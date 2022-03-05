@@ -5,6 +5,7 @@ using Glue;
 using GlueFormsCore.Controls;
 using OfficialPlugins.Compiler;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.Managers;
 using OfficialPlugins.Compiler.ViewModels;
 using System;
@@ -295,6 +296,21 @@ namespace OfficialPlugins.GameHost.Views
         const int msDelayBetweenResizes = 5;
 
         int lastWidth;
+
+        private async void BottomStatusBar_ZoomMinusClick()
+        {
+            var dto = new ChangeZoomDto();
+            dto.PlusOrMinus = PlusOrMinus.Minus;
+            await CommandSender.Send(dto);
+        }
+
+        private async void BottomStatusBar_ZoomPlusClick()
+        {
+            var dto = new ChangeZoomDto();
+            dto.PlusOrMinus = PlusOrMinus.Plus;
+            await CommandSender.Send(dto);
+        }
+
         int lastHeight;
         public async void ReactToMainWindowResizeEnd()
         {

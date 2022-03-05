@@ -160,6 +160,20 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region ChangeZoomDto
+
+    public enum PlusOrMinus
+    {
+        Plus, Minus
+    }
+
+    public class ChangeZoomDto
+    {
+        public PlusOrMinus PlusOrMinus { get; set; }
+    }
+
+    #endregion
+
     #region AddObjectDto
 
     public class AddObjectDtoList

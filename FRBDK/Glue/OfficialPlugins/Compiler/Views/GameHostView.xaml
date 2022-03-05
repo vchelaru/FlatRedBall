@@ -120,7 +120,12 @@
             </Grid>
             <controls:ActivitySpinner Visibility="{Binding BuildingActivitySpinnerVisibility}" 
                                       Grid.Column="1"></controls:ActivitySpinner>
-            <views:BottomStatusBar Visibility="{Binding WhileRunningViewVisibility}" Grid.Row="1" Grid.Column="1"></views:BottomStatusBar>
+            <views:BottomStatusBar Visibility="{Binding WhileRunningViewVisibility}" 
+                                   Grid.Row="1" 
+                                   Grid.Column="1"
+                                   ZoomMinusClick="BottomStatusBar_ZoomMinusClick"
+                                   ZoomPlusClick="BottomStatusBar_ZoomPlusClick"
+                                   ></views:BottomStatusBar>
 
         </Grid>
     </Grid>

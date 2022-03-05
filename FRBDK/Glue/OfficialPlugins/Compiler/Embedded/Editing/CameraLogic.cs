@@ -213,17 +213,27 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
                 {
-                    currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
-                    UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
-                    PushZoomLevelToEditor();
+                    DoZoomMinus();
                 }
                 if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
                 {
-                    currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
-                    UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
-                    PushZoomLevelToEditor();
+                    DoZoomPlus();
                 }
             }
+        }
+
+        public static void DoZoomMinus()
+        {
+            currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            PushZoomLevelToEditor();
+        }
+
+        public static void DoZoomPlus()
+        {
+            currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            PushZoomLevelToEditor();
         }
 
         public static void RecordCameraForCurrentScreen()

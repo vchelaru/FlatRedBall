@@ -464,6 +464,22 @@ namespace GlueControl
         #endregion
 
 
+        #region ChangeZoomDto
+
+        private static void HandleDto(ChangeZoomDto changeZoomDto)
+        {
+            if (changeZoomDto.PlusOrMinus == PlusOrMinus.Plus)
+            {
+                CameraLogic.DoZoomMinus();
+            }
+            else
+            {
+                CameraLogic.DoZoomPlus();
+            }
+        }
+
+        #endregion
+
         #region Rename
 
         static string topNamespace = null;
