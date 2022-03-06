@@ -779,10 +779,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             var zoomValue = dto.ZoomPercentage;
 
-            //if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
-            //{
-            //    zoomValue *= (decimal)(dto.DestinationRectangleHeight / (decimal)GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionHeight);
-            //}
+            // If it's in game mode, then display the % using the destination height / display settings height
+            if (CompilerViewModel.IsEditChecked == false && GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            {
+                zoomValue = 100 * (decimal)(dto.DestinationRectangleHeight / (decimal)GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionHeight);
+            }
 
             zoomValue = (int)zoomValue; // to prevent lots of trailing decimals
 

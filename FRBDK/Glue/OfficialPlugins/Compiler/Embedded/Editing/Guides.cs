@@ -83,6 +83,9 @@ namespace GlueControl.Editing
 
             var numberOfVerticalLines = 1 + MathFunctions.RoundToInt((rightMost - leftmost) / GridSpacing);
 
+            numberOfVerticalLines = Math.Min(1000, numberOfVerticalLines);
+
+
 #if SupportsEditMode
 
             while(verticalLines.Count < numberOfVerticalLines)
@@ -118,6 +121,10 @@ namespace GlueControl.Editing
             var topmost = MathFunctions.RoundFloat(camera.AbsoluteTopYEdge, GridSpacing);
 
             var numberOfHorizontalLines = 1 + MathFunctions.RoundToInt((topmost - bottomMost) / GridSpacing);
+
+            
+            // in case there's some error or the camera zooms out too far
+            numberOfHorizontalLines = Math.Min(1000, numberOfHorizontalLines);
 
             while(horizontalLines.Count < numberOfHorizontalLines)
             {

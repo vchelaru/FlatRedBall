@@ -167,16 +167,16 @@ namespace GlueControl.Editing
                     ? 100 * CameraSetup.Data.Scale / 100.0f
                     : zoomLevels[currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
                 Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
-                Camera.Main.FixAspectRatioYConstant();
             }
             else
             {
-                var multiple = forceTo100
+                var divisor = forceTo100
                     ? 1
-                    : zoomLevels[currentZoomLevelIndex] * 100.0f;
+                    : zoomLevels[currentZoomLevelIndex] / 100.0f;
 
-                Camera.Main.OrthogonalHeight = multiple * Camera.Main.DestinationRectangle.Height;
+                Camera.Main.OrthogonalHeight = Camera.Main.DestinationRectangle.Height / divisor;
             }
+            Camera.Main.FixAspectRatioYConstant();
 
 
             if (global::RenderingLibrary.SystemManagers.Default != null)
