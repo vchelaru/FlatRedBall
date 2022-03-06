@@ -149,20 +149,35 @@ namespace GlueControl.Editing
                 camera.Y += yMovementRatio * MaxVelocity * TimeManager.SecondDifference;
             }
         }
-
         public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true, bool forceTo100 = false)
         {
             var cursor = GuiManager.Cursor;
             var worldXBefore = cursor.WorldX;
             var worldYBefore = cursor.WorldY;
 
-            var zoomLevel =
-                forceTo100
-                ? 100 * CameraSetup.Data.Scale / 100.0f
-                : zoomLevels[currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
+            var makeDefaultCamera100 = false;
 
-            Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
-            Camera.Main.FixAspectRatioYConstant();
+            float zoomLevel = 100;
+
+            if (makeDefaultCamera100)
+            {
+                // In this case, 100% means whatever is the default zoom for the game.
+                zoomLevel =
+                    forceTo100
+                    ? 100 * CameraSetup.Data.Scale / 100.0f
+                    : zoomLevels[currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
+                Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
+                Camera.Main.FixAspectRatioYConstant();
+            }
+            else
+            {
+                var multiple = forceTo100
+                    ? 1
+                    : zoomLevels[currentZoomLevelIndex] * 100.0f;
+
+                Camera.Main.OrthogonalHeight = multiple * Camera.Main.DestinationRectangle.Height;
+            }
+
 
             if (global::RenderingLibrary.SystemManagers.Default != null)
             {
@@ -188,6 +203,7 @@ namespace GlueControl.Editing
                 Camera.Main.Y -= worldYAfterZoom - worldYBefore;
             }
         }
+
 
         internal static void DoHotkeyLogic()
         {

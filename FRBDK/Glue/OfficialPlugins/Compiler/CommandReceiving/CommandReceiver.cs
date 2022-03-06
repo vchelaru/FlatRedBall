@@ -779,10 +779,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             var zoomValue = dto.ZoomPercentage;
 
-            if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
-            {
-                zoomValue *= (decimal)(dto.DestinationRectangleHeight / (decimal)GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionHeight);
-            }
+            //if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null)
+            //{
+            //    zoomValue *= (decimal)(dto.DestinationRectangleHeight / (decimal)GlueState.Self.CurrentGlueProject.DisplaySettings.ResolutionHeight);
+            //}
 
             zoomValue = (int)zoomValue; // to prevent lots of trailing decimals
 
