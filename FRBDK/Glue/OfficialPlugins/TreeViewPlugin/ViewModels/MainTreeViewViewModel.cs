@@ -115,15 +115,30 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchListVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
+        public bool HasUserDismissedTips
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        [DependsOn(nameof(IsSearchBoxFocused))]
-        [DependsOn(nameof(SearchBoxText))]
-        public Visibility TipsVisibility =>
-            (IsSearchBoxFocused ||
-             // Consider the SearchTextBox, or else clicking off to select a tree view will adjust the size of the area above the list box, causing a mis-click
-             !string.IsNullOrWhiteSpace(SearchBoxText))
-            ? Visibility.Visible
-            : Visibility.Hidden;
+        [DependsOn(nameof(HasUserDismissedTips))]
+        public Visibility TipsVisibility
+        {
+            get
+            {
+                if(HasUserDismissedTips)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+
+                }
+            }
+        }
+
+
 
         [DependsOn(nameof(SearchBoxText))]
         public string FilterResultsInfo =>

@@ -10,6 +10,10 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
         <StackPanel>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -31,14 +35,24 @@
                                x:Name="PlaceholderText" Grid.ColumnSpan="2" 
                                >Search...</TextBlock>
             </Grid>
-            <TextBlock TextWrapping="Wrap" FontSize="10" 
-                           Visibility="{Binding TipsVisibility}"
-                           Text="{Binding FilterResultsInfo}"
-                           ></TextBlock>
         </StackPanel>
-        <Button x:Name="ClearSearchButton" Width="18" Height="20" VerticalAlignment="Top" Grid.Column="1" Click="ClearSearchButton_Click"
-                    Visibility="{Binding SearchButtonVisibility}"
-                    >X</Button>
+        <Button x:Name="ClearSearchButton" Width="18" Height="18" VerticalAlignment="Top" Grid.Column="1" Click="ClearSearchButton_Click"
+                    Visibility="{Binding SearchButtonVisibility}">
+            <TextBlock Margin="0,-2,0,2">X</TextBlock>
+        </Button>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding TipsVisibility}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock TextWrapping="Wrap" FontSize="10" 
+                               Text="{Binding FilterResultsInfo}"
+                               ></TextBlock>
+            <Button Width="16" Height="16" VerticalAlignment="Top" Grid.Column="1" Click="ClearHintTextClickedInternal">
+                <TextBlock Margin="0,-2,0,2">X</TextBlock>
+            </Button>
+
+        </Grid>
     </Grid>
 
 </UserControl>

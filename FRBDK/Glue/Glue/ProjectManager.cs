@@ -140,7 +140,7 @@ namespace FlatRedBall.Glue
         public static bool WantsToCloseProject { get; set; }
 
 
-
+        [Obsolete("Use GlueState.Self.GlueSettingsSave")]
         public static GlueSettingsSave GlueSettingsSave
         {
             get { return mGlueSettingsSave; }

@@ -504,6 +504,7 @@ namespace Glue
                 try
                 {
                     settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation);
+                    settingsSave.FixAllTypes();
                 }
                 catch (Exception e)
                 {

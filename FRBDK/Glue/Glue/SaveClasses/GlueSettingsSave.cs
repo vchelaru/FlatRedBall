@@ -32,6 +32,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    /// <summary>
+    /// Global glue settings for the current user, not tied to any particular project.
+    /// </summary>
     public class GlueSettingsSave
     {
         #region Fields
@@ -95,6 +98,9 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         public static bool StopSavesAndLoads { get; set; }
 
+        public List<PropertySave> Properties = new List<PropertySave>();
+
+
         #endregion
 
         public void Save()
@@ -115,6 +121,27 @@ namespace FlatRedBall.Glue.SaveClasses
 
             Associations.ReAddExternals();
             BuildToolAssociations.ReAddExternals();
+        }
+
+        public void FixAllTypes()
+        {
+            foreach (var property in Properties)
+            {
+                FixAllTypes(property);
+            }
+        }
+
+        private static void FixAllTypes(PropertySave property)
+        {
+            if (!string.IsNullOrEmpty(property.Type) && property.Value != null)
+            {
+                object variableValue = property.Value;
+                var type = property.Type;
+
+                variableValue = CustomVariableExtensionMethods.FixValue(variableValue, type);
+
+                property.Value = variableValue;
+            }
         }
 
         public void LoadExternalBuildToolsFromCsv(string csvFileName)

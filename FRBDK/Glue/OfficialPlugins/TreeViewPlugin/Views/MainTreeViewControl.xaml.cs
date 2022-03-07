@@ -485,5 +485,18 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #endregion
 
+        private async void SearchBar_DismissHintTextClicked()
+        {
+            ViewModel.HasUserDismissedTips = true;
+            await TaskManager.Self.AddAsync(() =>
+            {
+                if(GlueState.Self.GlueSettingsSave != null)
+                {
+                    GlueState.Self.GlueSettingsSave.Properties
+                        .SetValue(nameof(ViewModel.HasUserDismissedTips), true);
+                    GlueCommands.Self.GluxCommands.SaveSettings();
+                }
+            }, "Saving settings after dismissing tree view hint text");
+        }
     }
 }

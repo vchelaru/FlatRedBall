@@ -21,6 +21,8 @@ namespace GlueFormsCore.Controls
     {
         ISearchBarViewModel ViewModel => DataContext as ISearchBarViewModel;
         public event Action ClearSearchButtonClicked;
+        public event Action DismissHintTextClicked;
+
         public event Action EnterPressed;
         public event Action<Key> ArrowKeyPushed;
         public SearchBar()
@@ -45,6 +47,11 @@ namespace GlueFormsCore.Controls
         private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
         {
             ClearSearchButtonClicked?.Invoke();
+        }
+
+        private void ClearHintTextClickedInternal(object sender, RoutedEventArgs e)
+        {
+            DismissHintTextClicked?.Invoke();
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)

@@ -53,6 +53,7 @@
         </StackPanel>
         <controls:SearchBar Grid.Row="1" x:Name="SearchBar" 
                             ClearSearchButtonClicked="SearchBar_ClearSearchButtonClicked" 
+                            DismissHintTextClicked="SearchBar_DismissHintTextClicked"
                             ArrowKeyPushed="SearchBar_ArrowKeyPushed"
                             EnterPressed="SearchBar_EnterPressed"
                             ></controls:SearchBar>

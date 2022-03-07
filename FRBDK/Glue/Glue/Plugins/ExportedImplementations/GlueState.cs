@@ -253,10 +253,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
-        public GlueSettingsSave GlueSettingsSave
-        {
-            get { return ProjectManager.GlueSettingsSave; }
-        }
+
+        /// <summary>
+        /// The global glue settings for the current user, not tied to a particular project.
+        /// </summary>
+        public GlueSettingsSave GlueSettingsSave => ProjectManager.GlueSettingsSave; 
 
         #endregion
 

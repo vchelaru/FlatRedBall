@@ -44,8 +44,10 @@ namespace OfficialPlugins.TreeViewPlugin
             var findManager = new FindManager(MainViewModel);
             GlueState.Self.Find = findManager;
             mainView = new MainTreeViewControl();
-
+            MainViewModel.HasUserDismissedTips = GlueState.Self.GlueSettingsSave.Properties
+                .GetValue<bool>(nameof(MainViewModel.HasUserDismissedTips));
             mainView.DataContext = MainViewModel;
+
 
             SelectionLogic.Initialize(MainViewModel, mainView);
 
