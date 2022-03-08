@@ -56,7 +56,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             // newest first
             ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, currentFile.FullPath);
 
-            const int maxItemCount = 20;
+            // Vic bounces around projects enough that sometimes he needs more...
+            const int maxItemCount = 30;
 
             if (ProjectManager.GlueSettingsSave.RecentFiles.Count > maxItemCount)
             {

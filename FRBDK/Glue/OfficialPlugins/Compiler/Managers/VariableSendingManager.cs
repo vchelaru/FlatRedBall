@@ -72,7 +72,8 @@ namespace OfficialPlugins.Compiler.Managers
                             GlueCommands.Self.PrintError(exception);
                             Output.Print(exception);
                         }
-                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable changed").Wait();
+                        var waitTimeout = TimeSpan.FromSeconds(5);
+                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable changed").Wait(waitTimeout);
                     }
                 }
                 catch
