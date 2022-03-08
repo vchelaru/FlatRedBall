@@ -24,6 +24,12 @@ namespace FlatRedBall.Glue.Managers
                 case Keys.Control | Keys.F:
                     PluginManager.ReactToCtrlF();
                     return true;
+                case Keys.Control | Keys.C:
+                    CopyPasteManager.Self.HandleCopy();
+                    return true;
+                case Keys.Control | Keys.V:
+                    CopyPasteManager.Self.HandlePaste();
+                    return true;
                 case Keys.Alt | Keys.Left:
                     TreeNodeStackManager.Self.GoBack();
                     return true;
@@ -74,6 +80,20 @@ namespace FlatRedBall.Glue.Managers
                     {
                         PluginManager.ReactToCtrlF();
 
+                        return true;
+                    }
+                    break;
+                case System.Windows.Input.Key.C:
+                    if (ctrlDown)
+                    {
+                        CopyPasteManager.Self.HandleCopy();
+                        return true;
+                    }
+                    break;
+                case System.Windows.Input.Key.V:
+                    if (ctrlDown)
+                    {
+                        CopyPasteManager.Self.HandlePaste();
                         return true;
                     }
                     break;
@@ -129,6 +149,7 @@ namespace FlatRedBall.Glue.Managers
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
                     return true;
+
                 // Handle this in the tree view itself, otherwise all other controls
                 // start raising this
                 //case Key.Delete:
