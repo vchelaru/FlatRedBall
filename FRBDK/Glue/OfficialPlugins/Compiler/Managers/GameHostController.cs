@@ -19,21 +19,23 @@ namespace OfficialPlugins.Compiler.Managers
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
         MainControl mainControl;
-        public void Initialize(GameHostView gameHostControl, MainControl mainControl, 
+        GameHostView gameHostView;
+        public void Initialize(GameHostView gameHostView, MainControl mainControl, 
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
             PluginTab glueViewSettingsTab)
         {
+            this.gameHostView = gameHostView;
             this.compilerViewModel = compilerViewModel;
             this.glueViewSettingsViewModel = glueViewSettingsViewModel;
             this.mainControl = mainControl;
             this.glueViewSettingsTab = glueViewSettingsTab;
             var runner = Runner.Self;
-            gameHostControl.StopClicked += (not, used) =>
+            gameHostView.StopClicked += (not, used) =>
             {
                 runner.KillGameProcess();
             };
 
-            gameHostControl.RestartGameClicked += async (not, used) =>
+            gameHostView.RestartGameClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
                 runner.KillGameProcess();
@@ -44,9 +46,9 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-            gameHostControl.StartInEditModeClicked += StarRunInEditMode;
+            gameHostView.StartInEditModeClicked += StarRunInEditMode;
 
-            gameHostControl.RestartGameCurrentScreenClicked += async (not, used) =>
+            gameHostView.RestartGameCurrentScreenClicked += async (not, used) =>
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
                 // This is the screen that the game is currently on...
@@ -79,31 +81,31 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-            gameHostControl.RestartScreenClicked += async (not, used) =>
+            gameHostView.RestartScreenClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
                 await CommandSender.Send(new RestartScreenDto());
             };
 
-            gameHostControl.AdvanceOneFrameClicked += async (not, used) =>
+            gameHostView.AdvanceOneFrameClicked += async (not, used) =>
             {
                 await CommandSender.Send(new AdvanceOneFrameDto());
             };
 
 
-            gameHostControl.PauseClicked += async (not, used) =>
+            gameHostView.PauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = true;
                 await CommandSender.Send(new TogglePauseDto());
             };
 
-            gameHostControl.UnpauseClicked += async (not, used) =>
+            gameHostView.UnpauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
                 await CommandSender.Send(new TogglePauseDto());
             };
 
-            gameHostControl.SettingsClicked += (not, used) =>
+            gameHostView.SettingsClicked += (not, used) =>
             {
                 if(glueViewSettingsTab.IsShown)
                 {
@@ -116,7 +118,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-            gameHostControl.FocusOnSelectedObjectClicked += async (not, used) =>
+            gameHostView.FocusOnSelectedObjectClicked += async (not, used) =>
             {
                 var selectedNos = GlueState.Self.CurrentNamedObjectSave;
                 if (selectedNos != null)
@@ -191,40 +193,6 @@ namespace OfficialPlugins.Compiler.Managers
                         compilerViewModel.IsEditChecked = true;
                     }
                     succeeded = runResponse.Succeeded;
-                }
-
-                if(succeeded)
-                {
-                    //var dto = new SetCameraSetupDto();
-
-                    //// create values here...
-                    //var cameraSetup = GlueState.Self.CurrentGlueProject.DisplaySettings;
-                    //if(cameraSetup != null && cameraSetup.GenerateDisplayCode && cameraSetup.AllowWindowResizing &&
-                    //    glueViewSettingsViewModel.EmbedGameInGameTab)
-                    //{
-                    //    dto.IsGenerateCameraDisplayCodeEnabled = cameraSetup.GenerateDisplayCode;
-                    //    dto.Scale = cameraSetup.Scale;
-                    //    dto.ScaleGum = cameraSetup.ScaleGum;
-                    //    dto.Is2D = cameraSetup.Is2D;
-                    //    dto.ResolutionWidth = cameraSetup.ResolutionWidth;
-                    //    dto.ResolutionHeight = cameraSetup.ResolutionHeight;
-                    //    if(cameraSetup.AspectRatioHeight > 0)
-                    //    {
-                    //        dto.AspectRatio = cameraSetup.AspectRatioWidth / cameraSetup.AspectRatioHeight;
-                    //    }
-
-                    //    // don't allow this!
-                    //    dto.AllowWindowResizing = false;
-                    //    //dto.AllowWindowResizing = cameraSetup.AllowWindowResizing;
-                    //    dto.IsFullScreen = cameraSetup.RunInFullScreen;
-                    //    dto.ResizeBehavior = cameraSetup.ResizeBehavior;
-                    //    dto.ResizeBehaviorGum = cameraSetup.ResizeBehaviorGum;
-                    //    dto.DominantInternalCoordinates = cameraSetup.DominantInternalCoordinates;
-                    //    dto.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter) cameraSetup.TextureFilter;
-
-                    //    await CommandSender.Send(dto);
-
-                    //}
                 }
 
             }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);

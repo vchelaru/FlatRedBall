@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OfficialPlugins.Compiler.Views"
              mc:Ignorable="d" 
              d:DesignWidth="450" Height="28">
-    <Grid>
+    <StackPanel Orientation="Horizontal">
         <Grid HorizontalAlignment="Left" Margin="0,0,0,0">
             <Button IsHitTestVisible="False"></Button>
             <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
@@ -39,5 +39,6 @@
             </StackPanel>
 
         </Grid>
-    </Grid>
+        <TextBlock VerticalAlignment="Center" Margin="4" Text="{Binding ResolutionDisplayText, FallbackValue=800x600}"></TextBlock>
+    </StackPanel>
 </UserControl>

@@ -788,7 +788,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             zoomValue = (int)zoomValue; // to prevent lots of trailing decimals
 
             GlueCommands.Self.DoOnUiThread(() =>
-                CompilerViewModel.CurrentZoomLevelDisplay = zoomValue.ToString() + "%");
+            {
+                CompilerViewModel.CurrentZoomLevelDisplay = zoomValue.ToString() + "%";
+                CompilerViewModel.ResolutionDisplayText = $"{dto.DestinationRectangleWidth}x{dto.DestinationRectangleHeight}";
+            });
 
         }
 

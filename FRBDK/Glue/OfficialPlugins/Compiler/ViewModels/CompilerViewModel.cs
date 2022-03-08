@@ -215,6 +215,12 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public string ResolutionDisplayText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public PlayOrEdit PlayOrEdit
         {
             get => Get<PlayOrEdit>();

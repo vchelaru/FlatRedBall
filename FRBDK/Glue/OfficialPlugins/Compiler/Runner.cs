@@ -80,7 +80,11 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
+        #region Events
+
         public event Action AfterSuccessfulRun;
+
+        #endregion
 
         public Runner()
         {

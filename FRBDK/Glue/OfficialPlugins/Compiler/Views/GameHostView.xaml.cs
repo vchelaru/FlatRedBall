@@ -255,11 +255,11 @@ namespace OfficialPlugins.GameHost.Views
         }
 
 
-        private void BackgroundGrid_SizeChanged(object sender, SizeChangedEventArgs e)
+        private async void BackgroundGrid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if(e.HeightChanged)
             {
-                RefreshLeftPanelSize();
+                await ForceRefreshGameArea();
             }
         }
 
@@ -314,10 +314,10 @@ namespace OfficialPlugins.GameHost.Views
         int lastHeight;
         public async void ReactToMainWindowResizeEnd()
         {
-            await RefreshLeftPanelSize();
+            await ForceRefreshGameArea();
         }
 
-        private async Task RefreshLeftPanelSize()
+        public async Task ForceRefreshGameArea(bool force = false)
         {
             var window = MainGlueWindow.Self;
             var areSame = window.Width == lastWidth && window.Height == lastHeight;
@@ -325,11 +325,19 @@ namespace OfficialPlugins.GameHost.Views
 
             lastWidth = window.Width;
             lastHeight = window.Height;
-            if (areSame || are0)
+            if (ViewModel.IsRunning && (areSame || are0 || force))
             {
                 var leftPixel = MainPanelControl.ViewModel.LeftPanelWidth.Value;
                 // need to get the VM for the splitter and adjust it:
-                MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel + 1);
+                // If it always goes in the same direction, it can accumulate...
+                if(new Random().Next(2) == 0)
+                {
+                    MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel + 1);
+                }
+                else
+                {
+                    MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel - 1);
+                }
                 await Task.Delay(msDelayBetweenResizes);
                 MainPanelControl.ViewModel.LeftPanelWidth = new GridLength(leftPixel);
             }

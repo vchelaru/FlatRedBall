@@ -81,26 +81,30 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Visibility="{Binding EditingToolsVisibility}" Grid.RowSpan="2" >
-                <StackPanel Orientation="Horizontal"
-                            Visibility="{Binding WhileRunningViewVisibility}">
-                    <Button Click="FocusButtonClicked" 
-                            HorizontalAlignment="Left" 
-                            Width="24"
-                            Visibility="{Binding FocusButtonVisibility}">
-                        <Button.ToolTip>
-                            <ToolTip>
-                                <StackPanel>
-                                    <TextBlock FontWeight="Bold">Focus on Selection</TextBlock>
-                                    <TextBlock>Moves the camera to the selected item and plays the selection animation.</TextBlock>
-                                </StackPanel>
-                            </ToolTip>
-                        </Button.ToolTip>
-                        <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
-                    </Button>
-                </StackPanel>
+            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Grid.RowSpan="2" >
+<!--This is here to control visibility of all controls but we want the left frame to always be around to prevent flickering-->
+                <StackPanel Visibility="{Binding EditingToolsVisibility}" >
+                    <StackPanel Orientation="Horizontal"
+                                Visibility="{Binding WhileRunningViewVisibility}">
+                        <Button Click="FocusButtonClicked" 
+                                HorizontalAlignment="Left" 
+                                Width="24"
+                                Visibility="{Binding FocusButtonVisibility}">
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">Focus on Selection</TextBlock>
+                                        <TextBlock>Moves the camera to the selected item and plays the selection animation.</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Button.ToolTip>
+                            <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
+                        </Button>
+                    </StackPanel>
 
-                <views:EditingToolsView HorizontalAlignment="Left" Margin="0,1,0,0" x:Name="EditingTools"></views:EditingToolsView>
+                    <views:EditingToolsView HorizontalAlignment="Left" Margin="0,1,0,0" x:Name="EditingTools"></views:EditingToolsView>
+                    
+                </StackPanel>
             </StackPanel>
 
 
