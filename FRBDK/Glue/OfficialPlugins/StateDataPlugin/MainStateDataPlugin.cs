@@ -99,6 +99,7 @@ namespace OfficialPlugins.StateDataPlugin
                 // to have columns set from the element's variables
 
                 tab = this.CreateTab(control, "State Data");
+                tab.IsPreferredDisplayerForType = (type) => type == nameof(StateSaveCategory);
             }
             tab.Show();
 
