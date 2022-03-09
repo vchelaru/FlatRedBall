@@ -57,6 +57,9 @@ namespace OfficialPlugins.Compiler
 
         public void PrintOutput(string text)
         {
+            //////////////////////////////////// Early out ////////////////////////////////////////////
+            if (text == null) return;
+            //////////////////////////////////End Early Out////////////////////////////////////////////
 
             // suppress warnings...
             var split = text.Split('\n');

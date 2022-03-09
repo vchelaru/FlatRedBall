@@ -93,7 +93,7 @@ namespace OfficialPlugins.Compiler
 
         public override void StartUp()
         {
-            CreateControl();
+            CreateBuildControl();
 
             CreateToolbar();
 
@@ -115,6 +115,10 @@ namespace OfficialPlugins.Compiler
                 
                 await SendGlueViewSettingsToGame();
 
+            };
+            runner.OutputReceived += (output) =>
+            {
+                MainControl.PrintOutput(output);
             };
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
@@ -511,7 +515,7 @@ namespace OfficialPlugins.Compiler
         }
 
 
-        private void CreateControl()
+        private void CreateBuildControl()
         {
             CompilerViewModel = new CompilerViewModel();
             CompilerViewModel.Configuration = "Debug";

@@ -83,6 +83,7 @@ namespace OfficialPlugins.Compiler
         #region Events
 
         public event Action AfterSuccessfulRun;
+        public event Action<string> OutputReceived;
 
         #endregion
 
@@ -272,7 +273,7 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private static async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)
+        private async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)
         {
             if(preventFocus)
             {
@@ -283,6 +284,7 @@ namespace OfficialPlugins.Compiler
             else
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.RedirectStandardOutput = true;
                 startInfo.FileName = exeLocation;
                 startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
                 startInfo.Arguments = runArguments;
@@ -300,6 +302,7 @@ namespace OfficialPlugins.Compiler
 
                 if (hasExited && process?.ExitCode != 0)
                 {
+
                     var message = await GetCrashMessage();
                     var response = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulWith(message);
                     response.Data = process;
@@ -307,11 +310,22 @@ namespace OfficialPlugins.Compiler
                 }
                 else
                 {
+                    // from https://stackoverflow.com/questions/5044412/reading-console-stream-continually-in-c-sharp
+
+                    process.OutputDataReceived += HandleExeOutput;
+                    process.BeginOutputReadLine();
+
                     var response = ToolsUtilities.GeneralResponse<Process>.SuccessfulResponse;
                     response.Data = process;
                     return response;
                 }
             }
+        }
+
+        private void HandleExeOutput(object sender, DataReceivedEventArgs e)
+        {
+            var output = e.Data;
+            OutputReceived?.Invoke(output);
         }
 
         private async void HandleProcessExit(object sender, EventArgs e)
