@@ -263,15 +263,27 @@ namespace GlueControl.Editing
         internal static void GetDimensionsFor(PositionedObject itemOver,
             out float minX, out float maxX, out float minY, out float maxY)
         {
-            const float minDimension = 16;
             // We used to use the position as part of the min and max bounds, but this causes problems
             // if some objects are only visible when the cursor is over them. Therefore, always use half dimension
             // width for selection:
-            minX = itemOver.X - minDimension / 2.0f;
-            maxX = itemOver.X + minDimension / 2.0f;
-            minY = itemOver.Y - minDimension / 2.0f;
-            maxY = itemOver.Y + minDimension / 2.0f; ;
+            minX = itemOver.X;
+            maxX = itemOver.X;
+            minY = itemOver.Y;
+            maxY = itemOver.Y;
             GetDimensionsForInner(itemOver, ref minX, ref maxX, ref minY, ref maxY);
+
+            float minDimension = 0;
+
+            // if it's scalable, then we should show the 
+            // bounds exactly as is, so it can be resized.
+            // Otherwise, give it a min dimension in case it's
+            // empty or really small.
+            var isScalable = itemOver is IScalable;
+            if(!isScalable)
+            {
+                var multiplier = Camera.Main.OrthogonalHeight / Camera.Main.DestinationRectangle.Height;
+                minDimension = 16 * multiplier;
+            }
 
             if (maxX - minX < minDimension)
             {
@@ -288,6 +300,8 @@ namespace GlueControl.Editing
                 minY -= extraToAdd / 2.0f;
                 maxY += extraToAdd / 2.0f;
             }
+
+
         }
 
         private static void GetDimensionsForInner(PositionedObject itemOver,
@@ -397,5 +411,6 @@ namespace GlueControl.Editing
         }
 
         #endregion
+
     }
 }
