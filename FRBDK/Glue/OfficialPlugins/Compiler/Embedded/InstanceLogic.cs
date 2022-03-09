@@ -1229,10 +1229,12 @@ namespace GlueControl
 
             var valueAsString = variableValue as string;
 
+            string conversionReport = "";
+
             if (variableValue is string)
             {
                 // only convert this if the instance is 
-                variableValue = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, stateType != null, convertFileNamesToObjects);
+                variableValue = VariableAssignmentLogic.ConvertStringToType(instruction.Type, valueAsString, stateType != null, out conversionReport, convertFileNamesToObjects);
             }
             else if (stateType != null && variableValue is string && !string.IsNullOrWhiteSpace(valueAsString))
             {
@@ -1281,14 +1283,14 @@ namespace GlueControl
             {
                 if (convertFileNamesToObjects && variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {
-                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false);
+                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false, out conversionReport);
                 }
             }
             else if (instruction.Type == typeof(Microsoft.Xna.Framework.Color).FullName)
             {
                 if (variableValue is string asString && !string.IsNullOrWhiteSpace(asString))
                 {
-                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false);
+                    variableValue = Editing.VariableAssignmentLogic.ConvertStringToType(instruction.Type, asString, false, out conversionReport);
                 }
             }
             else if (instruction.Type == typeof(Microsoft.Xna.Framework.Graphics.TextureAddressMode).Name)
@@ -1310,6 +1312,10 @@ namespace GlueControl
             catch (MemberAccessException)
             {
                 // for info on why this exception is caught, search for MemberAccessException in this file
+            }
+            catch (System.Reflection.TargetInvocationException e)
+            {
+                throw new Exception(conversionReport, e);
             }
         }
 

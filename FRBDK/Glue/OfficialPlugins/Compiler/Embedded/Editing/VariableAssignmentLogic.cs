@@ -889,7 +889,7 @@ namespace GlueControl.Editing
         private static object ConvertVariableValue(GlueVariableSetData data)
         {
             var type = data.Type;
-            object variableValue = ConvertStringToType(type, data.VariableValue, data.IsState);
+            object variableValue = ConvertStringToType(type, data.VariableValue, data.IsState, out string _);
 
             return variableValue;
         }
@@ -925,10 +925,11 @@ namespace GlueControl.Editing
             return file;
         }
 
-        public static object ConvertStringToType(string type, string variableValue, bool isState, bool convertFileNamesToObjects = true)
+        public static object ConvertStringToType(string type, string variableValue, bool isState, out string conversionReport, bool convertFileNamesToObjects = true)
         {
             object convertedValue = variableValue;
             const string inWithSpaces = " in ";
+            conversionReport = $"Attempting to convert string varaible to {type}, but was not able to handle the conversion";
             if (isState)
             {
                 convertedValue = TryGetStateValue(type, variableValue);
@@ -950,6 +951,7 @@ namespace GlueControl.Editing
             }
             else if (variableValue?.Contains(inWithSpaces) == true)
             {
+                conversionReport = $"Attempting to convert string to CSV type {type}";
                 // It could be a CSV:
                 var indexOfIn = variableValue.IndexOf(inWithSpaces);
 
@@ -961,14 +963,35 @@ namespace GlueControl.Editing
 
                 if (file is IDictionary asDictionary)
                 {
+                    conversionReport += $"\nFound dictionary from {csvName}";
                     var itemInCsv = variableValue.Substring(0, indexOfIn);
-                    convertedValue = asDictionary[itemInCsv];
+
+                    if(asDictionary.Contains(itemInCsv))
+                    {
+                        convertedValue = asDictionary[itemInCsv];
+                        conversionReport += $"\nFound entry in dictionary {itemInCsv}";
+                    }
+                    else
+                    {
+                        conversionReport += $"\nCould not find entry in dictionary {itemInCsv}";
+                    }
+                }
+                else
+                {
+                    conversionReport += $"\nCould not find dictionary from name {csvName}";
+
                 }
 
                 if (convertedValue is string)
                 {
+                    conversionReport += $"\nConverted value is still string, was not able to convert";
+
                     // If we got here and it's a string, that's bad, so let's just set it to null
                     convertedValue = null;
+                }
+                else
+                {
+                    conversionReport += $"\nConverted value to {convertedValue?.GetType()}";
                 }
             }
             else
@@ -1135,6 +1158,7 @@ namespace GlueControl.Editing
 
             return convertedValue;
         }
+
 
         private static object TryGetStateValue(string type, string variableValue)
         {
