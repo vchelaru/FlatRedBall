@@ -800,7 +800,11 @@ namespace FlatRedBall.IO.Csv
 
                 var newItem = newKvp.Value;
 
-                var oldItem = dictionaryToUpdate[key];
+                ValueType oldItem = default;
+                if(dictionaryToUpdate.ContainsKey(key))
+                {
+                    oldItem = dictionaryToUpdate[key];
+                }
 
                 if(oldItem == null)
                 {
