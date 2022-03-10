@@ -37,7 +37,7 @@ using FlatRedBall.Glue.FormHelpers;
 namespace OfficialPlugins.Compiler
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : PluginBase
+    public class MainCompilerPlugin : PluginBase
     {
         #region Fields/Properties
 

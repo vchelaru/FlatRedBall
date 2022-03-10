@@ -13,7 +13,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
     {
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
-            if(MainPlugin.MainViewModel.IsGenerateGlueControlManagerInGame1Checked && element is EntitySave &&
+            if(MainCompilerPlugin.MainViewModel.IsGenerateGlueControlManagerInGame1Checked && element is EntitySave &&
                 // If it has a base element, then the base will handle this...
                 string.IsNullOrEmpty(element.BaseElement))
             {
