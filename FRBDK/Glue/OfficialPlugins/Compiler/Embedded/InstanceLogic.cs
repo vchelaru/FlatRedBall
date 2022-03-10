@@ -1313,7 +1313,7 @@ namespace GlueControl
             {
                 // for info on why this exception is caught, search for MemberAccessException in this file
             }
-            catch (System.Reflection.TargetInvocationException e)
+            catch (Exception e)
             {
                 throw new Exception(conversionReport, e);
             }
