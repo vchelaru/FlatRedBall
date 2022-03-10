@@ -52,7 +52,6 @@ namespace OfficialPlugins.Compiler
         public static CompilerViewModel MainViewModel { get; private set; }
 
 
-
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
         GlueViewSettings glueViewSettingsView;
@@ -86,6 +85,9 @@ namespace OfficialPlugins.Compiler
         Timer busyUpdateTimer;
         Timer dragDropTimer;
 
+        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
+        DateTime lastGetCall;
+        bool IsCursorOverTab;
 
         #endregion
 
@@ -300,9 +302,6 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
-        DateTime lastGetCall;
-        bool IsCursorOverTab;
         private async void HandleDragDropTimerElapsed(object sender, ElapsedEventArgs e)
         {
             try
@@ -685,20 +684,17 @@ namespace OfficialPlugins.Compiler
 
                         if (screen != null)
                         {
-                            await GlueCommands.Self.DoOnUiThread(() =>
-                            {
-                                if (GlueState.Self.CurrentElement != screen)
-                                {
-                                    GlueState.Self.CurrentElement = screen;
 
-                                    return Task.CompletedTask;
-                                }
-                                else
-                                {
-                                    // the screens are the same, so push the object selection from Glue to the game:
-                                    return RefreshManager.Self.PushGlueSelectionToGame();
-                                }
-                            });
+                            if (GlueState.Self.CurrentElement != screen)
+                            {
+                                GlueState.Self.CurrentElement = screen;
+
+                            }
+                            else
+                            {
+                                // the screens are the same, so push the object selection from Glue to the game:
+                                await RefreshManager.Self.PushGlueSelectionToGame();
+                            }
                         }
                     }
                 }
@@ -714,6 +710,51 @@ namespace OfficialPlugins.Compiler
                     await RefreshManager.Self.PushGlueSelectionToGame(forcedElement: startupScreen);
                 }
             }
+            var setCameraAspectRatioDto = new SetCameraAspectRatioDto();
+
+            if(inEditMode)
+            {
+                setCameraAspectRatioDto.AspectRatio = null;
+            }
+            else
+            {
+                if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null &&
+                    GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight > 0)
+                {
+                    setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
+                        GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;
+                }
+            }
+                    
+            await CommandSender.Send(setCameraAspectRatioDto);
+        }
+
+        private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
+        {
+            var toReturn = new SetCameraSetupDto();
+            toReturn.AllowWindowResizing = displaySettings.AllowWindowResizing;
+
+            if(displaySettings.FixedAspectRatio)
+            {
+                toReturn.AspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
+            }
+
+            toReturn.DominantInternalCoordinates = displaySettings.DominantInternalCoordinates;
+            toReturn.Is2D = displaySettings.Is2D;
+            toReturn.IsFullScreen = displaySettings.RunInFullScreen;
+            toReturn.IsGenerateCameraDisplayCodeEnabled = displaySettings.GenerateDisplayCode;
+            toReturn.ResizeBehavior = displaySettings.ResizeBehavior;
+            toReturn.ResizeBehaviorGum = displaySettings.ResizeBehaviorGum;
+            toReturn.ResolutionHeight = displaySettings.ResolutionHeight;
+            toReturn.ResolutionWidth = displaySettings.ResolutionWidth;
+            toReturn.Scale = displaySettings.Scale;
+            toReturn.ScaleGum = displaySettings.ScaleGum;
+            toReturn.TextureFilter = (Microsoft.Xna.Framework.Graphics.TextureFilter)displaySettings.TextureFilter;
+
+            return toReturn;
+
+
+
         }
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)

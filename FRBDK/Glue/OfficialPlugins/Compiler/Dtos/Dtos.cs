@@ -230,7 +230,7 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
-    #region Set Camera Setup
+    #region Set Camera Setup and related
 
     public class SetCameraSetupDto
     {
@@ -247,6 +247,11 @@ namespace OfficialPlugins.Compiler.Dtos
         public ResizeBehavior ResizeBehaviorGum { get; set; }
         public WidthOrHeight DominantInternalCoordinates { get; set; }
         public Microsoft.Xna.Framework.Graphics.TextureFilter TextureFilter { get; set; }
+    }
+
+    public class SetCameraAspectRatioDto
+    {
+        public decimal? AspectRatio { get; set; }
     }
 
     #endregion

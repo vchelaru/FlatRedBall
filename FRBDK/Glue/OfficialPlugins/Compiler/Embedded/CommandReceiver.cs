@@ -283,6 +283,17 @@ namespace GlueControl
 
         #endregion
 
+        #region SetCameraAspectRatioDto
+
+        private static void HandleDto(SetCameraAspectRatioDto dto)
+        {
+            CameraSetup.Data.AspectRatio = dto.AspectRatio;
+            
+            CameraSetup.ResetCamera();
+        }
+
+        #endregion
+
         #region Select Object
 
         private static void HandleDto(SelectObjectDto selectObjectDto)

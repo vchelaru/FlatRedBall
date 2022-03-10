@@ -436,7 +436,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static void GenerateSetAspectRatio(ICodeBlock classContents)
         {
             var functionBlock = classContents.Function("private static void", "SetAspectRatioTo", 
-                "decimal aspectRatio, WidthOrHeight dominantInternalCoordinates, int desiredWidth, int desiredHeight");
+                "decimal? aspectRatio, WidthOrHeight dominantInternalCoordinates, int desiredWidth, int desiredHeight");
             {
                 functionBlock.Line("var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
                 functionBlock.Line("int destinationRectangleWidth;");
@@ -444,14 +444,19 @@ namespace FlatRedBall.Glue.CodeGeneration
                 functionBlock.Line("int x = 0;");
                 functionBlock.Line("int y = 0;");
 
-                var ifBlock = functionBlock.If("aspectRatio > resolutionAspectRatio");
+                var ifBlock = functionBlock.If("aspectRatio == null");
                 {
                     ifBlock.Line("destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;");
-                    ifBlock.Line("destinationRectangleHeight = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleWidth / (float)aspectRatio);");
-
-                    ifBlock.Line("y = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight - destinationRectangleHeight) / 2;");
+                    ifBlock.Line("destinationRectangleHeight = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
                 }
-                var elseBlock = ifBlock.End().Else();
+                var elseIfBlock = ifBlock.End().ElseIf("aspectRatio > resolutionAspectRatio");
+                {
+                    elseIfBlock.Line("destinationRectangleWidth = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth;");
+                    elseIfBlock.Line("destinationRectangleHeight = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleWidth / (float)aspectRatio);");
+
+                    elseIfBlock.Line("y = (FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight - destinationRectangleHeight) / 2;");
+                }
+                var elseBlock = elseIfBlock.End().Else();
                 {
                     elseBlock.Line("destinationRectangleHeight = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;");
                     elseBlock.Line("destinationRectangleWidth = FlatRedBall.Math.MathFunctions.RoundToInt(destinationRectangleHeight * (float)aspectRatio);");
@@ -513,12 +518,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     foreachBlock.Line("camera.DestinationRectangle = new Microsoft.Xna.Framework.Rectangle(currentX, currentY, currentWidth, currentHeight);");
 
-                    ifBlock = foreachBlock.If("dominantInternalCoordinates == WidthOrHeight.Height");
+                    elseIfBlock = foreachBlock.If("dominantInternalCoordinates == WidthOrHeight.Height");
                     {
-                        ifBlock.Line("camera.OrthogonalHeight = desiredHeight;");
-                        ifBlock.Line("camera.FixAspectRatioYConstant();");
+                        elseIfBlock.Line("camera.OrthogonalHeight = desiredHeight;");
+                        elseIfBlock.Line("camera.FixAspectRatioYConstant();");
                     }
-                    elseBlock = ifBlock.End().Else();
+                    elseBlock = elseIfBlock.End().Else();
                     {
                         elseBlock.Line("camera.OrthogonalWidth = desiredWidth;");
                         elseBlock.Line("camera.FixAspectRatioXConstant();");
@@ -533,8 +538,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var functionBlock = classContents.Function("private static void", "HandleResolutionChange", "object sender, System.EventArgs args");
             {
                 functionBlock
-                    .If("Data.AspectRatio != null")
-                    .Line($"SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
+                    .Line($"SetAspectRatioTo(Data.AspectRatio, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
 
                 functionBlock.If("Data.Is2D && Data.ResizeBehavior == ResizeBehavior.IncreaseVisibleArea")
                     .Line("FlatRedBall.Camera.Main.OrthogonalHeight = FlatRedBall.Camera.Main.DestinationRectangle.Height / (Data.Scale/ 100.0f);")
@@ -714,9 +718,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                         .Line("var zoom = cameraToReset.DestinationRectangle.Height / (float)Data.ResolutionHeight;")
                         .Line("cameraToReset.Z /= zoom; ");
 
-                    ifStatement = resetMethod.If("Data.AspectRatio != null")
-                        .Line(
-                            $"SetAspectRatioTo(Data.AspectRatio.Value, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
+                    resetMethod.Line(
+                            $"SetAspectRatioTo(Data.AspectRatio, Data.DominantInternalCoordinates, Data.ResolutionWidth, Data.ResolutionHeight);");
 
                     if(GetIfHasGumProject())
                     {

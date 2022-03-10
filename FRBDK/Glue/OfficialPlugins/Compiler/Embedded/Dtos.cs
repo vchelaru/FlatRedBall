@@ -242,6 +242,12 @@ namespace GlueControl.Dtos
 
 
     }
+
+    public class SetCameraAspectRatioDto
+    {
+        public decimal? AspectRatio { get; set; }
+    }
+
     #endregion
 
     #region CreateNewEntityDto
