@@ -115,6 +115,11 @@ namespace OfficialPlugins.Compiler
                 
                 await SendGlueViewSettingsToGame();
 
+                if(CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
+                {
+                    await ReactToPlayOrEditSet();
+                }
+
             };
             runner.OutputReceived += (output) =>
             {
@@ -256,13 +261,17 @@ namespace OfficialPlugins.Compiler
                     if (hasErrors)
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () =>
+                        {
+                            await runner.Run(preventFocus: false);
+                            CompilerViewModel.IsEditChecked = false;
+                        });
                     }
                     else
                     {
                         PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
+                        CompilerViewModel.IsEditChecked = false;
                         await runner.Run(preventFocus: false);
                     }
                 }
@@ -625,85 +634,86 @@ namespace OfficialPlugins.Compiler
                     break;
                 case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
 
-                    var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-                    var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
-                    var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
-
-                    if(response?.Succeeded != true)
-                    {
-                        var message = "Failed to change game/edit mode. ";
-                        if(response == null)
-                        {
-                            message += "Game sent no response back.";
-                        }
-                        else
-                        {
-                            message += response.Message;
-                        }
-                        MainControl.PrintOutput(message);
-                    }
-                    else if(CommandSender.IsConnected == false)
-                    {
-                        if(inEditMode)
-                        {
-                            int m = 3;
-                        }
-                    }
-                    else if (inEditMode)
-                    {
-                        var currentEntity = GlueCommands.Self.DoOnUiThread<EntitySave>(() => GlueState.Self.CurrentEntitySave);
-                        if(currentEntity != null)
-                        {
-                            await GlueCommands.Self.DoOnUiThread(async () => await RefreshManager.Self.PushGlueSelectionToGame());
-                        }
-                        else
-                        {
-                            var screenName = await CommandSending.CommandSender.GetScreenName();
-
-                            if (!string.IsNullOrEmpty(screenName))
-                            {
-                                var glueScreenName =
-                                    string.Join('\\', screenName.Split('.').Skip(1).ToArray());
-
-                                var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
-
-                                if (screen != null)
-                                {
-                                    await GlueCommands.Self.DoOnUiThread(() =>
-                                    {
-                                        if(GlueState.Self.CurrentElement != screen)
-                                        {
-                                            GlueState.Self.CurrentElement = screen;
-
-                                            return Task.CompletedTask;
-                                        }
-                                        else
-                                        {
-                                            // the screens are the same, so push the object selection from Glue to the game:
-                                            return RefreshManager.Self.PushGlueSelectionToGame();
-                                        }
-                                    });
-                                }
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        // the user is viewing an entity, so force the screen
-                        if(GlueState.Self.CurrentEntitySave != null)
-                        {
-                            // push the selection to game
-                            var startupScreen = ObjectFinder.Self.GetScreenSave(GlueState.Self.CurrentGlueProject.StartUpScreen);
-                            await RefreshManager.Self.PushGlueSelectionToGame(forcedElement: startupScreen);
-                        }
-                    }
-
+                    await ReactToPlayOrEditSet();
 
                     break;
             }
 
 
+        }
+
+        private async Task ReactToPlayOrEditSet()
+        {
+            var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
+            var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
+            var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
+
+            if (response?.Succeeded != true)
+            {
+                var message = "Failed to change game/edit mode. ";
+                if (response == null)
+                {
+                    message += "Game sent no response back.";
+                }
+                else
+                {
+                    message += response.Message;
+                }
+                MainControl.PrintOutput(message);
+            }
+            else if (CommandSender.IsConnected == false)
+            {
+
+            }
+            else if (inEditMode)
+            {
+                var currentEntity = GlueState.Self.CurrentEntitySave;
+                if (currentEntity != null)
+                {
+                    await RefreshManager.Self.PushGlueSelectionToGame();
+                }
+                else
+                {
+                    var screenName = await CommandSending.CommandSender.GetScreenName();
+
+                    if (!string.IsNullOrEmpty(screenName))
+                    {
+                        var glueScreenName =
+                            string.Join('\\', screenName.Split('.').Skip(1).ToArray());
+
+                        var screen = ObjectFinder.Self.GetScreenSave(glueScreenName);
+
+                        if (screen != null)
+                        {
+                            await GlueCommands.Self.DoOnUiThread(() =>
+                            {
+                                if (GlueState.Self.CurrentElement != screen)
+                                {
+                                    GlueState.Self.CurrentElement = screen;
+
+                                    return Task.CompletedTask;
+                                }
+                                else
+                                {
+                                    // the screens are the same, so push the object selection from Glue to the game:
+                                    return RefreshManager.Self.PushGlueSelectionToGame();
+                                }
+                            });
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                // the user is viewing an entity, so force the screen
+                if (GlueState.Self.CurrentEntitySave != null)
+                {
+                    // push the selection to game
+                    var startupScreen = ObjectFinder.Self.GetScreenSave(GlueState.Self.CurrentGlueProject.StartUpScreen);
+                    await RefreshManager.Self.PushGlueSelectionToGame(forcedElement: startupScreen);
+                }
+            }
         }
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
@@ -764,6 +774,7 @@ namespace OfficialPlugins.Compiler
                 {
                     if (succeeded)
                     {
+                        CompilerViewModel.IsRunning = false;
                         await runner.Run(preventFocus: false);
                     }
                     else

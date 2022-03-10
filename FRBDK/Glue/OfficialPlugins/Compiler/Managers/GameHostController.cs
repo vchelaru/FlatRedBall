@@ -42,6 +42,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var succeeded = await Compile();
                 if (succeeded)
                 {
+                    // don't change if it's in edit mode or not here
                     await runner.Run(preventFocus: false);
                 }
             };
@@ -63,6 +64,7 @@ namespace OfficialPlugins.Compiler.Managers
                 GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
                 if (compileSucceeded)
                 {
+                    // don't change if it's in edit mode
                     runResponse = await runner.Run(preventFocus: false, commandLineArgs);
                 }
                 if (wasEditChecked && runResponse.Succeeded)
@@ -178,6 +180,8 @@ namespace OfficialPlugins.Compiler.Managers
 
         private void StarRunInEditMode(object sender, EventArgs e)
         {
+            
+            compilerViewModel.IsEditChecked = true;
             TaskManager.Self.Add(async () =>
             {
                 var runner = Runner.Self;
