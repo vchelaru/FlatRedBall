@@ -571,6 +571,22 @@ namespace FlatRedBall
             }
         }
 
+        public static async Task DelayFrames(int frameCount)
+        {
+            var currentFrame = TimeManager.CurrentTime;
+
+            while(frameCount > 0)
+            {
+                await Task.Yield();
+                if(currentFrame != TimeManager.CurrentTime)
+                {
+                    currentFrame = TimeManager.CurrentTime;
+                    frameCount--;
+                }
+            }
+
+        }
+
         /// <summary>
         /// Performs every-frame logic to update timing values such as CurrentTime and SecondDifference.  If this method is not called, CurrentTime will not advance.
         /// </summary>

@@ -227,7 +227,9 @@ namespace FlatRedBall
 
         }
 
-
+        /// <summary>
+        /// The red component of the color value to be used with the color operation. This value should be between 0 and 1.
+        /// </summary>
         public float Red
         {
             get
@@ -249,6 +251,9 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The green component of the color value to be used with the color operation. This value should be between 0 and 1.
+        /// </summary>
         public float Green
         {
             get
@@ -268,6 +273,9 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The blue component of the color value to be used with the color operation. This value should be between 0 and 1.
+        /// </summary>
         public float Blue
         {
             get

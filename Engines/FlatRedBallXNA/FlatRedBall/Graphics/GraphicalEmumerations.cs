@@ -7,9 +7,6 @@ using FlatRedBall.Graphics.Particle;
 
 using FlatRedBall.Utilities;
 
-#if FRB_MDX
-using Format = Microsoft.DirectX.Direct3D.Format;
-#endif
 
 namespace FlatRedBall.Graphics
 {
@@ -94,25 +91,9 @@ namespace FlatRedBall.Graphics
     public static class GraphicalEnumerations
     {
         #region Fields
-#if FRB_MDX
-        public static float MaxColorComponentValue
-        {
-            get
-            {
-                if (GraphicsOptions.UseXnaColors)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 255;
-                }
-            }
-        }
-#else
+
         public const float MaxColorComponentValue = 1.0f;
 
-#endif
         
         public static List<String> mConvertableSpriteProperties = new List<string>
             (
