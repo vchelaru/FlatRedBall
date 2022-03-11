@@ -345,7 +345,26 @@ namespace OfficialPlugins.Compiler.Managers
                 var container = ObjectFinder.Self.GetElementContaining(category);
 
                 var dto = new CreateNewStateDto();
-                dto.StateSave = state;
+                var stateCopy = state.Clone();
+
+                // cateorized states always set a value. That value will either
+                // be explicitly set on the state, or it will be inherited from the
+                // default value on the object.
+                foreach(var variable in container.CustomVariables)
+                {
+                    if(category.ExcludedVariables.Contains(variable.Name))
+                    {
+                        continue;
+                    }
+
+                    stateCopy.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+                    {
+                        Member = variable.Name,
+                        Type = variable.Type,
+                        Value = variable.DefaultValue
+                    });
+                }
+                dto.StateSave = stateCopy;
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
