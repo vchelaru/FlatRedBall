@@ -269,7 +269,13 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     stateSave.InstructionSaves.Remove(existingInstruction);
                 }
 
-                CheckForStateRemoval(stateViewModel);
+                var wasRemoved = CheckForStateRemoval(stateViewModel);
+
+                if(!wasRemoved)
+                {
+                    // The state wasn't removed, so a variable on the state was changed
+                    PluginManager.ReactToStateVariableChanged(stateSave, category, variable.Name);
+                }
             }
             else
             {
@@ -442,7 +448,12 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             }
         }
 
-        private void CheckForStateRemoval(StateViewModel selectedState)
+        /// <summary>
+        /// Checks if a state should be removed based on the state of its ViewModel. If all columns are empty, then the state is removed from the Glue project.
+        /// </summary>
+        /// <param name="selectedState">The state view model which should be checked.</param>
+        /// <returns>Whether a state was removed:</returns>
+        private bool CheckForStateRemoval(StateViewModel selectedState)
         {
             var isLast = selectedState == this.States.Last();
 
@@ -482,6 +493,8 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     this.SelectedIndex = oldSelectedIndex - 1;
                 }
             }
+
+            return shouldRemove;
         }
 
         private void CopyViewModelValuesToState(StateViewModel selectedViewModel, StateSave stateSave)

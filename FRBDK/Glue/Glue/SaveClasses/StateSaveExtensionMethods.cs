@@ -47,7 +47,15 @@ namespace FlatRedBall.Glue.SaveClasses
             CustomVariable variable = container.CustomVariables.FirstOrDefault(item => item.Name == variableName);
             var variableType = variable?.Type ?? valueToSet?.GetType().Name;
 
-            //if(variableType != "string" && valueToSet is string valueAsString)
+            // This was commented on commit 88915fcac8b236ed729b7063c353094ceeed2dc7
+            // Commit 88915fcac8b236ed729b7063c353094ceeed2dc7
+            // Author: Victor Chelaru<VicChelaru@gmail.com>
+            //Date: Saturday, January 22, 2022 11:29 AM
+            //Parent: 5a3487f2
+            //Fixed assignment of nullables on states in state data tab.
+            // Why?
+            // Update - because this is assigned by the StateCategoryViewModel.cs Convert method
+            //if (variableType != "string" && valueToSet is string valueAsString)
             //{
             //    valueToSet = Instructions.Reflection.PropertyValuePair.ConvertStringToType(valueAsString, variableType);
             //}

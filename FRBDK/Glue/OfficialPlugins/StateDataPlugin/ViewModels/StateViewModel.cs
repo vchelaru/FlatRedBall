@@ -231,16 +231,17 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             {
                 case nameof(StateVariableViewModel.Value):
                     
+                    // This handles the change including converting the type...:
                     ValueChanged?.Invoke(this, sender as StateVariableViewModel);
-
-                    if (viewModel.Value == null)
-                    {
-                        BackingData.RemoveVariable(viewModel.VariableName);
-                    }
-                    else
-                    {
-                        BackingData.SetValue(viewModel.VariableName, viewModel.Value);
-                    }
+                    // ...so this isn't needed. Also this isn't doing conversion like it should.
+                    //if (viewModel.Value == null)
+                    //{
+                    //    BackingData.RemoveVariable(viewModel.VariableName);
+                    //}
+                    //else
+                    //{
+                    //    BackingData.SetValue(viewModel.VariableName, viewModel.Value);
+                    //}
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                     GlueCommands.Self.GluxCommands.SaveGlux();
                     break;
