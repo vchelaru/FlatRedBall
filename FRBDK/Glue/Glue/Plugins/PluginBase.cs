@@ -53,11 +53,15 @@ namespace FlatRedBall.Glue.Plugins
     }
     #endregion
 
+    #region StateCategoryVariableAction
+
     public enum StateCategoryVariableAction
     {
         Included,
         Excluded
     }
+
+    #endregion
 
     #region PluginTab
     public class PluginTab

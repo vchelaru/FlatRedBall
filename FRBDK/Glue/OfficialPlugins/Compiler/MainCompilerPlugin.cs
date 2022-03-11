@@ -211,6 +211,7 @@ namespace OfficialPlugins.Compiler
             this.ReactToVariableAdded += RefreshManager.Self.HandleVariableAdded;
             this.ReactToStateCreated += RefreshManager.Self.HandleStateCreated;
             this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
+            this.ReactToStateCategoryExcludedVariablesChanged += RefreshManager.Self.HandleStateCategoryExcludedVariablesChanged;
             //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
             this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
@@ -774,7 +775,7 @@ namespace OfficialPlugins.Compiler
                 GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
             }
 
-            await RefreshManager.Self.StopAndRestartTask($"{propertyName} changed");
+            await RefreshManager.Self.StopAndRestartAsync($"{propertyName} changed");
 
             MainControl.PrintOutput("Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();

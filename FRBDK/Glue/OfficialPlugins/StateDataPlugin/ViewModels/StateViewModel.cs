@@ -178,6 +178,9 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             set => Set(value); 
         }
 
+        /// <summary>
+        /// Event raised whenever the user changes a variable value through the UI.
+        /// </summary>
         public event Action<StateViewModel, StateVariableViewModel> ValueChanged;
 
         public StateViewModel(StateSave state, StateSaveCategory category, GlueElement element)
@@ -219,12 +222,18 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
         private void HandleStateVariablePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // if the view model is null, the view model may not be instantiated yet
-            ValueChanged?.Invoke(this, sender as StateVariableViewModel);
+            // Question - why do we invoke this for every change. Shouldn't we only care
+            // about the Value changing? Otherwise this is raised whenever the user tabs to
+            // a new state
+            //ValueChanged?.Invoke(this, sender as StateVariableViewModel);
             var viewModel = sender as StateVariableViewModel;
             switch(e.PropertyName)
             {
                 case nameof(StateVariableViewModel.Value):
-                    if(viewModel.Value == null)
+                    
+                    ValueChanged?.Invoke(this, sender as StateVariableViewModel);
+
+                    if (viewModel.Value == null)
                     {
                         BackingData.RemoveVariable(viewModel.VariableName);
                     }

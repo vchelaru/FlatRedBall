@@ -2262,7 +2262,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Plugin Requirements
 
-        public bool GetPluginRequirement(Interfaces.IPlugin plugin)
+        public bool GetPluginRequirement(PluginBase plugin)
         {
             var name = plugin.FriendlyName;
 
@@ -2273,7 +2273,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return isRequired;
         }
 
-        public bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject)
+        public bool SetPluginRequirement(PluginBase plugin, bool requiredByProject)
         {
             var name = plugin.FriendlyName;
 

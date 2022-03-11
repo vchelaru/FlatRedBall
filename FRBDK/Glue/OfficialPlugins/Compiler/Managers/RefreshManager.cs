@@ -242,10 +242,11 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 if(!handled)
                 {
-                    StopAndRestartTask($"File {fileName} changed");
+                    StopAndRestartAsync($"File {fileName} changed");
                 }
             }
         }
+
 
         internal bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
@@ -330,7 +331,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartTask($"New screen created");
+                StopAndRestartAsync($"New screen created");
             }
         }
 
@@ -423,7 +424,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 else
                 {
-                    StopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                    StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
                 }
             }
         }
@@ -563,7 +564,7 @@ namespace OfficialPlugins.Compiler.Managers
             else
             {
                 // it's a brand new variable, so let's restart it...
-                StopAndRestartTask($"Restarting because of added variable {newVariable}");
+                StopAndRestartAsync($"Restarting because of added variable {newVariable}");
             }
         }
 
@@ -684,7 +685,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        #region State Variable Changed
+        #region State Variable Changed/Excluded
 
         internal async void HandleStateVariableChanged(StateSave state, StateSaveCategory category, string variableName)
         {
@@ -715,6 +716,15 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             }
 
+        }
+
+        internal async void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
+        {
+            if(excludedOrIncluded == StateCategoryVariableAction.Included)
+            {
+                // If a new state variable is included, it won't be functional. This could be confusing, so let's restart
+                await StopAndRestartAsync($"New variable {variableName} added to category {category}");
+            }
         }
 
         #endregion
@@ -773,7 +783,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                 if(!generalResponse.Succeeded)
                 {
-                    StopAndRestartTask($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
+                    StopAndRestartAsync($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
                 }
             }
         }
@@ -815,7 +825,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
                 if (response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
                 {
-                    await StopAndRestartTask(
+                    await StopAndRestartAsync(
                         $"Restarting because {namedObjects.Count} items were deleted from Glue but not from game");
                 }
             }
@@ -838,7 +848,7 @@ namespace OfficialPlugins.Compiler.Managers
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
 
-        public async Task StopAndRestartTask(string reason)
+        public async Task StopAndRestartAsync(string reason)
         {
             if (CanRestart)
             {

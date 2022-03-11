@@ -73,7 +73,7 @@ namespace OfficialPlugins.Compiler.Managers
                             Output.Print(exception);
                         }
                         var waitTimeout = TimeSpan.FromSeconds(5);
-                        RefreshManager.Self.StopAndRestartTask($"Unhandled variable changed").Wait(waitTimeout);
+                        RefreshManager.Self.StopAndRestartAsync($"Unhandled variable changed").Wait(waitTimeout);
                     }
                 }
                 catch
@@ -546,7 +546,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
             else
             {
-                await RefreshManager.Self.StopAndRestartTask($"Object variable {variable.Name} changed");
+                await RefreshManager.Self.StopAndRestartAsync($"Object variable {variable.Name} changed");
             }
         }
     }

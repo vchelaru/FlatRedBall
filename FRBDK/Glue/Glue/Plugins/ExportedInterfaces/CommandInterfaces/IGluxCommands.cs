@@ -79,9 +79,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Plugin Requirements
 
-        bool SetPluginRequirement(Interfaces.IPlugin plugin, bool requiredByProject);
+        bool SetPluginRequirement(PluginBase plugin, bool requiredByProject);
         bool SetPluginRequirement(string name, bool requiredByProject, Version version);
-        bool GetPluginRequirement(Interfaces.IPlugin plugin);
+        bool GetPluginRequirement(PluginBase plugin);
 
         #endregion
 

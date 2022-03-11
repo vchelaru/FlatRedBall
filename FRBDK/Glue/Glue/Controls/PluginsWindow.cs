@@ -421,7 +421,7 @@ namespace FlatRedBall.Glue.Controls
         private void RespondToRequiredByProject(PluginContainer pluginContainer, bool requiredByProject)
         {
             var didChange = GlueCommands.Self.GluxCommands.SetPluginRequirement(
-                pluginContainer.Plugin, requiredByProject);
+                (PluginBase)pluginContainer.Plugin, requiredByProject);
 
             if(didChange)
             {
