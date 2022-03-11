@@ -695,7 +695,22 @@ namespace OfficialPlugins.Compiler.Managers
             if(container != null)
             {
                 dto = new ChangeStateVariableDto();
-                dto.StateSave = state;
+                // Clone this...
+                dto.StateSave = state.Clone();
+                // ...because if the variable was deleted, we need to force the value to have the default:
+                if(dto.StateSave.InstructionSaves.Any(item => item.Member == variableName) == false &&
+                    !category.ExcludedVariables.Contains(variableName))
+                {
+                    var variable = container.GetCustomVariable(variableName);
+                    // add it!
+                    dto.StateSave.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+                    {
+                        Member = variable.Name,
+                        Type = variable.Type,
+                        Value = variable.DefaultValue
+                    });
+                }
+
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
                 dto.VariableName = variableName;
