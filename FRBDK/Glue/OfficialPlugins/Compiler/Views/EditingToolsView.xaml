@@ -12,5 +12,14 @@
         </ToggleButton>
         <StackPanel x:Name="TileButtonsStack">
         </StackPanel>
+        <ItemsControl ItemsSource="{Binding ToolbarEntitiesAndStates}" Margin="0,2,0,0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Width="24" Height="24" Command="{Binding ClickedCommand}">
+                        <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 </UserControl>

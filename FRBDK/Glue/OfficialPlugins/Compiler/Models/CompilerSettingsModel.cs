@@ -17,6 +17,8 @@ namespace OfficialPlugins.Compiler.Models
         public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
         public decimal GridSize { get; set; } = 32;
 
+        public List<string> ToolbarEntitiesAndStates { get; set; } = new List<string>();
+
         public void SetDefaults()
         {
             EmbedGameInGameTab = true;

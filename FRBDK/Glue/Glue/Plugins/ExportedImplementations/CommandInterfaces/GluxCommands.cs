@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
     class GluxCommands : IGluxCommands
     {
-        #region Fields
+        #region Fields / Properties
 
         const string NoType = "<No Type>";
 
@@ -61,10 +61,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         ElementCommands mElementCommands = new ElementCommands();
 
         static GluxCommands mSelf;
-
-        #endregion
-
-        #region Properties
 
         public static GluxCommands Self
         {
@@ -1875,6 +1871,49 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             GluxCommands.Self.SaveGlux();
+        }
+
+        #endregion
+
+        #region GlueElements
+
+        public FilePath GetElementJsonLocation(GlueElement element)
+        {
+            FilePath rootDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+
+            rootDirectory += element.Name;
+
+            if(element is EntitySave)
+            {
+                return rootDirectory + "." + GlueProjectSave.EntityExtension;
+            }
+            else // screen save
+            {
+                return rootDirectory + "." + GlueProjectSave.ScreenExtension;
+            }
+                 
+        }
+
+        public FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave)
+        {
+            var folder = GlueCommands.Self.GluxCommands.GetElementJsonLocation(glueElement).GetDirectoryContainingThis();
+
+            string fileName = glueElement.GetStrippedName();
+
+            if (stateSave != null)
+            {
+                var category = ObjectFinder.Self.GetStateSaveCategory(stateSave);
+                if (category != null)
+                {
+                    fileName += $".{category.Name}";
+                }
+                fileName += $".{stateSave.Name}";
+            }
+
+
+
+            FilePath filePath = folder + fileName + ".preview.png";
+            return filePath;
         }
 
         #endregion

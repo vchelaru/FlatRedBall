@@ -81,10 +81,20 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Grid.RowSpan="2" >
+            <!--Stretch so we can drag drop-->
+            <StackPanel Width="24" x:Name="ToolsSidePanel" Margin="2,2,2,0" Grid.RowSpan="2" 
+                        Drop="ToolsSidePanel_Drop"
+                        DragEnter="ToolsSidePanel_DragEnter"
+                        AllowDrop="True"
+                        VerticalAlignment="Stretch"
+                        Background="Transparent"
+                        >
 <!--This is here to control visibility of all controls but we want the left frame to always be around to prevent flickering-->
-                <StackPanel Visibility="{Binding EditingToolsVisibility}" >
+                <StackPanel IsEnabled="{Binding EditingToolEnabled}" 
+                            Opacity="{Binding ToolBarOpacity}"
+                            >
                     <StackPanel Orientation="Horizontal"
+                                
                                 Visibility="{Binding WhileRunningViewVisibility}">
                         <Button Click="FocusButtonClicked" 
                                 HorizontalAlignment="Left" 

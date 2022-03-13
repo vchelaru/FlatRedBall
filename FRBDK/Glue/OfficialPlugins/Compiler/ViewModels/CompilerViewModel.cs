@@ -2,6 +2,7 @@
 using OfficialPlugins.Compiler.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +96,14 @@ namespace OfficialPlugins.Compiler.ViewModels
         [DependsOn(nameof(IsEditChecked))]
         [DependsOn(nameof(IsRunning))]
         public Visibility EditingToolsVisibility => (IsRunning && IsEditChecked).ToVisibility();
+
+        [DependsOn(nameof(IsEditChecked))]
+        [DependsOn(nameof(IsRunning))]
+        public bool EditingToolEnabled => IsRunning && IsEditChecked;
+
+        [DependsOn(nameof(IsEditChecked))]
+        [DependsOn(nameof(IsRunning))] 
+        public double ToolBarOpacity => (IsRunning && IsEditChecked) ? 1 : 0.3;
 
         [DependsOn(nameof(IsRunning))]
         [DependsOn(nameof(IsCompiling))]
@@ -357,6 +366,9 @@ namespace OfficialPlugins.Compiler.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates { get; set; } = new ObservableCollection<ToolbarEntityAndStateViewModel>();
+
 
         #endregion
 

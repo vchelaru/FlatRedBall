@@ -695,7 +695,7 @@ namespace FlatRedBall.Glue.Plugins
             return tab;
         }
 
-        protected PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Center)
+        protected PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
             var tab = CreateTab(control, tabName, tabLocation);
             tab.Show();

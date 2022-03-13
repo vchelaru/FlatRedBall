@@ -2,6 +2,8 @@
 using OfficialPlugins.Compiler.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using System.Windows;
 
@@ -51,6 +53,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+
         [DependsOn(nameof(EnableGameEditMode))]
         public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
 
@@ -62,6 +65,8 @@ namespace OfficialPlugins.Compiler.ViewModels
             this.EnableGameEditMode = model.GenerateGlueControlManagerCode;
             this.EmbedGameInGameTab = model.EmbedGameInGameTab;
             this.RestartScreenOnLevelContentChange = model.RestartScreenOnLevelContentChange;
+
+
         }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
@@ -72,6 +77,7 @@ namespace OfficialPlugins.Compiler.ViewModels
             compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
             compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
             compilerSettings.RestartScreenOnLevelContentChange = this.RestartScreenOnLevelContentChange;
+            compilerSettings.ToolbarEntitiesAndStates.Clear();
 
         }
     }

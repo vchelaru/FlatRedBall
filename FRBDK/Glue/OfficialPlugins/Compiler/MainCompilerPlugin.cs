@@ -33,6 +33,9 @@ using System.Runtime.InteropServices;
 using OfficialPlugins.GameHost.Views;
 using OfficialPlugins.Compiler.Views;
 using FlatRedBall.Glue.FormHelpers;
+using GlueFormsCore.FormHelpers;
+using System.Windows.Media.Imaging;
+using FlatRedBall.Glue.ViewModels;
 
 namespace OfficialPlugins.Compiler
 {
@@ -87,7 +90,6 @@ namespace OfficialPlugins.Compiler
 
         System.Threading.SemaphoreSlim getCommandsSemaphore = new System.Threading.SemaphoreSlim(1, 1);
         DateTime lastGetCall;
-        bool IsCursorOverTab;
 
         #endregion
 
@@ -140,6 +142,21 @@ namespace OfficialPlugins.Compiler
             // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
             gameHostView = new GameHostView();
             gameHostView.DataContext = CompilerViewModel;
+            gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
+            {
+                if(treeNode.Tag is StateSave stateSave)
+                {
+                    var container = ObjectFinder.Self.GetElementContaining(stateSave);
+                    if(container is EntitySave entitySave)
+                    {
+                        HandleAddToEditToolbar(stateSave, entitySave, null);
+                    }
+                }
+                else if(treeNode.Tag is EntitySave entitySave)
+                {
+                    // todo finish here
+                }
+            };
 
             pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
             pluginTab.CanClose = false;
@@ -160,14 +177,14 @@ namespace OfficialPlugins.Compiler
 
             var busyTimerFrequency = 250; // ms
             busyUpdateTimer = new Timer(busyTimerFrequency);
-            busyUpdateTimer.Elapsed += HandleTimerElapsed;
+            busyUpdateTimer.Elapsed += async (not, used) => await UpdateIsBusyStatus();
             busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
             busyUpdateTimer.Start();
 
             // This was 250 but it wasn't fast enough to feel responsive
             var dragDropTimerFrequency = 100; // ms
             dragDropTimer = new Timer(dragDropTimerFrequency);
-            dragDropTimer.Elapsed += HandleDragDropTimerElapsed;
+            dragDropTimer.Elapsed += (not, used) => DragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
             dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
             dragDropTimer.Start();
 
@@ -219,6 +236,94 @@ namespace OfficialPlugins.Compiler
 
             this.ReactToLoadedGlux += () => pluginTab.Show();
             this.ReactToUnloadedGlux += () => pluginTab.Hide();
+            this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
+        }
+
+        private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
+        {
+            var tag = rightClickedTreeNode.Tag;
+
+            if(tag != null)
+            {
+                if(tag is StateSave asStateSave)
+                {
+                    listToAddTo.Add("Add State to Edit Toolbar", HandleAddStateToEditToolbar);
+                }
+            }
+        }
+
+        private void HandleAddStateToEditToolbar(object sender, EventArgs e)
+        {
+            var state = GlueState.Self.CurrentStateSave;
+            var entitySave = GlueState.Self.CurrentEntitySave;
+            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+
+            HandleAddToEditToolbar(state, entitySave, namedObject);
+        }
+
+        private void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
+        {
+            if (state != null)
+            {
+                var newViewModel = new ToolbarEntityAndStateViewModel();
+                newViewModel.GlueElement = entitySave;
+                newViewModel.StateSave = state;
+                newViewModel.Clicked += () =>
+                {
+                    var screen = GlueState.Self.CurrentScreenSave;
+
+                    NamedObjectSave newNos = null;
+
+                    if (screen != null)
+                    {
+                        var addObjectViewModel = new AddObjectViewModel();
+                        addObjectViewModel.SourceType = SourceType.Entity;
+                        addObjectViewModel.SelectedEntitySave = entitySave;
+
+                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, screen);
+
+                        newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                            addObjectViewModel,
+                            GlueState.Self.CurrentScreenSave,
+                            listToAddTo);
+                    }
+
+                    if (newNos != null && state != null)
+                    {
+                        // Set the state variable on the new NOS 
+
+                        var category = ObjectFinder.Self.GetStateSaveCategory(state);
+
+                        if (category != null)
+                        {
+                            var variableName = $"Current{category.Name}State";
+                            GlueCommands.Self.GluxCommands.SetVariableOn(newNos, variableName, state.Name);
+                        }
+                    }
+                };
+
+                FilePath imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(entitySave, state);
+
+                if (!imageFilePath.Exists())
+                {
+                    var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(namedObject, entitySave, state);
+                    PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, entitySave, state);
+                }
+
+                if (imageFilePath.Exists())
+                {
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.UriSource = new Uri(imageFilePath.FullPath, UriKind.Relative);
+                    bitmapImage.EndInit();
+                    newViewModel.ImageSource = bitmapImage;
+                }
+
+
+
+                CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
+            }
         }
 
         private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
@@ -302,57 +407,6 @@ namespace OfficialPlugins.Compiler
         }
 
         #endregion
-
-        private async void HandleDragDropTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            try
-            {
-                // These suck - they dont' return anything if the user is over only teh wpf item:
-                //var point = System.Windows.Input.Mouse.GetPosition(gameHostView);
-                //var position = gameHostView.PointToScreen(point);
-                var winformsPoint = System.Windows.Forms.Control.MousePosition;
-
-                Point locationFromScreen = this.gameHostView.PointToScreen(new Point(0, 0));
-                // Transform screen point to WPF device independent point
-                PresentationSource source = PresentationSource.FromVisual(gameHostView);
-                System.Windows.Point targetPoints = source.CompositionTarget.TransformFromDevice.Transform(locationFromScreen);
-
-                IsCursorOverTab = winformsPoint.X >= targetPoints.X && 
-                    winformsPoint.Y >= targetPoints.Y &&
-                    winformsPoint.X <= (targetPoints.X + gameHostView.ActualWidth) &&
-                    winformsPoint.Y <= (targetPoints.Y + gameHostView.ActualHeight);
-
-
-                CompilerViewModel.HasDraggedTreeNodeOverView = GlueState.Self.DraggedTreeNode != null && IsCursorOverTab;
-
-                if(CompilerViewModel.HasDraggedTreeNodeOverView && 
-                    (System.Windows.Forms.Control.MouseButtons & System.Windows.Forms.MouseButtons.Left) == 0)
-                {
-                    // user is not holding the mouse button down
-                    float screenX = (float)( winformsPoint.X - targetPoints.X);
-                    float screenY = (float) (winformsPoint.Y - targetPoints.Y);
-
-                    var draggedNode = GlueState.Self.DraggedTreeNode;
-                    // set this before calling HandleDragDropOnGameWindow to prevent a double-drop because the node is not null
-                    GlueState.Self.DraggedTreeNode = null;
-
-                    int gameHostWidth = (int)gameHostView.WinformsHost.ActualWidth;
-                    int gameHostHeight = (int)gameHostView.WinformsHost.ActualHeight;
-
-                    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(draggedNode, gameHostWidth, gameHostHeight, screenX, screenY);
-                }
-    
-            }
-            // This can get called before the control is created, so tolerate exceptions
-            catch { }
-        }
-
-
-        private async void HandleTimerElapsed(object sender, ElapsedEventArgs e)
-        {
-            await UpdateIsBusyStatus();
-
-        }
 
         private async Task UpdateIsBusyStatus()
         {

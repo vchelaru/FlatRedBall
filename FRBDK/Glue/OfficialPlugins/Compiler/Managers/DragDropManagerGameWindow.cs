@@ -5,17 +5,71 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.ViewModels;
+using OfficialPlugins.GameHost.Views;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
 
 namespace OfficialPlugins.Compiler.Managers
 {
     public static class DragDropManagerGameWindow
     {
         public static CompilerViewModel CompilerViewModel { get; set; }
-        public static async Task HandleDragDropOnGameWindow(ITreeNode treeNode, int gameHostWidth, int gameHostHeight, float screenX, float screenY)
+
+
+
+
+        public static async void HandleDragDropTimerElapsed(GameHostView gameHostView)
+        {
+            try
+            {
+                // These suck - they dont' return anything if the user is over only teh wpf item:
+                //var point = System.Windows.Input.Mouse.GetPosition(gameHostView);
+                //var position = gameHostView.PointToScreen(point);
+                var winformsPoint = System.Windows.Forms.Control.MousePosition;
+
+                var controlForDragDrop = gameHostView.WinformsHost;
+
+                var locationFromScreen = controlForDragDrop.PointToScreen(new Point(0, 0));
+                // Transform screen point to WPF device independent point
+                PresentationSource source = PresentationSource.FromVisual(controlForDragDrop);
+                System.Windows.Point targetPoints = source.CompositionTarget.TransformFromDevice.Transform(locationFromScreen);
+
+                var isCursorOverTab = winformsPoint.X >= targetPoints.X &&
+                    winformsPoint.Y >= targetPoints.Y &&
+                    winformsPoint.X <= (targetPoints.X + controlForDragDrop.ActualWidth) &&
+                    winformsPoint.Y <= (targetPoints.Y + controlForDragDrop.ActualHeight);
+
+
+                CompilerViewModel.HasDraggedTreeNodeOverView = GlueState.Self.DraggedTreeNode != null && isCursorOverTab;
+
+                if (CompilerViewModel.HasDraggedTreeNodeOverView &&
+                    (System.Windows.Forms.Control.MouseButtons & System.Windows.Forms.MouseButtons.Left) == 0)
+                {
+                    // user is not holding the mouse button down
+                    float screenX = (float)(winformsPoint.X - targetPoints.X);
+                    float screenY = (float)(winformsPoint.Y - targetPoints.Y);
+
+                    var draggedNode = GlueState.Self.DraggedTreeNode;
+                    // set this before calling HandleDragDropOnGameWindow to prevent a double-drop because the node is not null
+                    GlueState.Self.DraggedTreeNode = null;
+
+                    int gameHostWidth = (int)controlForDragDrop.ActualWidth;
+                    int gameHostHeight = (int)controlForDragDrop.ActualHeight;
+
+                    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(draggedNode, gameHostWidth, gameHostHeight, screenX, screenY);
+                }
+
+            }
+            // This can get called before the control is created, so tolerate exceptions
+            catch { }
+        }
+
+        public static async Task HandleDragDropOnGameWindow(ITreeNode treeNode, int gameHostWidth, 
+            int gameHostHeight, float screenX, float screenY)
         {
 
             /////////////////////////Early Out////////////////////////////////

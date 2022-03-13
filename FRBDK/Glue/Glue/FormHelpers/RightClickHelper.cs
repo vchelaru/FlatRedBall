@@ -427,7 +427,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
     public static class RightClickHelper
     {
-        #region Fields
+        #region Fields/Properties
 
         static GeneralToolStripMenuItem addScreenToolStripMenuItem;
 
@@ -498,7 +498,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
         static GeneralToolStripMenuItem addLayeritem;
-        #endregion
 
         //public static void PopulateRightClickItems(TreeNode targetNode, MenuShowingAction menuShowingAction = MenuShowingAction.RegularRightClick)
         //{
@@ -511,21 +510,7 @@ namespace FlatRedBall.Glue.FormHelpers
         //}
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
-        public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
-        {
-            List<GeneralToolStripMenuItem> listToFill = new List<GeneralToolStripMenuItem>();
-
-            ListToAddTo = listToFill;
-
-            PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, treeNodeMoving);
-
-            PluginManager.ReactToTreeViewRightClick(targetNode, listToFill);
-
-            ListToAddTo = null;
-
-            return listToFill;
-        }
-
+        #endregion
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
         {
 
@@ -722,7 +707,11 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddRemoveFromProjectItems();
 
                 AddItem(editResetVariablesToolStripMenuItem);
+                AddSeparator();
+
                 AddItem(mFindAllReferences);
+
+                Add("Go to definition", () => GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection());
 
                 AddSeparator();
 
@@ -931,6 +920,22 @@ namespace FlatRedBall.Glue.FormHelpers
 
             #endregion
         }
+
+        public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
+        {
+            List<GeneralToolStripMenuItem> listToFill = new List<GeneralToolStripMenuItem>();
+
+            ListToAddTo = listToFill;
+
+            PopulateRightClickMenuItemsShared(targetNode, menuShowingAction, treeNodeMoving);
+
+            PluginManager.ReactToTreeViewRightClick(targetNode, listToFill);
+
+            ListToAddTo = null;
+
+            return listToFill;
+        }
+
 
 
         static void Add(string text, Action action, string shortcutDisplay = null)

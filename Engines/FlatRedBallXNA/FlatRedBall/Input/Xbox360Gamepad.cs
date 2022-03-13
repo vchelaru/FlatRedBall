@@ -425,7 +425,8 @@ namespace FlatRedBall.Input
         #region Button States
 
         /// <summary>
-        /// Returns whether any button was pushed on this Xbox360GamePad.  This considers face buttons, trigger buttons, shoulder buttons, and d pad.
+        /// Returns whether any button was pushed on this Xbox360GamePad.  
+        /// This considers face buttons, trigger buttons, shoulder buttons, and d pad.
         /// </summary>
         /// <returns>Whether any button was pushed.</returns>
         public bool AnyButtonPushed()
@@ -1221,7 +1222,6 @@ namespace FlatRedBall.Input
 
         }
 
-#region XML Docs
         /// <summary>
         /// Sets the vibration of the game pad.
         /// </summary>
@@ -1230,7 +1230,6 @@ namespace FlatRedBall.Input
         /// <returns>True if the vibration motors were successfully set; false if the controller
         /// was unable to process the request.
         /// </returns>
-#endregion
         public bool SetVibration(float leftMotor, float rightMotor)
         {
 
@@ -1249,7 +1248,7 @@ namespace FlatRedBall.Input
         }
 
 
-#endregion
+        #endregion
 
         #region Internal Methods
 

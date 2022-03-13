@@ -56,14 +56,15 @@ namespace OfficialPlugins.Compiler.Views
                 {
                     if(!string.IsNullOrEmpty(tile.Type))
                     {
-                        CreateButtonForTilesetTile(tile, tilesetImage);
+                        var button = CreateButtonForTilesetTile(tile, tilesetImage);
+                        button.Visibility = Visibility.Collapsed;
                     }
                 }
             }
 
         }
 
-        private void CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
+        private ToggleButton CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
         {
             CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id);
 
@@ -81,6 +82,8 @@ namespace OfficialPlugins.Compiler.Views
             button.Width = 24;
             tileToggleButtons.Add(button);
             TileButtonsStack.Children.Add(button);
+
+            return button;
         }
 
         private async void HandleToggleButtonClicked(object sender, RoutedEventArgs e)

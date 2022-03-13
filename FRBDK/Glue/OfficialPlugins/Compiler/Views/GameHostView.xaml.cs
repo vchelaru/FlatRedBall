@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Glue;
@@ -77,6 +78,7 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler SettingsClicked;
         public event EventHandler FocusOnSelectedObjectClicked;
         public event EventHandler StartInEditModeClicked;
+        public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
 
         public GameHostView()
@@ -309,6 +311,25 @@ namespace OfficialPlugins.GameHost.Views
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Plus;
             await CommandSender.Send(dto);
+        }
+
+        private void ToolsSidePanel_Drop(object sender, DragEventArgs e)
+        {
+            var draggedNode = GlueState.Self.DraggedTreeNode;
+            if (draggedNode != null)
+            {
+                GlueState.Self.DraggedTreeNode = null;
+                TreeNodedDroppedInEditBar?.Invoke(draggedNode);
+            }
+        }
+
+        private void ToolsSidePanel_DragEnter(object sender, DragEventArgs e)
+        {
+            var draggedNode = GlueState.Self.DraggedTreeNode;
+            if(draggedNode == null)
+            {
+                e.Effects = DragDropEffects.None;
+            }
         }
 
         int lastHeight;

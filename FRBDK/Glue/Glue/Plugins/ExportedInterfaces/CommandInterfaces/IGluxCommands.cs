@@ -31,13 +31,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
-        #region Glux Methods
+        #region Save Glux Methods
         /// <summary>
         /// Saves the glue project immediately if in a task, and adds a task if not
         /// </summary>
         void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
 
         void SaveSettings();
+
+        #endregion
+
+        #region CustomClass
+
+        ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
 
         #endregion
 
@@ -85,17 +91,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region GlueElements
+
+        FilePath GetElementJsonLocation(GlueElement element);
+
+        FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave);
+
+        #endregion
+
         #region Entity
 
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
 
         void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
-
-        #endregion
-
-        #region CustomClass
-
-        ValidationResponse AddNewCustomClass(string className, out CustomClassSave customClassSave);
 
         #endregion
 

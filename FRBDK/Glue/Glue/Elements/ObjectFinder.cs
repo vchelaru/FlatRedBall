@@ -994,6 +994,12 @@ namespace FlatRedBall.Glue.Elements
             return GlueProject.GetElementContaining(customVariable);
         }
 
+        public StateSaveCategory GetStateSaveCategory(StateSave stateSave)
+        {
+            var container = ObjectFinder.Self.GetElementContaining(stateSave);
+            return container?.StateCategoryList.FirstOrDefault(item => item.States.Contains(stateSave)); 
+        }
+
         public (bool IsState, StateSaveCategory Category) GetStateSaveCategory(CustomVariable customVariable, GlueElement containingElement)
         {
             if (customVariable.Type == null)
