@@ -17,6 +17,21 @@
                 <DataTemplate>
                     <Button Width="24" Height="24" Command="{Binding ClickedCommand}">
                         <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
+                                <MenuItem Header="Refresh Preview" Command="{Binding ForceRefreshPreviewCommand}" />
+                                
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock TextAlignment="Center" HorizontalAlignment="Center" Text="{Binding TooltipText}"></TextBlock>
+                                    <Image Source="{Binding ImageSource}" Height="64" RenderOptions.BitmapScalingMode="NearestNeighbor"></Image>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
                     </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

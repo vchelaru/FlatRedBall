@@ -90,8 +90,7 @@
                         Background="Transparent"
                         >
 <!--This is here to control visibility of all controls but we want the left frame to always be around to prevent flickering-->
-                <StackPanel IsEnabled="{Binding EditingToolEnabled}" 
-                            Opacity="{Binding ToolBarOpacity}"
+                <StackPanel Opacity="{Binding ToolBarOpacity}"
                             >
                     <StackPanel Orientation="Horizontal"
                                 

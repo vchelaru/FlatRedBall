@@ -155,6 +155,7 @@ namespace OfficialPlugins.Compiler
                 else if(treeNode.Tag is EntitySave entitySave)
                 {
                     // todo finish here
+                    HandleAddToEditToolbar(null, entitySave, null);
                 }
             };
 
@@ -263,13 +264,30 @@ namespace OfficialPlugins.Compiler
 
         private void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
         {
-            if (state != null)
+
+            //////////////////////////Early Out////////////////////////////
+            var alreadyHasMatch = CompilerViewModel.ToolbarEntitiesAndStates.Any(item =>
+                item.StateSave == state &&
+                item.GlueElement == entitySave);
+            if(alreadyHasMatch)
+            {
+                return;
+            }
+            ////////////////////////End Early Out//////////////////////////
+
+            if (entitySave != null)
             {
                 var newViewModel = new ToolbarEntityAndStateViewModel();
                 newViewModel.GlueElement = entitySave;
                 newViewModel.StateSave = state;
                 newViewModel.Clicked += () =>
                 {
+                    var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
+                    if(!canEdit)
+                    {
+                        return;
+                    }
+
                     var screen = GlueState.Self.CurrentScreenSave;
 
                     NamedObjectSave newNos = null;
@@ -301,25 +319,16 @@ namespace OfficialPlugins.Compiler
                         }
                     }
                 };
-
-                FilePath imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(entitySave, state);
-
-                if (!imageFilePath.Exists())
+                newViewModel.RemovedFromToolbar += () =>
                 {
-                    var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(namedObject, entitySave, state);
-                    PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, entitySave, state);
-                }
-
-                if (imageFilePath.Exists())
+                    CompilerViewModel.ToolbarEntitiesAndStates.Remove(newViewModel);
+                };
+                newViewModel.ForceRefreshPreview += () => 
                 {
-                    var bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.UriSource = new Uri(imageFilePath.FullPath, UriKind.Relative);
-                    bitmapImage.EndInit();
-                    newViewModel.ImageSource = bitmapImage;
-                }
+                    newViewModel.SetSourceFromElementAndState(force:true);
+                };
 
+                newViewModel.SetSourceFromElementAndState();
 
 
                 CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
@@ -542,6 +551,21 @@ namespace OfficialPlugins.Compiler
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
             CompilerViewModel.HasLoadedGlux = true;
+            //CompilerViewModel.SetFrom(model);
+            foreach(var toolbarModel in model.ToolbarEntitiesAndStates)
+            {
+                var entitySave = ObjectFinder.Self.GetEntitySave(toolbarModel.EntityName);
+
+                if(entitySave != null)
+                {
+                    StateSaveCategory category = null;
+                    category = entitySave.GetStateCategory(toolbarModel.CategoryName);
+                    var state = category?.GetState(toolbarModel.StateName) ?? entitySave.States.FirstOrDefault(item => item.Name == toolbarModel.StateName);
+                    HandleAddToEditToolbar(state, entitySave, null);
+
+                }
+
+            }
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
@@ -690,6 +714,9 @@ namespace OfficialPlugins.Compiler
 
                     await ReactToPlayOrEditSet();
 
+                    break;
+                case nameof(ViewModels.CompilerViewModel.ToolbarEntitiesAndStates):
+                    SaveCompilerSettingsModel();
                     break;
             }
 
@@ -840,6 +867,14 @@ namespace OfficialPlugins.Compiler
         {
             var model = new CompilerSettingsModel();
             GlueViewSettingsViewModel.SetModel(model);
+
+            foreach(var vm in CompilerViewModel.ToolbarEntitiesAndStates)
+            {
+                var toolbarModel = new ToolbarEntityAndState();
+                vm.ApplyTo(toolbarModel);
+                model.ToolbarEntitiesAndStates.Add(toolbarModel);
+            }
+
             try
             {
                 var text = JsonConvert.SerializeObject(model);

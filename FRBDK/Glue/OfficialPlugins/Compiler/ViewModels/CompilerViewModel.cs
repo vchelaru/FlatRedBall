@@ -367,7 +367,11 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
-        public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates { get; set; } = new ObservableCollection<ToolbarEntityAndStateViewModel>();
+        public ObservableCollection<ToolbarEntityAndStateViewModel> ToolbarEntitiesAndStates
+        {
+            get => Get<ObservableCollection<ToolbarEntityAndStateViewModel>>();
+            set => Set(value);
+        }
 
 
         #endregion
@@ -377,6 +381,7 @@ namespace OfficialPlugins.Compiler.ViewModels
         public CompilerViewModel()
         {
             CurrentGameSpeed = "100%";
+            ToolbarEntitiesAndStates = new ObservableCollection<ToolbarEntityAndStateViewModel>();
         }
 
         #endregion

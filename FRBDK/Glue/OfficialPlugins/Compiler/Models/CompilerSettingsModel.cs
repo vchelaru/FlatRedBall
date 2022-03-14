@@ -6,6 +6,12 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler.Models
 {
+    public class ToolbarEntityAndState
+    {
+        public string EntityName { get; set; }
+        public string CategoryName { get; set; }
+        public string StateName { get; set; }
+    }
     public class CompilerSettingsModel
     {
         public bool GenerateGlueControlManagerCode { get; set; }
@@ -17,7 +23,7 @@ namespace OfficialPlugins.Compiler.Models
         public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
         public decimal GridSize { get; set; } = 32;
 
-        public List<string> ToolbarEntitiesAndStates { get; set; } = new List<string>();
+        public List<ToolbarEntityAndState> ToolbarEntitiesAndStates { get; set; } = new List<ToolbarEntityAndState>();
 
         public void SetDefaults()
         {
