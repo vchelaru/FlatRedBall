@@ -28,11 +28,13 @@ namespace OfficialPlugins.Compiler.ViewModels
         public event Action Clicked;
         public event Action RemovedFromToolbar;
         public event Action ForceRefreshPreview;
+        public event Action DragLeave;
 
         public ToolbarEntityAndStateViewModel()
         {
             ClickedCommand = new Command(RaiseClicked);
             RemoveFromToolbarCommand = new Command(RaiseRemoveFromToolbar);
+            ForceRefreshPreviewCommand = new Command(RaiseForceRefreshPreview);
         }
 
         public GlueElement GlueElement { get; set; }
@@ -107,20 +109,61 @@ namespace OfficialPlugins.Compiler.ViewModels
             if (!imageFilePath.Exists() || force)
             {
                 var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(null, GlueElement, StateSave);
-                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, GlueElement, StateSave);
+                if(image != null)
+                {
+                    try
+                    {
+                        PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, GlueElement, StateSave);
+                    }
+                    catch (Exception ex)
+                    {
+                        GlueCommands.Self.PrintError(ex.ToString());
+                    }
+                }
             }
 
             if (imageFilePath.Exists())
             {
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.UriSource = new Uri(imageFilePath.FullPath, UriKind.Relative);
-                bitmapImage.EndInit();
-                ImageSource = bitmapImage;
+                // Loading PNGs in WPF sucks
+                // This code works, but it holds
+                // on to the file path, so that 
+                // saving the file after it's loaded
+                // doesn't work:
+                //var bitmapImage = new BitmapImage(new Uri(imageFilePath.FullPath));
+                //ImageSource = bitmapImage;
+
+                // If I use "OnLoad" cache, it works, but it never re-loads...
+                //var bitmapImage = new BitmapImage();
+                //bitmapImage.BeginInit();
+                //// OnLoad means we can't refresh this image if the user makes changes to the object
+                ////bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                ////bitmapImage.CacheOption = BitmapCacheOption.None;
+                ////bitmapImage.CacheOption = BitmapCacheOption.OnDemand;
+                //bitmapImage.UriSource = new Uri(imageFilePath.FullPath, UriKind.Relative);
+                //bitmapImage.EndInit();
+
+                // Big thanks to Thraka who helped me figure this out. Using my own stream allows the file
+                // to be loaded AND allows it to be re-loaded
+                using (var stream = System.IO.File.OpenRead(imageFilePath.FullPath))
+                {
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+                    ImageSource = bitmap;
+                }
+
+
+
+
+
             }
 
 
         }
+
+        public void HandleDragLeave() => DragLeave?.Invoke();
     }
 }

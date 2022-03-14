@@ -14,10 +14,19 @@ namespace OfficialPlugins.PreviewGenerator.Managers
     {
         public static void SavePreview(BitmapSource bitmapSource, GlueElement glueElement, StateSave stateSave)
         {
+            if(bitmapSource == null)
+            {
+                throw new ArgumentNullException(nameof(bitmapSource));
+            }
             var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(glueElement, stateSave);
 
             var directoryToCreate = filePath.GetDirectoryContainingThis().FullPath;
             System.IO.Directory.CreateDirectory(directoryToCreate);
+
+            if(filePath.Exists())
+            {
+                System.IO.File.Delete(filePath.FullPath); 
+            }
 
             using (var fileStream = new FileStream(filePath.FullPath, FileMode.Create))
             {

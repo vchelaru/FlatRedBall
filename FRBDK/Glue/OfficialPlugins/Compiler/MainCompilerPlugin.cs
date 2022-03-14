@@ -327,6 +327,17 @@ namespace OfficialPlugins.Compiler
                 {
                     newViewModel.SetSourceFromElementAndState(force:true);
                 };
+                newViewModel.DragLeave += () =>
+                {
+                    if(GlueState.Self.DraggedTreeNode == null)
+                    {
+                        // Simulate having grabbed the tree node
+                        var tag = (object)state ?? entitySave;
+                        var treeNode = GlueState.Self.Find.TreeNodeByTag(tag);
+                        GlueState.Self.DraggedTreeNode = treeNode;
+                    }
+
+                };
 
                 newViewModel.SetSourceFromElementAndState();
 

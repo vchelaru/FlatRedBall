@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -214,5 +215,22 @@ namespace OfficialPlugins.Compiler.Views
                 button.IsChecked = matchingNos != null && matchingNos == currentNos;
             }
         }
+
+        // This is a pain in the butt to code properly so I'm going to save it for another day
+        //private void Button_DragLeave(object sender, DragEventArgs e)
+        //{
+        //    var viewModel = (sender as Button).DataContext as ToolbarEntityAndStateViewModel;
+        //    viewModel.HandleDragLeave();
+        //}
+
+        //private void Button_MouseMove(object sender, MouseEventArgs e)
+        //{
+        //    if (e.LeftButton == MouseButtonState.Pressed)
+        //    {
+        //        var viewModel = (sender as Button).DataContext as ToolbarEntityAndStateViewModel;
+        //        viewModel.HandleDragLeave();
+
+        //    }
+        //}
     }
 }

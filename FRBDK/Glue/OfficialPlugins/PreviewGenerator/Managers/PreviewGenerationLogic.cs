@@ -17,11 +17,39 @@ namespace OfficialPlugins.PreviewGenerator.Managers
     {
         public static ImageSource GetImageSourceForSelection(NamedObjectSave namedObjectSave, GlueElement element, StateSave state)
         {
-            if (namedObjectSave == null && element != null)
+
+            List<NamedObjectSave> visibleNamedObjects = null;
+
+            if (namedObjectSave != null)
             {
-                namedObjectSave = element.NamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
+                visibleNamedObjects = new List<NamedObjectSave>() { namedObjectSave };
+            }
+            else
+            {
+                visibleNamedObjects = element.AllNamedObjects.Where(item =>
+                {
+                    var visibleAsString = GetEffectiveValue(state, item, "Visible", element);
+                    return visibleAsString?.ToLowerInvariant() != "false" &&
+                        (item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite ||
+                         item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Circle);
+                }).ToList();
             }
 
+            ImageSource imageSource = null;
+            foreach (var nos in visibleNamedObjects)
+            {
+                imageSource = GetImageSourceForNamedObject(nos, element, state);
+                if(imageSource != null)
+                {
+                    break;
+                }
+            }
+
+            return imageSource;
+        }
+
+        private static ImageSource GetImageSourceForNamedObject(NamedObjectSave namedObjectSave, GlueElement element, StateSave state)
+        {
             string textureName, achxName, chainName;
             GetVariablesForCreatingPreview(namedObjectSave, element, state, out textureName, out achxName, out chainName);
 
@@ -64,7 +92,111 @@ namespace OfficialPlugins.PreviewGenerator.Managers
 
             }
 
+            if (imageSource == null && namedObjectSave != null)
+            {
+                var red = GetEffectiveValue(state, namedObjectSave, "Red", element) ?? "0";
+                var green = GetEffectiveValue(state, namedObjectSave, "Green", element) ?? "0";
+                var blue = GetEffectiveValue(state, namedObjectSave, "Blue", element) ?? "0";
+                if (namedObjectSave?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
+                {
+                    // is it solid color?
+                    var colorOperation = GetEffectiveValue(state, namedObjectSave, "ColorOperation", element);
+
+                    if (colorOperation == "Color" || colorOperation == ((int)(FlatRedBall.Graphics.ColorOperation.Color)).ToString())
+                    {
+                        float.TryParse(red, out float redValue);
+                        float.TryParse(green, out float greenValue);
+                        float.TryParse(blue, out float blueValue);
+
+                        var solidBrush = new SolidColorBrush(Color.FromRgb(
+                            (byte)(255 * redValue),
+                            (byte)(255 * greenValue),
+                            (byte)(255 * blueValue)));
+
+                        DrawingBrush myDrawingBrush = new DrawingBrush();
+
+                        // Create a drawing.
+                        GeometryDrawing myGeometryDrawing = new GeometryDrawing();
+                        myGeometryDrawing.Brush = solidBrush;
+                        //myGeometryDrawing.Pen = new Pen(Brushes.Tran, 1);
+                        GeometryGroup geometryGroup = new GeometryGroup();
+                        geometryGroup.Children.Add(new RectangleGeometry(new Rect(0, 0, 64, 64)));
+                        myGeometryDrawing.Geometry = geometryGroup;
+                        myDrawingBrush.Drawing = myGeometryDrawing;
+
+                        imageSource = BitmapSourceFromBrush(myDrawingBrush, 64);
+                    }
+                }
+                else if (namedObjectSave?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Circle)
+                {
+                    SolidColorBrush solidBrush = GetSolidColorBrushForShape(namedObjectSave, element, state);
+
+                    DrawingBrush myDrawingBrush = new DrawingBrush();
+
+                    // Create a drawing.
+                    GeometryDrawing myGeometryDrawing = new GeometryDrawing();
+                    //myGeometryDrawing.Brush = solidBrush;
+                    myGeometryDrawing.Pen = new Pen(solidBrush, 2);
+                    GeometryGroup geometryGroup = new GeometryGroup();
+                    geometryGroup.Children.Add(new EllipseGeometry(new Rect(1, 1, 62, 62)));
+                    myGeometryDrawing.Geometry = geometryGroup;
+                    myDrawingBrush.Drawing = myGeometryDrawing;
+
+                    imageSource = BitmapSourceFromBrush(myDrawingBrush, 64);
+                }
+                else if(namedObjectSave?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
+                {
+                    SolidColorBrush solidBrush = GetSolidColorBrushForShape(namedObjectSave, element, state);
+                    DrawingBrush myDrawingBrush = new DrawingBrush();
+
+                    // Create a drawing.
+                    GeometryDrawing myGeometryDrawing = new GeometryDrawing();
+                    //myGeometryDrawing.Brush = solidBrush;
+                    myGeometryDrawing.Pen = new Pen(solidBrush, 2);
+                    GeometryGroup geometryGroup = new GeometryGroup();
+                    geometryGroup.Children.Add(new RectangleGeometry(new Rect(1, 1, 62, 62)));
+                    myGeometryDrawing.Geometry = geometryGroup;
+                    myDrawingBrush.Drawing = myGeometryDrawing;
+
+                    imageSource = BitmapSourceFromBrush(myDrawingBrush, 64);
+                }
+            }
+
             return imageSource;
+        }
+
+        private static SolidColorBrush GetSolidColorBrushForShape(NamedObjectSave namedObjectSave, GlueElement element, StateSave state)
+        {
+            var color = GetEffectiveValue(state, namedObjectSave, "Color", element) ?? "White";
+
+            var matchingColor = typeof(Microsoft.Xna.Framework.Color).GetProperty(color);
+            var colorValue = (Microsoft.Xna.Framework.Color)matchingColor.GetValue(null);
+
+
+            var solidBrush = new SolidColorBrush(Color.FromRgb(
+                colorValue.R,
+                colorValue.G,
+                colorValue.B));
+            return solidBrush;
+        }
+
+        public static BitmapSource BitmapSourceFromBrush(Brush drawingBrush, int size = 32, int dpi = 96)
+        {
+            // RenderTargetBitmap = builds a bitmap rendering of a visual
+            var pixelFormat = PixelFormats.Pbgra32;
+            RenderTargetBitmap rtb = new RenderTargetBitmap(size, size, dpi, dpi, pixelFormat);
+
+            // Drawing visual allows us to compose graphic drawing parts into a visual to render
+            var drawingVisual = new DrawingVisual();
+            using (DrawingContext context = drawingVisual.RenderOpen())
+            {
+                // Declaring drawing a rectangle using the input brush to fill up the visual
+                context.DrawRectangle(drawingBrush, null, new Rect(0, 0, size, size));
+            }
+
+            // Actually rendering the bitmap
+            rtb.Render(drawingVisual);
+            return rtb;
         }
 
         private static void GetVariablesForCreatingPreview(NamedObjectSave namedObjectSave, GlueElement element, StateSave state, out string textureName, out string achxName, out string chainName)
@@ -74,27 +206,9 @@ namespace OfficialPlugins.PreviewGenerator.Managers
             chainName = null;
             if (namedObjectSave?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
             {
-                if (state != null)
-                {
-                    textureName = GetEffectiveValue(state, namedObjectSave, "Texture", element);
-                    achxName = GetEffectiveValue(state, namedObjectSave, "AnimationChains", element);
-                    chainName = GetEffectiveValue(state, namedObjectSave, "CurrentChainName", element);
-                }
-
-                if (string.IsNullOrEmpty(textureName))
-                {
-                    textureName = namedObjectSave.GetCustomVariable("Texture")?.Value as string;
-                }
-
-                if (string.IsNullOrEmpty(achxName))
-                {
-                    achxName = namedObjectSave.GetCustomVariable("AnimationChains")?.Value as string;
-                }
-
-                if (string.IsNullOrEmpty(chainName))
-                {
-                    chainName = namedObjectSave.GetCustomVariable("CurrentChainName")?.Value as string;
-                }
+                textureName = GetEffectiveValue(state, namedObjectSave, "Texture", element);
+                achxName = GetEffectiveValue(state, namedObjectSave, "AnimationChains", element);
+                chainName = GetEffectiveValue(state, namedObjectSave, "CurrentChainName", element);
             }
         }
 
@@ -106,13 +220,17 @@ namespace OfficialPlugins.PreviewGenerator.Managers
 
             if (variable != null)
             {
-                var matchingInstruction = state.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
+                var matchingInstruction = state?.InstructionSaves.FirstOrDefault(item => item.Member == variable.Name);
 
-                if (matchingInstruction != null)
-                {
-                    valueToReturn = matchingInstruction.Value as string;
-                }
+                valueToReturn = (matchingInstruction?.Value as string) ?? matchingInstruction?.Value?.ToString();
             }
+
+            if(string.IsNullOrEmpty(valueToReturn))
+            {
+                var customVariableInNamedObject = namedObjectSave.GetCustomVariable(variableName);
+                valueToReturn = (customVariableInNamedObject?.Value as string) ?? customVariableInNamedObject?.Value.ToString();
+            }
+
             return valueToReturn;
         }
 

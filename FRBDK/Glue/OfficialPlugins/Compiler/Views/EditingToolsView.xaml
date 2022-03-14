@@ -19,9 +19,8 @@
                         <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
                         <Button.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
                                 <MenuItem Header="Refresh Preview" Command="{Binding ForceRefreshPreviewCommand}" />
-                                
+                                <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
                             </ContextMenu>
                         </Button.ContextMenu>
                         <Button.ToolTip>
