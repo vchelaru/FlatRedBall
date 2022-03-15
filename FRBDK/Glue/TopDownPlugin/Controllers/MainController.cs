@@ -140,10 +140,10 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
             {
+                GlueCommands.Self.GluxCommands.SaveGlux();
                 await TaskManager.Self.AddAsync(
                     () =>
                     {
-                        GlueCommands.Self.GluxCommands.SaveGlux();
                         EnumFileGenerator.Self.GenerateAndSave();
                         InterfacesFileGenerator.Self.GenerateAndSave();
                         if (shouldGenerateCsv || shouldAddTopDownVariables)
@@ -152,7 +152,7 @@ namespace TopDownPlugin.Controllers
                             AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                             AnimationCodeGenerator.Self.GenerateAndSave();
                         }
-                    }, "Saving Glue Project");
+                    }, "Generating all top-down code");
             }
 
         }

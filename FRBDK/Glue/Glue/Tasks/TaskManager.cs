@@ -13,11 +13,11 @@ namespace FlatRedBall.Glue.Managers
 {
     #region Enums
 
-    public enum TaskExecutionPreference
+    public enum TaskExecutionPreference : ulong
     {
-        AddOrMoveToEnd,
-        Fifo,
-        Asap
+        Asap = 0,
+        Fifo = 1 * (ulong.MaxValue/3),
+        AddOrMoveToEnd = 2 * (ulong.MaxValue/3),
     }
 
     public enum TaskEvent
@@ -35,15 +35,18 @@ namespace FlatRedBall.Glue.Managers
         #region Fields
         int asyncTasks;
 
-        List<GlueTaskBase> mActiveAsyncTasks = new List<GlueTaskBase>();
+        List<GlueTaskBase> mActiveParallelTasks = new List<GlueTaskBase>();
 
         const int maxTasksInHistory = 121;
         List<string> taskHistory = new List<string>();
 
         public int? SyncTaskThreadId { get; private set; }
 
+        // This implementation of BlockingCollection with ConcurrentPriorityQueue is explained here:
+        // https://stackoverflow.com/questions/7502615/element-order-in-blockingcollection
+        // As of March 15, it's the last answer
 
-        readonly BlockingCollection<KeyValuePair<int, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<int, GlueTaskBase>>(new ConcurrentPriorityQueue<int, GlueTaskBase>());
+        readonly BlockingCollection<KeyValuePair<ulong, GlueTaskBase>> taskQueue = new BlockingCollection<KeyValuePair<ulong, GlueTaskBase>>(new ConcurrentPriorityQueue<ulong, GlueTaskBase>());
 
         const string RestartTaskDisplay = "Restarting due to Glue or file change";
         public bool HasRestartTask => taskQueue.Any(item => item.Value.DisplayInfo == RestartTaskDisplay);
@@ -62,13 +65,16 @@ namespace FlatRedBall.Glue.Managers
 
         public bool AreAllAsyncTasksDone => TaskCount == 0;
 
+        /// <summary>
+        /// Returns the task count, including cancelled tasks.
+        /// </summary>
         public int TaskCount
         {
             get
             {
-                lock (mActiveAsyncTasks)
+                lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveAsyncTasks.Count + asyncTasks + taskQueue.Count;
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks + taskQueue.Count;
                     if(CurrentlyRunningTask != null)
                     {
                         toReturn++;
@@ -89,13 +95,13 @@ namespace FlatRedBall.Glue.Managers
                     toReturn += "Task processing disabled, next task when re-enabled:\n";
                 }
 
-                if (mActiveAsyncTasks.Count != 0)
+                if (mActiveParallelTasks.Count != 0)
                 {
                     // This could update while we're looping. We don't want to throw errors, don't want to lock anything, 
                     // so just handle it with a try catch:
                     try
                     {
-                        foreach(var item in mActiveAsyncTasks)
+                        foreach(var item in mActiveParallelTasks)
                         {
                             toReturn += item.DisplayInfo + "\n";
                         }
@@ -126,6 +132,38 @@ namespace FlatRedBall.Glue.Managers
                 }
 
                 return toReturn;
+            }
+        }
+
+        public string NextTasksDescription
+        {
+            get
+            {
+                string toReturn = "";
+
+                if (IsTaskProcessingEnabled == false)
+                {
+                    toReturn += "Task processing disabled, next task when re-enabled:\n";
+                }
+
+
+                var currentlyRunning = CurrentlyRunningTask;
+                if (currentlyRunning != null)
+                {
+                    toReturn += GetDetails(currentlyRunning);
+                }
+
+                var tasksToPrint = taskQueue
+                    .Where(item => item.Value.IsCancelled == false)
+                    .Take(10)
+                    .ToArray();
+                foreach(var item in tasksToPrint)
+                {
+                    toReturn += GetDetails(item.Value);
+                }
+                string GetDetails(GlueTaskBase taskBase) => $"{taskBase?.DisplayInfo} ({taskBase?.TaskExecutionPreference})\n";
+                return toReturn;
+
             }
         }
 
@@ -179,7 +217,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        AddInternal(item.Value.DisplayInfo, item.Value);
+                        AddInternal(item.Value);
                         System.Threading.Thread.Sleep(50);
                     }
                 }
@@ -195,7 +233,10 @@ namespace FlatRedBall.Glue.Managers
             if(markAsCurrent) CurrentlyRunningTask = task;
             TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
             task.TimeStarted = DateTime.Now;
-            await task.DoAction();
+            if(task.IsCancelled == false)
+            {
+                await task.DoAction();
+            }
             task.TimeEnded = DateTime.Now;
             // Set it to null before raising the event so that the TaskCount uses a null object.
             if (markAsCurrent) CurrentlyRunningTask = null;
@@ -220,7 +261,7 @@ namespace FlatRedBall.Glue.Managers
         {
 
             ThreadPool.QueueUserWorkItem(
-                (arg)=>ExecuteActionSync(action, details));
+                (arg)=>ExecuteParallelAction(action, details));
         }
 
         [Obsolete("Use Add, which allows specifying the priority")]
@@ -236,7 +277,9 @@ namespace FlatRedBall.Glue.Managers
             glueTask.Action = action;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
-            AddInternal(displayInfo, glueTask);
+            glueTask.DisplayInfo = displayInfo;
+
+            AddInternal(glueTask);
             return glueTask;
         }
 
@@ -246,7 +289,9 @@ namespace FlatRedBall.Glue.Managers
             glueTask.Func = func;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
-            AddInternal(displayInfo, glueTask);
+            glueTask.DisplayInfo = displayInfo;
+
+            AddInternal(glueTask);
             return glueTask;
         }
 
@@ -256,7 +301,9 @@ namespace FlatRedBall.Glue.Managers
             glueTask.Func = func;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
-            AddInternal(displayInfo, glueTask);
+            glueTask.DisplayInfo = displayInfo;
+
+            AddInternal(glueTask);
             return glueTask;
         }
 
@@ -360,13 +407,28 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private void AddInternal(string displayInfo, GlueTaskBase glueTask)
+        ulong taskoffset = 0;
+        private void AddInternal(GlueTaskBase glueTask)
         {
-            glueTask.DisplayInfo = displayInfo;
+            var priorityValue = (ulong)glueTask.TaskExecutionPreference;
+            priorityValue += taskoffset;
+            taskoffset++;
+
+            if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
+            {
+                var existing = taskQueue.FirstOrDefault(item => 
+                    item.Value.DisplayInfo == glueTask.DisplayInfo &&
+                    item.Value.IsCancelled == false);
+
+                if (existing.Key != 0)
+                {
+                    existing.Value.IsCancelled = true;
+                }
+
+            }
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
-
-            taskQueue.Add(new KeyValuePair<int, GlueTaskBase>((int)glueTask.TaskExecutionPreference, glueTask));
+            taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
         }
 
 
@@ -390,7 +452,7 @@ namespace FlatRedBall.Glue.Managers
         {
             return
                 taskQueue.Any(item => item.Value == glueTask) ||
-                mActiveAsyncTasks.Contains(glueTask) ||
+                mActiveParallelTasks.Contains(glueTask) ||
                 CurrentlyRunningTask == glueTask;
 
         }
@@ -405,7 +467,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 bool IsTaskDone()
                 {
-                    lock(mActiveAsyncTasks)
+                    lock(mActiveParallelTasks)
                     {
                         if(DoesTaskNeedToFinish(glueTask))
                         {
@@ -435,7 +497,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 bool IsTaskDone()
                 {
-                    lock (mActiveAsyncTasks)
+                    lock (mActiveParallelTasks)
                     {
                         if (DoesTaskNeedToFinish(glueTask))
                         {
@@ -459,7 +521,7 @@ namespace FlatRedBall.Glue.Managers
         #region Etc Methods
 
 
-        void ExecuteActionSync(Action action, string details)
+        void ExecuteParallelAction(Action action, string details)
         {
             var glueTask = new GlueTask
             {
@@ -467,18 +529,18 @@ namespace FlatRedBall.Glue.Managers
                 DisplayInfo = details
             };
 
-            lock (mActiveAsyncTasks)
+            lock (mActiveParallelTasks)
             {
-                mActiveAsyncTasks.Add(glueTask);
+                mActiveParallelTasks.Add(glueTask);
             }
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
 
             ((Action)action)();
 
-            lock (mActiveAsyncTasks)
+            lock (mActiveParallelTasks)
             {
-                mActiveAsyncTasks.Remove(glueTask);
+                mActiveParallelTasks.Remove(glueTask);
             }
             asyncTasks--;
 

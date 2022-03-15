@@ -1788,7 +1788,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                 memberName, oldValue, namedObjectSave:nos);
 
-            TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors");
+            // Avoids accumulation when dragging a slider around:
+            TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
 
             PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
         }

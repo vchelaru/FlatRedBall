@@ -18,7 +18,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             }
         }
 
-        public string CurrentTaskText => TaskManager.Self.CurrentTaskDescription;
+        public string CurrentTaskText => TaskManager.Self.NextTasksDescription;
 
         public bool LogTaskDetailsToOutput
         {
@@ -33,8 +33,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
         private void HandleSyncTaskAddedOrRemoved(TaskEvent addedOrRemoved, GlueTaskBase glueTask)
         {
-            this.NotifyPropertyChanged("StatusText");
-            this.NotifyPropertyChanged("CurrentTaskText");
+            this.NotifyPropertyChanged(nameof(StatusText));
+            this.NotifyPropertyChanged(nameof(CurrentTaskText));
 
             if(LogTaskDetailsToOutput)
             {

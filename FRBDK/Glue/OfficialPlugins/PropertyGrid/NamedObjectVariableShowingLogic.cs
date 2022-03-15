@@ -619,7 +619,12 @@ namespace OfficialPlugins.VariableDisplay
                         // Get this on the UI thread, but use it in the async call below
                         var currentElement = GlueState.Self.CurrentElement;
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        // Note - this used to not specify parameters for saving...
+                        //GlueCommands.Self.GluxCommands.SaveGlux();
+                        // which means the save would happen ASAP and would duplicate
+                        // However, sliders can spam this, so we only want to save at the
+                        // end to avoid accumulation:
+                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
 
                         if (currentElement != null)
                         {

@@ -32,6 +32,8 @@ namespace FlatRedBall.Glue.Tasks
 
         public object Result { get; set; }
 
+        public bool IsCancelled { get; set; }
+
         public abstract Task DoAction();
     }
 

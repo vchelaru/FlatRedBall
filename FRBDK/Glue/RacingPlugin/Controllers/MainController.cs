@@ -110,11 +110,10 @@ namespace RacingPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddRacingVariables)
             {
+                GlueCommands.Self.GluxCommands.SaveGlux();
                 TaskManager.Self.Add(
                     () =>
                     {
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-
                         EnumFileGenerator.Self.GenerateAndSaveEnumFile();
 
                         // not sure if this needs any interfaces
@@ -122,7 +121,7 @@ namespace RacingPlugin.Controllers
 
                         // AI...eventually...
                         //AiCodeGenerator.Self.GenerateAndSave();
-                    }, "Saving Glue Project");
+                    }, "Generating Rading Enums");
             }
 
         }
