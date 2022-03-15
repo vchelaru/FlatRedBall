@@ -74,7 +74,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveParallelTasks.Count + asyncTasks + taskQueue.Count;
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks + taskQueue.Where(item => item.Value.IsCancelled == false).Count();
                     if(CurrentlyRunningTask != null)
                     {
                         toReturn++;
@@ -230,17 +230,17 @@ namespace FlatRedBall.Glue.Managers
 
         private async Task RunTask(GlueTaskBase task, bool markAsCurrent)
         {
-            if(markAsCurrent) CurrentlyRunningTask = task;
-            TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
-            task.TimeStarted = DateTime.Now;
             if(task.IsCancelled == false)
             {
+                if(markAsCurrent) CurrentlyRunningTask = task;
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
+                task.TimeStarted = DateTime.Now;
                 await task.DoAction();
+                task.TimeEnded = DateTime.Now;
+                // Set it to null before raising the event so that the TaskCount uses a null object.
+                if (markAsCurrent) CurrentlyRunningTask = null;
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
             }
-            task.TimeEnded = DateTime.Now;
-            // Set it to null before raising the event so that the TaskCount uses a null object.
-            if (markAsCurrent) CurrentlyRunningTask = null;
-            TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
         }
 
