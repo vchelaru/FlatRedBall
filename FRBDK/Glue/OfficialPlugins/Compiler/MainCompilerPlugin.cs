@@ -227,6 +227,13 @@ namespace OfficialPlugins.Compiler
             // The game won't reflect that until it has been restarted, so let's just take 
             // care of it now. For variable removal I don't know if any restart is needed...
             this.ReactToVariableAdded += RefreshManager.Self.HandleVariableAdded;
+            this.ReactToChangedPropertyHandler += (changedMember, oldValue, owner) =>
+            {
+                if(changedMember == nameof(CustomVariable.Name) && GlueState.Self.CurrentCustomVariable != null)
+                {
+                    RefreshManager.Self.HandleVariableRenamed(GlueState.Self.CurrentCustomVariable);
+                }
+            };
             this.ReactToStateCreated += RefreshManager.Self.HandleStateCreated;
             this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
             this.ReactToStateCategoryExcludedVariablesChanged += RefreshManager.Self.HandleStateCategoryExcludedVariablesChanged;

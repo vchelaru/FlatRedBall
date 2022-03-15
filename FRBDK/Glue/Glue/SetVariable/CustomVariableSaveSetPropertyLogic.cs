@@ -11,12 +11,14 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SaveClasses.Helpers;
 using GlueFormsCore.Managers;
+using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
     public class CustomVariableSaveSetPropertyLogic
     {
-        public void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
+        public async void ReactToCustomVariableChangedValue(string changedMember, CustomVariable customVariable, object oldValue)
         {
             var element = ObjectFinder.Self.GetElementContaining(customVariable);
 
@@ -24,7 +26,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (changedMember == nameof(CustomVariable.Name))
             {
-                ReactToChangedCustomVariableName((string)oldValue, customVariable);
+                await ReactToChangedCustomVariableNameAsync((string)oldValue, customVariable);
             }
             #endregion
 
@@ -35,7 +37,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (customVariable.SetByDerived && customVariable.IsShared)
                 {
-                    MessageBox.Show("Variables that are IsShared cannot be SetByDerived");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("Variables that are IsShared cannot be SetByDerived");
                     didErrorOccur = true;
                 }
 
@@ -412,128 +414,135 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private static void ReactToChangedCustomVariableName(string oldName, CustomVariable customVariable)
+        private static async Task ReactToChangedCustomVariableNameAsync(string oldName, CustomVariable customVariable)
         {
-            /////////////////////Early Out///////////////////////////////
             var currentElement = GlueState.Self.CurrentElement;
-            string whyItIsntValid = "";
-            bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
-            string newName = GlueState.Self.CurrentCustomVariable.Name;
+            var currentVariable = GlueState.Self.CurrentCustomVariable;
 
-            if (customVariable.GetIsVariableState() && oldName != newName)
+            await TaskManager.Self.AddAsync(() =>
             {
-                // This is only the case if the state is inside the entity itself. Otherwise, it can be renamed just fine...
+                /////////////////////Early Out///////////////////////////////
+                string whyItIsntValid = "";
+                bool isNameValid = NameVerifier.IsCustomVariableNameValid(customVariable.Name, customVariable, currentElement, ref whyItIsntValid);
+                string newName = currentVariable.Name;
 
-                var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
-                var isDefinedInDifferentElement = elementDefiningCategory != null && 
-                    elementDefiningCategory != currentElement && 
-                    ObjectFinder.Self.GetAllBaseElementsRecursively(currentElement).Contains(elementDefiningCategory) == false;
-
-                if(isDefinedInDifferentElement == false)
+                if (customVariable.GetIsVariableState() && oldName != newName)
                 {
-                    whyItIsntValid += "\nState variables cannot be renamed - they require specific names to function properly.";
-                }
-            }
+                    // This is only the case if the state is inside the entity itself. Otherwise, it can be renamed just fine...
 
-            if (!string.IsNullOrEmpty(whyItIsntValid))
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(whyItIsntValid);
-                customVariable.Name = oldName;
-                return;
-            }
+                    var elementDefiningCategory = ObjectFinder.Self.GetElementDefiningStateCategory(customVariable.Type);
+                    var isDefinedInDifferentElement = elementDefiningCategory != null &&
+                        elementDefiningCategory != currentElement &&
+                        ObjectFinder.Self.GetAllBaseElementsRecursively(currentElement).Contains(elementDefiningCategory) == false;
 
-            //////////////End Early Out/////////////////////////////////
-
-            var elementsToGenerate = new HashSet<GlueElement>();
-            var elementsToSearchForTunneledVariablesIn = new List<GlueElement>();
-
-            #region Change any states that use this variable
-            foreach (StateSave stateSave in currentElement.AllStates)
-            {
-                foreach (InstructionSave instructionSave in stateSave.InstructionSaves)
-                {
-                    if (instructionSave.Member == oldName)
+                    if (isDefinedInDifferentElement == false)
                     {
-                        instructionSave.Member = newName;
+                        whyItIsntValid += "\nState variables cannot be renamed - they require specific names to function properly.";
                     }
                 }
-            }
 
-            #endregion
-
-            #region Change any NOS that uses this as its source
-            List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(currentElement);
-            foreach (var nos in nosList)
-            {
-                var container = ObjectFinder.Self.GetElementContaining(nos);
-
-                if (!elementsToSearchForTunneledVariablesIn.Contains(container))
+                if (!string.IsNullOrEmpty(whyItIsntValid))
                 {
-                    elementsToSearchForTunneledVariablesIn.Add(container);
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(whyItIsntValid);
+                    customVariable.Name = oldName;
+                    return;
                 }
 
-                if (nos.RenameVariable(oldName, newName))
-                {
-                    elementsToGenerate.Add(container);
-                }
-            }
+                //////////////End Early Out/////////////////////////////////
 
-            #endregion
+                var elementsToGenerate = new HashSet<GlueElement>();
+                var elementsToSearchForTunneledVariablesIn = new List<GlueElement>();
 
-            #region Change any CustomVaribles that tunnel in to this variable
-            foreach (var elementToCheck in elementsToSearchForTunneledVariablesIn)
-            {
-                foreach (CustomVariable variableToCheck in elementToCheck.CustomVariables)
+                #region Change any states that use this variable
+                foreach (StateSave stateSave in currentElement.AllStates)
                 {
-                    if (!string.IsNullOrEmpty(variableToCheck.SourceObject) && !string.IsNullOrEmpty(variableToCheck.SourceObjectProperty) &&
-                        variableToCheck.SourceObjectProperty == oldName)
+                    foreach (InstructionSave instructionSave in stateSave.InstructionSaves)
                     {
-                        NamedObjectSave nos = elementToCheck.GetNamedObjectRecursively(variableToCheck.SourceObject);
-
-                        // just to be safe
-                        if (nos != null && nosList.Contains(nos))
+                        if (instructionSave.Member == oldName)
                         {
-                            variableToCheck.SourceObjectProperty = newName;
-
-                            elementsToGenerate.Add(elementToCheck);
+                            instructionSave.Member = newName;
                         }
                     }
                 }
-            }
 
-            #endregion
+                #endregion
 
-            #region Change all events that reference this variable
-
-            foreach (var eventResponse in currentElement.Events)
-            {
-                if (eventResponse.SourceVariable == oldName)
+                #region Change any NOS that uses this as its source
+                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(currentElement);
+                foreach (var nos in nosList)
                 {
-                    eventResponse.SourceVariable = newName;
-                    Plugins.PluginManager.ReceiveOutput("Changing event " + eventResponse.EventName + " to use variable " + newName);
-                }
-            }
+                    var container = ObjectFinder.Self.GetElementContaining(nos);
 
-            #endregion
-
-            var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(currentElement);
-            foreach(var derivedElement in derivedElements)
-            {
-                foreach(var variable in derivedElement.CustomVariables)
-                {
-                    if(variable.DefinedByBase && variable.Name == oldName)
+                    if (!elementsToSearchForTunneledVariablesIn.Contains(container))
                     {
-                        variable.Name = newName;
+                        elementsToSearchForTunneledVariablesIn.Add(container);
+                    }
+
+                    if (nos.RenameVariable(oldName, newName))
+                    {
+                        elementsToGenerate.Add(container);
                     }
                 }
-                elementsToGenerate.Add(derivedElement);
-            }
 
-            foreach (var toRegenerate in elementsToGenerate)
-            {
-                CodeWriter.GenerateCode(toRegenerate);
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(toRegenerate);
-            }
+                #endregion
+
+                #region Change any CustomVaribles that tunnel in to this variable
+                foreach (var elementToCheck in elementsToSearchForTunneledVariablesIn)
+                {
+                    foreach (CustomVariable variableToCheck in elementToCheck.CustomVariables)
+                    {
+                        if (!string.IsNullOrEmpty(variableToCheck.SourceObject) && !string.IsNullOrEmpty(variableToCheck.SourceObjectProperty) &&
+                            variableToCheck.SourceObjectProperty == oldName)
+                        {
+                            NamedObjectSave nos = elementToCheck.GetNamedObjectRecursively(variableToCheck.SourceObject);
+
+                            // just to be safe
+                            if (nos != null && nosList.Contains(nos))
+                            {
+                                variableToCheck.SourceObjectProperty = newName;
+
+                                elementsToGenerate.Add(elementToCheck);
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
+                #region Change all events that reference this variable
+
+                foreach (var eventResponse in currentElement.Events)
+                {
+                    if (eventResponse.SourceVariable == oldName)
+                    {
+                        eventResponse.SourceVariable = newName;
+                        Plugins.PluginManager.ReceiveOutput("Changing event " + eventResponse.EventName + " to use variable " + newName);
+                    }
+                }
+
+                #endregion
+
+                var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(currentElement);
+                foreach (var derivedElement in derivedElements)
+                {
+                    foreach (var variable in derivedElement.CustomVariables)
+                    {
+                        if (variable.DefinedByBase && variable.Name == oldName)
+                        {
+                            variable.Name = newName;
+                        }
+                    }
+                    elementsToGenerate.Add(derivedElement);
+                }
+
+                foreach (var toRegenerate in elementsToGenerate)
+                {
+                    CodeWriter.GenerateCode(toRegenerate);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(toRegenerate);
+                }
+
+            }, nameof(ReactToChangedCustomVariableNameAsync));
+
 
         }
 

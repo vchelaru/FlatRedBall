@@ -533,6 +533,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async void HandleVariableAdded(CustomVariable newVariable)
         {
+            await HandleVariableAddedOrRenamedInternal(newVariable);
+        }
+
+        private async Task HandleVariableAddedOrRenamedInternal(CustomVariable newVariable)
+        {
             // Vic says - When a new variable is added, we don't need to restart. However,
             // later that variable might get assigned on instances of an object, and if it is
             // then that would probably fail because it would attempt to assign through reflection.
@@ -549,7 +554,7 @@ namespace OfficialPlugins.Compiler.Managers
             var isTunneled = !string.IsNullOrWhiteSpace(newVariable.SourceObject) &&
                 !string.IsNullOrWhiteSpace(newVariable.SourceObjectProperty);
 
-            if(isTunneled)
+            if (isTunneled)
             {
                 // send this down to the game
                 var dto = new AddVariableDto();
@@ -566,6 +571,20 @@ namespace OfficialPlugins.Compiler.Managers
                 // it's a brand new variable, so let's restart it...
                 StopAndRestartAsync($"Restarting because of added variable {newVariable}");
             }
+        }
+
+        #endregion
+
+        #region Variable Renamed
+
+        internal async void HandleVariableRenamed(CustomVariable renamedVariable)
+        {
+            // When a variable is renamed, we treat it as if it's a new variable. 
+            // I don't think we need to clean up old variables...or at least I can't
+            // think of why it might be important to do so (yet), but if this becomes
+            // an issue in the future we will have to send a "remove variable" command,
+            // or modify the AddVariableDto DTO
+            await HandleVariableAddedOrRenamedInternal(renamedVariable);
         }
 
         #endregion

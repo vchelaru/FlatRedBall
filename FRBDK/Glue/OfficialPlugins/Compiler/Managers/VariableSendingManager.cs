@@ -476,7 +476,9 @@ namespace OfficialPlugins.Compiler.Managers
         private async Task<GlueVariableSetDataResponse> TryPushVariable(GlueVariableSetData data)
         {
             GlueVariableSetDataResponse response = null;
-            if (ViewModel.IsRunning && data.GlueElement != null)
+            if (ViewModel.IsRunning )
+                // why do we care if the GlueElement is null or not?
+                // && data.GlueElement != null)
             {
                 var sendGeneralResponse = await CommandSender.Send(data);
                 var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
