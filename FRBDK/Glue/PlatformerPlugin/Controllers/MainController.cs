@@ -125,6 +125,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             ///////////// end early out ///////////
 
             var entity = GlueState.Self.CurrentEntitySave;
+            var element = GlueState.Self.CurrentElement;
             var viewModel = sender as PlatformerEntityViewModel;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
 
@@ -169,7 +170,10 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(shouldAddPlatformerVariables)
             {
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                if(element != null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                }
             }
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
