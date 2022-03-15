@@ -44,46 +44,54 @@ namespace GlueControl
 
         public static string Receive(string message, Func<object, bool> runPredicate = null)
         {
-            string dtoTypeName = null;
-            string dtoSerialized = null;
-            if (message.Contains(":"))
+            try
             {
-                dtoSerialized = message.Substring(message.IndexOf(":") + 1);
-                dtoTypeName = message.Substring(0, message.IndexOf(":"));
-            }
-            else
-            {
-                throw new Exception($"The command {message} does not contain a : (colon) separator");
-            }
-
-            var matchingMethod =
-                AllMethods
-                .FirstOrDefault(item =>
+                string dtoTypeName = null;
+                string dtoSerialized = null;
+                if (message.Contains(":"))
                 {
-                    var parameters = item.GetParameters();
-                    return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
-                });
-
-            if (matchingMethod == null)
-            {
-                throw new InvalidOperationException(
-                    $"Could not find a HandleDto method for type {dtoTypeName}");
-            }
-
-            var dtoType = matchingMethod.GetParameters()[0].ParameterType;
-
-            var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
-
-            if (runPredicate == null || runPredicate(dto))
-            {
-                var response = ReceiveDto(dto);
-
-                if (response != null)
-                {
-                    return JsonConvert.SerializeObject(response);
+                    dtoSerialized = message.Substring(message.IndexOf(":") + 1);
+                    dtoTypeName = message.Substring(0, message.IndexOf(":"));
                 }
+                else
+                {
+                    throw new Exception($"The command {message} does not contain a : (colon) separator");
+                }
+
+                var matchingMethod =
+                    AllMethods
+                    .FirstOrDefault(item =>
+                    {
+                        var parameters = item.GetParameters();
+                        return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
+                    });
+
+                if (matchingMethod == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not find a HandleDto method for type {dtoTypeName}");
+                }
+
+                var dtoType = matchingMethod.GetParameters()[0].ParameterType;
+
+                var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+
+                if (runPredicate == null || runPredicate(dto))
+                {
+                    var response = ReceiveDto(dto);
+
+                    if (response != null)
+                    {
+                        return JsonConvert.SerializeObject(response);
+                    }
+                }
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex + "\nWith message:\n" + message);
+                return null;
+            }
         }
 
         public static object ReceiveDto(object dto)

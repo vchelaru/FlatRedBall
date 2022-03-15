@@ -497,6 +497,7 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxUnloaded()
         {
             CompilerViewModel.HasLoadedGlux = false;
+            CompilerViewModel.ToolbarEntitiesAndStates.Clear();
 
             glueViewSettingsTab.Hide();
 
@@ -561,9 +562,10 @@ namespace OfficialPlugins.Compiler
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
+            CompilerViewModel.ToolbarEntitiesAndStates.Clear();
             CompilerViewModel.HasLoadedGlux = true;
             //CompilerViewModel.SetFrom(model);
-            foreach(var toolbarModel in model.ToolbarEntitiesAndStates)
+            foreach (var toolbarModel in model.ToolbarEntitiesAndStates)
             {
                 var entitySave = ObjectFinder.Self.GetEntitySave(toolbarModel.EntityName);
 
@@ -727,7 +729,10 @@ namespace OfficialPlugins.Compiler
 
                     break;
                 case nameof(ViewModels.CompilerViewModel.ToolbarEntitiesAndStates):
-                    SaveCompilerSettingsModel();
+                    if(CompilerViewModel.HasLoadedGlux)
+                    {
+                        SaveCompilerSettingsModel();
+                    }
                     break;
             }
 
