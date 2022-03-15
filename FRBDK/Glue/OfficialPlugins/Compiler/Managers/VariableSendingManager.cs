@@ -499,9 +499,14 @@ namespace OfficialPlugins.Compiler.Managers
             data.AssignOrRecordOnly = assignOrRecordOnly;
             data.IsState = isState;
 
-
-            data.ScreenSave = currentElement as ScreenSave;
-            data.EntitySave = currentElement as EntitySave;
+            // March 15, 2022
+            // Why do we set this
+            // here? It results in 
+            // a large serialization/deserializaiton
+            // which can be very slow when sending lots
+            // of variables over at once.
+            //data.ScreenSave = currentElement as ScreenSave;
+            //data.EntitySave = currentElement as EntitySave;
 
             if (!string.IsNullOrEmpty(variableOwningNosName))
             {
