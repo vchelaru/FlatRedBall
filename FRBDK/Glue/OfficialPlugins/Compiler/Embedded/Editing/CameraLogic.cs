@@ -171,7 +171,16 @@ namespace GlueControl.Editing
                     ? 1
                     : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
-                Camera.Main.OrthogonalHeight = Camera.Main.DestinationRectangle.Height / divisor;
+                if (Camera.Main.Orthogonal == true)
+                {
+                    Camera.Main.OrthogonalHeight = Camera.Main.DestinationRectangle.Height / divisor;
+                }
+                else
+                {
+                    var zDistance = Camera.Main.GetZDistanceForPixelPerfect();
+                    Camera.Main.Z = zDistance / divisor;
+                    Camera.Main.FarClipPlane = Math.Max(Camera.Main.Z, Camera.Main.FarClipPlane);
+                }
             }
             Camera.Main.FixAspectRatioYConstant();
 

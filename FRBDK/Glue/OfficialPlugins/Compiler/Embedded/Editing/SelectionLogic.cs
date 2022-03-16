@@ -242,10 +242,12 @@ namespace GlueControl.Editing
 
             GetDimensionsFor(objectAtI, out float minX, out float maxX, out float minY, out float maxY);
 
-            return worldX >= minX &&
-                    worldX <= maxX &&
-                    worldY >= minY &&
-                    worldY <= maxY;
+            return
+                objectAtI.Z < (Camera.Main.Z - Camera.Main.NearClipPlane) &&
+                worldX >= minX &&
+                worldX <= maxX &&
+                worldY >= minY &&
+                worldY <= maxY;
         }
 
         private static bool IsRectangleSelectionOver(PositionedObject item)

@@ -538,14 +538,16 @@ namespace GlueControl.Editing
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
+            var itemZ = item?.Z ?? 0;
+
             if (cursor.PrimaryPush)
             {
-                lastWorldX = cursor.WorldX;
-                lastWorldY = cursor.WorldY;
+                lastWorldX = cursor.WorldXAt(itemZ);
+                lastWorldY = cursor.WorldYAt(itemZ);
             }
 
-            var xChange = cursor.WorldX - lastWorldX;
-            var yChange = cursor.WorldY - lastWorldY;
+            var xChange = cursor.WorldXAt(itemZ) - lastWorldX;
+            var yChange = cursor.WorldYAt(itemZ) - lastWorldY;
 
             var didCursorMove = xChange != 0 || yChange != 0;
 
@@ -569,8 +571,8 @@ namespace GlueControl.Editing
                 }
             }
 
-            lastWorldX = cursor.WorldX;
-            lastWorldY = cursor.WorldY;
+            lastWorldX = cursor.WorldXAt(itemZ);
+            lastWorldY = cursor.WorldYAt(itemZ);
         }
 
 
