@@ -115,6 +115,7 @@ start GlueFormsCore.exe";
 
             yield return "*.Generated.cs";
             yield return "*.Generated.Event.cs";
+            yield return "*.generatedpreview.png";
 
             yield return "TiledObjects.Generated.xml";
 

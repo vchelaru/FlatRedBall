@@ -47,6 +47,11 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Converts this Vector3 to a Vector2 by copying the X and Y values.
+        /// </summary>
+        /// <param name="vector3">The Vector3 to convert</param>
+        /// <returns>A Vector2 with the same X adn Y values</returns>
         public static Vector2 ToVector2(this Vector3 vector3)
         {
             var toReturn = new Vector2();
@@ -57,6 +62,12 @@ namespace Microsoft.Xna.Framework
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns a new Vector3 of Length 0, or throws an InvalidOperationException if this Vector3 has a Length of 0.
+        /// </summary>
+        /// <param name="vector3">The Vector3 to normalize</param>
+        /// <returns>The normalized vector.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the Vector3 has a Length of 0. </exception>
         public static Vector3 Normalized(this Vector3 vector3)
         {
             if(vector3.X != 0 || vector3.Y != 0 || vector3.Z != 0)
@@ -140,6 +151,12 @@ namespace Microsoft.Xna.Framework
         public static Vector3 AtAngle(this Vector3 vector3, float angleRadians)
         {
             return Vector3ExtensionMethods.FromAngle(angleRadians) * vector3.Length();
+        }
+
+        public static Vector3 WithZ(this Vector3 vector3, float zValue)
+        {
+            vector3.Z = zValue;
+            return vector3;
         }
     }
 }

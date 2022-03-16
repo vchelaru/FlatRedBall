@@ -1914,7 +1914,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
 
-            FilePath filePath = folder + fileName + ".preview.png";
+            FilePath filePath = folder + fileName + ".generatedpreview.png";
             return filePath;
         }
 
