@@ -380,6 +380,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             this.GenerateDisplayCode = displaySettings.GenerateDisplayCode;
 
             this.Is2D = displaySettings.Is2D;
+            this.Is3D = !displaySettings.Is2D;
 
             this.ResolutionWidth = displaySettings.ResolutionWidth;
 
