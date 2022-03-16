@@ -291,6 +291,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 {
                     viewModel.FirstSubCollisionSelectedItem = oldValue;
                 }
+                else if(oldValue == null)
+                {
+                    viewModel.FirstSubCollisionSelectedItem = CollisionRelationshipViewModel.EntireObject;
+                }
             }
             else
             {
@@ -314,6 +318,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 if(list.Contains(oldValue))
                 {
                     viewModel.SecondSubCollisionSelectedItem = oldValue;
+                }
+                else if (oldValue == null)
+                {
+                    viewModel.FirstSubCollisionSelectedItem = CollisionRelationshipViewModel.EntireObject;
                 }
             }
             else
