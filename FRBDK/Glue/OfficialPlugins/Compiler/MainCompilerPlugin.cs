@@ -817,14 +817,18 @@ namespace OfficialPlugins.Compiler
             }
             var setCameraAspectRatioDto = new SetCameraAspectRatioDto();
 
-            if(inEditMode)
+            var displaySettings = GlueState.Self.CurrentGlueProject?.DisplaySettings;
+
+            if (inEditMode)
             {
                 setCameraAspectRatioDto.AspectRatio = null;
             }
             else
             {
-                if(GlueState.Self.CurrentGlueProject?.DisplaySettings != null &&
-                    GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight > 0)
+                if(displaySettings != null &&
+                    displaySettings.AspectRatioHeight > 0 &&
+                    displaySettings.FixedAspectRatio == true
+                    )
                 {
                     setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
                         GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;

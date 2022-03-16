@@ -377,6 +377,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
 
             block.Line($"Scale = {(displaySettings.Scale ).ToString(CultureInfo.InvariantCulture)}f,");
+            block.Line($"IsGenerateCameraDisplayCodeEnabled = {(displaySettings.GenerateDisplayCode.ToString().ToLowerInvariant())},");
 
             block.Line($"ResolutionWidth = {displaySettings.ResolutionWidth},");
             block.Line($"ResolutionHeight = {displaySettings.ResolutionHeight},");

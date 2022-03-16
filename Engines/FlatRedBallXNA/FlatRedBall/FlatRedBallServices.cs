@@ -236,11 +236,17 @@ namespace FlatRedBall
             get { return mGraphicsOptions; }
         }
 
+        /// <summary>
+        /// The height of the entire drawable area of the game window.
+        /// </summary>
         public static int ClientWidth
         {
             get { return mClientWidth; }
         }
 
+        /// <summary>
+        /// The width of the entire drawable area of the game window.
+        /// </summary>
         public static int ClientHeight
         {
             get { return mClientHeight; }

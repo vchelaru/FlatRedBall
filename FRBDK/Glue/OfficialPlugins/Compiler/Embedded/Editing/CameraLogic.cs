@@ -48,9 +48,10 @@ namespace GlueControl.Editing
             33  ,
             25
         };
-        static int currentZoomLevelIndex;
+        // store this as a decimal, because the zoom can be inbetween when switching from game to edit mode
+        static decimal currentZoomLevelIndex;
 
-        public static float CurrentZoomRatio => zoomLevels[currentZoomLevelIndex] / 100.0f;
+        public static float CurrentZoomRatio => zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
         public static float CameraXMovement { get; private set; }
         public static float CameraYMovement { get; private set; }
@@ -95,15 +96,11 @@ namespace GlueControl.Editing
         {
             if (cursor.ZVelocity < 0)
             {
-                currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
-                UpdateCameraToZoomLevel();
-                PushZoomLevelToEditor();
+                DoZoomPlus(zoomAroundCursorPosition: true);
             }
             if (cursor.ZVelocity > 0)
             {
-                currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
-                UpdateCameraToZoomLevel();
-                PushZoomLevelToEditor();
+                DoZoomMinus(zoomAroundCursorPosition: true);
             }
         }
 
@@ -165,14 +162,14 @@ namespace GlueControl.Editing
                 zoomLevel =
                     forceTo100
                     ? 100 * CameraSetup.Data.Scale / 100.0f
-                    : zoomLevels[currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
+                    : zoomLevels[(int)currentZoomLevelIndex] * CameraSetup.Data.Scale / 100.0f;
                 Camera.Main.OrthogonalHeight = (CameraSetup.Data.Scale / 100.0f) * CameraSetup.Data.ResolutionHeight / (zoomLevel / 100.0f);
             }
             else
             {
                 var divisor = forceTo100
                     ? 1
-                    : zoomLevels[currentZoomLevelIndex] / 100.0f;
+                    : zoomLevels[(int)currentZoomLevelIndex] / 100.0f;
 
                 Camera.Main.OrthogonalHeight = Camera.Main.DestinationRectangle.Height / divisor;
             }
@@ -238,17 +235,17 @@ namespace GlueControl.Editing
             }
         }
 
-        public static void DoZoomMinus()
+        public static void DoZoomMinus(bool zoomAroundCursorPosition = false)
         {
             currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
-            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition);
             PushZoomLevelToEditor();
         }
 
-        public static void DoZoomPlus()
+        public static void DoZoomPlus(bool zoomAroundCursorPosition = false)
         {
             currentZoomLevelIndex = Math.Min(currentZoomLevelIndex + 1, zoomLevels.Length - 1);
-            UpdateCameraToZoomLevel(zoomAroundCursorPosition: false);
+            UpdateCameraToZoomLevel(zoomAroundCursorPosition);
             PushZoomLevelToEditor();
         }
 
@@ -266,7 +263,7 @@ namespace GlueControl.Editing
             }
         }
 
-        public static void SetCameraForScreen(Screen screen, bool setZoom = true)
+        public static void UpdateCameraValuesToScreenSavedValues(Screen screen, bool setZoom = true)
         {
             if (CameraStates.ContainsKey(screen.GetType().FullName))
             {
@@ -278,14 +275,61 @@ namespace GlueControl.Editing
                     camera.OrthogonalHeight = value.OrthogonalHeight;
                     camera.FixAspectRatioYConstant();
 
+                    UpdateZoomIndexToCamera();
+
                 }
             }
         }
 
+        private static void UpdateZoomIndexToCamera()
+        {
+            int cameraZoom;
+
+            var heightMulitplier = FlatRedBallServices.GraphicsOptions.ResolutionHeight / (float)Camera.Main.DestinationRectangle.Height;
+
+
+            //if (Camera.Main.DestinationRectangle.Height == FlatRedBallServices.GraphicsOptions.ResolutionHeight)
+            //{
+            cameraZoom = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight);
+            //}
+            //else
+            //{
+            //    cameraZoom = FlatRedBall.Math.MathFunctions.RoundToInt(100 * Camera.Main.DestinationRectangle.Width / Camera.Main.OrthogonalWidth);
+            //}
+
+            for (int i = 0; i < zoomLevels.Count(); i++)
+            {
+                if (cameraZoom >= zoomLevels[i])
+                {
+                    currentZoomLevelIndex = i;
+                    break;
+                }
+                else
+                {
+                    // start high, go lower
+                    if (i < zoomLevels.Length - 1)
+                    {
+                        var nextSmallerZoom = zoomLevels[i + 1];
+                        if (cameraZoom < zoomLevels[i] && cameraZoom > nextSmallerZoom)
+                        {
+                            currentZoomLevelIndex = i + .5m;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // we got to the last so set it!
+                        currentZoomLevelIndex = i;
+                    }
+                }
+            }
+        }
+
+
         public static void PushZoomLevelToEditor()
         {
             var dto = new Dtos.CurrentDisplayInfoDto();
-            dto.ZoomPercentage = zoomLevels[currentZoomLevelIndex];
+            dto.ZoomPercentage = zoomLevels[(int)currentZoomLevelIndex];
             dto.DestinationRectangleWidth = Camera.Main.DestinationRectangle.Width;
             dto.DestinationRectangleHeight = Camera.Main.DestinationRectangle.Height;
             dto.OrthogonalWidth = Camera.Main.OrthogonalWidth;
