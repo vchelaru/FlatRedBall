@@ -84,14 +84,14 @@ namespace FlatRedBall.Glue.Managers
                     }
                     break;
                 case System.Windows.Input.Key.C:
-                    if (ctrlDown)
+                    if (ctrlDown && !isTextBoxFocused)
                     {
                         CopyPasteManager.Self.HandleCopy();
                         return true;
                     }
                     break;
                 case System.Windows.Input.Key.V:
-                    if (ctrlDown)
+                    if (ctrlDown && !isTextBoxFocused)
                     {
                         CopyPasteManager.Self.HandlePaste();
                         return true;
