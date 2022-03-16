@@ -753,7 +753,10 @@ namespace FlatRedBall.Instructions.Reflection
 
         private static bool IsEnum(string typeAsString)
         {
-
+            if(typeAsString == null)
+            {
+                throw new ArgumentNullException(nameof(typeAsString));
+            }
             Type foundType = null;
 
             if (mUnqualifiedTypeDictionary.ContainsKey(typeAsString))

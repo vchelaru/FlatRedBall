@@ -418,7 +418,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
                 #region Camera-related properties
 
-                if (instance.SourceType != SaveClasses.SourceType.FlatRedBallType || instance.SourceClassType != "Camera")
+                if (instance.GetAssetTypeInfo() != AvailableAssetTypes.CommonAtis.Camera)
                 {
                     ExcludeMember(nameof(NamedObjectSave.IsNewCamera));
                 }

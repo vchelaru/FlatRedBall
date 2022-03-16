@@ -452,6 +452,24 @@ namespace GlueControl.Editing
                 targetInstance = foundObject as INameable;
             }
 
+            if (targetInstance == null)
+            {
+                var screenType = screen.GetType();
+                while (targetInstance == null && screenType != null)
+                {
+                    var field = screenType.GetField(objectName,
+                        System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Public |
+                        System.Reflection.BindingFlags.NonPublic);
+                    var foundObject = field?.GetValue(screen);
+                    targetInstance = foundObject as INameable;
+
+                    if (targetInstance == null)
+                    {
+                        screenType = screenType.BaseType;
+                    }
+                }
+            }
 
             return targetInstance;
         }

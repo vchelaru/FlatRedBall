@@ -1755,7 +1755,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool shouldConvertValue = false;
 
-            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+            var ati = nos.GetAssetTypeInfo();
+            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
 
             if (variableDefinition != null)
             {
@@ -1777,7 +1778,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // If the MemberType is object, then it's something we can't convert to - it's likely a state
                 }
 
-                if (shouldConvertValue)
+                if (shouldConvertValue && variableDefinition.Type != null)
                 {
                     value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
                 }

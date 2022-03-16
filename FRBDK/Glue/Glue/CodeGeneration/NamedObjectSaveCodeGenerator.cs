@@ -552,7 +552,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 // We treat Cameras in a special way:
                 // Eventually we should move this to an ATI that uses custom code (like in the if-statement above)
-                else if (namedObject.ClassType == "Camera")
+                else if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Camera)
                 {
                     if (namedObject.IsNewCamera)
                     {
@@ -1089,7 +1089,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #region Special case Camera
 
-            if (namedObject.SourceType == SourceType.FlatRedBallType && namedObject.SourceClassType == "Camera" && namedObject.IsNewCamera)
+            if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Camera && namedObject.IsNewCamera)
             {
                 codeBlock.Line("FlatRedBall.SpriteManager.Cameras.Remove(" + namedObject.InstanceName + ");");
 
