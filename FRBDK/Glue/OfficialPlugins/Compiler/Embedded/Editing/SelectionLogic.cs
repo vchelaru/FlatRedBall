@@ -74,7 +74,8 @@ namespace GlueControl.Editing
 
                 if (availableItems != null)
                 {
-                    foreach (PositionedObject objectAtI in availableItems)
+                    // here we sort every frame. This could be slow if we have a lot of objects so we may need to cache this somehow
+                    foreach (PositionedObject objectAtI in availableItems.OrderByDescending(item => item.Z))
                     {
                         if (IsSelectable(objectAtI))
                         {
@@ -236,8 +237,8 @@ namespace GlueControl.Editing
         private static bool IsCursorOver(PositionedObject objectAtI)
         {
             var cursor = GuiManager.Cursor;
-            var worldX = cursor.WorldX;
-            var worldY = cursor.WorldY;
+            var worldX = cursor.WorldXAt(objectAtI.Z);
+            var worldY = cursor.WorldYAt(objectAtI.Z);
 
             GetDimensionsFor(objectAtI, out float minX, out float maxX, out float minY, out float maxY);
 
