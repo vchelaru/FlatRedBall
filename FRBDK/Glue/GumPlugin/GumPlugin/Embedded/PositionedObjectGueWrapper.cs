@@ -11,12 +11,19 @@ namespace GumCoreShared.FlatRedBall.Embedded
 {
     /// <summary>
     /// A PositionedObject which can hold a reference to a Gum object (GraphicalUiElement) to position it in FlatRedBall coordinates. 
+    /// This allows Gum objects to be positioned in world space, and if the FrbObject is attached to another FlatRedBall object, then
+    /// the Gum object can move with the parent FlatRedBall object, enabling attachments.
     /// </summary>
     public class PositionedObjectGueWrapper : PositionedObject
     {
         PositionedObject frbObject;
         global::FlatRedBall.Math.Geometry.IReadOnlyScalable frbObjectAsScalable;
+        global::FlatRedBall.Graphics.IVisible frbObjectAsIVisible;
 
+        /// <summary>
+        /// The FlatRedBall object controlling the position of the Gum object. This is typically an entity instance, and codegen in the FRB Editor
+        /// assigns this automatically when adding a Gum object to a FlatRedBall entity.
+        /// </summary>
         public PositionedObject FrbObject
         {
             get { return frbObject; }
@@ -24,6 +31,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
             {
                 frbObject = value;
                 frbObjectAsScalable = value as global::FlatRedBall.Math.Geometry.IReadOnlyScalable;
+                frbObjectAsIVisible = value as global::FlatRedBall.Graphics.IVisible;
             }
         }
 
@@ -120,6 +128,10 @@ namespace GumCoreShared.FlatRedBall.Embedded
             {
                 GumParent.Width = frbObjectAsScalable.ScaleX * 2;
                 GumParent.Height = frbObjectAsScalable.ScaleY * 2;
+            }
+            if(frbObjectAsIVisible != null)
+            {
+                GumParent.Visible = frbObjectAsIVisible.AbsoluteVisible;
             }
         }
 
