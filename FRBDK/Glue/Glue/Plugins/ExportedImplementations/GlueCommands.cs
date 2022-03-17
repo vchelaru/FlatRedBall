@@ -195,11 +195,43 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             //save.WindowWidth = this.Width;
             save.StoredRecentFiles = MainGlueWindow.Self.NumberOfStoredRecentFiles;
 
+            List<List<string>> AllTabs = new List<List<string>>
+            {
+                save.TopTabs,
+                save.BottomTabs,
+                save.LeftTabs,
+                save.RightTabs,
+                save.CenterTabs
+            };
+
             void SetTabs(List<string> tabNames, TabContainerViewModel tabs)
             {
-                tabNames.Clear();
-                tabNames.AddRange(tabs.Tabs.Select(item => item.Title));
+                // If we clear, that means we only end up saving whatever is currently visible. Invisible tabs would get removed.
+                // Instead, we want to amke sure that any tab added should get removed from other tabs
+                //tabNames.Clear();
+                var tabTitles = tabs.Tabs.Select(item => item.Title).ToArray();
+                foreach (var title in tabTitles)
+                {
+                    RemoveFromAllBut(title, tabNames);
+                    if(!tabNames.Contains(title))
+                    {
+                        tabNames.Add(title);
+                    }
+                }
             }
+
+            void RemoveFromAllBut(string title, List<string> except)
+            {
+                foreach(var stringList in AllTabs)
+                {
+                    if(stringList != except && stringList.Contains(title))
+                    {
+                        stringList.Remove(title);
+                    }
+                }
+            }
+
+
 
             SetTabs(save.TopTabs, PluginManager.TabControlViewModel.TopTabItems);
             SetTabs(save.LeftTabs, PluginManager.TabControlViewModel.LeftTabItems);
