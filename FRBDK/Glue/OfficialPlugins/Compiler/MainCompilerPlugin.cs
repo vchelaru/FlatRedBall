@@ -77,7 +77,9 @@ namespace OfficialPlugins.Compiler
                 // - Added VS 2017 support
                 // 0.7
                 // - Added a list of MSBuild locations
-                return new Version(0, 7);
+                // 1.0
+                // - This was added long ago, but might as well mark it 1.0
+                return new Version(1, 0);
             }
         }
 
