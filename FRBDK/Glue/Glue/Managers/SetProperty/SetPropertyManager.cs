@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="oldValue">The value before the change</param>
         /// <param name="variableName">The variable name as defined in Glue (no spaces)</param>
         /// <param name="parentGridItemName">The parent PropertyGridItem, usually null unless the value being changed is a component of a larger property grid.</param>
-        public void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
+        public async void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
             string variableName, string parentGridItemName)
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
@@ -177,7 +177,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                await TaskManager.Self.AddAsync(() => GlobalContentCodeGenerator.UpdateLoadGlobalContentCode(), "Updating loda global content code");
             }
 
             // UpdateCurrentObjectReferencedTreeNodes
