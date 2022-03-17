@@ -321,7 +321,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
                 else if (oldValue == null)
                 {
-                    viewModel.FirstSubCollisionSelectedItem = CollisionRelationshipViewModel.EntireObject;
+                    viewModel.SecondSubCollisionSelectedItem = CollisionRelationshipViewModel.EntireObject;
                 }
             }
             else
