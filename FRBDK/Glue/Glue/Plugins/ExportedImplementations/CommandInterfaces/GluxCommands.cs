@@ -321,57 +321,62 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region ReferencedFileSave
 
-        public ReferencedFileSave CreateNewFileAndReferencedFileSave(AddNewFileViewModel viewModel, object creationOptions = null)
+        public async Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, object creationOptions = null)
         {
-            ReferencedFileSave rfs;
-            string name = viewModel.FileName;
-            AssetTypeInfo resultAssetTypeInfo =
-                viewModel.SelectedAssetTypeInfo;
+            ReferencedFileSave rfs = null;
 
-            string errorMessage;
-            string directory = null;
-            var element = GlueState.Self.CurrentElement;
-
-            if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
+            await TaskManager.Self.AddAsync(() =>
             {
-                directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath().Replace("/", "\\");
-            }
+                string name = viewModel.FileName;
+                AssetTypeInfo resultAssetTypeInfo =
+                    viewModel.SelectedAssetTypeInfo;
 
+                string errorMessage;
+                string directory = null;
+                var element = GlueState.Self.CurrentElement;
 
-            rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
-                element, directory, name, resultAssetTypeInfo,
-                creationOptions, out errorMessage);
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                MessageBox.Show(errorMessage);
-            }
-            else if (rfs != null)
-            {
-
-                var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
-
-                if (createdFile.EndsWith(".csv"))
+                if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
                 {
-                    CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
+                    directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath().Replace("/", "\\");
                 }
 
-                if (GlueState.Self.CurrentElement != null)
-                {
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
-                }
-                else
-                {
-                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                }
-                GlueState.Self.CurrentReferencedFileSave = rfs;
 
-                PluginManager.ReactToNewFile(rfs);
+                rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
+                    element, directory, name, resultAssetTypeInfo,
+                    creationOptions, out errorMessage);
 
-                GluxCommands.Self.SaveGlux();
-            }
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    MessageBox.Show(errorMessage);
+                }
+                else if (rfs != null)
+                {
+
+                    var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
+
+                    if (createdFile.EndsWith(".csv"))
+                    {
+                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
+                    }
+
+                    if (GlueState.Self.CurrentElement != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    }
+                    GlueState.Self.CurrentReferencedFileSave = rfs;
+
+                    PluginManager.ReactToNewFile(rfs);
+
+                    GluxCommands.Self.SaveGlux();
+                }
+
+            }, $"Adding file with name {viewModel.FileName}");
 
             return rfs;
         }

@@ -58,7 +58,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #region Hotkey
 
-        private void MainTreeView_KeyDown(object sender, KeyEventArgs e)
+        private async void MainTreeView_KeyDown(object sender, KeyEventArgs e)
         {
             var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
             var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
@@ -78,10 +78,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
             else if(e.Key==Key.N && ctrlDown)
             {
+                e.Handled=true;
                 ITreeNode currentNode = SelectionLogic.CurrentNode;
                 if(currentNode.IsFilesContainerNode())
                 {
-                    GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
+                    await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync();
                 }
                 else if(currentNode.IsRootNamedObjectNode())
                 {
@@ -111,7 +112,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 {
                     GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
                 }
-                e.Handled=true;
             }
             else if(HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
             {

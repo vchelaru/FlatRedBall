@@ -111,8 +111,8 @@ namespace OfficialPluginsCore.Wizard.Managers
             // Create the levels *after* the player, so the player gets exposed in the levels
             if (vm.AddGameScreen && vm.CreateLevels)
             {
-                Add("Create Levels", () =>
-                    HandleCreateLevels(vm, gameScreen));
+                AddTask("Create Levels", async () =>
+                    await HandleCreateLevels(vm, gameScreen));
             }
 
             #endregion
@@ -627,7 +627,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
+        private static async Task HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
         {
             for (int i = 0; i < vm.NumberOfLevels; i++)
             {
@@ -655,7 +655,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     addNewFileVm.ForcedType = tmxAti;
                     addNewFileVm.FileName = levelName + "Map";
-                    GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(addNewFileVm);
+                    await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm);
 
                     var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
                     if (mapObject != null)

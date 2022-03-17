@@ -1052,7 +1052,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             newFileToolStripMenuItem = new GeneralToolStripMenuItem();
             newFileToolStripMenuItem.Text = "New File";
-            newFileToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewFileDialog();
+            newFileToolStripMenuItem.Click += async (not, used) => await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync();
 
             addFileToolStripMenuItem = new GeneralToolStripMenuItem();
             addFileToolStripMenuItem.DropDownItems.AddRange(new GeneralToolStripMenuItem[] {

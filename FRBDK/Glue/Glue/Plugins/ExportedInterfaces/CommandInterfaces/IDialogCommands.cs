@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -8,7 +9,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         #region File
 
-        ReferencedFileSave ShowAddNewFileDialog(AddNewFileViewModel viewModel = null);
+        Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null);
 
         #endregion
 

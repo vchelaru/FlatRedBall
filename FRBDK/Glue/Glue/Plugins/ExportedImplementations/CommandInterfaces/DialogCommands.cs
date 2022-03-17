@@ -22,6 +22,7 @@ using FlatRedBall.Glue.VSHelpers;
 using GlueFormsCore.Extensions;
 using System.Runtime.InteropServices;
 using FlatRedBall.Glue.IO;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -404,7 +405,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region ReferencedFileSave
 
-        public ReferencedFileSave ShowAddNewFileDialog(AddNewFileViewModel viewModel = null)
+        public async Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null)
         {
             ReferencedFileSave rfs = null;
 
@@ -427,7 +428,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-                rfs = GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSave(viewModel, option);
+                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, option);
 
             }
 
