@@ -65,6 +65,7 @@ namespace FlatRedBall.Instructions.Reflection
     }
 
 
+
     /// <summary>
     /// Provides a simple interface to late bind a class.
     /// </summary>
@@ -73,6 +74,28 @@ namespace FlatRedBall.Instructions.Reflection
     /// meta data.</remarks>
     public sealed class LateBinder<T> : LateBinder
     {
+        internal class SetPropertyInfo
+        {
+            public SetHandler Delegate;
+            public PropertyInfo PropertyInfo;
+
+            internal void Invoke(object source, object value)
+            {
+#if DEBUG
+                if(value != null)
+                {
+                    var valueType = value.GetType();
+                    var propertyType = PropertyInfo.PropertyType; 
+                    var isAssignable = propertyType.IsAssignableFrom(valueType);
+                    if(!isAssignable)
+                    {
+                        throw new InvalidOperationException($"Attempting to set property {PropertyInfo.Name} of type {propertyType} to value {value} with type {value.GetType()}");
+                    }
+                }
+#endif
+                Delegate(source, value);
+            }
+        }
         #region Fields
 
         HashSet<string> mFieldsSet = new HashSet<string>();
@@ -80,7 +103,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         private Type mType;
         private Dictionary<string, GetHandler> mPropertyGet;
-        private Dictionary<string, SetHandler> mPropertySet;
+        private Dictionary<string, SetPropertyInfo> mPropertySet;
 
         private Dictionary<Type, List<string>> mFields;
 
@@ -139,7 +162,7 @@ namespace FlatRedBall.Instructions.Reflection
             set
             {
                 ValidateSetter(ref propertyName);
-                mPropertySet[propertyName](target, value);
+                mPropertySet[propertyName].Invoke(target, value);
             }
         }
 
@@ -166,7 +189,7 @@ namespace FlatRedBall.Instructions.Reflection
         {
             mType = typeof(T);
             mPropertyGet = new Dictionary<string, GetHandler>();
-            mPropertySet = new Dictionary<string, SetHandler>();
+            mPropertySet = new Dictionary<string, SetPropertyInfo>();
 
             mFields = new Dictionary<Type, List<string>>();
         }
@@ -462,7 +485,14 @@ namespace FlatRedBall.Instructions.Reflection
 
             if (mPropertySet.ContainsKey(propertyName))
             {
-                mPropertySet[propertyName](target, value);
+                try
+                {
+                    mPropertySet[propertyName].Invoke(target, value);
+                }
+                catch (System.AccessViolationException ex)
+                {
+                    throw new Exception($"Could not set {propertyName} to {value} with type {value?.GetType()}, probably because the types do not match", ex);
+                }
             }
             else
             {
@@ -599,7 +629,7 @@ namespace FlatRedBall.Instructions.Reflection
 
         private static object GetPropertyThroughReflection(object target, string propertyName)
         {
-#if WINDOWS_8 || UWP
+#if UWP
             PropertyInfo pi = typeof(T).GetProperty(propertyName);
 #else
             PropertyInfo pi = typeof(T).GetProperty(propertyName, mGetterBindingFlags);
@@ -608,7 +638,7 @@ namespace FlatRedBall.Instructions.Reflection
             if (pi == null)
             {
                 string message = "Could not find the property " + propertyName + "\n\nAvailableProperties:\n\n";
-#if WINDOWS_8 || UWP
+#if UWP
                 IEnumerable<PropertyInfo> properties = typeof(T).GetProperties();
 #else
                 PropertyInfo[] properties = typeof(T).GetProperties(mGetterBindingFlags);
@@ -649,7 +679,10 @@ namespace FlatRedBall.Instructions.Reflection
 #endif
                 if (propertyInfo != null && propertyInfo.CanWrite)
                 {
-                    mPropertySet.Add(propertyName, DynamicMethodCompiler.CreateSetHandler(mType, propertyInfo));
+                    var setInfo = new SetPropertyInfo();
+                    setInfo.Delegate = DynamicMethodCompiler.CreateSetHandler(mType, propertyInfo);
+                    setInfo.PropertyInfo = propertyInfo;
+                    mPropertySet.Add(propertyName, setInfo);
                 }
 
             }

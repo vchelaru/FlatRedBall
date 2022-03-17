@@ -260,16 +260,19 @@ namespace OfficialPlugins.Compiler
             }
         }
 
-        private void HandleAddStateToEditToolbar(object sender, EventArgs e)
+        private async void HandleAddStateToEditToolbar(object sender, EventArgs e)
         {
             var state = GlueState.Self.CurrentStateSave;
             var entitySave = GlueState.Self.CurrentEntitySave;
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
+
+
             HandleAddToEditToolbar(state, entitySave, namedObject);
+
         }
 
-        private void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
+        private async void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
         {
 
             //////////////////////////Early Out////////////////////////////
@@ -284,6 +287,19 @@ namespace OfficialPlugins.Compiler
 
             if (entitySave != null)
             {
+                var category = ObjectFinder.Self.GetStateSaveCategory(state);
+                // As of 2022 we really don't mess with uncategorized states anymore. Add this check for old projects:
+                if (category != null)
+                {
+                    // The state category must be exposed as a variable...
+                    var variableName = "Current" + category.Name + "State";
+                    if (entitySave.GetCustomVariableRecursively(variableName) == null)
+                    {
+                        await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, entitySave);
+                    }
+                }
+
+
                 var newViewModel = new ToolbarEntityAndStateViewModel();
                 newViewModel.GlueElement = entitySave;
                 newViewModel.StateSave = state;

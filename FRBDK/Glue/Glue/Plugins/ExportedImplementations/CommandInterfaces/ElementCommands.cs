@@ -422,6 +422,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             AddCustomVariableToElement(newVariable, element, save);
         }
 
+        public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
+        {
+            await TaskManager.Self.AddAsync(() =>
+            {
+                // expose a variable that exposes the category
+                CustomVariable customVariable = new CustomVariable();
+
+                customVariable.Type = category.Name;
+                customVariable.Name = "Current" + category.Name + "State";
+
+                GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
+                    customVariable, element, save);
+
+            }, $"Adding category {category} as variable to {element}");
+        }
+
         public void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true)
         { 
             element.CustomVariables.Add(newVariable);
@@ -440,10 +456,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CustomVariableHelper.SetDefaultValueFor(newVariable, element);
 
-            if (GlueState.Self.CurrentElement != null)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-            }
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
 

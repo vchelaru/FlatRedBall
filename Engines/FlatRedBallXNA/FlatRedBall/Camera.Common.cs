@@ -179,6 +179,9 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Returns the absolute X value of the right edge of the visible area for this camera at Z = 0.
+        /// </summary>
         public float AbsoluteRightXEdge => AbsoluteRightXEdgeAt(0);
 
         /// <summary>
@@ -192,6 +195,9 @@ namespace FlatRedBall
             return Position.X + RelativeXEdgeAt(absoluteZ);
         }
 
+        /// <summary>
+        /// Returns the absolute X value of the left edge of the visible area for this camera at Z = 0.
+        /// </summary>
         public float AbsoluteLeftXEdge => AbsoluteLeftXEdgeAt(0);
 
         /// <summary>
@@ -205,6 +211,9 @@ namespace FlatRedBall
             return Position.X - RelativeXEdgeAt(absoluteZ);
         }
 
+        /// <summary>
+        /// Returns the absolute Y value of the top edge of the visible area for this camera at Z = 0.
+        /// </summary>
         public float AbsoluteTopYEdge => AbsoluteTopYEdgeAt(0);
 
         /// <summary>
@@ -218,6 +227,9 @@ namespace FlatRedBall
             return Position.Y + RelativeYEdgeAt(absoluteZ);
         }
 
+        /// <summary>
+        /// Returns the absolute Y value of the bottom edge of the visible area for this camera at Z = 0.
+        /// </summary>
         public float AbsoluteBottomYEdge => AbsoluteBottomYEdgeAt(0);
 
         /// <summary>
@@ -264,23 +276,20 @@ namespace FlatRedBall
         }
 
 
-
+        /// <summary>
+        /// Returns whether the camera is using an orthogonal perspective. If true, the camera is 2D.
+        /// </summary>
         public bool Orthogonal
         {
-            get { return mOrthogonal; }
-            set 
-            { 
-                mOrthogonal = value; 
-            }
+            get => mOrthogonal; 
+            set => mOrthogonal = value; 
         }
 
 
 
-        #region XML Docs
         /// <summary>
         /// Whether the camera draws its layers.
         /// </summary>
-        #endregion
         public bool DrawsCameraLayer
         {
             get { return mDrawsCameraLayer; }

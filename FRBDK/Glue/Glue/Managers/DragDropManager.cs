@@ -617,7 +617,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region StateSaveCategory
 
-        internal void MoveStateCategory(ITreeNode nodeMoving, ITreeNode targetNode)
+        internal async void MoveStateCategory(ITreeNode nodeMoving, ITreeNode targetNode)
         {
             if (targetNode.IsRootCustomVariablesNode() || targetNode.IsCustomVariable())
             {
@@ -632,17 +632,9 @@ namespace FlatRedBall.Glue.Managers
                 if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
                 {
                     StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
-
-                    // expose a variable that exposes the category
-                    CustomVariable customVariable = new CustomVariable();
-
-                    customVariable.Type = category.Name;
-                    customVariable.Name = "Current" + category.Name + "State";
-
                     var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
 
-                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
-                        customVariable, element);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, element);
                 }
             }
         }

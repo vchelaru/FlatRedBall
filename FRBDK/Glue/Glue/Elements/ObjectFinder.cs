@@ -153,6 +153,15 @@ namespace FlatRedBall.Glue.Elements
 
         #region Get Element
 
+        public EntitySave GetEntitySave(NamedObjectSave nos)
+        {
+            if(nos?.SourceType == SourceType.Entity && !string.IsNullOrEmpty(nos?.SourceClassType))
+            {
+                return GetEntitySave(nos.SourceClassType);
+            }
+
+            return null;
+        }
         public EntitySave GetEntitySave(string entityName)
         {
             // This method is called by NamedObjectSave whenever its

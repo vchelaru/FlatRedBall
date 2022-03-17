@@ -123,7 +123,12 @@ namespace OfficialPlugins.Compiler.Managers
                         category = isStateResult.Category;
                         isState = isStateResult.IsState;
                     }
+                    if(!isState && typeName != null && typeName.StartsWith("Current") && changedMember.EndsWith("State"))
+                    {
+                        var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
 
+                        isState = nosElement.GetStateCategoryRecursively(strippedName) != null;
+                    }
                     if (isState)
                     {
                         if(changedMember == "VariableState")

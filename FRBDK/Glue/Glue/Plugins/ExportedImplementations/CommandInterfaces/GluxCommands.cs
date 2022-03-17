@@ -1783,16 +1783,51 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     value = PropertyValuePair.ConvertStringToType((string)value, variableDefinition.Type);
                 }
             }
-            nos.SetVariable(memberName, value);
+
+            // March 17, 2022
+            // If the NOS is an
+            // EntitySave and the
+            // variable being assigned
+            // is not an exposed variable,
+            // then this has a few problems:
+            // 1. The value cannot be viewed on
+            //    the object instance or edited in
+            //    the UI.
+            // 2. The type may not be known on the instance
+            //    because a variable hasn't been added so the
+            //    TypeMemberBases have not been updated. Therefore,
+            //    pushing this to the game could cause errors due to
+            //    the type not being properly converted by the game.
+            // To solve this, we're going to check if it's an entity instance
+            // and throw an exception if the variable hasn't yet been exposed:
+            var shouldProceed = true;
+            var nosEntity = ObjectFinder.Self.GetEntitySave(nos);
+            if(nosEntity != null)
+            {
+                var variable = nosEntity.GetCustomVariableRecursively(memberName);
+                if(variable == null)
+                {
+                    var message = 
+                        $"Attempting to set variable {memberName} on object {nos}, " +
+                        $"but this object uses entity type {nosEntity} which does not have this variable added or exposed";
+                    GlueCommands.Self.PrintError(message);
+                    shouldProceed = false;
+                }
+            }
+            if(shouldProceed)
+            {
+                nos.SetVariable(memberName, value);
 
 
-            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                memberName, oldValue, namedObjectSave:nos);
+                EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                    memberName, oldValue, namedObjectSave:nos);
 
-            // Avoids accumulation when dragging a slider around:
-            TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
+                // Avoids accumulation when dragging a slider around:
+                TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
 
-            PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
+                PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
+            }
+
         }
 
 
