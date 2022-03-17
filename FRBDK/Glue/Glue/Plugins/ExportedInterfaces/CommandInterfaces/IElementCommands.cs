@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.ViewModels;
 
@@ -18,6 +19,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);
 
+        Task AddStateSaveCategoryAsync(string categoryName, GlueElement element);
         void AddEntity(EntitySave entitySave);
         void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
         bool UpdateFromBaseType(GlueElement glueElement);

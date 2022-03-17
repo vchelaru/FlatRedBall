@@ -873,10 +873,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region State Categories
 
-        public void ShowAddNewCategoryDialog()
+        public async void ShowAddNewCategoryDialog()
         {
             // add category, addcategory, add state category
-            TextInputWindow tiw = new TextInputWindow();
+            var tiw = new TextInputWindow();
             tiw.Message = "Enter a name for the new category";
             tiw.Text = "New Category";
 
@@ -892,31 +892,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    var element = GlueState.Self.CurrentElement;
-
-                    var newCategory = new StateSaveCategory();
-                    newCategory.Name = tiw.Result;
-
-                    foreach(var variable in element.CustomVariables)
-                    {
-                        // new categories should have all variables excluded initially.
-                        newCategory.ExcludedVariables.Add(variable.Name);
-                    }
-
-                    element.StateCategoryList.Add(newCategory);
-
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                    GlueState.Self.CurrentStateSaveCategory = newCategory;
-
-                    GluxCommands.Self.SaveGlux();
-
-                    // Nov 5, 2021 
-                    // Why save .csproj
-                    // files here? There's
-                    // no changes to the files...
-                    //GlueCommands.Self.ProjectCommands.SaveProjects();
+                    await GlueCommands.Self.GluxCommands.ElementCommands.AddStateSaveCategoryAsync(tiw.Result, GlueState.Self.CurrentElement);
                 }
             }
         }

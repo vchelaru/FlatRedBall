@@ -79,9 +79,10 @@ namespace OfficialPlugins.PreviewGenerator.Managers
 
                 imageSource = bitmapImage;
 
+                CroppedBitmap croppedBitmap = null;
                 if (left != null)
                 {
-                    var croppedBitmap = new CroppedBitmap();
+                    croppedBitmap = new CroppedBitmap();
                     croppedBitmap.BeginInit();
                     croppedBitmap.SourceRect = new Int32Rect(left.Value, top.Value, width.Value, height.Value);
                     croppedBitmap.Source = bitmapImage;
@@ -89,6 +90,65 @@ namespace OfficialPlugins.PreviewGenerator.Managers
 
                     imageSource = croppedBitmap;
                 }
+
+                // Vic says - I started this but ended up giving up because
+                // you can't CopyPixels from a CroppedBitmap - it uses the original
+                // source. This could be heavy! In that case, I may just need to revisit
+                // this in the future when I can dive in deeper.
+                //if(namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
+                //{
+                //    var colorOperation = GetEffectiveValue(state, namedObjectSave, "ColorOperation", element);
+
+                //    if(MatchesColorOperation(colorOperation, FlatRedBall.Graphics.ColorOperation.Modulate))
+                //    {
+                //        var imageWidth = (int)imageSource.Width;
+                //        var imageHeight = (int)imageSource.Height;
+                //        // need to multipy
+                //        WriteableBitmap bitmap = new WriteableBitmap(imageWidth, imageHeight, 96, 96, PixelFormats.Bgra32, null);
+
+                //        // Create an array of pixels to contain pixel color values
+                //        uint[] pixels = new uint[imageWidth * imageHeight];
+
+                //        var red = GetEffectiveValue(state, namedObjectSave, "Red", element) ?? "0";
+                //        var green = GetEffectiveValue(state, namedObjectSave, "Green", element) ?? "0";
+                //        var blue = GetEffectiveValue(state, namedObjectSave, "Blue", element) ?? "0";
+
+                //        //int red;
+                //        //int green;
+                //        //int blue;
+                //        //int alpha;
+
+                //        // less than 64 causes a crash
+                //        var stride = Math.Max(imageWidth * 4, 64);
+                //        if(croppedBitmap != null)
+                //        {
+                //            // this won't work, it uses the full image!
+                //            croppedBitmap.CopyPixels(pixels, stride, 0);
+                //        }
+
+                //        int i = 0;
+
+                //        for (int x = 0; x < width; ++x)
+                //        {
+                //            for (int y = 0; y < height; ++y)
+                //            {
+                //                var value = pixels[i];
+                //                var unmodifiedAlpha = (value & 0x000000ff);
+                //                var unmodifiedRed =   (value & 0x0000ff00) >> 8;
+                //                var unmodifiedGreen = (value & 0x00ff0000) >> 16;
+                //                var unmodifiedBlue =  (value & 0xff000000) >> 24;
+
+                //                pixels[i] = (uint)((unmodifiedBlue << 24) + (unmodifiedGreen << 16) + (unmodifiedRed << 8) + unmodifiedAlpha);
+
+                //                i++;
+                //            }
+                //        }
+
+                //        //// apply pixels to bitmap
+                //        bitmap.WritePixels(new Int32Rect(0, 0, imageWidth, imageHeight), pixels, stride, 0);
+                //        imageSource = bitmap;
+                //    }
+                //}
 
             }
 
@@ -102,7 +162,7 @@ namespace OfficialPlugins.PreviewGenerator.Managers
                     // is it solid color?
                     var colorOperation = GetEffectiveValue(state, namedObjectSave, "ColorOperation", element);
 
-                    if (colorOperation == "Color" || colorOperation == ((int)(FlatRedBall.Graphics.ColorOperation.Color)).ToString())
+                    if (MatchesColorOperation(colorOperation, FlatRedBall.Graphics.ColorOperation.Color))
                     {
                         float.TryParse(red, out float redValue);
                         float.TryParse(green, out float greenValue);
@@ -163,6 +223,16 @@ namespace OfficialPlugins.PreviewGenerator.Managers
             }
 
             return imageSource;
+        }
+
+        static bool MatchesColorOperation(string asString, FlatRedBall.Graphics.ColorOperation colorOperation)
+        {
+            if (asString == colorOperation.ToString() ||
+                asString == ((int)colorOperation).ToString())
+            {
+                return true;
+            }
+            return false;
         }
 
         private static SolidColorBrush GetSolidColorBrushForShape(NamedObjectSave namedObjectSave, GlueElement element, StateSave state)

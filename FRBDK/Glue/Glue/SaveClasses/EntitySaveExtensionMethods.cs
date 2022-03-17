@@ -390,7 +390,21 @@ namespace FlatRedBall.Glue.SaveClasses
                         }
                     }
                 }
+            }
 
+            // all categorized states should be typed too, even if they are not added as variables. Need to check
+            foreach(var category in instance.StateCategoryList)
+            {
+                var name = $"Current{category.Name}State";
+                var type = category.Name;
+                var alreadyContains = typedMembers.Any(item => item.MemberName == name && item.CustomTypeName == type);
+                if(!alreadyContains)
+                {
+                    var typedMember = AssetTypeInfoExtensionMethods.GetTypedMemberBase(
+                                type,
+                                name);
+                    typedMembers.Add(typedMember);
+                }
             }
 
             if (!string.IsNullOrEmpty(instance.BaseEntity))

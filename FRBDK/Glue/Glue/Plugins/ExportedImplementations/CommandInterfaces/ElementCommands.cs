@@ -25,6 +25,7 @@ using Glue;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.SaveClasses.Helpers;
 using GlueFormsCore.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -487,6 +488,48 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
         }
+        #endregion
+
+        #region Add StateSaveCategory
+
+        public async Task AddStateSaveCategoryAsync(string categoryName, GlueElement element)
+        {
+            await TaskManager.Self.AddAsync(() =>
+            {
+                var newCategory = new StateSaveCategory();
+                newCategory.Name = categoryName;
+
+                foreach (var variable in element.CustomVariables)
+                {
+                    // new categories should have all variables excluded initially.
+                    newCategory.ExcludedVariables.Add(variable.Name);
+                }
+
+                element.StateCategoryList.Add(newCategory);
+
+                List<NamedObjectSave> nosList = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(element.Name);
+                List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(element.Name);
+                for (int i = 0; i < derivedEntities.Count; i++)
+                {
+                    EntitySave entitySave = derivedEntities[i];
+
+                    nosList.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entitySave.Name));
+                }
+
+                foreach (NamedObjectSave nos in nosList)
+                {
+                    nos.UpdateCustomProperties();
+                }
+
+                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                GlueState.Self.CurrentStateSaveCategory = newCategory;
+
+                GluxCommands.Self.SaveGlux();
+            }, nameof(AddStateSaveCategoryAsync));
+        }
+
         #endregion
 
         #region ReferencedFile
