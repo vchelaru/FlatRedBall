@@ -95,29 +95,49 @@ namespace GumCoreShared.FlatRedBall.Embedded
             var camera = global::FlatRedBall.Camera.Main;
 
 
-            int screenX = 0;
-            int screenY = 0;
+            int screenXRelativeToDestinationRectangle = 0;
+            int screenYRelativeToDestinationRectangle = 0;
 
             var worldPosition = FrbObject.Position;
 
             global::FlatRedBall.Math.MathFunctions.AbsoluteToWindow(
                 worldPosition.X, worldPosition.Y, worldPosition.Z,
-                ref screenX, ref screenY, camera);
+                ref screenXRelativeToDestinationRectangle, ref screenYRelativeToDestinationRectangle, camera);
+
 
             var zoom = 1.0f;
             if (camera.Orthogonal)
             {
-                var managers = GumObject.Managers ?? SystemManagers.Default;
                 //var gumZoom = GumObject.Managers.Renderer.Camera.Zoom;
                 //zoom = managers.Renderer.Camera.Zoom;
                 // If we use the Gum zoom (managers.Renderer.Camera.Zoom), position will be accurate
                 // but zooming of the objects in Gum won't change. What should happen is the Gum zoom 
                 // should be zooming when the normal camera zooms too
-                zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
-            }
+                //zoom = camera.DestinationRectangle.Height / (managers.Renderer.Camera.Zoom * camera.OrthogonalHeight);
+                // Update March 18, 2022
+                // This is a huge mess, so
+                // let's work this out:
+                // screenX and screenY are
+                // the pixel X and Y regardless
+                // of any zoom. Therefore, on a 600
+                // pixel wide screen, a value of 300
+                // would be center of the screen. To convert
+                // that to Gum coordinates, we need to set the
+                // value to be the same ratio of the width and height.
+                double ratioWidth = screenXRelativeToDestinationRectangle / (double)camera.DestinationRectangle.Width;
+                double ratioHeight = screenYRelativeToDestinationRectangle / (double) camera.DestinationRectangle.Height;
 
-            GumParent.X = screenX / zoom;
-            GumParent.Y = screenY / zoom;
+                var managers = GumObject.Managers ?? SystemManagers.Default;
+                var renderer = managers.Renderer;
+                GumParent.X = (float)(GraphicalUiElement.CanvasWidth * ratioWidth);
+                GumParent.Y = (float)(GraphicalUiElement.CanvasHeight * ratioHeight);
+            }
+            else
+            {
+                // todo - need to figure out 3D, but we'll worry about that later
+                GumParent.X = screenXRelativeToDestinationRectangle / zoom;
+                GumParent.Y = screenYRelativeToDestinationRectangle / zoom;
+            }
 
             if(this.ParentRotationChangesRotation)
             {

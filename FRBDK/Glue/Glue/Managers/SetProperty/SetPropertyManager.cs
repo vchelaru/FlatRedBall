@@ -177,7 +177,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                await TaskManager.Self.AddAsync(() => GlobalContentCodeGenerator.UpdateLoadGlobalContentCode(), "Updating loda global content code");
+                await TaskManager.Self.AddAsync(() => GlobalContentCodeGenerator.UpdateLoadGlobalContentCode(), "Updating load global content code");
             }
 
             // UpdateCurrentObjectReferencedTreeNodes
