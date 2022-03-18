@@ -2096,8 +2096,11 @@ namespace FlatRedBallAddOns.Entities
             // We can look at that custom variable to see if it's
             // an AnimationChain
 
+            var shouldTranslate = false;
+
             if (ObjectFinder.Self.GlueProject != null && 
-                ObjectFinder.Self.GlueProject.UsesTranslation && valueAsObject is string && (customVariable == null || customVariable.Type != "Color"))//&& !namedObject.IsAnimationChain)
+                ObjectFinder.Self.GlueProject.UsesTranslation && 
+                valueAsObject is string && (customVariable == null || customVariable.Type != "Color"))//&& !namedObject.IsAnimationChain)
             {
                 if (customVariable != null && customVariable.GetIsAnimationChain())
                 {
@@ -2109,7 +2112,7 @@ namespace FlatRedBallAddOns.Entities
                         && variableName != "CurrentChainName" // and CurrentChainName is used by others....sucky.
                         )
                     {
-                        valueAsString = "FlatRedBall.Localization.LocalizationManager.Translate(" + valueAsString + ")";
+                        shouldTranslate = true;
                     }
                 }
                 else if (namedObject != null && namedObject.SourceType == SourceType.Entity)
@@ -2122,18 +2125,28 @@ namespace FlatRedBallAddOns.Entities
 
                         if (variableInEntity == null || variableInEntity.GetIsAnimationChain() == false)
                         {
-                            valueAsString = "FlatRedBall.Localization.LocalizationManager.Translate(" + valueAsString + ")";
+                            shouldTranslate = true;
                         }
                     }
                 }
                 else if (namedObject != null && namedObject.SourceType == SourceType.FlatRedBallType)
                 {
-                    if (namedObject.SourceClassType == "Text" && variableName == "DisplayText")
+                    if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Text && variableName == "DisplayText")
                     {
-                        valueAsString = "FlatRedBall.Localization.LocalizationManager.Translate(" + valueAsString + ")";
+                        shouldTranslate = true;
                     }
                 }
+                else // March 18, 2022 - 
+                {
+
+                }
             }
+
+            if(shouldTranslate)
+            {
+                valueAsString = "FlatRedBall.Localization.LocalizationManager.Translate(" + valueAsString + ")";
+            }
+
             return valueAsString;
         }
 

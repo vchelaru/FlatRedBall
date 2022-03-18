@@ -65,6 +65,7 @@ namespace FlatRedBall.Glue.SaveClasses
             GumSupportsAchxAnimation = 12,
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
+            RemoveAutoLocalizationOfVariables = 14
         }
 
         #endregion
@@ -156,13 +157,9 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<DisplaySettings> AllDisplaySettings { get; set; }
         = new List<DisplaySettings>();
 
-        [XmlIgnore]
-        [JsonIgnore]
-        public bool UsesTranslation
-        {
-            get;
-            set;
-        }
+        // As of March 18, 2022, this has been removed. It's very buggy and it should probably get removed from Glue altogether.
+        // Old projects will still use it, but not new ones.
+        public bool UsesTranslation { get; set; }
 
         [XmlIgnore]
         [JsonIgnore]
@@ -367,14 +364,26 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public void UpdateIfTranslationIsUsed()
         {
-            List<ReferencedFileSave> allReferencedFiles = GetAllReferencedFiles();
+            // Update March 18, 2022
+            // This is set to false because
+            // there is no good control over
+            // localization. There can be lots
+            // of string variables in Glue, and
+            // when a localization DB is added, the
+            // string translation is unexpected, and 
+            // very difficult to track. Instead, we should
+            // just let it happen at the code and Gum level.
             UsesTranslation = false;
-            foreach (ReferencedFileSave rfs in allReferencedFiles)
+            if(this.FileVersion < (int)GluxVersions.RemoveAutoLocalizationOfVariables)
             {
-                if (rfs.IsDatabaseForLocalizing)
+                List<ReferencedFileSave> allReferencedFiles = GetAllReferencedFiles();
+                foreach (ReferencedFileSave rfs in allReferencedFiles)
                 {
-                    UsesTranslation = true;
-                    break;
+                    if (rfs.IsDatabaseForLocalizing)
+                    {
+                        UsesTranslation = true;
+                        break;
+                    }
                 }
             }
         }

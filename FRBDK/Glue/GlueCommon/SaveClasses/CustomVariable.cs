@@ -85,7 +85,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [CategoryAttribute("Access")]
 		public object DefaultValue
 		{
-            get { return mDefaultValue; }
+            get => mDefaultValue; 
             set 
             {
                 // We used to do this, but it turns out the user
