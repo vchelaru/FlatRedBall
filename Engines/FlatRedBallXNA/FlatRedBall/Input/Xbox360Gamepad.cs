@@ -18,27 +18,26 @@ namespace FlatRedBall.Input
         /// </summary>
         public enum Button
         {
-            A, // = 0
-            B,
-            X,
-            Y,
-            LeftShoulder,
-            RightShoulder, // = 5
-            Back,
-            Start,
-            LeftStick,
-            RightStick,
-            DPadUp, // = 10
-            DPadDown,
-            DPadLeft,
-            DPadRight,
-            LeftTrigger,
-            RightTrigger, // 15
-
-            LeftStickAsDPadUp, // = 16
-            LeftStickAsDPadDown,
-            LeftStickAsDPadLeft,
-            LeftStickAsDPadRight // = 19
+            A,                      // 0
+            B,                      // 1
+            X,                      // 2
+            Y,                      // 3
+            LeftShoulder,           // 4
+            RightShoulder,          // 5
+            Back,                   // 6
+            Start,                  // 7
+            LeftStick,              // 8
+            RightStick,             // 9
+            DPadUp,                 // 10
+            DPadDown,               // 11
+            DPadLeft,               // 12
+            DPadRight,              // 13
+            LeftTrigger,            // 14
+            RightTrigger,           // 15
+            LeftStickAsDPadUp,      // 16
+            LeftStickAsDPadDown,    // 17
+            LeftStickAsDPadLeft,    // 18
+            LeftStickAsDPadRight    // 19
         }
 
         // This serves as a sentinel value.
@@ -427,13 +426,45 @@ namespace FlatRedBall.Input
         /// <summary>
         /// Returns whether any button was pushed on this Xbox360GamePad.  
         /// This considers face buttons, trigger buttons, shoulder buttons, and d pad.
+        /// 
+        /// Justin 3/19/22: added optional arguments to explicitly ignore directional
+        /// and analog inputs as buttons as these are often not intended to register
+        /// as buttons. The defaults ensure back compat.
         /// </summary>
+        /// <param name="ignoreDirectionals">Whether to consider directions, such as the D-Pad, as buttons</param>
+        /// <param name="ignoreAnalogs">Whether to consider analogs, such as triggers and sticks, as buttons</param>
         /// <returns>Whether any button was pushed.</returns>
-        public bool AnyButtonPushed()
+        public bool AnyButtonPushed(bool ignoreDirectionals = false, bool ignoreAnalogs = false)
         {
             for (int i = 0; i < NumberOfButtons; i++)
             {
-                if (ButtonPushed((Button)i))
+                var button = (Button)i;
+
+                if (ignoreDirectionals &&
+                    (button == Button.DPadLeft ||
+                        button == Button.DPadUp ||
+                        button == Button.DPadRight ||
+                        button == Button.DPadDown ||
+                        button == Button.LeftStickAsDPadLeft ||
+                        button == Button.LeftStickAsDPadUp ||
+                        button == Button.LeftStickAsDPadRight ||
+                        button == Button.LeftStickAsDPadDown))
+                {
+                        continue;
+                }
+
+                if (ignoreAnalogs &&
+                    (button == Button.LeftTrigger ||
+                    button == Button.RightTrigger ||
+                    button == Button.LeftStickAsDPadLeft ||
+                        button == Button.LeftStickAsDPadUp ||
+                        button == Button.LeftStickAsDPadRight ||
+                        button == Button.LeftStickAsDPadDown))
+                {
+                    continue;
+                }
+
+                if (ButtonPushed(button))
                 {
                     return true;
                 }
