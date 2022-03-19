@@ -139,6 +139,7 @@ namespace Microsoft.Xna.Framework
 
         /// <summary>
         /// Returns a vector in the same direction as the argument vector, but of the length specified by the length argument.
+        /// This can safely be called on vectors with length 0, as the right direction will be used.
         /// </summary>
         /// <param name="vector3">The vector specifying the direction.</param>
         /// <param name="length">The desired length.</param>
