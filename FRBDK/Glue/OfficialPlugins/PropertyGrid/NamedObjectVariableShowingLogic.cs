@@ -56,6 +56,11 @@ namespace OfficialPlugins.VariableDisplay
                 SortCategoriesAndMembers(ref categories, assetTypeInfo);
             }
 
+            if(assetTypeInfo != null)
+            {
+                AssignVariableSubtext(instance, categories, assetTypeInfo);
+            }
+
 
             if (defaultCategory.Members.Count == 0)
             {
@@ -81,6 +86,30 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             grid.Refresh();
+        }
+
+        private static void AssignVariableSubtext(NamedObjectSave instance, List<MemberCategory> categories, AssetTypeInfo assetTypeInfo)
+        {
+            if(assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite)
+            {
+                // could this be plugin somehow?
+                var animationChainsVariable = instance.GetCustomVariable("AnimationChains");
+                var useAnimationPositionVariable = instance.GetCustomVariable("UseAnimationRelativePosition");
+                var useAnimationPosition = useAnimationPositionVariable == null || (useAnimationPositionVariable.Value is bool asBool && asBool);
+
+                if(!string.IsNullOrEmpty( animationChainsVariable?.Value as string ) && useAnimationPosition)
+                {
+                    var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
+                    var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
+
+                    if(xVariable != null)
+                    { xVariable.DetailText = "This value may be overwritten by the Sprite's animation"; }
+
+
+                    if (yVariable != null)
+                    { yVariable.DetailText = "This value may be overwritten by the Sprite's animation"; }
+                }
+            }
         }
 
         private static void SetAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
