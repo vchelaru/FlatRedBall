@@ -90,6 +90,9 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AssignVariableSubtext(NamedObjectSave instance, List<MemberCategory> categories, AssetTypeInfo assetTypeInfo)
         {
+            var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
+            var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
+            string subtext = string.Empty;
             if(assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite)
             {
                 // could this be plugin somehow?
@@ -99,17 +102,16 @@ namespace OfficialPlugins.VariableDisplay
 
                 if(!string.IsNullOrEmpty( animationChainsVariable?.Value as string ) && useAnimationPosition)
                 {
-                    var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
-                    var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
-
-                    if(xVariable != null)
-                    { xVariable.DetailText = "This value may be overwritten by the Sprite's animation"; }
-
-
-                    if (yVariable != null)
-                    { yVariable.DetailText = "This value may be overwritten by the Sprite's animation"; }
+                    subtext = "This value may be overwritten by the Sprite's animation";
                 }
             }
+                
+            if (xVariable != null)
+            { xVariable.DetailText = subtext; }
+
+
+            if (yVariable != null)
+            { yVariable.DetailText = subtext; }
         }
 
         private static void SetAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
@@ -152,7 +154,7 @@ namespace OfficialPlugins.VariableDisplay
                         else
                         {
                             typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition);
+                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
                             if (instanceMember != null)
                             {
                                 var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
@@ -226,7 +228,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember.CustomTypeName, ati, variableDefinition);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember.CustomTypeName, ati, variableDefinition, categories);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 
@@ -488,7 +490,7 @@ namespace OfficialPlugins.VariableDisplay
             Type memberType,
             string customTypeName, 
             AssetTypeInfo ati, 
-            VariableDefinition variableDefinition)
+            VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
         {
             bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
 
@@ -628,9 +630,9 @@ namespace OfficialPlugins.VariableDisplay
                     instanceMember.IsDefault = makeDefault;
 
 
-                    PerformStandardVariableAssignments(instance, memberName, value);
+                    PerformStandardVariableAssignments(instance, memberName, value, categories);
 
-                    static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value)
+                    static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value, IEnumerable<MemberCategory> categories)
                     {
                         // If we ignore the next refresh, then AnimationChains won't update when the user
                         // picks an AnimationChainList from a combo box:
@@ -640,9 +642,13 @@ namespace OfficialPlugins.VariableDisplay
                             memberName,
                             value);
 
+                        // Set subtext before refreshing property grid
+                        AssignVariableSubtext(instance, categories.ToList(),        instance.GetAssetTypeInfo());
+
+
 
                         GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
+                        GlueCommands.Self.RefreshCommands.RefreshVariables();
                         // let's make the UI faster:
 
                         // Get this on the UI thread, but use it in the async call below
