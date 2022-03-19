@@ -45,6 +45,10 @@ namespace OfficialPlugins.Compiler.Managers
                     // don't change if it's in edit mode or not here
                     await runner.Run(preventFocus: false);
                 }
+                else
+                {
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                }
             };
 
             gameHostView.StartInEditModeClicked += StarRunInEditMode;
@@ -66,6 +70,10 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     // don't change if it's in edit mode
                     runResponse = await runner.Run(preventFocus: false, commandLineArgs);
+                }
+                else
+                {
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
                 if (wasEditChecked && runResponse.Succeeded)
                 {
@@ -197,6 +205,10 @@ namespace OfficialPlugins.Compiler.Managers
                         compilerViewModel.IsEditChecked = true;
                     }
                     succeeded = runResponse.Succeeded;
+                }
+                else
+                {
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
 
             }, "Starting in edit mode", TaskExecutionPreference.AddOrMoveToEnd);

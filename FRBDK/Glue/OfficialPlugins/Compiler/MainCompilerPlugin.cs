@@ -430,7 +430,7 @@ namespace OfficialPlugins.Compiler
                 }
                 else
                 {
-                    PluginManager.ReceiveError("Building failed. See \"Build\" tab for more information.");
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
             }
         }
@@ -939,7 +939,11 @@ namespace OfficialPlugins.Compiler
         {
             MainControl.BuildClicked += async (not, used) =>
             {
-                await GameHostController.Self.Compile();
+                var succeeded = await GameHostController.Self.Compile();
+                if(!succeeded)
+                {
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                }
             };
 
 
