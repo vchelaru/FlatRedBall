@@ -4,6 +4,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
+using System;
 using System.Collections.Generic;
 
 
@@ -67,6 +68,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         /// <param name="filePath">The file path to remove</param>
         void RemoveFromProjects(FilePath filePath, bool saveAfterRemoving = true);
+
+        [Obsolete("Use RemoveFromProjects which takes a FilePath")]
         void RemoveFromProjects(string absoluteFileName);
         void RemoveFromProjectsTask(FilePath absoluteFileName, bool saveAfterRemoving = true);
 

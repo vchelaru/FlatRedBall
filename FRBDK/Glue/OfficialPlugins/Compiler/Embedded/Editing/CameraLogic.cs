@@ -209,7 +209,9 @@ namespace GlueControl.Editing
                 Camera.Main.Y -= worldYAfterZoom - worldYBefore;
             }
 
+#if HasGum
             CameraSetup.ResetGumResolutionValues();
+#endif
         }
 
 
