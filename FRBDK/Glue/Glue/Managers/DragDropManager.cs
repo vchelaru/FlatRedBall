@@ -404,6 +404,7 @@ namespace FlatRedBall.Glue.Managers
         private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
         {
             var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
+                // Don't save - the caller will do it
                 save:false);
 
             if(response.Succeeded)

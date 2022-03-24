@@ -1511,7 +1511,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCode(targetElement as GlueElement);
 
-                if(save)
+                PluginManager.ReactToNewObject(clonedNos);
+                if (listOfThisType != null)
+                {
+                    PluginManager.ReactToObjectContainerChanged(clonedNos, listOfThisType);
+                }
+
+                if (save)
                 {
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }

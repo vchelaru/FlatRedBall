@@ -814,6 +814,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void FocusTab(string dialogTitle)
         {
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                var focused = TryFocus(PluginManager.TabControlViewModel.TopTabItems);
+
+                if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.BottomTabItems);
+                if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.LeftTabItems);
+                if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.RightTabItems);
+                if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
+            });
             bool TryFocus(TabContainerViewModel items)
             {
                 foreach (var tabPage in items.Tabs)
@@ -827,13 +836,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 return false;
             }
-
-            var focused = TryFocus(PluginManager.TabControlViewModel.TopTabItems);
-
-            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.BottomTabItems);
-            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.LeftTabItems);
-            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.RightTabItems);
-            if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
         }
         public void FocusOnTreeView()
         {
