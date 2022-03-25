@@ -221,6 +221,10 @@ namespace OfficialPlugins.MonoGameContent
             {
                 contentItem = ContentItem.CreateWavBuild();
             }
+            else if(extension == "fbx")
+            {
+                contentItem = ContentItem.CreateFbxBuild();
+            }
             else if (extension == "png")
             {
                 contentItem = ContentItem.CreateTextureBuild();
@@ -477,6 +481,7 @@ namespace OfficialPlugins.MonoGameContent
 
             bool isRequired = 
                 extension == "wma" ||
+                extension == "fbx" ||
 
                 // OGG and WAV no longer force content pipeline now that we support other audio engines
                 // like NAudio
