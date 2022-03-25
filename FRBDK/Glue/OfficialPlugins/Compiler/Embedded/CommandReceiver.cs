@@ -965,6 +965,19 @@ namespace GlueControl
         {
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
             Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
+
+            if (dto.SetBackgroundColor)
+            {
+                CameraLogic.BackgroundRed = dto.BackgroundRed / 255.0f;
+                CameraLogic.BackgroundGreen = dto.BackgroundGreen / 255.0f;
+                CameraLogic.BackgroundBlue = dto.BackgroundBlue / 255.0f;
+            }
+            else
+            {
+                CameraLogic.BackgroundRed = null;
+                CameraLogic.BackgroundGreen = null;
+                CameraLogic.BackgroundBlue = null;
+            }
         }
     }
 }

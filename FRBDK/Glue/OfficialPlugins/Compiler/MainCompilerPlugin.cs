@@ -696,6 +696,10 @@ namespace OfficialPlugins.Compiler
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
+                case nameof(ViewModels.GlueViewSettingsViewModel.SetBackgroundColor):
+                case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
+                case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundGreen):
+                case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundBlue):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
                     await SendGlueViewSettingsToGame();
                     break;
@@ -711,7 +715,11 @@ namespace OfficialPlugins.Compiler
             var dto = new Dtos.GlueViewSettingsDto
             {
                 GridSize = GlueViewSettingsViewModel.GridSize,
-                ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities
+                ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
+                SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
+                BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
+                BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,
+                BackgroundBlue = GlueViewSettingsViewModel.BackgroundBlue,
             };
 
             await CommandSender.Send(dto);

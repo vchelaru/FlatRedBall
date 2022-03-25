@@ -23,6 +23,10 @@ namespace OfficialPlugins.Compiler.Models
         public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
         public decimal GridSize { get; set; } = 32;
 
+        public bool SetBackgroundColor { get; set; } = false;
+        public int BackgroundRed { get; set; }
+        public int BackgroundGreen { get; set; }
+        public int BackgroundBlue { get; set; }
         public List<ToolbarEntityAndState> ToolbarEntitiesAndStates { get; set; } = new List<ToolbarEntityAndState>();
 
         public void SetDefaults()

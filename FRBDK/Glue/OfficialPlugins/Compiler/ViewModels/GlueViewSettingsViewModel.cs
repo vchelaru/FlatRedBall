@@ -85,6 +85,10 @@ namespace OfficialPlugins.Compiler.ViewModels
             this.PortNumber = model.PortNumber;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
             this.GridSize = model.GridSize;
+            this.SetBackgroundColor = model.SetBackgroundColor;
+            this.BackgroundRed = model.BackgroundRed;
+            this.BackgroundGreen = model.BackgroundGreen;
+            this.BackgroundBlue = model.BackgroundBlue;
             this.EnableGameEditMode = model.GenerateGlueControlManagerCode;
             this.EmbedGameInGameTab = model.EmbedGameInGameTab;
             this.RestartScreenOnLevelContentChange = model.RestartScreenOnLevelContentChange;
@@ -97,6 +101,13 @@ namespace OfficialPlugins.Compiler.ViewModels
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
             compilerSettings.GridSize = this.GridSize;
+
+            compilerSettings.SetBackgroundColor = this.SetBackgroundColor;
+            compilerSettings.BackgroundRed = this.BackgroundRed;
+            compilerSettings.BackgroundGreen = this.BackgroundGreen;
+            compilerSettings.BackgroundBlue = this.BackgroundBlue;
+
+
             compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
             compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
             compilerSettings.RestartScreenOnLevelContentChange = this.RestartScreenOnLevelContentChange;

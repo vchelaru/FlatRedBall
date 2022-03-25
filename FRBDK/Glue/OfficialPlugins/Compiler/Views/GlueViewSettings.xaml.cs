@@ -76,23 +76,25 @@ namespace OfficialPlugins.Compiler.Views
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), "Grid and Markings");
             
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundRed), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundGreen), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundBlue), "Grid and Markings");
+            
 
             var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 
             restartScreenOnContentChangeMember.DetailText = "If unchecked, the game will only respond to file changes (like TMX) in edit mode";
             //this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.Show), "Grid and Markings");
 
             TypeMemberDisplayProperties properties = new TypeMemberDisplayProperties();
-            properties.GetOrCreateImdp(nameof(ViewModel.BackgroundRed)).IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
-            //GetMember(nameof(ViewModel.BackgroundRed))
-            //if(ViewModel.SetBackgroundColor == false)
-            //{
-            //    properties.AddIgnore(nameof(ViewModel.BackgroundRed));
-            //    properties.AddIgnore(nameof(ViewModel.BackgroundGreen));
-            //    properties.AddIgnore(nameof(ViewModel.BackgroundBlue));
-            //}
+
+            AddColorProperties(nameof(ViewModel.BackgroundRed));
+            AddColorProperties(nameof(ViewModel.BackgroundGreen));
+            AddColorProperties(nameof(ViewModel.BackgroundBlue));
+            void AddColorProperties(string propertyName)
+            {
+                var colorProperties = properties.GetOrCreateImdp(propertyName);
+                colorProperties.Category = "Grid and Markings";
+                colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
+
+            }
+
             DataUiGrid.Apply(properties);
 
         }

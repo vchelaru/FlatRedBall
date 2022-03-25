@@ -337,6 +337,11 @@ namespace GlueControl.Dtos
     {
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
         public decimal GridSize { get; set; }
+
+        public bool SetBackgroundColor { get; set; }
+        public int BackgroundRed { get; set; }
+        public int BackgroundGreen { get; set; }
+        public int BackgroundBlue { get; set; }
     }
     #endregion
 
