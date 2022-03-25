@@ -222,9 +222,14 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private void HandleRfsChange(ReferencedFileSave rfs)
+        private async void HandleRfsChange(ReferencedFileSave rfs)
         {
-            BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
+            var newFiles = await BuildLogic.Self.UpdateFileMembershipAndBuildReferencedFile(GlueState.CurrentMainProject, rfs, viewModel.UseContentPipelineOnPngs);
+
+            foreach(var file in newFiles)
+            {
+                GlueCommands.Self.ProjectCommands.CopyToBuildFolder(file);
+            }
 
             foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
             {

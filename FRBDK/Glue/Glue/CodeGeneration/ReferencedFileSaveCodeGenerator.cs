@@ -806,7 +806,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             string referencedFileName = "content/" +  referencedFile.Name;
 
-            if ((ati != null && ati.MustBeAddedToContentPipeline) || referencedFile.UseContentPipeline)
+            if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
             {
                 referencedFileName = FileManager.RemoveExtension(referencedFileName);
             }
@@ -915,7 +915,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
 
-                    fileName = referencedFile.Name.ToLower().Replace("\\", "/");
                     project = ProjectManager.ProjectBase;
                 }
 
@@ -970,11 +969,12 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             if (project != null)
             {
-
-                if (ProjectManager.IsContent(fileName))
-                {
-                    fileName = ("content/" + fileName).ToLower();
-                }
+                // March 24, 2022
+                // This should be sent with content so no need to prepend it here anymore
+                //if (ProjectManager.IsContent(fileName))
+                //{
+                //    fileName = ("content/" + fileName).ToLower();
+                //}
 
                 if (isProjectSpecific)
                 {
@@ -1029,9 +1029,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                             innerBlock.Line("var cm = FlatRedBall.FlatRedBallServices.GetContentManagerByName(\"Global\");");
                             innerBlock.Line($"cm.UnloadAsset({referencedFile.GetInstanceName()});");
-                            
+
                             string code =
-                                $"{referencedFile.GetInstanceName()} = FlatRedBall.FlatRedBallServices.Load<{ati.QualifiedRuntimeTypeName.QualifiedType}>(\"{fileName}\");";
+                                $"{referencedFile.GetInstanceName()} = " +
+                                $"FlatRedBall.FlatRedBallServices.Load<{ati.QualifiedRuntimeTypeName.QualifiedType}>(\"{fileName}\");";
                             innerBlock.Line(code);
                         }
                     }

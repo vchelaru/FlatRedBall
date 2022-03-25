@@ -83,28 +83,34 @@ namespace OfficialPlugins.MonoGameContent
         }
 
 
-        public void UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
+        public async Task<List<FilePath>> UpdateFileMembershipAndBuildReferencedFile(VisualStudioProject project, ReferencedFileSave referencedFile, bool forcePngsToContentPipeline)
         {
             bool isBuilt = IsBuiltByContentPipeline(referencedFile, forcePngsToContentPipeline);
-
+            List<FilePath> newFiles = new List<FilePath>();
             if(isBuilt)
             {
-                TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
+                newFiles = await TryAddXnbReferencesAndBuild(referencedFile, project, save:true);
             }
             else
             {
                 TryRemoveXnbReferences(project, referencedFile);
 
             }
+            return newFiles;
         }
 
-        public void TryHandleReferencedFile(VisualStudioProject project, string absoluteFile, bool forcePngsToContentPipeline)
+        public async void TryHandleReferencedFile(VisualStudioProject project, string absoluteFile, bool forcePngsToContentPipeline)
         {
             bool isBuilt = IsBuiltByContentPipeline(absoluteFile, false, forcePngsToContentPipeline);
 
             if (isBuilt)
             {
-                TryAddXnbReferencesAndBuild(absoluteFile, project, saveProjectAfterAdd: true);
+                var paths = await TryAddXnbReferencesAndBuild(absoluteFile, project, saveProjectAfterAdd: true);
+                foreach(var path in paths)
+                {
+                    GlueCommands.ProjectCommands.CopyToBuildFolder(path);
+
+                }
             }
             else
             {
@@ -122,7 +128,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public static void TryRemoveXnbReferences(VisualStudioProject project, string fullFileName, bool save = true)
         {
-            string destinationDirectory = GetDestinationDirectory(fullFileName, project);
+            string destinationDirectory = GetXnbDestinationDirectory(fullFileName, project);
 
             ContentItem contentItem = GetContentItem(fullFileName, project, createEvenIfProjectTypeNotSupported: true);
 
@@ -287,31 +293,32 @@ namespace OfficialPlugins.MonoGameContent
             return platform;
         }
 
-        private static string GetDestinationDirectory(string fullFileName, ProjectBase project)
+        public static string GetXnbDestinationDirectory(FilePath fullFileName, ProjectBase project)
         {
             string platform = GetPipelinePlatformNameFor(project);
 
             string contentDirectory = GlueState.ContentDirectory;
             string projectDirectory = GlueState.CurrentGlueProjectDirectory;
-            string destinationDirectory = FileManager.GetDirectory(fullFileName);
+            string destinationDirectory = fullFileName.GetDirectoryContainingThis().FullPath;
             destinationDirectory = FileManager.MakeRelative(destinationDirectory, contentDirectory);
             destinationDirectory = FileManager.RemoveDotDotSlash($"{projectDirectory}../BuiltXnbs/{platform}/{destinationDirectory}");
 
             return destinationDirectory;
         }
 
-        private void TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
+        private async Task<List<FilePath>> TryAddXnbReferencesAndBuild(ReferencedFileSave referencedFile, VisualStudioProject project, bool save)
         {
             var fullFileName = GlueCommands.FileCommands.GetFullFileName(referencedFile);
 
-            TryAddXnbReferencesAndBuild(fullFileName, project, save);
+            return await TryAddXnbReferencesAndBuild(fullFileName, project, save);
 
         }
 
-        public void TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
+        public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
         {
+            List<FilePath> toReturn = new List<FilePath>();
             //////////////EARLY OUT////////////////////////
-            if(commandLineBuildExe == null)
+            if (commandLineBuildExe == null)
             {
                 var error = $"Could not find Monogame Builder Tool. Looked in the following locations:";
 
@@ -338,7 +345,7 @@ namespace OfficialPlugins.MonoGameContent
 
                 EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(viewModel);
 
-                return;
+                return toReturn;
             }
             ////////////END EARLY OUT//////////////////////
 
@@ -350,7 +357,7 @@ namespace OfficialPlugins.MonoGameContent
             ContentItem contentItem;
             contentItem = GetContentItem(rfsFilePath.FullPath, project, createEvenIfProjectTypeNotSupported: false);
 
-            string destinationDirectory = GetDestinationDirectory(rfsFilePath.FullPath, project);
+            string destinationDirectory = GetXnbDestinationDirectory(rfsFilePath, project);
 
             // The monogame content builder seems to be doing an incremental build - 
             // it's being told to do so through the command line params, and it's not replacing
@@ -358,7 +365,7 @@ namespace OfficialPlugins.MonoGameContent
             // and make it much faster
             if (contentItem != null)
             {
-                TaskManager.Self.Add(() =>
+                await TaskManager.Self.AddAsync(() =>
                 {
                     // If the user closes the project while the startup is happening, just skip the task - no need to build
                     if (GlueState.CurrentGlueProject != null)
@@ -377,6 +384,7 @@ namespace OfficialPlugins.MonoGameContent
 
                         foreach (var extension in contentItem.GetBuiltExtensions())
                         {
+                            toReturn.Add(absoluteToAddNoExtension + "." + extension);
                             AddFileToProject(project,
                                 absoluteToAddNoExtension + "." + extension,
                                 relativeToAddNoExtension + "." + extension,
@@ -387,6 +395,8 @@ namespace OfficialPlugins.MonoGameContent
                 },
                 "Building MonoGame Content " + rfsFilePath);
             }
+
+            return toReturn;
         }
 
         private static void PerformBuild(ContentItem contentItem, bool rebuild = false)

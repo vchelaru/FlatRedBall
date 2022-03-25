@@ -506,15 +506,47 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (GlueState.Self.CurrentMainProject is VisualStudioProject)
                 {
+                    var visualStudioProject =
+                        GlueState.Self.CurrentMainProject as VisualStudioProject;
+
+                    var item = visualStudioProject.GetItem(absoluteSource);
+
                     // This is the location when running from Visual Studio
-                    var foundProperty = (GlueState.Self.CurrentMainProject as VisualStudioProject).Project.Properties
+                    var foundProperty = visualStudioProject.Project.Properties
                         .ToArray()
                         .FirstOrDefault(item => item.Name == "OutputPath");
 
                     if (foundProperty != null)
                     {
+                        var handledByItem = false;
                         debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
-                        CopyToBuildFolder(absoluteSource.FullPath, debugPath);
+                        if(item != null)
+                        {
+                            var link = item.GetLink();
+                            if(!string.IsNullOrEmpty(link))
+                            {
+                                FilePath destination = GlueState.Self.CurrentGlueProjectDirectory + debugPath + link;
+                                if(absoluteSource.Exists())
+                                {
+                                    try
+                                    {
+                                        System.IO.File.Copy(absoluteSource.FullPath, destination.FullPath, true);
+
+                                        PluginManager.ReceiveOutput("Copied " + absoluteSource.FullPath + " ==> " + destination.FullPath);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        // this could really overwhelm the user with popups, so let's just show output:
+                                        PluginManager.ReceiveOutput("Error copying file:\n\n" + e.ToString());
+                                    }
+                                }
+                                handledByItem = true;
+                            }
+                        }
+                        if(!handledByItem)
+                        {
+                            CopyToBuildFolder(absoluteSource.FullPath, debugPath);
+                        }
                     }
 
                 }

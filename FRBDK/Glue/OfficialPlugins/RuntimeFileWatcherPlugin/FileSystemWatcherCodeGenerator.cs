@@ -52,7 +52,17 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
 
                     if(shouldGenerate)
                     {
-                        var fileName = ProjectBase.AccessContentDirectory + rfs.Name.ToLower().Replace("\\", "/");
+                        var fileName =
+                            ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati);
+
+                        // this will strip extension for content pipeline so let's re-add XNB. Assume this is the type for textures, but
+                        // eventually may need to expand this for other types like wav/mpe
+                        if(ati?.MustBeAddedToContentPipeline == true || rfs.UseContentPipeline)
+                        {
+                            // assume XNB for now:
+                            fileName = fileName + ".xnb";
+                        }
+
                         var instanceName = rfs.GetInstanceName();
 
                         var ifStatement = tryBlock.If($"relativeFileName == \"{fileName}\"");
