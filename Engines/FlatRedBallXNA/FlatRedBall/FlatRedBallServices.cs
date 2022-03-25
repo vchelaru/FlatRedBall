@@ -1115,11 +1115,18 @@ namespace FlatRedBall
         /// <param name="contentManagerName">The content manager to remove.</param>
         public static void Unload(string contentManagerName)
         {
-            if (contentManagerName == FlatRedBallServices.GlobalContentManager)
-            {
-                throw new ArgumentException("Cannot unload the Global content manager.  " +
-                    "FlatRedBallServices.GlobalContentManager is a content manager that should never be unloaded.");
-            }
+            // Update March 25, 2022
+            // The code used to check
+            // if the content manager being
+            // unloaded was the GlobalContentManager.
+            // If so, it would throw an error. However,
+            // we now need this whenever global files change
+            // on disk and we want to reload everything.
+            //if (contentManagerName == FlatRedBallServices.GlobalContentManager)
+            //{
+            //    throw new ArgumentException("Cannot unload the Global content manager.  " +
+            //        "FlatRedBallServices.GlobalContentManager is a content manager that should never be unloaded.");
+            //}
 
 
 
@@ -1131,6 +1138,11 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Removes any cached objects which may be storing references to disposed textures. This must be 
+        /// called if unloading a content manager without clearing FRB objects. Normally this happens on a screen
+        /// transition so this doesn't need to be explicitly called.
+        /// </summary>
         public static void Clean()
         {
             //Go through and clean up any referances that may be holding on to resources

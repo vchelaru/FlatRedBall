@@ -286,6 +286,7 @@ namespace OfficialPlugins.Compiler.Dtos
     public class RestartScreenDto 
     {
         public bool ShowSelectionBump { get; set; } = true;
+        public bool ReloadGlobalContent { get; set; }
     }
     #endregion
 
