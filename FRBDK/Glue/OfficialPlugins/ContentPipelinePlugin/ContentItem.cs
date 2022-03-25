@@ -92,6 +92,32 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
+        public static ContentItem CreateFbxBuild()
+        {
+            var toReturn = new ContentItem();
+            toReturn.Importer = "FbxImporter";
+            toReturn.Processor = "ModelProcessor";
+            toReturn.ProcessorParameters.Add("ColorKeyEnabled=True");
+            toReturn.ProcessorParameters.Add("DefaultEffect=BasicEffect");
+            return toReturn;
+            /*
+             *                     "/outputDir:bin /intermediateDir:obj /platform:Windows /config: /profile:Reach /compress:False " +
+                    "/importer:FbxImporter /processor:ModelProcessor /processorParam:ColorKeyColor=0,0,0,0 " +
+                    "/processorParam:ColorKeyEnabled=True /processorParam:DefaultEffect=BasicEffect " +
+                    "/processorParam:GenerateMipmaps=True /processorParam:GenerateTangentFrames=False " +
+                    "/processorParam:PremultiplyTextureAlpha=True /processorParam:PremultiplyVertexColors=True " +
+                    "/processorParam:ResizeTexturesToPowerOfTwo=False /processorParam:RotationX=0 " +
+                    "/processorParam:RotationY=0 /processorParam:RotationZ=0 /processorParam:Scale=1 " +
+                    "/processorParam:SwapWindingOrder=False " +
+                    "/processorParam:TextureFormat=Compressed /build:VertexColorTree.fbx";
+
+             * 
+             * 
+             * 
+             * 
+             */
+        }
+
         public static ContentItem CreateTextureBuild()
         {
             var toReturn = new ContentItem();
@@ -186,7 +212,8 @@ namespace OfficialPlugins.MonoGameContent
         {
             switch(Processor)
             {
-                case "SoundEffectProcessor":
+                case "SoundEffectProcessor": // wav
+                case "ModelProcessor":
                     yield return "xnb";
                     break;
                 case "TextureProcessor":

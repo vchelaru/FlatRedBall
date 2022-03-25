@@ -784,21 +784,24 @@ namespace GlueControl
 
         private static void HandleDto(RestartScreenDto dto)
         {
-            RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: FlatRedBall.Screens.ScreenManager.IsInEditMode, playBump: dto.ShowSelectionBump);
+            RestartScreenRerunCommands(applyRestartVariables: true,
+                isInEditMode: FlatRedBall.Screens.ScreenManager.IsInEditMode,
+                playBump: dto.ShowSelectionBump,
+                shouldReloadGlobalContent: dto.ReloadGlobalContent);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, bool isInEditMode,
+        private static void RestartScreenRerunCommands(bool applyRestartVariables, 
+            bool isInEditMode,
             bool shouldRecordCameraPosition = true,
             bool forceCameraToPreviousState = false,
-            bool playBump = true)
+            bool playBump = true,
+            bool shouldReloadGlobalContent = false)
         {
             ScreenManager.IsNextScreenInEditMode = isInEditMode;
 
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            // user may go into edit mode after moving through a level and wouldn't want it to restart fully....or would they? What if they
-            // want to change the Player start location. Need to think that through...
-
+            
             void AfterInitializeLogic(Screen newScreen)
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
@@ -838,8 +841,14 @@ namespace GlueControl
             }
 
 
-            screen?.RestartScreen(reloadContent: true, applyRestartVariables: applyRestartVariables);
+            screen?.RestartScreen(reloadScreenContent: true, applyRestartVariables: applyRestartVariables);
             EditorVisuals.DestroyContainedObjects();
+
+            if (shouldReloadGlobalContent)
+            {
+                FlatRedBallServices.Unload(FlatRedBallServices.GlobalContentManager);
+                GlobalContent.Initialize();
+            }
         }
 
         #endregion

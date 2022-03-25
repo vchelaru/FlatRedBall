@@ -24,7 +24,8 @@ namespace OfficialPlugins.Compiler.Managers
             "png",
             "achx",
             "emix",
-            "json"
+            "json",
+            "xnb"
         };
 
         MainControl control;

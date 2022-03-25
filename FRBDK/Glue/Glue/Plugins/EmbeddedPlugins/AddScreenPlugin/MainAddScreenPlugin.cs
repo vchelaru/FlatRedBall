@@ -204,7 +204,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     break;
                 case AddScreenType.LevelScreen:
 
-                    shouldSave = ApplyLevelScreenViewModelProperties(newScreen, viewModel, shouldSave);
+                    shouldSave = await ApplyLevelScreenViewModelProperties(newScreen, viewModel, shouldSave);
                     break;
             }
 
@@ -216,7 +216,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             }
         }
 
-        private static bool ApplyLevelScreenViewModelProperties(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel, bool shouldSave)
+        private static async Task<bool> ApplyLevelScreenViewModelProperties(ScreenSave newScreen, ViewModels.AddScreenViewModel viewModel, bool shouldSave)
         {
             if (viewModel.InheritFromGameScreen)
             {
@@ -257,7 +257,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             switch (viewModel.TmxOptions)
             {
                 case TmxOptions.NewStandardTmx:
-                    ShowUiForNewTmx(newScreen);
+                    await ShowUiForNewTmx(newScreen);
                     break;
                 case TmxOptions.CopiedTmx:
                     var originalFile = GlueCommands.Self.GetAbsoluteFilePath(viewModel.SelectedTmxFile);
@@ -313,7 +313,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             nos.SetVariable("CreateEntitiesFromTiles", true);
         }
 
-        private static void ShowUiForNewTmx(ScreenSave newScreen)
+        private static async Task ShowUiForNewTmx(ScreenSave newScreen)
         {
             // add standard TMX....how?
             // Currently there's no way to run
@@ -326,7 +326,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             addNewFileViewModel.ForcedType = tmxAti;
             addNewFileViewModel.FileName = newScreen.GetStrippedName() + "Map";
 
-            var newRfs = GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync(addNewFileViewModel).Result;
+            var newRfs = await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync(addNewFileViewModel);
 
             if (newRfs != null)
             {

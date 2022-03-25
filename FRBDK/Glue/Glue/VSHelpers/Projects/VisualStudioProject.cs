@@ -604,6 +604,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             return GetItem(itemName, true);
         }
 
+        public ProjectItem GetItem(FilePath filepath)
+        {
+            return GetItem(filepath.FullPath, true);
+        }
+
         public ProjectItem GetItem(string itemName, bool standardizeItemName)
         {
             if (standardizeItemName)

@@ -878,9 +878,9 @@ namespace FlatRedBall.Content
 				else
 				{
 					throw new ArgumentException("The content manager " + mName + " does not contain the argument " +
-						"assetToUnload, of the file has been loaded from XNB and cannot be unloaded without disposing the content manager.  Check the " +
-						"contentManagerName and verify that it is a contentManager that has loaded this asset.  Assets which have been " +
-						"loaded from the project must be loaded by unloading an entire Content Manager");
+						"assetToUnload, or the file has been loaded from XNB and cannot be unloaded without disposing the content manager.  " +
+						"Check the " +
+						"contentManagerName and verify that it is a contentManager that has loaded this asset.");
 				}
 			}
             #endregion

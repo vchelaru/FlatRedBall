@@ -179,24 +179,6 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         strippedName = fileName.NoPath;
                     }
-                    if(isGlobalContent && firstRfs.GetAssetTypeInfo().CustomReloadFunc != null)
-                    {
-                        printOutput($"Waiting for Glue to copy reload global file {strippedName}");
-
-                        // just give the file time to copy:
-                        await Task.Delay(500);
-
-                        // it's part of global content and can be reloaded, so let's just tell
-                        // it to reload:
-                        await CommandSender.Send(new ReloadGlobalContentDto
-                        {
-                            StrippedGlobalContentFileName = strippedName
-                        });
-
-                        printOutput($"Reloading global file {strippedName}");
-
-                        handled = true;
-                    }
 
                     var containerNames = rfses.Select(item => item.GetContainer()?.Name).Where(item => item != null).ToHashSet();
 
@@ -228,7 +210,9 @@ namespace OfficialPlugins.Compiler.Managers
                                 {
                                     printOutput($"Telling game to restart screen");
 
-                                    await CommandSender.Send(new RestartScreenDto());
+                                    var dto = new RestartScreenDto();
+                                    dto.ReloadGlobalContent = isGlobalContent;
+                                    await CommandSender.Send(dto);
                                 }
                             }
 
@@ -238,6 +222,34 @@ namespace OfficialPlugins.Compiler.Managers
                         {
                             printError($"Error trying to send command:{e.ToString()}");
                         }
+                    }
+
+                    var isContentPipeline = firstRfs?.UseContentPipeline == true || firstRfs?.GetAssetTypeInfo()?.MustBeAddedToContentPipeline == true;
+                    // the game should reload only after copying the file
+                    if(isGlobalContent && 
+                        // if it's using the content pipeline, it can't be reloaded individually. FRB Will throw an exception:
+                        !isContentPipeline
+                        // Why do we check if the CustomReloadFunc != null?
+                        // If a file (like PNG) changes and it's in global content,
+                        // then we want to reload global content
+                        //&& firstRfs.GetAssetTypeInfo().CustomReloadFunc != null
+                        )
+                    {
+                        printOutput($"Waiting for Glue to copy reload global file {strippedName}");
+
+                        // just give the file time to copy:
+                        await Task.Delay(500);
+
+                        // it's part of global content and can be reloaded, so let's just tell
+                        // it to reload:
+                        await CommandSender.Send(new ReloadGlobalContentDto
+                        {
+                            StrippedGlobalContentFileName = strippedName
+                        });
+
+                        printOutput($"Reloading global file {strippedName}");
+
+                        handled = true;
                     }
                 }
                 if(!handled)
