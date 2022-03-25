@@ -92,9 +92,24 @@
 <!--This is here to control visibility of all controls but we want the left frame to always be around to prevent flickering-->
                 <StackPanel Opacity="{Binding ToolBarOpacity}"
                             >
-                    <StackPanel Orientation="Horizontal"
-                                
+                    <StackPanel Orientation="Vertical"
                                 Visibility="{Binding WhileRunningViewVisibility}">
+                                
+                        <Button Click="SelectStartupScreenButtonClicked" 
+                                HorizontalAlignment="Left" 
+                                Width="24"
+                                Visibility="{Binding FocusButtonVisibility}">
+                            <Button.ToolTip>
+                                <ToolTip>
+                                    <StackPanel>
+                                        <TextBlock FontWeight="Bold">Select Startup Screen</TextBlock>
+                                        <TextBlock>Selects the startup screen in edit.</TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Button.ToolTip>
+                            <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/SelectStartupScreen.png"></Image>
+                        </Button>
+
                         <Button Click="FocusButtonClicked" 
                                 HorizontalAlignment="Left" 
                                 Width="24"
@@ -109,6 +124,7 @@
                             </Button.ToolTip>
                             <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
                         </Button>
+
                     </StackPanel>
 
                     <views:EditingToolsView HorizontalAlignment="Left" Margin="0,1,0,0" x:Name="EditingTools"></views:EditingToolsView>

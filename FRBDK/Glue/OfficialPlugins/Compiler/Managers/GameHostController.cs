@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using OfficialPlugins.Compiler.CommandSending;
@@ -138,7 +139,15 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-
+            gameHostView.SelectStartupScreenClicked += (not, used) =>
+            {
+                var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
+                var screenSave = ObjectFinder.Self.GetScreenSave(startupScreen);
+                if (screenSave != null)
+                {
+                    GlueState.Self.CurrentScreenSave = screenSave;
+                }
+            };
         }
 
         private async Task<string> GetCommandLineArgs(bool isRunning)

@@ -77,6 +77,7 @@ namespace OfficialPlugins.GameHost.Views
         public event EventHandler UnpauseClicked;
         public event EventHandler SettingsClicked;
         public event EventHandler FocusOnSelectedObjectClicked;
+        public event EventHandler SelectStartupScreenClicked;
         public event EventHandler StartInEditModeClicked;
         public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
@@ -234,6 +235,11 @@ namespace OfficialPlugins.GameHost.Views
         private void FocusButtonClicked(object sender, RoutedEventArgs e)
         {
             FocusOnSelectedObjectClicked?.Invoke(this, null);
+        }
+
+        private void SelectStartupScreenButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SelectStartupScreenClicked?.Invoke(this, null);
         }
 
         private void PlayInEditModeClicked(object sender, RoutedEventArgs e)

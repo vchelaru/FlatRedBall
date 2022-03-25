@@ -96,7 +96,7 @@ namespace OfficialPlugins.Compiler.Views
             }
 
             DataUiGrid.Apply(properties);
-
+            DataUiGrid.Refresh();
         }
 
         InstanceMember GetMember(string name)

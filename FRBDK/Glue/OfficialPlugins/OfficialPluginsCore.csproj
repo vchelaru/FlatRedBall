@@ -71,6 +71,7 @@
     <None Remove="Compiler\Icons\Run.png" />
     <None Remove="Compiler\Icons\RunDeselected.png" />
     <None Remove="Compiler\Icons\SelectObjectsIcon.png" />
+    <None Remove="Compiler\Icons\SelectStartupScreen.png" />
     <None Remove="Compiler\Icons\Settings.png" />
     <None Remove="Compiler\Icons\SlowMotion.png" />
     <None Remove="Compiler\Icons\stop.png" />
@@ -165,6 +166,7 @@
     <Resource Include="Compiler\Icons\icon_plus.png" />
     <Resource Include="Compiler\Icons\Run.png" />
     <Resource Include="Compiler\Icons\SelectObjectsIcon.png" />
+    <Resource Include="Compiler\Icons\SelectStartupScreen.png" />
     <Resource Include="Compiler\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
