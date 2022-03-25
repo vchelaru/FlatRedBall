@@ -1,6 +1,7 @@
 ﻿using OfficialPlugins.Compiler.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -30,8 +31,16 @@ namespace OfficialPlugins.Compiler.Views
             {
                 this.DataContext = value;
                 this.DataUiGrid.Instance = value;
+
+                ViewModel.PropertyChanged += HandlePropertyChaned;
+
                 CustomizeDisplay();
             }
+        }
+
+        private void HandlePropertyChaned(object sender, PropertyChangedEventArgs e)
+        {
+            this.DataUiGrid.Refresh();
         }
 
         public GlueViewSettings()
@@ -65,12 +74,44 @@ namespace OfficialPlugins.Compiler.Views
 
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), "Grid and Markings");
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), "Grid and Markings");
+            
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), "Grid and Markings");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundRed), "Grid and Markings");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundGreen), "Grid and Markings");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.BackgroundBlue), "Grid and Markings");
 
-            var contentCategory = DataUiGrid.Categories.First(item => item.Name == "Content");
-            var restartScreenOnContentChangeMember = contentCategory.Members.FirstOrDefault(item => item.Name == nameof(ViewModel.RestartScreenOnLevelContentChange));
+            var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 
             restartScreenOnContentChangeMember.DetailText = "If unchecked, the game will only respond to file changes (like TMX) in edit mode";
             //this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.Show), "Grid and Markings");
+
+            TypeMemberDisplayProperties properties = new TypeMemberDisplayProperties();
+            properties.GetOrCreateImdp(nameof(ViewModel.BackgroundRed)).IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
+            //GetMember(nameof(ViewModel.BackgroundRed))
+            //if(ViewModel.SetBackgroundColor == false)
+            //{
+            //    properties.AddIgnore(nameof(ViewModel.BackgroundRed));
+            //    properties.AddIgnore(nameof(ViewModel.BackgroundGreen));
+            //    properties.AddIgnore(nameof(ViewModel.BackgroundBlue));
+            //}
+            DataUiGrid.Apply(properties);
+
         }
+
+        InstanceMember GetMember(string name)
+        {
+            foreach(var category in DataUiGrid.Categories)
+            {
+                foreach(var member in category.Members)
+                {
+                    if(member.Name == name)
+                    {
+                        return member;
+                    }
+                }
+            }
+            return null;
+        }
+
 
     }
 }

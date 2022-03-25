@@ -58,6 +58,9 @@ namespace GlueControl.Editing
 
         public static Dictionary<string, CameraStateForScreen> CameraStates = new Dictionary<string, CameraStateForScreen>();
 
+        public static float? BackgroundRed = .5f;
+        public static float? BackgroundGreen = .5f;
+        public static float? BackgroundBlue = .5f;
 
         #endregion
 
@@ -66,7 +69,29 @@ namespace GlueControl.Editing
             currentZoomLevelIndex = Array.IndexOf(zoomLevels, 100);
         }
 
-        public static void DoCursorCameraControllingLogic()
+        public static void DoActivity()
+        {
+            DoCursorCameraControllingLogic();
+
+            DoBackgroundLogic();
+        }
+
+        private static void DoBackgroundLogic()
+        {
+            if (BackgroundBlue != null)
+            {
+                var sprite = EditorVisuals.Sprite(null, Vector3.Zero);
+                sprite.ColorOperation = FlatRedBall.Graphics.ColorOperation.Color;
+                sprite.Red = BackgroundRed.Value;
+                sprite.Green = BackgroundGreen.Value;
+                sprite.Blue = BackgroundBlue.Value;
+                sprite.TextureScale = 0;
+                sprite.Width = 10000;
+                sprite.Height = 10000;
+            }
+        }
+
+        private static void DoCursorCameraControllingLogic()
         {
             var cursor = GuiManager.Cursor;
             var camera = Camera.Main;
@@ -91,6 +116,73 @@ namespace GlueControl.Editing
             CameraXMovement = camera.X - xBefore;
             CameraYMovement = camera.Y - yBefore;
         }
+
+        internal static void DoHotkeyLogic()
+        {
+            const int movePerPush = 16;
+            var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+            if (keyboard.IsCtrlDown)
+            {
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
+                {
+                    Camera.Main.Y += movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    Camera.Main.Y -= movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Left))
+                {
+                    Camera.Main.X -= movePerPush;
+                }
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Right))
+                {
+                    Camera.Main.X += movePerPush;
+                }
+                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
+                {
+                    DoZoomMinus();
+                }
+                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
+                {
+                    DoZoomPlus();
+                }
+            }
+        }
+
+        public static void RecordCameraForCurrentScreen()
+        {
+            var currentScreen = ScreenManager.CurrentScreen;
+            if (currentScreen != null)
+            {
+                var state = new CameraStateForScreen();
+                state.Position = Camera.Main.Position;
+                state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
+
+                CameraStates[currentScreen.GetType().FullName] = state;
+
+            }
+        }
+
+        public static void UpdateCameraValuesToScreenSavedValues(Screen screen, bool setZoom = true)
+        {
+            if (CameraStates.ContainsKey(screen.GetType().FullName))
+            {
+                var camera = Camera.Main;
+                var value = CameraStates[screen.GetType().FullName];
+                camera.Position = value.Position;
+                if (setZoom)
+                {
+                    camera.OrthogonalHeight = value.OrthogonalHeight;
+                    camera.FixAspectRatioYConstant();
+
+                    UpdateZoomIndexToCamera();
+
+                }
+            }
+        }
+
+        #region Zooming
 
         private static void DoMouseWheelZoomingLogic(Cursor cursor)
         {
@@ -214,40 +306,6 @@ namespace GlueControl.Editing
 #endif
         }
 
-
-        internal static void DoHotkeyLogic()
-        {
-            const int movePerPush = 16;
-            var keyboard = FlatRedBall.Input.InputManager.Keyboard;
-            if (keyboard.IsCtrlDown)
-            {
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Up))
-                {
-                    Camera.Main.Y += movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Down))
-                {
-                    Camera.Main.Y -= movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Left))
-                {
-                    Camera.Main.X -= movePerPush;
-                }
-                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.Right))
-                {
-                    Camera.Main.X += movePerPush;
-                }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
-                {
-                    DoZoomMinus();
-                }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
-                {
-                    DoZoomPlus();
-                }
-            }
-        }
-
         public static void DoZoomMinus(bool zoomAroundCursorPosition = false)
         {
             currentZoomLevelIndex = Math.Max(currentZoomLevelIndex - 1, 0);
@@ -262,37 +320,6 @@ namespace GlueControl.Editing
             PushZoomLevelToEditor();
         }
 
-        public static void RecordCameraForCurrentScreen()
-        {
-            var currentScreen = ScreenManager.CurrentScreen;
-            if (currentScreen != null)
-            {
-                var state = new CameraStateForScreen();
-                state.Position = Camera.Main.Position;
-                state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
-
-                CameraStates[currentScreen.GetType().FullName] = state;
-
-            }
-        }
-
-        public static void UpdateCameraValuesToScreenSavedValues(Screen screen, bool setZoom = true)
-        {
-            if (CameraStates.ContainsKey(screen.GetType().FullName))
-            {
-                var camera = Camera.Main;
-                var value = CameraStates[screen.GetType().FullName];
-                camera.Position = value.Position;
-                if (setZoom)
-                {
-                    camera.OrthogonalHeight = value.OrthogonalHeight;
-                    camera.FixAspectRatioYConstant();
-
-                    UpdateZoomIndexToCamera();
-
-                }
-            }
-        }
 
         private static void UpdateZoomIndexToCamera()
         {
@@ -349,5 +376,7 @@ namespace GlueControl.Editing
             dto.OrthogonalHeight = Camera.Main.OrthogonalHeight;
             GlueControlManager.Self.SendToGlue(dto);
         }
+
+        #endregion
     }
 }

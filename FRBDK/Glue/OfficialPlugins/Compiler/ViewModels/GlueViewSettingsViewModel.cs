@@ -35,6 +35,29 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public bool SetBackgroundColor
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public int BackgroundRed
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int BackgroundGreen
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int BackgroundBlue
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
 
         public decimal GridSize
         {

@@ -141,7 +141,7 @@ namespace GlueControl.Editing
 
                 DoHotkeyLogic();
 
-                CameraLogic.DoCursorCameraControllingLogic();
+                CameraLogic.DoActivity();
 
                 UpdateMarkers(didChangeItemOver);
 
