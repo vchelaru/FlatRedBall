@@ -5,7 +5,7 @@
     <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\EntityPerformancePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\EntityPerformancePlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\EntityPerformancePluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\EntityPerformancePlugin\EntityPerformancePluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

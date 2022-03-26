@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -317,7 +317,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumPluginCore.pdb&quot;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumDataTypesStandard.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumDataTypesStandard.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumDataTypesStandard.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumDataTypesStandard.pdb&quot;&#xD;&#xA;echo 4&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumRuntime.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumRuntime.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumRuntime.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumRuntime.pdb&quot;&#xD;&#xA;echo 5&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\FlatRedBall.InterpolationCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumPluginCore.pdb&quot;&#xD;&#xA;echo 3&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumDataTypesStandard.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumDataTypesStandard.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumDataTypesStandard.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumDataTypesStandard.pdb&quot;&#xD;&#xA;echo 4&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumRuntime.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumRuntime.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumRuntime.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumRuntime.pdb&quot;&#xD;&#xA;echo 5&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\FlatRedBall.InterpolationCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

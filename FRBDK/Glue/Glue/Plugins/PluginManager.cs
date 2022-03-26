@@ -1197,7 +1197,7 @@ namespace FlatRedBall.Glue.Plugins
             TabControlViewModel.IsRecordingSelection = true;
         }
 
-        internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify)
+        internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
             foreach (PluginManager pluginManager in mInstances)
             {

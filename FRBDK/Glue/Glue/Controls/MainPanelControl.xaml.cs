@@ -185,7 +185,13 @@ namespace GlueFormsCore.Controls
 
             ProjectManager.UnloadProject(isExiting);
 
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.PropertyGrid.SelectedObject = null);
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                if(MainGlueWindow.Self.PropertyGrid != null)
+                {
+                    MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
+                }
+            });
 
             GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall");
             ProjectManager.WantsToCloseProject = false;

@@ -5,7 +5,7 @@
     <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\DialogTreePlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\DialogTreePlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\DialogTreePluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\DialogTreePlugin\DialogTreePluginCore.dll&quot;" />
   </Target>
 
 </Project>
