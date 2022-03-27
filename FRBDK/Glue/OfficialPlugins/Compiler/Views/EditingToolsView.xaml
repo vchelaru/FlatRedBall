@@ -19,6 +19,8 @@
                         <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
                         <Button.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="View Preview in Explorer" Command="{Binding ViewInExplorerCommand}" />
+                                <Separator></Separator>
                                 <MenuItem Header="Refresh Preview" Command="{Binding ForceRefreshPreviewCommand}" />
                                 <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
                             </ContextMenu>

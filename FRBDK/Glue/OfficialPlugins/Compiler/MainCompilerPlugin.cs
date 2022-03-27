@@ -352,6 +352,11 @@ namespace OfficialPlugins.Compiler
                 {
                     newViewModel.SetSourceFromElementAndState(force:true);
                 };
+                newViewModel.ViewInExplorer += () =>
+                {
+                    var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(entitySave, state);
+                    GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
+                };
                 newViewModel.DragLeave += () =>
                 {
                     if(GlueState.Self.DraggedTreeNode == null)
