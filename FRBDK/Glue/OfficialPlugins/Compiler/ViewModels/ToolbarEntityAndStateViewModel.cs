@@ -20,21 +20,24 @@ namespace OfficialPlugins.Compiler.ViewModels
         public ICommand RemoveFromToolbarCommand { get; private set; }
 
         public ICommand ForceRefreshPreviewCommand { get; private set; }
-
+        public ICommand ViewInExplorerCommand { get;private set; }
         void RaiseClicked() => Clicked?.Invoke();
         void RaiseRemoveFromToolbar() => RemovedFromToolbar?.Invoke();
         void RaiseForceRefreshPreview() => ForceRefreshPreview?.Invoke();
+        void RaiseViewInExplorerCommand() => ViewInExplorer?.Invoke();
 
         public event Action Clicked;
         public event Action RemovedFromToolbar;
         public event Action ForceRefreshPreview;
         public event Action DragLeave;
+        public event Action ViewInExplorer;
 
         public ToolbarEntityAndStateViewModel()
         {
             ClickedCommand = new Command(RaiseClicked);
             RemoveFromToolbarCommand = new Command(RaiseRemoveFromToolbar);
             ForceRefreshPreviewCommand = new Command(RaiseForceRefreshPreview);
+            ViewInExplorerCommand = new Command(RaiseViewInExplorerCommand);
         }
 
         public GlueElement GlueElement { get; set; }

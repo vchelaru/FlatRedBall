@@ -11,6 +11,7 @@ using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -402,6 +403,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             return false;
+        }
+
+        public void ViewInExplorer(FilePath filePath)
+        {
+            var extension = filePath.Extension;
+            bool isFile = !string.IsNullOrEmpty(extension);
+            if (isFile)
+            {
+                if (!filePath.Exists())
+                {
+                    filePath = filePath.GetDirectoryContainingThis();
+                }
+            }
+            else
+            {
+                // the location may not exis if it's something like global content, so let's try the parent
+                if (!Directory.Exists(filePath.FullPath))
+                {
+                    filePath = filePath.FullPath;
+                }
+            }
+
+            //fileToShow = @"d:/Projects";
+            // The file might begin with something like c:\.  Make sure it shows "c:\" and not "c:/"
+            var locationToShow = filePath.FullPath.Replace("/", "\\");
+
+            // Make sure the quites are
+            // added after everything else.
+            locationToShow = "\"" + locationToShow + "\"";
+
+            if (isFile)
+            {
+                Process.Start("explorer.exe", "/select," + locationToShow);
+            }
+            else
+            {
+                Process.Start("explorer.exe", "/root," + locationToShow);
+            }
         }
     }
 

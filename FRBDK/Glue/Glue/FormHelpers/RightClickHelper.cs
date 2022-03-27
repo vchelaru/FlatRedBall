@@ -2157,39 +2157,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
 
                 string extension = FileManager.GetExtension(locationToShow);
-                bool isFile = !string.IsNullOrEmpty(extension);
-                if (isFile)
-                {
-                    if (!File.Exists(locationToShow))
-                    {
-                        locationToShow = FileManager.GetDirectory(locationToShow);
-                    }
-                }
-                else
-                {
-                    // the location may not exis if it's something like global content, so let's try the parent
-                    if (!Directory.Exists(locationToShow))
-                    {
-                        locationToShow = FileManager.GetDirectory(locationToShow);
-                    }
-                }
-
-                //fileToShow = @"d:/Projects";
-                // The file might begin with something like c:\.  Make sure it shows "c:\" and not "c:/"
-                locationToShow = locationToShow.Replace("/", "\\");
-
-                // Make sure the quites are
-                // added after everything else.
-                locationToShow = "\"" + locationToShow + "\"";
-
-                if (isFile)
-                {
-                    Process.Start("explorer.exe", "/select," + locationToShow);
-                }
-                else
-                {
-                    Process.Start("explorer.exe", "/root," + locationToShow);
-                }
+                GlueCommands.Self.FileCommands.ViewInExplorer(locationToShow);
             }
         }
 
