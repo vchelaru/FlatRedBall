@@ -187,8 +187,8 @@ namespace TMXGlueLib.DataTypes
                     }
                 }
 
-                int tileWidth = FlatRedBall.Math.MathFunctions.RoundToInt(tiledMapSave.tilewidth);
-                int tileHeight = FlatRedBall.Math.MathFunctions.RoundToInt(tiledMapSave.tileheight);
+                int tileWidth = tiledMapSave.tilewidth;
+                int tileHeight = tiledMapSave.tileheight;
 
                 reducedLayerInfo = new ReducedLayerInfo
                 {

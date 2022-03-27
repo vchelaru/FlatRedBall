@@ -825,6 +825,7 @@ namespace FlatRedBall.Screens
         #region Protected Methods
 
         /// <param name="state">This should be a valid enum value of the concrete screen type.</param>
+        [Obsolete("This is no longer used for anything as of March 27 2022, and will be removed in a future version")]
         public virtual void MoveToState(int state)
         {
             // no-op
