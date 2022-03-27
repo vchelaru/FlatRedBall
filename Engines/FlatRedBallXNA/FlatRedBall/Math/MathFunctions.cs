@@ -963,7 +963,7 @@ namespace FlatRedBall.Math
         /// Rounds the argument floatToRound to an integer.
         /// </summary>
         /// <param name="floatToRound">The float value.</param>
-        /// <returns>The integer of the rounded.</returns>
+        /// <returns>The rounded value as an integer.</returns>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static int RoundToInt(float floatToRound)
         {
@@ -977,11 +977,24 @@ namespace FlatRedBall.Math
 
         }
 
+        /// <summary>
+        /// Rounds the argument doubleToRound to an integer.
+        /// </summary>
+        /// <param name="doubleToRound">The double value.</param>
+        /// <returns>The rounded value as an integer.</returns>
         public static int RoundToInt(double doubleToRound)
         {
             // see the other RoundToInt for information on why we add .5
-            return (int)(System.Math.Round(doubleToRound) + (System.Math.Sign(doubleToRound) * .5f));
+            return (int)(System.Math.Round(doubleToRound) + (System.Math.Sign(doubleToRound) * .5));
         }
+
+        /// <summary>
+        /// Rounds the argument decimalToRound to an integer.
+        /// </summary>
+        /// <param name="decimalToRound">The decimal value.</param>
+        /// <returns>The rounded value as a decimal.</returns>
+        public static int RoundToInt(decimal decimalToRound) =>
+            (int)(System.Math.Round(decimalToRound) + (System.Math.Sign(decimalToRound)* .5m));
 
         public static long RoundToLong(double doubleToRound)
         {
