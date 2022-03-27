@@ -27,13 +27,13 @@ namespace BuildServerUploaderConsole.Processes
         };
 
         string GlueRegularBuildDestinationFolder =
-            @"Glue\Glue\bin\x86\Debug\netcoreapp3.0\";
+            @"Glue\Glue\bin\x86\Debug\";
         // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
         string GluePublishDestinationFolder
         {
             get
             {
-                return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
+                return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\win-x86\publish\";
 
             }
         }
