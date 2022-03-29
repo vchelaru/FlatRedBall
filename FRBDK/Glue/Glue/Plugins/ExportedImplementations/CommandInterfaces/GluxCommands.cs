@@ -1746,7 +1746,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void SetVariableOn(NamedObjectSave nos, string memberName, object value)
+        public async void SetVariableOn(NamedObjectSave nos, string memberName, object value)
         {
             // XML serialization doesn't like enums
             if (value?.GetType().IsEnum() == true)
@@ -1834,7 +1834,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     memberName, oldValue, namedObjectSave:nos);
 
                 // Avoids accumulation when dragging a slider around:
-                TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
+                TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
 
                 PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
             }

@@ -1,10 +1,12 @@
 ﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Errors;
+using OfficialPlugins.AnimationChainPlugin.Managers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -23,9 +25,11 @@ namespace OfficialPluginsCore.AnimationChainPlugin
 
         public override Version Version => new Version(1, 0);
 
-        
+        public static MainAnimationChainPlugin Self { get; private set; }
 
         #endregion
+
+        public new void RefreshErrors() => base.RefreshErrors();
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -34,6 +38,7 @@ namespace OfficialPluginsCore.AnimationChainPlugin
 
         public override void StartUp()
         {
+            Self = this;
             AssignEvents();
             this.AddErrorReporter(new AnimationChainErrorReporter());
         }
@@ -42,16 +47,10 @@ namespace OfficialPluginsCore.AnimationChainPlugin
         {
             this.ReactToNewFileHandler += HandleNewFile;
             this.ReactToFileChangeHandler += HandleFileChanged;
-            this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
+            this.ReactToNamedObjectChangedValue += NamedObjectVariableChangeLogic.HandleNamedObjectChangedValue;
         }
 
-        private void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
-        {
-            if (changedMember == "CurrentChainName" || changedMember == "AnimationChains")
-            {
-                this.RefreshErrors();
-            }
-        }
+
 
         private void HandleFileChanged(string fileName)
         {
