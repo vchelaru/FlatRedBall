@@ -7,28 +7,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GumPluginCore.Managers
 {
     class FormsAddManager
     {
-        public static void GenerateBehaviors()
+        public static async Task GenerateBehaviors()
         {
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 bool didAdd = false;
 
                 foreach (var control in FormsControlInfo.AllControls)
                 {
-                    if (AddIfDoesntHave(CreateBehaviorSaveFrom(control)))
+                    if(!string.IsNullOrEmpty(control.BehaviorName))
                     {
-                        didAdd = true;
+                        var newBehavior = CreateBehaviorSaveFrom(control);
+                        if(newBehavior.Name == null)
+                        {
+                            System.Diagnostics.Debugger.Break();
+                        }
+                        if (AddIfDoesntHave(newBehavior))
+                        {
+                            didAdd = true;
+                        }
                     }
                 }
 
                 if (didAdd)
                 {
-                    GumPluginCommands.Self.SaveGumxAsync();
+                    await GumPluginCommands.Self.SaveGumxAsync();
                 }
             }, "Adding Gum Forms Behaviors");
         }
