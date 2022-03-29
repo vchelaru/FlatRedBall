@@ -117,9 +117,9 @@ namespace FlatRedBall.AnimationEditorForms
             get { return mManagers; }
         }
 
-        private WireframeEditControlsViewModel WireframeEditControlsViewModel
+        public WireframeEditControlsViewModel WireframeEditControlsViewModel
         {
-            get; set;
+            get; private set;
         }
 
         #endregion

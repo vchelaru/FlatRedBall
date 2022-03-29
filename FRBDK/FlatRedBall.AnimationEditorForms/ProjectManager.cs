@@ -80,7 +80,7 @@ namespace FlatRedBall.AnimationEditorForms
 
 
 
-                //Now just convert back to pixel when saving out
+                // The app prefers UV coordinates....I think?
                 if (acls.CoordinateType == Graphics.TextureCoordinateType.Pixel)
                 {
                     acls.ConvertToUvCoordinates();

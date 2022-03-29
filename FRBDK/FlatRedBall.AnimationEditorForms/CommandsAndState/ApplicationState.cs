@@ -37,16 +37,23 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
 
         public int WireframeZoomValue
         {
-            get
-            {
-                return WireframeManager.Self.ZoomValue ;
-            }
+            get => WireframeManager.Self.ZoomValue ;
             set
             {
                 WireframeManager.Self.ZoomValue = value;
             }
         }
 
+        public bool IsSnapToGridChecked
+        {
+            get => WireframeManager.Self.WireframeEditControlsViewModel.IsSnapToGridChecked;
+            set => WireframeManager.Self.WireframeEditControlsViewModel.IsSnapToGridChecked = value;
+        }
 
+        public int GridSize
+        {
+            get => WireframeManager.Self.WireframeEditControlsViewModel.GridSize;
+            set => WireframeManager.Self.WireframeEditControlsViewModel.GridSize = value;
+        }
     }
 }
