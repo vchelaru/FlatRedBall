@@ -62,7 +62,7 @@ namespace GumPlugin.Controls
             }
         }
 
-        private void HandleAddAllForms(object sender, RoutedEventArgs e)
+        private async void HandleAddAllForms(object sender, RoutedEventArgs e)
         {
             var project = GlueState.Self.CurrentMainProject;
             var response = GetWhyAddingFormsIsNotSupported(project);
@@ -78,12 +78,12 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                FormsAddManager.GenerateBehaviors();
+                await FormsAddManager.GenerateBehaviors();
                 FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
             }
         }
 
-        private void HandleGenerateBehaviors(object sender, RoutedEventArgs args) => FormsAddManager.GenerateBehaviors();
+        private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) => await FormsAddManager.GenerateBehaviors();
 
         private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
         {

@@ -382,7 +382,7 @@ namespace GumPlugin
 
         private void HandleResolutionChanged()
         {
-            if(viewModel?.IsMatchGameResolutionInGumChecked == true)
+            if (viewModel?.IsMatchGameResolutionInGumChecked == true)
             {
                 GumPluginCommands.Self.UpdateGumToGlueResolution();
             }
@@ -392,7 +392,7 @@ namespace GumPlugin
         {
             var nos = arg.Tag as NamedObjectSave;
 
-            if(nos != null && nos.SourceType == SourceType.FlatRedBallType &&
+            if (nos != null && nos.SourceType == SourceType.FlatRedBallType &&
                 !string.IsNullOrEmpty(nos.SourceClassType))
             {
                 var ati = nos.GetAssetTypeInfo();
@@ -400,13 +400,13 @@ namespace GumPlugin
                 var isGumAti = AssetTypeInfoManager.Self.AssetTypesForThisProject
                     .Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati?.QualifiedRuntimeTypeName.QualifiedType);
 
-                if(isGumAti)
+                if (isGumAti)
                 {
                     var qualified = ati.QualifiedRuntimeTypeName.QualifiedType;
                     // open it!
                     var endsInRuntime = qualified.EndsWith("Runtime");
 
-                    if(endsInRuntime)
+                    if (endsInRuntime)
                     {
                         var withoutRuntime = qualified.Substring(0, qualified.Length - "Runtime".Length);
                         var lastPeriod = withoutRuntime.LastIndexOf(".");
@@ -415,7 +415,7 @@ namespace GumPlugin
                         var matchingComponent = AppState.Self.GumProjectSave.Components.FirstOrDefault(
                             item => item.Name == strippedName || item.Name.EndsWith("/" + strippedName));
 
-                        if(matchingComponent != null)
+                        if (matchingComponent != null)
                         {
                             string fileName = AppState.Self.GumProjectFolder +
                                 "Components/" + matchingComponent.Name + "." + GumProjectSave.ComponentExtension;
@@ -449,7 +449,7 @@ namespace GumPlugin
 
         private void HandleFileRemoved(IElement container, ReferencedFileSave file)
         {
-            if(file.Name.EndsWith(".gumx"))
+            if (file.Name.EndsWith(".gumx"))
             {
                 // gum project was removed, so mark it as removed:
                 AppState.Self.GumProjectSave = null;
@@ -463,7 +463,7 @@ namespace GumPlugin
         {
             var alreadyHasGumProject = AppState.Self.GumProjectSave != null;
 
-            if(alreadyHasGumProject == false)
+            if (alreadyHasGumProject == false)
             {
                 HandleAddNewGumProjectMenuItemClicked(null, null);
             }
@@ -480,7 +480,7 @@ namespace GumPlugin
                 {
                     System.Diagnostics.Process.Start(startInfo);
                 }
-                catch(Win32Exception winException)
+                catch (Win32Exception winException)
                 {
                     var message = "Could not open the Gum project - have you set up the Gum tool to be associated with the .gumx file format in Windows Explorer?";
 
@@ -488,7 +488,7 @@ namespace GumPlugin
                 }
                 catch
                 {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox("Unknown error attempting to open Gum") ;
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("Unknown error attempting to open Gum");
                 }
             }
 
@@ -500,14 +500,14 @@ namespace GumPlugin
         {
             var element = CodeGeneratorManager.GetElementFrom(referencedFileSave);
 
-            if(element != null)
+            if (element != null)
             {
 
                 var foundItem = AssetTypeInfoManager.Self.AssetTypesForThisProject
                     .Where(item => item.QualifiedRuntimeTypeName.QualifiedType ==
                         GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element));
 
-                if(foundItem.Any())
+                if (foundItem.Any())
                 {
                     return foundItem.ToList();
                 }
@@ -540,7 +540,7 @@ namespace GumPlugin
             {
                 bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
 
-                if(createGumScreen && AppState.Self.GumProjectSave != null)
+                if (createGumScreen && AppState.Self.GumProjectSave != null)
                 {
                     await GumPluginCommands.Self.AddScreenForGlueScreen(newFrbScreen);
                 }
@@ -551,7 +551,7 @@ namespace GumPlugin
 
         private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
         {
-            if(AppState.Self.GumProjectSave != null)
+            if (AppState.Self.GumProjectSave != null)
             {
                 var gumScreenName = GumPluginCommands.Self.GetGumScreenNameFor(glueScreen);
 
@@ -560,7 +560,7 @@ namespace GumPlugin
                 if (gumScreen != null)
                 {
                     GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?", 
+                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?",
                         async () => await GumPluginCommands.Self.RemoveScreen(gumScreen));
 
                 }
@@ -573,7 +573,7 @@ namespace GumPlugin
         {
             bool shouldShowTab = GetIfShouldShowTab(selectedTreeNode);
 
-            if(shouldShowTab)
+            if (shouldShowTab)
             {
                 if (control == null)
                 {
@@ -599,7 +599,7 @@ namespace GumPlugin
             // Maybe we'll need this at some point:
             //var referencedFileSave = GlueState.Self.CurrentReferencedFileSave;
             //var absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
-            if(raiseViewModelEvents && !viewModel.IsUpdatingFromGlueObject)
+            if (raiseViewModelEvents && !viewModel.IsUpdatingFromGlueObject)
             {
                 propertiesManager.HandlePropertyChanged(e.PropertyName);
             }
@@ -607,9 +607,9 @@ namespace GumPlugin
 
         private bool GetIfShouldShowTab(ITreeNode selectedTreeNode)
         {
-            if(selectedTreeNode?.Tag is ReferencedFileSave rfs)
+            if (selectedTreeNode?.Tag is ReferencedFileSave rfs)
             {
-                return FileManager.GetExtension( rfs.Name ) == "gumx";
+                return FileManager.GetExtension(rfs.Name) == "gumx";
             }
 
             return false;
@@ -627,8 +627,8 @@ namespace GumPlugin
         private void HandleNewFile(ReferencedFileSave newFile)
         {
             string extension = FileManager.GetExtension(newFile.Name);
-            
-            if(extension == GumProjectSave.ProjectExtension)
+
+            if (extension == GumProjectSave.ProjectExtension)
             {
                 bool isInGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles.Contains(newFile);
                 if (!isInGlobalContent)
@@ -637,7 +637,7 @@ namespace GumPlugin
 
                     var container = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetElementContaining(newFile);
 
-                    if(container != null)
+                    if (container != null)
                     {
                         container.ReferencedFiles.Remove(newFile);
                     }
@@ -650,7 +650,7 @@ namespace GumPlugin
 
                     // only do this if the property reactor is reacting to changes - if it's not, then we're still
                     // setting up the new file:
-                    if(this.propertiesManager.IsReactingToProperyChanges)
+                    if (this.propertiesManager.IsReactingToProperyChanges)
                     {
                         EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
                         GlueCommands.Self.ProjectCommands.SaveProjects();
@@ -659,7 +659,7 @@ namespace GumPlugin
 
             }
             // If it's a component then assign the specific type:
-            else if(extension == GumProjectSave.ComponentExtension)
+            else if (extension == GumProjectSave.ComponentExtension)
             {
                 string componentName = FileManager.RemovePath(FileManager.RemoveExtension(newFile.Name));
 
@@ -672,7 +672,7 @@ namespace GumPlugin
                     newFile.RuntimeType = ati.QualifiedRuntimeTypeName.QualifiedType;
                 }
             }
-            else if(extension == GumProjectSave.ScreenExtension)
+            else if (extension == GumProjectSave.ScreenExtension)
             {
                 string screenName = FileManager.RemovePath(FileManager.RemoveExtension(newFile.Name));
 
@@ -725,7 +725,7 @@ namespace GumPlugin
 
 
 
-            if(showDialogResult == true)
+            if (showDialogResult == true)
             {
 
                 var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
@@ -738,7 +738,7 @@ namespace GumPlugin
 
         private async Task CreateGumProjectInternal(bool shouldAlsoAddForms)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 propertiesManager.IsReactingToProperyChanges = false;
                 var added = GumProjectManager.Self.TryAddNewGumProject();
@@ -761,15 +761,15 @@ namespace GumPlugin
                     // show the tab for the new file:
                     tab.Focus();
 
-                            // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
-                            // But since the .glux hasn't yet been assigned as the currently-loaded project, 
-                            // the Gum plugin doesn't track its references and returns an empty list. That empty
-                            // list return is then cached, and future calls will always treat the .gumx as having 
-                            // no referenced files. Now that we've assigned the custom project, clear the cache so
-                            // it can properly be set up.
-                            GlueCommands.Self.FileCommands.ClearFileCache(
-                            GlueCommands.Self.GetAbsoluteFileName(gumRfs));
-                            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
+                    // When we first add the RFS to Glue, the RFS tries to refresh its file cache.
+                    // But since the .glux hasn't yet been assigned as the currently-loaded project, 
+                    // the Gum plugin doesn't track its references and returns an empty list. That empty
+                    // list return is then cached, and future calls will always treat the .gumx as having 
+                    // no referenced files. Now that we've assigned the custom project, clear the cache so
+                    // it can properly be set up.
+                    GlueCommands.Self.FileCommands.ClearFileCache(
+                    GlueCommands.Self.GetAbsoluteFileName(gumRfs));
+                    GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
 
 
                     if (shouldAlsoAddForms == true)
@@ -781,7 +781,7 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        FormsAddManager.GenerateBehaviors();
+                        await FormsAddManager.GenerateBehaviors();
                         FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
@@ -798,10 +798,10 @@ namespace GumPlugin
         {
             var changed = GlueCommands.Self.GluxCommands.SetPluginRequirement(this, true);
 
-            if(changed)
+            if (changed)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
-             }
+            }
         }
 
         private void HandleGluxLoadEarly()
@@ -817,7 +817,7 @@ namespace GumPlugin
 
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
 
-            if(AppState.Self.GumProjectSave != null)
+            if (AppState.Self.GumProjectSave != null)
             {
                 var rfs = GumProjectManager.Self.GetRfsForGumProject();
                 var wasUpdating = viewModel.IsUpdatingFromGlueObject;
@@ -834,7 +834,7 @@ namespace GumPlugin
 
             toolbarViewModel.HasGumProject = gumRfs != null;
 
-            if(gumRfs != null)
+            if (gumRfs != null)
             {
 
                 var behavior = GetBehavior(gumRfs);
@@ -876,15 +876,15 @@ namespace GumPlugin
                 var expectedGumProjectParentRoot = new FilePath(GlueState.Self.ContentDirectory).RelativeTo(AppState.Self.GumProjectFolder);
                 if (!needsToSetRoot)
                 {
-                    var currentGumProjectParentRoot = 
+                    var currentGumProjectParentRoot =
                         new FilePath(GlueState.Self.ContentDirectory + gumProject.ParentProjectRoot);
 
-                    if(currentGumProjectParentRoot != expectedGumProjectParentRoot)
+                    if (currentGumProjectParentRoot != expectedGumProjectParentRoot)
                     {
                         needsToSetRoot = true;
                     }
                 }
-                if(needsToSetRoot)
+                if (needsToSetRoot)
                 {
                     gumProject.ParentProjectRoot = expectedGumProjectParentRoot;
 
@@ -917,7 +917,7 @@ namespace GumPlugin
 
             FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Remove(globalContentCodeGenerator);
 
-            if(gumToolbar != null)
+            if (gumToolbar != null)
             {
                 base.RemoveFromToolbar(gumToolbar, "Standard");
             }
