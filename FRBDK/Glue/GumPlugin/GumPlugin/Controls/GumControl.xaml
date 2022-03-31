@@ -46,7 +46,12 @@
             <GroupBox Header="FlatRedBall.Forms">
                 <StackPanel>
                     <StackPanel x:Name="Basic" Visibility="{Binding BasicVisibility}">
-                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="220" Click="HandleAddAllForms">Add Forms to Project</Button>
+                        <Button HorizontalAlignment="Left" Margin="0,5,0,0" Width="260" Click="HandleAddAllForms">
+                            <StackPanel>
+                                <Label HorizontalAlignment="Center">Add/Update Forms to Project</Label>
+                                <Label HorizontalAlignment="Center" FontSize="9">(Clicking again will re-add all Forms content)</Label>
+                            </StackPanel>
+                            </Button>
 
                         <TextBlock>           
                             <Hyperlink Click="AdvancedClick">
