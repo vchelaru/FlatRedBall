@@ -841,7 +841,7 @@ namespace GlueControl
             }
 
 
-            screen?.RestartScreen(reloadScreenContent: true, applyRestartVariables: applyRestartVariables);
+            screen?.RestartScreen(true, applyRestartVariables);
             EditorVisuals.DestroyContainedObjects();
 
             if (shouldReloadGlobalContent)
