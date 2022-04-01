@@ -213,6 +213,10 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         compilerViewModel.IsEditChecked = true;
                     }
+                    else
+                    {
+                        GlueCommands.Self.PrintError(runResponse.Message);
+                    }
                     succeeded = runResponse.Succeeded;
                 }
                 else

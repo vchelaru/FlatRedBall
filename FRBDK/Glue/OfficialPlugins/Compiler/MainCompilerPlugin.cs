@@ -1066,6 +1066,18 @@ namespace OfficialPlugins.Compiler
             {
                 await gameHostView.EmbedHwnd(handle.Value);
             }
+            else
+            {
+                if(gameProcess == null)
+                {
+                    GlueCommands.Self.PrintOutput("Failed to find game handle.");
+                }
+                else
+                {
+                    GlueCommands.Self.PrintOutput("Failed to find window handle.");
+                }
+                
+            }
         }
 
 
