@@ -295,10 +295,17 @@ namespace FlatRedBall
             set { mUseAnimationRelativePosition = value; }
         }
 
+        [Obsolete("Use UseAnimationTextureFlip instead")]
         public bool IgnoreAnimationChainTextureFlip
         {
             get { return mIgnoreAnimationChainTextureFlip; }
             set { mIgnoreAnimationChainTextureFlip = value; }
+        }
+
+        public bool UseAnimationTextureFlip
+        {
+            get => !mIgnoreAnimationChainTextureFlip;
+            set => mIgnoreAnimationChainTextureFlip = !value;
         }
 
         public double TimeIntoAnimation
