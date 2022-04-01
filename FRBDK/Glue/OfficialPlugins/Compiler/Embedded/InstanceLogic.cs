@@ -844,9 +844,17 @@ namespace GlueControl
             {
                 foreach (var instruction in nosForCopiedObject.InstructionSaves)
                 {
-                    if (instruction.Member != "X" && instruction.Member != "Y")
+                    var instructionReference = instruction;
+                    if (instructionReference.Member != "X" && instructionReference.Member != "Y")
                     {
-                        addObjectDto.InstructionSaves.Add(instruction);
+                        // is it a state? If so, the type needs to be fully qualified or it won't be assigned properly on a screen restart
+                        var propertyType = newInstance.GetType().GetProperty(instructionReference.Member)?.PropertyType;
+                        if (propertyType != null && propertyType.FullName.Contains("+"))
+                        {
+                            instructionReference = instructionReference.Clone();
+                            instructionReference.Type = propertyType.FullName.Replace("+", ".");
+                        }
+                        addObjectDto.InstructionSaves.Add(instructionReference);
                     }
                 }
             }

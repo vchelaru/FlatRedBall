@@ -1194,8 +1194,21 @@ namespace GlueControl.Editing
             }
         }
 
+
         public static Type TryGetStateType(string qualifiedTypeName)
         {
+            // Note about fully-qualified state names
+            // This code was originally written to support
+            // only fully-qualified names. This was causing
+            // errors because state types were not being recognized
+            // as fully qualified. Vic thought - okay, why not make this
+            // tolerate unqualified types? That seems like a good idea, right?
+            // NOPE! Because state types can be used across entities, and if they
+            // are not fully qualified, then setting one state may be mistakenly set
+            // to another state, causing a crash. Instead, we must make sure that states
+            // are always fully qualified. They must be fully qualified before reaching this
+            // method, and this method should never tolerate unqualified type names.
+
             ///////// Early Out/////////////
             if (!qualifiedTypeName.Contains('.'))
             {
