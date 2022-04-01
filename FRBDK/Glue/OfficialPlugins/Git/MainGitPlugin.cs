@@ -88,6 +88,7 @@ start GlueFormsCore.exe";
                 try
                 {
                     System.IO.File.WriteAllText(destinationFileName, contents);
+                    GlueCommands.Self.PrintOutput($"Added batch file to:\n{destinationFileName}");
                 }
                 catch (Exception ex)
                 {
