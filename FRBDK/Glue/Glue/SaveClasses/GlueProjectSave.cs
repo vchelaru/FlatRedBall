@@ -65,7 +65,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GumSupportsAchxAnimation = 12,
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
-            RemoveAutoLocalizationOfVariables = 14
+            RemoveAutoLocalizationOfVariables = 14,
+            SpriteHasUseAnimationTextureFlip = 15
         }
 
         #endregion
@@ -74,7 +75,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.StartupInGeneratedGame;
+        public const int LatestVersion = (int)GluxVersions.SpriteHasUseAnimationTextureFlip;
 
         public int FileVersion { get; set; }
 
