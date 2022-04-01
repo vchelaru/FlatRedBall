@@ -788,7 +788,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void ShowAddNewEventDialog(NamedObjectSave eventOwner)
         {
             var name = eventOwner.InstanceName;
-
+            var element = ObjectFinder.Self.GetElementContaining(eventOwner);
+            if(element != GlueState.Self.CurrentElement)
+            {
+                GlueState.Self.CurrentElement = element;
+            }
             AddEventViewModel viewModel = new AddEventViewModel();
             viewModel.TunnelingObject = name;
             viewModel.DesiredEventType = CustomEventType.Tunneled;
