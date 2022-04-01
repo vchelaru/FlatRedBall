@@ -86,8 +86,11 @@ namespace GlueControl.Editing
                 sprite.Green = BackgroundGreen.Value;
                 sprite.Blue = BackgroundBlue.Value;
                 sprite.TextureScale = 0;
-                sprite.Width = 10000;
-                sprite.Height = 10000;
+                sprite.Z = Camera.Main.Z - (Camera.Main.FarClipPlane * 0.99f);
+                sprite.Width = Camera.Main.AbsoluteLeftXEdgeAt(sprite.Z) * 2.5f;
+                sprite.Height = Camera.Main.AbsoluteTopYEdgeAt(sprite.Z) * 2.5f;
+                sprite.X = Camera.Main.X;
+                sprite.Y = Camera.Main.Y;
             }
         }
 
