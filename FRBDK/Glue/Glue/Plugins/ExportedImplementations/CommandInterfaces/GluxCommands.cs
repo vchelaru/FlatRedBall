@@ -74,8 +74,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public IScreenCommands ScreenCommands => mElementCommands; 
-        
+        public IScreenCommands ScreenCommands => mElementCommands;
+
 
         public IEntityCommands EntityCommands
         {
@@ -119,7 +119,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var screen = GlueState.Self.CurrentGlueProject.Screens
                         .FirstOrDefault(item => item.Name == value);
 
-                    if(oldStartupScreen != null)
+                    if (oldStartupScreen != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldStartupScreen);
                     }
@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // .NET Core XmlSerialization
                     // requires no enums - values must
                     // be ints, so let's convert them:
-                    if(ProjectManager.GlueProjectSave.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    if (ProjectManager.GlueProjectSave.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                     {
                         ProjectManager.GlueProjectSave.ConvertEnumerationValuesToInts();
                     }
@@ -212,7 +212,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
 
                             var message = "Error trying to save your Glue file.  Because of this error, Glue did not make any changes to the file on disk.";
-                            if(wasAbleToSaveError)
+                            if (wasAbleToSaveError)
                             {
                                 message += "\n\nAn error log has been saved here:\n" + errorLogLocation;
 
@@ -221,11 +221,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 mbmb.AddButton("Open Error File", true);
                                 mbmb.AddButton("Do nothing (Glue probably needs to be restarted)", false);
 
-                                if(mbmb.ShowDialog() == true)
+                                if (mbmb.ShowDialog() == true)
                                 {
                                     var clickedResult = (bool)mbmb.ClickedResult;
 
-                                    if(clickedResult)
+                                    if (clickedResult)
                                     {
                                         try
                                         {
@@ -241,7 +241,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                         {
                                             try
                                             {
-                                                System.Diagnostics.Process.Start(FileManager.GetDirectory( errorLogLocation));
+                                                System.Diagnostics.Process.Start(FileManager.GetDirectory(errorLogLocation));
                                             }
                                             catch
                                             {
@@ -266,11 +266,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (!MainGlueWindow.Self.HasErrorOccurred)
                     {
                         List<FilePath> fileChangesToIgnore = GlueState.Self.CurrentGlueProject.GetAllSerializedFiles(GlueState.Self.GlueProjectFileName);
-                        foreach(var fileToIgnore in fileChangesToIgnore)
+                        foreach (var fileToIgnore in fileChangesToIgnore)
                         {
                             FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
                         }
-                        
+
                         Exception lastException;
                         var succeeded = ProjectManager.GlueProjectSave.Save("GLUE", GlueState.Self.GlueProjectFileName.FullPath, out lastException);
 
@@ -427,7 +427,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
-            if(TaskManager.Self.IsInTask() == false)
+            if (TaskManager.Self.IsInTask() == false)
             {
                 int m = 3;
             }
@@ -455,11 +455,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         // CreateReferencedFileSaveForExistingFile suggests it's newer/more complete, but why not obsolete this?
         // I think we should obsolete this
         [Obsolete("Use GluxCommands.CreateReferencedFileSaveForExistingFile")]
-        public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, 
+        public ReferencedFileSave AddSingleFileTo(string fileName, string rfsName,
             string extraCommandLineArguments,
-            BuildToolAssociation buildToolAssociation, bool isBuiltFile, 
+            BuildToolAssociation buildToolAssociation, bool isBuiltFile,
             object options, GlueElement sourceElement, string directoryOfTreeNode,
-            bool selectFileAfterCreation = true 
+            bool selectFileAfterCreation = true
             )
         {
             ReferencedFileSave toReturn = null;
@@ -528,14 +528,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     failed = true;
                 }
-                else if(toReturn != null && string.IsNullOrEmpty(toReturn.Name))
+                else if (toReturn != null && string.IsNullOrEmpty(toReturn.Name))
                 {
                     errorMessage = "There was an error creating the named object for\n" + fileName;
                     failed = true;
 
                 }
             }
-            
+
             if (!failed)
             {
                 if (isBuiltFile)
@@ -557,7 +557,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if(!failed && toReturn != null)
+            if (!failed && toReturn != null)
             {
                 TaskManager.Self.OnUiThread(() =>
                 {
@@ -594,11 +594,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 ApplyOptions(toReturn, options);
 
-                if(selectFileAfterCreation)
+                if (selectFileAfterCreation)
                 {
-                    TaskManager.Self.Add( () =>
-                        TaskManager.Self.OnUiThread( () => 
-                            GlueState.Self.CurrentReferencedFileSave = toReturn), "Select new file");
+                    TaskManager.Self.Add(() =>
+                       TaskManager.Self.OnUiThread(() =>
+                          GlueState.Self.CurrentReferencedFileSave = toReturn), "Select new file");
                 }
             }
 
@@ -694,7 +694,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             BuildToolAssociationManager.Self.GetBuilderToolAssociationByName(ati.CustomBuildToolName);
                     }
 
-                    if(!string.IsNullOrEmpty(fileToAdd))
+                    if (!string.IsNullOrEmpty(fileToAdd))
                     {
                         if (containerForFile != null)
                         {
@@ -768,7 +768,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
-        { 
+        {
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
             /////////////////////////Early Out//////////////////////////////
             if (!isContained)
@@ -844,9 +844,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
-                        if(GlueState.Self.CurrentElement != null)
+                        if (GlueState.Self.CurrentElement != null)
                         {
-                            if(GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
+                            if (GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
                             {
                                 GlueState.Self.CurrentReferencedFileSave = GlueState.Self.CurrentElement.ReferencedFiles.LastOrDefault();
                             }
@@ -926,8 +926,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 isFileReferenced = FileReferenceManager.Self.IsFileReferencedRecursively(rfsFilePath);
             }
 
-            if(isFileReferenced == false)
-            { 
+            if (isFileReferenced == false)
+            {
                 additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
 
                 string itemName = referencedFileToRemove.GetRelativePath();
@@ -957,7 +957,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             PluginManager.ReactToFileRemoved(container, referencedFileToRemove);
 
-            if(regenerateAndSave)
+            if (regenerateAndSave)
             {
                 GluxCommands.Self.SaveGlux();
             }
@@ -1002,7 +1002,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public ReferencedFileSave GetReferencedFileSaveFromFile(string fileName)
         {
             FilePath filePath = new FilePath(fileName);
-            if(FileManager.IsRelative(fileName))
+            if (FileManager.IsRelative(fileName))
             {
                 filePath = GlueCommands.Self.GetAbsoluteFilePath(fileName);
             }
@@ -1032,7 +1032,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles)
                     {
                         var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-                        if(absoluteRfs == filePath)
+                        if (absoluteRfs == filePath)
                         {
                             return rfs;
                         }
@@ -1145,14 +1145,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var isMatchingList = currentList != null && currentList.IsList &&
                 currentList.SourceClassGenericType == addObjectViewModel.SourceClassType;
 
-            if(!isMatchingList && currentList != null)
+            if (!isMatchingList && currentList != null)
             {
                 var newAti = addObjectViewModel.SelectedAti;
                 isMatchingList = currentList.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection &&
                     (newAti == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
                      newAti == AvailableAssetTypes.CommonAtis.Circle ||
                      newAti == AvailableAssetTypes.CommonAtis.Polygon ||
-                     newAti == AvailableAssetTypes.CommonAtis.Line );
+                     newAti == AvailableAssetTypes.CommonAtis.Line);
 
             }
 
@@ -1163,7 +1163,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             return AddNewNamedObjectTo(addObjectViewModel,
-                elementToAddTo, 
+                elementToAddTo,
                 currentList);
         }
 
@@ -1196,7 +1196,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             newNos.InstanceName = addObjectViewModel.ObjectName;
             newNos.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
 
-            if(addObjectViewModel.SourceType == SourceType.File)
+            if (addObjectViewModel.SourceType == SourceType.File)
             {
                 newNos.SourceType = addObjectViewModel.SourceType;
                 newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
@@ -1255,7 +1255,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if(performSaveAndGenerateCode)
+            if (performSaveAndGenerateCode)
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
@@ -1267,7 +1267,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
             }
 
-            if(updateUi)
+            if (updateUi)
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
@@ -1275,20 +1275,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     PropertyGridHelper.UpdateNamedObjectDisplay();
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
-                    if(selectNewNos)
+                    if (selectNewNos)
                     {
                         GlueState.Self.CurrentNamedObjectSave = newNos;
                     }
                 });
             }
 
-            if(performSaveAndGenerateCode)
+            if (performSaveAndGenerateCode)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }
 
-        public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, 
+        public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
             bool updateUi = true, List<string> additionalFilesToRemove = null)
         {
             StringBuilder removalInformation = new StringBuilder();
@@ -1402,14 +1402,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             foreach (var item in namedObjectListToRemove)
             {
-                await RemoveNamedObjectAsync(item, performSaveAndGenerateCode: false, updateUi: false, additionalFilesToRemove: null, notifyPluginsOfRemoval:false);
+                await RemoveNamedObjectAsync(item, performSaveAndGenerateCode: false, updateUi: false, additionalFilesToRemove: null, notifyPluginsOfRemoval: false);
             }
 
             var ownerHashSet = ownerList.ToHashSet();
 
-            if(updateUi)
+            if (updateUi)
             {
-                foreach(var owner in ownerHashSet)
+                foreach (var owner in ownerHashSet)
                 {
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
                 }
@@ -1429,13 +1429,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
 
-            if(wasSelected)
+            if (wasSelected)
             {
                 var owner = ownerHashSet.FirstOrDefault();
-                if(owner != null)
+                if (owner != null)
                 {
                     var nos = owner.NamedObjects.FirstOrDefault();
-                    if(nos != null)
+                    if (nos != null)
                     {
                         GlueState.Self.CurrentNamedObjectSave = nos;
                     }
@@ -1548,16 +1548,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             toReturn.SubObjectsInList.AddRange(namedObject.ContainedObjects);
 
             // Only check the top level 
-            foreach(var item in owner.NamedObjects)
+            foreach (var item in owner.NamedObjects)
             {
-                if(item.IsCollisionRelationship())
+                if (item.IsCollisionRelationship())
                 {
-                    var matches = 
+                    var matches =
                         item.Properties.GetValue<string>("FirstCollisionName") == namedObject.FieldName ||
                         item.Properties.GetValue<string>("SecondCollisionName") == namedObject.FieldName
                         ;
 
-                    if(matches)
+                    if (matches)
                     {
                         toReturn.CollisionRelationships.Add(item);
                     }
@@ -1581,7 +1581,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            
+
 
             var customVariablesToRemove = owner.CustomVariables
                 .Where(item => item.SourceObject == namedObject.InstanceName)
@@ -1600,10 +1600,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return toReturn;
         }
 
-        private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi, 
-            List<string> additionalFilesToRemove, 
-            StringBuilder removalInformation, bool wasSelected, 
-            int indexInChild, NamedObjectSave containerOfRemoved, 
+        private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi,
+            List<string> additionalFilesToRemove,
+            StringBuilder removalInformation, bool wasSelected,
+            int indexInChild, NamedObjectSave containerOfRemoved,
             GlueElement element,
             bool notifyPlugins = true)
         {
@@ -1710,7 +1710,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // If we aren't going to save the project, we probably don't
                 // care about generating code either. I don't know if we ever
                 // want to separate these variables, but we'll link them for now.
-                if(performSaveAndGenerateCode)
+                if (performSaveAndGenerateCode)
                 {
                     CodeWriter.GenerateCode(element);
                 }
@@ -1727,7 +1727,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
 
-                if(notifyPlugins)
+                if (notifyPlugins)
                 {
                     PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
                 }
@@ -1813,25 +1813,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // and throw an exception if the variable hasn't yet been exposed:
             var shouldProceed = true;
             var nosEntity = ObjectFinder.Self.GetEntitySave(nos);
-            if(nosEntity != null)
+            if (nosEntity != null)
             {
                 var variable = nosEntity.GetCustomVariableRecursively(memberName);
-                if(variable == null)
+                if (variable == null)
                 {
-                    var message = 
+                    var message =
                         $"Attempting to set variable {memberName} on object {nos}, " +
                         $"but this object uses entity type {nosEntity} which does not have this variable added or exposed";
                     GlueCommands.Self.PrintError(message);
                     shouldProceed = false;
                 }
             }
-            if(shouldProceed)
+            if (shouldProceed)
             {
                 nos.SetVariable(memberName, value);
 
 
                 EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                    memberName, oldValue, namedObjectSave:nos);
+                    memberName, oldValue, namedObjectSave: nos);
 
                 // Avoids accumulation when dragging a slider around:
                 TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
@@ -1907,7 +1907,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             HashSet<GlueElement> impactedObjects = new HashSet<GlueElement>();
 
-            foreach(var variable in combined)
+            foreach (var variable in combined)
             {
                 GlueCommands.Self.PrintOutput($"Removing {variable} because it references the category {category.Name}");
                 GlueCommands.Self.GluxCommands.RemoveCustomVariable(variable);
@@ -1931,7 +1931,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             rootDirectory += element.Name;
 
-            if(element is EntitySave)
+            if (element is EntitySave)
             {
                 return rootDirectory + "." + GlueProjectSave.EntityExtension;
             }
@@ -1939,7 +1939,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 return rootDirectory + "." + GlueProjectSave.ScreenExtension;
             }
-                 
+
         }
 
         public FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave)
@@ -2127,7 +2127,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // So we'll manually remove the RFS's first before removing the entire entity
             for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave:false);
+                GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
             }
 
 
@@ -2197,7 +2197,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // For more information see the RemoveEntity function
             for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave:false);
+                GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
             }
 
             ProjectManager.GlueProjectSave.Screens.Remove(screenToRemove);
@@ -2247,7 +2247,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 bool shouldRemove = true;
                 foreach (var file in allReferencedFiles)
                 {
-                    if (file ==  GlueCommands.Self.GetAbsoluteFilePath(rfs))
+                    if (file == GlueCommands.Self.GetAbsoluteFilePath(rfs))
                     {
                         shouldRemove = false;
                         break;
@@ -2274,10 +2274,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string elementName = element.Name;
 
 
-            
+
             filesThatCouldBeRemoved.Add(elementName + ".cs");
 
-            
+
             filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
 
             string eventFile = elementName + ".Event.cs";
@@ -2401,7 +2401,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             ProjectManager.GlueSettingsSave.Save();
         }
-
 
     }
 }

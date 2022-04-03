@@ -400,9 +400,11 @@ namespace GlueControl
 
                 if (isEntity)
                 {
-                    var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
-                        SpriteManager.ManagedPositionedObjects.Count > 0 &&
-                        DoTypesMatch(SpriteManager.ManagedPositionedObjects[0], ownerTypeName, ownerType);
+                    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                    var entity = (entityScreen?.CurrentEntity as PositionedObject);
+
+                    var isAlreadyViewingThisEntity = entityScreen != null &&
+                        DoTypesMatch(entity, ownerTypeName, ownerType);
 
                     if (!isAlreadyViewingThisEntity)
                     {

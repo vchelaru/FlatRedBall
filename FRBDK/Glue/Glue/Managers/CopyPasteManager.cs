@@ -18,12 +18,20 @@ namespace FlatRedBall.Glue.Managers
             {
                 copiedObjectClone = rfs.Clone();
             }
+            else if(currentTreeNodeTag is NamedObjectSave nos)
+            {
+                copiedObjectClone = nos.Clone();
+            }
         }
         internal void HandlePaste()
         {
             if(copiedObjectClone is ReferencedFileSave asRfs)
             {
                 GlueCommands.Self.GluxCommands.DuplicateAsync(asRfs, GlueState.Self.CurrentElement);
+            }
+            else if(copiedObjectClone is NamedObjectSave asNos)
+            {
+                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
             }
         }
     }

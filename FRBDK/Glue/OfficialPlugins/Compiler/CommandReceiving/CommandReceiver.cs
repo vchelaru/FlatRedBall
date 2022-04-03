@@ -101,7 +101,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                                 ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
                                 screen = screen ?? GlueState.Self.CurrentScreenSave;
 
-                                HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, screen:screen);
+                                HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, element:screen);
                             }
 
                             break;
@@ -157,8 +157,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleAddObjectDtoList(AddObjectDtoList deserializedList)
         {
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            screen = screen ?? GlueState.Self.CurrentScreenSave;
+            GlueElement element = await CommandSender.GetCurrentInGameScreen();
+            element = element ?? GlueState.Self.CurrentElement;
 
             List<NamedObjectSave> newNamedObjects = new List<NamedObjectSave>();
 
@@ -167,16 +167,16 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var cloneString = JsonConvert.SerializeObject(item);
                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
                 newNamedObjects.Add(nos);
-                await HandleAddObject(item, nos, saveRegenAndUpdateUi:false, screen:screen);
+                await HandleAddObject(item, nos, saveRegenAndUpdateUi:false, element: element);
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
                 MainGlueWindow.Self.PropertyGrid.Refresh();
                 PropertyGridHelper.UpdateNamedObjectDisplay();
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
                 if(newNamedObjects.Count > 0)
                 {
@@ -225,15 +225,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Add Object (including copy/paste
 
-        private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, ScreenSave screen)
+        private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, GlueElement element)
         {
+            element = element ?? GlueState.Self.CurrentElement;
             return TaskManager.Self.AddAsync(() =>
             {
-                screen = screen ?? GlueState.Self.CurrentScreenSave;
-                GlueElement element = screen;
-                
-
-                var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, screen);
+                var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, element);
 
                 string newName = GetNewName(element, addObjectDto);
                 var oldName = addObjectDto.InstanceName;
@@ -347,7 +344,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var element = ObjectFinder.Self.GetElement(type);
 
-                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+                NamedObjectSave nos = null;
+                if(element != null)
+                {
+                    nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+                }
 
                 if (nos != null)
                 {

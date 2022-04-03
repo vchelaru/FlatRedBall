@@ -14,8 +14,11 @@ using System.Threading.Tasks;
 
 namespace GlueControl.Editing
 {
+
     class CopyPasteManager
     {
+        #region Fields/Properties
+
         List<INameable> CopiedObjects
         {
             get; set;
@@ -25,6 +28,8 @@ namespace GlueControl.Editing
         {
             get; set;
         } = new List<NamedObjectSave>();
+
+        #endregion
 
         public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, PositionedObject itemGrabbed)
         {
@@ -54,66 +59,7 @@ namespace GlueControl.Editing
 
             foreach (var copiedObject in CopiedObjects)
             {
-                PositionedObject instance = null;
-
-                var copiedObjectName = copiedObject.Name;
-
-                if (copiedObject is Circle originalCircle)
-                {
-                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is AxisAlignedRectangle originalRectangle)
-                {
-                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Polygon originalPolygon)
-                {
-                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Sprite originalSprite)
-                {
-                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Text originalText)
-                {
-                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
-                {
-                    var type = copiedObject.GetType().FullName;
-                    if (copiedObject is Runtime.DynamicEntity dynamicEntity)
-                    {
-                        type = dynamicEntity.EditModeType;
-                    }
-                    // for now assume names are unique, not qualified
-                    instance = InstanceLogic.Self.CreateInstanceByGame(
-                        type,
-                        asPositionedObject, addedItems);
-                    instance.CreationSource = "Glue";
-                    instance.Velocity = Vector3.Zero;
-                    instance.Acceleration = Vector3.Zero;
-
-                    // apply any changes that have been made to the entity:
-                    int currentAddObjectIndex = CommandReceiver.GlobalGlueToGameCommands.Count;
-
-                    for (int i = 0; i < currentAddObjectIndex; i++)
-                    {
-                        var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                        if (dto is Dtos.AddObjectDto addObjectDtoRerun)
-                        {
-                            InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, instance);
-                        }
-                        else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
-                        {
-                            GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, instance);
-                        }
-                    }
-                }
-
-                if (instance != null)
-                {
-                    newObjects.Add(instance);
-                }
+                HandlePasteIndividualObject(newObjects, addedItems, copiedObject);
             }
 
             // If we have something grabbed, then don't select the new items in Glue
@@ -151,6 +97,77 @@ namespace GlueControl.Editing
                     // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
                     // support multi-selection.
                     EditingManager.Self.RaiseObjectSelected();
+                }
+            }
+        }
+
+        private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems, INameable copiedObject)
+        {
+            PositionedObject instance = null;
+
+            var copiedObjectName = copiedObject.Name;
+
+            if (copiedObject is Circle originalCircle)
+            {
+                instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName, addedItems);
+            }
+            else if (copiedObject is AxisAlignedRectangle originalRectangle)
+            {
+                instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName, addedItems);
+            }
+            else if (copiedObject is Polygon originalPolygon)
+            {
+                instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName, addedItems);
+            }
+            else if (copiedObject is Sprite originalSprite)
+            {
+                instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName, addedItems);
+            }
+            else if (copiedObject is Text originalText)
+            {
+                instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName, addedItems);
+            }
+            else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
+            {
+                var type = copiedObject.GetType().FullName;
+                if (copiedObject is Runtime.DynamicEntity dynamicEntity)
+                {
+                    type = dynamicEntity.EditModeType;
+                }
+                // for now assume names are unique, not qualified
+                instance = InstanceLogic.Self.CreateInstanceByGame(
+                    type,
+                    asPositionedObject, addedItems);
+                instance.CreationSource = "Glue";
+                instance.Velocity = Vector3.Zero;
+                instance.Acceleration = Vector3.Zero;
+
+                // apply any changes that have been made to the entity:
+                int currentAddObjectIndex = CommandReceiver.GlobalGlueToGameCommands.Count;
+
+                for (int i = 0; i < currentAddObjectIndex; i++)
+                {
+                    var dto = CommandReceiver.GlobalGlueToGameCommands[i];
+                    if (dto is Dtos.AddObjectDto addObjectDtoRerun)
+                    {
+                        InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, instance);
+                    }
+                    else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
+                    {
+                        GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, instance);
+                    }
+                }
+            }
+
+            if (instance != null)
+            {
+                newObjects.Add(instance);
+
+                var entityViewingScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                var parent = entityViewingScreen?.CurrentEntity;
+                if (parent is PositionedObject parentAttachable)
+                {
+                    instance.AttachTo(parentAttachable);
                 }
             }
         }

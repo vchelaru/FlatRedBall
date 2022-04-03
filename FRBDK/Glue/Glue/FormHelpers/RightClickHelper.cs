@@ -1509,90 +1509,16 @@ namespace FlatRedBall.Glue.FormHelpers
             GlueCommands.Self.DialogCommands.ShowAddNewCategoryDialog();
         }
 
-        static void DuplicateClick(object sender, EventArgs e)
+        static async void DuplicateClick(object sender, EventArgs e)
         {
             if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                DuplicateCurrentNamedObject();
+                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(GlueState.Self.CurrentNamedObjectSave, GlueState.Self.CurrentElement);
             }
             else if (GlueState.Self.CurrentStateSave != null)
             {
                 DuplicateCurrentStateSave();
             }
-        }
-
-        private static void DuplicateCurrentNamedObject()
-        {
-            // Duplicate duplicate named object, copy named object, copy object
-            NamedObjectSave namedObjectToDuplicate = GlueState.Self.CurrentNamedObjectSave;
-            var element = ObjectFinder.Self.GetElementContaining(namedObjectToDuplicate);
-
-            NamedObjectSave newNamedObject = namedObjectToDuplicate.Clone();
-
-            #region Update the instance name
-
-            newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
-            if (newNamedObject.InstanceName.EndsWith("1") && StringFunctions.GetNumberAtEnd(newNamedObject.InstanceName) == 1)
-            {
-                newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
-            }
-
-            #endregion
-
-            NamedObjectSave parentNos = element
-                .NamedObjects
-                .FirstOrDefault(item => item.ContainedObjects.Contains(namedObjectToDuplicate));
-
-            if (parentNos != null)
-            {
-                bool IsShapeCollection(NamedObjectSave nos)
-                {
-                    return nos.SourceType == SourceType.FlatRedBallType &&
-                        (nos.SourceClassType == "ShapeCollection" || nos.SourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection");
-                }
-
-                if (parentNos != null && (parentNos.IsList || IsShapeCollection(parentNos)))
-                {
-                    int indexToInsertAt = 1 + parentNos.ContainedObjects.IndexOf(namedObjectToDuplicate);
-
-
-                    while (element.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
-                    {
-                        newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
-                    }
-
-                    parentNos.ContainedObjects.Insert(indexToInsertAt, newNamedObject);
-                }
-            }
-            else
-            {
-                int indexToInsertAt = 1 + element.NamedObjects.IndexOf(namedObjectToDuplicate);
-
-                while (element.GetNamedObjectRecursively(newNamedObject.InstanceName) != null)
-                {
-                    newNamedObject.InstanceName = StringFunctions.IncrementNumberAtEnd(newNamedObject.InstanceName);
-                }
-
-                element.NamedObjects.Insert(indexToInsertAt, newNamedObject);
-            }
-
-
-            if (newNamedObject.SetByDerived)
-            {
-                GlueFormsCore.SetVariable.NamedObjectSaves.SetByDerivedSetLogic.ReactToChangedSetByDerived(
-                    newNamedObject, element);
-            }
-
-
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-            // run after generated code so plugins like level editor work off latest code
-            PluginManager.ReactToNewObject(newNamedObject);
-
-            GlueCommands.Self.ProjectCommands.SaveProjects();
-            GluxCommands.Self.SaveGlux();
         }
 
         private static void DuplicateCurrentStateSave()

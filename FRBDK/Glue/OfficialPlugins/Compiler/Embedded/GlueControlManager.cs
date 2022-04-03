@@ -334,15 +334,17 @@ namespace GlueControl
             string ownerType;
             if(isEditingEntity)
             {
-                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
-                if(entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
+                var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                var entity = (entityScreen.CurrentEntity as PositionedObject);
+
+                if (entity is GlueControl.Runtime.DynamicEntity dynamicEntity)
                 {
                     ownerType = dynamicEntity.EditModeType;
                 }
                 else
                 {
                     // todo - handle inheritance
-                    ownerType = entityInstance.GetType().FullName;
+                    ownerType = entity.GetType().FullName;
                 }
             }
             else
@@ -399,7 +401,8 @@ namespace GlueControl
 
             if (ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
             {
-                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
+                var entityInstance = (ScreenManager.CurrentScreen as Screens.EntityViewingScreen)?.CurrentEntity;
+
                 if (entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
                 {
                     elementGameType = dynamicEntity.EditModeType;
