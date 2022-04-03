@@ -689,7 +689,7 @@ namespace GlueControl.Editing
         }
 
 
-        private INameable GetObjectByName(string objectName)
+        public INameable GetObjectByName(string objectName)
         {
             INameable foundObject = null;
 

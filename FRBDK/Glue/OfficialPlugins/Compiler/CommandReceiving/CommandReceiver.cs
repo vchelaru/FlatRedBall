@@ -721,9 +721,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
         {
-            var currentScreen = GlueState.Self.CurrentScreenSave;
+            // Maps can be in entities too for "rooms" so support both entities and screens
+            var currentElement = GlueState.Self.CurrentElement;
 
-            var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
+            var collisionNos = currentElement?.GetNamedObject(dto.TileShapeCollection);
 
             // this should use a file as a source, need to find that
             var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
@@ -740,11 +741,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             mapLayer = null;
             if (isUsingTmx)
             {
-                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
+                var tmxObjectNos = currentElement.GetNamedObjectRecursively(sourceTmxObjectName);
                 ReferencedFileSave rfs = null;
                 if (tmxObjectNos.SourceType == SourceType.File)
                 {
-                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
+                    rfs = currentElement.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
                 }
 
                 if (rfs != null)

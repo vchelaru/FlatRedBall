@@ -141,8 +141,7 @@ namespace GlueControl.Editing
 
             if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
             {
-                var foundObject = ScreenManager.CurrentScreen.GetInstanceRecursive("this." + sourceTmxObject + ".throwaway");
-                map = foundObject as FlatRedBall.TileGraphics.LayeredTileMap;
+                map = EditingManager.Self.GetObjectByName(sourceTmxObject) as FlatRedBall.TileGraphics.LayeredTileMap;
             }
         }
 
