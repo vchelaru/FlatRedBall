@@ -639,22 +639,22 @@ namespace GlueControl.Editing
 
         internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
-            INameable foundObject = null;
+            INameable foundObject = GetObjectByName(objectName);
 
-            if (!string.IsNullOrEmpty(objectName))
-            {
-                foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
-                    ?.FirstOrDefault(item => item.Name == objectName);
+            //if (!string.IsNullOrEmpty(objectName))
+            //{
+            //    foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
+            //        ?.FirstOrDefault(item => item.Name == objectName);
 
 
-                if (foundObject == null)
-                {
-                    var screen = ScreenManager.CurrentScreen;
-                    var instance = screen.GetInstance($"{objectName}", screen);
+            //    if (foundObject == null)
+            //    {
+            //        var screen = ScreenManager.CurrentScreen;
+            //        var instance = screen.GetInstance($"{objectName}", screen);
 
-                    foundObject = instance as INameable;
-                }
-            }
+            //        foundObject = instance as INameable;
+            //    }
+            //}
 
 
             if (!addToExistingSelection)
@@ -705,6 +705,12 @@ namespace GlueControl.Editing
                     var instance = screen.GetInstance($"{objectName}", screen);
 
                     foundObject = instance as INameable;
+                }
+
+                if (foundObject == null && ScreenManager.CurrentScreen is Screens.EntityViewingScreen entityViewingScreen)
+                {
+                    foundObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(
+                        entityViewingScreen.CurrentEntity, objectName) as INameable;
                 }
             }
 

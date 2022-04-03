@@ -208,7 +208,13 @@ namespace GlueControl.Editing
             }
             else if (elementEditingMode == ElementEditingMode.EditingEntity)
             {
-                if (SpriteManager.ManagedPositionedObjects.Count > 0)
+                var screen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                var entity = (screen.CurrentEntity as PositionedObject);
+                if (entity != null)
+                {
+                    availableItems = entity.Children;
+                }
+                else if (SpriteManager.ManagedPositionedObjects.Count > 0)
                 {
                     availableItems = SpriteManager.ManagedPositionedObjects[0].Children;
                 }
@@ -281,8 +287,8 @@ namespace GlueControl.Editing
             // bounds exactly as is, so it can be resized.
             // Otherwise, give it a min dimension in case it's
             // empty or really small.
-            var isScalable = itemOver is IScalable;
-            if(!isScalable)
+            var isScalable = itemOver is IReadOnlyScalable;
+            if (!isScalable)
             {
                 var multiplier = Camera.Main.OrthogonalHeight / Camera.Main.DestinationRectangle.Height;
                 minDimension = 16 * multiplier;
@@ -310,7 +316,15 @@ namespace GlueControl.Editing
         private static void GetDimensionsForInner(PositionedObject itemOver,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
-            if (itemOver is IScalable asScalable)
+            if (itemOver is IMinMax minMax)
+            {
+                minX = minMax.MinXAbsolute;
+                maxX = minMax.MaxXAbsolute;
+
+                minY = minMax.MinYAbsolute;
+                maxY = minMax.MaxYAbsolute;
+            }
+            else if (itemOver is IReadOnlyScalable asScalable)
             {
                 minX = Math.Min(minX, itemOver.X - asScalable.ScaleX);
                 maxX = Math.Max(maxX, itemOver.X + asScalable.ScaleX);
@@ -416,4 +430,17 @@ namespace GlueControl.Editing
         #endregion
 
     }
+
+    #region IMinMax
+
+    public interface IMinMax
+    {
+        float MinXAbsolute { get; }
+        float MaxXAbsolute { get; }
+        float MinYAbsolute { get; }
+        float MaxYAbsolute { get; }
+    }
+
+    #endregion
+
 }
