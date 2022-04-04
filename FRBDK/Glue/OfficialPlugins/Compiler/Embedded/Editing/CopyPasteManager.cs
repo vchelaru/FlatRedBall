@@ -3,6 +3,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
+using GlueControl.Managers;
 using GlueControl.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -14,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace GlueControl.Editing
 {
-
     class CopyPasteManager
     {
         #region Fields/Properties
@@ -28,6 +28,8 @@ namespace GlueControl.Editing
         {
             get; set;
         } = new List<NamedObjectSave>();
+
+        static GlueElement CopiedObjectsOwner;
 
         #endregion
 
@@ -44,6 +46,8 @@ namespace GlueControl.Editing
 
                     CopiedObjects.AddRange(selectedObjects);
                     CopiedNamedObjects.AddRange(selectedNamedObjects);
+
+                    CopiedObjectsOwner = GlueState.Self.CurrentElement;
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
@@ -52,14 +56,18 @@ namespace GlueControl.Editing
             }
         }
 
+        #region Paste
+
         private void HandlePaste(PositionedObject itemGrabbed)
         {
             List<PositionedObject> newObjects = new List<PositionedObject>();
             List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
 
-            foreach (var copiedObject in CopiedObjects)
+            for (int i = 0; i < CopiedObjects.Count; i++)
             {
-                HandlePasteIndividualObject(newObjects, addedItems, copiedObject);
+                var copiedRuntimeObject = CopiedObjects[i];
+                var copiedGlueObject = CopiedNamedObjects[i];
+                HandlePasteIndividualObject(newObjects, addedItems, copiedRuntimeObject, copiedGlueObject);
             }
 
             // If we have something grabbed, then don't select the new items in Glue
@@ -101,7 +109,8 @@ namespace GlueControl.Editing
             }
         }
 
-        private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems, INameable copiedObject)
+        private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems,
+            INameable copiedObject, NamedObjectSave copiedGlueNamedObjectSave)
         {
             PositionedObject instance = null;
 
@@ -162,14 +171,54 @@ namespace GlueControl.Editing
             if (instance != null)
             {
                 newObjects.Add(instance);
-
                 var entityViewingScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
-                var parent = entityViewingScreen?.CurrentEntity;
-                if (parent is PositionedObject parentAttachable)
+                var parent = entityViewingScreen?.CurrentEntity as PositionedObject;
+                if (parent != null)
                 {
-                    instance.AttachTo(parentAttachable);
+                    instance.AttachTo(parent);
+                }
+                var isPastedInNewObject = CopiedObjectsOwner != GlueState.Self.CurrentElement;
+
+                if (isPastedInNewObject)
+                {
+                    var dto = addedItems.LastOrDefault();
+                    instance.X = Camera.Main.X;
+                    instance.Y = Camera.Main.Y;
+                    // move it and set its values
+                    var xInstruction = dto.InstructionSaves.FirstOrDefault(item => item.TargetName == "X");
+                    var yInstruction = dto.InstructionSaves.FirstOrDefault(item => item.TargetName == "Y");
+                    if (entityViewingScreen != null)
+                    {
+                        instance.Z = parent.Z;
+                        instance.SetRelativeFromAbsolute();
+                        if (xInstruction != null)
+                        {
+                            xInstruction.Value = instance.RelativeX;
+                        }
+                        if (yInstruction != null)
+                        {
+                            yInstruction.Value = instance.RelativeY;
+                        }
+
+                    }
+                    // else
+                    {
+                        if (xInstruction != null)
+                        {
+                            xInstruction.Value = instance.X;
+                        }
+                        if (yInstruction != null)
+                        {
+                            yInstruction.Value = instance.Y;
+                        }
+                    }
+
                 }
             }
+
+
         }
+
+        #endregion
     }
 }

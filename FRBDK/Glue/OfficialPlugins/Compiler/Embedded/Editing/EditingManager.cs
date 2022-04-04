@@ -143,6 +143,8 @@ namespace GlueControl.Editing
 
                 CameraLogic.DoActivity();
 
+                DoForwardBackActivity();
+
                 UpdateMarkers(didChangeItemOver);
 
             }
@@ -418,6 +420,19 @@ namespace GlueControl.Editing
 
             CameraLogic.DoHotkeyLogic();
 
+        }
+
+        private void DoForwardBackActivity()
+        {
+            var mouse = InputManager.Mouse;
+            if (mouse.ButtonPushed(Mouse.MouseButtons.XButton1))
+            {
+                GlueControlManager.Self.SendToGlue(new Dtos.SelectPreviousDto());
+            }
+            else if (mouse.ButtonPushed(Mouse.MouseButtons.XButton2))
+            {
+                GlueControlManager.Self.SendToGlue(new Dtos.SelectNextDto());
+            }
         }
 
         private void DoGoToDefinitionLogic()

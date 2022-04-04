@@ -69,6 +69,13 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
+    #region SelectPrevious/Next 
+
+    class SelectPreviousDto { }
+    class SelectNextDto { }
+
+    #endregion
+
     #region GoToDefinitionDto
 
     class GoToDefinitionDto {}

@@ -72,6 +72,12 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region SelectPrevious/Next 
+
+    class SelectPreviousDto { }
+    class SelectNextDto { }
+
+    #endregion
 
     #region GoToDefinitionDto
 

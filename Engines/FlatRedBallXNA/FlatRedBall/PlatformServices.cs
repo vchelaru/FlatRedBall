@@ -34,22 +34,9 @@ namespace FlatRedBall
             }
         }
 
-        public static bool BackStackEnabled { get; set; }
-
         public static void Initialize()
         {
-            // default value is back stack enabled false
-            // Update Oct 15, 2012
-            // This has caused some 
-            // confusing behavior and
-            // its default behavior is
-            // not what I want in Baron
-            // so I'm going to turn it off
-            // by default.  This is better than
-            // having another thing to maintain which
-            // I didn't write.
-            //BackStackEnabled = true;
-            BackStackEnabled = false;
+
 
 #if !SILVERLIGHT
             #region Windows Phone Vibration System

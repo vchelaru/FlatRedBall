@@ -302,16 +302,6 @@ namespace FlatRedBall.Screens
             {
                 mAccumulatedPausedTime += TimeManager.SecondDifference;
             }
-
-            // This needs to happen after popup activity
-            // in case the Screen creates a popup - we don't
-            // want 2 activity calls for one frame.  We also want
-            // to make sure that popups have the opportunity to handle
-            // back calls so that the base doesn't get it.
-            if (PlatformServices.BackStackEnabled && InputManager.BackPressed && !firstTimeCalled)
-            {
-                this.HandleBackNavigation();
-            }
         }
 
         public virtual void ActivityEditMode()

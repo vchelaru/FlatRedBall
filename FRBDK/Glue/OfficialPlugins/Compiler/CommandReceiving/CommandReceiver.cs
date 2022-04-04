@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
@@ -772,6 +773,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
         }
 
+
+        #endregion
+
+        #region SelectPrevious/Next
+
+        private static void HandleDto(SelectPreviousDto dto) => TreeNodeStackManager.Self.GoBack();
+        private static void HandleDto(SelectNextDto dto) => TreeNodeStackManager.Self.GoForward();
 
         #endregion
 
