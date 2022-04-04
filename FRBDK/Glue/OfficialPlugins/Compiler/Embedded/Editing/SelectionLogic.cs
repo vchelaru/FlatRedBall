@@ -197,13 +197,13 @@ namespace GlueControl.Editing
             {
                 // is it slow to do this every frame?
                 availableItems = SpriteManager.ManagedPositionedObjects
-                    .Where(item => item is CameraControllingEntity == false)
+                    // We check for null parents so we don't grab an object that is embedded inside an entity instance.
+                    .Where(item => item is CameraControllingEntity == false && item.Parent == null)
                     .Concat(SpriteManager.AutomaticallyUpdatedSprites.Where(item => item.Parent == null))
                     .Concat(TextManager.AutomaticallyUpdatedTexts.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisibleRectangles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisibleCircles.Where(item => item.Parent == null))
                     .Concat(ShapeManager.VisiblePolygons.Where(item => item.Parent == null))
-
                     ;
             }
             else if (elementEditingMode == ElementEditingMode.EditingEntity)

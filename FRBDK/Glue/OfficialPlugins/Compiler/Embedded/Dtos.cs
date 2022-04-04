@@ -370,4 +370,15 @@ namespace GlueControl.Dtos
         public List<string> Commands { get; set; } = new List<string>();
     }
     #endregion
+
+    #region GlueCommandsDto
+
+    public class GlueCommandDto
+    {
+        public string Method { get; set; }
+        public List<object> Parameters { get; set; } = new List<object>();
+
+    }
+
+    #endregion
 }

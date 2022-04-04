@@ -698,6 +698,12 @@ namespace GlueControl
             var newInstance = CreateEntity(entityGameType);
             newInstance.X = original.X;
             newInstance.Y = original.Y;
+            newInstance.RotationZ = original.RotationZ;
+
+            newInstance.RelativeX = original.RelativeX;
+            newInstance.RelativeY = original.RelativeY;
+            newInstance.RelativeRotationZ = original.RelativeRotationZ;
+
             newInstance.Name = newName;
 
 
@@ -783,8 +789,7 @@ namespace GlueControl
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
 
-            AddFloatValue(addObjectDto, "X", original.X);
-            AddFloatValue(addObjectDto, "Y", original.Y);
+            SetPositionValuesOnDto(newInstance, addObjectDto);
 
             var properties = newInstance.GetType().GetProperties();
 
@@ -903,13 +908,9 @@ namespace GlueControl
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
 
-            AddFloatValue(addObjectDto, "X", x);
-            AddFloatValue(addObjectDto, "Y", y);
+            SetPositionValuesOnDto(toReturn, addObjectDto);
 
             //var fields = toReturn.GetType().GetFields();
-
-
-
 
             #endregion
 
@@ -941,8 +942,8 @@ namespace GlueControl
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Circle";
 
-            AddFloatValue(addObjectDto, "X", newCircle.X);
-            AddFloatValue(addObjectDto, "Y", newCircle.Y);
+            SetPositionValuesOnDto(newCircle, addObjectDto);
+
             AddFloatValue(addObjectDto, "Radius", newCircle.Radius);
 
             #endregion
@@ -976,8 +977,9 @@ namespace GlueControl
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.AxisAlignedRectangle";
 
-            AddFloatValue(addObjectDto, "X", newRectangle.X);
-            AddFloatValue(addObjectDto, "Y", newRectangle.Y);
+            SetPositionValuesOnDto(newRectangle, addObjectDto);
+
+
             AddFloatValue(addObjectDto, "Width", newRectangle.Width);
             AddFloatValue(addObjectDto, "Height", newRectangle.Height);
 
@@ -1011,8 +1013,7 @@ namespace GlueControl
             // todo - need to eventually include sub namespaces for entities in folders
             addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Polygon";
 
-            AddFloatValue(addObjectDto, "X", newPolygon.X);
-            AddFloatValue(addObjectDto, "Y", newPolygon.Y);
+            SetPositionValuesOnDto(newPolygon, addObjectDto);
 
             AddValueToDto(addObjectDto, "Points", typeof(List<Point>).ToString(),
                 Newtonsoft.Json.JsonConvert.SerializeObject(newPolygon.Points.ToList()));
@@ -1045,8 +1046,7 @@ namespace GlueControl
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             addObjectDto.SourceClassType = "FlatRedBall.Sprite";
 
-            AddFloatValue(addObjectDto, "X", newSprite.X);
-            AddFloatValue(addObjectDto, "Y", newSprite.Y);
+            SetPositionValuesOnDto(newSprite, addObjectDto);
             if (newSprite.TextureScale > 0)
             {
                 AddFloatValue(addObjectDto, nameof(newSprite.TextureScale), newSprite.TextureScale);
@@ -1164,8 +1164,7 @@ namespace GlueControl
             addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
             addObjectDto.SourceClassType = typeof(FlatRedBall.Graphics.Text).FullName;
 
-            AddFloatValue(addObjectDto, "X", newText.X);
-            AddFloatValue(addObjectDto, "Y", newText.Y);
+            SetPositionValuesOnDto(newText, addObjectDto);
 
             AddValueToDto(addObjectDto, nameof(Text.DisplayText), "string", newText.DisplayText);
 
@@ -1204,6 +1203,20 @@ namespace GlueControl
             addDtoList.Add(addObjectDto);
 
             return newText;
+        }
+
+        private void SetPositionValuesOnDto(PositionedObject newInstance, AddObjectDto addObjectDto)
+        {
+            if (Managers.GlueState.Self.CurrentElement is ScreenSave)
+            {
+                AddFloatValue(addObjectDto, "X", newInstance.X);
+                AddFloatValue(addObjectDto, "Y", newInstance.Y);
+            }
+            else
+            {
+                AddFloatValue(addObjectDto, "X", newInstance.RelativeX);
+                AddFloatValue(addObjectDto, "Y", newInstance.RelativeY);
+            }
         }
 
         #endregion

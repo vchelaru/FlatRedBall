@@ -806,5 +806,22 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         }
 
         #endregion
+
+        #region GlueCommandDto
+
+        private static async void HandleDto(GlueCommandDto dto)
+        {
+            var method = typeof(GlueCommands).GetMethod(dto.Method);
+
+            List<object> parameters = new List<object>();
+            foreach(var parameter in dto.Parameters)
+            {
+                parameters.Add(parameter);
+            }
+
+            method.Invoke(GlueCommands.Self, parameters.ToArray());
+        }
+
+        #endregion
     }
 }

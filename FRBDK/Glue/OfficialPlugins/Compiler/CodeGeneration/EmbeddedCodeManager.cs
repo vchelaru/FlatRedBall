@@ -31,6 +31,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Editing.Guides.cs");
 
+            SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueState.cs");
 
 
@@ -46,19 +47,12 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Editing.Visuals.Arrow.cs");
 
-
-
-
-
+            SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
 
             SaveEmbeddedFile("GlueControlManager.cs");
 
-
-
-
             SaveEmbeddedFile("InstanceLogic.cs");
 
-            SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
 
             SaveEmbeddedFile("Models.CustomVariable.cs");
 
