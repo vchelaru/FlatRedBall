@@ -115,9 +115,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         case nameof(SelectObjectDto):
                             HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));
                             break;
-                        case nameof(RemoveObjectDto):
-                            HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(dtoSerialized));
-                            break;
                         case nameof(ModifyCollisionDto):
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
                             break;
@@ -204,15 +201,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Remove Object
 
-        private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        //private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private static async void HandleDto(RemoveObjectDto removeObjectDto)
         {
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            if(screen != null)
+            GlueElement elementToRemoveFrom = await CommandSender.GetCurrentInGameScreen();
+            elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
+            if(elementToRemoveFrom != null)
             {
                 await TaskManager.Self.AddAsync(() =>
                 {
                     var objectsToRemove = removeObjectDto.ObjectNames
-                        .Select(objectName => screen.GetNamedObjectRecursively(objectName))
+                        .Select(objectName => elementToRemoveFrom.GetNamedObjectRecursively(objectName))
                         .Where(item => item != null)
                         .ToList();
 
