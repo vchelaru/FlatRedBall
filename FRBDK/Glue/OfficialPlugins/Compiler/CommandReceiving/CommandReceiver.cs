@@ -102,7 +102,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                                 ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
                                 screen = screen ?? GlueState.Self.CurrentScreenSave;
 
-                                HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, element:screen);
+                                await HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, element:screen);
                             }
 
                             break;
