@@ -99,7 +99,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                                 var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dtoSerialized);
                                 var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dtoSerialized);
 
-                                ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
+                                ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
                                 screen = screen ?? GlueState.Self.CurrentScreenSave;
 
                                 await HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, element:screen);
@@ -228,7 +228,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, GlueElement element)
         {
             element = element ?? GlueState.Self.CurrentElement;
-            return TaskManager.Self.AddAsync(() =>
+            return TaskManager.Self.AddAsync(async () =>
             {
                 var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, element);
 
@@ -274,9 +274,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 data.GlueElement.NamedObjects.Add(nos);
 
 
-                var renameResponseTask = CommandSender.Send<GlueVariableSetDataResponse>(data);
-                renameResponseTask.Wait();
-                var result = renameResponseTask.Result?.Data;
+                var generalResponse = await CommandSender.Send<GlueVariableSetDataResponse>(data);
+                var result = generalResponse.Data;
 
                 if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
                 {
