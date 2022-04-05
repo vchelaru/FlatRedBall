@@ -34,14 +34,16 @@ namespace FlatRedBall.Glue.Tasks
 
         public bool IsCancelled { get; set; }
 
-        public abstract Task DoAction();
+        // Named in a very particular way so that it can be checked
+        // in the TaskManager and not have any name collision.
+        internal abstract Task Do_Action_Internal();
     }
 
     public class GlueTask : GlueTaskBase
     {
         public Action Action { get; set; }
 
-        public override Task DoAction()
+        internal override Task Do_Action_Internal()
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
@@ -60,7 +62,7 @@ namespace FlatRedBall.Glue.Tasks
     {
         public Func<T> Func { get; set; }
 
-        public override Task DoAction()
+        internal override Task Do_Action_Internal()
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
@@ -80,7 +82,7 @@ namespace FlatRedBall.Glue.Tasks
     {
         public Func<Task> Func { get; set; }
 
-        public override async Task DoAction()
+        internal override async Task Do_Action_Internal()
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {
@@ -98,7 +100,7 @@ namespace FlatRedBall.Glue.Tasks
     {
         public Func<Task<T>> Func { get; set; }
 
-        public override async Task DoAction()
+        internal override async Task Do_Action_Internal()
         {
             if (DoOnUiThread && !TaskManager.Self.IsOnUiThread)
             {

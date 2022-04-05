@@ -46,14 +46,14 @@ namespace OfficialPlugins.Compiler.Managers
 
         public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 try
                 {
                     var dto = new GlueVariableSetDataList();
                     dto.Data.AddRange(listOfVariables);
 
-                    var sendGeneralResponse = CommandSender.Send(dto).Result;
+                    var sendGeneralResponse = await CommandSender.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)

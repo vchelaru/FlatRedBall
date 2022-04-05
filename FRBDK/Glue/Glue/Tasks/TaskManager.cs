@@ -235,7 +235,7 @@ namespace FlatRedBall.Glue.Managers
                 if(markAsCurrent) CurrentlyRunningTask = task;
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
                 task.TimeStarted = DateTime.Now;
-                await task.DoAction();
+                await task.Do_Action_Internal();
                 task.TimeEnded = DateTime.Now;
                 // Set it to null before raising the event so that the TaskCount uses a null object.
                 if (markAsCurrent) CurrentlyRunningTask = null;
@@ -600,17 +600,44 @@ namespace FlatRedBall.Glue.Managers
             }
 
             var stackTrace = new System.Diagnostics.StackTrace();
-            for(int i = stackTrace.FrameCount - 1; i > -1; i--)
+
+
+            /* For debugging:
+             * 
+            List<string> frameTexts = new List<string>();
+            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
             {
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
-                if(frameText.StartsWith("RunOnUiThreadTasked") || 
+
+                frameTexts.Add(frameText);
+            }
+
+            foreach(var frameText in frameTexts)
+            { 
+                if (frameText.StartsWith("RunOnUiThreadTasked ") || 
                     // Vic says - not sure why but sometimes thread IDs change when in an async function.
                     // So I thought I could check if the thread is the main task thread, but this won't work
                     // because command receiving from the game runs on a separate thread, so that would behave
                     // as if it's tasked, even though it's not
                     // so we check this:
-                    frameText.StartsWith("DoTaskManagerLoop"))
+                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " "))
+                {
+                    return true;
+                }
+            }
+            */
+            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            {
+                var frame = stackTrace.GetFrame(i);
+                var frameText = frame.ToString();
+                if (frameText.StartsWith("RunOnUiThreadTasked") ||
+                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
+                    // So I thought I could check if the thread is the main task thread, but this won't work
+                    // because command receiving from the game runs on a separate thread, so that would behave
+                    // as if it's tasked, even though it's not
+                    // so we check this:
+                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ")) ;
                 {
                     return true;
                 }
