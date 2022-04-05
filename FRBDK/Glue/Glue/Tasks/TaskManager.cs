@@ -196,13 +196,13 @@ namespace FlatRedBall.Glue.Managers
 
         public TaskManager()
         {
-            new Thread(Loop)
+            new Thread(DoTaskManagerLoop)
             {
                 IsBackground = true
             }.Start();
         }
 
-        async void Loop()
+        async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
@@ -604,23 +604,19 @@ namespace FlatRedBall.Glue.Managers
             {
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
-                if(frameText.StartsWith("RunOnUiThreadTasked"))
+                if(frameText.StartsWith("RunOnUiThreadTasked") || 
+                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
+                    // So I thought I could check if the thread is the main task thread, but this won't work
+                    // because command receiving from the game runs on a separate thread, so that would behave
+                    // as if it's tasked, even though it's not
+                    // so we check this:
+                    frameText.StartsWith("DoTaskManagerLoop"))
                 {
                     return true;
                 }
             }
 
-            // It seems async calls may change the thread ID from the task so we can't rely on the thread ID matching SyncTaskThreadId
-            // Therefore, we'll just make sure we are not on UI thread:
-
-            if(currentThreadId == global::Glue.MainGlueWindow.UiThreadId)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return false;
         }
 
         public void WarnIfNotInTask()

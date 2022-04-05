@@ -1563,76 +1563,85 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, IElement element)
         {
-
-            foreach (NamedObjectSave nos in namedObjectList)
+            try
             {
-                if (!nos.IsDisabled && nos.IsFullyDefined && nos.Instantiate)
+                foreach (NamedObjectSave nos in namedObjectList)
                 {
-
-                    // We should put the conditional compilation symbol before adding to a list:
-                    AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
-
-
-                    // Sept 24, 2012
-                    // This used to be
-                    // in LateInitialize,
-                    // but we moved it here.
-                    // See the LateInitialize
-                    // method for more information.
-                    if (container != null && !nos.InstantiatedByBase && nos.IsContainer == false)
+                    if (!nos.IsDisabled && nos.IsFullyDefined && nos.Instantiate)
                     {
-                        bool shouldSkip = nos.SourceType == SourceType.File &&
-                            string.IsNullOrEmpty(nos.SourceFile);
-                        if (!shouldSkip)
+
+                        // We should put the conditional compilation symbol before adding to a list:
+                        AddIfConditionalSymbolIfNecesssary(codeBlock, nos);
+
+
+                        // Sept 24, 2012
+                        // This used to be
+                        // in LateInitialize,
+                        // but we moved it here.
+                        // See the LateInitialize
+                        // method for more information.
+                        if (container != null && !nos.InstantiatedByBase && nos.IsContainer == false)
                         {
-                            // pooled entities have this method called multiple times. We want to make sure
-                            // that instances aren't added multiple times to this list, so we need to add an 
-                            // if-statement if this is pooled.
-                            bool isPooled = element is EntitySave && ((EntitySave)element).PooledByFactory;
-
-                            if(isPooled)
+                            bool shouldSkip = nos.SourceType == SourceType.File &&
+                                string.IsNullOrEmpty(nos.SourceFile);
+                            if (!shouldSkip)
                             {
-                                codeBlock = codeBlock.If($"!{container.InstanceName}.Contains({nos.InstanceName})");
-                            }
+                                // pooled entities have this method called multiple times. We want to make sure
+                                // that instances aren't added multiple times to this list, so we need to add an 
+                                // if-statement if this is pooled.
+                                bool isPooled = element is EntitySave && ((EntitySave)element).PooledByFactory;
+
+                                if(isPooled)
+                                {
+                                    codeBlock = codeBlock.If($"!{container.InstanceName}.Contains({nos.InstanceName})");
+                                }
 
 
-                            codeBlock.Line(container.InstanceName + ".Add(" + nos.InstanceName + ");");
+                                codeBlock.Line(container.InstanceName + ".Add(" + nos.InstanceName + ");");
 
 
-                            if (isPooled)
-                            {
-                                codeBlock = codeBlock.End();
+                                if (isPooled)
+                                {
+                                    codeBlock = codeBlock.End();
+                                }
                             }
                         }
+
+
+                        EntitySave throwAway = null;
+                        ReferencedFileSave rfsReferenced = GetReferencedFileSaveReferencedByNamedObject(nos, element, ref throwAway);
+
+
+                        bool wrappInIf = nos.SetByDerived || nos.SetByContainer;
+                        // This may be a SetByDerived NOS, so it could be null
+                        if (wrappInIf)
+                        {
+                            codeBlock = codeBlock
+                                .If(nos.InstanceName + "!= null");
+                        }
+
+                        if (nos.IsContainer == false)
+                        {
+                            WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced, element);
+                        }
+
+                        GetPostInitializeForNamedObjectList(nos, codeBlock);
+
+                        GetPostInitializeForNamedObjectList(nos, nos.ContainedObjects, codeBlock, element);
+                        if (wrappInIf)
+                        {
+                            codeBlock = codeBlock.End();
+                        }
+                        AddEndIfIfNecessary(codeBlock, nos);
                     }
-
-
-                    EntitySave throwAway = null;
-                    ReferencedFileSave rfsReferenced = GetReferencedFileSaveReferencedByNamedObject(nos, element, ref throwAway);
-
-
-                    bool wrappInIf = nos.SetByDerived || nos.SetByContainer;
-                    // This may be a SetByDerived NOS, so it could be null
-                    if (wrappInIf)
-                    {
-                        codeBlock = codeBlock
-                            .If(nos.InstanceName + "!= null");
-                    }
-
-                    if (nos.IsContainer == false)
-                    {
-                        WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced, element);
-                    }
-
-                    GetPostInitializeForNamedObjectList(nos, codeBlock);
-
-                    GetPostInitializeForNamedObjectList(nos, nos.ContainedObjects, codeBlock, element);
-                    if (wrappInIf)
-                    {
-                        codeBlock = codeBlock.End();
-                    }
-                    AddEndIfIfNecessary(codeBlock, nos);
                 }
+            }
+            catch(Exception ex)
+            {
+
+
+                System.Diagnostics.Debugger.Break();
+                throw ex;
             }
         }
 

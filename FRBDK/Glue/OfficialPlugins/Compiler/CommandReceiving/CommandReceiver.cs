@@ -54,7 +54,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static void Receive(string message, int gamePortNumber)
+        private static async void Receive(string message, int gamePortNumber)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;
@@ -79,7 +79,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                 });
 
-            TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 if(matchingMethod != null)
                 {
@@ -107,10 +107,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                             break;
                         case nameof(SetVariableDto):
-                            HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
+                            await HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
                             break;
                         case nameof(SetVariableDtoList):
-                            HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
+                            await HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
                             break;
                         case nameof(SelectObjectDto):
                             HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));

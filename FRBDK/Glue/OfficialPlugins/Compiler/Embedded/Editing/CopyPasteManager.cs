@@ -177,7 +177,7 @@ namespace GlueControl.Editing
                 {
                     instance.AttachTo(parent);
                 }
-                var isPastedInNewObject = CopiedObjectsOwner != GlueState.Self.CurrentElement;
+                var isPastedInNewObject = CopiedObjectsOwner?.Name != GlueState.Self.CurrentElement?.Name;
 
                 if (isPastedInNewObject)
                 {
