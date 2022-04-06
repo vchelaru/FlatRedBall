@@ -35,6 +35,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 mainControl.RefreshCheckboxes();
             }
             tab.Show();
+            tab.Focus();
         }
 
         private void HandleFinishedDownloading(AllFeed allFeed, DownloadState state)
