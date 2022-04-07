@@ -534,7 +534,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             double width = window.Width;
             if (double.IsNaN(width))
             {
-                width = 0;
+                width = 64;
             }
             double height = window.Height;
             if (double.IsNaN(height))
@@ -556,7 +556,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 mousePositionY /= source.CompositionTarget.TransformToDevice.M22;
             }
 
-            window.Left = mousePositionX - width / 2;
+            window.Left = System.Math.Max(0, mousePositionX - width / 2);
             window.Top = mousePositionY - height / 2;
 
             window.ShiftWindowOntoScreen();
