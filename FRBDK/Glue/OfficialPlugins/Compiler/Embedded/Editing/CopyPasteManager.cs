@@ -185,8 +185,19 @@ namespace GlueControl.Editing
                     instance.X = Camera.Main.X;
                     instance.Y = Camera.Main.Y;
                     // move it and set its values
-                    var xInstruction = dto.InstructionSaves.FirstOrDefault(item => item.TargetName == "X");
-                    var yInstruction = dto.InstructionSaves.FirstOrDefault(item => item.TargetName == "Y");
+                    var xInstruction = dto.InstructionSaves.FirstOrDefault(item => item.Member == "X");
+                    var yInstruction = dto.InstructionSaves.FirstOrDefault(item => item.Member == "Y");
+
+                    void AddFloatValue(string memberName, float value)
+                    {
+                        dto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
+                        {
+                            Member = memberName,
+                            Type = "float",
+                            Value = value
+                        });
+                    }
+
                     if (entityViewingScreen != null)
                     {
                         instance.Z = parent.Z;
@@ -195,21 +206,38 @@ namespace GlueControl.Editing
                         {
                             xInstruction.Value = instance.RelativeX;
                         }
+                        else
+                        {
+                            AddFloatValue("X", instance.RelativeX);
+                        }
                         if (yInstruction != null)
                         {
                             yInstruction.Value = instance.RelativeY;
                         }
+                        else
+                        {
+                            AddFloatValue("Y", instance.RelativeY);
+                        }
 
                     }
-                    // else
+                    else
                     {
                         if (xInstruction != null)
                         {
                             xInstruction.Value = instance.X;
                         }
+                        else
+                        {
+                            AddFloatValue("X", instance.X);
+                        }
                         if (yInstruction != null)
                         {
                             yInstruction.Value = instance.Y;
+                        }
+                        else
+                        {
+                            AddFloatValue("Y", instance.Y);
+
                         }
                     }
 

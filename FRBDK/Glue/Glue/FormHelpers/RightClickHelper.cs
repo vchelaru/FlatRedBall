@@ -387,8 +387,9 @@ namespace FlatRedBall.Glue.FormHelpers
             else if(asTreeNode.IsCodeNode())
             {
                 var toReturn = Parent.GetRelativeFilePath();
-                // take of "code" and the name of the screen
+                // take off "code"...
                 toReturn = FileManager.GetDirectory(toReturn, RelativeType.Relative);
+                // ... and the name of the element
                 toReturn = FileManager.GetDirectory(toReturn, RelativeType.Relative);
                 toReturn = toReturn + Text;
                 return toReturn;

@@ -724,14 +724,28 @@ namespace GlueControl.Editing
 
                 if (foundObject == null && ScreenManager.CurrentScreen is Screens.EntityViewingScreen entityViewingScreen)
                 {
-                    foundObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(
-                        entityViewingScreen.CurrentEntity, objectName) as INameable;
+                    try
+                    {
+                        foundObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(
+                            entityViewingScreen.CurrentEntity, objectName) as INameable;
+                    }
+                    catch
+                    {
+
+                    }
                 }
+            }
+
+            if (foundObject == null)
+            {
+                // This object may not exist. Should we tell Glue? I guess...
+                Managers.GlueCommands.Self.PrintOutput($"Tried to get object by name {objectName} but couldn't find anything");
             }
 
             return foundObject;
 
         }
+
         void RemoveFromSelection(NamedObjectSave namedObject)
         {
             CurrentNamedObjects.Remove(namedObject);

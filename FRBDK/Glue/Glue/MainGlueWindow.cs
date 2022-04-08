@@ -378,7 +378,7 @@ namespace Glue
             var wasInTask = TaskManager.Self.IsInTask();
             Task toReturn = Task.CompletedTask;
 
-            base.Invoke((MethodInvoker)delegate
+            var asyncResult = base.BeginInvoke((MethodInvoker)delegate
             {
                 try
                 {
@@ -400,6 +400,8 @@ namespace Glue
                     // otherwise, we don't care, they're exiting
                 }
             });
+
+            asyncResult.AsyncWaitHandle.WaitOne();
 
             return toReturn;
         }
