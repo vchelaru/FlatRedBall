@@ -12,7 +12,14 @@ namespace GlueControl.Managers
     {
         public static GlueCommands Self { get; }
 
+        public GluxCommands GluxCommands { get; private set; }
+
         static GlueCommands() => Self = new GlueCommands();
+
+        public GlueCommands()
+        {
+            GluxCommands = new GluxCommands();
+        }
 
         public void PrintOutput(string output)
         {

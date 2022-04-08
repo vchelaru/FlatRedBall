@@ -31,6 +31,7 @@
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueState.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
@@ -145,6 +146,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueState.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />

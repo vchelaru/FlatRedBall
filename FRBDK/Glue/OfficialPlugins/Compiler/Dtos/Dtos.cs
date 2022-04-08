@@ -378,14 +378,28 @@ namespace OfficialPlugins.Compiler.Dtos
     }
     #endregion
 
-    #region GlueCommandsDto
+    #region Glue/XXXX/CommandsDto
 
-    public class GlueCommandDto
+    public class GlueElementReference
+    {
+        public string ElementNameGlue { get; set; }
+    }
+
+    public class NamedObjectSaveReference
+    {
+        public GlueElementReference GlueElementReference { get; set; }
+        public string NamedObjectName { get; set; }
+    }
+
+    public class FacadeCommandBase
     {
         public string Method { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
-
     }
+
+    public class GlueCommandDto : FacadeCommandBase { }
+    public class GluxCommandDto : FacadeCommandBase { }
+
 
     #endregion
 }

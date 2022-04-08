@@ -373,12 +373,51 @@ namespace GlueControl.Dtos
 
     #region GlueCommandsDto
 
-    public class GlueCommandDto
+    public class GeneralResponse
+    {
+        public static GeneralResponse SuccessfulResponse => new GeneralResponse { Succeeded = true };
+        public static GeneralResponse UnsuccessfulResponse => new GeneralResponse { Succeeded = false };
+
+        public static GeneralResponse UnsuccessfulWith(string message) =>
+            new GeneralResponse { Succeeded = false, Message = message };
+
+        public bool Succeeded { get; set; }
+        public string Message { get; set; }
+
+        public void Fail(string failureMessage)
+        {
+            Succeeded = false;
+            Message = failureMessage;
+        }
+
+        public virtual void SetFrom(GeneralResponse generalResponse)
+        {
+            this.Succeeded = generalResponse.Succeeded;
+            this.Message = generalResponse.Message;
+        }
+
+    }
+
+    public class GlueElementReference
+    {
+        public string ElementNameGlue { get; set; }
+    }
+
+    public class NamedObjectSaveReference
+    {
+        public GlueElementReference GlueElementReference { get; set; }
+        public string NamedObjectName { get; set; }
+    }
+
+    public class FacadeCommandBase
     {
         public string Method { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
-
     }
+
+    public class GlueCommandDto : FacadeCommandBase { }
+    public class GluxCommandDto : FacadeCommandBase { }
+
 
     #endregion
 }

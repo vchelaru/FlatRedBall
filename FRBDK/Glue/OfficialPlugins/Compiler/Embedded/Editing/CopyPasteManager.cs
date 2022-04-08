@@ -60,53 +60,58 @@ namespace GlueControl.Editing
 
         private void HandlePaste(PositionedObject itemGrabbed)
         {
-            List<PositionedObject> newObjects = new List<PositionedObject>();
-            List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
-
-            for (int i = 0; i < CopiedObjects.Count; i++)
+            foreach (var copiedNos in CopiedNamedObjects)
             {
-                var copiedRuntimeObject = CopiedObjects[i];
-                var copiedGlueObject = CopiedNamedObjects[i];
-                HandlePasteIndividualObject(newObjects, addedItems, copiedRuntimeObject, copiedGlueObject);
+                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(copiedNos, CopiedObjectsOwner, GlueState.Self.CurrentElement);
             }
+            //List<PositionedObject> newObjects = new List<PositionedObject>();
+            //List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
 
-            // If we have something grabbed, then don't select the new items in Glue
-            foreach (var item in addedItems)
-            {
-                item.SelectNewObject = itemGrabbed == null;
-            }
+            //for (int i = 0; i < CopiedObjects.Count; i++)
+            //{
+            //    //var nos = 
+            //    var copiedRuntimeObject = CopiedObjects[i];
+            //    var copiedGlueObject = CopiedNamedObjects[i];
+            //    HandlePasteIndividualObject(newObjects, addedItems, copiedRuntimeObject, copiedGlueObject);
+            //}
 
-            GlueControlManager.Self.SendToGlue(addedItems);
+            //// If we have something grabbed, then don't select the new items in Glue
+            //foreach (var item in addedItems)
+            //{
+            //    item.SelectNewObject = itemGrabbed == null;
+            //}
 
-            // If the user is dragging objects around and pasting them, then we won't select
-            // pasted objects. If the user does a simple copy/paste without dragging, then select
-            // the new object.
-            var shouldSelectNewObjectsInGame = itemGrabbed == null;
+            //GlueControlManager.Self.SendToGlue(addedItems);
 
-            if (shouldSelectNewObjectsInGame)
-            {
-                var allNamedObjects = EditingManager.Self.CurrentGlueElement.AllNamedObjects.ToArray();
+            //// If the user is dragging objects around and pasting them, then we won't select
+            //// pasted objects. If the user does a simple copy/paste without dragging, then select
+            //// the new object.
+            //var shouldSelectNewObjectsInGame = itemGrabbed == null;
 
-                var isFirst = true;
-                foreach (var newObject in newObjects)
-                {
-                    var matchingNos = allNamedObjects.FirstOrDefault(item => item.InstanceName == newObject.Name);
-                    EditingManager.Self.Select(matchingNos, addToExistingSelection: !isFirst);
-                    isFirst = false;
-                }
-            }
-            else
-            {
-                if (CopiedObjects.Count > 0)
-                {
-                    // If at least one object was copied, then we sent that one object over to Glue. Glue will
-                    // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
-                    // so we re-send the select command on the first selected item. If only one item is selected, this will
-                    // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
-                    // support multi-selection.
-                    EditingManager.Self.RaiseObjectSelected();
-                }
-            }
+            //if (shouldSelectNewObjectsInGame)
+            //{
+            //    var allNamedObjects = EditingManager.Self.CurrentGlueElement.AllNamedObjects.ToArray();
+
+            //    var isFirst = true;
+            //    foreach (var newObject in newObjects)
+            //    {
+            //        var matchingNos = allNamedObjects.FirstOrDefault(item => item.InstanceName == newObject.Name);
+            //        EditingManager.Self.Select(matchingNos, addToExistingSelection: !isFirst);
+            //        isFirst = false;
+            //    }
+            //}
+            //else
+            //{
+            //    if (CopiedObjects.Count > 0)
+            //    {
+            //        // If at least one object was copied, then we sent that one object over to Glue. Glue will
+            //        // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
+            //        // so we re-send the select command on the first selected item. If only one item is selected, this will
+            //        // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
+            //        // support multi-selection.
+            //        EditingManager.Self.RaiseObjectSelected();
+            //    }
+            //}
         }
 
         private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems,

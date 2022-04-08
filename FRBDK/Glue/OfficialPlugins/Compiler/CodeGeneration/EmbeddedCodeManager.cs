@@ -22,21 +22,17 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Dtos.cs");
 
             SaveEmbeddedFile("Editing.CameraLogic.cs");
-
             SaveEmbeddedFile("Editing.CopyPasteManager.cs");
-
             SaveEmbeddedFile("Editing.EditingManager.cs");
-
             SaveEmbeddedFile("Editing.EditorVisuals.cs");
-
             SaveEmbeddedFile("Editing.Guides.cs");
 
             SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueState.cs");
+            SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
 
 
             SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs");
-
             SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs");
 
             SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs");
@@ -55,16 +51,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
 
             SaveEmbeddedFile("Models.CustomVariable.cs");
-
-            SaveEmbeddedFile("Models.NamedObjectSave.cs");
-
-            SaveEmbeddedFile("Models.StateSave.cs");
-
-            SaveEmbeddedFile("Models.StateSaveCategory.cs");
-
-            SaveEmbeddedFile("Models.CustomVariable.cs");
-
             SaveEmbeddedFile("Models.GlueElement.cs");
+            SaveEmbeddedFile("Models.NamedObjectSave.cs");
+            SaveEmbeddedFile("Models.StateSave.cs");
+            SaveEmbeddedFile("Models.StateSaveCategory.cs");
 
             SaveEmbeddedFile("Runtime.DynamicEntity.cs");
             // This was a typo in old projects:

@@ -3,6 +3,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math;
@@ -10,6 +11,7 @@ using Glue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.Managers;
@@ -18,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -805,19 +808,61 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        #region GlueCommandDto
+        #region Glue/XXXX/CommandDto
 
         private static async void HandleDto(GlueCommandDto dto)
         {
-            var method = typeof(GlueCommands).GetMethod(dto.Method);
+            HandleFacadeCommand(GlueCommands.Self, dto);
+        }
+        private static async void HandleDto(GluxCommandDto dto)
+        {
+            HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+        }
 
+        private static void HandleFacadeCommand(object target, FacadeCommandBase dto)
+        {
+            MethodInfo method = target.GetType().GetMethod(dto.Method);
+            var dtoParameters = dto.Parameters;
             List<object> parameters = new List<object>();
-            foreach(var parameter in dto.Parameters)
+            var methodParameters = method.GetParameters();
+
+            for (int i = 0; i < dtoParameters.Count; i++)
             {
-                parameters.Add(parameter);
+                var parameter = dtoParameters[i];
+                var parameterInfo = methodParameters[i];
+                var converted = Convert(parameter, parameterInfo);
+
+                parameters.Add(converted);
             }
 
-            method.Invoke(GlueCommands.Self, parameters.ToArray());
+            method.Invoke(target, parameters.ToArray());
+        }
+
+
+        private static object Convert(object parameter, ParameterInfo parameterInfo)
+        {
+            var converted = parameter;
+
+            if(parameter is JObject asJObject)
+            {
+                if(parameterInfo.ParameterType == typeof(NamedObjectSave))
+                {
+                    var reference = asJObject.ToObject<NamedObjectSaveReference>();
+
+                    var parentElement = ObjectFinder.Self.GetElement(reference.GlueElementReference.ElementNameGlue);
+                    var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == reference.NamedObjectName);
+
+                    converted = nos;
+                }
+                else if(parameterInfo.ParameterType == typeof(GlueElement))
+                {
+                    var reference = asJObject.ToObject<GlueElementReference>();
+
+                    var element = ObjectFinder.Self.GetElement(reference.ElementNameGlue);
+                    converted = element;
+                }
+            }
+            return converted;
         }
 
         #endregion

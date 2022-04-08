@@ -50,7 +50,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     }
     #endregion
 
-    class GluxCommands : IGluxCommands
+    public class GluxCommands : IGluxCommands
     {
         #region Fields / Properties
 
