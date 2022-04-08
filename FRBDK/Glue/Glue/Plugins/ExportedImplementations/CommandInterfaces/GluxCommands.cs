@@ -1451,33 +1451,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
-        public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
+        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
         {
             bool succeeded = true;
 
             //// moving to another element, so let's copy
-            NamedObjectSave clonedNos = nos.Clone();
+            NamedObjectSave newNos = nos.Clone();
 
-            UpdateNosAttachmentAfterDragDrop(clonedNos, targetElement);
+            UpdateNosAttachmentAfterDragDrop(newNos, targetElement);
 
             //clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
             FlatRedBall.Utilities.StringFunctions.MakeNameUnique(
-                clonedNos, targetElement.AllNamedObjects);
+                newNos, targetElement.AllNamedObjects);
 
-            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(clonedNos, targetElement);
+            var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
 
             if (listOfThisType != null)
             {
-                listOfThisType.ContainedObjects.Add(clonedNos);
+                listOfThisType.ContainedObjects.Add(newNos);
             }
             else
             {
-                targetElement.NamedObjects.Add(clonedNos);
+                targetElement.NamedObjects.Add(newNos);
             }
 
             var referenceCheck = ProjectManager.CheckForCircularObjectReferences(targetElement);
 
-            var generalResponse = new GeneralResponse();
+            var generalResponse = new ToolsUtilities.GeneralResponse<NamedObjectSave>();
 
             if (referenceCheck == ProjectManager.CheckResult.Failed)
             {
@@ -1487,11 +1487,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 //MessageBox.Show("This movement would result in a circular reference");
                 if (listOfThisType != null)
                 {
-                    listOfThisType.ContainedObjects.Remove(clonedNos);
+                    listOfThisType.ContainedObjects.Remove(newNos);
                 }
                 else
                 {
-                    targetElement.NamedObjects.Remove(clonedNos);
+                    targetElement.NamedObjects.Remove(newNos);
                 }
             }
 
@@ -1504,23 +1504,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // see if there is a Layer with the same-name
                 // but we maybe shouldn't assume that they mean
                 // the same thing.
-                clonedNos.LayerOn = null;
+                newNos.LayerOn = null;
 
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
 
                 GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCode(targetElement as GlueElement);
 
-                PluginManager.ReactToNewObject(clonedNos);
+                PluginManager.ReactToNewObject(newNos);
                 if (listOfThisType != null)
                 {
-                    PluginManager.ReactToObjectContainerChanged(clonedNos, listOfThisType);
+                    PluginManager.ReactToObjectContainerChanged(newNos, listOfThisType);
                 }
 
                 if (save)
                 {
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }
+                generalResponse.Data = newNos;
             }
 
             generalResponse.Succeeded = succeeded;

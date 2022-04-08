@@ -1328,7 +1328,27 @@ namespace GlueControl
 
             try
             {
-                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                // special case X and Y if attached
+                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && instance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
+                {
+                    if (variableName == "X")
+                    {
+                        asPositionedObject.RelativeX = (float)variableValue;
+                    }
+                    else if(variableName == "Y")
+                    {
+                        asPositionedObject.RelativeY = (float)variableValue;
+                    }
+                    else if(variableName == "RotationZ")
+                    {
+                        asPositionedObject.RelativeRotationZ = (float)variableValue;
+                    }
+
+                }
+                else
+                {
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                }
             }
             catch (MemberAccessException)
             {

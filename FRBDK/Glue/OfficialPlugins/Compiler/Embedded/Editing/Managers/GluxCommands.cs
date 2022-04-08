@@ -12,10 +12,7 @@ namespace GlueControl.Managers
         public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
         {
             // convert nos and target element to references
-            var nosReference = new NamedObjectSaveReference();
-            nosReference.NamedObjectName = nos.InstanceName;
-            nosReference.GlueElementReference = new GlueElementReference();
-            nosReference.GlueElementReference.ElementNameGlue = nosOwner.Name;
+            var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
             var targetElementReference = new GlueElementReference();
             targetElementReference.ElementNameGlue = targetElement.Name;
@@ -23,6 +20,13 @@ namespace GlueControl.Managers
 
             // Until we get real 2 way communication working:
             return GeneralResponse.SuccessfulResponse;
+        }
+
+        public void SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value)
+        {
+            var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
+
+            SendToGame(nameof(SetVariableOn), nosReference, memberName, value);
         }
 
 

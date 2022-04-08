@@ -22,6 +22,7 @@ using GlueControl.Editing;
 using FlatRedBall.Utilities;
 
 #if SupportsEditMode
+using GlueControl.Managers;
 using Newtonsoft.Json;
 #endif
 
@@ -328,47 +329,56 @@ namespace GlueControl
         {
 #if SupportsEditMode
 
-            var screen = ScreenManager.CurrentScreen;
-            var isEditingEntity =
-                screen.GetType() == typeof(Screens.EntityViewingScreen);
-            string ownerType;
-            if(isEditingEntity)
-            {
-                var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
-                var entity = (entityScreen.CurrentEntity as PositionedObject);
-
-                if (entity is GlueControl.Runtime.DynamicEntity dynamicEntity)
-                {
-                    ownerType = dynamicEntity.EditModeType;
-                }
-                else
-                {
-                    // todo - handle inheritance
-                    ownerType = entity.GetType().FullName;
-                }
-            }
-            else
-            {
-                ownerType = screen.GetType().FullName;
-
-            }
-
-            var dtoList = new SetVariableDtoList();
-
             foreach(var change in propertyChangeArgs)
             {
-                var dto = new SetVariableDto();
-                dto.InstanceOwner = ownerType;
-                dto.ObjectName = change.Nameable.Name;
-                dto.VariableName = change.PropertyName;
-                dto.VariableValue = change.PropertyValue;
-                dto.Type = change.PropertyValue?.GetType().Name;
-
-                dtoList.SetVariableList.Add(dto);
+                Managers.GlueCommands.Self.GluxCommands.SetVariableOn(
+                    new Models.NamedObjectSave { InstanceName = change.Nameable.Name },
+                    GlueState.Self.CurrentElement,
+                    change.PropertyName,
+                    change.PropertyValue);
             }
 
+            //var screen = ScreenManager.CurrentScreen;
+            //var isEditingEntity =
+            //    screen.GetType() == typeof(Screens.EntityViewingScreen);
+            //string ownerType;
+            //if(isEditingEntity)
+            //{
+            //    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+            //    var entity = (entityScreen.CurrentEntity as PositionedObject);
 
-            SendToGlue(dtoList);
+            //    if (entity is GlueControl.Runtime.DynamicEntity dynamicEntity)
+            //    {
+            //        ownerType = dynamicEntity.EditModeType;
+            //    }
+            //    else
+            //    {
+            //        // todo - handle inheritance
+            //        ownerType = entity.GetType().FullName;
+            //    }
+            //}
+            //else
+            //{
+            //    ownerType = screen.GetType().FullName;
+
+            //}
+
+            //var dtoList = new SetVariableDtoList();
+
+            //foreach(var change in propertyChangeArgs)
+            //{
+            //    var dto = new SetVariableDto();
+            //    dto.InstanceOwner = ownerType;
+            //    dto.ObjectName = change.Nameable.Name;
+            //    dto.VariableName = change.PropertyName;
+            //    dto.VariableValue = change.PropertyValue;
+            //    dto.Type = change.PropertyValue?.GetType().Name;
+
+            //    dtoList.SetVariableList.Add(dto);
+            //}
+
+
+            //SendToGlue(dtoList);
 
             // the game used to set this itself, but the game doesn't know which screen defines an object
             // so let Glue hande that

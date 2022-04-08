@@ -407,6 +407,16 @@ namespace GlueControl.Dtos
     {
         public GlueElementReference GlueElementReference { get; set; }
         public string NamedObjectName { get; set; }
+
+        public static NamedObjectSaveReference From(NamedObjectSave nos, GlueElement owner)
+        {
+            var nosReference = new NamedObjectSaveReference();
+            nosReference.NamedObjectName = nos.InstanceName;
+            nosReference.GlueElementReference = new GlueElementReference();
+            nosReference.GlueElementReference.ElementNameGlue = owner.Name;
+
+            return nosReference;
+        }
     }
 
     public class FacadeCommandBase
