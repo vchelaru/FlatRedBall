@@ -58,11 +58,26 @@ namespace GlueControl.Editing
 
         #region Paste
 
-        private void HandlePaste(PositionedObject itemGrabbed)
+        private async void HandlePaste(PositionedObject itemGrabbed)
         {
+            NamedObjectSave newObjectToSelect = null;
             foreach (var copiedNos in CopiedNamedObjects)
             {
-                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(copiedNos, CopiedObjectsOwner, GlueState.Self.CurrentElement);
+                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
+                    copiedNos, CopiedObjectsOwner, GlueState.Self.CurrentElement);
+
+                if (response.Succeeded)
+                {
+                    if (itemGrabbed == null)
+                    {
+                        newObjectToSelect = response.Data;
+                    }
+                }
+            }
+
+            if (newObjectToSelect != null)
+            {
+                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, GlueState.Self.CurrentElement);
             }
             //List<PositionedObject> newObjects = new List<PositionedObject>();
             //List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();

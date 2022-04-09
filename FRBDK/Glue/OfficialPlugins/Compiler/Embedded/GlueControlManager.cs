@@ -41,6 +41,12 @@ namespace GlueControl
             public string Command { get; set; }
         }
 
+        public class AwaitedResponse
+        {
+            public SemaphoreSlim Semaphore { get; set; }
+            public object Response { get; set; }
+        }
+
         #endregion
 
         #region Fields/Properties
@@ -51,7 +57,7 @@ namespace GlueControl
             = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager;
 
-        ConcurrentDictionary<int, SemaphoreSlim> AwaitedResponses = new ConcurrentDictionary<int, SemaphoreSlim>();
+        ConcurrentDictionary<int, AwaitedResponse> AwaitedResponses = new ConcurrentDictionary<int, AwaitedResponse>();
 
         public static GlueControlManager Self { get; private set; }
 
@@ -469,29 +475,39 @@ namespace GlueControl
         }
 
         int nextRespondableId = 1;
-        public async Task SendToGlue(RespondableDto respondableDto)
+        public async Task<object> SendToGlue(RespondableDto respondableDto)
         {
             var semaphoreSlim = new SemaphoreSlim(0, 1);
 
             var idToUse = nextRespondableId;
             nextRespondableId++;
 
-            AwaitedResponses[idToUse] = semaphoreSlim;
+            var awaitedResponse = new AwaitedResponse
+            {
+                Semaphore = semaphoreSlim
+            };
+
+            AwaitedResponses[idToUse] = awaitedResponse;
+
             respondableDto.Id = idToUse;
 
             SendToGlue((object)respondableDto);
 
             await semaphoreSlim.WaitAsync();
-            AwaitedResponses.TryRemove(idToUse, out SemaphoreSlim _);
+            AwaitedResponses.TryRemove(idToUse, out AwaitedResponse _);
             semaphoreSlim.Dispose();
+
+            return awaitedResponse.Response;
             // return response?
         }
 
-        public void NotifyResponse(int id)
+        public void NotifyResponse(int id, object response)
         {
             if (AwaitedResponses.ContainsKey(id))
             {
-                AwaitedResponses[id].Release();
+                var awaitedResponse = AwaitedResponses[id];
+                awaitedResponse.Response = response;
+                awaitedResponse.Semaphore.Release();
             }
         }
 

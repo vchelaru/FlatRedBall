@@ -4,23 +4,27 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace GlueControl.Managers
 {
     internal class GluxCommands
     {
         // nosOwner is needed until we have support for ObjectFinder, which requires the full GlueProjectSave
-        public Task<GeneralResponse> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
+        public async Task<GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
         {
             // convert nos and target element to references
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
             var targetElementReference = new GlueElementReference();
             targetElementReference.ElementNameGlue = targetElement.Name;
-            SendToGame(nameof(CopyNamedObjectIntoElement), nosReference, targetElementReference, save);
+            var response = await SendToGame(nameof(CopyNamedObjectIntoElement), nosReference, targetElementReference, save);
 
-            // Until we get real 2 way communication working:
-            return Task.FromResult(GeneralResponse.SuccessfulResponse);
+            var responseAsJObject = response as JObject;
+            responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
+            var generalResponse = responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
+
+            return generalResponse;
         }
 
         public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value)
@@ -33,13 +37,14 @@ namespace GlueControl.Managers
         }
 
 
-        private async Task SendToGame(string caller = null, params object[] parameters)
+        private async Task<object> SendToGame(string caller = null, params object[] parameters)
         {
             var dto = new GluxCommandDto();
             dto.Method = caller;
             dto.Parameters.AddRange(parameters);
 
-            await GlueControlManager.Self.SendToGlue(dto);
+            var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
+            return objectResponse;
         }
     }
 }

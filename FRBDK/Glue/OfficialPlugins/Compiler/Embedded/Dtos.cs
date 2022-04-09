@@ -371,7 +371,7 @@ namespace GlueControl.Dtos
     }
     #endregion
 
-    #region GlueCommandsDto
+    #region Glue/XXXX/CommandsDto
 
     public class GeneralResponse
     {
@@ -398,6 +398,35 @@ namespace GlueControl.Dtos
 
     }
 
+    public class GeneralResponse<T> : GeneralResponse
+    {
+        public static new GeneralResponse<T> SuccessfulResponse => new GeneralResponse<T> { Succeeded = true };
+        public static new GeneralResponse<T> UnsuccessfulResponse => new GeneralResponse<T> { Succeeded = false };
+
+        public static new GeneralResponse<T> UnsuccessfulWith(string message) =>
+            new GeneralResponse<T> { Succeeded = false, Message = message };
+
+        public T Data { get; set; }
+
+        public GeneralResponse()
+        {
+            Data = default(T);
+        }
+
+        public override void SetFrom(GeneralResponse nonGenericResponse)
+        {
+            Data = default(T);
+
+            this.Succeeded = nonGenericResponse.Succeeded;
+            this.Message = nonGenericResponse.Message;
+        }
+
+        public GeneralResponse(GeneralResponse nonGenericResponse)
+        {
+            SetFrom(nonGenericResponse);
+        }
+
+    }
 
     public class TypedParameter
     {
@@ -437,17 +466,25 @@ namespace GlueControl.Dtos
     public class FacadeCommandBase : RespondableDto
     {
         public string Method { get; set; }
+        public string GetPropertyName { get; set; }
+        public string SetPropertyName { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
     }
 
     public class GlueCommandDto : FacadeCommandBase { }
     public class GluxCommandDto : FacadeCommandBase { }
+    public class GlueStateDto : FacadeCommandBase { }
 
 
     #endregion
 
 
     #region Base DTOs/Utilities
+
+    public class ResponseWithContentDto : RespondableDto
+    {
+        public string Content { get; set; }
+    }
 
     public class RespondableDto
     {

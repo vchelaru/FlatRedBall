@@ -819,50 +819,74 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }
 
+        private static async void HandleDto(GlueStateDto dto)
+        {
+            await HandleFacadeCommand(GlueState.Self, dto);
+        }
+
         private static async Task<object> HandleFacadeCommand(object target, FacadeCommandBase dto)
         {
-            MethodInfo method = target.GetType().GetMethod(dto.Method);
-            var dtoParameters = dto.Parameters;
-            List<object> parameters = new List<object>();
-            var methodParameters = method.GetParameters();
-
-            for (int i = 0; i < dtoParameters.Count; i++)
+            var targetType = target.GetType();
+            if(!string.IsNullOrEmpty( dto.Method ))
             {
-                var parameter = dtoParameters[i];
-                var parameterInfo = methodParameters[i];
-                var converted = Convert(parameter, parameterInfo);
+                MethodInfo method = targetType.GetMethod(dto.Method);
+                var dtoParameters = dto.Parameters;
+                List<object> parameters = new List<object>();
+                var methodParameters = method.GetParameters();
 
-                parameters.Add(converted);
+                for (int i = 0; i < dtoParameters.Count; i++)
+                {
+                    var parameter = dtoParameters[i];
+                    var parameterInfo = methodParameters[i];
+                    var converted = Convert(parameter, parameterInfo.ParameterType);
+
+                    parameters.Add(converted);
+                }
+
+                var methodResponse = method.Invoke(target, parameters.ToArray());
+
+                if(methodResponse is Task asTask)
+                {
+                    System.Diagnostics.Debugger.Break();
+
+                    await asTask;
+
+                    return null;
+                }
+                else
+                {
+
+                    var response = new ResponseWithContentDto();
+                    response.Id = -1;
+                    response.OriginalDtoId = dto.Id;
+                    if(methodResponse != null)
+                    {
+                        response.Content = JsonConvert.SerializeObject(methodResponse);
+                    }
+                    await CommandSender.Send(response);
+                    // todo - include the dto here
+                    return response;
+                }
             }
-
-            var methodResponse = method.Invoke(target, parameters.ToArray());
-
-            if(methodResponse is Task asTask)
+            else if(!string.IsNullOrEmpty(dto.SetPropertyName))
             {
-                System.Diagnostics.Debugger.Break();
+                PropertyInfo property = targetType.GetProperty(dto.SetPropertyName);
+                var parameter = dto.Parameters[0];
+                var converted = Convert(parameter, property.PropertyType);
 
-                await asTask;
+                property.SetValue(target, converted);
 
                 return null;
             }
-            else
-            {
 
-                var response = new RespondableDto();
-                response.Id = -1;
-                response.OriginalDtoId = dto.Id;
-
-                await CommandSender.Send(response);
-                // todo - include the dto here
-                return response;
-            }
+            return null;
         }
 
 
-        private static object Convert(object parameter, ParameterInfo parameterInfo)
+        private static object Convert(object parameter, Type reflectedParameterType)
         {
 
-            return Convert(parameter, parameterInfo.ParameterType.Name);
+            return Convert(parameter, reflectedParameterType.Name);
         }
 
         private static object Convert(object parameter, string typeName)

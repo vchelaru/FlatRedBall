@@ -124,7 +124,12 @@ namespace GlueControl
 
             if (dto is RespondableDto respondableDto && respondableDto.OriginalDtoId > 0)
             {
-                GlueControlManager.Self.NotifyResponse(respondableDto.OriginalDtoId);
+                object content = null;
+                if (respondableDto is ResponseWithContentDto dtoWithContent)
+                {
+                    content = JsonConvert.DeserializeObject(dtoWithContent.Content);
+                }
+                GlueControlManager.Self.NotifyResponse(respondableDto.OriginalDtoId, content);
             }
 
             return toReturn;

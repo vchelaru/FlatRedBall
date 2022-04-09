@@ -410,16 +410,23 @@ namespace OfficialPlugins.Compiler.Dtos
     public class FacadeCommandBase : RespondableDto
     {
         public string Method { get; set; }
+        public string GetPropertyName { get; set; }
+        public string SetPropertyName { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
     }
 
     public class GlueCommandDto : FacadeCommandBase { }
     public class GluxCommandDto : FacadeCommandBase { }
-
+    public class GlueStateDto : FacadeCommandBase { }
 
     #endregion
 
     #region Base DTOs/Utilities
+
+    public class ResponseWithContentDto : RespondableDto
+    {
+        public string Content { get; set; }
+    }
 
     public class RespondableDto
     {
