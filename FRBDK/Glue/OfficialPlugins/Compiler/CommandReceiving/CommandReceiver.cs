@@ -812,14 +812,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleDto(GlueCommandDto dto)
         {
-            HandleFacadeCommand(GlueCommands.Self, dto);
+            await HandleFacadeCommand(GlueCommands.Self, dto);
         }
         private static async void HandleDto(GluxCommandDto dto)
         {
-            HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+            await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }
 
-        private static void HandleFacadeCommand(object target, FacadeCommandBase dto)
+        private static async Task<object> HandleFacadeCommand(object target, FacadeCommandBase dto)
         {
             MethodInfo method = target.GetType().GetMethod(dto.Method);
             var dtoParameters = dto.Parameters;
@@ -835,7 +835,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 parameters.Add(converted);
             }
 
-            method.Invoke(target, parameters.ToArray());
+            var methodResponse = method.Invoke(target, parameters.ToArray());
+
+            if(methodResponse is Task asTask)
+            {
+                System.Diagnostics.Debugger.Break();
+
+                await asTask;
+
+                return null;
+            }
+            else
+            {
+
+                var response = new RespondableDto();
+                response.Id = -1;
+                response.OriginalDtoId = dto.Id;
+
+                await CommandSender.Send(response);
+                // todo - include the dto here
+                return response;
+            }
         }
 
 

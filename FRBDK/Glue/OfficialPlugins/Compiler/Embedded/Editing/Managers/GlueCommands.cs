@@ -10,9 +10,15 @@ namespace GlueControl.Managers
 {
     internal class GlueCommands
     {
+        #region Fields/properties
+
         public static GlueCommands Self { get; }
 
         public GluxCommands GluxCommands { get; private set; }
+
+        #endregion
+
+        #region  Constructors
 
         static GlueCommands() => Self = new GlueCommands();
 
@@ -20,6 +26,8 @@ namespace GlueControl.Managers
         {
             GluxCommands = new GluxCommands();
         }
+
+        #endregion
 
         public void PrintOutput(string output)
         {

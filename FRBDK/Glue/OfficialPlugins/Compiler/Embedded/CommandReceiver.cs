@@ -66,14 +66,23 @@ namespace GlueControl
                         return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                     });
 
-                if (matchingMethod == null)
+
+                // This could be a response, so don't throw an exception anymore
+                //if (matchingMethod == null)
+                //{
+                //    throw new InvalidOperationException(
+                //        $"Could not find a HandleDto method for type {dtoTypeName}");
+                //}
+
+                var dtoType = matchingMethod?.GetParameters()[0].ParameterType;
+                if (dtoType == null)
                 {
-                    throw new InvalidOperationException(
-                        $"Could not find a HandleDto method for type {dtoTypeName}");
+                    // there may not be a matching method for this. That's okay, it may
+                    // be a method that is only expected as a response
+                    var possibleQualifiedType = $"GlueControl.Dtos.{dtoTypeName}";
+
+                    dtoType = typeof(Game1).Assembly.GetType(possibleQualifiedType);
                 }
-
-                var dtoType = matchingMethod.GetParameters()[0].ParameterType;
-
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
                 if (runPredicate == null || runPredicate(dto))
@@ -111,6 +120,11 @@ namespace GlueControl
             if (method != null)
             {
                 toReturn = method.Invoke(null, new object[] { dto });
+            }
+
+            if (dto is RespondableDto respondableDto && respondableDto.OriginalDtoId > 0)
+            {
+                GlueControlManager.Self.NotifyResponse(respondableDto.OriginalDtoId);
             }
 
             return toReturn;

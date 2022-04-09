@@ -1,6 +1,10 @@
-﻿{CompilerDirectives}
+﻿#define IncludeSetVariable
+#define SupportsEditMode
+#define HasGum
+using SuperBounceHouse;
 
-using {ProjectNamespace};
+
+using SuperBounceHouse;
 using GlueControl.Dtos;
 
 using FlatRedBall;
@@ -47,6 +51,7 @@ namespace GlueControl
             = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager;
 
+        ConcurrentDictionary<int, SemaphoreSlim> AwaitedResponses = new ConcurrentDictionary<int, SemaphoreSlim>();
 
         public static GlueControlManager Self { get; private set; }
 
@@ -329,7 +334,7 @@ namespace GlueControl
         {
 #if SupportsEditMode
 
-            foreach(var change in propertyChangeArgs)
+            foreach (var change in propertyChangeArgs)
             {
                 Managers.GlueCommands.Self.GluxCommands.SetVariableOn(
                     new Models.NamedObjectSave { InstanceName = change.Nameable.Name },
@@ -395,7 +400,7 @@ namespace GlueControl
             //}
             //else
             //{
-                
+
             //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
             //}
 #endif
@@ -460,6 +465,33 @@ namespace GlueControl
             {
                 // We don't (yet) handle batch here, so just add the individuals
                 CommandReceiver.GlobalGlueToGameCommands.Add(item);
+            }
+        }
+
+        int nextRespondableId = 1;
+        public async Task SendToGlue(RespondableDto respondableDto)
+        {
+            var semaphoreSlim = new SemaphoreSlim(0, 1);
+
+            var idToUse = nextRespondableId;
+            nextRespondableId++;
+
+            AwaitedResponses[idToUse] = semaphoreSlim;
+            respondableDto.Id = idToUse;
+
+            SendToGlue((object)respondableDto);
+
+            await semaphoreSlim.WaitAsync();
+            AwaitedResponses.TryRemove(idToUse, out SemaphoreSlim _);
+            semaphoreSlim.Dispose();
+            // return response?
+        }
+
+        public void NotifyResponse(int id)
+        {
+            if (AwaitedResponses.ContainsKey(id))
+            {
+                AwaitedResponses[id].Release();
             }
         }
 

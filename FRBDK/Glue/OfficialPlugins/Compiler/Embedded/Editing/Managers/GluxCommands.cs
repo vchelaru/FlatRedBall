@@ -3,13 +3,14 @@ using GlueControl.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace GlueControl.Managers
 {
     internal class GluxCommands
     {
         // nosOwner is needed until we have support for ObjectFinder, which requires the full GlueProjectSave
-        public GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
+        public Task<GeneralResponse> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
         {
             // convert nos and target element to references
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
@@ -19,26 +20,26 @@ namespace GlueControl.Managers
             SendToGame(nameof(CopyNamedObjectIntoElement), nosReference, targetElementReference, save);
 
             // Until we get real 2 way communication working:
-            return GeneralResponse.SuccessfulResponse;
+            return Task.FromResult(GeneralResponse.SuccessfulResponse);
         }
 
-        public void SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value)
+        public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value)
         {
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
             var typedParameter = TypedParameter.FromValue(value);
 
-            SendToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
+            await SendToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
         }
 
 
-        private void SendToGame(string caller = null, params object[] parameters)
+        private async Task SendToGame(string caller = null, params object[] parameters)
         {
             var dto = new GluxCommandDto();
             dto.Method = caller;
             dto.Parameters.AddRange(parameters);
 
-            GlueControlManager.Self.SendToGlue(dto);
+            await GlueControlManager.Self.SendToGlue(dto);
         }
     }
 }
