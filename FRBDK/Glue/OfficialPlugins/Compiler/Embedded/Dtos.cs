@@ -398,6 +398,21 @@ namespace GlueControl.Dtos
 
     }
 
+
+    public class TypedParameter
+    {
+        public string Type { get; set; }
+        public object Value { get; set; }
+
+        public static TypedParameter FromValue(object value)
+        {
+            var toReturn = new TypedParameter();
+            toReturn.Type = value?.GetType().Name;
+            toReturn.Value = value;
+            return toReturn;
+        }
+    }
+
     public class GlueElementReference
     {
         public string ElementNameGlue { get; set; }

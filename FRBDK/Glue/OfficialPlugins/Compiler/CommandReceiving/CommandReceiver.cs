@@ -841,11 +841,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static object Convert(object parameter, ParameterInfo parameterInfo)
         {
+
+            return Convert(parameter, parameterInfo.ParameterType.Name);
+        }
+
+        private static object Convert(object parameter, string typeName)
+        { 
             var converted = parameter;
 
             if(parameter is JObject asJObject)
             {
-                if(parameterInfo.ParameterType == typeof(NamedObjectSave))
+                if(typeName == typeof(NamedObjectSave).Name)
                 {
                     var reference = asJObject.ToObject<NamedObjectSaveReference>();
 
@@ -854,12 +860,52 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     converted = nos;
                 }
-                else if(parameterInfo.ParameterType == typeof(GlueElement))
+                else if(typeName == typeof(GlueElement).Name)
                 {
                     var reference = asJObject.ToObject<GlueElementReference>();
 
                     var element = ObjectFinder.Self.GetElement(reference.ElementNameGlue);
                     converted = element;
+                }
+                else if(typeName == typeof(TypedParameter).Name)
+                {
+                    var typedParameter = asJObject.ToObject<TypedParameter>();
+
+                    converted = Convert(typedParameter.Value, typedParameter.Type);
+                }
+                else if(typeName == typeof(object).Name)
+                {
+                    try
+                    {
+                        // Maybe we could parse this to see if it's a typed parameter?
+                        var typedParameter = asJObject.ToObject<TypedParameter>();
+
+                        converted = Convert(typedParameter.Value, typedParameter.Type);
+                    }
+                    catch { }
+
+                }
+            }
+            else if(parameter is double asDouble)
+            {
+                if(typeName == typeof(float).Name)
+                {
+                    converted = (float)asDouble;
+                }
+            }
+            else if(parameter is long asLong)
+            {
+                if(typeName == typeof(int).Name)
+                {
+                    converted = (int)asLong;
+                }
+            }
+            else if(parameter is object)
+            {
+                // the method does not take a casted value, but we may have sent a casted value through a TypedParameter
+                if(parameter is JObject)
+                {
+
                 }
             }
             return converted;

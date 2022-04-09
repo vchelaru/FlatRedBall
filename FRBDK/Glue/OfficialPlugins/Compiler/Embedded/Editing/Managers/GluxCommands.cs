@@ -26,7 +26,9 @@ namespace GlueControl.Managers
         {
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
-            SendToGame(nameof(SetVariableOn), nosReference, memberName, value);
+            var typedParameter = TypedParameter.FromValue(value);
+
+            SendToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
         }
 
 
