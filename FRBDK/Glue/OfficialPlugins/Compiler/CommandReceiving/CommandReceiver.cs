@@ -35,6 +35,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         static int gamePortNumber;
 
         static System.Reflection.MethodInfo[] AllMethods;
+        public static Action<string> PrintOutput { get; set; }
 
         public static CompilerViewModel CompilerViewModel { get; set; }
 
@@ -134,9 +135,26 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             $"Processing command of type {dtoTypeName}");
         }
 
-        public static object ReceiveDto(object dto)
+        private static object ReceiveDto(object dto)
         {
             var type = dto.GetType();
+
+            if (CompilerViewModel.IsPrintGameToEditorCheckboxChecked)
+            {
+
+                if (CompilerViewModel.IsShowParametersChecked && CompilerViewModel.CommandParameterCheckboxVisibility == System.Windows.Visibility.Visible)
+                {
+                    PrintOutput(JsonConvert.SerializeObject(dto));
+                    PrintOutput("------------------------------------------");
+                }
+                else
+                {
+                    PrintOutput(type.ToString());
+                }
+            }
+
+
+
 
             var method = AllMethods
                 .FirstOrDefault(item =>

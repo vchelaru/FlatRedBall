@@ -24,12 +24,21 @@
 
             <CheckBox HorizontalAlignment="Center" 
                       HorizontalContentAlignment="Center" 
-                      Visibility="{Binding EditorToGameCheckboxVisibility}"
+                      Margin="0,0,12,0"
+                      Visibility="{Binding ShowCommandsCheckboxVisibility}"
                       IsChecked="{Binding IsPrintEditorToGameCheckboxChecked}"
                       >Show Editor->Game Commands</CheckBox>
 
             <CheckBox HorizontalAlignment="Center" 
                       HorizontalContentAlignment="Center" 
+                      Margin="0,0,12,0"
+                      Visibility="{Binding ShowCommandsCheckboxVisibility}"
+                      IsChecked="{Binding IsPrintGameToEditorCheckboxChecked}"
+                      >Show Game->Editor Commands</CheckBox>
+            
+            <CheckBox HorizontalAlignment="Center" 
+                      HorizontalContentAlignment="Center" 
+                      Margin="0,0,12,0"
                       Visibility="{Binding CommandParameterCheckboxVisibility}"
                       IsChecked="{Binding IsShowParametersChecked}"
                       >Show Parameters</CheckBox>

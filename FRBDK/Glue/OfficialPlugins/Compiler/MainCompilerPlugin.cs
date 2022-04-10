@@ -662,6 +662,7 @@ namespace OfficialPlugins.Compiler
             RefreshManager.Self.ViewModel = CompilerViewModel;
             DragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
             CommandReceiver.CompilerViewModel = CompilerViewModel;
+            CommandReceiver.PrintOutput = MainControl.PrintOutput;
             RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
