@@ -855,15 +855,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
                 else
                 {
-
-                    var response = new ResponseWithContentDto();
-                    response.Id = -1;
-                    response.OriginalDtoId = dto.Id;
-                    if(methodResponse != null)
-                    {
-                        response.Content = JsonConvert.SerializeObject(methodResponse);
-                    }
-                    await CommandSender.Send(response);
+                    var contentToGame = methodResponse;
+                    ResponseWithContentDto response = await SendResponseBackToGame(dto, contentToGame);
                     // todo - include the dto here
                     return response;
                 }
@@ -876,12 +869,27 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 property.SetValue(target, converted);
 
+                await SendResponseBackToGame(dto, null);
+
+
                 return null;
             }
 
             return null;
         }
 
+        private static async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
+        {
+            var response = new ResponseWithContentDto();
+            response.Id = -1;
+            response.OriginalDtoId = dto.Id;
+            if (contentToGame != null)
+            {
+                response.Content = JsonConvert.SerializeObject(contentToGame);
+            }
+            await CommandSender.Send(response);
+            return response;
+        }
 
         private static object Convert(object parameter, Type reflectedParameterType)
         {

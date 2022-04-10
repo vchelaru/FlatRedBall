@@ -125,7 +125,8 @@ namespace GlueControl
             if (dto is RespondableDto respondableDto && respondableDto.OriginalDtoId > 0)
             {
                 object content = null;
-                if (respondableDto is ResponseWithContentDto dtoWithContent)
+
+                if (respondableDto is ResponseWithContentDto dtoWithContent && !string.IsNullOrEmpty(dtoWithContent.Content))
                 {
                     content = JsonConvert.DeserializeObject(dtoWithContent.Content);
                 }

@@ -51,26 +51,71 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
-                    HandlePaste(itemGrabbed);
+                    HandlePaste(itemGrabbed, selectedNamedObjects);
                 }
             }
         }
 
         #region Paste
 
-        private async void HandlePaste(PositionedObject itemGrabbed)
+        (float x, float y) GetXY(NamedObjectSave nos)
+        {
+            float x = nos.InstructionSaves.FirstOrDefault(item => item.Member == "X")?.Value as float? ?? 0;
+            float y = nos.InstructionSaves.FirstOrDefault(item => item.Member == "Y")?.Value as float? ?? 0;
+            return (x, y);
+        }
+
+        private async void HandlePaste(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
         {
             NamedObjectSave newObjectToSelect = null;
+
+            float? offsetX = null;
+            float? offsetY = null;
+
+            var matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbed.Name);
+            if (matchingNos != null)
+            {
+                (float originalX, float originalY) = GetXY(matchingNos);
+
+                if (itemGrabbed.Parent == null)
+                {
+                    offsetX = itemGrabbed.X - originalX;
+                    offsetY = itemGrabbed.Y - originalY;
+                }
+                else
+                {
+                    offsetX = itemGrabbed.RelativeX - originalX;
+                    offsetY = itemGrabbed.RelativeY - originalY;
+                }
+            }
+
             foreach (var copiedNos in CopiedNamedObjects)
             {
                 var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
                     copiedNos, CopiedObjectsOwner, GlueState.Self.CurrentElement);
 
+                var newNos = response.Data;
+
                 if (response.Succeeded)
                 {
                     if (itemGrabbed == null)
                     {
-                        newObjectToSelect = response.Data;
+                        newObjectToSelect = newNos;
+                    }
+
+                    if (offsetX != null)
+                    {
+                        (float oldX, float oldY) = GetXY(newNos);
+                        var newX = oldX + offsetX;
+                        var newY = oldY + offsetY;
+                        if (newX != oldX)
+                        {
+                            await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "X", newX);
+                        }
+                        if (newY != oldY)
+                        {
+                            await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "Y", newY);
+                        }
                     }
                 }
             }
