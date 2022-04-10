@@ -828,19 +828,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Glue/XXXX/CommandDto
 
-        private static async void HandleDto(GlueCommandDto dto)
-        {
-            await HandleFacadeCommand(GlueCommands.Self, dto);
-        }
-        private static async void HandleDto(GluxCommandDto dto)
-        {
-            await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
-        }
+        private static async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
 
-        private static async void HandleDto(GlueStateDto dto)
-        {
-            await HandleFacadeCommand(GlueState.Self, dto);
-        }
+        private static async void HandleDto(GluxCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+
+        private static async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
+        private static async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
 
         private static async Task<object> HandleFacadeCommand(object target, FacadeCommandBase dto)
         {
@@ -865,11 +858,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 if(methodResponse is Task asTask)
                 {
-                    System.Diagnostics.Debugger.Break();
-
+                    var taskType = asTask.GetType();
                     await asTask;
+                    if(taskType.IsGenericType())
+                    {
+                        var resultProperty = taskType.GetProperty("Result");
+                        var taskResult = resultProperty.GetValue(asTask);
+                        return taskResult;
+                    }
+                    else
+                    {
+                        return null;
 
-                    return null;
+                    }
+
+
                 }
                 else
                 {
@@ -968,6 +971,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 if(typeName == typeof(int).Name)
                 {
                     converted = (int)asLong;
+                }
+                else if(typeName == nameof(TaskExecutionPreference))
+                {
+                    converted = (TaskExecutionPreference)asLong;
                 }
             }
             else if(parameter is object)

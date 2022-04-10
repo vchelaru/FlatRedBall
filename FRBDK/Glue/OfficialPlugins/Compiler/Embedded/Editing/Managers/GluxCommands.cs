@@ -9,17 +9,22 @@ using GlueControl.Models;
 
 namespace GlueControl.Managers
 {
-    internal class GluxCommands
+    internal class GluxCommands : GlueCommandsStateBase
     {
         // nosOwner is needed until we have support for ObjectFinder, which requires the full GlueProjectSave
-        public async Task<GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement, bool save = true)
+        public async Task<GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement nosOwner, GlueElement targetElement,
+            bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
             // convert nos and target element to references
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
             var targetElementReference = new GlueElementReference();
             targetElementReference.ElementNameGlue = targetElement.Name;
-            var response = await SendToGame(nameof(CopyNamedObjectIntoElement), nosReference, targetElementReference, save);
+            var response = await SendMethodCallToGame(nameof(CopyNamedObjectIntoElement),
+                nosReference,
+                targetElementReference,
+                performSaveAndGenerateCode,
+                updateUi);
 
             var responseAsJObject = response as JObject;
             responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
@@ -39,18 +44,15 @@ namespace GlueControl.Managers
 
             var typedParameter = TypedParameter.FromValue(value);
 
-            await SendToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
+            await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
         }
 
+        public Task SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap) => 
+            SendMethodCallToGame(nameof(SaveGlux), taskExecutionPreference);
 
-        private async Task<object> SendToGame(string caller = null, params object[] parameters)
-        {
-            var dto = new GluxCommandDto();
-            dto.Method = caller;
-            dto.Parameters.AddRange(parameters);
 
-            var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
-            return objectResponse;
-        }
+
+        private Task<object> SendMethodCallToGame(string caller = null, params object[] parameters) =>
+            SendMethodCallToGame(new GluxCommandDto(), caller, parameters);
     }
 }

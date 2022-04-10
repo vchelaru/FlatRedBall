@@ -243,7 +243,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         {
                             // todo - copy this to the new object
                             GlueCommands.Self.GluxCommands
-                                .CopyNamedObjectIntoElement(original, newScreen, save: false);
+                                .CopyNamedObjectIntoElement(original, newScreen, performSaveAndGenerateCode: false);
                         }
                     }
                 }

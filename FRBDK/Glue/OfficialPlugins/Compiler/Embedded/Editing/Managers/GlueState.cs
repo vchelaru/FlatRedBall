@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace GlueControl.Managers
 {
-    internal class GlueState
+    internal class GlueState : GlueCommandsStateBase
     {
         public GlueElement CurrentElement
         {
@@ -45,12 +45,7 @@ namespace GlueControl.Managers
 
         private async Task<object> SendMethodCallToGame(string caller, params object[] parameters)
         {
-            var dto = new GlueStateDto();
-            dto.Method = caller;
-            dto.Parameters.AddRange(parameters);
-
-            var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
-            return objectResponse;
+            return base.SendMethodCallToGame(new GlueStateDto(), caller, parameters);
         }
     }
 }

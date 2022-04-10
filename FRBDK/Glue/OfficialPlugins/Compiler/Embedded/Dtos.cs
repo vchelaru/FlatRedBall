@@ -445,6 +445,15 @@ namespace GlueControl.Dtos
     public class GlueElementReference
     {
         public string ElementNameGlue { get; set; }
+
+        public static GlueElementReference From(GlueElement element)
+        {
+            var toReturn = new GlueElementReference();
+
+            toReturn.ElementNameGlue = element.Name;
+
+            return toReturn;
+        }
     }
 
     public class NamedObjectSaveReference
@@ -512,6 +521,7 @@ namespace GlueControl.Dtos
     public class GlueCommandDto : FacadeCommandBase { }
     public class GluxCommandDto : FacadeCommandBase { }
     public class GlueStateDto : FacadeCommandBase { }
+    public class GenerateCodeCommandDto : FacadeCommandBase { }
 
 
     #endregion

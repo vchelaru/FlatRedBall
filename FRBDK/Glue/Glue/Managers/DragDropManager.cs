@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.Managers
         {
             var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
                 // Don't save - the caller will do it
-                save:false);
+                performSaveAndGenerateCode:false);
 
             if(response.Succeeded)
             {

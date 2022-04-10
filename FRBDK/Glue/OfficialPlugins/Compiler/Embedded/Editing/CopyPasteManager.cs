@@ -78,6 +78,7 @@ namespace GlueControl.Editing
 
         private async void HandlePaste(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
         {
+            var currentElement = GlueState.Self.CurrentElement;
             NamedObjectSave newObjectToSelect = null;
 
             GetoffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
@@ -87,7 +88,8 @@ namespace GlueControl.Editing
             async Task SendCopyToEditor(NamedObjectSave originalNamedObject)
             {
                 var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
-                    originalNamedObject, CopiedObjectsOwner, GlueState.Self.CurrentElement);
+                    originalNamedObject, CopiedObjectsOwner, currentElement,
+                    performSaveAndGenerateCode: false);
                 if (response.Succeeded)
                 {
                     var newNos = response.Data;
@@ -99,12 +101,15 @@ namespace GlueControl.Editing
                 }
             }
 
+
             List<Task> tasksToWait = new List<Task>();
             foreach (var originalNamedObject in CopiedNamedObjects)
             {
                 var task = SendCopyToEditor(originalNamedObject);
                 tasksToWait.Add(task);
             }
+            tasksToWait.Add(GlueCommands.Self.GluxCommands.SaveGlux());
+            tasksToWait.Add(GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement));
 
             await Task.WhenAll(tasksToWait);
 
@@ -117,18 +122,18 @@ namespace GlueControl.Editing
                     var newY = oldY + offsetY;
                     if (newX != oldX)
                     {
-                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "X", newX);
+                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "X", newX);
                     }
                     if (newY != oldY)
                     {
-                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "Y", newY);
+                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "Y", newY);
                     }
                 }
             }
 
             if (newObjectToSelect != null)
             {
-                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, GlueState.Self.CurrentElement);
+                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, currentElement);
             }
         }
 

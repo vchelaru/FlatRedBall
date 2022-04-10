@@ -1448,10 +1448,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            if(performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
         }
 
-        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true)
+        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
             bool succeeded = true;
 
@@ -1506,10 +1509,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // the same thing.
                 newNos.LayerOn = null;
 
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+                if(updateUi)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+                }
 
-                GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCode(targetElement as GlueElement);
+                if(performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GenerateCodeCommands
+                        .GenerateElementAndReferencedObjectCode(targetElement);
+                }
 
                 PluginManager.ReactToNewObject(newNos);
                 if (listOfThisType != null)
@@ -1517,7 +1526,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     PluginManager.ReactToObjectContainerChanged(newNos, listOfThisType);
                 }
 
-                if (save)
+                if (performSaveAndGenerateCode)
                 {
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }

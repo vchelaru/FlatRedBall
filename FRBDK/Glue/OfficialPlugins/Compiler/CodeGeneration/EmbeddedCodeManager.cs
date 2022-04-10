@@ -27,7 +27,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.EditorVisuals.cs");
             SaveEmbeddedFile("Editing.Guides.cs");
 
+            SaveEmbeddedFile("Editing.Managers.GenerateCodeCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
+            SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
             SaveEmbeddedFile("Editing.Managers.GlueState.cs");
             SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
 

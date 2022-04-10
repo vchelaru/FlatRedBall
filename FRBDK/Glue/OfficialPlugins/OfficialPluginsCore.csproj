@@ -29,7 +29,9 @@
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueState.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
@@ -145,7 +147,9 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueState.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
