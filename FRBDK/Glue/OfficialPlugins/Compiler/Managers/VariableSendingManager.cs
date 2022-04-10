@@ -17,9 +17,21 @@ using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
+    class VariableIgnoreData
+    {
+        public const int SecondsToKeepIgnoreItem = 10;
+
+        public NamedObjectSave NamedObjectSave { get; set; }
+        public string VariableName { get; set; }
+        // Since orphans can exist, let's expire variable assignments after X seconds
+        public DateTime TimeIgnoreCreated { get; set; }
+    }
+
     class VariableSendingManager : Singleton<VariableSendingManager>
     {
         #region Fields/Properties
+
+        List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
 
         public CompilerViewModel ViewModel
         {
@@ -30,8 +42,24 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        bool GetIfChangedMemberIsIgnored(string changedMember)
+        public void AddOneTimeIgnore(NamedObjectSave nos, string variableName)
         {
+            var ignore = new VariableIgnoreData();
+            ignore.NamedObjectSave = nos;
+            ignore.VariableName = variableName;
+            ignore.TimeIgnoreCreated = DateTime.Now;
+            Ignores.Add(ignore);
+        }
+
+        bool GetIfChangedMemberIsIgnored(NamedObjectSave nos, string changedMember)
+        {
+            Ignores.RemoveAll(item => item.TimeIgnoreCreated + TimeSpan.FromSeconds(VariableIgnoreData.SecondsToKeepIgnoreItem) < DateTime.Now);
+            var match = Ignores.FirstOrDefault(item => item.NamedObjectSave == nos && item.VariableName == changedMember);
+            if(match != null)
+            {
+                Ignores.Remove(match);
+                return true;
+            }
             // todo - add more here over time, including making this a HashSet
             return changedMember == nameof(NamedObjectSave.ExposedInDerived);
         }
@@ -87,7 +115,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
             //////////////////Early Out//////////////////////////////
-            var isIgnored = GetIfChangedMemberIsIgnored(changedMember);
+            var isIgnored = GetIfChangedMemberIsIgnored(nos, changedMember);
             if(isIgnored)
             {
                 return toReturn;

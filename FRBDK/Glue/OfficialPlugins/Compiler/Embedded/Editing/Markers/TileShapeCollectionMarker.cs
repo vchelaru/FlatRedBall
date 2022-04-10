@@ -284,6 +284,7 @@ namespace GlueControl.Editing
             #endregion
         }
 
+        public bool ShouldSuppress(string variableName) => false;
 
         private void CommitRemovedTiles()
         {

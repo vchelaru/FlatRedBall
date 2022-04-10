@@ -60,6 +60,7 @@ namespace GlueControl.Editing
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
         void Update(ResizeSide sideGrabbed);
+        bool ShouldSuppress(string memberName);
 
         bool IsCursorOverThis();
         void HandleCursorRelease();
@@ -834,6 +835,19 @@ namespace GlueControl.Editing
 
         public ResizeSide GetSideOver() => Handles.GetSideOver();
 
+        public bool ShouldSuppress(string variableName) =>
+            variableName == "X" ||
+            variableName == "Y" ||
+            variableName == "Z" ||
+            variableName == "RelativeX" ||
+            variableName == "RelativeY" ||
+            variableName == "RelativeZ" ||
+
+            variableName == "Width" ||
+            variableName == "Height" ||
+
+            variableName == "Radius"
+            ;
 
         public void HandleCursorRelease()
         {

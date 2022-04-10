@@ -720,7 +720,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 MessageBox.Show("The target is not a List or Layer so we can't add an Object to it.", "Target not valid");
             }
-            if (targetNamedObjectSave.IsLayer)
+            else if (targetNamedObjectSave.IsLayer)
             {
                 var parent = targetNode.Parent;
 

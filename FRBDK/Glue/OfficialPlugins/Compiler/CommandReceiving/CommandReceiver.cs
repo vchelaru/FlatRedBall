@@ -830,7 +830,18 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
 
-        private static async void HandleDto(GluxCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+        private static async void HandleDto(GluxCommandDto dto)
+        {
+            if(dto.Method == nameof(GluxCommands.SetVariableOn))
+            {
+                // suppress this 
+                var nos = (NamedObjectSave) Convert(dto.Parameters[0], typeof(NamedObjectSave));
+                var memberName = (string)dto.Parameters[1];
+
+                VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
+            }
+            await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+        }
 
         private static async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
         private static async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);

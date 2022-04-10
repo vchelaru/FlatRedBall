@@ -791,5 +791,29 @@ namespace GlueControl.Editing
         }
 
         #endregion
+
+        #region Variable Assignment (suppression)
+
+        public bool GetIfShouldSuppressVariableAssignment(string variableName, INameable targetInstance)
+        {
+            var isAnythingGrabbed = itemGrabbed != null;
+
+            ISelectionMarker markerToAsk = null;
+
+            if (isAnythingGrabbed && ItemsSelected.Contains(targetInstance))
+            {
+                var index = itemsSelected.IndexOf(targetInstance);
+
+                if (index > -1 && index < SelectedMarkers.Count)
+                {
+                    markerToAsk = SelectedMarkers[index];
+                }
+            }
+
+            var shouldSuppress = markerToAsk?.ShouldSuppress(variableName) == true;
+            return shouldSuppress;
+        }
+
+        #endregion
     }
 }

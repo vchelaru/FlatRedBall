@@ -86,7 +86,7 @@ namespace GlueControl.Editing
                                 {
                                     targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
                                 }
-                                SetValueOnObjectInScreen(variableValue, response, screen, splitVariable[1], variableName, targetInstance as INameable);
+                                SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableName, targetInstance as INameable);
                                 //SetValueOnObjectInScreen(variableNameOnObjectInInstance, variableValue, item);
                                 //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
                             }
@@ -131,7 +131,7 @@ namespace GlueControl.Editing
 
                 var targetInstance = GetTargetInstance(data, ref variableValue, screen);
 
-                SetValueOnObjectInScreen(variableValue, response, screen, splitVariable[1], variableName, targetInstance);
+                SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableName, targetInstance);
 
             }
             catch (Exception e)
@@ -144,8 +144,16 @@ namespace GlueControl.Editing
             return variableValue;
         }
 
-        private static void SetValueOnObjectInScreen(object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen, string instanceName, string variableName, INameable targetInstance)
+        private static void SetValueOnObjectInElement(object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen, string instanceName, string variableName, INameable targetInstance)
         {
+            var shouldSuppressVariable = EditingManager.Self.GetIfShouldSuppressVariableAssignment(variableName, targetInstance);
+            ////////////////////////Early Out/////////////////
+            if (shouldSuppressVariable)
+            {
+                return;
+            }
+            /////////////////////End Early Out////////////////
+
             var didAttemptToAssign = false;
 
             #region "Entire CollisionRelationship" on CollisionRelationship
