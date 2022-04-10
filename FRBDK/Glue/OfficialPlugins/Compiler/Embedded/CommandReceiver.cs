@@ -198,6 +198,10 @@ namespace GlueControl
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
         {
+            if (dto.GlueElement != null)
+            {
+                dto.GlueElement.FixAllTypes();
+            }
             GlueVariableSetDataResponse response = null;
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
@@ -316,7 +320,7 @@ namespace GlueControl
         private static void HandleDto(SetCameraAspectRatioDto dto)
         {
             CameraSetup.Data.AspectRatio = dto.AspectRatio;
-            
+
             CameraSetup.ResetCamera();
 
             if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
@@ -331,7 +335,10 @@ namespace GlueControl
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
-
+            if (selectObjectDto.GlueElement != null)
+            {
+                selectObjectDto.GlueElement.FixAllTypes();
+            }
             // if it matches, don't fall back to the backup element
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
@@ -561,6 +568,10 @@ namespace GlueControl
 
         private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
         {
+            if (removeObjectDto.GlueElement != null)
+            {
+                removeObjectDto.GlueElement.FixAllTypes();
+            }
             var response = InstanceLogic.Self.HandleDeleteInstanceCommandFromGlue(removeObjectDto);
 
             Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
@@ -812,7 +823,7 @@ namespace GlueControl
                 shouldReloadGlobalContent: dto.ReloadGlobalContent);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, 
+        private static void RestartScreenRerunCommands(bool applyRestartVariables,
             bool isInEditMode,
             bool shouldRecordCameraPosition = true,
             bool forceCameraToPreviousState = false,
@@ -823,7 +834,7 @@ namespace GlueControl
 
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            
+
             void AfterInitializeLogic(Screen newScreen)
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;

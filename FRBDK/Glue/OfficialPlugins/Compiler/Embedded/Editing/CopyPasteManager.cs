@@ -61,8 +61,18 @@ namespace GlueControl.Editing
 
         (float x, float y) GetXY(NamedObjectSave nos)
         {
-            float x = nos.InstructionSaves.FirstOrDefault(item => item.Member == "X")?.Value as float? ?? 0;
-            float y = nos.InstructionSaves.FirstOrDefault(item => item.Member == "Y")?.Value as float? ?? 0;
+            var xAsObject = nos.InstructionSaves.FirstOrDefault(item => item.Member == "X")?.Value;
+            var yAsObject = nos.InstructionSaves.FirstOrDefault(item => item.Member == "Y")?.Value;
+            float x = 0;
+            float y = 0;
+            if (xAsObject is float asFloatX)
+            {
+                x = asFloatX;
+            }
+            if (yAsObject is float asFloatY)
+            {
+                y = asFloatY;
+            }
             return (x, y);
         }
 
