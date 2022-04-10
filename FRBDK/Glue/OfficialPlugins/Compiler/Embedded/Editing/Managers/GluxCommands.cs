@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using GlueControl.Models;
 
 namespace GlueControl.Managers
 {
@@ -23,6 +24,11 @@ namespace GlueControl.Managers
             var responseAsJObject = response as JObject;
             responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
             var generalResponse = responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
+
+            if (generalResponse.Data != null)
+            {
+                generalResponse.Data.FixAllTypes();
+            }
 
             return generalResponse;
         }

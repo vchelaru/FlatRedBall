@@ -44,6 +44,7 @@
     <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
     <Compile Remove="Compiler\Embedded\Models\CustomVariable.cs" />
     <Compile Remove="Compiler\Embedded\Models\GlueElement.cs" />
+    <Compile Remove="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
     <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSaveCategory.cs" />
@@ -158,6 +159,7 @@
     <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\CustomVariable.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueElement.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />

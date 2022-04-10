@@ -8,6 +8,7 @@ using GlueControl.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,10 +70,67 @@ namespace GlueControl.Editing
         {
             NamedObjectSave newObjectToSelect = null;
 
-            float? offsetX = null;
-            float? offsetY = null;
+            GetoffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
 
-            var matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbed.Name);
+            ConcurrentQueue<NamedObjectSave> newNamedObjects = new ConcurrentQueue<NamedObjectSave>();
+
+            async Task SendCopyToEditor(NamedObjectSave originalNamedObject)
+            {
+                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
+                    originalNamedObject, CopiedObjectsOwner, GlueState.Self.CurrentElement);
+                if (response.Succeeded)
+                {
+                    var newNos = response.Data;
+                    newNamedObjects.Enqueue(newNos);
+                    if (itemGrabbed == null)
+                    {
+                        newObjectToSelect = newNos;
+                    }
+                }
+            }
+
+            List<Task> tasksToWait = new List<Task>();
+            foreach (var originalNamedObject in CopiedNamedObjects)
+            {
+                var task = SendCopyToEditor(originalNamedObject);
+                tasksToWait.Add(task);
+            }
+
+            await Task.WhenAll(tasksToWait);
+
+            foreach (var newNos in newNamedObjects)
+            {
+                if (offsetX != null)
+                {
+                    (float oldX, float oldY) = GetXY(newNos);
+                    var newX = oldX + offsetX;
+                    var newY = oldY + offsetY;
+                    if (newX != oldX)
+                    {
+                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "X", newX);
+                    }
+                    if (newY != oldY)
+                    {
+                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "Y", newY);
+                    }
+                }
+            }
+
+            if (newObjectToSelect != null)
+            {
+                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, GlueState.Self.CurrentElement);
+            }
+        }
+
+        private void GetoffsetForPasting(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
+        {
+            offsetX = null;
+            offsetY = null;
+            NamedObjectSave matchingNos = null;
+            if (itemGrabbed != null)
+            {
+                matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbed.Name);
+            }
             if (matchingNos != null)
             {
                 (float originalX, float originalY) = GetXY(matchingNos);
@@ -88,90 +146,6 @@ namespace GlueControl.Editing
                     offsetY = itemGrabbed.RelativeY - originalY;
                 }
             }
-
-            foreach (var copiedNos in CopiedNamedObjects)
-            {
-                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
-                    copiedNos, CopiedObjectsOwner, GlueState.Self.CurrentElement);
-
-                var newNos = response.Data;
-
-                if (response.Succeeded)
-                {
-                    if (itemGrabbed == null)
-                    {
-                        newObjectToSelect = newNos;
-                    }
-
-                    if (offsetX != null)
-                    {
-                        (float oldX, float oldY) = GetXY(newNos);
-                        var newX = oldX + offsetX;
-                        var newY = oldY + offsetY;
-                        if (newX != oldX)
-                        {
-                            await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "X", newX);
-                        }
-                        if (newY != oldY)
-                        {
-                            await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, GlueState.Self.CurrentElement, "Y", newY);
-                        }
-                    }
-                }
-            }
-
-            if (newObjectToSelect != null)
-            {
-                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, GlueState.Self.CurrentElement);
-            }
-            //List<PositionedObject> newObjects = new List<PositionedObject>();
-            //List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
-
-            //for (int i = 0; i < CopiedObjects.Count; i++)
-            //{
-            //    //var nos = 
-            //    var copiedRuntimeObject = CopiedObjects[i];
-            //    var copiedGlueObject = CopiedNamedObjects[i];
-            //    HandlePasteIndividualObject(newObjects, addedItems, copiedRuntimeObject, copiedGlueObject);
-            //}
-
-            //// If we have something grabbed, then don't select the new items in Glue
-            //foreach (var item in addedItems)
-            //{
-            //    item.SelectNewObject = itemGrabbed == null;
-            //}
-
-            //GlueControlManager.Self.SendToGlue(addedItems);
-
-            //// If the user is dragging objects around and pasting them, then we won't select
-            //// pasted objects. If the user does a simple copy/paste without dragging, then select
-            //// the new object.
-            //var shouldSelectNewObjectsInGame = itemGrabbed == null;
-
-            //if (shouldSelectNewObjectsInGame)
-            //{
-            //    var allNamedObjects = EditingManager.Self.CurrentGlueElement.AllNamedObjects.ToArray();
-
-            //    var isFirst = true;
-            //    foreach (var newObject in newObjects)
-            //    {
-            //        var matchingNos = allNamedObjects.FirstOrDefault(item => item.InstanceName == newObject.Name);
-            //        EditingManager.Self.Select(matchingNos, addToExistingSelection: !isFirst);
-            //        isFirst = false;
-            //    }
-            //}
-            //else
-            //{
-            //    if (CopiedObjects.Count > 0)
-            //    {
-            //        // If at least one object was copied, then we sent that one object over to Glue. Glue will
-            //        // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
-            //        // so we re-send the select command on the first selected item. If only one item is selected, this will
-            //        // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
-            //        // support multi-selection.
-            //        EditingManager.Self.RaiseObjectSelected();
-            //    }
-            //}
         }
 
         private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems,
