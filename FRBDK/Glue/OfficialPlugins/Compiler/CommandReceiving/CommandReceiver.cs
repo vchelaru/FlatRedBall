@@ -149,7 +149,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
                 else
                 {
-                    PrintOutput(type.ToString());
+                    PrintOutput(dto.ToString());
                 }
             }
 

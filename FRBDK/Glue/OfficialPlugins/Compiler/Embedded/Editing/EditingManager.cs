@@ -654,7 +654,9 @@ namespace GlueControl.Editing
 
         internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
-            INameable foundObject = GetObjectByName(objectName);
+            INameable foundObject = string.IsNullOrEmpty(objectName)
+                ? null
+                : GetObjectByName(objectName);
 
             //if (!string.IsNullOrEmpty(objectName))
             //{

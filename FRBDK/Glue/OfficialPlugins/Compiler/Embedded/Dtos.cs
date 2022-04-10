@@ -469,6 +469,44 @@ namespace GlueControl.Dtos
         public string GetPropertyName { get; set; }
         public string SetPropertyName { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
+
+        public override string ToString()
+        {
+            string toReturn = GetType().Name + " " + (Method ?? GetPropertyName ?? SetPropertyName);
+
+            foreach (var param in Parameters)
+            {
+                toReturn += " " + SummaryFor(param);
+            }
+
+            return toReturn;
+        }
+
+        string SummaryFor(object type)
+        {
+            if (type is Newtonsoft.Json.Linq.JObject jobject)
+            {
+                var elementReference = jobject.ToObject<GlueElementReference>();
+                if (elementReference.ElementNameGlue != null)
+                {
+                    return $"{elementReference.ElementNameGlue}";
+                }
+
+                var nosReference = jobject.ToObject<NamedObjectSaveReference>();
+                if (nosReference.GlueElementReference?.ElementNameGlue != null)
+                {
+                    return $"{nosReference.GlueElementReference.ElementNameGlue}.{nosReference.NamedObjectName}";
+                }
+
+                var typedParameter = jobject.ToObject<TypedParameter>();
+                if (typedParameter.Type != null)
+                {
+                    return $"{typedParameter.Type} {typedParameter.Value}";
+                }
+            }
+
+            return type?.ToString();
+        }
     }
 
     public class GlueCommandDto : FacadeCommandBase { }
