@@ -134,6 +134,11 @@ namespace GlueControl.Editing
                     (float oldX, float oldY) = GetXY(newNos);
                     var newX = oldX + offsetX;
                     var newY = oldY + offsetY;
+
+                    Debug.WriteLine($"Old X,Y:{oldX},{oldY}");
+                    Debug.WriteLine($"New X,Y:{newX},{newY}");
+
+
                     if (newX != oldX)
                     {
                         tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(
