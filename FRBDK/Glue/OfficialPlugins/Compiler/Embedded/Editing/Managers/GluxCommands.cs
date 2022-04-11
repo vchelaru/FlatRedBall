@@ -39,21 +39,32 @@ namespace GlueControl.Managers
         }
 
         public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
+            bool updateUi = true, bool echoToGame = false)
         {
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
             var typedValue = TypedParameter.FromValue(value);
 
-            await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+            if(echoToGame)
+            {
+                await SendMethodCallToGameWithEcho(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+            }
+            else
+            {
+                await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+            }
         }
 
-        public Task SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap) => 
+        public Task SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap) =>
             SendMethodCallToGame(nameof(SaveGlux), taskExecutionPreference);
 
 
 
         private Task<object> SendMethodCallToGame(string caller = null, params object[] parameters) =>
             SendMethodCallToGame(new GluxCommandDto(), caller, parameters);
+
+
+        private Task<object> SendMethodCallToGameWithEcho(string caller = null, params object[] parameters) =>
+            SendMethodCallToGame(new GluxCommandDto() { EchoToGame = true }, caller, parameters);
     }
 }

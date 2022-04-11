@@ -832,7 +832,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static async void HandleDto(GluxCommandDto dto)
         {
-            if(dto.Method == nameof(GluxCommands.SetVariableOn))
+            if(dto.Method == nameof(GluxCommands.SetVariableOn) && !dto.EchoToGame)
             {
                 // suppress this 
                 var nos = (NamedObjectSave) Convert(dto.Parameters[0], typeof(NamedObjectSave));

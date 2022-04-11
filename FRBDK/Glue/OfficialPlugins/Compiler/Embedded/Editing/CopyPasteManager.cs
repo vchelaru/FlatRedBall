@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -87,9 +88,14 @@ namespace GlueControl.Editing
 
             async Task SendCopyToEditor(NamedObjectSave originalNamedObject)
             {
+                Debug.WriteLine($"Sending copy command for {originalNamedObject}");
+
                 var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
                     originalNamedObject, CopiedObjectsOwner, currentElement,
                     performSaveAndGenerateCode: false);
+
+                Debug.WriteLine($"Got command for {originalNamedObject}, succeeded:{response.Succeeded}");
+
                 if (response.Succeeded)
                 {
                     var newNos = response.Data;
@@ -103,6 +109,10 @@ namespace GlueControl.Editing
 
 
             List<Task> tasksToWait = new List<Task>();
+
+            Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
+
+
             foreach (var originalNamedObject in CopiedNamedObjects)
             {
                 var task = SendCopyToEditor(originalNamedObject);
@@ -113,6 +123,10 @@ namespace GlueControl.Editing
 
             tasksToWait.Clear();
 
+            Debug.WriteLine($"Moving newNameObjects count {newNamedObjects.Count}" +
+                $" with offset {offsetX}, {offsetY}");
+
+
             foreach (var newNos in newNamedObjects)
             {
                 if (offsetX != null)
@@ -122,11 +136,13 @@ namespace GlueControl.Editing
                     var newY = oldY + offsetY;
                     if (newX != oldX)
                     {
-                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "X", newX, performSaveAndGenerateCode: false, updateUi: false));
+                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(
+                            newNos, currentElement, "X", newX, performSaveAndGenerateCode: false, updateUi: false, echoToGame: true));
                     }
                     if (newY != oldY)
                     {
-                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "Y", newY, performSaveAndGenerateCode: false, updateUi: false));
+                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(
+                            newNos, currentElement, "Y", newY, performSaveAndGenerateCode: false, updateUi: false, echoToGame: true));
                     }
                 }
             }

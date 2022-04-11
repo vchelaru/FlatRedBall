@@ -463,7 +463,10 @@ namespace OfficialPlugins.Compiler.Dtos
     }
 
     public class GlueCommandDto : FacadeCommandBase { }
-    public class GluxCommandDto : FacadeCommandBase { }
+    public class GluxCommandDto : FacadeCommandBase 
+    {
+        public bool EchoToGame { get; set; } = false;
+    }
     public class GlueStateDto : FacadeCommandBase { }
     public class GenerateCodeCommandDto : FacadeCommandBase { }
     public class RefreshCommandDto : FacadeCommandBase { }
