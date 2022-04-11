@@ -832,6 +832,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 }
             }
+            else if(parameter is JArray asJArray)
+            {
+                int m = 3;
+            }
             else if(parameter is double asDouble)
             {
                 if(typeName == typeof(float).Name)
