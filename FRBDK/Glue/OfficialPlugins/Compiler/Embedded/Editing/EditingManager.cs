@@ -390,8 +390,9 @@ namespace GlueControl.Editing
                 text += nos.InstanceName + "\n";
                 foreach (var instruction in nos.InstructionSaves)
                 {
-                    text += $"  {instruction.Member}={instruction.Value}\n";
+                    text += $"  {instruction.Member}={instruction.Value}";
                 }
+                text += "\n";
             }
 
             var position = new Vector3();
@@ -697,6 +698,18 @@ namespace GlueControl.Editing
                 CurrentNamedObjects.Remove(oldNos);
 
                 CurrentNamedObjects.Insert(index, nos);
+            }
+            // Things can change due to a re-load so let's check for names too
+            else
+            {
+                var matchingNameNos = CurrentNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName);
+                if (matchingNameNos != null)
+                {
+                    var index = CurrentNamedObjects.IndexOf(matchingNameNos);
+                    CurrentNamedObjects.Remove(matchingNameNos);
+
+                    CurrentNamedObjects.Insert(index, nos);
+                }
             }
 
             nos.FixAllTypes();
