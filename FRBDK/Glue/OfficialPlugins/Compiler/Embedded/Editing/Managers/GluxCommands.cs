@@ -38,13 +38,14 @@ namespace GlueControl.Managers
             return generalResponse;
         }
 
-        public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value)
+        public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
         {
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
-            var typedParameter = TypedParameter.FromValue(value);
+            var typedValue = TypedParameter.FromValue(value);
 
-            await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedParameter);
+            await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
         }
 
         public Task SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap) => 

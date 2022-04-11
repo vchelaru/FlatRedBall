@@ -1756,7 +1756,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public async void SetVariableOn(NamedObjectSave nos, string memberName, object value)
+        public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
         {
             // XML serialization doesn't like enums
             if (value?.GetType().IsEnum() == true)
@@ -1843,10 +1844,32 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                     memberName, oldValue, namedObjectSave: nos);
 
+                var nosContainer = ObjectFinder.Self.GetElementContaining(nos);
+
+                if (performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
+                }
+
                 // Avoids accumulation when dragging a slider around:
                 TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
 
-                PluginManager.ReactToChangedProperty(memberName, oldValue, ObjectFinder.Self.GetElementContaining(nos));
+                PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer);
+
+                if (updateUi)
+                {
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        MainGlueWindow.Self.PropertyGrid.Refresh();
+                        PropertyGridHelper.UpdateNamedObjectDisplay();
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(nosContainer);
+                    });
+                }
+
+                if (performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                }
             }
 
         }

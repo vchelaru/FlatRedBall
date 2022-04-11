@@ -1441,16 +1441,6 @@ namespace FlatRedBall.Glue.Managers
             if(matchingVariable != null)
             {
                 GlueCommands.Self.GluxCommands.SetVariableOn(namedObject, matchingVariable.Name, FileManager.RemovePath(FileManager.RemoveExtension( referencedFileSave.Name)) );
-
-
-                GlueCommands.Self.GluxCommands.SaveGlux();
-
-                var element = ObjectFinder.Self.GetElementContaining(namedObject);
-                if(element != null)
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                }
-
                 return true;
             }
 

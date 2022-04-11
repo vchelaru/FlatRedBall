@@ -465,12 +465,12 @@ namespace OfficialPlugins.Compiler.Managers
 
             if (newPosition.X != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
+                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X, false, false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
+                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y, false, false);
 
                 didSetValue = true;
             }

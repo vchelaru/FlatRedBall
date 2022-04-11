@@ -644,27 +644,6 @@ namespace OfficialPlugins.VariableDisplay
 
                         // Set subtext before refreshing property grid
                         AssignVariableSubtext(instance, categories.ToList(),        instance.GetAssetTypeInfo());
-
-
-
-                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                        GlueCommands.Self.RefreshCommands.RefreshVariables();
-                        // let's make the UI faster:
-
-                        // Get this on the UI thread, but use it in the async call below
-                        var currentElement = GlueState.Self.CurrentElement;
-
-                        // Note - this used to not specify parameters for saving...
-                        //GlueCommands.Self.GluxCommands.SaveGlux();
-                        // which means the save would happen ASAP and would duplicate
-                        // However, sliders can spam this, so we only want to save at the
-                        // end to avoid accumulation:
-                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
-
-                        if (currentElement != null)
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
-                        }
                     }
 
 

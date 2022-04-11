@@ -77,12 +77,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             points.Add(new Vector2(-16, 16));
 
             GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "Points", points);
-
-            //instructions.Value = points;
-
-            GlueCommands.Self.ProjectCommands.SaveProjects();
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
         }
 
         private static NamedObjectSave HandleAddShape(string message, AssetTypeInfo ati)

@@ -138,7 +138,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="nos">The NamedObjectSave which will have its variable assigned.</param>
         /// <param name="memberName">The name of the variable to assign.</param>
         /// <param name="value">The value of the variable.</param>
-        void SetVariableOn(NamedObjectSave nos, string memberName, object value);
+        void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
         ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
