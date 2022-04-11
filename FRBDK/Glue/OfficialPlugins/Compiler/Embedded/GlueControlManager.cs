@@ -339,76 +339,21 @@ namespace GlueControl
         private void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
         {
 #if SupportsEditMode
-
+            var currentElement = GlueState.Self.CurrentElement;
             foreach (var change in propertyChangeArgs)
             {
+#pragma warning disable CS4014 // No need to wait, they will play in order
                 Managers.GlueCommands.Self.GluxCommands.SetVariableOn(
                     new Models.NamedObjectSave { InstanceName = change.Nameable.Name },
-                    GlueState.Self.CurrentElement,
+                    currentElement,
                     change.PropertyName,
-                    change.PropertyValue);
+                    change.PropertyValue, performSaveAndGenerateCode: false, updateUi: false);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
-            //var screen = ScreenManager.CurrentScreen;
-            //var isEditingEntity =
-            //    screen.GetType() == typeof(Screens.EntityViewingScreen);
-            //string ownerType;
-            //if(isEditingEntity)
-            //{
-            //    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
-            //    var entity = (entityScreen.CurrentEntity as PositionedObject);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
 
-            //    if (entity is GlueControl.Runtime.DynamicEntity dynamicEntity)
-            //    {
-            //        ownerType = dynamicEntity.EditModeType;
-            //    }
-            //    else
-            //    {
-            //        // todo - handle inheritance
-            //        ownerType = entity.GetType().FullName;
-            //    }
-            //}
-            //else
-            //{
-            //    ownerType = screen.GetType().FullName;
-
-            //}
-
-            //var dtoList = new SetVariableDtoList();
-
-            //foreach(var change in propertyChangeArgs)
-            //{
-            //    var dto = new SetVariableDto();
-            //    dto.InstanceOwner = ownerType;
-            //    dto.ObjectName = change.Nameable.Name;
-            //    dto.VariableName = change.PropertyName;
-            //    dto.VariableValue = change.PropertyValue;
-            //    dto.Type = change.PropertyValue?.GetType().Name;
-
-            //    dtoList.SetVariableList.Add(dto);
-            //}
-
-
-            //SendToGlue(dtoList);
-
-            // the game used to set this itself, but the game doesn't know which screen defines an object
-            // so let Glue hande that
-            //var fromGlueDto = new GlueVariableSetData();
-            //fromGlueDto.InstanceOwner = ownerType;
-            //fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
-            //fromGlueDto.VariableValue = value.ToString();
-            //fromGlueDto.Type = "float";
-            //var simulatedGlueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
-
-            //if(isEditingEntity)
-            //{
-            //    GlobalGlueToGameCommands.Enqueue(simulatedGlueToGameCommand);
-            //}
-            //else
-            //{
-
-            //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
-            //}
+            GlueCommands.Self.GluxCommands.SaveGlux();
 #endif
         }
 

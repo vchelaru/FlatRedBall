@@ -522,6 +522,7 @@ namespace GlueControl.Dtos
     public class GluxCommandDto : FacadeCommandBase { }
     public class GlueStateDto : FacadeCommandBase { }
     public class GenerateCodeCommandDto : FacadeCommandBase { }
+    public class RefreshCommandDto : FacadeCommandBase { }
 
 
     #endregion

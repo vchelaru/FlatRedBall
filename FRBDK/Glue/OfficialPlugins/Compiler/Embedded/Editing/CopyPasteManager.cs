@@ -108,10 +108,10 @@ namespace GlueControl.Editing
                 var task = SendCopyToEditor(originalNamedObject);
                 tasksToWait.Add(task);
             }
-            tasksToWait.Add(GlueCommands.Self.GluxCommands.SaveGlux());
-            tasksToWait.Add(GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement));
 
             await Task.WhenAll(tasksToWait);
+
+            tasksToWait.Clear();
 
             foreach (var newNos in newNamedObjects)
             {
@@ -122,14 +122,18 @@ namespace GlueControl.Editing
                     var newY = oldY + offsetY;
                     if (newX != oldX)
                     {
-                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "X", newX);
+                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "X", newX, performSaveAndGenerateCode: false, updateUi: false));
                     }
                     if (newY != oldY)
                     {
-                        await GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "Y", newY);
+                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(newNos, currentElement, "Y", newY, performSaveAndGenerateCode: false, updateUi: false));
                     }
                 }
             }
+            tasksToWait.Add(GlueCommands.Self.GluxCommands.SaveGlux());
+            tasksToWait.Add(GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement));
+
+            await Task.WhenAll(tasksToWait);
 
             if (newObjectToSelect != null)
             {

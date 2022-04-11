@@ -466,7 +466,7 @@ namespace OfficialPlugins.Compiler.Dtos
     public class GluxCommandDto : FacadeCommandBase { }
     public class GlueStateDto : FacadeCommandBase { }
     public class GenerateCodeCommandDto : FacadeCommandBase { }
-
+    public class RefreshCommandDto : FacadeCommandBase { }
     #endregion
 
     #region Base DTOs/Utilities
