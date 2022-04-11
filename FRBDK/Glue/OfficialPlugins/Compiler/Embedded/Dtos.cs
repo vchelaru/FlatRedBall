@@ -482,6 +482,13 @@ namespace GlueControl.Dtos
         }
     }
 
+    public class NosReferenceVariableAssignment
+    {
+        public NamedObjectSaveReference NamedObjectSave;
+        public string VariableName;
+        public TypedParameter Value;
+    }
+
     public class FacadeCommandBase : RespondableDto
     {
         public string Method { get; set; }

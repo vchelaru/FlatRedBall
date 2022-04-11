@@ -18,7 +18,10 @@ namespace GlueControl.Managers
         protected async Task<object> SendMethodCallToGame(FacadeCommandBase dto, string caller = null, params object[] parameters)
         {
             dto.Method = caller;
-            dto.Parameters.AddRange(parameters);
+            foreach (var parameter in parameters)
+            {
+                dto.Parameters.Add(parameter);
+            }
 
             var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
             return objectResponse;

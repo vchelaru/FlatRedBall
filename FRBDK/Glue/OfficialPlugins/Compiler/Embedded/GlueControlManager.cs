@@ -336,34 +336,47 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
+        private async void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
         {
 #if SupportsEditMode
             var currentElement = GlueState.Self.CurrentElement;
+            List<NosVariableAssignment> nosVariableAssignments = new List<NosVariableAssignment>();
             foreach (var change in propertyChangeArgs)
             {
-#pragma warning disable CS4014 // No need to wait, they will play in order
                 var nos = currentElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
-
                 if (nos != null)
                 {
-                    // we should only do this if we have a NOS, otherwise the variable won't get set here
-                    Managers.GlueCommands.Self.GluxCommands.SetVariableOn(
-                        nos,
-                        currentElement,
-                        change.PropertyName,
-                        change.PropertyValue, performSaveAndGenerateCode: false, updateUi: false);
+                    nosVariableAssignments.Add(new NosVariableAssignment
+                    {
+                        NamedObjectSave = nos,
+                        VariableName = change.PropertyName,
+                        Value = change.PropertyValue
+                    });
+
                 }
-                else
-                {
-                    System.Diagnostics.Debugger.Break();
-                }
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+                //#pragma warning disable CS4014 // No need to wait, they will play in order
+                //                var nos = currentElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
+
+                //                if (nos != null)
+                //                {
+                //                    // we should only do this if we have a NOS, otherwise the variable won't get set here
+                //                    Managers.GlueCommands.Self.GluxCommands.SetVariableOn(
+                //                        nos,
+                //                        currentElement,
+                //                        change.PropertyName,
+                //                        change.PropertyValue, performSaveAndGenerateCode: false, updateUi: false);
+                //                }
+                //                else
+                //                {
+                //                    System.Diagnostics.Debugger.Break();
+                //                }
+                //#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
-
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, echoToGame: false);
+            //GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
+            //GlueCommands.Self.GluxCommands.SaveGlux();
 #endif
         }
 

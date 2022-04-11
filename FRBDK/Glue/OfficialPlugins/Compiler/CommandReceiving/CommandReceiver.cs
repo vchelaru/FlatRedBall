@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math;
@@ -671,6 +672,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
             }
+            if(dto.Method == nameof(GluxCommands.SetVariableOnList))
+            {
+                // todo - do ignores here...
+            }
             await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }
 
@@ -760,6 +765,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return Convert(parameter, reflectedParameterType.Name);
         }
 
+        public class NosReferenceVariableAssignment
+        {
+            public NamedObjectSaveReference NamedObjectSave;
+            public string VariableName;
+            public TypedParameter Value;
+        }
+
         private static object Convert(object parameter, string typeName)
         { 
             var converted = parameter;
@@ -787,6 +799,25 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     var typedParameter = asJObject.ToObject<TypedParameter>();
 
                     converted = Convert(typedParameter.Value, typedParameter.Type);
+                }
+                else if(typeName == typeof(List<NosVariableAssignment>).Name)
+                {
+                    var assignmentList = asJObject.ToObject<List<NosReferenceVariableAssignment>>();
+                    List<NosVariableAssignment> convertedList = new List<NosVariableAssignment>();
+                    foreach(var assignment in assignmentList)
+                    {
+                        NosVariableAssignment individual = new NosVariableAssignment();
+
+                        var parentElement = ObjectFinder.Self.GetElement(assignment.NamedObjectSave.GlueElementReference.ElementNameGlue);
+                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == assignment.NamedObjectSave.NamedObjectName);
+
+                        individual.NamedObjectSave = nos;
+                        individual.VariableName = assignment.VariableName;
+                        individual.Value = Convert(assignment.Value, nameof(TypedParameter));
+
+                        convertedList.Add(individual);
+                    }
+                    converted = convertedList;
                 }
                 else if(typeName == typeof(object).Name)
                 {

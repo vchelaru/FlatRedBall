@@ -9,6 +9,17 @@ using GlueControl.Models;
 
 namespace GlueControl.Managers
 {
+    #region Classes
+
+    public class NosVariableAssignment
+    {
+        public NamedObjectSave NamedObjectSave;
+        public string VariableName;
+        public object Value;
+    }
+
+    #endregion
+
     internal class GluxCommands : GlueCommandsStateBase
     {
         // nosOwner is needed until we have support for ObjectFinder, which requires the full GlueProjectSave
@@ -45,13 +56,41 @@ namespace GlueControl.Managers
 
             var typedValue = TypedParameter.FromValue(value);
 
-            if(echoToGame)
+            if (echoToGame)
             {
                 await SendMethodCallToGameWithEcho(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
             }
             else
             {
                 await SendMethodCallToGame(nameof(SetVariableOn), nosReference, memberName, typedValue, performSaveAndGenerateCode, updateUi);
+            }
+        }
+
+        public async Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments, GlueElement nosOwner,
+            bool performSaveAndGenerateCode = true,
+            bool updateUi = true,
+            bool echoToGame = false)
+        {
+            List<NosReferenceVariableAssignment> nosReferenceVariableAssignments = new List<NosReferenceVariableAssignment>();
+            foreach (var assignment in nosVariableAssignments)
+            {
+                var referenceAssignment = new NosReferenceVariableAssignment
+                {
+                    NamedObjectSave = NamedObjectSaveReference.From(assignment.NamedObjectSave, nosOwner),
+                    VariableName = assignment.VariableName,
+                    Value = TypedParameter.FromValue(assignment.Value)
+                };
+
+                nosReferenceVariableAssignments.Add(referenceAssignment);
+            }
+
+            if (echoToGame)
+            {
+                await SendMethodCallToGameWithEcho(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi);
+            }
+            else
+            {
+                await SendMethodCallToGame(nameof(SetVariableOnList), nosReferenceVariableAssignments, performSaveAndGenerateCode, updateUi);
             }
         }
 

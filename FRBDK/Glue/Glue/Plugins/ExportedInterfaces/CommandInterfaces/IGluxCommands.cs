@@ -9,6 +9,13 @@ using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    public class NosVariableAssignment
+    {
+        public NamedObjectSave NamedObjectSave;
+        public string VariableName;
+        public object Value;
+    }
+
     public interface IGluxCommands
     {
         #region Fields/Properties
@@ -139,6 +146,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="memberName">The name of the variable to assign.</param>
         /// <param name="value">The value of the variable.</param>
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+            bool performSaveAndGenerateCode = true,
             bool updateUi = true);
         ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 

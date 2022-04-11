@@ -424,6 +424,13 @@ namespace OfficialPlugins.Compiler.Dtos
         public string NamedObjectName { get; set; }
     }
 
+    public class NosReferenceVariableAssignment
+    {
+        public NamedObjectSaveReference NamedObjectSave;
+        public string VariableName;
+        public TypedParameter Value;
+    }
+
 
 
     public class FacadeCommandBase : RespondableDto

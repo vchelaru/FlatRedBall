@@ -1756,6 +1756,50 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        
+
+        public void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+            bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
+        {
+            HashSet<GlueElement> nosContainers = new HashSet<GlueElement>();
+            foreach(var assignment in nosVariableAssignments)
+            {
+                SetVariableOn(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false);
+                nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
+            }
+
+            foreach(var nosContainer in nosContainers)
+            {
+                if (performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
+                }
+
+                if (updateUi)
+                {
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(nosContainer);
+                    });
+                }
+            }
+
+
+            if (updateUi)
+            {
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    PropertyGridHelper.UpdateNamedObjectDisplay();
+                });
+            }
+            if (performSaveAndGenerateCode)
+            { 
+                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            }
+        }
+
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
