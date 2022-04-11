@@ -82,7 +82,7 @@ namespace GlueControl.Editing
             var currentElement = GlueState.Self.CurrentElement;
             NamedObjectSave newObjectToSelect = null;
 
-            GetoffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
+            GetOffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
 
             ConcurrentQueue<NamedObjectSave> newNamedObjects = new ConcurrentQueue<NamedObjectSave>();
 
@@ -162,7 +162,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void GetoffsetForPasting(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
+        private void GetOffsetForPasting(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
         {
             offsetX = null;
             offsetY = null;
@@ -186,144 +186,6 @@ namespace GlueControl.Editing
                     offsetY = itemGrabbed.RelativeY - originalY;
                 }
             }
-        }
-
-        private static void HandlePasteIndividualObject(List<PositionedObject> newObjects, List<Dtos.AddObjectDto> addedItems,
-            INameable copiedObject, NamedObjectSave copiedGlueNamedObjectSave)
-        {
-            PositionedObject instance = null;
-
-            var copiedObjectName = copiedObject.Name;
-
-            if (copiedObject is Circle originalCircle)
-            {
-                instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName, addedItems);
-            }
-            else if (copiedObject is AxisAlignedRectangle originalRectangle)
-            {
-                instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName, addedItems);
-            }
-            else if (copiedObject is Polygon originalPolygon)
-            {
-                instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName, addedItems);
-            }
-            else if (copiedObject is Sprite originalSprite)
-            {
-                instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName, addedItems);
-            }
-            else if (copiedObject is Text originalText)
-            {
-                instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName, addedItems);
-            }
-            else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
-            {
-                var type = copiedObject.GetType().FullName;
-                if (copiedObject is Runtime.DynamicEntity dynamicEntity)
-                {
-                    type = dynamicEntity.EditModeType;
-                }
-                // for now assume names are unique, not qualified
-                instance = InstanceLogic.Self.CreateInstanceByGame(
-                    type,
-                    asPositionedObject, addedItems);
-                instance.CreationSource = "Glue";
-                instance.Velocity = Vector3.Zero;
-                instance.Acceleration = Vector3.Zero;
-
-                // apply any changes that have been made to the entity:
-                int currentAddObjectIndex = CommandReceiver.GlobalGlueToGameCommands.Count;
-
-                for (int i = 0; i < currentAddObjectIndex; i++)
-                {
-                    var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                    if (dto is Dtos.AddObjectDto addObjectDtoRerun)
-                    {
-                        InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, instance);
-                    }
-                    else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
-                    {
-                        GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, instance);
-                    }
-                }
-            }
-
-            if (instance != null)
-            {
-                newObjects.Add(instance);
-                var entityViewingScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
-                var parent = entityViewingScreen?.CurrentEntity as PositionedObject;
-                if (parent != null)
-                {
-                    instance.AttachTo(parent);
-                }
-                var isPastedInNewObject = CopiedObjectsOwner?.Name != GlueState.Self.CurrentElement?.Name;
-
-                if (isPastedInNewObject)
-                {
-                    var dto = addedItems.LastOrDefault();
-                    instance.X = Camera.Main.X;
-                    instance.Y = Camera.Main.Y;
-                    // move it and set its values
-                    var xInstruction = dto.InstructionSaves.FirstOrDefault(item => item.Member == "X");
-                    var yInstruction = dto.InstructionSaves.FirstOrDefault(item => item.Member == "Y");
-
-                    void AddFloatValue(string memberName, float value)
-                    {
-                        dto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
-                        {
-                            Member = memberName,
-                            Type = "float",
-                            Value = value
-                        });
-                    }
-
-                    if (entityViewingScreen != null)
-                    {
-                        instance.Z = parent.Z;
-                        instance.SetRelativeFromAbsolute();
-                        if (xInstruction != null)
-                        {
-                            xInstruction.Value = instance.RelativeX;
-                        }
-                        else
-                        {
-                            AddFloatValue("X", instance.RelativeX);
-                        }
-                        if (yInstruction != null)
-                        {
-                            yInstruction.Value = instance.RelativeY;
-                        }
-                        else
-                        {
-                            AddFloatValue("Y", instance.RelativeY);
-                        }
-
-                    }
-                    else
-                    {
-                        if (xInstruction != null)
-                        {
-                            xInstruction.Value = instance.X;
-                        }
-                        else
-                        {
-                            AddFloatValue("X", instance.X);
-                        }
-                        if (yInstruction != null)
-                        {
-                            yInstruction.Value = instance.Y;
-                        }
-                        else
-                        {
-                            AddFloatValue("Y", instance.Y);
-
-                        }
-                    }
-
-                }
-            }
-
-
         }
 
         #endregion

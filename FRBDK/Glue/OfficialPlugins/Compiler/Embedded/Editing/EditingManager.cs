@@ -107,66 +107,6 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public void Update()
-        {
-#if SupportsEditMode
-
-            var isInEditMode = ScreenManager.IsInEditMode;
-
-            Guides.Visible = isInEditMode;
-
-            if (isInEditMode)
-            {
-                Guides.UpdateGridLines();
-
-                itemsOverLastFrame.Clear();
-                itemsOverLastFrame.AddRange(itemsOver);
-                var itemSelectedBefore = ItemSelected;
-
-                if(itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
-                {
-                    SelectionLogic.DoDragSelectLogic();
-                }
-
-                SelectionLogic.GetInstanceOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
-
-                var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
-                    itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
-
-                DoGrabLogic();
-
-                DoRectangleSelectLogic();
-
-                DoReleaseLogic();
-
-                DoHotkeyLogic();
-
-                CameraLogic.DoActivity();
-
-                DoForwardBackActivity();
-
-                UpdateMarkers(didChangeItemOver);
-
-            }
-            else
-            {
-                HighlightMarker.Visible = false;
-                if (SelectedMarkers.Count > 0)
-                {
-                    for (int i = SelectedMarkers.Count - 1; i > -1; i--)
-                    {
-                        SelectedMarkers[i].Destroy();
-                    }
-                    SelectedMarkers.Clear();
-                }
-                itemsSelected.Clear();
-                itemsOver.Clear();
-                itemGrabbed = null;
-
-            }
-#endif
-        }
-
         #region Markers
 
         private void UpdateMarkers(bool didChangeItemOver)
@@ -303,9 +243,72 @@ namespace GlueControl.Editing
 
         #endregion
 
+        #region Update/DoXXXXLogic
+        public void Update()
+        {
+#if SupportsEditMode
+
+            var isInEditMode = ScreenManager.IsInEditMode;
+
+            Guides.Visible = isInEditMode;
+
+            if (isInEditMode)
+            {
+                Guides.UpdateGridLines();
+
+                itemsOverLastFrame.Clear();
+                itemsOverLastFrame.AddRange(itemsOver);
+                var itemSelectedBefore = ItemSelected;
+
+                if(itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
+                {
+                    SelectionLogic.DoDragSelectLogic();
+                }
+
+                SelectionLogic.GetInstanceOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+
+                var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
+                    itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
+
+                DoGrabLogic();
+
+                DoRectangleSelectLogic();
+
+                DoReleaseLogic();
+
+                DoHotkeyLogic();
+
+                CameraLogic.DoActivity();
+
+                DoForwardBackActivity();
+
+                UpdateMarkers(didChangeItemOver);
+
+            }
+            else
+            {
+                HighlightMarker.Visible = false;
+                if (SelectedMarkers.Count > 0)
+                {
+                    for (int i = SelectedMarkers.Count - 1; i > -1; i--)
+                    {
+                        SelectedMarkers[i].Destroy();
+                    }
+                    SelectedMarkers.Clear();
+                }
+                itemsSelected.Clear();
+                itemsOver.Clear();
+                itemGrabbed = null;
+
+            }
+#endif
+        }
+
         private void DoGrabLogic()
         {
             var cursor = GuiManager.Cursor;
+
+            PrintCurrentNamedObjectsInformation();
 
             if (cursor.PrimaryPush)
             {
@@ -321,20 +324,31 @@ namespace GlueControl.Editing
                 var isCtrlDown = InputManager.Keyboard.IsCtrlDown;
                 if (!clickedOnSelectedItem)
                 {
-                    NamedObjectSave nos = null;
-                    if (itemOver?.Name != null)
+                    if (itemOver?.Name == null)
                     {
-                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
-                    }
-
-                    if (nos != null)
-                    {
-                        Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
+                        Select((NamedObjectSave)null, addToExistingSelection: isCtrlDown, playBump: true);
                     }
                     else
                     {
-                        // this shouldn't happen, but for now we tolerate it until the current is sent
-                        Select(itemOver?.Name, addToExistingSelection: isCtrlDown, playBump: true);
+                        NamedObjectSave nos = null;
+                        if (itemOver?.Name != null)
+                        {
+                            nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        }
+
+                        if (nos != null)
+                        {
+                            Select(nos, addToExistingSelection: isCtrlDown, playBump: true);
+                        }
+                        else
+                        {
+                            if (!isCtrlDown)
+                            {
+                                CurrentNamedObjects.Clear();
+                            }
+                            // this shouldn't happen, but for now we tolerate it until the current is sent
+                            Select(itemOver?.Name, addToExistingSelection: isCtrlDown, playBump: true);
+                        }
                     }
                 }
                 else if (isCtrlDown)
@@ -366,6 +380,27 @@ namespace GlueControl.Editing
                     ObjectSelected(itemGrabbed);
                 }
             }
+        }
+
+        private void PrintCurrentNamedObjectsInformation()
+        {
+            var text = $"{CurrentGlueElement?.AllNamedObjects.Count()} NOSes in current element\n";
+            foreach (var nos in CurrentNamedObjects)
+            {
+                text += nos.InstanceName + "\n";
+                foreach (var instruction in nos.InstructionSaves)
+                {
+                    text += $"  {instruction.Member}={instruction.Value}\n";
+                }
+            }
+
+            var position = new Vector3();
+            position.X = Camera.Main.AbsoluteLeftXEdge;
+            position.Y = Camera.Main.AbsoluteTopYEdge;
+
+            var textInstance = EditorVisuals.Text(text, position);
+            textInstance.HorizontalAlignment = FlatRedBall.Graphics.HorizontalAlignment.Left;
+            textInstance.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
         }
 
         private void DoReleaseLogic()
@@ -597,6 +632,8 @@ namespace GlueControl.Editing
             }
         }
 
+        #endregion
+
         public void UpdateDependencies()
         {
 
@@ -618,6 +655,51 @@ namespace GlueControl.Editing
             // Note - this will fail if the this is being called as a result of a rename. Therefore, the caller is responsbile
             // for re-selecting the NOS
             CurrentNamedObjects.AddRange(newNamedObjects);
+        }
+
+        public void ReplaceNamedObjectSave(NamedObjectSave nos, string glueElementName, string containerName)
+        {
+            ///////////////////Early Out///////////////////
+            if (CurrentGlueElement?.Name != glueElementName)
+            {
+                return;
+            }
+            ////////////////End Early Out//////////////////
+
+            var oldNos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == nos.InstanceName);
+            var oldContainer = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(oldNos));
+
+            NamedObjectSave newContainer = null;
+            if (!string.IsNullOrEmpty(containerName))
+            {
+                newContainer = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == containerName);
+            }
+
+            // Does index matter? Maybe eventually...
+            if (oldContainer != null)
+            {
+                oldContainer.ContainedObjects.Remove(oldNos);
+            }
+
+            if (newContainer != null)
+            {
+                newContainer.ContainedObjects.Add(nos);
+            }
+            else
+            {
+                CurrentGlueElement.NamedObjects.Add(nos);
+            }
+
+            if (CurrentNamedObjects.Contains(oldNos))
+            {
+                // Index matters here because the order should match the same order of the runtime objects
+                var index = CurrentNamedObjects.IndexOf(oldNos);
+                CurrentNamedObjects.Remove(oldNos);
+
+                CurrentNamedObjects.Insert(index, nos);
+            }
+
+            nos.FixAllTypes();
         }
 
         #region Selection

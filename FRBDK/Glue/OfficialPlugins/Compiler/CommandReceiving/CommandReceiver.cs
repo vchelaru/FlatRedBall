@@ -98,18 +98,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     switch(dtoTypeName)
                     {
-                        case nameof(AddObjectDto):
-                            {
-                                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dtoSerialized);
-                                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dtoSerialized);
-
-                                ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-                                screen = screen ?? GlueState.Self.CurrentScreenSave;
-
-                                await HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, element:screen);
-                            }
-
-                            break;
                         case nameof(SetVariableDto):
                             await HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
                             break;
@@ -121,10 +109,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             break;
                         case nameof(ModifyCollisionDto):
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
-                            break;
-                        case nameof(AddObjectDtoList):
-                            var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(dtoSerialized);
-                            HandleAddObjectDtoList(deserializedList);
                             break;
                         default:
                             int m = 3;
@@ -174,50 +158,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return toReturn;
         }
 
-        private static async void HandleAddObjectDtoList(AddObjectDtoList deserializedList)
-        {
-            GlueElement element = await CommandSender.GetCurrentInGameScreen();
-            element = element ?? GlueState.Self.CurrentElement;
-
-            List<NamedObjectSave> newNamedObjects = new List<NamedObjectSave>();
-
-            foreach (var item in deserializedList.Data)
-            {
-                var cloneString = JsonConvert.SerializeObject(item);
-                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
-                newNamedObjects.Add(nos);
-                await HandleAddObject(item, nos, saveRegenAndUpdateUi:false, element: element);
-            }
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-
-            GlueCommands.Self.DoOnUiThread(() =>
-            {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                PropertyGridHelper.UpdateNamedObjectDisplay();
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-
-                if(newNamedObjects.Count > 0)
-                {
-                    foreach(var item in deserializedList.Data)
-                    {
-                        if(item.SelectNewObject)
-                        {
-                            var objectToSelect = newNamedObjects.FirstOrDefault(item => item.InstanceName == item.InstanceName);
-                            if(objectToSelect != null)
-                            {
-                                GlueState.Self.CurrentNamedObjectSave = objectToSelect;
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
-
-            GlueCommands.Self.GluxCommands.SaveGlux();
-        }
-
-
         #endregion
 
         #region Remove Object
@@ -240,115 +180,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 }, "Handling removing object from screen");
             }
-        }
-
-        #endregion
-
-        #region Add Object (including copy/paste
-
-        private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, GlueElement element)
-        {
-            element = element ?? GlueState.Self.CurrentElement;
-            return TaskManager.Self.AddAsync(async () =>
-            {
-                var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, element);
-
-                string newName = GetNewName(element, addObjectDto);
-                var oldName = addObjectDto.InstanceName;
-
-
-                nos.InstanceName = newName;
-
-                foreach (var variable in nos.InstructionSaves)
-                {
-                    object value = variable.Value;
-                    var typeName = variable.Type;
-                    value = ConvertVariable(value, ref typeName, variable.Member, nos, element);
-                    variable.Type = typeName;
-                    variable.Value = value;
-                }
-
-                #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
-                // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
-                // sent to the game, and we want the right name before the AddToList command
-                var data = new GlueVariableSetData();
-                data.Type = "string";
-                data.VariableValue = newName;
-                data.VariableName = "this." + oldName + ".Name";
-                data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
-
-                // At this point the element does not contain the new nos
-                // We want it to, but we have to send the DTO to the game before
-                // calling GluxCommands.AddNamedObjectTo
-                // We can make a copy:
-                var serialized = JsonConvert.SerializeObject(element);
-
-                if(element is ScreenSave)
-                {
-                    data.ScreenSave = JsonConvert.DeserializeObject<ScreenSave>(serialized);
-                }
-                else
-                {
-                    data.EntitySave = JsonConvert.DeserializeObject<EntitySave>(serialized);
-                }
-
-                data.GlueElement.NamedObjects.Add(nos);
-
-
-                var generalResponse = await CommandSender.Send<GlueVariableSetDataResponse>(data);
-                var result = generalResponse.Data;
-
-                if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
-                {
-                    int m = 3;
-                }
-
-
-                #endregion
-
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    RefreshManager.Self.IgnoreNextObjectAdd = true;
-                    RefreshManager.Self.IgnoreNextObjectSelect = true;
-
-                    // This will result in Glue selecting the new object. When GView copy/pastes, it keeps the
-                    // old object selected. Glue shouldn't assume this is the case, because in the future new instances
-                    // may be added without copy/paste, and those would be selected. Therefore, we'll rely on the game to 
-                    // tell us to select something different...
-                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo, 
-                        selectNewNos: false, // The caller of this is responsible for selection, so that selection goes faster
-                        performSaveAndGenerateCode:saveRegenAndUpdateUi, 
-                        updateUi: saveRegenAndUpdateUi);
-                });
-
-                //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
-
-            }, "Adding NOS");
-        }
-
-        private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
-        {
-            string newName = addObjectDto.CopyOriginalName;
-
-            if(string.IsNullOrEmpty(newName))
-            {
-                if(addObjectDto.SourceClassType.Contains('.'))
-                {
-                    var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
-                    newName = suffix + "1";
-                }
-                else
-                {
-                    var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                    newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
-                }
-            }
-            while (glueElement.GetNamedObjectRecursively(newName) != null)
-            {
-                newName = StringFunctions.IncrementNumberAtEnd(newName);
-            }
-
-            return newName;
         }
 
         #endregion
@@ -449,7 +280,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables);
+            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
 
             await TaskManager.Self.AddAsync(() =>
             {

@@ -187,6 +187,9 @@ namespace GlueControl
         {
             GlueVariableSetDataResponseList toReturn = new GlueVariableSetDataResponseList();
 
+            // Vic says - haven't figured out if NOS's should get set before applying runtimes or after...
+            ApplyNewNamedObjects(dto);
+
             foreach (var setVariableDto in dto.Data)
             {
                 var setResponse = HandleDto(setVariableDto);
@@ -249,6 +252,8 @@ namespace GlueControl
                         }
                     }
                 }
+
+                ApplyNewNamedObjects(dto);
             }
             else
             {
@@ -366,6 +371,8 @@ namespace GlueControl
 
                 throw new ArgumentException(message);
             }
+
+            ApplyNewNamedObjects(selectObjectDto);
 
             if (matchesCurrentScreen)
             {
@@ -578,6 +585,8 @@ namespace GlueControl
 
             CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
 
+            ApplyNewNamedObjects(removeObjectDto);
+
             return response;
         }
 
@@ -603,6 +612,8 @@ namespace GlueControl
         private static AddObjectDtoResponse HandleDto(AddObjectDto dto)
         {
             AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
+
+            ApplyNewNamedObjects(dto);
 
             var createdObject =
                 GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedItem: null);
@@ -1010,6 +1021,14 @@ namespace GlueControl
                 CameraLogic.BackgroundRed = null;
                 CameraLogic.BackgroundGreen = null;
                 CameraLogic.BackgroundBlue = null;
+            }
+        }
+
+        private static void ApplyNewNamedObjects(UpdateCurrentElementDto dto)
+        {
+            foreach (var update in dto.NamedObjectsToUpdate)
+            {
+                EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName);
             }
         }
     }

@@ -69,10 +69,10 @@ namespace OfficialPlugins.Compiler.Managers
             var gameScreenName = await CommandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            await PushVariableChangesToGame(listOfVariables);
+            await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
         }
 
-        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables)
+        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -80,6 +80,18 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     var dto = new GlueVariableSetDataList();
                     dto.Data.AddRange(listOfVariables);
+
+                    foreach(var nos in namedObjectsToUpdate)
+                    {
+                        var container = ObjectFinder.Self.GetElementContaining(nos);
+                        var namedObjectWithElement = new NamedObjectWithElementName();
+                        namedObjectWithElement.NamedObjectSave = nos;
+                        namedObjectWithElement.GlueElementName = container?.Name;
+                        var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
+                        namedObjectWithElement.ContainerName = listNos?.InstanceName;
+
+                        dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
+                    }
 
                     var sendGeneralResponse = await CommandSender.Send(dto);
 

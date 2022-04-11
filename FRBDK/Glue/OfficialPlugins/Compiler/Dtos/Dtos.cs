@@ -8,6 +8,13 @@ using System.Text;
 namespace OfficialPlugins.Compiler.Dtos
 {
     #region UpdateCurrentElementDto (base class for updating element to game)
+    public class NamedObjectWithElementName
+    {
+        public string GlueElementName { get; set; }
+        public string ContainerName { get; set; }
+        public NamedObjectSave NamedObjectSave { get; set; }
+    }
+
     public class UpdateCurrentElementDto
     {
         public ScreenSave ScreenSave { get; set; }
@@ -16,7 +23,9 @@ namespace OfficialPlugins.Compiler.Dtos
         [JsonIgnore]
         public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
 
+        public List<NamedObjectWithElementName> NamedObjectsToUpdate { get; set; } = new List<NamedObjectWithElementName>();
     }
+
     #endregion
 
     #region RemoveObjectDto
@@ -89,7 +98,7 @@ namespace OfficialPlugins.Compiler.Dtos
         RecordOnly
     }
 
-    public class GlueVariableSetDataList
+    public class GlueVariableSetDataList : UpdateCurrentElementDto
     {
         public List<GlueVariableSetData> Data { get; set; } = new List<GlueVariableSetData>();
     }
@@ -183,8 +192,9 @@ namespace OfficialPlugins.Compiler.Dtos
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
 
-    public class AddObjectDto : NamedObjectSave
+    public class AddObjectDto : UpdateCurrentElementDto
     {
+        public NamedObjectSave NamedObjectSave { get; set; }
         public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
         public bool SelectNewObject { get; set; }

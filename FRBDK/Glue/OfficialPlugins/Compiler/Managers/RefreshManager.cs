@@ -398,12 +398,23 @@ namespace OfficialPlugins.Compiler.Managers
             else if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
-                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
+                var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
+                var addObjectDto = new AddObjectDto();
+                addObjectDto.NamedObjectSave = nosCopy;
                 var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
+                NamedObjectSave nosList = null;
                 if (containerElement != null)
                 {
                     addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
+                    nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
                 }
+
+                addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+                {
+                    NamedObjectSave = nosCopy,
+                    GlueElementName = containerElement?.Name,
+                    ContainerName = nosList?.InstanceName
+                }) ;
 
                 var sendResponse = await CommandSender.Send(addObjectDto);
                 string addResponseAsString = null;
