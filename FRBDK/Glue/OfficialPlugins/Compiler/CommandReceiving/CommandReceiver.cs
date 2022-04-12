@@ -762,7 +762,30 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static object Convert(object parameter, Type reflectedParameterType)
         {
 
-            return Convert(parameter, reflectedParameterType.Name);
+            return Convert(parameter, GetFriendlyName(reflectedParameterType));
+        }
+
+        static string GetFriendlyName(Type type)
+        {
+            string friendlyName = type.Name;
+            if (type.IsGenericType)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
         }
 
         public class NosReferenceVariableAssignment
@@ -800,25 +823,26 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                     converted = Convert(typedParameter.Value, typedParameter.Type);
                 }
-                else if(typeName == typeof(List<NosVariableAssignment>).Name)
-                {
-                    var assignmentList = asJObject.ToObject<List<NosReferenceVariableAssignment>>();
-                    List<NosVariableAssignment> convertedList = new List<NosVariableAssignment>();
-                    foreach(var assignment in assignmentList)
-                    {
-                        NosVariableAssignment individual = new NosVariableAssignment();
+                // I don't think this is possible:
+                //else if(typeName == typeof(List<NosVariableAssignment>).Name)
+                //{
+                //    var assignmentList = asJObject.ToObject<List<NosReferenceVariableAssignment>>();
+                //    List<NosVariableAssignment> convertedList = new List<NosVariableAssignment>();
+                //    foreach(var assignment in assignmentList)
+                //    {
+                //        NosVariableAssignment individual = new NosVariableAssignment();
 
-                        var parentElement = ObjectFinder.Self.GetElement(assignment.NamedObjectSave.GlueElementReference.ElementNameGlue);
-                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == assignment.NamedObjectSave.NamedObjectName);
+                //        var parentElement = ObjectFinder.Self.GetElement(assignment.NamedObjectSave.GlueElementReference.ElementNameGlue);
+                //        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == assignment.NamedObjectSave.NamedObjectName);
 
-                        individual.NamedObjectSave = nos;
-                        individual.VariableName = assignment.VariableName;
-                        individual.Value = Convert(assignment.Value, nameof(TypedParameter));
+                //        individual.NamedObjectSave = nos;
+                //        individual.VariableName = assignment.VariableName;
+                //        individual.Value = Convert(assignment.Value, nameof(TypedParameter));
 
-                        convertedList.Add(individual);
-                    }
-                    converted = convertedList;
-                }
+                //        convertedList.Add(individual);
+                //    }
+                //    converted = convertedList;
+                //}
                 else if(typeName == typeof(object).Name)
                 {
                     try
@@ -835,6 +859,30 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             else if(parameter is JArray asJArray)
             {
                 int m = 3;
+                if(typeName == GetFriendlyName(typeof(List<NosVariableAssignment>)))
+                {
+                    var list = new List<NosVariableAssignment>();
+                    foreach(JObject item in asJArray)
+                    {
+                        var itemReference = item.ToObject<NosReferenceVariableAssignment>();
+
+                        var convertedItem = new NosVariableAssignment();
+
+                        var parentElement = ObjectFinder.Self.GetElement(itemReference.NamedObjectSave.GlueElementReference.ElementNameGlue);
+                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == itemReference.NamedObjectSave.NamedObjectName);
+
+                        convertedItem.NamedObjectSave = nos;
+                        convertedItem.VariableName = itemReference.VariableName;
+
+                        var typedParameter = (TypedParameter)Convert(itemReference.Value, typeof(TypedParameter));
+
+                        convertedItem.Value = Convert(typedParameter.Value, typedParameter.Type);
+
+                        list.Add(convertedItem);
+
+                    }
+                    converted = list;
+                }
             }
             else if(parameter is double asDouble)
             {
