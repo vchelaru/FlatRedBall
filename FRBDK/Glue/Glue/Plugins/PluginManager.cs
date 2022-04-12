@@ -1471,23 +1471,9 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToVariableAdded(CustomVariable newVariable)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToVariableAdded != null);
-
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToVariableAdded(newVariable);
-                        }, container, "Failed in ReactToVariableAdded");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToVariableAdded(newVariable),
+                plugin => plugin.ReactToVariableAdded != null);
         }
 
         internal static void ReactToVariableRemoved(CustomVariable removedVariable)
@@ -1567,6 +1553,14 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
                 plugin => plugin.ReactToChangedPropertyHandler != null);
         }
+
+        public class NamedObjectSaveVariableChange
+        {
+            public NamedObjectSave NamedObjectSave { get; set; }
+            public string ChangedMember { get; set; }
+            // unsure if we need the old value, but it's more work to support so...dropping it for now.
+        }
+
 
         internal static void ReactToGluxUnload(bool isExiting)
         {
@@ -1789,6 +1783,13 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        /// <summary>
+        /// Calls the plugin method in a Task.AddAsync, which will run in a task if not already in a task.
+        /// </summary>
+        /// <param name="methodToCall">The method to call</param>
+        /// <param name="predicate">A predicate determining if the plugin should try to run - usually a null check</param>
+        /// <param name="methodName">The name of the method making this call, optional, usually left empty and filled by CallerMemberName</param>
+        /// <returns>A task which can be awaited for the task to finish.</returns>
         static Task CallMethodOnPluginAsync(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
         {
             var task = TaskManager.Self.AddAsync(() =>

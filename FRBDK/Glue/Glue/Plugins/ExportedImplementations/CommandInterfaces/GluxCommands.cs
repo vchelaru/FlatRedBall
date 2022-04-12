@@ -34,6 +34,7 @@ using GlueFormsCore.Managers;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using System.Threading.Tasks;
 using FlatRedBall.Utilities;
+using static FlatRedBall.Glue.Plugins.PluginManager;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -1758,15 +1759,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         
 
-        public void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+        public async void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
             HashSet<GlueElement> nosContainers = new HashSet<GlueElement>();
+            
+            
+            var changes = new List<VariableChangeArguments>();
             foreach(var assignment in nosVariableAssignments)
             {
-                SetVariableOn(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false);
+                // get the old value before calling SetVariableOnInner:
+                object oldValue = assignment.NamedObjectSave.GetCustomVariable(assignment.VariableName)?.Value;
+
+                SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false,
+                    notifyPlugins:false);
                 nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
+
+                
+                changes.Add(new VariableChangeArguments
+                {
+                    ChangedMember = assignment.VariableName,
+                    NamedObject = assignment.NamedObjectSave,
+                    OldValue = oldValue
+                });
+
             }
 
             foreach(var nosContainer in nosContainers)
@@ -1785,6 +1802,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            //PluginManager.ReactToNamedObjectChangedValue(changedMember, oldValue, namedObjectSave);
+            //PluginManager.ReactToNamedObjectChangedValueList()
+            PluginManager.ReactToNamedObjectChangedValueList(changes);
 
             if (updateUi)
             {
@@ -1803,6 +1823,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
+            SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins:true);
+        }
+
+        private async void SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true, bool notifyPlugins = true)
+        { 
             // XML serialization doesn't like enums
             if (value?.GetType().IsEnum() == true)
             {
@@ -1813,11 +1839,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var instruction = nos.GetCustomVariable(memberName);
 
-            if (instruction != null)
-            {
-                oldValue = instruction.Value;
-            }
-            //SetVariableOn(nos, memberName, memberType, value);
+            oldValue = instruction?.Value;
 
             bool shouldConvertValue = false;
 
@@ -1884,9 +1906,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 nos.SetVariable(memberName, value);
 
-
-                EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                    memberName, oldValue, namedObjectSave: nos);
+                if(notifyPlugins)
+                {
+                    // This does more than notify plugins, but the "more" doesn't apply to custom variables
+                    // I think this should be refactored to handle NamedObjectProperties specifically anyway
+                    EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                        memberName, oldValue, namedObjectSave: nos);
+                }
 
                 var nosContainer = ObjectFinder.Self.GetElementContaining(nos);
 
@@ -1898,7 +1924,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // Avoids accumulation when dragging a slider around:
                 TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
 
-                PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer);
+                if(notifyPlugins)
+                {
+                    PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer);
+                }
 
                 if (updateUi)
                 {

@@ -29,6 +29,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using static FlatRedBall.Glue.Plugins.PluginManager;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -237,6 +238,7 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
+        public Action<List<NamedObjectSaveVariableChange>> ReactToChangedNamedObjectVariableList { get; protected set; }
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public ReactToFileChangeDelegate ReactToBuiltFileChangeHandler { get; protected set; }
         public Action ReactToChangedStartupScreen { get; protected set; }
