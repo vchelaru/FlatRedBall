@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SaveClasses.Helpers;
@@ -64,7 +65,23 @@ namespace OfficialPlugins.Compiler.Managers
             return changedMember == nameof(NamedObjectSave.ExposedInDerived);
         }
 
-        public async Task HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
+
+        internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
+        {
+            var gameScreenName = await CommandSender.GetScreenName();
+            List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
+            List<NamedObjectSave> nosList = new List<NamedObjectSave>();
+            foreach (var variable in variableList)
+            {
+                List<GlueVariableSetData> inner = GetNamedObjectValueChangedDtos(variable.ChangedMember, variable.OldValue, variable.NamedObject, assignOrRecordOnly, gameScreenName);
+                nosList.Add(variable.NamedObject);
+                listOfVariables.AddRange(inner);
+            }
+
+            await PushVariableChangesToGame(listOfVariables, nosList);
+        }
+
+        public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
             var gameScreenName = await CommandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
@@ -570,7 +587,7 @@ namespace OfficialPlugins.Compiler.Managers
         internal async Task HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
-            await HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
+            await HandleNamedObjectVariableChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
         }
 
         internal async void HandleVariableChanged(GlueElement variableElement, CustomVariable variable)
@@ -601,5 +618,6 @@ namespace OfficialPlugins.Compiler.Managers
                 await RefreshManager.Self.StopAndRestartAsync($"Object variable {variable.Name} changed");
             }
         }
+
     }
 }
