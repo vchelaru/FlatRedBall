@@ -221,7 +221,7 @@ namespace OfficialPlugins.Compiler
                 await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
 
             this.ReactToElementVariableChange += HandleElementVariableChanged;
-            this.ReactToNamedObjectChangedValueList += RefreshManager.Self.ReactToNamedObjectChangedValueList;
+            this.ReactToNamedObjectChangedValueList += (changeList) => RefreshManager.Self.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
             this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += HandleItemSelected;

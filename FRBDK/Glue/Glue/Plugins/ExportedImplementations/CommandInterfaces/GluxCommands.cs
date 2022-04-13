@@ -1811,6 +1811,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
+                    GlueCommands.Self.RefreshCommands.RefreshVariables();
                     PropertyGridHelper.UpdateNamedObjectDisplay();
                 });
             }

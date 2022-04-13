@@ -181,6 +181,11 @@ namespace FlatRedBall.Glue.Plugins
         public string ChangedMember { get; set; }
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
+
+        public override string ToString()
+        {
+            return $"{NamedObject}.{ChangedMember}";
+        }
     }
 
     #endregion
