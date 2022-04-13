@@ -982,29 +982,43 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToElementRenamed(elementToRename, oldName);
-            },
-            plugin => plugin.ReactToElementRenamed != null,
-            nameof(ReactToElementRenamed));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
+                plugin => plugin.ReactToElementRenamed != null);
         }
 
         public static void ReactToNewObject(NamedObjectSave newObject)
         {
-            CallMethodOnPlugin((plugin) =>
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToNewObjectHandler(newObject),
+                plugin => plugin.ReactToNewObjectHandler != null);
+        }
+
+        public static void ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
+        {
+            return CallMethodOnPluginAsync(plugin =>
             {
-                plugin.ReactToNewObjectHandler(newObject);
+                // todo - add this, implement it on the compiler plugin, test it
+                if (plugin.ReactToNewObjectList != null)
+                {
+                    plugin.ReactToNewObjectList(newObjectList);
+                }
+                else
+                {
+                    foreach(var nos in newObjectList)
+                    {
+                        plugin.ReactToNewObjectHandler(nos);
+                    }
+                }
             },
-            plugin => plugin.ReactToNewObjectHandler != null,
-            nameof(ReactToNewObject));
+            plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null);
         }
 
         internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
         {
-            CallMethodOnPlugin(plugin => plugin.ReactToObjectRemoved(element, removedObject),
-            plugin => plugin.ReactToObjectRemoved != null);
-            
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToObjectRemoved(element, removedObject),
+                plugin => plugin.ReactToObjectRemoved != null);
         }
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
@@ -1032,11 +1046,9 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToNewScreenCreated(ScreenSave screen)
         {
-            CallMethodOnPlugin(plugin =>
-            {
-                plugin.NewScreenCreated(screen);
-            },
-            plugin => plugin.NewScreenCreated != null);
+            CallMethodOnPlugin(
+                plugin => plugin.NewScreenCreated(screen),
+                plugin => plugin.NewScreenCreated != null);
         }
 
         /// <summary>
@@ -1045,22 +1057,16 @@ namespace FlatRedBall.Glue.Plugins
         /// <param name="entitySave"></param>
         internal static void ReactToNewEntityCreated(EntitySave entitySave)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewEntityCreated(entitySave);
-            },
-            plugin => plugin.NewEntityCreated != null,
-            nameof(ReactToNewEntityCreated));
+            CallMethodOnPlugin(
+                plugin => plugin.NewEntityCreated(entitySave),
+                plugin => plugin.NewEntityCreated != null);
         }
 
         internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewEntityCreatedWithUi(entitySave, window);
-            },
-            plugin => plugin.NewEntityCreatedWithUi != null,
-            nameof(ReactToNewEntityCreatedWithUi));
+            CallMethodOnPlugin(
+                plugin => plugin.NewEntityCreatedWithUi(entitySave, window),
+                plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
         internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)

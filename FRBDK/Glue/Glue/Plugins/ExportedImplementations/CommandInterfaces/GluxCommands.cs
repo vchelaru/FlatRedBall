@@ -1455,8 +1455,57 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        public List<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        {
+            var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
+            foreach (var originalNos in nosList)
+            {
+                var response = CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: false);
+                toReturn.Add(response);
+            }
+
+            if (updateUi)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
+            }
+
+            if (performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCode(targetElement);
+            }
+
+            foreach(var item in toReturn)
+            {
+                if(item.Succeeded)
+                {
+                    PluginManager.ReactToNewObject
+                    PluginManager.ReactToNewObject(item.Data);
+
+                    // this could be faster but I suspect it's not too slow:
+                    var listNos = targetElement.NamedObjects.FirstOrDefault(candidateList => candidateList.ContainedObjects.Contains(item.Data));
+                    if (listNos != null)
+                    {
+                        PluginManager.ReactToObjectContainerChanged(item.Data, listNos);
+                    }
+                }
+            }
+
+            if (performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+            }
+            return toReturn;
+        }
+
         public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
+            return CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+        }
+
+        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi, 
+            bool notifyPlugins)
+        { 
             bool succeeded = true;
 
             //// moving to another element, so let's copy
@@ -1521,10 +1570,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         .GenerateElementAndReferencedObjectCode(targetElement);
                 }
 
-                PluginManager.ReactToNewObject(newNos);
-                if (listOfThisType != null)
+                if(notifyPlugins)
                 {
-                    PluginManager.ReactToObjectContainerChanged(newNos, listOfThisType);
+                    PluginManager.ReactToNewObject(newNos);
+                    if (listOfThisType != null)
+                    {
+                        PluginManager.ReactToObjectContainerChanged(newNos, listOfThisType);
+                    }
                 }
 
                 if (performSaveAndGenerateCode)
