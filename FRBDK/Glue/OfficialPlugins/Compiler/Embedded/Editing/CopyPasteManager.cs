@@ -121,12 +121,10 @@ namespace GlueControl.Editing
 
             await Task.WhenAll(tasksToWait);
 
-            tasksToWait.Clear();
-
             Debug.WriteLine($"Moving newNameObjects count {newNamedObjects.Count}" +
                 $" with offset {offsetX}, {offsetY}");
 
-
+            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
             foreach (var newNos in newNamedObjects)
             {
                 if (offsetX != null)
@@ -141,20 +139,28 @@ namespace GlueControl.Editing
 
                     if (newX != oldX)
                     {
-                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(
-                            newNos, currentElement, "X", newX, performSaveAndGenerateCode: false, updateUi: false, echoToGame: true));
+                        variableAssignments.Add(new NosVariableAssignment
+                        {
+                            NamedObjectSave = newNos,
+                            VariableName = "X",
+                            Value = newX
+                        });
                     }
                     if (newY != oldY)
                     {
-                        tasksToWait.Add(GlueCommands.Self.GluxCommands.SetVariableOn(
-                            newNos, currentElement, "Y", newY, performSaveAndGenerateCode: false, updateUi: false, echoToGame: true));
+                        variableAssignments.Add(new NosVariableAssignment
+                        {
+                            NamedObjectSave = newNos,
+                            VariableName = "Y",
+                            Value = newY
+                        });
                     }
                 }
             }
-            tasksToWait.Add(GlueCommands.Self.GluxCommands.SaveGlux());
-            tasksToWait.Add(GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement));
-
-            await Task.WhenAll(tasksToWait);
+            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
+                variableAssignments,
+                currentElement,
+                performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
 
             if (newObjectToSelect != null)
             {
