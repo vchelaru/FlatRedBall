@@ -1455,7 +1455,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public List<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        public async Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
             var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
             foreach (var originalNos in nosList)
@@ -1475,13 +1475,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     .GenerateElementAndReferencedObjectCode(targetElement);
             }
 
-            foreach(var item in toReturn)
-            {
-                if(item.Succeeded)
-                {
-                    PluginManager.ReactToNewObject
-                    PluginManager.ReactToNewObject(item.Data);
+            var newNosList = toReturn.Select(item => item.Data).Where(item => item != null).ToList();
 
+            await PluginManager.ReactToNewObjectListAsync(newNosList);
+
+            foreach (var item in toReturn)
+            {
+                if (item.Succeeded)
+                {
                     // this could be faster but I suspect it's not too slow:
                     var listNos = targetElement.NamedObjects.FirstOrDefault(candidateList => candidateList.ContainedObjects.Contains(item.Data));
                     if (listNos != null)
@@ -1490,6 +1491,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
+
 
             if (performSaveAndGenerateCode)
             {

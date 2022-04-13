@@ -190,7 +190,7 @@ namespace GlueControl.Dtos
 
     #region AddObjectDto
 
-    public class AddObjectDtoList
+    public class AddObjectDtoList : UpdateCurrentElementDto
     {
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
@@ -209,6 +209,11 @@ namespace GlueControl.Dtos
     public class AddObjectDtoResponse
     {
         public bool WasObjectCreated { get; set; }
+    }
+
+    public class AddObjectDtoListResponse
+    {
+        public List<AddObjectDtoResponse> Data { get; set; } = new List<AddObjectDtoResponse>();
     }
     #endregion
 

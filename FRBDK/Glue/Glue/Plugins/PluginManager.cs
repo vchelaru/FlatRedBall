@@ -994,7 +994,7 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToNewObjectHandler != null);
         }
 
-        public static void ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
+        public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
         {
             return CallMethodOnPluginAsync(plugin =>
             {

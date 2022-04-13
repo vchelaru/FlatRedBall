@@ -264,6 +264,13 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate called whenever a new NamedObjectSave is added.
         /// </summary>
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate called whenever a group of new NamedObjectSaves is added. If this is null, then the PluginManager
+        /// falls back to calling ReactToNewObjectHandler.
+        /// </summary>
+        public Action<List<NamedObjectSave>> ReactToNewObjectList { get; protected set; }
+
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
         public Action<List<GlueElement>, List<NamedObjectSave>> ReactToObjectListRemoved { get; protected set; }
         

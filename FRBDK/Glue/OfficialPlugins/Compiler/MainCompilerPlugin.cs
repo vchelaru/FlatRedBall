@@ -197,16 +197,17 @@ namespace OfficialPlugins.Compiler
         private void AssignEvents()
         {
             var manager = new FileChangeManager(MainControl, compiler, CompilerViewModel);
-            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
+            
             this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
+            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
+
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
-            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
-
-
             this.NewScreenCreated += (newScreen) =>
             {
                 ToolbarController.Self.HandleNewScreenCreated(newScreen);
@@ -214,11 +215,15 @@ namespace OfficialPlugins.Compiler
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
+
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
+            this.ReactToNewObjectList += RefreshManager.Self.HandleNewObjectList;
+
             this.ReactToObjectRemoved += async (owner, nos) =>
                 await RefreshManager.Self.HandleObjectRemoved(owner, nos);
             this.ReactToObjectListRemoved += async (ownerList, list) =>
                 await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
+
 
             this.ReactToElementVariableChange += HandleElementVariableChanged;
             this.ReactToNamedObjectChangedValueList += (changeList) => RefreshManager.Self.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);

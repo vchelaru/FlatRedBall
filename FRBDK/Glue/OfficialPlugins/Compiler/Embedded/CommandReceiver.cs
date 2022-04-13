@@ -626,6 +626,17 @@ namespace GlueControl
             return valueToReturn;
         }
 
+        private static AddObjectDtoListResponse HandleDto(AddObjectDtoList dto)
+        {
+            AddObjectDtoListResponse dtoResponse = new AddObjectDtoListResponse();
+            foreach (var dtoItem in dto.Data)
+            {
+                var response = HandleDto(dtoItem);
+                dtoResponse.Data.Add(response);
+            }
+            return dtoResponse;
+        }
+
         #endregion
 
         #region Add State

@@ -86,7 +86,6 @@ namespace OfficialPlugins.Compiler.Managers
             get; set;
         }
 
-        public bool IgnoreNextObjectAdd { get; set; }
         public bool IgnoreNextObjectSelect { get; set; }
 
         public SynchronizedCollection<ExpiringFilePath> FilePathsToIgnore { get; private set; }
@@ -259,6 +258,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
+
         internal bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
             if(arg.Tag is NamedObjectSave asNos)
@@ -388,67 +388,95 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region NamedObject Created
 
-        internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
+
+        internal async void HandleNewObjectList(List<NamedObjectSave> newObjectList)
         {
-            if(IgnoreNextObjectAdd)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                IgnoreNextObjectAdd = false;
-            }
-            else if (ViewModel.IsRunning && ViewModel.IsEditChecked)
-            {
-                var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
-                var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
-                var addObjectDto = new AddObjectDto();
-                addObjectDto.NamedObjectSave = nosCopy;
-                var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
-                NamedObjectSave nosList = null;
-                if (containerElement != null)
+                var list = new Dtos.AddObjectDtoList();
+
+                foreach(var newObject in newObjectList)
                 {
-                    addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
-                    nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
+                    var individualDto = CreateAddObjectDtoFor(newObject);
+
+                    list.Data.Add(individualDto);
                 }
 
-                addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+                var response = await CommandSender.Send<AddObjectDtoListResponse>(list);
+
+                if(response.Succeeded == false || 
+                    response.Data.Data == null ||
+                    response.Data.Data.Any(item => item.WasObjectCreated == false))
                 {
-                    NamedObjectSave = nosCopy,
-                    GlueElementName = containerElement?.Name,
-                    ContainerName = nosList?.InstanceName
-                }) ;
+                    await StopAndRestartAsync("Restarting because the add object group failed");
+                }
+                // else do we want to position based on camera? This is likely a copy/paste so...maybe not?
+            }
+        }
+
+        internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
+        {
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            {
+                AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
 
                 var sendResponse = await CommandSender.Send(addObjectDto);
                 string addResponseAsString = null;
-                if(sendResponse.Succeeded)
+                if (sendResponse.Succeeded)
                 {
                     addResponseAsString = sendResponse.Data;
                 }
 
                 AddObjectDtoResponse addResponse = null;
-                if(!string.IsNullOrEmpty(addResponseAsString))
+                if (!string.IsNullOrEmpty(addResponseAsString))
                 {
                     try
                     {
                         addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         printOutput($"Error parsing string:\n\n{addResponseAsString}");
                     }
                 }
 
-                if(addResponse?.WasObjectCreated == true)
+                if (addResponse?.WasObjectCreated == true)
                 {
                     var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
                         (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);
-                    if(isPositionedObject)
+                    if (isPositionedObject)
                     {
                         await AdjustNewObjectToCameraPosition(newNamedObject);
                     }
                 }
                 else
                 {
-                    StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
+                    await StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
                 }
             }
+        }
+
+        private AddObjectDto CreateAddObjectDtoFor(NamedObjectSave newNamedObject)
+        {
+            var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
+            var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
+            var addObjectDto = new AddObjectDto();
+            addObjectDto.NamedObjectSave = nosCopy;
+            var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
+            NamedObjectSave nosList = null;
+            if (containerElement != null)
+            {
+                addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
+                nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
+            }
+
+            addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+            {
+                NamedObjectSave = nosCopy,
+                GlueElementName = containerElement?.Name,
+                ContainerName = nosList?.InstanceName
+            });
+            return addObjectDto;
         }
 
         public Vector2? ForcedNextObjectPosition { get; set; }

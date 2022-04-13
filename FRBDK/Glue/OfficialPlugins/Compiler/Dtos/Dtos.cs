@@ -187,7 +187,7 @@ namespace OfficialPlugins.Compiler.Dtos
 
     #region AddObjectDto
 
-    public class AddObjectDtoList
+    public class AddObjectDtoList : UpdateCurrentElementDto
     {
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
@@ -206,6 +206,12 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public bool WasObjectCreated { get; set; }
     }
+
+    public class AddObjectDtoListResponse
+    {
+        public List<AddObjectDtoResponse> Data { get; set; } = new List<AddObjectDtoResponse>();
+    }
+
     #endregion
 
     #region AddVariableDto
