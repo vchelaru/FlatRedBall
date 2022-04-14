@@ -682,7 +682,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private static async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
         private static async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
 
-        private static async Task<object> HandleFacadeCommand(object target, FacadeCommandBase dto)
+        private static async Task HandleFacadeCommand(object target, FacadeCommandBase dto)
         {
             var targetType = target.GetType();
             if(!string.IsNullOrEmpty( dto.Method ))
@@ -711,12 +711,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         var resultProperty = taskType.GetProperty("Result");
                         var taskResult = resultProperty.GetValue(asTask);
-                        return taskResult;
+                        await SendResponseBackToGame(dto, taskResult);
+
                     }
                     else
                     {
-                        return null;
-
+                        // do we send anything back?
+                        await SendResponseBackToGame(dto, null);
                     }
 
 
@@ -724,9 +725,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 else
                 {
                     var contentToGame = methodResponse;
-                    ResponseWithContentDto response = await SendResponseBackToGame(dto, contentToGame);
-                    // todo - include the dto here
-                    return response;
+                    await SendResponseBackToGame(dto, contentToGame);
                 }
             }
             else if(!string.IsNullOrEmpty(dto.SetPropertyName))
@@ -738,12 +737,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 property.SetValue(target, converted);
 
                 await SendResponseBackToGame(dto, null);
-
-
-                return null;
             }
-
-            return null;
         }
 
         private static async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
