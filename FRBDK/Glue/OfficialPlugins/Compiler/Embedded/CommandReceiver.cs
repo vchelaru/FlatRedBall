@@ -1,6 +1,4 @@
-﻿#define SupportsEditMode
-#define IncludeSetVariable
-using GlueControl.Dtos;
+﻿using GlueControl.Dtos;
 using GlueControl.Editing;
 using Microsoft.Xna.Framework;
 

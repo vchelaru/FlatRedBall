@@ -1,11 +1,4 @@
-﻿#define IncludeSetVariable
-#define SupportsEditMode
-#define HasGum
-using SuperBounceHouse;
-
-
-using SuperBounceHouse;
-using GlueControl.Dtos;
+﻿using GlueControl.Dtos;
 
 using FlatRedBall;
 using FlatRedBall.Graphics;
