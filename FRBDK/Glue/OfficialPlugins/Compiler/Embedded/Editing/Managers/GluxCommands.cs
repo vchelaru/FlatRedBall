@@ -29,8 +29,8 @@ namespace GlueControl.Managers
             // convert nos and target element to references
             var nosReference = NamedObjectSaveReference.From(nos, nosOwner);
 
-            var targetElementReference = new GlueElementReference();
-            targetElementReference.ElementNameGlue = targetElement.Name;
+            var targetElementReference = GlueElementReference.From(targetElement);
+
             var response = await SendMethodCallToGame(nameof(CopyNamedObjectIntoElement),
                 nosReference,
                 targetElementReference,
@@ -38,7 +38,6 @@ namespace GlueControl.Managers
                 updateUi);
 
             var responseAsJObject = response as JObject;
-            responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
             var generalResponse = responseAsJObject.ToObject<GeneralResponse<NamedObjectSave>>();
 
             if (generalResponse.Data != null)
@@ -47,6 +46,41 @@ namespace GlueControl.Managers
             }
 
             return generalResponse;
+        }
+
+        public async Task<List<GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement nosOwner, GlueElement targetElement,
+            bool performSaveAndGenerateCode = true, bool updateUi = true)
+        {
+            List<NamedObjectSaveReference> namedReferenceList = new List<NamedObjectSaveReference>();
+            foreach (var nos in nosList)
+            {
+                var reference = NamedObjectSaveReference.From(nos, nosOwner);
+                namedReferenceList.Add(reference);
+            }
+
+            var targetElementReference = GlueElementReference.From(targetElement);
+
+            var response = await SendMethodCallToGame(nameof(CopyNamedObjectListIntoElement),
+                namedReferenceList,
+                targetElementReference,
+                performSaveAndGenerateCode,
+                updateUi);
+
+            var responseAsJArray = response as JArray;
+            List<GeneralResponse<NamedObjectSave>> listToReturn = new List<GeneralResponse<NamedObjectSave>>();
+
+            foreach (var jobject in responseAsJArray)
+            {
+                var generalResponse = jobject.ToObject<GeneralResponse<NamedObjectSave>>();
+
+                if (generalResponse.Data != null)
+                {
+                    generalResponse.Data.FixAllTypes();
+                }
+
+                listToReturn.Add(generalResponse);
+            }
+            return listToReturn;
         }
 
         public async Task SetVariableOn(NamedObjectSave nos, GlueElement nosOwner, string memberName, object value, bool performSaveAndGenerateCode = true,
