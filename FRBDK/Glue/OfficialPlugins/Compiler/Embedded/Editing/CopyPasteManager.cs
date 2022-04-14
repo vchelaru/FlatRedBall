@@ -84,42 +84,19 @@ namespace GlueControl.Editing
 
             GetOffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
 
-            ConcurrentQueue<NamedObjectSave> newNamedObjects = new ConcurrentQueue<NamedObjectSave>();
-
-            async Task SendCopyToEditor(NamedObjectSave originalNamedObject)
-            {
-                Debug.WriteLine($"Sending copy command for {originalNamedObject}");
-
-                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(
-                    originalNamedObject, CopiedObjectsOwner, currentElement,
-                    performSaveAndGenerateCode: false);
-
-                Debug.WriteLine($"Got command for {originalNamedObject}, succeeded:{response.Succeeded}");
-
-                if (response.Succeeded)
-                {
-                    var newNos = response.Data;
-                    newNamedObjects.Enqueue(newNos);
-                    if (itemGrabbed == null)
-                    {
-                        newObjectToSelect = newNos;
-                    }
-                }
-            }
-
-
             List<Task> tasksToWait = new List<Task>();
 
             Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
 
+            var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
+                CopiedNamedObjects,
+                CopiedObjectsOwner,
+                currentElement);
 
-            foreach (var originalNamedObject in CopiedNamedObjects)
-            {
-                var task = SendCopyToEditor(originalNamedObject);
-                tasksToWait.Add(task);
-            }
-
-            await Task.WhenAll(tasksToWait);
+            var newNamedObjects = copyResponse
+                .Select(item => item.Data)
+                .Where(item => item != null)
+                .ToList();
 
             Debug.WriteLine($"Moving newNameObjects count {newNamedObjects.Count}" +
                 $" with offset {offsetX}, {offsetY}");

@@ -883,6 +883,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                     converted = list;
                 }
+                else if(typeName == GetFriendlyName(typeof(List<NamedObjectSave>)))
+                {
+                    var list = new List<NamedObjectSave>();
+                    foreach (JObject item in asJArray)
+                    {
+                        var itemReference = item.ToObject<NamedObjectSaveReference>();
+
+                        var parentElement = ObjectFinder.Self.GetElement(itemReference.GlueElementReference.ElementNameGlue);
+                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == itemReference.NamedObjectName);
+                        list.Add(nos);
+                    }
+                    converted = list;
+                }
             }
             else if(parameter is double asDouble)
             {
