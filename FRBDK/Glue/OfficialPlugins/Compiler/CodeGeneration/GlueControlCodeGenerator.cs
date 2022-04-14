@@ -44,7 +44,16 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             compilerDirectives += $"using {GlueState.Self.ProjectNamespace};\r\n";
 
-            asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
+            if(asString.Contains("{CompilerDirectives}"))
+            {
+                asString = asString.Replace("{CompilerDirectives}", compilerDirectives);
+
+            }
+            else
+            {
+                // still put it in, in case it got wiped out by a copy/paste
+                asString = compilerDirectives + "\n" + asString;
+            }
             return asString;
         }
     }

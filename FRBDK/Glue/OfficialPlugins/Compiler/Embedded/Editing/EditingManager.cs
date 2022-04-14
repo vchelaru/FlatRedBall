@@ -304,11 +304,16 @@ namespace GlueControl.Editing
 #endif
         }
 
+        bool shouldPrintCurrentNamedObjectInformation = false;
         private void DoGrabLogic()
         {
             var cursor = GuiManager.Cursor;
 
-            PrintCurrentNamedObjectsInformation();
+            if (shouldPrintCurrentNamedObjectInformation)
+            {
+                PrintCurrentNamedObjectsInformation();
+
+            }
 
             if (cursor.PrimaryPush)
             {
