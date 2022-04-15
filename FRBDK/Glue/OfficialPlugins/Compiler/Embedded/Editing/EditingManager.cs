@@ -247,7 +247,7 @@ namespace GlueControl.Editing
         public void Update()
         {
 #if SupportsEditMode
-
+            PrintAvailableObjects();
             var isInEditMode = ScreenManager.IsInEditMode;
 
             Guides.Visible = isInEditMode;
@@ -387,27 +387,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void PrintCurrentNamedObjectsInformation()
-        {
-            var text = $"{CurrentGlueElement?.AllNamedObjects.Count()} NOSes in current element\n";
-            foreach (var nos in CurrentNamedObjects)
-            {
-                text += nos.InstanceName + "\n";
-                foreach (var instruction in nos.InstructionSaves)
-                {
-                    text += $"  {instruction.Member}={instruction.Value}";
-                }
-                text += "\n";
-            }
 
-            var position = new Vector3();
-            position.X = Camera.Main.AbsoluteLeftXEdge;
-            position.Y = Camera.Main.AbsoluteTopYEdge;
-
-            var textInstance = EditorVisuals.Text(text, position);
-            textInstance.HorizontalAlignment = FlatRedBall.Graphics.HorizontalAlignment.Left;
-            textInstance.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
-        }
 
         private void DoReleaseLogic()
         {
@@ -720,6 +700,49 @@ namespace GlueControl.Editing
             nos.FixAllTypes();
         }
 
+        #region Diagnostics
+
+        private void PrintCurrentNamedObjectsInformation()
+        {
+            var text = $"{CurrentGlueElement?.AllNamedObjects.Count()} NOSes in current element\n";
+            foreach (var nos in CurrentNamedObjects)
+            {
+                text += nos.InstanceName + "\n";
+                foreach (var instruction in nos.InstructionSaves)
+                {
+                    text += $"  {instruction.Member}={instruction.Value}";
+                }
+                text += "\n";
+            }
+
+            WriteDiagnosticText(text);
+        }
+
+        private void PrintAvailableObjects()
+        {
+            var availableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
+            var text = $"Number of available objects: {availableObjects.Count()}\n";
+            var sublist = availableObjects.Take(30);
+            foreach (var item in sublist)
+            {
+                text += item.Name + "\n";
+            }
+            WriteDiagnosticText(text);
+        }
+
+        private static void WriteDiagnosticText(string text)
+        {
+            var position = new Vector3();
+            position.X = Camera.Main.AbsoluteLeftXEdge;
+            position.Y = Camera.Main.AbsoluteTopYEdge;
+
+            var textInstance = EditorVisuals.Text(text, position);
+            textInstance.HorizontalAlignment = FlatRedBall.Graphics.HorizontalAlignment.Left;
+            textInstance.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
+        }
+
+        #endregion
+
         #region Selection
 
         internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
@@ -812,8 +835,8 @@ namespace GlueControl.Editing
 
             if (!string.IsNullOrEmpty(objectName))
             {
-                foundObject = SelectionLogic.GetAvailableObjects(ElementEditingMode)
-                    ?.FirstOrDefault(item => item.Name == objectName);
+                var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
+                foundObject = allAvailableObjects?.FirstOrDefault(item => item.Name == objectName);
 
 
                 if (foundObject == null)

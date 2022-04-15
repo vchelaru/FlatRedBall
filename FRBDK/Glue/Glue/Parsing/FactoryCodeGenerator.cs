@@ -648,6 +648,8 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("EntitySpawned = null;")
                 .End();
 
+            codeBlock.Line("void IEntityFactory.Destroy() => Destroy();");
+
             return codeBlock;
         }
 

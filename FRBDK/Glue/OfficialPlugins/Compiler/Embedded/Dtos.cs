@@ -35,6 +35,17 @@ namespace GlueControl.Dtos
     {
         public string ElementNameGlue { get; set; }
         public List<string> ObjectNames { get; set; } = new List<string>();
+
+        public override string ToString()
+        {
+            string toReturn = $"Remove {ElementNameGlue}.";
+
+            foreach (var name in ObjectNames)
+            {
+                toReturn += name + ",";
+            }
+            return toReturn;
+        }
     }
     #endregion
 
@@ -202,6 +213,11 @@ namespace GlueControl.Dtos
         public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
         public bool SelectNewObject { get; set; }
+
+        public override string ToString()
+        {
+            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType})";
+        }
     }
     #endregion
 
@@ -231,6 +247,10 @@ namespace GlueControl.Dtos
         public string ElementName { get; set; }
         public string ObjectName { get; set; }
         public string ContainerName { get; set; }
+        public override string ToString()
+        {
+            return $"Move {ElementName}.{ObjectName} to container {ContainerName}";
+        }
     }
     #endregion
 

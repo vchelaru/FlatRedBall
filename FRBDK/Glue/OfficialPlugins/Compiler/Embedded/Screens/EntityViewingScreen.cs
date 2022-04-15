@@ -116,6 +116,11 @@ namespace GlueControl.Screens
 
             CurrentEntity?.Destroy();
 
+            foreach (var factory in {ProjectNamespace}.Performance.FactoryManager.GetAllFactories())
+            {
+                factory.Destroy();
+            }
+
             base.Destroy();
         }
     }

@@ -265,19 +265,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var viewModel = new RemoveObjectViewModel();
                     viewModel.SetFrom(namedObjectToRemove);
                     var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
-                    var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
+                    if(owner == null)
+                    { System.Diagnostics.Debugger.Break(); }
+                    if(owner != null)
+                    {
+                        var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
 
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.SubObjectsInList.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CollisionRelationships.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.SubObjectsInList.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.CollisionRelationships.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
 
-                    window.DataContext = viewModel;
+                        window.DataContext = viewModel;
 
-                    var showDialogResult = window.ShowDialog();
+                        var showDialogResult = window.ShowDialog();
 
-                    reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+                        reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+                    }
+
 
                     //string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
 
