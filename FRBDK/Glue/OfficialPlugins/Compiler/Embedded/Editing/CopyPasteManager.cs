@@ -43,13 +43,7 @@ namespace GlueControl.Editing
             {
                 if (keyboard.KeyPushed(Keys.C))
                 {
-                    CopiedObjects.Clear();
-                    CopiedNamedObjects.Clear();
-
-                    CopiedObjects.AddRange(selectedObjects);
-                    CopiedNamedObjects.AddRange(selectedNamedObjects);
-
-                    CopiedObjectsOwner = GlueState.Self.CurrentElement;
+                    HandleCopy(selectedObjects, selectedNamedObjects);
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
@@ -57,6 +51,34 @@ namespace GlueControl.Editing
                 }
             }
         }
+
+        #region Copy
+
+        private void HandleCopy(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects)
+        {
+            CopiedObjects.Clear();
+            CopiedNamedObjects.Clear();
+
+            CopiedObjects.AddRange(selectedObjects);
+            CopiedNamedObjects.AddRange(selectedNamedObjects);
+
+#if HasGum
+            string message = "";
+            if(selectedNamedObjects.Count == 1)
+            {
+                message = $"Copied {selectedNamedObjects[0]}";
+            }
+            else
+            {
+                message = $"Copied {selectedNamedObjects.Count} objects";
+            }
+            FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
+#endif
+
+            CopiedObjectsOwner = GlueState.Self.CurrentElement;
+        }
+
+        #endregion
 
         #region Paste
 
