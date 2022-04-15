@@ -58,9 +58,9 @@ namespace GlueControl.Editing
 
         public static Dictionary<string, CameraStateForScreen> CameraStates = new Dictionary<string, CameraStateForScreen>();
 
-        public static float? BackgroundRed = .5f;
-        public static float? BackgroundGreen = .5f;
-        public static float? BackgroundBlue = .5f;
+        public static float? BackgroundRed = null;
+        public static float? BackgroundGreen = null;
+        public static float? BackgroundBlue = null;
 
         #endregion
 

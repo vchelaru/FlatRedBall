@@ -247,7 +247,6 @@ namespace GlueControl.Editing
         public void Update()
         {
 #if SupportsEditMode
-            PrintAvailableObjects();
             var isInEditMode = ScreenManager.IsInEditMode;
 
             Guides.Visible = isInEditMode;
