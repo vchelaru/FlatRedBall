@@ -725,6 +725,10 @@ namespace GlueControl.Editing
             var sublist = availableObjects.Take(30);
             foreach (var item in sublist)
             {
+                if (ItemsSelected.Contains(item))
+                {
+                    text += "> ";
+                }
                 text += item.Name + "\n";
             }
             WriteDiagnosticText(text);

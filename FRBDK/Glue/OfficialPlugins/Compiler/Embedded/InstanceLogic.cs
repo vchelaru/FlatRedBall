@@ -546,17 +546,21 @@ namespace GlueControl
                         }
                     }
                 }
-                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                else // Vic says - but what if we have entities inside of entities? Skipping this logic may result in those subentities not being set up correctly?
                 {
-                    if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
-                    {
-                        // try to remove this object from here...
-                        //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
-                        var objectToDelete = item.Children.FindByName(objectName);
 
-                        if (objectToDelete != null)
+                    foreach (var item in SpriteManager.ManagedPositionedObjects)
+                    {
+                        if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
                         {
-                            TryDeleteObject(response, objectToDelete);
+                            // try to remove this object from here...
+                            //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
+                            var objectToDelete = item.Children.FindByName(objectName);
+
+                            if (objectToDelete != null)
+                            {
+                                TryDeleteObject(response, objectToDelete);
+                            }
                         }
                     }
                 }
