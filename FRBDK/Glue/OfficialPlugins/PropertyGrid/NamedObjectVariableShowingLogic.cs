@@ -22,6 +22,7 @@ using WpfDataUi.Controls;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Errors;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -56,7 +57,7 @@ namespace OfficialPlugins.VariableDisplay
                 SortCategoriesAndMembers(ref categories, assetTypeInfo);
             }
 
-            if(assetTypeInfo != null)
+            if (assetTypeInfo != null)
             {
                 AssignVariableSubtext(instance, categories, assetTypeInfo);
             }
@@ -80,7 +81,7 @@ namespace OfficialPlugins.VariableDisplay
 
             SetAlternatingColors(grid, categories);
 
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
                 grid.Categories.Add(category);
             }
@@ -93,19 +94,19 @@ namespace OfficialPlugins.VariableDisplay
             var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
             var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
             string subtext = string.Empty;
-            if(assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite)
+            if (assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite)
             {
                 // could this be plugin somehow?
                 var animationChainsVariable = instance.GetCustomVariable("AnimationChains");
                 var useAnimationPositionVariable = instance.GetCustomVariable("UseAnimationRelativePosition");
                 var useAnimationPosition = useAnimationPositionVariable == null || (useAnimationPositionVariable.Value is bool asBool && asBool);
 
-                if(!string.IsNullOrEmpty( animationChainsVariable?.Value as string ) && useAnimationPosition)
+                if (!string.IsNullOrEmpty(animationChainsVariable?.Value as string) && useAnimationPosition)
                 {
                     subtext = "This value may be overwritten by the Sprite's animation";
                 }
             }
-                
+
             if (xVariable != null)
             { xVariable.DetailText = subtext; }
 
@@ -128,7 +129,7 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container, 
+        private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
             // May 13, 2017
@@ -139,7 +140,7 @@ namespace OfficialPlugins.VariableDisplay
             // We'll try this out:
             if (ati?.VariableDefinitions != null && ati.VariableDefinitions.Count > 0)
             {
-                foreach(var variableDefinition in ati.VariableDefinitions)
+                foreach (var variableDefinition in ati.VariableDefinitions)
                 {
                     bool fallBackToTypedMember = false;
                     try
@@ -147,7 +148,7 @@ namespace OfficialPlugins.VariableDisplay
                         var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
                         TypedMemberBase typedMember = null;
 
-                        if(type == null)
+                        if (type == null)
                         {
                             fallBackToTypedMember = true;
                         }
@@ -167,7 +168,7 @@ namespace OfficialPlugins.VariableDisplay
                         fallBackToTypedMember = true;
                     }
 
-                    if(fallBackToTypedMember)
+                    if (fallBackToTypedMember)
                     {
                         // this new code isn't working with some things like generics. Until I fix that, let's fall back:
 
@@ -188,11 +189,11 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     VariableDefinition baseVariableDefinition = null;
                     TypedMemberBase typedMember = instance.TypedMembers[i];
-                    if(instanceElement != null)
+                    if (instanceElement != null)
                     {
                         var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
 
-                        if(variableInElement != null && !string.IsNullOrEmpty(variableInElement.SourceObject))
+                        if (variableInElement != null && !string.IsNullOrEmpty(variableInElement.SourceObject))
                         {
                             var ownerNos = instanceElement.GetNamedObjectRecursively(variableInElement.SourceObject);
 
@@ -200,7 +201,7 @@ namespace OfficialPlugins.VariableDisplay
                             baseVariableDefinition = ownerNosAti?.VariableDefinitions
                                 .FirstOrDefault(item => item.Name == variableInElement.SourceObjectProperty);
                         }
-                        else if(variableInElement != null)
+                        else if (variableInElement != null)
                         {
                             // we can create a new VariableDefinition here with the category:
                             baseVariableDefinition = new VariableDefinition();
@@ -217,7 +218,7 @@ namespace OfficialPlugins.VariableDisplay
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
                 !string.IsNullOrEmpty(instance.SourceFile);
 
-            if(shouldAddSourceNameVariable)
+            if (shouldAddSourceNameVariable)
             {
                 AddSourceNameVariable(instance, categories);
 
@@ -302,7 +303,7 @@ namespace OfficialPlugins.VariableDisplay
                 RefreshLogic.IgnoreNextRefresh();
 
                 instance.SourceName = value as string;
-                
+
                 GlueCommands.Self.GluxCommands.SaveGlux();
 
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
@@ -336,7 +337,7 @@ namespace OfficialPlugins.VariableDisplay
             // this gets updated in the CustomSetEvent below
             string oldValue = instance.InstanceName;
 
-            if(instance.DefinedByBase)
+            if (instance.DefinedByBase)
             {
                 instanceMember.MakeReadOnly();
             }
@@ -391,13 +392,13 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void SortMembers(List<MemberCategory> categories, AssetTypeInfo ati)
         {
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
                 string categoryName = category.Name;
 
                 var variableDefinitions = ati.VariableDefinitions
                     .Where(item => item.Category == categoryName)
-                    .Select(item=>item.Name)
+                    .Select(item => item.Name)
                     .ToList();
 
                 var sorted = category.Members
@@ -406,7 +407,7 @@ namespace OfficialPlugins.VariableDisplay
                         var castedItem = item as DataGridItem;
                         var index = variableDefinitions.IndexOf(castedItem.UnmodifiedVariableName);
 
-                        if(index == -1)
+                        if (index == -1)
                         {
                             return int.MaxValue;
                         }
@@ -419,7 +420,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 category.Members.Clear();
 
-                foreach(var item in sorted)
+                foreach (var item in sorted)
                 {
                     category.Members.Add(item);
                 }
@@ -458,7 +459,7 @@ namespace OfficialPlugins.VariableDisplay
             if (ati != null || variableDefinition != null)
             {
                 // ... see if there is avariable definition for this variable...
-                var foundVariableDefinition = variableDefinition ??  ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                var foundVariableDefinition = variableDefinition ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
                 if (foundVariableDefinition != null)
                 {
                     //... if so, see the category that it's a part of...
@@ -484,12 +485,12 @@ namespace OfficialPlugins.VariableDisplay
             return categoryToAddTo;
         }
 
-        private static InstanceMember CreateInstanceMember(NamedObjectSave instance, 
-            GlueElement container, 
+        private static InstanceMember CreateInstanceMember(NamedObjectSave instance,
+            GlueElement container,
             string memberName,
             Type memberType,
-            string customTypeName, 
-            AssetTypeInfo ati, 
+            string customTypeName,
+            AssetTypeInfo ati,
             VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
         {
             bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
@@ -536,11 +537,15 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
                 }
-                else if (variableDefinition?.Name == "RotationZ" && variableDefinition.Type == "float")
+                else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
                 {
                     instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
                     instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
                         AngleType.Radians;
+
+                    // this used to be 1, then 5, but 10 is prob enough resolution. Numbers can be typed.
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
+                        10m;
                 }
                 else if (variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
                 {
@@ -601,7 +606,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 AssignCustomGetEvent(instance, container, memberName, memberType, variableDefinition, instanceMember);
 
-                instanceMember.CustomSetEvent += (owner, value) =>
+                instanceMember.CustomSetEvent += async (owner, value) =>
                 {
                     //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
 
@@ -629,38 +634,51 @@ namespace OfficialPlugins.VariableDisplay
                     }
                     instanceMember.IsDefault = makeDefault;
 
+                    // If we ignore the next refresh, then AnimationChains won't update when the user
+                    // picks an AnimationChainList from a combo box:
+                    //RefreshLogic.IgnoreNextRefresh();
 
-                    PerformStandardVariableAssignments(instance, memberName, value, categories);
+                    // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
 
-                    static void PerformStandardVariableAssignments(NamedObjectSave instance, string memberName, object value, IEnumerable<MemberCategory> categories)
-                    {
-                        // If we ignore the next refresh, then AnimationChains won't update when the user
-                        // picks an AnimationChainList from a combo box:
-                        //RefreshLogic.IgnoreNextRefresh();
-                        GlueCommands.Self.GluxCommands.SetVariableOn(
-                            instance,
-                            memberName,
-                            value);
-
-                        // Set subtext before refreshing property grid
-                        AssignVariableSubtext(instance, categories.ToList(),        instance.GetAssetTypeInfo());
-                    }
+                    GlueCommands.Self.GluxCommands.SetVariableOn(
+                        instance,
+                        memberName,
+                        value, performSaveAndGenerateCode: false, updateUi: false);
 
 
+                    await System.Threading.Tasks.Task.Delay(400);
 
-
+                    // Set subtext before refreshing property grid
+                    AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
 
                     instanceMember.IsDefault = makeDefault;
+
+                    TaskManager.Self.Add(async () =>
+                    {
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                        EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+                        GlueCommands.Self.DoOnUiThread(() =>
+                        {
+                            MainGlueWindow.Self.PropertyGrid.Refresh();
+                            PropertyGridHelper.UpdateNamedObjectDisplay();
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                        });
+                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+
+
+                    }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
+
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
                 {
                     if (instanceMember.IsDefault)
                     {
-                        // June 29 2021 - this used to get called whenever
-                        // IsDefault is set to either true or false, but we
-                        // only want to call MakeDefault if the value is set to true.
-                        MakeDefault(instance, memberName);
+                    // June 29 2021 - this used to get called whenever
+                    // IsDefault is set to either true or false, but we
+                    // only want to call MakeDefault if the value is set to true.
+                    MakeDefault(instance, memberName);
 
                     }
                 };
@@ -709,7 +727,7 @@ namespace OfficialPlugins.VariableDisplay
 
             var typeName = variableDefinition?.Type;
             Type type = null;
-            if(!string.IsNullOrEmpty(typeName))
+            if (!string.IsNullOrEmpty(typeName))
             {
                 type = TypeManager.GetTypeFromString(typeName);
             }
@@ -761,7 +779,7 @@ namespace OfficialPlugins.VariableDisplay
             {
 
 
-                foreach(var instructionOnObject in instance.InstructionSaves)
+                foreach (var instructionOnObject in instance.InstructionSaves)
                 {
                     var variableOnInstanceName = instructionOnObject.Member;
                     var variableOnInstanceValue = instructionOnObject.Value;
@@ -790,12 +808,12 @@ namespace OfficialPlugins.VariableDisplay
                     }
                 }
 
-                if(valueOnState == null)
+                if (valueOnState == null)
                 {
                     // See if this variable is set by any states on the instance first
                     var variablesOnThisInstance = container.CustomVariables.Where(item => item.SourceObject == instance.InstanceName);
 
-                    foreach(var variableOnInstance in variablesOnThisInstance)
+                    foreach (var variableOnInstance in variablesOnThisInstance)
                     {
                         var variableOnInstanceName = variableOnInstance.Name;
                         var variableOnInstanceValue = variableOnInstance.DefaultValue;
@@ -803,24 +821,24 @@ namespace OfficialPlugins.VariableDisplay
                         CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
 
                         var matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
-                        if(matchingStateCategory != null)
+                        if (matchingStateCategory != null)
                         {
                             var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
-                            if(matchingState != null)
+                            if (matchingState != null)
                             {
                                 // does the state set the member?
                                 valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
 
                             }
                         }
-                        if(valueOnState != null)
+                        if (valueOnState != null)
                         {
                             break;
                         }
                     }
                 }
 
-                if(valueOnState == null)
+                if (valueOnState == null)
                 {
                     foundVariable = instanceElementType.GetCustomVariableRecursively(memberName);
                 }
@@ -840,7 +858,7 @@ namespace OfficialPlugins.VariableDisplay
         private static bool GetIfShouldBeSkipped(string name, NamedObjectSave instance, AssetTypeInfo ati)
         {
             ///////////////////Early Out////////////////////////
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return true;
             }
@@ -877,7 +895,7 @@ namespace OfficialPlugins.VariableDisplay
                         // These used to be the standard way to size text, but now we just
                         // use "TextureScale"
                         name == "Scale" || name == "Spacing" || name == "NewLineDistance"
-                        
+
                         ;
                 }
 
@@ -887,17 +905,17 @@ namespace OfficialPlugins.VariableDisplay
                         name == "AspectRatio" || name == "DestinationRectangle" || name == "CameraModelCullMode";
 
                 }
-             
+
                 if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Geometry.Polygon")
                 {
                     return
                         name == "RotationX" || name == "RotationY" || name == "Points";
                 }
 
-                
+
                 if (ati.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Graphics.Layer")
                 {
-                    return 
+                    return
                         name == "LayerCameraSettings";
                 }
 
@@ -905,10 +923,10 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     return
                         name == "AlphaRate" || name == "RedRate" || name == "GreenRate" || name == "BlueRate" ||
-                        name == "RelativeTop" || name == "RelativeBottom" || 
+                        name == "RelativeTop" || name == "RelativeBottom" ||
                         name == "RelativeLeft" || name == "RelativeRight" ||
                         name == "TimeCreated" || name == "TimeIntoAnimation" ||
-                        name == "ScaleX" || name == "ScaleY" || 
+                        name == "ScaleX" || name == "ScaleY" ||
                         name == "CurrentChainIndex" ||
                         name == "Top" || name == "Bottom" || name == "Left" || name == "Right" ||
                         name == "PixelSize" ||

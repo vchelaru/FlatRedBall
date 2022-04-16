@@ -1976,8 +1976,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
                 }
 
-                // Avoids accumulation when dragging a slider around:
-                TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
+                if(updateUi)
+                {
+                    // Avoids accumulation when dragging a slider around:
+                    TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
+                }
 
                 if(notifyPlugins)
                 {
