@@ -1706,13 +1706,8 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)
         {
-            CallMethodOnPlugin(
-                delegate (PluginBase plugin)
-                {
-                    plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer);
-                },
-                plugin => plugin.AdjustDisplayedEntity != null,
-                nameof(AdjustDisplayedEntity));
+            CallMethodOnPlugin(plugin => plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer),
+                plugin => plugin.AdjustDisplayedEntity != null);
         }
 
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)

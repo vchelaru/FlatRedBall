@@ -67,7 +67,8 @@ namespace FlatRedBall.Glue.SaveClasses
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
             RemoveAutoLocalizationOfVariables = 14,
-            SpriteHasUseAnimationTextureFlip = 15
+            SpriteHasUseAnimationTextureFlip = 15,
+            RemoveIsScrollableEntityList = 16,
         }
 
         #endregion
@@ -76,7 +77,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteHasUseAnimationTextureFlip;
+        public const int LatestVersion = (int)GluxVersions.RemoveIsScrollableEntityList;
 
         public int FileVersion { get; set; }
 
