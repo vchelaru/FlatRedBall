@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -273,7 +274,18 @@ namespace GlueFormsCore.Controls
                 FileWatchManager.Flush();
         }
 
-
-
+        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.XButton1 == MouseButtonState.Pressed)
+            {
+                // navigate back
+                TreeNodeStackManager.Self.GoBack();
+            }
+            if(e.XButton2 == MouseButtonState.Pressed)
+            {
+                // navigate forward
+                TreeNodeStackManager.Self.GoForward();
+            }
+        }
     }
 }
