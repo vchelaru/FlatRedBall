@@ -1158,6 +1158,11 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public void Shift(Microsoft.Xna.Framework.Vector3 shiftVector)
+        {
+            mShapes.Shift(shiftVector);
+        }
+
         public void RefreshAllRepositionDirections()
         {
             var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);

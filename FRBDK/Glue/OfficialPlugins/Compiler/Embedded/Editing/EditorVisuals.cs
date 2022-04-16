@@ -40,11 +40,14 @@ namespace GlueControl.Editing
 
         static double lastFrameReset;
 
+        public static Layer DefaultLayer { get; set; }
+
         #endregion
 
         static EditorVisuals()
         {
             FlatRedBallServices.AddManager(new EditorVisuals());
+            DefaultLayer = SpriteManager.TopLayer;
         }
 
         public static Text Text(string text, Vector3 position, Color? color = null)
@@ -64,7 +67,7 @@ namespace GlueControl.Editing
 
             if (nextText == Texts.Count)
             {
-                Texts.Add(TextManager.AddText(String.Empty));
+                Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
             }
 
             var textInstance = Texts[nextText];
@@ -105,7 +108,9 @@ namespace GlueControl.Editing
 
             if (nextLine == Lines.Count)
             {
-                Lines.Add(ShapeManager.AddLine());
+                var line = new Line();
+                ShapeManager.AddToLayer(line, DefaultLayer);
+                Lines.Add(line);
             }
 
             var lineInstance = Lines[nextLine];
@@ -132,13 +137,13 @@ namespace GlueControl.Editing
             // This screen is cleaning up, so don't make anymore objects:
             if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
             {
-                return new Arrow();
+                return new Arrow(DefaultLayer);
             }
             TryResetEveryFrameValues();
 
             if (nextArrow == Arrows.Count)
             {
-                Arrows.Add(new Visuals.Arrow());
+                Arrows.Add(new Visuals.Arrow(DefaultLayer));
             }
 
 
@@ -168,7 +173,9 @@ namespace GlueControl.Editing
 
             if (nextSprite == Sprites.Count)
             {
-                Sprites.Add(SpriteManager.AddSprite(animationChain));
+                var newSprite = SpriteManager.AddSprite(animationChain);
+                SpriteManager.AddToLayer(newSprite, DefaultLayer);
+                Sprites.Add(newSprite);
             }
 
             var sprite = Sprites[nextSprite];
@@ -202,7 +209,9 @@ namespace GlueControl.Editing
 
             if (nextRectangle == Rectangles.Count)
             {
-                Rectangles.Add(ShapeManager.AddAxisAlignedRectangle());
+                var newRectangle = new AxisAlignedRectangle();
+                ShapeManager.AddToLayer(newRectangle, DefaultLayer);
+                Rectangles.Add(newRectangle);
             }
 
             var rectangle = Rectangles[nextRectangle];
@@ -236,7 +245,9 @@ namespace GlueControl.Editing
 
             if (nextCircle == Circles.Count)
             {
-                Circles.Add(ShapeManager.AddCircle());
+                var newCircle = new Circle();
+                ShapeManager.AddToLayer(newCircle, DefaultLayer);
+                Circles.Add(newCircle);
             }
 
             var circle = Circles[nextCircle];
@@ -269,7 +280,9 @@ namespace GlueControl.Editing
 
             if (nextPolygon == Polygons.Count)
             {
-                Polygons.Add(ShapeManager.AddPolygon());
+                var newPolygon = new Polygon();
+                ShapeManager.AddToLayer(newPolygon, DefaultLayer);
+                Polygons.Add(newPolygon);
             }
 
             var polygon = Polygons[nextPolygon];
