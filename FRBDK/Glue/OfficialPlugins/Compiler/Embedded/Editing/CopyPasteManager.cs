@@ -66,11 +66,11 @@ namespace GlueControl.Editing
             string message = "";
             if(selectedNamedObjects.Count == 1)
             {
-                message = $"Copied {selectedNamedObjects[0]}";
+                message = $"Copied {selectedNamedObjects[0]} to clipboard";
             }
             else
             {
-                message = $"Copied {selectedNamedObjects.Count} objects";
+                message = $"Copied {selectedNamedObjects.Count} objects to clipboard";
             }
             FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
 #endif
