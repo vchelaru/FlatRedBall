@@ -544,8 +544,9 @@ namespace OfficialPlugins.VariableDisplay
                         AngleType.Radians;
 
                     // this used to be 1, then 5, but 10 is prob enough resolution. Numbers can be typed.
+                    // 15 is better, gives the user access to 45
                     instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
-                        10m;
+                        15m;
                 }
                 else if (variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
                 {

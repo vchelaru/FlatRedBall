@@ -942,7 +942,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 // ToString leads with the type not the name, so let's lead with the name instead
                 //node.Text = nos.ToString();
-                node.Text = $"{nos.FieldName} ({nos.ClassType}) in {nos.GetContainer()}";
+                // don't use field name, that has the 'm' prefix in some cases
+                //node.Text = $"{nos.FieldName} ({nos.ClassType}) in {nos.GetContainer()}";
+                node.Text = $"{nos.InstanceName} ({nos.ClassType}) in {nos.GetContainer()}";
                 node.Tag = nos;
                 //LayersTreeNode.SelectedImageKey = "layerList.png";
                 //LayersTreeNode.ImageKey = "layerList.png";
