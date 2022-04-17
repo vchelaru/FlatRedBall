@@ -1163,6 +1163,15 @@ namespace FlatRedBall.TileCollisions
             mShapes.Shift(shiftVector);
         }
 
+        /// <summary>
+        /// Updates the reposition directions for all contained shapes to prevent snagging. This can be called after performing add or remove operations on this ShapeCollection.
+        /// By default this does not need to be called when calling InsertRectangle or AddRectangle - reposition direcitons will be adjusted automatically when these methods are called
+        /// if AdjustRepositionDirectionsOnAddAndRemove is true.
+        /// </summary>
+        /// <remarks>
+        /// This method adjusts the reposition directions to point "outward" if the shape is on the outside. If a shape is fully enclosed, it
+        /// has no reposition direction assigned.
+        /// </remarks>
         public void RefreshAllRepositionDirections()
         {
             var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);
