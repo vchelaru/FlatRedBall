@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.ErrorReportingPlugin.ViewModels;
@@ -11,26 +12,59 @@ using System.Text;
 
 namespace OfficialPlugins.ErrorReportingPlugin
 {
-    internal class MainErrorReporter : IErrorReporter
+    internal class NamedObjectSaveErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
 
             FillWithBadSetByDerived(errors);
 
             // This could eventually be moved to an object file, but for now...
-            FillWithMissingSourceName(errors);
+            FillWithBadFileRelatedProperties(errors);
 
             return errors.ToArray();
         }
 
-        private void FillWithMissingSourceName(List<ErrorViewModel> errors)
+        private void FillWithBadFileRelatedProperties(List<ErrorViewModel> errors)
         {
-            foreach (var nos in ObjectFinder.Self.GetAllNamedObjects())
+            var project = GlueState.Self.CurrentGlueProject;
+            foreach (var screen in project.Screens)
             {
-                if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile) &&
-                    !string.IsNullOrEmpty(nos.SourceName) && !nos.IsEntireFile)
+                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(screen, true, false);
+
+                foreach (var nos in screen.AllNamedObjects)
+                {
+                    FillWithBadFileRelatedProperties(nos, availableSourceFiles, errors);
+                }
+            }
+            foreach (var entity in project.Entities)
+            {
+                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(entity, true, false);
+
+                foreach (var nos in entity.AllNamedObjects)
+                {
+                    FillWithBadFileRelatedProperties(nos, availableSourceFiles, errors);
+                }
+            }
+        }
+
+        private void FillWithBadFileRelatedProperties(NamedObjectSave nos, List<string> availableSourceFiles, List<ErrorViewModel> errors)
+        { 
+            if (nos.SourceType == SourceType.File)
+            {
+                if(!string.IsNullOrEmpty(nos.SourceFile))
+                { 
+                    if(availableSourceFiles.Contains(nos.SourceFile) == false)
+                    {
+                        var error = new MissingNamedObjectSourceFileViewModel(nos);
+                        errors.Add(error);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(nos.SourceFile) &&
+                    !string.IsNullOrEmpty(nos.SourceName) && 
+                    !nos.IsEntireFile)
                 {
                     var availableObjects = AvailableNameablesStringConverter.GetAvailableNamedObjectSourceNames(nos);
 

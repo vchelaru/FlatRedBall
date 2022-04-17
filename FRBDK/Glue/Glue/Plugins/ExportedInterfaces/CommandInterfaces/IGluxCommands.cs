@@ -100,6 +100,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region GlueElements
 
+        Task CopyGlueElement(GlueElement original);
+
         FilePath GetElementJsonLocation(GlueElement element);
 
         FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave);
@@ -110,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
 
-        void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
+        Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
 
         #endregion
 

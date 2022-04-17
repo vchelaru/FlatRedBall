@@ -1786,9 +1786,9 @@ namespace FlatRedBall.Glue.FormHelpers
                         else if (GlueState.Self.CurrentEntitySave != null)
                         {
                             var entityToRemove = GlueState.Self.CurrentEntitySave;
-                            await TaskManager.Self.AddAsync(() =>
+                            await TaskManager.Self.AddAsync(async () =>
                             {
-                                RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
+                                await RemoveEntity(GlueState.Self.CurrentEntitySave, filesToRemove);
                                 //ProjectManager.RemoveEntity(EditorLogic.CurrentEntitySave);
                                 deletedElement = entityToRemove;
                             }, "Removing Entity");
@@ -1912,11 +1912,9 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        private static void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved)
+        private static async Task RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved)
         {
             List<NamedObjectSave> namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
-
-            DialogResult result = DialogResult.Yes;
 
             string message = null;
 
@@ -1927,7 +1925,6 @@ namespace FlatRedBall.Glue.FormHelpers
                 for (int i = 0; i < namedObjectsToRemove.Count; i++)
                 {
                     message += "\n" + namedObjectsToRemove[i].ToString();
-
                 }
             }
 
@@ -1948,11 +1945,11 @@ namespace FlatRedBall.Glue.FormHelpers
                 message += "\n\nDo you really want to remove this Entity?";
 
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message,
-                    () => GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved));
+                    async () => await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved));
             }
             else
             {
-                GlueCommands.Self.GluxCommands.RemoveEntity(entityToRemove, filesThatCouldBeRemoved);
+                await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
             }
         }
 

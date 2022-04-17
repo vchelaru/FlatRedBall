@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Errors
 {
-    public class CsvErrorReporter : IErrorReporter
+    public class CsvErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             var glueProject = GlueState.Self.CurrentGlueProject;
 

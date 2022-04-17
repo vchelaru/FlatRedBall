@@ -20,13 +20,12 @@
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
-                        x:Name="AddObjectToListButton"
+                        x:Name="AddObjectToListInScreenButton"
                         Title="Add XXXX to XXXXList"
                         Details="Adds a new instance to the selected list."
                         Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
-                    
 
                 </WrapPanel>
             </glue:StyledGroupBox>
@@ -37,6 +36,13 @@
                         Title="Add Object"
                         Details="Set the AddObject details here, depending on if it's a Screen or entity."
                         Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
+                    </local:TitleImageButton>
+
+                    <local:TitleImageButton
+                        x:Name="AddObjectToListInEntityButton"
+                        Title="Add XXXX to XXXXList"
+                        Details="Adds a new instance to the selected list."
+                        Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton

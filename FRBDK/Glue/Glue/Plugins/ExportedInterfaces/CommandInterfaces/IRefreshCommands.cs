@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.SaveClasses;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -45,8 +46,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshErrors();
 
-        void RefreshErrorsFor(IErrorReporter errorReporter);
+        void RefreshErrorsFor(ErrorReporterBase errorReporter);
 
+        Task ClearFixedErrors();
 
 
         /// <summary>

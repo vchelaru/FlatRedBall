@@ -10,13 +10,13 @@ namespace FlatRedBall.Glue.Errors
 {
     public class GlueErrorManager
     {
-        public List<IErrorReporter> ErrorReporters { get; private set; } = new List<IErrorReporter>();
+        public List<ErrorReporterBase> ErrorReporters { get; private set; } = new List<ErrorReporterBase>();
 
         List<ErrorViewModel> errors = new List<ErrorViewModel>();
 
         public IEnumerable<ErrorViewModel> Errors => errors;
 
-        public void Add(IErrorReporter errorReporter) => ErrorReporters.Add(errorReporter);
+        public void Add(ErrorReporterBase errorReporter) => ErrorReporters.Add(errorReporter);
 
         public void Add(ErrorViewModel error)
         {
@@ -43,6 +43,23 @@ namespace FlatRedBall.Glue.Errors
                     if(GlueState.Self.ErrorList.Errors[i].GetIfIsFixed())
                     {
                         GlueState.Self.ErrorList.Errors.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        public void ClearFixedErrors(List<ErrorViewModel> errorsToCheck)
+        {
+            foreach (var error in errorsToCheck)
+            {
+                if(error.GetIfIsFixed())
+                {
+                    var id = error.UniqueId;
+                    errors.RemoveAll(item => item.UniqueId == id);
+
+                    lock (GlueState.ErrorListSyncLock)
+                    {
+                        GlueState.Self.ErrorList.Errors.RemoveAll(item => item.UniqueId == id);
                     }
                 }
             }

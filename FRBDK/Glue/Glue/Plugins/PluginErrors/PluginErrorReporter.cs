@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.PluginErrors
 {
-    public class PluginErrorReporter : IErrorReporter
+    public class PluginErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> toReturn = new List<ErrorViewModel>();
             foreach(var container in PluginManager.AllPluginContainers)

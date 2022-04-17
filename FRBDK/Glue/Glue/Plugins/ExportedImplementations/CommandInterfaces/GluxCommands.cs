@@ -768,6 +768,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 $"Removing referenced file {referencedFileToRemove}");
         }
 
+        public async Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
+        {
+            await TaskManager.Self.AddAsync(() =>
+                RemoveReferencedFileInternal(referencedFileToRemove, additionalFilesToRemove, regenerateAndSave),
+                $"Removing referenced file {referencedFileToRemove}");
+        }
+
         public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         {
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
@@ -784,7 +791,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // 1.  Remove the ReferencedFileSave from the Glue project (GLUX)
             // 2.  Remove the GUI item
             // 3.  Remove the item from the Visual Studio project.
-            IElement container = referencedFileToRemove.GetContainer();
+            var container = referencedFileToRemove.GetContainer();
 
             #region Remove the file from the current Screen or Entity if there is a current Screen or Entity
 
@@ -838,31 +845,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     nos.ResetVariablesReferencing(referencedFileToRemove);
                 }
-
-                GlueCommands.Self.DoOnUiThread(() =>
+                if (container != null)
                 {
-                    if (GlueState.Self.CurrentElement != null)
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                    var isCurrentElement = container == GlueState.Self.CurrentElement;
 
-                        if (GlueState.Self.CurrentElement != null)
-                        {
-                            if (GlueState.Self.CurrentElement.ReferencedFiles.Count > 0)
-                            {
-                                GlueState.Self.CurrentReferencedFileSave = GlueState.Self.CurrentElement.ReferencedFiles.LastOrDefault();
-                            }
-                            else
-                            {
-                                // This should refresh the selection...
-                                GlueState.Self.CurrentElement = GlueState.Self.CurrentElement;
-                            }
-                        }
-                    }
-                    if (regenerateAndSave)
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+
+                    if (container.ReferencedFiles.Count > 0 && isCurrentElement)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                        GlueState.Self.CurrentReferencedFileSave = container.ReferencedFiles.LastOrDefault();
                     }
-                });
+                    else
+                    {
+                        // This should refresh the selection...
+                        GlueState.Self.CurrentElement = container;
+                    }
+                }
+                if (regenerateAndSave && container != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                }
 
             }
             #endregion
@@ -895,32 +897,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             #endregion
 
-
-            // November 10, 2015
-            // I feel like this may
-            // have been old code before
-            // we had full dependency tracking
-            // in Glue. This file should only be
-            // removed from the project if nothing
-            // else references it, including no entities.
-            // This code does just entities/screens/global
-            // content, but doesn't check the full dependency
-            // tree. I think we can just remove it and depend on
-            // the code below.
-            // Actually, removing this seems to cause problems - files
-            // that should be removed aren't. So instead we'll chnage the
-            // call to use the dependency tree:
-            // replace:
-
-            var referencedFiles = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
+            var allFilePaths = GlueCommands.Self.FileCommands.GetAllReferencedFileNames();
 
             var rfsFilePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileToRemove);
-            string absoluteToLower = rfsFilePath.FullPath.ToLowerInvariant();
-            string relativeToProject = FileManager.MakeRelative(absoluteToLower, GlueState.Self.ContentDirectory);
 
-            bool isReferencedDirectlyByGlue = referencedFiles.Contains(relativeToProject);
-
-            var isFileReferenced = isReferencedDirectlyByGlue;
+            var isFileReferenced = allFilePaths.Contains(rfsFilePath);
 
             if (isFileReferenced == false)
             {
@@ -945,7 +926,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if (ProjectManager.IsContent(referencedFileToRemove.Name))
+            if (GlueCommands.Self.FileCommands.IsContent(rfsFilePath))
             {
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);
                 foreach (var file in UnreferencedFilesManager.LastAddedUnreferencedFiles)
@@ -2128,34 +2109,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return filePath;
         }
 
+        // Eventually support copy/paste into different folders
+        public async Task CopyGlueElement(GlueElement original)
+        {
+            await TaskManager.Self.AddAsync(() =>
+            {
+                GlueElement newElement = null;
+
+                if (original is EntitySave asEntitySave)
+                {
+                    newElement = asEntitySave.Clone();
+                }
+                else if (original is ScreenSave asScreenSave)
+                {
+                    newElement = asScreenSave.Clone();
+                }
+
+                newElement.Name = original.Name + "Copy";
+
+                while (ObjectFinder.Self.GetElement(newElement.Name) != null)
+                {
+                    newElement.Name = StringFunctions.IncrementNumberAtEnd(newElement.Name);
+                }
+
+                if (newElement is ScreenSave newScreenSave)
+                {
+                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
+                }
+                else if (newElement is EntitySave newEntitySave)
+                {
+                    GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
+                }
+
+            }, $"Adding copy of {original}");
+        }
+
         #endregion
 
         #region Entity
-
-        private static bool UpdateNamespaceOnCodeFiles(EntitySave entitySave)
-        {
-            var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
-            string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-
-            foreach (var file in allFiles)
-            {
-                bool doesFileExist = file.Exists();
-                bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
-
-                if (doesFileExist && !isFactory)
-                {
-                    string contents = FileManager.FromFileText(file.FullPath);
-
-                    contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
-
-                    FileManager.SaveText(contents, file.FullPath);
-
-
-                }
-            }
-
-            return true;
-        }
 
         private static bool MoveEntityCodeFilesToDirectory(EntitySave entitySave, string targetDirectory)
         {
@@ -2264,7 +2255,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return succeeded;
         }
 
-        public void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null)
+        public async Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null)
         {
             List<NamedObjectSave> namedObjectsToRemove = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(entityToRemove.Name);
             List<EntitySave> inheritingEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityToRemove);
@@ -2291,7 +2282,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // So we'll manually remove the RFS's first before removing the entire entity
             for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
+                await GluxCommands.Self.RemoveReferencedFileAsync (entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
             }
 
 
@@ -2333,6 +2324,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GluxCommands.Self.SaveGlux();
+        }
+
+        private static bool UpdateNamespaceOnCodeFiles(EntitySave entitySave)
+        {
+            var allFiles = CodeWriter.GetAllCodeFilesFor(entitySave);
+            string newNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
+
+            foreach (var file in allFiles)
+            {
+                bool doesFileExist = file.Exists();
+                bool isFactory = GetIfFileIsFactory(entitySave, file.FullPath);
+
+                if (doesFileExist && !isFactory)
+                {
+                    string contents = FileManager.FromFileText(file.FullPath);
+
+                    contents = CodeWriter.ReplaceNamespace(contents, newNamespace);
+
+                    FileManager.SaveText(contents, file.FullPath);
+
+
+                }
+            }
+
+            return true;
         }
 
         #endregion

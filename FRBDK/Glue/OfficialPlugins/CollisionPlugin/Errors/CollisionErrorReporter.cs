@@ -10,9 +10,9 @@ using System.Text;
 
 namespace OfficialPluginsCore.CollisionPlugin.Errors
 {
-    class CollisionErrorReporter : IErrorReporter
+    class CollisionErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> errorList = null;
             var project = GlueState.Self.CurrentGlueProject;

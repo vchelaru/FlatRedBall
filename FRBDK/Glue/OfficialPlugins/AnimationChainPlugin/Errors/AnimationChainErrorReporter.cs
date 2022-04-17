@@ -9,9 +9,9 @@ using System.Text;
 
 namespace OfficialPlugins.AnimationChainPlugin.Errors
 {
-    internal class AnimationChainErrorReporter : IErrorReporter
+    internal class AnimationChainErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             var errors = new List<ErrorViewModel>();
 

@@ -75,35 +75,13 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        public IElement CurrentElement
-        {
-            get { return mGlueStateSnapshot.CurrentElement; }
-        }
+        public GlueElement CurrentElement => mGlueStateSnapshot.CurrentElement; 
 
-        public NamedObjectSave CurrentNamedObject
-        {
-            get
-            {
-                return mGlueStateSnapshot.CurrentNamedObjectSave;
-            }
-        }
+        public NamedObjectSave CurrentNamedObject => mGlueStateSnapshot.CurrentNamedObjectSave;
 
-        public CustomVariable CurrentCustomVariable
-        {
-            get
-            {
-                return mGlueStateSnapshot.CurrentCustomVariable;
-            }
-        }
+        public CustomVariable CurrentCustomVariable => mGlueStateSnapshot.CurrentCustomVariable;
 
-        public StateSave CurrentStateSave
-        {
-            get
-            {
-                return mGlueStateSnapshot.CurrentStateSave;
-            }
-        }
-
+        public StateSave CurrentStateSave => mGlueStateSnapshot.CurrentStateSave;
 
         public override System.Windows.Forms.PropertyGrid PropertyGrid
         {

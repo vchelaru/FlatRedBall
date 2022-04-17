@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -22,16 +23,28 @@ namespace FlatRedBall.Glue.Managers
             {
                 copiedObjectClone = nos.Clone();
             }
+            else if(currentTreeNodeTag is ScreenSave screen)
+            {
+                copiedObjectClone = screen.Clone();
+            }
+            else if(currentTreeNodeTag is EntitySave entity)
+            {
+                copiedObjectClone = entity.Clone();
+            }
         }
-        internal void HandlePaste()
+        internal async Task HandlePaste()
         {
             if(copiedObjectClone is ReferencedFileSave asRfs)
             {
-                GlueCommands.Self.GluxCommands.DuplicateAsync(asRfs, GlueState.Self.CurrentElement);
+                await GlueCommands.Self.GluxCommands.DuplicateAsync(asRfs, GlueState.Self.CurrentElement);
             }
             else if(copiedObjectClone is NamedObjectSave asNos)
             {
                 GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
+            }
+            else if(copiedObjectClone is GlueElement element)
+            {
+                await GlueCommands.Self.GluxCommands.CopyGlueElement(element);
             }
         }
     }

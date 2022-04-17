@@ -16,10 +16,10 @@ using TMXGlueLib;
 namespace TiledPluginCore.Managers
 {
 
-    class ErrorReporter : IErrorReporter
+    class ErrorReporter : ErrorReporterBase
     {
 
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
 
@@ -32,10 +32,6 @@ namespace TiledPluginCore.Managers
                     tmxFiles.Add(fileName);
                 }
             }
-
-            var type = typeof(TiledCache);
-            var methods = type.GetMethods();
-            int m = 3;
 
             FillWithTmxFilesWithMultipleTilesetsPerLayer(tmxFiles, errors);
 

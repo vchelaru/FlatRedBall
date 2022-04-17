@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         #region Properties
 
-        public IElement CurrentElement
+        public GlueElement CurrentElement
         {
 
             get;
@@ -41,13 +41,13 @@ namespace FlatRedBall.Glue.GuiDisplay
         }
 
 
-        public string QualifiedRuntimeTypeName
+        public string QualifiedRuntimeTypeNameFilter
         {
             get;
             set;
         }
 
-        public string UnqualifiedRuntimeTypeName
+        public string UnqualifiedRuntimeTypeNameFilter
         {
             get;
             set;
@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.GuiDisplay
 
         #endregion
 
-        public AvailableFileStringConverter(IElement element)
+        public AvailableFileStringConverter(GlueElement element)
             : base()
         {
             IncludeNoneOption = true;
@@ -76,13 +76,17 @@ namespace FlatRedBall.Glue.GuiDisplay
         private static extern int StrCmpLogicalW(string x, string y);
 
 
-        List<string> stringToReturn = new List<string>();
-        public override StandardValuesCollection
-                     GetStandardValues(ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            stringToReturn.Clear();
+            List<string> stringToReturn = GetAvailableOptions(CurrentElement, IncludeNoneOption, RemovePathAndExtension, QualifiedRuntimeTypeNameFilter, UnqualifiedRuntimeTypeNameFilter);
+            return new StandardValuesCollection(stringToReturn);
+        }
 
-            if(IncludeNoneOption)
+        public static List<string> GetAvailableOptions(GlueElement glueElement, bool includeNoneOption, bool removePathAndExtension, string qualifiedRuntimeTypeNameFilter = null, string unqualifiedRuntimeTypeNameFilter = null)
+        {
+            List<string> stringToReturn = new List<string>();
+
+            if (includeNoneOption)
             {
                 // 
                 stringToReturn.Add("<NONE>");
@@ -92,23 +96,22 @@ namespace FlatRedBall.Glue.GuiDisplay
                 stringToReturn.Add("");
             }
 
-            IElement currentElementSave = CurrentElement;
 
             List<string> listToSort = new List<string>();
 
-            if (currentElementSave != null)
+            if (glueElement != null)
             {
                 // Let's use 
                 //foreach (ReferencedFileSave rfs in currentElementSave.ReferencedFiles)
-                foreach (ReferencedFileSave rfs in currentElementSave.GetAllReferencedFileSavesRecursively())
+                foreach (ReferencedFileSave rfs in glueElement.GetAllReferencedFileSavesRecursively())
                 {
-                    bool shouldInclude = (string.IsNullOrEmpty(QualifiedRuntimeTypeName) && string.IsNullOrEmpty(UnqualifiedRuntimeTypeName)) ||
-                        (!string.IsNullOrEmpty(QualifiedRuntimeTypeName) && IsRfsOfQualifiedRuntimeType(rfs, QualifiedRuntimeTypeName)) ||
-                        (!string.IsNullOrEmpty(UnqualifiedRuntimeTypeName) && IsRfsOfUnqualifiedRuntimeType(rfs, UnqualifiedRuntimeTypeName));
+                    bool shouldInclude = (string.IsNullOrEmpty(qualifiedRuntimeTypeNameFilter) && string.IsNullOrEmpty(unqualifiedRuntimeTypeNameFilter)) ||
+                        (!string.IsNullOrEmpty(qualifiedRuntimeTypeNameFilter) && IsRfsOfQualifiedRuntimeType(rfs, qualifiedRuntimeTypeNameFilter)) ||
+                        (!string.IsNullOrEmpty(unqualifiedRuntimeTypeNameFilter) && IsRfsOfUnqualifiedRuntimeType(rfs, unqualifiedRuntimeTypeNameFilter));
 
                     if (shouldInclude)
                     {
-                        if (RemovePathAndExtension)
+                        if (removePathAndExtension)
                         {
                             listToSort.Add(FileManager.RemovePath(FileManager.RemoveExtension(rfs.Name)));
                         }
@@ -123,9 +126,8 @@ namespace FlatRedBall.Glue.GuiDisplay
             listToSort.Sort(StrCmpLogicalW);
 
             stringToReturn.AddRange(listToSort);
-            return new StandardValuesCollection(stringToReturn);
+            return stringToReturn;
         }
-
 
         bool IsRfsOfType(ReferencedFileSave rfs, Type type)
         {
@@ -141,7 +143,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        bool IsRfsOfQualifiedRuntimeType(ReferencedFileSave rfs, string qualifiedRuntimeType)
+        static bool IsRfsOfQualifiedRuntimeType(ReferencedFileSave rfs, string qualifiedRuntimeType)
         {
             AssetTypeInfo ati = rfs.GetAssetTypeInfo();
 
@@ -155,7 +157,7 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
         }
 
-        bool IsRfsOfUnqualifiedRuntimeType(ReferencedFileSave rfs, string unqualifiedRuntimeType)
+        static bool IsRfsOfUnqualifiedRuntimeType(ReferencedFileSave rfs, string unqualifiedRuntimeType)
         {
             AssetTypeInfo ati = rfs.GetAssetTypeInfo();
 

@@ -594,9 +594,9 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Errors
 
-        List<IErrorReporter> ErrorReporters = new List<IErrorReporter>();
+        List<ErrorReporterBase> ErrorReporters = new List<ErrorReporterBase>();
 
-        protected void AddErrorReporter(IErrorReporter errorReporter)
+        protected void AddErrorReporter(ErrorReporterBase errorReporter)
         {
             ErrorReporters.Add(errorReporter);
             EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);

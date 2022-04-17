@@ -21,8 +21,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             this.GetTypeConverter += HandleGetTypeConverter;
         }
 
-        private TypeConverter HandleGetTypeConverter(IElement container, NamedObjectSave instance, Type memberType, string memberName, string customType)
+        private TypeConverter HandleGetTypeConverter(IElement containerAsIElement, NamedObjectSave instance, Type memberType, string memberName, string customType)
         {
+            GlueElement container = containerAsIElement as GlueElement;
             TypeConverter typeConverter = null;
 
             // If the NOS references a FRB type, we need to adjust the type appropriately
@@ -31,11 +32,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
             Type oldType = memberType;
 
             bool handled = false;
-
-
-
-
-
 
             if (instance.SourceType == SourceType.FlatRedBallType)
             {
@@ -89,10 +85,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 else if (IsTypeFile(memberType, customType))
                 {
                     AvailableFileStringConverter availableFileStringConverter = new AvailableFileStringConverter(container);
-                    availableFileStringConverter.QualifiedRuntimeTypeName = memberType.FullName;
+                    availableFileStringConverter.QualifiedRuntimeTypeNameFilter = memberType.FullName;
                     if (!string.IsNullOrEmpty(customType))
                     {
-                        availableFileStringConverter.QualifiedRuntimeTypeName = customType;
+                        availableFileStringConverter.QualifiedRuntimeTypeNameFilter = customType;
                     }
                     availableFileStringConverter.RemovePathAndExtension = true;
                     typeConverter = availableFileStringConverter;

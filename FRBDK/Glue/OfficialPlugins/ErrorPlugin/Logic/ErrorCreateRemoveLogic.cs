@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.ErrorPlugin.Logic
 {
-    public class ErrorCreateRemoveLogic : Singleton<ErrorCreateRemoveLogic>, IErrorReporter
+    public class ErrorCreateRemoveLogic : ErrorReporterBase
     {
         #region Add Errors
 
@@ -295,7 +295,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
 
         #endregion
 
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             var missingFiles = GetAllFileErrorViewModels().ToArray();
 

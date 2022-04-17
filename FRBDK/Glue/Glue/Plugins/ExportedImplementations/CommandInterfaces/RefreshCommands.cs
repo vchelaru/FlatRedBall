@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using EditorObjects.IoC;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.FormHelpers;
@@ -90,8 +92,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshPropertyGrid()
         {
-            MainGlueWindow.Self.BeginInvoke(new EventHandler(delegate { MainGlueWindow.Self.PropertyGrid.Refresh(); }));
-            PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+            });
 
         }
 
@@ -134,11 +139,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void RefreshErrorsFor(IErrorReporter errorReporter)
+        public async Task ClearFixedErrors()
+        {
+            var errorManager = Container.Get<GlueErrorManager>();
+            await TaskManager.Self.AddAsync(() =>
+            {
+                errorManager.ClearFixedErrors();
+            }, "Clearing Fixed Errors", TaskExecutionPreference.AddOrMoveToEnd);
+        }
+
+        public void RefreshErrorsFor(ErrorReporterBase errorReporter)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
+                // Old errors here may not be cleared. We need to check if those are fixed:
+                var errorManager = Container.Get<GlueErrorManager>();
+                errorManager.ClearFixedErrors(errorReporter.ErrorsBelongingToThisReporter);
+
                 var errors = errorReporter.GetAllErrors();
+                errorReporter.ErrorsBelongingToThisReporter.Clear();
+                if (errors != null)
+                {
+                    errorReporter.ErrorsBelongingToThisReporter.AddRange(errors);
+                }
 
                 if (errors != null)
                 {

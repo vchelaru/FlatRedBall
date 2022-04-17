@@ -109,7 +109,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             #endregion
 
-            #region Add Object to Screen/Entity/List
+            #region Add Object to Screen/Entity
 
             mainView.AddObjectToEntityButton.Visibility = ToVisibility(
                 GlueState.Self.CurrentEntitySave != null
@@ -123,14 +123,19 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             mainView.AddObjectToScreenButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
             mainView.AddObjectToScreenButton.Details = "Common screen object types include entity lists, layers, and collision relationships.";
 
+            #endregion
+
+            #region Add object to List
+
             NamedObjectSave nosList = null;
 
-            if(GlueState.Self.CurrentScreenSave != null &&
+            if(GlueState.Self.CurrentElement != null &&
                 GlueState.Self.CurrentNamedObjectSave?.IsList == true)
             {
                 nosList = GlueState.Self.CurrentNamedObjectSave;
             }
-            if(nosList == null && GlueState.Self.CurrentScreenSave != null &&
+
+            if(nosList == null && GlueState.Self.CurrentElement != null &&
                 GlueState.Self.CurrentNamedObjectSave != null)
             {
                 nosList = GlueState.Self.CurrentElement.NamedObjects
@@ -138,15 +143,19 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             }
 
             var isListReferencingAbstractEntity = nosList != null && ObjectFinder.Self.GetEntitySave(nosList.SourceClassGenericType)?.AllNamedObjects.Any(item => item.SetByDerived) == true;
-
-            mainView.AddObjectToListButton.Visibility = ToVisibility(nosList != null && !isListReferencingAbstractEntity);
             var listType = nosList?.SourceClassGenericType;
             if(listType?.Contains('\\') == true)
             {
                 listType = FileManager.RemovePath(listType);
             }
 
-            mainView.AddObjectToListButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
+            mainView.AddObjectToListInScreenButton.Visibility = 
+                ToVisibility(nosList != null && !isListReferencingAbstractEntity && GlueState.Self.CurrentScreenSave != null);
+            mainView.AddObjectToListInScreenButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
+
+            mainView.AddObjectToListInEntityButton.Visibility = 
+                ToVisibility(nosList != null && !isListReferencingAbstractEntity && GlueState.Self.CurrentElement != null);
+            mainView.AddObjectToListInEntityButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
 
 
             #endregion
