@@ -190,6 +190,23 @@ namespace GlueControl.Editing
             return sprite;
         }
 
+        public static Sprite ColoredRectangle(float width, float height, Vector3 centerPosition, Color? color = null)
+        {
+            var sprite = Sprite(null, centerPosition, textureScale: -1);
+            sprite.Width = width;
+            sprite.Height = height;
+            sprite.ColorOperation = ColorOperation.Color;
+
+            var effectiveColor = color ?? new Color(255, 0, 0, 100);
+
+            sprite.Red = effectiveColor.R / 255.0f;
+            sprite.Green = effectiveColor.G / 255.0f;
+            sprite.Blue = effectiveColor.B / 255.0f;
+            sprite.Alpha = effectiveColor.A / 255.0f;
+
+            return sprite;
+        }
+
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
             if (centerPosition.Z == Camera.Main.Z)
