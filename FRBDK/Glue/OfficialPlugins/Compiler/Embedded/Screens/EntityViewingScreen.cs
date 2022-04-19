@@ -17,7 +17,6 @@ namespace GlueControl.Screens
 
         public static string GameElementTypeToCreate { get; set; }
         public static NamedObjectSave InstanceToSelect { get; set; }
-        public System.Reflection.MethodInfo ActivityEditModeMethod;
 
         public static bool ShowScreenBounds { get; set; }
 
@@ -56,7 +55,14 @@ namespace GlueControl.Screens
 
             try
             {
-                ActivityEditModeMethod?.Invoke(CurrentEntity, null);
+                foreach (var item in FlatRedBall.SpriteManager.ManagedPositionedObjects)
+                {
+                    if (item is FlatRedBall.Entities.IEntity entity)
+                    {
+                        entity.ActivityEditMode();
+                    }
+                }
+                base.ActivityEditMode();
             }
             catch (Exception e)
             {
@@ -77,7 +83,7 @@ namespace GlueControl.Screens
         {
             base.AddToManagers();
 
-            if(!string.IsNullOrEmpty(EntityViewingScreen.GameElementTypeToCreate))
+            if (!string.IsNullOrEmpty(EntityViewingScreen.GameElementTypeToCreate))
             {
                 var entityType = this.GetType().Assembly.GetType(EntityViewingScreen.GameElementTypeToCreate);
                 isViewingAbstractEntity = entityType?.IsAbstract == true;
@@ -100,12 +106,6 @@ namespace GlueControl.Screens
 
 
                     GlueControl.Editing.EditingManager.Self.Select(InstanceToSelect);
-
-                    var currentEntityType = CurrentEntity.GetType();
-                    if (!isViewingAbstractEntity)
-                    {
-                        ActivityEditModeMethod = currentEntityType.GetMethod("ActivityEditMode");
-                    }
                 }
             }
         }
