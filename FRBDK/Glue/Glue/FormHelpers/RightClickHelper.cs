@@ -551,7 +551,10 @@ namespace FlatRedBall.Glue.FormHelpers
                     if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                     {
                         Add("Force Save Screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
+                        Add("View in explorer", () => ViewElementInExplorer(targetNode.Tag as GlueElement));
                     }
+
+
                 }
             }
 
@@ -588,6 +591,11 @@ namespace FlatRedBall.Glue.FormHelpers
                         AddItem(mAddResetVariablesForPooling);
                     }
                     AddItem(mRefreshTreeNodesMenuItem);
+
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                    {
+                        Add("View in explorer", () => ViewElementInExplorer(targetNode.Tag as GlueElement));
+                    }
                 }
             }
 
@@ -2024,6 +2032,15 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
             }
+        }
+
+        internal static void ViewElementInExplorer(GlueElement element)
+        {
+            var extension = element is ScreenSave
+                ? GlueProjectSave.ScreenExtension
+                : GlueProjectSave.EntityExtension;
+            var filePath = GlueState.Self.CurrentGlueProjectDirectory + element.Name + "." + extension;
+            GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
         }
 
         internal static void ViewInExplorerClick(ITreeNode targetNode)
