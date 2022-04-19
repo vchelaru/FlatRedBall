@@ -460,6 +460,13 @@ namespace OfficialPlugins.Compiler.Managers
         {
             var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
             var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
+
+            foreach(var instruction in nosCopy.InstructionSaves)
+            {
+                // qualify here!
+                instruction.Type = VariableSendingManager.Self.GetQualifiedStateTypeName(instruction.Member, null, nosCopy, out bool isState, out StateSaveCategory category);
+            }
+
             var addObjectDto = new AddObjectDto();
             addObjectDto.NamedObjectSave = nosCopy;
             var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);

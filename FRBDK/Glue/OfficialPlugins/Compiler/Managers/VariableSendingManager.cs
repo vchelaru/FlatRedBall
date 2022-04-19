@@ -166,50 +166,9 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 typeName = variableDefinition.Type;
             }
-            else if(instruction != null)     
+            else if(instruction != null)
             {
-                typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
-
-                var nosElement = ObjectFinder.Self.GetElement(nos);
-                if( nosElement != null)
-                {
-                    var variable = nosElement.GetCustomVariableRecursively(changedMember);
-                    if(variable != null)
-                    {
-                        var isStateResult = ObjectFinder.Self.GetStateSaveCategory(variable, nosElement);
-                        category = isStateResult.Category;
-                        isState = isStateResult.IsState;
-                    }
-                    if(!isState && typeName != null && typeName.StartsWith("Current") && changedMember.EndsWith("State"))
-                    {
-                        var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
-
-                        isState = nosElement.GetStateCategoryRecursively(strippedName) != null;
-                    }
-                    if (isState)
-                    {
-                        if(changedMember == "VariableState")
-                        {
-                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.VariableState";
-                        }
-                        else if(changedMember.StartsWith("Current") && changedMember.EndsWith("State"))
-                        {
-                            var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
-                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
-                        }
-                        else
-                        {
-                            typeName = variable.Type;
-
-                            if(typeName.StartsWith("Entities.") || typeName.StartsWith("Screens."))
-                            {
-                                typeName = GlueState.Self.ProjectNamespace + "." + typeName;
-                            }
-                        }
-
-                        isState = true;
-                    }
-                }
+                typeName = GetQualifiedStateTypeName(changedMember, oldValue, nos, out isState, out category);
             }
             else if(property != null)
             {
@@ -300,6 +259,56 @@ namespace OfficialPlugins.Compiler.Managers
             }
 
             return toReturn;
+        }
+
+        public string GetQualifiedStateTypeName(string changedMember, object oldValue, NamedObjectSave nos, out bool isState, out StateSaveCategory category)
+        {
+            var instruction = nos?.GetCustomVariable(changedMember);
+            isState = false;
+            category = null;
+            string typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
+            var nosElement = ObjectFinder.Self.GetElement(nos);
+            if (nosElement != null)
+            {
+                var variable = nosElement.GetCustomVariableRecursively(changedMember);
+                if (variable != null)
+                {
+                    var isStateResult = ObjectFinder.Self.GetStateSaveCategory(variable, nosElement);
+                    category = isStateResult.Category;
+                    isState = isStateResult.IsState;
+                }
+                if (!isState && typeName != null && typeName.StartsWith("Current") && changedMember.EndsWith("State"))
+                {
+                    var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
+
+                    isState = nosElement.GetStateCategoryRecursively(strippedName) != null;
+                }
+                if (isState)
+                {
+                    if (changedMember == "VariableState")
+                    {
+                        typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.VariableState";
+                    }
+                    else if (changedMember.StartsWith("Current") && changedMember.EndsWith("State"))
+                    {
+                        var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
+                        typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
+                    }
+                    else
+                    {
+                        typeName = variable.Type;
+
+                        if (typeName.StartsWith("Entities.") || typeName.StartsWith("Screens."))
+                        {
+                            typeName = GlueState.Self.ProjectNamespace + "." + typeName;
+                        }
+                    }
+
+                    isState = true;
+                }
+            }
+
+            return typeName;
         }
 
         private void ConvertValue(ref string changedMember, object oldValue, 
