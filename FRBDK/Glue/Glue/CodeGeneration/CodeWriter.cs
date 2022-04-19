@@ -203,7 +203,7 @@ namespace FlatRedBallAddOns.Entities
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
         }
 
-        public static void GenerateCode(GlueElement element)
+        public static async void GenerateCode(GlueElement element)
         {
 
             #region Prepare for generation
@@ -371,7 +371,7 @@ namespace FlatRedBallAddOns.Entities
 
             // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
             // project. This is a last chance to add it if necessary:
-            GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+            await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
         }
 
         public static void GenerateDefines(ICodeBlock rootBlock)

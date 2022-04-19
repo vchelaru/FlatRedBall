@@ -6,7 +6,7 @@ using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// Adds the argument file to the current project if it is not already part of the project. 
         /// </summary>
         /// <param name="codeFilePath">The FilePath to the file.</param>
-        void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false);
+        Task TryAddCodeFileToProjectAsync(FilePath codeFilePath, bool saveOnAdd = false);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(FilePath absoluteSource);

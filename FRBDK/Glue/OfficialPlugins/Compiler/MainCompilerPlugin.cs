@@ -217,7 +217,7 @@ namespace OfficialPlugins.Compiler
             // todo - handle startup changed...
 
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
-            this.ReactToNewObjectList += RefreshManager.Self.HandleNewObjectList;
+            this.ReactToNewObjectListAsync += RefreshManager.Self.HandleNewObjectList;
 
             this.ReactToObjectRemoved += async (owner, nos) =>
                 await RefreshManager.Self.HandleObjectRemoved(owner, nos);
@@ -489,7 +489,7 @@ namespace OfficialPlugins.Compiler
 
                         if (response?.Commands.Count > 0)
                         {
-                            CommandReceiver.HandleCommandsFromGame(response.Commands,
+                            await CommandReceiver.HandleCommandsFromGame(response.Commands,
                                 GlueViewSettingsViewModel.PortNumber);
                         }
                         else

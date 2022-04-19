@@ -150,13 +150,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true);
 
-        void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+        Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
             bool updateUi = true);
 
         Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
-        ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
+        Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null);

@@ -30,6 +30,7 @@ using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using static FlatRedBall.Glue.Plugins.PluginManager;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -270,6 +271,7 @@ namespace FlatRedBall.Glue.Plugins
         /// falls back to calling ReactToNewObjectHandler.
         /// </summary>
         public Action<List<NamedObjectSave>> ReactToNewObjectList { get; protected set; }
+        public Func<List<NamedObjectSave>, Task> ReactToNewObjectListAsync { get; protected set; }
 
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
         public Action<List<GlueElement>, List<NamedObjectSave>> ReactToObjectListRemoved { get; protected set; }

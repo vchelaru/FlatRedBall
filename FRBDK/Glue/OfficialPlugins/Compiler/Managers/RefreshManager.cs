@@ -389,7 +389,7 @@ namespace OfficialPlugins.Compiler.Managers
         #region NamedObject Created
 
 
-        internal async void HandleNewObjectList(List<NamedObjectSave> newObjectList)
+        internal async Task HandleNewObjectList(List<NamedObjectSave> newObjectList)
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {

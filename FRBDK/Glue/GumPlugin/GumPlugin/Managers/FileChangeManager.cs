@@ -13,7 +13,7 @@ namespace GumPluginCore.Managers
 {
     public class FileChangeManager : Singleton<FileChangeManager>
     {
-        public void HandleFileChange(string fileName)
+        public async void HandleFileChange(string fileName)
         {
             string extension = FileManager.GetExtension(fileName);
 
@@ -169,7 +169,7 @@ namespace GumPluginCore.Managers
                 }
                 else if (extension == "json")
                 {
-                    GumPlugin.Managers.EventExportManager.Self.HandleEventExportFileChanged(fileName);
+                    await GumPlugin.Managers.EventExportManager.Self.HandleEventExportFileChanged(fileName);
                 }
             }
         }

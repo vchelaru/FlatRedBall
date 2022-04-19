@@ -996,14 +996,22 @@ namespace FlatRedBall.Glue.Plugins
 
         public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
         {
-            return CallMethodOnPluginAsync(plugin =>
+            return CallMethodOnPluginAsync(async (plugin) =>
             {
-                // todo - add this, implement it on the compiler plugin, test it
+                var handledByList = false;
                 if (plugin.ReactToNewObjectList != null)
                 {
                     plugin.ReactToNewObjectList(newObjectList);
+                    handledByList = true;
                 }
-                else
+
+                if (plugin.ReactToNewObjectListAsync != null)
+                {
+                    await plugin.ReactToNewObjectListAsync(newObjectList);
+                    handledByList = true;
+                }
+
+                if(!handledByList)
                 {
                     foreach(var nos in newObjectList)
                     {
@@ -1011,7 +1019,7 @@ namespace FlatRedBall.Glue.Plugins
                     }
                 }
             },
-            plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null);
+            plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null);
         }
 
         internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
@@ -1824,6 +1832,39 @@ namespace FlatRedBall.Glue.Plugins
             return task;
         }
 
+        static Task CallMethodOnPluginAsync(Func<PluginBase, Task> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
+        {
+            var task = TaskManager.Self.AddAsync(async () =>
+            {
+                foreach (PluginManager manager in mInstances)
+                {
+                    var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
+                        .Select(item => item as PluginBase);
+                    if (predicate != null)
+                    {
+                        plugins = plugins.Where(item => predicate(item));
+                    }
+
+                    PluginBase[] pluginArray = plugins.ToArray();
+
+                    foreach (var plugin in pluginArray)
+                    {
+                        PluginContainer container = manager.PluginContainers[plugin];
+
+                        if (container.IsEnabled)
+                        {
+                            await PluginCommand(() =>
+                            {
+                                return methodToCall(plugin);
+                            }, container, "Failed in " + methodName);
+                        }
+                    }
+                }
+            }, methodName);
+
+            return task;
+        }
+
         private static void PluginCommandNotUiThread(Action action, PluginContainer container, string message)
         {
             if (HandleExceptions)
@@ -1895,6 +1936,62 @@ namespace FlatRedBall.Glue.Plugins
             else
             {
                 action();
+            }
+        }
+
+        private static async Task PluginCommand(Func<Task> func, PluginContainer container, string message)
+        {
+            if (HandleExceptions)
+            {
+                //if (mMenuStrip.IsDisposed)
+                //{
+                //    try
+                //    {
+                //        await func();
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        var version = container.Plugin.Version;
+
+                //        message = $"{container.Name} Version {version} {message}";
+
+                //        container.Fail(e, message);
+
+                //        ReceiveError(message + "\n" + e.ToString());
+
+
+                //    }
+                //}
+                //else
+                //{
+
+                    // Do this on a UI thread
+                    // Wait, why? This can cause all kinds of slowness
+
+                    //await FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DoOnUiThread(async () =>
+                    //{
+                        try
+                        {
+                            await func();
+                        }
+                        catch (Exception e)
+                        {
+                            var version = container.Plugin.Version;
+
+                            message = $"{container.Name} Version {version} {message}";
+
+                            container.Fail(e, message);
+
+                            ReceiveError(message + "\n" + e.ToString());
+
+
+                        }
+                    //});
+                //}
+            }
+            else
+            {
+                await func();
             }
         }
 

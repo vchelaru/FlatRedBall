@@ -51,15 +51,15 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region General Functions
 
-        public static void HandleCommandsFromGame(List<string> commands, int gamePortNumber)
+        public static async Task HandleCommandsFromGame(List<string> commands, int gamePortNumber)
         {
             foreach (var command in commands)
             {
-                Receive(command, gamePortNumber);
+                await Receive(command, gamePortNumber);
             }
         }
 
-        private static async void Receive(string message, int gamePortNumber)
+        private static async Task Receive(string message, int gamePortNumber)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;

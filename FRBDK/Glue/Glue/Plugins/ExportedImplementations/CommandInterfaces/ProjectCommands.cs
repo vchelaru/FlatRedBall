@@ -17,6 +17,7 @@ using System.Linq;
 using FlatRedBall.Glue.IO;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.VSHelpers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -474,9 +475,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return added;
         }
 
-        public void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false)
+        public async Task TryAddCodeFileToProjectAsync(FilePath codeFilePath, bool saveOnAdd = false)
         {
-            TaskManager.Self.AddOrRunIfTasked(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 var mainProject = GlueState.Self.CurrentMainProject;
                 if (mainProject.CodeProject.IsFilePartOfProject(codeFilePath.FullPath) == false)

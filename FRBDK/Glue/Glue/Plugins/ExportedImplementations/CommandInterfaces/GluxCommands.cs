@@ -1441,7 +1441,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
             foreach (var originalNos in nosList)
             {
-                var response = CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: false);
+                var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: false);
                 toReturn.Add(response);
             }
 
@@ -1452,7 +1452,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GenerateCodeCommands
+                await GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCode(targetElement);
             }
 
@@ -1481,12 +1481,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return toReturn;
         }
 
-        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
-            return CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+            return await CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
         }
 
-        public ToolsUtilities.GeneralResponse<NamedObjectSave> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi, 
+        public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi, 
             bool notifyPlugins)
         { 
             bool succeeded = true;
@@ -1549,7 +1549,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if(performSaveAndGenerateCode)
                 {
-                    GlueCommands.Self.GenerateCodeCommands
+                    await GlueCommands.Self.GenerateCodeCommands
                         .GenerateElementAndReferencedObjectCode(targetElement);
                 }
 
@@ -1794,7 +1794,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         
 
-        public async void SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+        public async Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
@@ -1825,7 +1825,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 if (performSaveAndGenerateCode)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
+                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(nosContainer);
                 }
 
                 if (updateUi)

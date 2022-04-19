@@ -62,18 +62,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void GenerateElementAndReferencedObjectCode(GlueElement element)
+        public async Task GenerateElementAndReferencedObjectCode(GlueElement element)
         {
             if (element != null)
             {
-                GenerateElementCode(element);
+                await GenerateElementCodeAsync(element);
 
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
 
                 foreach (var nos in namedObjects)
                 {
                     var nosElement = ObjectFinder.Self.GetElementContaining(nos);
-                    GenerateElementCode(element);
+                    await GenerateElementCodeAsync(element);
                 }
             }
         }

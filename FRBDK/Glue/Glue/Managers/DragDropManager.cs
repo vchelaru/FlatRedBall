@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region ... general methods
 
-        private void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        private async void MoveNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             if (targetNode != null)
             {
@@ -47,7 +47,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNode.IsRootNamedObjectNode())
                 {
-                    succeeded = MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos, succeeded);
+                    succeeded = await MoveObjectOnObjectsRoot(treeNodeMoving, targetNode, movingNos, succeeded);
                 }
                 else if (targetNode.IsRootCustomVariablesNode())
                 {
@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNode.Tag is GlueElement glueElement)
                 {
-                    succeeded = DragDropNosIntoElement(movingNos, glueElement);
+                    succeeded = await DragDropNosIntoElement(movingNos, glueElement);
                 }
                 else if (targetNode.IsRootEventsNode())
                 {
@@ -297,7 +297,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region ... into/out of lists
 
-        private static bool MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
+        private static async Task<bool> MoveObjectOnObjectsRoot(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave movingNos, bool succeeded)
         {
             // Dropped it on the "Objects" tree node
 
@@ -329,7 +329,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                succeeded = DragDropNosIntoElement(movingNos, elementMovingInto);
+                succeeded = await DragDropNosIntoElement(movingNos, elementMovingInto);
             }
             return succeeded;
         }
@@ -401,9 +401,9 @@ namespace FlatRedBall.Glue.Managers
         #endregion
 
         #region ... copy to other GlueElement
-        private static bool DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
+        private static async Task<bool> DragDropNosIntoElement(NamedObjectSave movingNos, GlueElement elementMovingInto)
         {
-            var response = GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
+            var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(movingNos, elementMovingInto,
                 // Don't save - the caller will do it
                 performSaveAndGenerateCode:false);
 
