@@ -385,9 +385,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement element)
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement elementAsIElement)
         {
-
+            var element = elementAsIElement as GlueElement;
+            HashSet<GlueElement> elementsToLoadStaticContent = new HashSet<GlueElement>();
             for (int i = 0; i < element.CustomVariables.Count; i++)
             {
                 CustomVariable customVariable = element.CustomVariables[i];
@@ -405,6 +406,38 @@ namespace FlatRedBall.Glue.CodeGeneration
                     
                 }
 
+                // If a custom variable references a state in another element, that state in the other element
+                // may require files to be loaded. For example, the state in the other element may reference movement
+                // variables in a platformer, which would require the CSV to be loaded.
+                // If this is the case, call LoadStaticContent on the container. Sure, it means that we may load unnecessarily, but
+                // it would be a lot of logic to make it more efficient. Plus, all-global-content games are probably becoming more and more common.
+                var getCategoryResult = ObjectFinder.Self.GetStateSaveCategory(customVariable, element as GlueElement);
+                GlueElement ownerOfCategory = null;
+                if(getCategoryResult.IsState && getCategoryResult.Category != null)
+                {
+                    ownerOfCategory = ObjectFinder.Self.GetElementContaining(getCategoryResult.Category);
+                }
+
+                if(ownerOfCategory != null && ownerOfCategory != null 
+                    // No inheritance relationship to prevent recursion
+                    && !ObjectFinder.Self.GetIfInherits(ownerOfCategory, element) 
+                    && !ObjectFinder.Self.GetIfInherits(element, ownerOfCategory)
+                    && element != ownerOfCategory)
+                {
+                    elementsToLoadStaticContent.Add(ownerOfCategory);
+                    
+                }
+
+            }
+
+            if(elementsToLoadStaticContent.Count > 0)
+            {
+                codeBlock.Line("// Generating LoadStaticContent calls because this element references states from the following elements, and those states may reference files internally.");
+            }
+            foreach(var elementToLoad in elementsToLoadStaticContent)
+            {
+                var fullName = CodeWriter.GetGlueElementNamespace(elementToLoad) + "." + elementToLoad.GetStrippedName();
+                codeBlock.Line($"{fullName}.LoadStaticContent(contentManagerName);");
             }
             return codeBlock;
         }
