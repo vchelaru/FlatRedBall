@@ -455,7 +455,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        #region Modify Collision
+        #region Modify Collision (Tile)
 
         private static void HandleDto(ModifyCollisionDto dto)
         {
