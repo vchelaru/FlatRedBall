@@ -522,14 +522,16 @@ namespace GlueControl.Editing
 
             RectanglesAddedOrRemoved.Add(newRect);
         }
-
         private void UpdateTileHighlightsToLine()
         {
             float startX, startY, endX, endY;
             var currentCursorPosition = GuiManager.Cursor.WorldPosition;
 
-            endX = MathFunctions.RoundFloat(currentCursorPosition.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
-            endY = MathFunctions.RoundFloat(currentCursorPosition.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+            var leftSeed = owner.LeftSeedX + owner.GridSize / 2.0f;
+            var bottomSeed = owner.BottomSeedY + owner.GridSize / 2.0f;
+
+            endX = MathFunctions.RoundFloat(currentCursorPosition.X - owner.GridSize / 2.0f, owner.GridSize, leftSeed);
+            endY = MathFunctions.RoundFloat(currentCursorPosition.Y - owner.GridSize / 2.0f, owner.GridSize, bottomSeed);
 
             //////////////////early out///////////////////////////////////
             if (endX == LastLineDrawingPosition.X && endY == LastLineDrawingPosition.Y)
@@ -541,8 +543,8 @@ namespace GlueControl.Editing
             LastLineDrawingPosition.X = endX;
             LastLineDrawingPosition.Y = endY;
 
-            startX = MathFunctions.RoundFloat(PositionPushed.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
-            startY = MathFunctions.RoundFloat(PositionPushed.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+            startX = MathFunctions.RoundFloat(PositionPushed.X - owner.GridSize / 2.0f, owner.GridSize, leftSeed);
+            startY = MathFunctions.RoundFloat(PositionPushed.Y - owner.GridSize / 2.0f, owner.GridSize, bottomSeed);
 
 
             var xDifference = Math.Abs(endX - startX);
@@ -622,6 +624,7 @@ namespace GlueControl.Editing
                 RectanglesAddedOrRemoved.Add(newRect);
             }
         }
+
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
