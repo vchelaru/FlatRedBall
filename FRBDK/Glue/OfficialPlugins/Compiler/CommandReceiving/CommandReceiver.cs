@@ -459,6 +459,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void HandleDto(ModifyCollisionDto dto)
         {
+
+            ///////////////Early Out///////////////////////////
+            var hasAnything = dto.AddedPositions?.Count > 0 || dto.RemovedPositions?.Count > 0;
+            if(!hasAnything)
+            {
+                return;
+            }
+            /////////////End Early Out/////////////////////////
             string collisionTileTypeName;
             FlatRedBall.IO.FilePath tmxFilePath;
             TiledMapSave tiledMapSave;
@@ -576,6 +584,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             // Maps can be in entities too for "rooms" so support both entities and screens
             var currentElement = GlueState.Self.CurrentElement;
+            tmxFilePath = null;
+            tiledMapSave = null;
+            mapLayer = null;
+            collisionTileTypeName = null;
+
+            ////////////////////////////////////Early Out//////////////////////////////////////////////
+            if (currentElement == null)
+            {
+                return;
+            }
+            /////////////////////////////////End Early Out/////////////////////////////////////////////
 
             var collisionNos = currentElement?.GetNamedObject(dto.TileShapeCollection);
 
@@ -589,9 +608,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
             var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
 
-            tmxFilePath = null;
-            tiledMapSave = null;
-            mapLayer = null;
             if (isUsingTmx)
             {
                 var tmxObjectNos = currentElement.GetNamedObjectRecursively(sourceTmxObjectName);

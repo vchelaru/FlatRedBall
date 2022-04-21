@@ -555,7 +555,6 @@ namespace GlueControl.Editing
 
             if (xDifference >= yDifference)
             {
-                FlatRedBall.Debugging.Debugger.Write(xDifference);
                 // horizontal
                 var sign = Math.Sign(endX - startX);
 

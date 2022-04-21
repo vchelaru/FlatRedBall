@@ -154,6 +154,24 @@ namespace Microsoft.Xna.Framework
             return Vector3ExtensionMethods.FromAngle(angleRadians) * vector3.Length();
         }
 
+        public static Vector3 AddX(this Vector3 vector3, float xValue)
+        {
+            vector3.X += xValue;
+            return vector3;
+        }
+
+        public static Vector3 AddY(this Vector3 vector3, float yValue)
+        {
+            vector3.Y += yValue;
+            return vector3;
+        }
+
+        public static Vector3 AddZ(this Vector3 vector3, float zValue)
+        {
+            vector3.Z += zValue;
+            return vector3;
+        }
+
         public static Vector3 WithZ(this Vector3 vector3, float zValue)
         {
             vector3.Z = zValue;
