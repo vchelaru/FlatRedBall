@@ -451,6 +451,8 @@ namespace GlueControl
 
                             FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
 
+                            CameraLogic.UpdateCameraValuesToScreenSavedValues(newScreen );
+
                             if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                             {
                                 SelectState(selectObjectDto.StateName, selectObjectDto.StateCategoryName);

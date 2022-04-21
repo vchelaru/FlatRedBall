@@ -153,6 +153,23 @@ namespace GlueControl.Editing
             }
         }
 
+        static string GetShownTypeFrom(Screen screen)
+        {
+            if (screen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                var currentEntity = entityViewingScreen.CurrentEntity;
+                return currentEntity?.GetType().FullName
+                    ?? "No Entity";
+            }
+            else
+            {
+                return screen?.GetType().FullName ?? "No Screen";
+            }
+
+        }
+
+        #region Camera Values when switching screens
+
         public static void RecordCameraForCurrentScreen()
         {
             var currentScreen = ScreenManager.CurrentScreen;
@@ -162,17 +179,20 @@ namespace GlueControl.Editing
                 state.Position = Camera.Main.Position;
                 state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
 
-                CameraStates[currentScreen.GetType().FullName] = state;
+                var shownType = GetShownTypeFrom(currentScreen);
+
+                CameraStates[shownType] = state;
 
             }
         }
 
         public static void UpdateCameraValuesToScreenSavedValues(Screen screen, bool setZoom = true)
         {
-            if (CameraStates.ContainsKey(screen.GetType().FullName))
+            var shownType = GetShownTypeFrom(screen);
+            if (CameraStates.ContainsKey(shownType))
             {
                 var camera = Camera.Main;
-                var value = CameraStates[screen.GetType().FullName];
+                var value = CameraStates[shownType];
                 camera.Position = value.Position;
                 if (setZoom)
                 {
@@ -184,6 +204,8 @@ namespace GlueControl.Editing
                 }
             }
         }
+
+        #endregion
 
         #region Zooming
 
