@@ -512,7 +512,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         int absoluteIndex = GetTileIndexFromWorldPosition(oldTile, mapLayer);
 
-                        if (ids[absoluteIndex] != 0)
+                        if (absoluteIndex < ids.Length && absoluteIndex > -1 && ids[absoluteIndex] != 0)
                         {
                             ids[absoluteIndex] = 0;
                             didChange = true;

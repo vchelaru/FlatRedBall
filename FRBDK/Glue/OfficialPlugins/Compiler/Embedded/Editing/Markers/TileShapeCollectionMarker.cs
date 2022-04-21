@@ -522,6 +522,7 @@ namespace GlueControl.Editing
 
             RectanglesAddedOrRemoved.Add(newRect);
         }
+
         private void UpdateTileHighlightsToLine()
         {
             float startX, startY, endX, endY;
@@ -530,8 +531,8 @@ namespace GlueControl.Editing
             var leftSeed = owner.LeftSeedX + owner.GridSize / 2.0f;
             var bottomSeed = owner.BottomSeedY + owner.GridSize / 2.0f;
 
-            endX = MathFunctions.RoundFloat(currentCursorPosition.X - owner.GridSize / 2.0f, owner.GridSize, leftSeed);
-            endY = MathFunctions.RoundFloat(currentCursorPosition.Y - owner.GridSize / 2.0f, owner.GridSize, bottomSeed);
+            endX = MathFunctions.RoundFloat(currentCursorPosition.X, owner.GridSize, leftSeed);
+            endY = MathFunctions.RoundFloat(currentCursorPosition.Y, owner.GridSize, bottomSeed);
 
             //////////////////early out///////////////////////////////////
             if (endX == LastLineDrawingPosition.X && endY == LastLineDrawingPosition.Y)
@@ -543,8 +544,8 @@ namespace GlueControl.Editing
             LastLineDrawingPosition.X = endX;
             LastLineDrawingPosition.Y = endY;
 
-            startX = MathFunctions.RoundFloat(PositionPushed.X - owner.GridSize / 2.0f, owner.GridSize, leftSeed);
-            startY = MathFunctions.RoundFloat(PositionPushed.Y - owner.GridSize / 2.0f, owner.GridSize, bottomSeed);
+            startX = MathFunctions.RoundFloat(PositionPushed.X, owner.GridSize, leftSeed);
+            startY = MathFunctions.RoundFloat(PositionPushed.Y, owner.GridSize, bottomSeed);
 
 
             var xDifference = Math.Abs(endX - startX);
@@ -557,16 +558,35 @@ namespace GlueControl.Editing
                 FlatRedBall.Debugging.Debugger.Write(xDifference);
                 // horizontal
                 var sign = Math.Sign(endX - startX);
-                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endX - startX) / owner.GridSize));
+
+                var clampedStartX = ClampX(startX);
+                var clampedEndX = ClampX(endX);
+
+                float ClampX(float xValue)
+                {
+                    if (xValue < boundsRectangle.Left)
+                    {
+                        // ...but assign including the offset:
+                        xValue = boundsRectangle.Left + owner.GridSize / 2.0f;
+                    }
+                    if (xValue > boundsRectangle.Right)
+                    {
+                        xValue = boundsRectangle.Right - owner.GridSize / 2.0f;
+                    }
+                    return xValue;
+                }
+
+
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((clampedEndX - clampedStartX) / owner.GridSize));
 
                 ClearRectangles();
 
                 for (int i = 0; i < numberOfTiles; i++)
                 {
-                    var worldX = startX + sign * i * owner.GridSize;
+                    var worldX = clampedStartX + sign * i * owner.GridSize;
                     var worldY = startY;
 
-                    CreateLocalRectangleAt(worldX, worldY, i);
+                    CreateLocalRectangleForLineAt(worldX, worldY, i);
                 }
                 while (numberOfTiles < RectanglesAddedOrRemoved.Count)
                 {
@@ -579,16 +599,35 @@ namespace GlueControl.Editing
             {
                 // vertical
                 var sign = Math.Sign(endY - startY);
-                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endY - startY) / owner.GridSize));
+
+
+                var clampedStartY = ClampY(startY);
+                var clampedEndY = ClampY(endY);
+
+                float ClampY(float yValue)
+                {
+                    if (yValue < boundsRectangle.Bottom)
+                    {
+                        // ...but assign including the offset:
+                        yValue = boundsRectangle.Bottom + owner.GridSize / 2.0f;
+                    }
+                    if (yValue > boundsRectangle.Top)
+                    {
+                        yValue = boundsRectangle.Top - owner.GridSize / 2.0f;
+                    }
+                    return yValue;
+                }
+
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((clampedEndY - clampedStartY) / owner.GridSize));
 
                 ClearRectangles();
 
                 for (int i = 0; i < numberOfTiles; i++)
                 {
                     var worldX = startX;
-                    var worldY = startY + sign * i * owner.GridSize;
+                    var worldY = clampedStartY + sign * i * owner.GridSize;
 
-                    CreateLocalRectangleAt(worldX, worldY, i);
+                    CreateLocalRectangleForLineAt(worldX, worldY, i);
                 }
                 while (numberOfTiles < RectanglesAddedOrRemoved.Count)
                 {
@@ -608,7 +647,7 @@ namespace GlueControl.Editing
                 }
             }
 
-            void CreateLocalRectangleAt(float worldX, float worldY, int i)
+            void CreateLocalRectangleForLineAt(float worldX, float worldY, int i)
             {
 
 
@@ -624,6 +663,7 @@ namespace GlueControl.Editing
                 RectanglesAddedOrRemoved.Add(newRect);
             }
         }
+
 
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
