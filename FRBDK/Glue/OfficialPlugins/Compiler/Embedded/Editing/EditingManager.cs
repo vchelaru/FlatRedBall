@@ -898,12 +898,14 @@ namespace GlueControl.Editing
 
             if (names.Length > 0)
             {
-                var allnamedObjectSaves = CurrentGlueElement?.AllNamedObjects.ToArray();
-
-                foreach (var name in names)
+                var allNamedObjectSaves = CurrentGlueElement?.AllNamedObjects.ToArray();
+                if (allNamedObjectSaves != null)
                 {
-                    var matchingNos = allnamedObjectSaves.FirstOrDefault(item => item.InstanceName == name);
-                    Select(matchingNos, addToExistingSelection: true, playBump);
+                    foreach (var name in names)
+                    {
+                        var matchingNos = allNamedObjectSaves.FirstOrDefault(item => item.InstanceName == name);
+                        Select(matchingNos, addToExistingSelection: true, playBump);
+                    }
                 }
             }
         }

@@ -160,13 +160,13 @@ namespace OfficialPlugins.Compiler.Views
             var existingCheckedButton = tileToggleButtons.FirstOrDefault(item => item.IsChecked == true);
             
             NamedObjectSave tileShapeCollectionNos = null;
-            var currentScreen = GlueState.Self.CurrentScreenSave;
+            var currentElement = GlueState.Self.CurrentElement;
             if (existingCheckedButton != null)
             {
                 existingCheckedButton.IsChecked = false;
-                if(currentScreen != null)
+                if(currentElement != null)
                 {
-                    tileShapeCollectionNos = GetNosForButton(existingCheckedButton, currentScreen);
+                    tileShapeCollectionNos = GetNosForButton(existingCheckedButton, currentElement);
                 }
             }
 
@@ -177,7 +177,7 @@ namespace OfficialPlugins.Compiler.Views
             
             if(tileShapeCollectionNos != null)
             {
-                GlueState.Self.CurrentScreenSave = currentScreen;
+                GlueState.Self.CurrentElement = currentElement;
             }
 
 

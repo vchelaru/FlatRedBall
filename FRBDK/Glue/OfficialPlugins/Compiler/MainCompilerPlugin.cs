@@ -319,21 +319,21 @@ namespace OfficialPlugins.Compiler
                         return;
                     }
 
-                    var screen = GlueState.Self.CurrentScreenSave;
+                    var element = GlueState.Self.CurrentElement;
 
                     NamedObjectSave newNos = null;
 
-                    if (screen != null)
+                    if (element != null)
                     {
                         var addObjectViewModel = new AddObjectViewModel();
                         addObjectViewModel.SourceType = SourceType.Entity;
                         addObjectViewModel.SelectedEntitySave = entitySave;
 
-                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, screen);
+                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
 
                         newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
                             addObjectViewModel,
-                            GlueState.Self.CurrentScreenSave,
+                            element,
                             listToAddTo);
                     }
 
