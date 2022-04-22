@@ -786,5 +786,7 @@ namespace FlatRedBall.Forms.Controls
 
 
         #endregion
+
+        public abstract void SelectAll();
     }
 }

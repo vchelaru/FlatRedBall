@@ -235,8 +235,17 @@ namespace FlatRedBall.Forms.Controls
                 SelectionLength = 0;
             }
         }
-        
+
         #endregion
+
+        public override void SelectAll()
+        {
+            if (this.Text != null)
+            {
+                this.SelectionStart = 0;
+                this.SelectionLength = this.Text.Length;
+            }
+        }
 
         #region Utilities
 

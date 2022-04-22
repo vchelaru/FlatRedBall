@@ -90,14 +90,12 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         public RepositionDirections RepositionDirections { get; set; } = RepositionDirections.All;
 
-        public float BoundingRadius
-        {
-            get { return mBoundingRadius; }
-        }
+        public float BoundingRadius => mBoundingRadius;
+        
 
         public bool Visible
         {
-            get { return mVisible; }
+            get => mVisible;
             set
             {
                 // This is here for efficiency; however,

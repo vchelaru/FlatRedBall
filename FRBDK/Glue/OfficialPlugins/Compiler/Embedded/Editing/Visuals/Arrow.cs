@@ -88,7 +88,11 @@ namespace GlueControl.Editing.Visuals
 
             var angle = (second - first).Angle() ?? 0;
 
-            const float ArrowSizeX = 5;
+
+            var pixelsPerUnit = FlatRedBall.Camera.Main.PixelsPerUnitAt((first.Z + second.Z) / 2.0f);
+
+            float ArrowSizeX = 5 / pixelsPerUnit;
+            float ArrowSizeY = ArrowSizeX;
 
             if (FirstArrow.Count > 0)
             {
@@ -106,10 +110,10 @@ namespace GlueControl.Editing.Visuals
             {
                 mainSecond += (Vector3.Left * ArrowSizeX).RotatedBy(angle);
 
-                var firstLineOffset = new Vector3(-ArrowSizeX, 5, 0).RotatedBy(angle);
+                var firstLineOffset = new Vector3(-ArrowSizeX, ArrowSizeY, 0).RotatedBy(angle);
                 SecondArrow[0].SetFromAbsoluteEndpoints(second, second + firstLineOffset);
 
-                var secondLineOffset = new Vector3(-ArrowSizeX, -5, 0).RotatedBy(angle);
+                var secondLineOffset = new Vector3(-ArrowSizeX, -ArrowSizeY, 0).RotatedBy(angle);
                 SecondArrow[1].SetFromAbsoluteEndpoints(second, second + secondLineOffset);
 
                 SecondArrow[2].SetFromAbsoluteEndpoints(
@@ -119,6 +123,7 @@ namespace GlueControl.Editing.Visuals
 
             MainLine.SetFromAbsoluteEndpoints(mainFirst, mainSecond);
         }
+
 
         public void Destroy()
         {
