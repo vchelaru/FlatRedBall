@@ -690,7 +690,7 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// Moves all contained objects by the argument shiftVector;
+        /// Changes the absolute Position value of all contained objects by the argument shiftVector.
         /// </summary>
         /// <param name="shiftVector">The amount to shift by.</param>
         public void Shift(Vector3 shiftVector)

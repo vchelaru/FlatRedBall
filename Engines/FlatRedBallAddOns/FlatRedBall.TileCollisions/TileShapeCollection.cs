@@ -169,6 +169,13 @@ namespace FlatRedBall.TileCollisions
             mShapes.AttachTo(newParent, changeRelative);
         }
 
+        public TileShapeCollection Clone()
+        {
+            var toReturn = (TileShapeCollection)this.MemberwiseClone();
+            toReturn.mShapes = this.mShapes.Clone();
+            return toReturn;
+        }
+
         public void CopyAbsoluteToRelative()
         {
             mShapes.CopyAbsoluteToRelative();
@@ -1112,9 +1119,7 @@ namespace FlatRedBall.TileCollisions
 
         public void RemoveFromManagersOneWay()
         {
-            this.mShapes.MakeOneWay();
-            this.mShapes.RemoveFromManagers();
-            this.mShapes.MakeTwoWay();
+            this.mShapes.RemoveFromManagers(clearThis: false);
         }
 
         /// <summary>
