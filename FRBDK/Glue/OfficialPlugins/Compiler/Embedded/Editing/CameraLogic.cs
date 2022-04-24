@@ -122,7 +122,8 @@ namespace GlueControl.Editing
 
         internal static void DoHotkeyLogic()
         {
-            const int movePerPush = 16;
+            float movePerPush = 32 / CurrentZoomRatio;
+
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
             if (keyboard.IsCtrlDown)
             {
