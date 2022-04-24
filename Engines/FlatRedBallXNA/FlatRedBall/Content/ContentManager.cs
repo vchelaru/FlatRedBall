@@ -494,12 +494,12 @@ namespace FlatRedBall.Content
 
 
 			string fullNameWithType = assetName + typeof(T).Name;
-
+			string fullNameStandardizeWithType = FileManager.Standardize(assetName) + typeof(T).Name;
 
 			// get the dictionary by the contentManagerName.  If it doesn't exist, GetDisposableDictionaryByName
 			// will create it.
 
-			if (mDisposableDictionary.ContainsKey(fullNameWithType))
+			if (mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
 
 #if PROFILE
@@ -507,11 +507,11 @@ namespace FlatRedBall.Content
 					TimeManager.CurrentTime, typeof(T).Name, fullNameWithType, ContentLoadDetail.Cached));
 #endif
 
-				return ((T)mDisposableDictionary[fullNameWithType]);
+				return ((T)mDisposableDictionary[fullNameStandardizeWithType]);
 			}
-			else if (mNonDisposableDictionary.ContainsKey(fullNameWithType))
+			else if (mNonDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
-				return ((T)mNonDisposableDictionary[fullNameWithType]);
+				return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
 			}
 			else
 			{
@@ -796,9 +796,9 @@ namespace FlatRedBall.Content
 					lock (mDisposableDictionary)
 					{
 						// Multiple threads could try to load this content simultaneously
-						if (!mDisposableDictionary.ContainsKey(fullNameWithType))
+						if (!mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 						{
-							mDisposableDictionary.Add(fullNameWithType, loadedAsset);
+							mDisposableDictionary.Add(fullNameStandardizeWithType, loadedAsset);
 						}
 					}
 				}
