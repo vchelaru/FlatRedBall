@@ -143,11 +143,11 @@ namespace GlueControl.Editing
                 {
                     Camera.Main.X += movePerPush;
                 }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.OemPlus))
                 {
                     DoZoomMinus();
                 }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.OemMinus))
                 {
                     DoZoomPlus();
                 }
