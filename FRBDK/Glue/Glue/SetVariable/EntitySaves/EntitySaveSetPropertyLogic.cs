@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
 
                 FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
             }
 
             #endregion

@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static void UpdateFactoryClass(EntitySave entitySave)
+        public static void GenerateAndAddFactoryToProjectClass(EntitySave entitySave)
         {
             mEntireClassGenerator.EntitySave = entitySave;
 

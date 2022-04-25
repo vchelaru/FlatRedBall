@@ -2209,7 +2209,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (entitySave.CreatedByOtherEntities)
                 {
                     // Vic says: I'm tired.  For now just ignore the directory.  Fix this when it becomes a problem.
-                    FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                    FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
                 }
 
                 List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldName);

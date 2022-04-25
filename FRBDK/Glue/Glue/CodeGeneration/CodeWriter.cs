@@ -339,7 +339,7 @@ namespace FlatRedBallAddOns.Entities
                     var isAbstract = entitySave.AllNamedObjects.Any(item => item.SetByDerived);
                     if(!isAbstract)
                     {
-                        FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                        FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
                     }
                 }
 

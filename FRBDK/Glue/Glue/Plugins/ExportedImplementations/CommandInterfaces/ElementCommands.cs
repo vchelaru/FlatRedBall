@@ -325,8 +325,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 });
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newElement);
                 GluxCommands.Self.SaveGlux();
             }
 
