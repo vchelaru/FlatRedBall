@@ -694,11 +694,29 @@ namespace FlatRedBall.Glue.Elements
         {
             if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
             {
-                return GetIElement(derivedElement.BaseElement);
+                return GetElement(derivedElement.BaseElement);
             }
             else
             {
                 return null;
+            }
+        }
+
+        public GlueElement GetBaseElementRecursively(GlueElement derivedElement)
+        {
+            GlueElement baseElement = null;
+            if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
+            {
+                baseElement = GetElement(derivedElement.BaseElement);
+            }
+            
+            if(baseElement == null)
+            {
+                return derivedElement;
+            }
+            else
+            {
+                return GetBaseElementRecursively(baseElement);
             }
         }
 

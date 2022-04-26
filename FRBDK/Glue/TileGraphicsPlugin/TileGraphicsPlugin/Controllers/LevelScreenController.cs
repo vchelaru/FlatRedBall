@@ -339,7 +339,7 @@ namespace TiledPluginCore.Controllers
             }
         }
 
-        internal void HandleRenameScreenClicked()
+        internal async void HandleRenameScreenClicked()
         {
             TextInputWindow tiw = new TextInputWindow();
             tiw.Message = "Enter new TMX name";
@@ -388,8 +388,9 @@ namespace TiledPluginCore.Controllers
                         whyScreenNameIsntValid);
                 }
                 else
+
                 {
-                    currentScreen.RenameElement(desiredScreenNameWithoutScreenPrefix);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(currentScreen, desiredScreenNameWithoutScreenPrefix);
 
 
                     GlueCommands.Self.FileCommands.RenameReferencedFileSave(rfs, tiw.Result);
