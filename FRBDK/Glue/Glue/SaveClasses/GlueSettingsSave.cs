@@ -32,6 +32,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+
     /// <summary>
     /// Global glue settings for the current user, not tied to any particular project.
     /// </summary>
@@ -92,6 +93,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<string> CenterTabs { get; set; } = new List<string>();
         public List<string> RightTabs { get; set; } = new List<string>();
         public List<string> BottomTabs { get; set; } = new List<string>();
+
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 

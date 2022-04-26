@@ -333,7 +333,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<AddScreenWindow> ModifyAddScreenWindow { get; protected set; }
 
         /// <summary>
-        /// Raised whenever a project is unloaded. Glue will still report the project as loaded, so that plugins can
+        /// Raised right before a project is unloaded. Glue will still report the project as loaded, so that plugins can
         /// react to a specific project unloading (such as by saving content).
         /// </summary>
         public Action ReactToUnloadedGlux { get; protected set; }

@@ -4,8 +4,15 @@ using System.Text;
 
 namespace OfficialPlugins.TreeViewPlugin.Models
 {
-    public class Node
+
+    public class TreeNodeState
     {
         public string Name { get; set; }
+
+        public List<TreeNodeState> Children { get; set; } = new List<TreeNodeState>();
+
+        public bool IsExpanded { get; set; }
     }
+
+
 }

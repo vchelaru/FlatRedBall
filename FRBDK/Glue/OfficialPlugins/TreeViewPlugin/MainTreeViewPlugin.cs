@@ -115,8 +115,16 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleUnloadedGlux()
         {
+            FillExpandedTreeViewItems();
+
+
             pluginTab.Hide();
             MainViewModel.Clear();
+        }
+
+        private void FillExpandedTreeViewItems()
+        {
+            var settings = GlueState.Self.GlueSettingsSave
         }
 
         private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
