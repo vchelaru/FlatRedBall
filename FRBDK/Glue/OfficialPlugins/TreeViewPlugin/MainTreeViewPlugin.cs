@@ -130,11 +130,12 @@ namespace OfficialPlugins.TreeViewPlugin
             {
                 if(element is ScreenSave)
                 {
-                    MainViewModel.ScreenRootNode.SortByTextConsideringDirectories();
+                    MainViewModel.ScreenRootNode.SortByTextConsideringDirectories(recursive:true);
                 }
                 else // entity save
                 {
-                    MainViewModel.EntityRootNode.SortByTextConsideringDirectories();
+
+                    MainViewModel.EntityRootNode.SortByTextConsideringDirectories(recursive:true);
                 }
             }
             if(currentNode?.Tag != null)
