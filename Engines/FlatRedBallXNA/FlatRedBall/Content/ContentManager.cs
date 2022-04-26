@@ -314,7 +314,10 @@ namespace FlatRedBall.Content
 				assetName = FileManager.MakeAbsolute(assetName);
 			}
 
+
 			assetName = FileManager.Standardize(assetName);
+
+			var assetNameNoExtension = FileManager.RemoveExtension(assetName);
 
 			string combinedName = assetName + typeof(T).Name;
 
@@ -327,7 +330,7 @@ namespace FlatRedBall.Content
 				return true;
 			}
 
-			else if (mAssets.ContainsKey(combinedName))
+			else if (mAssets.ContainsKey(assetNameNoExtension))
 			{
 				return true;
 			}
@@ -829,10 +832,13 @@ namespace FlatRedBall.Content
             }
         }
 
+        public override string ToString()
+        {
+			return $"{Name} with {mDisposableDictionary.Count} disposables, {mNonDisposableDictionary.Count} non disposables, {mAssets.Count} assets";
+        }
 
 
-
-		public void UnloadAsset<T>(T assetToUnload)
+        public void UnloadAsset<T>(T assetToUnload)
 		{
             #region Remove from non-disposables if the non-disposables containes the assetToUnload
 			if (this.mNonDisposableDictionary.ContainsValue(assetToUnload))
@@ -952,7 +958,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region Internal Methods
+		#region Internal Methods
 
 		// Vic says: I don't think we need this anymore
 		internal void RefreshTextureOnDeviceLost()
@@ -974,7 +980,7 @@ namespace FlatRedBall.Content
 			//kvp.Value.Clear();
 		}
 
-#endregion
+		#endregion
 
 #region Private Methods
 
