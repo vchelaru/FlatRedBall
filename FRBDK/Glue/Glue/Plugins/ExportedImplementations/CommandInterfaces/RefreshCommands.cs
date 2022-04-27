@@ -33,11 +33,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RefreshTreeNodes()
         {
-            if(!TaskManager.Self.IsOnUiThread)
-            {
-                TaskManager.Self.OnUiThread(RefreshTreeNodes);
-            }
-            else
+            GlueCommands.Self.DoOnUiThread(() =>
             {
                 var project = GlueState.Self.CurrentGlueProject;
                 var entities = project.Entities.ToArray();
@@ -53,9 +49,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     RefreshTreeNodeFor(screen);
                 }
 
-
                 RefreshGlobalContent();
-            }
+            });
         }
 
         public void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType = TreeNodeRefreshType.All)

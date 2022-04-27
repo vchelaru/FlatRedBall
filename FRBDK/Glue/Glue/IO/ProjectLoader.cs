@@ -206,8 +206,6 @@ namespace FlatRedBall.Glue.IO
             }
 
 
-            Section.EndContextAndTime();
-
             TaskManager.Self.IsTaskProcessingEnabled = true;
 
             // If we ever want to make things go faster, turn this back on and let's see what's going on.
@@ -395,37 +393,10 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Refreshing TiledCache", initializationWindow);
                 GlueState.Self.TiledCache.RefreshCache();
 
-
-                SetInitWindowText("Checking for additional missing files...", initializationWindow);
-
-                SetInitWindowText("Building out of date external files...", initializationWindow);
+                SetInitWindowText("Building out-of-date external files...", initializationWindow);
                 BuildAllOutOfDateFiles();
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("RefreshGlobalContentDirectory");
-
-
-                // February 8, 2022
-                // Why do we have this
-                // code here? It's already
-                // in the CodeWriter.GenerateCode
-                // Answer: Because we want to refresh
-                // it only once and then re-use that dictionary
-                // for the entire codegeneration for the sake of
-                // speed.
-
-
-
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Screens");
-                SetInitWindowText("Creating tree nodes...", initializationWindow);
-                //CreateScreenTreeNodes();
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Entities");
-                //CreateEntityTreeNodes();
-                Section.EndContextAndTime();
-
+                
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
                 foreach (var rfs in allReferencedFileSaves)
                 {
@@ -447,10 +418,7 @@ namespace FlatRedBall.Glue.IO
                     CheckForMissingCustomFile(entity);
                 }
 
-                Section.GetAndStartContextAndTime("SortEntities");
-
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                // this was moved to be handled by the plugin on the "late" call:
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("PrepareSyncedProjects");

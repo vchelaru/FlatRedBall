@@ -7,11 +7,16 @@ namespace OfficialPlugins.TreeViewPlugin.Models
 
     public class TreeNodeState
     {
-        public string Name { get; set; }
+        public string Text { get; set; }
 
         public List<TreeNodeState> Children { get; set; } = new List<TreeNodeState>();
 
         public bool IsExpanded { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Text} expanded: {IsExpanded}";
+        }
     }
 
 

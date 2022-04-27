@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.Logic;
+using OfficialPlugins.TreeViewPlugin.Models;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
 using PropertyTools.Wpf;
@@ -59,7 +60,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void AssignEvents()
         {
-            ReactToLoadedGluxEarly += HandleGluxLoaded;
+            ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
+            ReactToLoadedGlux += HandleGluxLoadLate;
             ReactToUnloadedGlux += HandleUnloadedGlux;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
@@ -69,6 +71,33 @@ namespace OfficialPlugins.TreeViewPlugin
             ReactToItemSelectHandler += HandleItemSelected;
         }
 
+        private void HandleGluxLoadLate()
+        {
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                var project = GlueState.Self.CurrentGlueProject;
+                var entities = project.Entities.ToArray();
+                var screens = project.Screens.ToArray();
+
+                foreach (var entity in entities)
+                {
+                    HandleRefreshTreeNodeFor(entity, TreeNodeRefreshType.All);
+                }
+
+                foreach (var screen in screens)
+                {
+                    HandleRefreshTreeNodeFor(screen, TreeNodeRefreshType.All);
+                }
+
+                HandleRefreshGlobalContentTreeNode();
+
+                var settings = TreeViewPluginSettingsManager.LoadSettings();
+                if(settings != null)
+                {
+                    TreeViewPluginSettingsManager.ApplySettingsToViewModel(settings, MainViewModel);
+                }
+            });
+        }
 
         private async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
@@ -106,25 +135,28 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.RefreshGlobalContentTreeNodes();
         }
 
-        private void HandleGluxLoaded()
+        private void HandleGluxLoadedEarly()
         {
             pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
+
         }
 
         private void HandleUnloadedGlux()
         {
-            FillExpandedTreeViewItems();
+            FillAndSaveTreeViewPluginSettings();
 
 
             pluginTab.Hide();
             MainViewModel.Clear();
         }
 
-        private void FillExpandedTreeViewItems()
+        private void FillAndSaveTreeViewPluginSettings()
         {
+            var settings = TreeViewPluginSettingsManager.CreateSettingsFrom(MainViewModel);
 
+            TreeViewPluginSettingsManager.SaveSettings(settings);
         }
 
         private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)

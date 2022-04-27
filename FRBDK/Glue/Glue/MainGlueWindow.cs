@@ -591,8 +591,11 @@ namespace Glue
 
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            PluginManager.ReactToGlueClose();
+            // ReactToCloseProject should be called before ReactToGlueClose so that plugins 
+            // can react to the glux unloaded before the plugins get disabled.
             MainWpfControl.ReactToCloseProject(true, true);
+
+            PluginManager.ReactToGlueClose();
 
             GlueCommands.Self.CloseGlue();            
         }
