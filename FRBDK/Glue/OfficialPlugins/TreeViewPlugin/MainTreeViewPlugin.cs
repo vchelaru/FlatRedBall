@@ -124,7 +124,7 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void FillExpandedTreeViewItems()
         {
-            var settings = GlueState.Self.GlueSettingsSave
+
         }
 
         private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
