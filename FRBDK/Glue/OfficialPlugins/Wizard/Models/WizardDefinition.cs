@@ -48,6 +48,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 page.TopDownClicked += () =>
                 {
                     ViewModel.PlayerControlType = GameType.Topdown;
+                    ViewModel.AddCloudCollision = false;
                     DoneClicked();
                 };
                 page.FormsClicked += () =>

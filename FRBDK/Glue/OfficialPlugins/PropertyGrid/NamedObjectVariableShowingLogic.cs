@@ -609,6 +609,8 @@ namespace OfficialPlugins.VariableDisplay
 
                 instanceMember.CustomSetEvent += async (owner, value) =>
                 {
+                    if (GlueState.Self.CurrentGlueProject == null)
+                        return;
                     //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
 
                     //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
@@ -654,7 +656,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     instanceMember.IsDefault = makeDefault;
 
-                    TaskManager.Self.Add(async () =>
+                    await TaskManager.Self.AddAsync(async () =>
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                         EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
