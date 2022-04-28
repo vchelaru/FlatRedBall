@@ -663,7 +663,12 @@ namespace OfficialPlugins.VariableDisplay
                         {
                             MainGlueWindow.Self.PropertyGrid.Refresh();
                             PropertyGridHelper.UpdateNamedObjectDisplay();
-                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                            if(instanceMember.DisplayName == "Name")
+                            {
+                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container, 
+                                    // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
+                                    FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                            }
                         });
                         GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
 
