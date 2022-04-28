@@ -113,17 +113,19 @@ namespace GumPlugin.CodeGeneration
                 }
                 foreach(var subAnimation in animation.Animations)
                 {
+                    var isMissingInstance = false;
                     if(string.IsNullOrEmpty(subAnimation.SourceObject) == false)
                     {
-                        var isMissingInstance = context.Element.GetInstance(subAnimation.SourceObject) == null;
-                        if(isMissingInstance)
-                        {
-                            ifBlock.Line($"//Missing object {subAnimation.SourceObject}");
-                        }
-                        else
-                        {
-                            ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.PropertyNameInCode()});");
-                        }
+                        isMissingInstance = context.Element.GetInstance(subAnimation.SourceObject) == null;
+                    }
+
+                    if(isMissingInstance)
+                    {
+                        ifBlock.Line($"//Missing object {subAnimation.SourceObject}");
+                    }
+                    else
+                    {
+                        ifBlock.Line($"{fieldName}.SubAnimations.Add({subAnimation.PropertyNameInCode()});");
                     }
                 }
             }
