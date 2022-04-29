@@ -39,6 +39,11 @@ namespace FlatRedBall.Math.Geometry
             return new Point(p1.X - v2.X, p1.Y - v2.Y);
         }
 
+        public static Vector3 operator -(Vector3 v1, Point p2)
+        {
+            return new Vector3(v1.X - (float)p2.X, v1.Y - (float)p2.Y, v1.Z);
+        }
+
         public static Point operator +(Point p1, Point p2)
         {
             return new Point(p1.X + p2.X, p1.Y + p2.Y);
@@ -63,6 +68,7 @@ namespace FlatRedBall.Math.Geometry
         {
             return new Point(p1.X / floatValue, p1.Y / floatValue);
         }
+
 
         #endregion
 
