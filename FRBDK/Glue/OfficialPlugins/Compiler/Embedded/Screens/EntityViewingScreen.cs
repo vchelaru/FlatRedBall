@@ -67,7 +67,7 @@ namespace GlueControl.Screens
             catch (Exception e)
             {
                 Editing.EditorVisuals.Text(
-                    $"Error in edit mode for entity {CurrentEntity?.GetType().Name}\n{e.InnerException}",
+                    $"Error in edit mode for entity {CurrentEntity?.GetType().Name}\n{e}\n{e.InnerException}",
                     new Vector3(camera.X, camera.Y, 0));
             }
 
