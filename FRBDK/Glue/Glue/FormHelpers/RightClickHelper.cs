@@ -2381,9 +2381,9 @@ namespace FlatRedBall.Glue.FormHelpers
             MoveObjectInDirection(direction);
         }
 
-        private static void MoveObjectInDirection(int direction)
+        private static async Task MoveObjectInDirection(int direction)
         {
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
                 object objectToMove;
                 IList listToRemoveFrom;
@@ -2452,7 +2452,10 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
         private static void GetObjectAndListForMoving(out object objectToMove,
-            out IList listToRemoveFrom, out IList listForIndexing)
+            out IList listToRemoveFrom, 
+            // The list to use when adjusting index, which is needed if the object being shifted is in a list that is filtered. For example,
+            // Layers appear in a sub-list of all layers.
+            out IList listForIndexing)
         {
             objectToMove = null;
             listToRemoveFrom = null;
@@ -2461,6 +2464,14 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 objectToMove = GlueState.Self.CurrentCustomVariable;
                 listToRemoveFrom = GlueState.Self.CurrentElement.CustomVariables;
+                listForIndexing = listToRemoveFrom;
+            }
+            else if(GlueState.Self.CurrentStateSave != null)
+            {
+                var category = GlueState.Self.CurrentStateSaveCategory;
+
+                objectToMove = GlueState.Self.CurrentStateSave;
+                listToRemoveFrom = category.States ?? GlueState.Self.CurrentElement.States;
                 listForIndexing = listToRemoveFrom;
             }
 
@@ -2504,6 +2515,7 @@ namespace FlatRedBall.Glue.FormHelpers
             // do this before refreshing the tree nodes
             var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
             var currentNamedObjectSave = GlueState.Self.CurrentNamedObjectSave;
+            var currentStateSave = GlueState.Self.CurrentStateSave;
 
             var element = GlueState.Self.CurrentElement;
 
@@ -2520,6 +2532,12 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.NamedObjects);
                 //GlueState.Self.CurrentNamedObjectSave = null;
                 GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
+            }
+            else if (currentStateSave != null)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // todo - this could be more efficient...
+
+                GlueState.Self.CurrentStateSave = currentStateSave;
             }
 
             GlueState.Self.CurrentElement.SortStatesToCustomVariables();

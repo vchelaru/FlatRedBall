@@ -9,8 +9,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         All,
         NamedObjects,
-        CustomVariables
-            // eventually add more here as needed
+        CustomVariables,
+        StateSaves
+        // eventually add more here as needed
     }
 
     public interface IRefreshCommands

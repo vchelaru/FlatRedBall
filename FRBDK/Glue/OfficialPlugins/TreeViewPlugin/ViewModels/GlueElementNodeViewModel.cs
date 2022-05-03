@@ -91,6 +91,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
             }
+            else if(treeNodeRefreshType == TreeNodeRefreshType.StateSaves)
+            {
+                this.StatesNode.RefreshTreeNodes(treeNodeRefreshType);
+            }
             else
             {
                 // could add more here for the sake of performance, but only if needed

@@ -17,6 +17,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         }
 
         [DependsOn(nameof(OtherObjectName))]
+        [DependsOn(nameof(SelectedNamedObjectName))]
         public string ObjectObjectDisplayName
         {
             get => 

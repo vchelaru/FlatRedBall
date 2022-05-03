@@ -49,8 +49,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private void UpdateStateContainingNode(List<StateSave> states, NodeViewModel parentTreeNode)
         {
-            foreach (StateSave stateSave in states)
+            for(int stateIndex = 0; stateIndex < states.Count; stateIndex++)
             {
+                var stateSave = states[stateIndex];
                 var treeNode = GetTreeNodeFor(stateSave, parentTreeNode);
 
                 if (treeNode == null)
@@ -64,6 +65,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     //treeNode.SelectedImageKey = "states.png";
 
                     parentTreeNode.Children.Add(treeNode);
+                }
+
+                var indexOfTreeNode = parentTreeNode.Children.IndexOf(treeNode);
+                if (indexOfTreeNode != -1 && indexOfTreeNode != stateIndex)
+                {
+                    parentTreeNode.Children.Move(indexOfTreeNode, stateIndex);
                 }
 
                 if (treeNode.Text != stateSave.Name)
