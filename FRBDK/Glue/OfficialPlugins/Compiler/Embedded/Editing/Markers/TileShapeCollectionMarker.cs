@@ -208,11 +208,17 @@ namespace GlueControl.Editing
 
             if (EditingMode == EditingMode.Adding)
             {
-                var oldXIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(lastFrameTileHighlight.X, owner.GridSize, owner.LeftSeedX + owner.GridSize / 2));
-                var oldYIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(lastFrameTileHighlight.Y, owner.GridSize, owner.BottomSeedY + owner.GridSize / 2));
+                var oldXIndex = MathFunctions.RoundToInt(
+                    (lastFrameTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
 
-                var newXIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(currentTileHighlight.X, owner.GridSize, owner.LeftSeedX + owner.GridSize / 2));
-                var newYIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(currentTileHighlight.Y, owner.GridSize, owner.BottomSeedY + owner.GridSize / 2));
+                var oldYIndex = MathFunctions.RoundToInt(
+                    (lastFrameTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                var newXIndex = MathFunctions.RoundToInt(
+                    (currentTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
+
+                var newYIndex = MathFunctions.RoundToInt(
+                    (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
 
                 if (oldXIndex != newXIndex || oldYIndex != newYIndex)
                 {
@@ -285,17 +291,39 @@ namespace GlueControl.Editing
             {
                 if (EditingMode == EditingMode.Removing)
                 {
-                    // try to erase
-                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                    var oldXIndex = MathFunctions.RoundToInt(
+                        (lastFrameTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
 
-                    if (existingRectangle != null && RectanglesAddedOrRemoved.Contains(existingRectangle) == false)
+                    var oldYIndex = MathFunctions.RoundToInt(
+                        (lastFrameTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                    var newXIndex = MathFunctions.RoundToInt(
+                        (currentTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
+
+                    var newYIndex = MathFunctions.RoundToInt(
+                        (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                    if (oldXIndex != newXIndex || oldYIndex != newYIndex)
                     {
-                        existingRectangle.Visible = true;
-                        existingRectangle.Color = Color.Red;
-                        existingRectangle.Width = tileDimensions - 2;
-                        existingRectangle.Height = tileDimensions - 2;
+                        var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
 
-                        RectanglesAddedOrRemoved.Add(existingRectangle);
+                        foreach (var pointToPaint in listOfPoints)
+                        {
+                            var xIndex = pointToPaint.X;
+                            var yIndex = pointToPaint.Y;
+
+                            var worldX = owner.LeftSeedX + owner.GridSize / 2 + owner.GridSize * xIndex;
+                            var worldY = owner.BottomSeedY + owner.GridSize / 2 + owner.GridSize * yIndex;
+
+                            EraseTileAtWorld(worldX, worldY);
+                        }
+                    }
+                    else
+                    {
+                        var worldX = currentTileHighlight.X;
+                        var worldY = currentTileHighlight.Y;
+                        EraseTileAtWorld(worldX, worldY);
+
                     }
                 }
             }
@@ -317,6 +345,24 @@ namespace GlueControl.Editing
             #endregion
 
             lastFrameTileHighlight = currentTileHighlight.Position;
+        }
+
+        private void EraseTileAtWorld(float worldX, float worldY)
+        {
+            var tileDimensions = owner.GridSize;
+
+            // try to erase
+            var existingRectangle = owner.GetRectangleAtPosition(worldX, worldY);
+
+            if (existingRectangle != null && RectanglesAddedOrRemoved.Contains(existingRectangle) == false)
+            {
+                existingRectangle.Visible = true;
+                existingRectangle.Color = Color.Red;
+                existingRectangle.Width = tileDimensions - 2;
+                existingRectangle.Height = tileDimensions - 2;
+
+                RectanglesAddedOrRemoved.Add(existingRectangle);
+            }
         }
 
         public bool ShouldSuppress(string variableName) => false;
@@ -841,5 +887,6 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
 
 }
