@@ -56,6 +56,7 @@ namespace GlueControl.Editing
         Models.NamedObjectSave namedObjectSave;
 
         AxisAlignedRectangle currentTileHighlight;
+        Vector3 lastFrameTileHighlight;
         AxisAlignedRectangle boundsRectangle;
 
         public Vector3 LastUpdateMovement => throw new NotImplementedException();
@@ -207,13 +208,45 @@ namespace GlueControl.Editing
 
             if (EditingMode == EditingMode.Adding)
             {
-                // try to paint
-                var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                var oldXIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(lastFrameTileHighlight.X, owner.GridSize, owner.LeftSeedX + owner.GridSize / 2));
+                var oldYIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(lastFrameTileHighlight.Y, owner.GridSize, owner.BottomSeedY + owner.GridSize / 2));
 
-                if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                var newXIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(currentTileHighlight.X, owner.GridSize, owner.LeftSeedX + owner.GridSize / 2));
+                var newYIndex = MathFunctions.RoundToInt(MathFunctions.RoundFloat(currentTileHighlight.Y, owner.GridSize, owner.BottomSeedY + owner.GridSize / 2));
+
+                if (oldXIndex != newXIndex || oldYIndex != newYIndex)
                 {
-                    PaintTileAtHighlight();
+                    // need to paint a line
+                    var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
+
+                    foreach (var pointToPaint in listOfPoints)
+                    {
+                        var xIndex = pointToPaint.X;
+                        var yIndex = pointToPaint.Y;
+
+                        var worldX = owner.LeftSeedX + owner.GridSize / 2 + owner.GridSize * xIndex;
+                        var worldY = owner.BottomSeedY + owner.GridSize / 2 + owner.GridSize * yIndex;
+
+                        var existingRectangle = owner.GetRectangleAtPosition(worldX, worldY);
+
+                        if (existingRectangle == null)
+                        {
+                            PaintTileAtWorldPosition(worldX, worldY);
+                        }
+                    }
                 }
+                else
+                {
+                    // paint a single spot
+                    // try to paint
+                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+
+                    if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                    {
+                        PaintTileAtHighlight();
+                    }
+                }
+
             }
             else if (EditingMode == EditingMode.AddingLine)
             {
@@ -282,6 +315,8 @@ namespace GlueControl.Editing
             }
 
             #endregion
+
+            lastFrameTileHighlight = currentTileHighlight.Position;
         }
 
         public bool ShouldSuppress(string variableName) => false;
@@ -512,9 +547,17 @@ namespace GlueControl.Editing
 
         private void PaintTileAtHighlight()
         {
+            var worldX = currentTileHighlight.X;
+            var worldY = currentTileHighlight.Y;
+
+            PaintTileAtWorldPosition(worldX, worldY);
+        }
+
+        private void PaintTileAtWorldPosition(float worldX, float worldY)
+        {
             var tileDimensions = owner.GridSize;
-            owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
-            var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+            owner.AddCollisionAtWorld(worldX, worldY);
+            var newRect = owner.GetRectangleAtPosition(worldX, worldY);
             newRect.Visible = true;
             newRect.Color = Color.Green;
             newRect.Width = tileDimensions - 2;
@@ -798,4 +841,5 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
 }
