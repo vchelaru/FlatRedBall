@@ -19,7 +19,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(OtherObjectName))]
         public string ObjectObjectDisplayName
         {
-            get => OtherObjectName ?? CollisionRelationshipViewModel.AlwaysColliding;
+            get => 
+                SelectedNamedObjectName == OtherObjectName
+                ? OtherObjectName + " " + CollisionRelationshipViewModel.SelfCollisionSuffix
+                : OtherObjectName ?? CollisionRelationshipViewModel.AlwaysColliding;
         }
 
         public string SelectedNamedObjectName
