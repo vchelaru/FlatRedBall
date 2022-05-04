@@ -769,7 +769,7 @@ namespace GlueControl.Editing
             else
             {
 
-                if (xChange != 0)
+                if (xChange * xPositionMultiple != 0)
                 {
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
@@ -789,7 +789,7 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (yChange != 0)
+                if (yChange * yPositionMultiple != 0)
                 {
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
