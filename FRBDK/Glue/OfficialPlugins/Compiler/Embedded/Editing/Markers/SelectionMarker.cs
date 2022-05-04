@@ -618,7 +618,7 @@ namespace GlueControl.Editing
             return changeAfterSnapping;
         }
 
-        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float v1, float v2)
+        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float xChange, float yChange)
         {
             float xPositionMultiple = 0;
             float yPositionMultiple = 0;
@@ -768,38 +768,44 @@ namespace GlueControl.Editing
             }
             else
             {
-                //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
-                //newScaleX = Math.Max(0, newScaleX);
-                //scalable.ScaleX = newScaleX;
 
-                // Vic says - this needs more work. Didn't work lik ethis and I don't want to dive in yet
-                unsnappedItemSize.X = unsnappedItemSize.X + cursorXChange * widthMultiple;
-                unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
-                //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                var newScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
-                var scaleXChange = newScaleX - scalable.ScaleX;
-
-                xChangeForPosition = 0;
-                if (scaleXChange != 0)
+                if (xChange != 0)
                 {
-                    scalable.ScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
-                    xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
+                    //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
+                    //newScaleX = Math.Max(0, newScaleX);
+                    //scalable.ScaleX = newScaleX;
+                    // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
+                    unsnappedItemSize.X = unsnappedItemSize.X + cursorXChange * widthMultiple;
+                    unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
+                    //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
+                    var newScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
+                    var scaleXChange = newScaleX - scalable.ScaleX;
+
+                    xChangeForPosition = 0;
+                    if (scaleXChange != 0)
+                    {
+                        scalable.ScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
+                        xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
+                    }
                 }
 
-                //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
-                //newScaleY = Math.Max(0, newScaleY);
-                //scalable.ScaleY = newScaleY;
-                unsnappedItemSize.Y = unsnappedItemSize.Y + cursorYChange * heightMultiple;
-                unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
-
-                var newScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
-                var scaleYChange = newScaleY - scalable.ScaleY;
-
-                yChangeForPosition = 0;
-                if (scaleYChange != 0)
+                if (yChange != 0)
                 {
-                    scalable.ScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
-                    yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
+                    //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
+                    //newScaleY = Math.Max(0, newScaleY);
+                    //scalable.ScaleY = newScaleY;
+                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorYChange * heightMultiple;
+                    unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
+
+                    var newScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
+                    var scaleYChange = newScaleY - scalable.ScaleY;
+
+                    yChangeForPosition = 0;
+                    if (scaleYChange != 0)
+                    {
+                        scalable.ScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
+                        yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
+                    }
                 }
             }
             ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown);
@@ -926,4 +932,5 @@ namespace GlueControl.Editing
 #endif
         }
     }
+
 }
