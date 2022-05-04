@@ -92,6 +92,7 @@ namespace GlueControl
             {
                 ownerElement = CustomGlueElements[elementGameType];
             }
+            object newRuntimeObject = null;
 
             var addedToEntity =
                 (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
@@ -104,7 +105,7 @@ namespace GlueControl
                 {
                     if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
                     {
-                        HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedItem);
+                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedItem);
                     }
                 }
                 else
@@ -115,7 +116,7 @@ namespace GlueControl
                         var item = SpriteManager.ManagedPositionedObjects[i];
                         if (CommandReceiver.DoTypesMatch(item, elementGameType))
                         {
-                            HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, item);
+                            newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, item);
                         }
                     }
                 }
@@ -124,10 +125,10 @@ namespace GlueControl
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
                 // it's added to the base screen, so just add it to null
-                HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
+                newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
             }
 
-            return dto;
+            return newRuntimeObject;
         }
 
         private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
@@ -205,6 +206,23 @@ namespace GlueControl
                                 asCollidable.Collision.Add(polygon);
                             }
                             newPositionedObject = polygon;
+                        }
+                        break;
+                    case "FlatRedBall.Math.Geometry.Line":
+                    case "Line":
+                        {
+                            var line = new FlatRedBall.Math.Geometry.Line();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddLine(line);
+                                ShapesAddedAtRuntime.Lines.Add(line);
+                            }
+                            // eventually lines may be part of ICollidable:
+                            //if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            //{
+                            //    asCollidable.Collision.Add(polygon);
+                            //}
+                            newPositionedObject = line;
                         }
                         break;
                     case "FlatRedBall.Sprite":

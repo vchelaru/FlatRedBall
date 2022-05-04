@@ -340,6 +340,20 @@ namespace GlueControl.Editing
                 minY = Math.Min(minY, itemOver.Y - asCircle.Radius);
                 maxY = Math.Max(maxY, itemOver.Y + asCircle.Radius);
             }
+            else if (itemOver is Line asLine)
+            {
+                minX = Math.Min(minX, asLine.X + (float)asLine.RelativePoint1.X);
+                maxX = Math.Max(maxX, asLine.X + (float)asLine.RelativePoint1.X);
+
+                minY = Math.Min(minY, asLine.Y - (float)asLine.RelativePoint1.Y);
+                maxY = Math.Max(maxY, asLine.Y + (float)asLine.RelativePoint1.Y);
+
+                minX = Math.Min(minX, asLine.X + (float)asLine.RelativePoint2.X);
+                maxX = Math.Max(maxX, asLine.X + (float)asLine.RelativePoint2.X);
+
+                minY = Math.Min(minY, asLine.Y - (float)asLine.RelativePoint2.Y);
+                maxY = Math.Max(maxY, asLine.Y + (float)asLine.RelativePoint2.Y);
+            }
 #if HasGum
             else if(itemOver is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
             {
