@@ -828,7 +828,13 @@ namespace OfficialPlugins.VariableDisplay
                         // is it a state?
                         CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
 
-                        var matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                        StateSaveCategory matchingStateCategory = null;
+
+                        if(possibleStateCustomVariable.Type != null)
+                        {
+                            matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                        }
+
                         if (matchingStateCategory != null)
                         {
                             var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);

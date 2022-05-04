@@ -640,6 +640,11 @@ namespace GlueControl
                 ShapeManager.Remove(polygon);
                 removeResponse.WasObjectRemoved = true;
             }
+            else if (objectToDelete is Line line)
+            {
+                ShapeManager.Remove(line);
+                removeResponse.WasObjectRemoved = true;
+            }
             else if (objectToDelete is Sprite sprite)
             {
                 SpriteManager.RemoveSprite(sprite);
