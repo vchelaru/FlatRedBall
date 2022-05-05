@@ -125,18 +125,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (treeNode.IsCodeNode())
                     {
-                        var fileName = treeNode.Text;
-
-                        var absolute = GlueState.Self.CurrentGlueProjectDirectory + fileName;
-
-                        if (System.IO.File.Exists(absolute))
+                        var element = treeNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                        if(element != null)
                         {
-                            var startInfo = new ProcessStartInfo();
-                            startInfo.FileName = absolute;
-                            startInfo.UseShellExecute = true;
-                            System.Diagnostics.Process.Start(startInfo);
+                            var elementDirectory = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(element).GetDirectoryContainingThis();
+                            FilePath absolute = elementDirectory + treeNode.Text;
+
+                            if (absolute.Exists())
+                            {
+                                var startInfo = new ProcessStartInfo();
+                                startInfo.FileName = absolute.FullPath;
+                                startInfo.UseShellExecute = true;
+                                System.Diagnostics.Process.Start(startInfo);
+                            }
+                            handled = true;
+
                         }
-                        handled = true;
+
                     }
 
                     #endregion
