@@ -1943,51 +1943,23 @@ namespace FlatRedBall.Glue.Plugins
         {
             if (HandleExceptions)
             {
-                //if (mMenuStrip.IsDisposed)
-                //{
-                //    try
-                //    {
-                //        await func();
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        var version = container.Plugin.Version;
 
-                //        message = $"{container.Name} Version {version} {message}";
+                try
+                {
+                    await func();
+                }
+                catch (Exception e)
+                {
+                    var version = container.Plugin.Version;
 
-                //        container.Fail(e, message);
+                    message = $"{container.Name} Version {version} {message}";
 
-                //        ReceiveError(message + "\n" + e.ToString());
+                    container.Fail(e, message);
 
-
-                //    }
-                //}
-                //else
-                //{
-
-                    // Do this on a UI thread
-                    // Wait, why? This can cause all kinds of slowness
-
-                    //await FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DoOnUiThread(async () =>
-                    //{
-                        try
-                        {
-                            await func();
-                        }
-                        catch (Exception e)
-                        {
-                            var version = container.Plugin.Version;
-
-                            message = $"{container.Name} Version {version} {message}";
-
-                            container.Fail(e, message);
-
-                            ReceiveError(message + "\n" + e.ToString());
+                    ReceiveError(message + "\n" + e.ToString());
 
 
-                        }
-                    //});
-                //}
+                }
             }
             else
             {
@@ -2060,12 +2032,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             List<VariableDefinition> toReturn = new List<VariableDefinition>();
             CallMethodOnPlugin(
-                (plugin) =>
+                plugin =>
                 {
                     toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element));
                 },
-                plugin => plugin.GetVariableDefinitionsForElement != null,
-                nameof(GetVariableDefinitionsFor));
+                plugin => plugin.GetVariableDefinitionsForElement != null);
             return toReturn;
         }
 
@@ -2074,7 +2045,7 @@ namespace FlatRedBall.Glue.Plugins
             bool handled = false;
 
             CallMethodOnPlugin(
-                (plugin) =>
+                plugin =>
                 {
                     if (plugin.TryHandleTreeNodeDoubleClicked(treeNode))
                     {

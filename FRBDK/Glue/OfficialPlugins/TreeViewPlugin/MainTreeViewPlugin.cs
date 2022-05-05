@@ -69,6 +69,19 @@ namespace OfficialPlugins.TreeViewPlugin
             FocusOnTreeView += HandleFocusOnTreeView;
             ReactToCtrlF += HandleCtrlF;
             ReactToItemSelectHandler += HandleItemSelected;
+            TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
+        }
+
+        private bool TryHandleTreeNodeDoubleClick(ITreeNode arg)
+        {
+            var node = arg as NodeViewModel;
+
+            if(node?.Children.Count > 0)
+            {
+                node.IsExpanded = !node.IsExpanded;
+                return true;
+            }
+            return false;
         }
 
         private void HandleGluxLoadLate()
