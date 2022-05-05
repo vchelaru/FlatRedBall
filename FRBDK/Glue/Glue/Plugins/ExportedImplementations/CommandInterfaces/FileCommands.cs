@@ -442,6 +442,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 Process.Start("explorer.exe", "/root," + locationToShow);
             }
         }
+
+        public void Open(FilePath filePath)
+        {
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = "\"" + filePath.FullPath + "\"";
+            startInfo.UseShellExecute = true;
+
+            System.Diagnostics.Process.Start(startInfo);
+        }
     }
 
 }

@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 
                     if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(extension))
                     {
-                        HandleFileTreeNodeDoubleClick(text);
+                        HandleFileTreeNodeDoubleClick(GlueState.Self.CurrentReferencedFileSave);
                         handled = true;
                     }
 
@@ -144,9 +144,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        private static void HandleFileTreeNodeDoubleClick(string text)
+        private static void HandleFileTreeNodeDoubleClick(ReferencedFileSave currentReferencedFileSave)
         {
-            string textExtension = FileManager.GetExtension(text);
+            string textExtension = FileManager.GetExtension(currentReferencedFileSave.Name);
             string sourceExtension = null;
 
             if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
@@ -155,13 +155,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             var effectiveExtension = sourceExtension ?? textExtension;
-
+            string fileName = GetFileName(currentReferencedFileSave);
 
             string applicationSetInGlue = "";
-
-            ReferencedFileSave currentReferencedFileSave = GlueState.Self.CurrentReferencedFileSave;
-            string fileName;
-
             if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
             {
                 applicationSetInGlue = currentReferencedFileSave.OpensWith;
@@ -170,24 +166,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
             }
-
-            if (currentReferencedFileSave != null)
-            {
-                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
-                {
-                    fileName =
-                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
-                }
-                else
-                {
-                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
-                }
-            }
-            else
-            {
-                fileName = ProjectManager.MakeAbsolute(text);
-            }
-
             if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
             {
                 try
@@ -248,6 +226,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        private static string GetFileName(ReferencedFileSave currentReferencedFileSave)
+        {
+            string fileName = null;
+            if (currentReferencedFileSave != null)
+            {
+                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
+                {
+                    fileName =
+                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
+                }
+                else
+                {
+                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
+                }
+            }
 
+            return fileName;
+        }
     }
 }

@@ -512,7 +512,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
         #endregion
-        private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode sourceNode)
+        private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
         {
 
             #region IsScreenNode
@@ -521,10 +521,10 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
-                    if (sourceNode.IsEntityNode())
+                    if (draggedNode.IsEntityNode())
                     {
-                        Add("Add Entity Instance", () => OnAddEntityInstanceClick(targetNode, sourceNode));
-                        Add("Add Entity List", () => OnAddEntityListClick(targetNode, sourceNode));
+                        Add("Add Entity Instance", () => OnAddEntityInstanceClick(targetNode, draggedNode));
+                        Add("Add Entity List", () => OnAddEntityListClick(targetNode, draggedNode));
                     }
                 }
                 else
@@ -550,9 +550,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
                     {
-                        Add("Force Save Screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
+                        Add("Force save screen JSON", () => ForceSaveElementJson(targetNode.Tag as GlueElement));
                         Add("View in explorer", () => ViewElementInExplorer(targetNode.Tag as GlueElement));
                     }
+                    Add("Open .cs file", () => OpenCsFile(targetNode.Tag as GlueElement));
 
 
                 }
@@ -564,13 +565,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
             else if (targetNode.IsEntityNode())
             {
-                if (menuShowingAction == MenuShowingAction.RightButtonDrag && sourceNode.IsEntityNode())
+                if (menuShowingAction == MenuShowingAction.RightButtonDrag && draggedNode.IsEntityNode())
                 {
                     var mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
-                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
+                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, draggedNode);
 
                     var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
-                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, sourceNode);
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, draggedNode);
 
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
@@ -596,6 +597,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         Add("View in explorer", () => ViewElementInExplorer(targetNode.Tag as GlueElement));
                     }
+
+                    Add("Open .cs file", () => OpenCsFile(targetNode.Tag as GlueElement));
                 }
             }
 
@@ -625,18 +628,18 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 var elementForTreeNode = targetNode.GetContainingElementTreeNode()?.Tag;
 
-                if (elementForTreeNode != null && sourceNode != null)
+                if (elementForTreeNode != null && draggedNode != null)
                 {
-                    isSameObject = elementForTreeNode == sourceNode?.Tag;
+                    isSameObject = elementForTreeNode == draggedNode?.Tag;
                 }
 
-                if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && sourceNode.IsEntityNode())
+                if (menuShowingAction == MenuShowingAction.RightButtonDrag && !isSameObject && draggedNode.IsEntityNode())
                 {
                     var mAddEntityInstance = new GeneralToolStripMenuItem("Add Entity Instance");
-                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, sourceNode);
+                    mAddEntityInstance.Click += (not, used) => OnAddEntityInstanceClick(targetNode, draggedNode);
 
                     var mAddEntityList = new GeneralToolStripMenuItem("Add Entity List");
-                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, sourceNode);
+                    mAddEntityList.Click += (not, used) => OnAddEntityListClick(targetNode, draggedNode);
 
                     AddItem(mAddEntityInstance);
                     AddItem(mAddEntityList);
@@ -930,6 +933,15 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
+        private static void OpenCsFile(GlueElement glueElement)
+        {
+            var customCodeFile = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(glueElement);
+            if(customCodeFile?.Exists() == true)
+            {
+                GlueCommands.Self.FileCommands.Open(customCodeFile);
+            }
+        }
+
         public static List<GeneralToolStripMenuItem> GetRightClickItems(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode treeNodeMoving = null)
         {
             List<GeneralToolStripMenuItem> listToFill = new List<GeneralToolStripMenuItem>();
@@ -946,6 +958,7 @@ namespace FlatRedBall.Glue.FormHelpers
         }
 
 
+        #region Utility Methods
 
         static void Add(string text, Action action, string shortcutDisplay = null)
         {
@@ -1010,6 +1023,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 throw new NotImplementedException("Need a ListToAddTo assigned");
             }
         }
+
+        #endregion
 
 
         public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled, IElement elementToAddTo = null)

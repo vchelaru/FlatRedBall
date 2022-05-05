@@ -51,5 +51,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         bool IsContent(FilePath filePath);
         void ViewInExplorer(FilePath filePath);
+
+        void Open(FilePath filePath);
+
     }
 }
