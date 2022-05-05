@@ -334,9 +334,11 @@ namespace OfficialPlugins.Compiler.Managers
             }
             #endregion
 
-            if(type?.StartsWith("System.Collections.Generic.List") == true)
+            var isConversionHandled = false;
+            if(type?.StartsWith("System.Collections.Generic.List") == true || type?.StartsWith("List<") == true)
             {
                 value = JsonConvert.SerializeObject(currentValue);
+                isConversionHandled = true;
             }
 
             #region Collision Relationships
@@ -450,7 +452,10 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
                 type = variableDefinition.Type;
-                value = currentValue?.ToString();
+                if(!isConversionHandled)
+                {
+                    value = currentValue?.ToString();
+                }
             
                 var isFile =
                     variableDefinition.Type == "Microsoft.Xna.Framework.Texture2D" ||

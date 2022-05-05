@@ -960,11 +960,11 @@ namespace GlueControl.Editing
             {
                 convertedValue = TryGetStateValue(type, variableValue);
             }
-            else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString())
+            else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString() || type == "List<Vector2>")
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
             }
-            else if (type == typeof(List<Point>).ToString())
+            else if (type == typeof(List<Point>).ToString() || type == "List<Point>")
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Point>>(variableValue);
             }
