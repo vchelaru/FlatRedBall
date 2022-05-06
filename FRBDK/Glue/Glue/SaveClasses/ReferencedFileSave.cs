@@ -488,6 +488,8 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        public bool IsLoadedThroughWildcard { get; set; }
+
         #endregion
 
         #region Methods

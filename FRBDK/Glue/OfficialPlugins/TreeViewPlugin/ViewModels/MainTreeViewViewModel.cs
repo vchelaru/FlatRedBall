@@ -364,36 +364,24 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 if (nodeForFile == null)
                 {
-                    string fullFileName = ProjectManager.MakeAbsolute(rfs.Name, true);
+                    // May 6 2022
+                    // This code used to remove files
+                    // that were missing on disk from the Glue project.
+                    // I don't know why - that seems wrong, because we want to 
+                    // show all files that are part of the project. The project should
+                    // decide what to show, not what is on disk.
+                    string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
+                    var nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs)) ??
+                        GlobalContentRootNode;
+                    nodeForFile = new NodeViewModel(nodeToAddTo);
+                    nodeForFile.Text = FileManager.RemovePath(rfs.Name);
+                    nodeForFile.ImageSource = NodeViewModel.FileIcon;
 
-                    if (FileManager.FileExists(fullFileName))
-                    {
-                        string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
-                        var nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs)) ??
-                            GlobalContentRootNode;
-                        nodeForFile = new NodeViewModel(nodeToAddTo);
-                        nodeForFile.Text = FileManager.RemovePath(rfs.Name);
-                        nodeForFile.ImageSource = NodeViewModel.FileIcon;
+                    nodeToAddTo.Children.Add(nodeForFile);
 
-                        //nodeForFile.ImageKey = "file.png";
-                        //nodeForFile.SelectedImageKey = "file.png";
+                    nodeToAddTo.SortByTextConsideringDirectories();
 
-
-                        nodeToAddTo.Children.Add(nodeForFile);
-
-                        nodeToAddTo.SortByTextConsideringDirectories();
-
-                        nodeForFile.Tag = rfs;
-                    }
-
-                    else
-                    {
-                        ProjectManager.GlueProjectSave.GlobalFiles.RemoveAt(i);
-                        // Do we want to do this?
-                        // ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
-
-                        i--;
-                    }
+                    nodeForFile.Tag = rfs;
                 }
 
                 #endregion

@@ -109,7 +109,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
-
+        [JsonIgnore]
+        [XmlIgnore]
+        public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
 
         public GluxPluginData PluginData

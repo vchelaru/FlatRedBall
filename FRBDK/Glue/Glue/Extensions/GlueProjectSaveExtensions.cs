@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Newtonsoft.Json;
@@ -202,10 +204,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static GlueProjectSave Load(FilePath fileName)
         {
-            GlueProjectSave main = null;
+            GlueProjectSave mainGlueProjectSave = null;
             if(fileName.Extension == "glux")
             {
-                main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
+                mainGlueProjectSave = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
             }
             else if(fileName.Extension == "gluj")
             {
@@ -213,14 +215,14 @@ namespace FlatRedBall.Glue.SaveClasses
                 if(fileName.Exists())
                 {
                     var text = System.IO.File.ReadAllText(fileName.FullPath);
-                    main = JsonConvert.DeserializeObject<GlueProjectSave>(text);
+                    mainGlueProjectSave = JsonConvert.DeserializeObject<GlueProjectSave>(text);
                 }
                 else if(System.IO.File.Exists( fileName.RemoveExtension() + ".glux"))
                 {
-                    main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.RemoveExtension() + ".glux");
+                    mainGlueProjectSave = FileManager.XmlDeserialize<GlueProjectSave>(fileName.RemoveExtension() + ".glux");
                 }
             }
-            main = main.MarkTags("GLUE"); 
+            mainGlueProjectSave = mainGlueProjectSave.MarkTags("GLUE"); 
 
             var files =
                 Directory.GetFiles(fileName.GetDirectoryContainingThis() + @"\");
@@ -235,44 +237,55 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (withoutGenerated == null) continue;
                 var tag = FileManager.GetExtension(withoutGenerated);
 
-                main.Merge(FileManager.XmlDeserialize<GlueProjectSave>(file).MarkTags(tag));
+                mainGlueProjectSave.Merge(FileManager.XmlDeserialize<GlueProjectSave>(file).MarkTags(tag));
             }
 
-            if(main.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            if(mainGlueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                var glueDirectory = fileName.GetDirectoryContainingThis();
-                foreach (var screenReference in main.ScreenReferences)
-                {
-                    var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+                LoadReferencedScreensAndEntities(fileName, mainGlueProjectSave);
 
-                    if(path.Exists())
-                    {
-                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
-                        var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
-
-                        main.Screens.Add(deserialized);
-                    }
-                }
-
-                foreach(var entityReference in main.EntityReferences)
-                {
-                    var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
-
-                    if(path.Exists())
-                    {
-                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
-                        var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
-
-                        main.Entities.Add(deserialized);
-                    }
-                }
-
-                main.ScreenReferences.Clear();
-                main.EntityReferences.Clear();
+                ReferencedFileSaveWildcardLogic.LoadWildcardReferencedFiles(fileName, mainGlueProjectSave);
             }
 
-            return main;
+            return mainGlueProjectSave;
         }
+
+        private static void LoadReferencedScreensAndEntities(FilePath glujFilePath, GlueProjectSave main)
+        {
+            var glueDirectory = glujFilePath.GetDirectoryContainingThis();
+            foreach (var screenReference in main.ScreenReferences)
+            {
+                var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+
+                if (path.Exists())
+                {
+                    var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
+
+                    main.Screens.Add(deserialized);
+                }
+            }
+
+            foreach (var entityReference in main.EntityReferences)
+            {
+                var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
+
+                if (path.Exists())
+                {
+                    var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
+
+                    main.Entities.Add(deserialized);
+                }
+            }
+
+            main.ScreenReferences.Clear();
+            main.EntityReferences.Clear();
+        }
+
+
+
+
 
         public static void Save(this GlueProjectSave glueprojectsave, string tag, string fileName)
         {
