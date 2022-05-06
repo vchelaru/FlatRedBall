@@ -116,6 +116,7 @@
     <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
     <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
     <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
     <None Remove="Resources\Icons\MoveTabs\BottomTab.png" />
     <None Remove="Resources\Icons\MoveTabs\CenterTab.png" />
     <None Remove="Resources\Icons\MoveTabs\LeftTab.png" />
@@ -219,6 +220,7 @@
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
     <Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+    <Resource Include="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
     <Resource Include="Resources\CameraSetupTemplate.cs" />
     <Resource Include="Resources\Icons\MoveTabs\BottomTab.png" />
     <Resource Include="Resources\Icons\MoveTabs\CenterTab.png" />

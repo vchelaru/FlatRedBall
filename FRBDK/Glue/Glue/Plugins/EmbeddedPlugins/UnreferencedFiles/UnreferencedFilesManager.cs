@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Managers
         #region Fields
 
         static List<ProjectSpecificFile> mLastAddedUnreferencedFiles = new List<ProjectSpecificFile>();
-        static List<string> mListBeforeAddition = new List<string>();
+        static List<FilePath> mListBeforeAddition = new List<FilePath>();
         static List<ProjectSpecificFile> mUnreferencedFiles = new List<ProjectSpecificFile>();
 
         public bool mHasHadFailure = false;
@@ -111,14 +111,7 @@ namespace FlatRedBall.Glue.Managers
                     // return after;
 
                     mListBeforeAddition.Clear();
-
-                    // Gotta to-lower it 
-                    // so we can do =='s checks later.
-                    for (int i = 0; i < mUnreferencedFiles.Count; i++)
-                    {
-                        mListBeforeAddition.Add(mUnreferencedFiles[i].FilePath.ToLower());
-                    }
-
+                    mListBeforeAddition.AddRange(mUnreferencedFiles.Select(item => item.File));
                     mUnreferencedFiles.Clear();
 
                     string contentDirectory = ProjectManager.ContentProject.GetAbsoluteContentFolder();
@@ -187,7 +180,7 @@ namespace FlatRedBall.Glue.Managers
 
                     }
 
-                    mUnreferencedFiles = mUnreferencedFiles.OrderBy(item => item.FilePath.ToLowerInvariant()).ToList();
+                    mUnreferencedFiles = mUnreferencedFiles.OrderBy(item => item.File.FullPath.ToLowerInvariant()).ToList();
                 }
             }
         }
@@ -230,11 +223,11 @@ namespace FlatRedBall.Glue.Managers
                 nameToInclude = ProjectManager.ContentProject.GetAbsoluteContentFolder() + nameToInclude;
                 nameToInclude = nameToInclude.Replace(@"/", @"\");
 
-                if (!mListBeforeAddition.Contains(nameToInclude.ToLower()))
+                if (!mListBeforeAddition.Contains(nameToInclude))
                 {
                     var projectSpecificFile = new ProjectSpecificFile()
                     {
-                        FilePath = nameToInclude.ToLower(),
+                        File = nameToInclude,
                         ProjectName = project.Name
                     };
 
@@ -245,7 +238,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 unreferencedFiles.Add(new ProjectSpecificFile()
                 {
-                    FilePath = nameToInclude,
+                    File = nameToInclude,
                     ProjectName = project.Name
                 });
             }
@@ -261,7 +254,7 @@ namespace FlatRedBall.Glue.Managers
             var lastAddedUnreferenced = UnreferencedFilesManager.LastAddedUnreferencedFiles;
             foreach (ProjectSpecificFile projectSpecificFile in lastAddedUnreferenced)
             {
-                if (File.Exists(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath)))
+                if (projectSpecificFile.File.Exists())
                 {
                     DialogResult result =
                         System.Windows.Forms.MessageBox.Show(
@@ -272,9 +265,9 @@ namespace FlatRedBall.Glue.Managers
                     if (result == DialogResult.Yes)
                     {
                         ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
-                            projectSpecificFile.FilePath);
+                            projectSpecificFile.File.FullPath);
 
-                        FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));
+                        FileHelper.DeleteFile(projectSpecificFile.File.FullPath);
                         shouldRefreshAgainst = true;
                     }
                 }
@@ -299,7 +292,7 @@ namespace FlatRedBall.Glue.Managers
             var lastAddedUnreferencedFiles = LastAddedUnreferencedFiles;
             foreach (var projectSpecificFile in lastAddedUnreferencedFiles)
             {
-                if (!File.Exists(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath))) continue;
+                if (!projectSpecificFile.File.Exists()) continue;
 
                 DialogResult result =
                     System.Windows.Forms.MessageBox.Show(
@@ -310,9 +303,9 @@ namespace FlatRedBall.Glue.Managers
                 if (result != DialogResult.Yes) continue;
 
                 ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
-                    projectSpecificFile.FilePath);
+                    projectSpecificFile.File.FullPath);
 
-                FileHelper.DeleteFile(ProjectManager.MakeAbsolute(projectSpecificFile.FilePath));
+                FileHelper.DeleteFile(projectSpecificFile.File.FullPath);
                 shouldRefreshAgainst = true;
             }
 

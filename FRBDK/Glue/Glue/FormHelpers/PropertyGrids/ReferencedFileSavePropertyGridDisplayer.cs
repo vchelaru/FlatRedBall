@@ -168,7 +168,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 ProjectSpecificFile projectSpecificFile = this.collection[index];
                 StringBuilder sb = new StringBuilder();
-                sb.Append(projectSpecificFile.FilePath);
+                sb.Append(projectSpecificFile.File.FullPath);
 
                 return sb.ToString();
             }
