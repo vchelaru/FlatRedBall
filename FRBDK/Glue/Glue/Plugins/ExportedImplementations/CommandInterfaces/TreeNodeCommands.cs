@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
@@ -177,7 +178,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension(effectiveExtension);
 
-                    if (string.IsNullOrEmpty(executable))
+                    if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
                             $"program to associate with this extension to open the file. Set the assocaition now?";

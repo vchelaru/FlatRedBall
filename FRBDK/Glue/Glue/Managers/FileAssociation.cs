@@ -15,6 +15,10 @@ namespace HQ.Util.Unmanaged
     /// </summary>
     public static class WindowsFileAssociation
     {
+        public static string[] NativelyHandledExtensions = new string[]
+        {
+            "png"
+        };
         /// <summary>
         /// 
         /// </summary>
@@ -63,10 +67,13 @@ namespace HQ.Util.Unmanaged
         [DllImport("Shlwapi.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern uint AssocQueryString(AssocF flags, AssocStr str, string pszAssoc, string pszExtra, [Out] StringBuilder pszOut, [In][Out] ref uint pcchOut);
 
+        const uint E_POINTER = 0x80004003;
+
         private static string FileExtentionInfo(AssocStr assocStr, string doctype, string verb)
         {
             uint pcchOut = 0;
-            AssocQueryString(AssocF.Verify, assocStr, doctype, verb, null, ref pcchOut);
+            var response = AssocQueryString(AssocF.Verify, assocStr, doctype, verb, null, ref pcchOut);
+            // not sure why, but when asking for a .png when there is no association, 2147943555 is returned...
 
             //Debug.Assert(pcchOut != 0);
             if (pcchOut == 0)
@@ -82,6 +89,7 @@ namespace HQ.Util.Unmanaged
         [Flags]
         public enum AssocF
         {
+            None = 0,
             Init_NoRemapCLSID = 0x1,
             Init_ByExeName = 0x2,
             Open_ByExeName = 0x2,
@@ -92,7 +100,11 @@ namespace HQ.Util.Unmanaged
             Verify = 0x40,
             RemapRunDll = 0x80,
             NoFixUps = 0x100,
-            IgnoreBaseClass = 0x200
+            IgnoreBaseClass = 0x200,
+            Init_IgnoreUnknown = 0x400,
+            Init_Fixed_ProgId = 0x800,
+            Is_Protocol = 0x1000,
+            Init_For_File = 0x2000
         }
 
         public enum AssocStr
