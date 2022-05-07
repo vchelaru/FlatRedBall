@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
-        public static async Task<bool> UpdateFile(string changedFile)
+        public static async Task<bool> UpdateFile(string changedFile, FileChangeType changeType = FileChangeType.Modified)
         {
             bool handled = false;
             ///////////////Early Out////////////////////
