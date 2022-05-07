@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.IO
                     // *so many* generated files, that putting a check here on generated can eliminate hundreds
                     // of tasks from being created, improving startup performance
                     IgnoreReason reason;
-                    bool isIgnored = IsFileIgnored(file.FilePath, out reason);
+                    bool isIgnored = IsFileIgnored(fileCopy.FilePath, out reason);
 
                     // November 12, 2019
                     // Vic asks - why do we only ignore files that are generated here?
@@ -184,13 +184,13 @@ namespace FlatRedBall.Glue.IO
                     {
                         TaskManager.Self.Add(async () =>
                             {
-                                var didReact = await ReactToChangedFile(file);
+                                var didReact = await ReactToChangedFile(fileCopy);
                                 if (didReact)
                                 {
                                     UnreferencedFilesManager.Self.IsRefreshRequested = true;
                                 }
                             },
-                            "Reacting to changed file " + file);
+                            "Reacting to changed file " + fileCopy);
                     }
                 }
 

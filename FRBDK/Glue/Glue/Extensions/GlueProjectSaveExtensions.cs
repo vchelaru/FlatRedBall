@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                RemoveReferencesAndWildcards(filePath, clone);
+                PrepareReferencesAndWildcardsForSaving(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -120,10 +120,12 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void RemoveReferencesAndWildcards(FilePath filePath, GlueProjectSave clone)
+        private static void PrepareReferencesAndWildcardsForSaving(FilePath filePath, GlueProjectSave clone)
         {
             clone.GlobalFiles.RemoveAll(item => item.IsCreatedByWildcard);
             clone.GlobalFiles.AddRange(clone.GlobalFileWildcards);
+            clone.GlobalFileWildcards.Clear();
+
             foreach(var screen in clone.Screens)
             {
                 // add wildcards here...

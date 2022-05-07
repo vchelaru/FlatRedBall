@@ -412,7 +412,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
                     otherGlueProjectSave.FixAllTypes();
-                    fix references and wildcards
+
                     ObjectFinder.Self.GlueProject = savedOld;
 
 
