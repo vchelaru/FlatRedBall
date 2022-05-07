@@ -99,37 +99,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
-                clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
-
-                var glueDirectory = filePath.GetDirectoryContainingThis();
-
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.Formatting = Formatting.Indented;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-                // Ignoring defaults will make the json much smaller, but is it okay?
-
-                foreach(var entity in clone.Entities)
-                {
-                    var serialized = JsonConvert.SerializeObject(entity, settings);
-
-                    var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
-
-                    FileManager.SaveText(serialized, locationToSave);
-                }
-
-                foreach(var screen in clone.Screens)
-                {
-                    var serialized = JsonConvert.SerializeObject(screen, settings);
-
-                    var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
-
-                    FileManager.SaveText(serialized, locationToSave);
-                }
-
-                clone.Entities.Clear();
-                clone.Screens.Clear();
+                RemoveReferencesAndWildcards(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -148,6 +118,55 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 FileManager.XmlSerialize(clone, convertedFileName);
             }
+        }
+
+        private static void RemoveReferencesAndWildcards(FilePath filePath, GlueProjectSave clone)
+        {
+            clone.GlobalFiles.RemoveAll(item => item.IsCreatedByWildcard);
+            clone.GlobalFiles.AddRange(clone.GlobalFileWildcards);
+            foreach(var screen in clone.Screens)
+            {
+                // add wildcards here...
+            }
+            foreach(var entity in clone.Entities)
+            {
+                // add wildcards here...
+            }
+
+
+            clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+            clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+
+            var glueDirectory = filePath.GetDirectoryContainingThis();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+            // Ignoring defaults will make the json much smaller, but is it okay?
+
+            foreach (var entity in clone.Entities)
+            {
+                var serialized = JsonConvert.SerializeObject(entity, settings);
+
+                var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
+
+                FileManager.SaveText(serialized, locationToSave);
+            }
+
+            foreach (var screen in clone.Screens)
+            {
+                var serialized = JsonConvert.SerializeObject(screen, settings);
+
+                var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
+
+                FileManager.SaveText(serialized, locationToSave);
+            }
+
+            clone.Entities.Clear();
+            clone.Screens.Clear();
+
+
         }
 
         private static GlueProjectSave ConvertToPartial(this GlueProjectSave glueProjectSave, string tag)
@@ -244,7 +263,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 LoadReferencedScreensAndEntities(fileName, mainGlueProjectSave);
 
-                ReferencedFileSaveWildcardLogic.LoadWildcardReferencedFiles(fileName, mainGlueProjectSave);
+                WildcardReferencedFileSaveLogic.LoadWildcardReferencedFiles(fileName, mainGlueProjectSave);
             }
 
             return mainGlueProjectSave;

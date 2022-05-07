@@ -777,15 +777,21 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddSeparator();
 
                 AddItem(mCreateZipPackage);
+                var rfs = (ReferencedFileSave)targetNode.Tag;
 
                 AddSeparator();
 
-                AddRemoveFromProjectItems();
+                if(rfs.IsCreatedByWildcard == false)
+                {
+                    AddRemoveFromProjectItems();
+                }
 
-                AddItem(mUseContentPipeline);
+                if (rfs.IsCreatedByWildcard == false)
+                {
+                    AddItem(mUseContentPipeline);
+                }
                 //AddItem(form.openWithDEFAULTToolStripMenuItem);
 
-                ReferencedFileSave rfs = (ReferencedFileSave)targetNode.Tag;
 
                 if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
                 {

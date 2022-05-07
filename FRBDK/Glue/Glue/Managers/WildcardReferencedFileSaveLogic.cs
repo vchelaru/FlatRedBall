@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FlatRedBall.Glue.Managers
 {
-    public class ReferencedFileSaveWildcardLogic
+    public class WildcardReferencedFileSaveLogic
     {
 
         public static void LoadWildcardReferencedFiles(FilePath fileName, GlueProjectSave mainGlueProjectSave)
@@ -32,7 +32,7 @@ namespace FlatRedBall.Glue.Managers
                     if (existingFile == null)
                     {
                         var clone = wildcardRfs.Clone();
-                        clone.IsLoadedThroughWildcard = true;
+                        clone.IsCreatedByWildcard = true;
                         clone.Name = file.RelativeTo(contentFolder);
                         mainGlueProjectSave.GlobalFiles.Add(clone);
                     }
