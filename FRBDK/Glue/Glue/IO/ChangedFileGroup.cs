@@ -208,7 +208,7 @@ namespace FlatRedBall.Glue.IO
 
         
 
-        string[] extensionsToIgnoreRenamesAndDeletes = new string[]
+        string[] extensionsToIgnoreRenames_CreatesAndDeletes = new string[]
         {
             "glux",
             "gluj",
@@ -221,7 +221,7 @@ namespace FlatRedBall.Glue.IO
             var extension = FileManager.GetExtension(e.Name);
 
 
-            var shouldProcess = extensionsToIgnoreRenamesAndDeletes.Contains(extension) == false;
+            var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false;
 
             if(shouldProcess)
             {
@@ -278,7 +278,8 @@ namespace FlatRedBall.Glue.IO
         {
             string fileName = e.FullPath;
 
-            bool shouldProcess = true;
+            var extension = FileManager.GetExtension(fileName);
+            bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
 
             if (shouldProcess)
             {
@@ -291,7 +292,7 @@ namespace FlatRedBall.Glue.IO
         private bool GetIfShouldIgnoreDelete(string fileName)
         {
             var extension = FileManager.GetExtension(fileName);
-            return extensionsToIgnoreRenamesAndDeletes.Contains(extension);
+            return extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
         }
 
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
@@ -303,7 +304,7 @@ namespace FlatRedBall.Glue.IO
             if(e.ChangeType == WatcherChangeTypes.Renamed)
             {
                 var extension = FileManager.GetExtension(fileName);
-                shouldProcess = !extensionsToIgnoreRenamesAndDeletes.Contains(extension);
+                shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
             }
             
             if(shouldProcess)

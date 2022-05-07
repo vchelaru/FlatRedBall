@@ -1175,22 +1175,9 @@ namespace FlatRedBall.Glue.Plugins
         /// <param name="newRfs">The newly-created ReferencedFileSave/param>
         internal static void ReactToNewFile(ReferencedFileSave newRfs)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewFileHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginCommand(() =>
-                            {
-                                plugin.ReactToNewFileHandler(newRfs);
-                            },container, "Failed in ReactToNewFile");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToNewFileHandler(newRfs),
+                plugin => plugin.ReactToNewFileHandler != null);
         }
 
         internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
@@ -1222,13 +1209,34 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToCodeFileChange != null);
         }
 
-        internal static void ReactToChangedFile(string fileName, FileChangeType changeType)
+        internal static void ReactToChangedFile(FilePath fileName, FileChangeType changeType)
         {
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                plugin => plugin.ReactToBuiltFileChangeHandler(fileName),
-                plugin => plugin.ReactToBuiltFileChangeHandler != null);
+                plugin =>
+                {
+                    if(changeType == FileChangeType.Created)
+                    {
+                        // The "Create" type is new. If it is reported to all plugins, then
+                        // files may get re-loaded unnecessarily, and we don't want that, so only 
+                        // push Add to the new 
+                        plugin.ReactToFileChange?.Invoke(fileName, changeType);
+                    }
+                    else
+                    {
+                        if (plugin.ReactToFileChange != null)
+                        {
+                            plugin.ReactToFileChange(fileName, changeType);
+                        }
+                        else
+                        {
+                            plugin.ReactToFileChangeHandler(fileName.FullPath);
+                        }
+
+                    }
+                },
+                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null);
 
 
             ResumeRelativeDirectory(nameof(ReactToChangedFile));

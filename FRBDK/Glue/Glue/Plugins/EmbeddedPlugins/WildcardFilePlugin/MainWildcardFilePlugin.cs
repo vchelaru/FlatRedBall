@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
@@ -14,23 +15,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
     {
         public override void StartUp()
         {
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
         }
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
-            var filePath = new FilePath(fileName);
-
             var project = GlueState.Self.CurrentGlueProject;
 
-            var exists = System.IO.File.Exists(fileName);
+            var exists = filePath.Exists();
 
             if(exists)
             {
                 // was it added?
                 foreach(var wildcardFile in project.GlobalFileWildcards)
                 {
-                    if(IsFileRelativeToWildcard(fileName, wildcardFile))
+                    if(IsFileRelativeToWildcard(filePath, wildcardFile))
                     {
                         // clone it, add it here
                         var clone = wildcardFile.Clone();
@@ -57,8 +56,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             }
         }
 
-        private bool IsFileRelativeToWildcard(string changedFileName, SaveClasses.ReferencedFileSave wildcardFile)
+        private bool IsFileRelativeToWildcard(FilePath changedFilePath, SaveClasses.ReferencedFileSave wildcardFile)
         {
+            var changedFileName = changedFilePath.FullPath;
+
             // This could be faster, but we'll cheat and use some (probably slow) operations:
             var wildcardFilePath = GlueCommands.Self.GetAbsoluteFilePath(wildcardFile);
             FilePath directoryWithNoWildcard = wildcardFilePath;
@@ -85,7 +86,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                         .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.AllDirectories)
                         .Select(item => new FilePath(item));
 
-                    return allFiles.Contains(wildcardFilePath);
+                    return allFiles.Contains(changedFilePath);
                 }
                 else
                 {
@@ -101,7 +102,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 var allFiles = System.IO.Directory
                     .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.TopDirectoryOnly)
                     .Select(item => new FilePath(item));
-                return allFiles.Contains(wildcardFilePath);
+                return allFiles.Contains(changedFilePath);
             }
         }
     }

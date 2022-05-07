@@ -109,8 +109,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
-        [JsonIgnore]
-        [XmlIgnore]
+
+        // Even though these never appear in the saved json on disk, they need to be serialized
+        // so that the clone can be properly created, so it an't be ignored.
+        // [JsonIgnore]
         public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
 
