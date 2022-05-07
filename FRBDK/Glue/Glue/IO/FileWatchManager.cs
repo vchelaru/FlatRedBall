@@ -190,7 +190,7 @@ namespace FlatRedBall.Glue.IO
                                     UnreferencedFilesManager.Self.IsRefreshRequested = true;
                                 }
                             },
-                            "Reacting to changed file " + fileCopy);
+                            "Reacting to changed file " + fileCopy.FilePath);
                     }
                 }
 

@@ -23,6 +23,8 @@ namespace FlatRedBall.Glue.IO
     {
         public FilePath FilePath { get; set; }
         public FileChangeType ChangeType { get; set; }
+
+        public override string ToString() => FilePath?.ToString();
     }
 
     class ChangeInformation

@@ -124,9 +124,11 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             clone.GlobalFiles.RemoveAll(item => item.IsCreatedByWildcard);
             clone.GlobalFiles.AddRange(clone.GlobalFileWildcards);
-            clone.GlobalFileWildcards.Clear();
+            //clone.GlobalFileWildcards.Clear();
+            // if we null it, it won't show up, right?
+            clone.GlobalFileWildcards = null;
 
-            foreach(var screen in clone.Screens)
+            foreach (var screen in clone.Screens)
             {
                 // add wildcards here...
             }
