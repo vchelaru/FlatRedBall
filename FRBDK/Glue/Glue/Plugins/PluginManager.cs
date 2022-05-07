@@ -69,8 +69,6 @@ namespace FlatRedBall.Glue.Plugins
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; } = new List<ICodeGeneratorPlugin>();
 
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IContentFileChange> ContentFileChangePlugins { get; set; } = new List<IContentFileChange>();
 
         #endregion
 
@@ -151,7 +149,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 MenuStripPlugins,
                 CodeGeneratorPlugins,
-                ContentFileChangePlugins, CurrentElementPlugins
+                CurrentElementPlugins
             };
 
             foreach (var pluginList in allPlugins)
@@ -209,7 +207,6 @@ namespace FlatRedBall.Glue.Plugins
             MenuStripPlugins = new List<IMenuStripPlugin>();
             CurrentElementPlugins = new List<ICurrentElement>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
-            ContentFileChangePlugins = new List<IContentFileChange>();
         }
 
         internal static void Initialize(bool isStartup, List<string> pluginsToIgnore = null)
@@ -1213,96 +1210,42 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenu menuToModify)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-
-
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToRightClickHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToRightClickHandler(rightClickedPropertyGrid, menuToModify);
-                            },container, "Failed in ReactToRightClick");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToRightClickHandler(rightClickedPropertyGrid, menuToModify),
+                plugin => plugin.ReactToRightClickHandler != null);
         }
 
         internal static void ReactToChangedCodeFile(FilePath filePath)
         {
-            CallMethodOnPlugin(plugin =>
-            {
-                plugin.ReactToCodeFileChange(filePath);
-            },
-            plugin => plugin.ReactToCodeFileChange != null,
-            nameof(ReactToChangedCodeFile));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToCodeFileChange(filePath),
+                plugin => plugin.ReactToCodeFileChange != null);
         }
 
-        internal static void ReactToChangedFile(string fileName)
+        internal static void ReactToChangedFile(string fileName, FileChangeType changeType)
         {
-
             SaveRelativeDirectory();
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                foreach (IContentFileChange plugin in pluginManager.ContentFileChangePlugins)
-                {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
-                    {
-                        IContentFileChange plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToFileChange(fileName);
-                            },container, "Failed in ReactToChangedFile");
-                    }
-                }
-
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToFileChangeHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToFileChangeHandler(fileName);
-                            },container,"Failed in ReactToChangedFile");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToBuiltFileChangeHandler(fileName),
+                plugin => plugin.ReactToBuiltFileChangeHandler != null);
 
 
-            ResumeRelativeDirectory("ReactToFileChangeHandler");
+            ResumeRelativeDirectory(nameof(ReactToChangedFile));
         }
 
         internal static void ReactToChangedBuiltFile(string fileName)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToBuiltFileChangeHandler(fileName);
-            },
-                (plugin) => plugin.ReactToBuiltFileChangeHandler != null,
-                nameof(PluginBase.ReactToBuiltFileChangeHandler));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToBuiltFileChangeHandler(fileName),
+                plugin => plugin.ReactToBuiltFileChangeHandler != null);
         }
 
         internal static void ReactToChangedStartupScreen()
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToChangedStartupScreen();
-            },
-            plugin => plugin.ReactToChangedStartupScreen != null,
-            nameof(ReactToChangedStartupScreen));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToChangedStartupScreen(),
+                plugin => plugin.ReactToChangedStartupScreen != null);
         }
 
         #region XML Docs

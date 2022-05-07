@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.IO
 
             if (! handled && GlueCommands.Self.FileCommands.IsContent(changedFile))
             {
-                PluginManager.ReactToChangedFile(changedFile);
+                PluginManager.ReactToChangedFile(changedFile, changeType);
             }
 
             #region If it's a CSV, then re-generate the code for the objects
