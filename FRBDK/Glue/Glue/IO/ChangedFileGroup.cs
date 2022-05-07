@@ -14,12 +14,12 @@ namespace FlatRedBall.Glue.IO
     {
         Modified,
         Deleted,
-        Added,
+        Created,
         Renamed
         // todo - expand here
     }
 
-    class FileChange
+    public class FileChange
     {
         public FilePath FilePath { get; set; }
         public FileChangeType ChangeType { get; set; }
@@ -269,7 +269,7 @@ namespace FlatRedBall.Glue.IO
             bool shouldIgnoreDelete = GetIfShouldIgnoreDelete(fileName);
             if(!shouldIgnoreDelete)
             {
-                AddChangedFileTo(fileName, toAddTo);
+                AddChangedFileTo(fileName, FileChangeType.Deleted, toAddTo);
             }
 
         }
@@ -284,7 +284,7 @@ namespace FlatRedBall.Glue.IO
             {
                 ChangeInformation toAddTo = mChangedFiles;
 
-                bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Created, toAddTo);
             }
         }
 
@@ -310,7 +310,7 @@ namespace FlatRedBall.Glue.IO
             {
                 ChangeInformation toAddTo = mChangedFiles;
 
-                bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Modified, toAddTo);
             }
         }
 
