@@ -31,11 +31,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 {
                     if(IsFileRelativeToWildcard(filePath, wildcardFile))
                     {
-                        // clone it, add it here
-                        var clone = wildcardFile.Clone();
-                        clone.Name = filePath.RelativeTo(GlueState.Self.ContentDirectory);
-                        clone.IsCreatedByWildcard = true;
-                        GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(clone);
+                        var newRfsName = filePath.RelativeTo(GlueState.Self.ContentDirectory);
+                        var alreadyExists = project.GlobalFiles.Any(item => item.Name == newRfsName);
+                        if(!alreadyExists)
+                        {
+                            // clone it, add it here
+                            var clone = wildcardFile.Clone();
+                            clone.Name = newRfsName;
+                            clone.IsCreatedByWildcard = true;
+                            GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(clone);
+                        }
                         break;
                     }
                 }
