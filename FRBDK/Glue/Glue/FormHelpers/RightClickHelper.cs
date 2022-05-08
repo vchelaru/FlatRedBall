@@ -1720,6 +1720,17 @@ namespace FlatRedBall.Glue.FormHelpers
                         askAreYouSure = false;
                     }
 
+                    if(currentObject is ReferencedFileSave rfs)
+                    {
+                        if(rfs.IsCreatedByWildcard)
+                        {
+                            // for now, don't allow deleting it - must be removed from disk:
+                            GlueCommands.Self.DialogCommands.ShowMessageBox("Cannot remove this file through the FRB Editor - it's a wildcard file, so it must be removed from disk.");
+                            askAreYouSure = false;
+                            reallyRemoveResult = DialogResult.No;
+                        }
+                    }
+
 
                     if (askAreYouSure)
                     {

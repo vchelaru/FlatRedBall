@@ -374,11 +374,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     var nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs)) ??
                         GlobalContentRootNode;
                     nodeForFile = new NodeViewModel(nodeToAddTo);
-                    nodeForFile.Text = FileManager.RemovePath(rfs.Name);
-                    nodeForFile.ImageSource = 
-                        rfs.IsCreatedByWildcard 
-                        ? NodeViewModel.FileIconWildcard
-                        : NodeViewModel.FileIcon;
 
                     nodeToAddTo.Children.Add(nodeForFile);
 
@@ -389,18 +384,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 #endregion
 
-                #region else, there is already one
+                string textToSet = FileManager.RemovePath(rfs.Name);
+                nodeForFile.Text = textToSet;
 
-                else
-                {
-                    string textToSet = FileManager.RemovePath(rfs.Name);
-                    if (nodeForFile.Text != textToSet)
-                    {
-                        nodeForFile.Text = textToSet;
-                    }
-                }
+                nodeForFile.ImageSource = 
+                    rfs.IsCreatedByWildcard 
+                    ? NodeViewModel.FileIconWildcard
+                    : NodeViewModel.FileIcon;
 
-                #endregion
+
             }
 
             #endregion
