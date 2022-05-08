@@ -85,6 +85,8 @@ namespace FlatRedBall.Glue.SaveClasses
             set => File = value;
         }
 
+        [XmlIgnore]
+        [JsonIgnore]
         public FilePath File
         {
             get; set;
