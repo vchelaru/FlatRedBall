@@ -57,7 +57,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         nodeToAddTo = this;
                     }
                     nodeForFile = new NodeViewModel(nodeToAddTo);
-                    nodeForFile.ImageSource = FileIcon;
+                    nodeForFile.ImageSource = file.IsCreatedByWildcard
+                        ? NodeViewModel.FileIconWildcard
+                        : NodeViewModel.FileIcon; ;
                     nodeForFile.Tag = file;
                     nodeForFile.Text = FileManager.RemovePath(file.Name);
 

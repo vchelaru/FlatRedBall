@@ -375,7 +375,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         GlobalContentRootNode;
                     nodeForFile = new NodeViewModel(nodeToAddTo);
                     nodeForFile.Text = FileManager.RemovePath(rfs.Name);
-                    nodeForFile.ImageSource = NodeViewModel.FileIcon;
+                    nodeForFile.ImageSource = 
+                        rfs.IsCreatedByWildcard 
+                        ? NodeViewModel.FileIconWildcard
+                        : NodeViewModel.FileIcon;
 
                     nodeToAddTo.Children.Add(nodeForFile);
 
@@ -979,7 +982,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             NodeViewModel NodeFor(ReferencedFileSave rfs)
             {
                 var nodeForFile = new NodeViewModel(null);
-                nodeForFile.ImageSource = NodeViewModel.FileIcon;
+                nodeForFile.ImageSource = 
+                    rfs.IsCreatedByWildcard
+                        ? NodeViewModel.FileIconWildcard
+                        : NodeViewModel.FileIcon;
                 nodeForFile.Tag = rfs;
                 nodeForFile.Text = rfs.ToString();
                 return nodeForFile;

@@ -100,11 +100,11 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (singleSuffix == "**")
             {
-                if(remainderSuffix.Contains('/') == false)
+                if(remainderSuffix?.Contains('/') != true)
                 {
                     // We don't have anymore folders, so that means we want to have all files in here too. For example
                     // "**/*.txt" means "all txt files in this folder plus subfolders"
-                    GetFilesForWildcard(prefix.FullPath, remainderSuffix, files);
+                    GetFilesForWildcard(prefix.FullPath, remainderSuffix ?? "*", files);
                 }
                 var directories = System.IO.Directory.GetDirectories(prefix.FullPath);
                 foreach(var directory in directories)
