@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Newtonsoft.Json;
@@ -97,37 +99,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
-                clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
-
-                var glueDirectory = filePath.GetDirectoryContainingThis();
-
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.Formatting = Formatting.Indented;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-                // Ignoring defaults will make the json much smaller, but is it okay?
-
-                foreach(var entity in clone.Entities)
-                {
-                    var serialized = JsonConvert.SerializeObject(entity, settings);
-
-                    var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
-
-                    FileManager.SaveText(serialized, locationToSave);
-                }
-
-                foreach(var screen in clone.Screens)
-                {
-                    var serialized = JsonConvert.SerializeObject(screen, settings);
-
-                    var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
-
-                    FileManager.SaveText(serialized, locationToSave);
-                }
-
-                clone.Entities.Clear();
-                clone.Screens.Clear();
+                PrepareReferencesAndWildcardsForSaving(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -146,6 +118,59 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 FileManager.XmlSerialize(clone, convertedFileName);
             }
+        }
+
+        private static void PrepareReferencesAndWildcardsForSaving(FilePath filePath, GlueProjectSave clone)
+        {
+            clone.GlobalFiles.RemoveAll(item => item.IsCreatedByWildcard);
+            clone.GlobalFiles.AddRange(clone.GlobalFileWildcards);
+            //clone.GlobalFileWildcards.Clear();
+            // if we null it, it won't show up, right?
+            clone.GlobalFileWildcards = null;
+
+            foreach (var screen in clone.Screens)
+            {
+                // add wildcards here...
+            }
+            foreach(var entity in clone.Entities)
+            {
+                // add wildcards here...
+            }
+
+
+            clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+            clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+
+            var glueDirectory = filePath.GetDirectoryContainingThis();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+            // Ignoring defaults will make the json much smaller, but is it okay?
+
+            foreach (var entity in clone.Entities)
+            {
+                var serialized = JsonConvert.SerializeObject(entity, settings);
+
+                var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
+
+                FileManager.SaveText(serialized, locationToSave);
+            }
+
+            foreach (var screen in clone.Screens)
+            {
+                var serialized = JsonConvert.SerializeObject(screen, settings);
+
+                var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
+
+                FileManager.SaveText(serialized, locationToSave);
+            }
+
+            clone.Entities.Clear();
+            clone.Screens.Clear();
+
+
         }
 
         private static GlueProjectSave ConvertToPartial(this GlueProjectSave glueProjectSave, string tag)
@@ -202,10 +227,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static GlueProjectSave Load(FilePath fileName)
         {
-            GlueProjectSave main = null;
+            GlueProjectSave mainGlueProjectSave = null;
             if(fileName.Extension == "glux")
             {
-                main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
+                mainGlueProjectSave = FileManager.XmlDeserialize<GlueProjectSave>(fileName.FullPath);
             }
             else if(fileName.Extension == "gluj")
             {
@@ -213,14 +238,14 @@ namespace FlatRedBall.Glue.SaveClasses
                 if(fileName.Exists())
                 {
                     var text = System.IO.File.ReadAllText(fileName.FullPath);
-                    main = JsonConvert.DeserializeObject<GlueProjectSave>(text);
+                    mainGlueProjectSave = JsonConvert.DeserializeObject<GlueProjectSave>(text);
                 }
                 else if(System.IO.File.Exists( fileName.RemoveExtension() + ".glux"))
                 {
-                    main = FileManager.XmlDeserialize<GlueProjectSave>(fileName.RemoveExtension() + ".glux");
+                    mainGlueProjectSave = FileManager.XmlDeserialize<GlueProjectSave>(fileName.RemoveExtension() + ".glux");
                 }
             }
-            main = main.MarkTags("GLUE"); 
+            mainGlueProjectSave = mainGlueProjectSave.MarkTags("GLUE"); 
 
             var files =
                 Directory.GetFiles(fileName.GetDirectoryContainingThis() + @"\");
@@ -235,44 +260,55 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (withoutGenerated == null) continue;
                 var tag = FileManager.GetExtension(withoutGenerated);
 
-                main.Merge(FileManager.XmlDeserialize<GlueProjectSave>(file).MarkTags(tag));
+                mainGlueProjectSave.Merge(FileManager.XmlDeserialize<GlueProjectSave>(file).MarkTags(tag));
             }
 
-            if(main.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            if(mainGlueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                var glueDirectory = fileName.GetDirectoryContainingThis();
-                foreach (var screenReference in main.ScreenReferences)
-                {
-                    var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+                LoadReferencedScreensAndEntities(fileName, mainGlueProjectSave);
 
-                    if(path.Exists())
-                    {
-                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
-                        var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
-
-                        main.Screens.Add(deserialized);
-                    }
-                }
-
-                foreach(var entityReference in main.EntityReferences)
-                {
-                    var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
-
-                    if(path.Exists())
-                    {
-                        var fileContents = System.IO.File.ReadAllText(path.FullPath);
-                        var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
-
-                        main.Entities.Add(deserialized);
-                    }
-                }
-
-                main.ScreenReferences.Clear();
-                main.EntityReferences.Clear();
+                WildcardReferencedFileSaveLogic.LoadWildcardReferencedFiles(fileName, mainGlueProjectSave);
             }
 
-            return main;
+            return mainGlueProjectSave;
         }
+
+        private static void LoadReferencedScreensAndEntities(FilePath glujFilePath, GlueProjectSave main)
+        {
+            var glueDirectory = glujFilePath.GetDirectoryContainingThis();
+            foreach (var screenReference in main.ScreenReferences)
+            {
+                var path = new FilePath(glueDirectory + screenReference.Name + "." + GlueProjectSave.ScreenExtension);
+
+                if (path.Exists())
+                {
+                    var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
+
+                    main.Screens.Add(deserialized);
+                }
+            }
+
+            foreach (var entityReference in main.EntityReferences)
+            {
+                var path = new FilePath(glueDirectory + entityReference.Name + "." + GlueProjectSave.EntityExtension);
+
+                if (path.Exists())
+                {
+                    var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
+
+                    main.Entities.Add(deserialized);
+                }
+            }
+
+            main.ScreenReferences.Clear();
+            main.EntityReferences.Clear();
+        }
+
+
+
+
 
         public static void Save(this GlueProjectSave glueprojectsave, string tag, string fileName)
         {

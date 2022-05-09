@@ -412,6 +412,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
                     otherGlueProjectSave.FixAllTypes();
+
                     ObjectFinder.Self.GlueProject = savedOld;
 
 

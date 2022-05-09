@@ -785,7 +785,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             ////////////////////////End Early Out/////////////////////////////
 
-
+            // allow sending null here if the caller doesn't care:
+            additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
 
             // There are some things that need to happen:
             // 1.  Remove the ReferencedFileSave from the Glue project (GLUX)

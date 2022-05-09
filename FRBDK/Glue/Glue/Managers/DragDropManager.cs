@@ -1051,8 +1051,15 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if (targetNode.GetContainingElementTreeNode() == null)
                     {
-                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
-                        MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                        if(referencedFileSave.IsCreatedByWildcard)
+                        {
+                            response.Fail("Cannot move this file because it is created by a wildcard pattern");
+                        }
+                        else
+                        {
+                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                            response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                        }
                     }
                     else
                     {
@@ -1063,8 +1070,16 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNode.IsFolderForGlobalContentFiles())
                 {
-                    string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
-                    MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                    if (targetNode.GetContainingElementTreeNode() == null && referencedFileSave.IsCreatedByWildcard)
+                    {
+                        response.Fail("Cannot move this file because it is created by a wildcard pattern");
+                    }
+                    else
+                    {
+                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                        response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                    }
+
                 }
                 else if (targetNode.IsRootNamedObjectNode())
                 {
@@ -1153,21 +1168,28 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        var targetElementContentFolder = new FilePath( GlueCommands.Self.FileCommands.GetContentFolder(elementDroppingIn));
-
-                        var fileAbsolutePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
-
-                        var isRelativeToElementBeforeMove = targetElementContentFolder.IsRootOf(fileAbsolutePath);
-
-                        if(isRelativeToElementBeforeMove)
+                        if(referencedFileSave.IsCreatedByWildcard)
                         {
-                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
-                            MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                            response.Fail("Cannot move this file because it is created by a wildcard pattern");
                         }
                         else
                         {
-                            GlueCommands.Self.PrintOutput($"Could not move {referencedFileSave} because it is not inside the content folder for {elementDroppingIn}");
+                            var targetElementContentFolder = new FilePath( GlueCommands.Self.FileCommands.GetContentFolder(elementDroppingIn));
 
+                            var fileAbsolutePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
+
+                            var isRelativeToElementBeforeMove = targetElementContentFolder.IsRootOf(fileAbsolutePath);
+
+                            if(isRelativeToElementBeforeMove)
+                            {
+                                string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                                response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                            }
+                            else
+                            {
+                                GlueCommands.Self.PrintOutput($"Could not move {referencedFileSave} because it is not inside the content folder for {elementDroppingIn}");
+
+                            }
                         }
 
                     }
@@ -1251,7 +1273,7 @@ namespace FlatRedBall.Glue.Managers
 
         }
 
-        private static void MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
+        private static GeneralResponse MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
         {
             // Things to do:
             // 1 Move the TreeNode from one parent TreeNode to another UPDATE:  We will just refresh the UI for the Element or GlobalContent
@@ -1271,54 +1293,11 @@ namespace FlatRedBall.Glue.Managers
             string oldFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
             string targetFile = targetDirectory + FileManager.RemovePath(oldFileName);
             var elementContainingMovedFile = ObjectFinder.Self.GetElementContaining(referencedFileSave);
-            bool canMove = true;
+            Dictionary<string, string> mOldNewDependencyFileDictionary;
 
-            // There's so much error checking and validation that we
-            // could/should do here, but man, I just can't spend forever
-            // on it because I need to get the game I'm working on moving forward
-            // But I'm going to at least improve it a little bit by having the referenced
-            // files get copied over.
-            Dictionary<string, string> mOldNewDependencyFileDictionary = new Dictionary<string, string>();
-            var referencedFiles = ContentParser.GetFilesReferencedByAsset(oldFileName, TopLevelOrRecursive.Recursive);
-            string oldDirectoryFull = FileManager.GetDirectory(oldFileName);
+            var canMoveResponse = DetermineIfCanMoveFileToDirectory(targetDirectory, oldFileName, targetFile, out mOldNewDependencyFileDictionary);
 
-            foreach (var file in referencedFiles)
-            {
-                string relativeToRfs = FileManager.MakeRelative(file.FullPath, FileManager.GetDirectory(oldFileName));
-
-                string targetReferencedFileName = targetDirectory + relativeToRfs;
-
-                mOldNewDependencyFileDictionary.Add(file.FullPath, targetReferencedFileName);
-
-                if (!FileManager.IsRelativeTo(targetReferencedFileName, targetDirectory))
-                {
-                    MessageBox.Show("The file\n\n" + file + "\n\nis not relative to the file being moved, so it cannot be moved.  You must manually move these files and manually update the file reference.");
-                    canMove = false;
-                    break;
-                }
-            }
-
-
-            if (canMove && File.Exists(targetFile))
-            {
-                MessageBox.Show("There is already a file by this name located in the directory you're trying to move to.");
-                canMove = false;
-            }
-            if (canMove)
-            {
-                foreach (KeyValuePair<string, string> kvp in mOldNewDependencyFileDictionary)
-                {
-                    if (File.Exists(kvp.Value))
-                    {
-                        MessageBox.Show("Can't move the file because a dependency will be moved to\n\n" + kvp.Value + "\n\nand a file already exists there.");
-                        canMove = false;
-                        break;
-                    }
-                }
-
-            }
-
-            if (canMove)
+            if (canMoveResponse.Succeeded)
             {
                 // 1 Move the TreeNode from one parent TreeNode to another            
                 //treeNodeMoving.Parent.Nodes.Remove(treeNodeMoving);
@@ -1392,6 +1371,57 @@ namespace FlatRedBall.Glue.Managers
                 GluxCommands.Self.SaveGlux();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
+
+            return canMoveResponse;
+        }
+
+        private static GeneralResponse DetermineIfCanMoveFileToDirectory(string targetDirectory, string oldFileName, string targetFile, out Dictionary<string, string> mOldNewDependencyFileDictionary)
+        {
+            var response = GeneralResponse.SuccessfulResponse;
+
+            // There's so much error checking and validation that we
+            // could/should do here, but man, I just can't spend forever
+            // on it because I need to get the game I'm working on moving forward
+            // But I'm going to at least improve it a little bit by having the referenced
+            // files get copied over.
+            mOldNewDependencyFileDictionary = new Dictionary<string, string>();
+            var referencedFiles = ContentParser.GetFilesReferencedByAsset(oldFileName, TopLevelOrRecursive.Recursive);
+
+            foreach (var file in referencedFiles)
+            {
+                string relativeToRfs = FileManager.MakeRelative(file.FullPath, FileManager.GetDirectory(oldFileName));
+
+                string targetReferencedFileName = targetDirectory + relativeToRfs;
+
+                mOldNewDependencyFileDictionary.Add(file.FullPath, targetReferencedFileName);
+
+                if (!FileManager.IsRelativeTo(targetReferencedFileName, targetDirectory))
+                {
+                    response.Message = "The file\n\n" + file + "\n\nis not relative to the file being moved, so it cannot be moved.  You must manually move these files and manually update the file reference.";
+                    response.Succeeded = false;
+                    break;
+                }
+            }
+
+
+            if (response.Succeeded && File.Exists(targetFile))
+            {
+                response.Message = "There is already a file by this name located in the directory you're trying to move to.";
+                response.Succeeded = false;
+            }
+            if (response.Succeeded)
+            {
+                foreach (KeyValuePair<string, string> kvp in mOldNewDependencyFileDictionary)
+                {
+                    if (File.Exists(kvp.Value))
+                    {
+                        response.Message = "Can't move the file because a dependency will be moved to\n\n" + kvp.Value + "\n\nand a file already exists there.";
+                        response.Succeeded = false;
+                        break;
+                    }
+                }
+            }
+            return response;
         }
 
         private static GeneralResponse HandleDroppingFileOnObjectInSameElement(ITreeNode targetNode, ReferencedFileSave referencedFileSave)

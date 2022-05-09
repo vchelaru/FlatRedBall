@@ -10,11 +10,28 @@ namespace FlatRedBall.Glue.IO
 {
     #region ChangeInformation class
 
+    public enum FileChangeType
+    {
+        Modified,
+        Deleted,
+        Created,
+        Renamed
+        // todo - expand here
+    }
+
+    public class FileChange
+    {
+        public FilePath FilePath { get; set; }
+        public FileChangeType ChangeType { get; set; }
+
+        public override string ToString() => FilePath?.ToString();
+    }
+
     class ChangeInformation
     {
         static TimeSpan mMinimumTimeAfterChangeToReact = new TimeSpan(0, 0, 0, 0, 500);
 
-        List<string> mChangedFiles = new List<string>();
+        List<FileChange> mChangedFiles = new List<FileChange>();
 
         public bool CanFlush
         {
@@ -30,7 +47,7 @@ namespace FlatRedBall.Glue.IO
             private set;
         }
 
-        public ReadOnlyCollection<string> Changes
+        public ReadOnlyCollection<FileChange> Changes
         {
             get;
             private set;
@@ -38,16 +55,23 @@ namespace FlatRedBall.Glue.IO
 
         public ChangeInformation()
         {
-            Changes = new ReadOnlyCollection<string>(mChangedFiles);
+            Changes = new ReadOnlyCollection<FileChange>(mChangedFiles);
         }
 
-        public void Add(string fileName)
+        public void Add(string fileName, FileChangeType changeType)
         {
             fileName = FileManager.Standardize(fileName);
 
-            if (!mChangedFiles.Contains(fileName))
+            var contains = mChangedFiles.Any(item => item.FilePath == fileName);
+
+            if (!contains)
             {
-                mChangedFiles.Add(fileName);
+
+                mChangedFiles.Add(new FileChange
+                {
+                    FilePath = fileName,
+                    ChangeType = changeType
+                });
             }
 
             LastAdd = DateTime.Now;
@@ -58,7 +82,7 @@ namespace FlatRedBall.Glue.IO
             mChangedFiles.Clear();
         }
 
-        public void Sort(Comparison<string> comparison)
+        public void Sort(Comparison<FileChange> comparison)
         {
             mChangedFiles.Sort(comparison);
         }
@@ -125,21 +149,18 @@ namespace FlatRedBall.Glue.IO
             }
         }
 
-        public ReadOnlyCollection<string> DeletedFiles
-        {
-            get { return mDeletedFiles.Changes; }
-        }
+        public ReadOnlyCollection<FileChange> DeletedFiles => mDeletedFiles.Changes; 
 
-        public ReadOnlyCollection<string> ChangedFiles
+        public ReadOnlyCollection<FileChange> ChangedFiles
         {
             get { return mChangedFiles.Changes; }
         }
 
-        public IEnumerable<string> AllFiles
+        public IEnumerable<FileChange> AllFiles
         {
             get
             {
-                List<string> toReturn = new List<string>();
+                List<FileChange> toReturn = new List<FileChange>();
                 lock (LockObject)
                 {
                     toReturn.AddRange(mDeletedFiles.Changes);
@@ -151,7 +172,7 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
-        public Comparison<string> SortDelegate;
+        public Comparison<FileChange> SortDelegate;
 
         public ChangedFileGroup()
         {
@@ -182,10 +203,14 @@ namespace FlatRedBall.Glue.IO
 
             mFileSystemWatcher.Deleted += new FileSystemEventHandler(HandleFileSystemDelete);
             mFileSystemWatcher.Changed += new FileSystemEventHandler(HandleFileSystemChange);
+            // May 6, 2022
+            mFileSystemWatcher.Created += HandleFileSystemCreated;
             mFileSystemWatcher.Renamed += HandleRename;
         }
 
-        string[] extensionsToIgnoreRenamesAndDeletes = new string[]
+        
+
+        string[] extensionsToIgnoreRenames_CreatesAndDeletes = new string[]
         {
             "glux",
             "gluj",
@@ -198,13 +223,13 @@ namespace FlatRedBall.Glue.IO
             var extension = FileManager.GetExtension(e.Name);
 
 
-            var shouldProcess = extensionsToIgnoreRenamesAndDeletes.Contains(extension) == false;
+            var shouldProcess = extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension) == false;
 
             if(shouldProcess)
             {
                 // Process both the old and the new just in case someone depended on the old
-                AddChangedFileTo(e.OldFullPath, mChangedFiles);
-                AddChangedFileTo(e.FullPath, mChangedFiles);
+                AddChangedFileTo(e.OldFullPath, FileChangeType.Renamed, mChangedFiles);
+                AddChangedFileTo(e.FullPath, FileChangeType.Renamed, mChangedFiles);
             }
 
         }
@@ -246,15 +271,30 @@ namespace FlatRedBall.Glue.IO
             bool shouldIgnoreDelete = GetIfShouldIgnoreDelete(fileName);
             if(!shouldIgnoreDelete)
             {
-                AddChangedFileTo(fileName, toAddTo);
+                AddChangedFileTo(fileName, FileChangeType.Deleted, toAddTo);
             }
 
+        }
+
+        private void HandleFileSystemCreated(object sender, FileSystemEventArgs e)
+        {
+            string fileName = e.FullPath;
+
+            var extension = FileManager.GetExtension(fileName);
+            bool shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
+
+            if (shouldProcess)
+            {
+                ChangeInformation toAddTo = mChangedFiles;
+
+                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Created, toAddTo);
+            }
         }
 
         private bool GetIfShouldIgnoreDelete(string fileName)
         {
             var extension = FileManager.GetExtension(fileName);
-            return extensionsToIgnoreRenamesAndDeletes.Contains(extension);
+            return extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
         }
 
         void HandleFileSystemChange(object sender, FileSystemEventArgs e)
@@ -266,18 +306,18 @@ namespace FlatRedBall.Glue.IO
             if(e.ChangeType == WatcherChangeTypes.Renamed)
             {
                 var extension = FileManager.GetExtension(fileName);
-                shouldProcess = !extensionsToIgnoreRenamesAndDeletes.Contains(extension);
+                shouldProcess = !extensionsToIgnoreRenames_CreatesAndDeletes.Contains(extension);
             }
             
             if(shouldProcess)
             {
                 ChangeInformation toAddTo = mChangedFiles;
 
-                bool wasAdded = AddChangedFileTo(fileName, toAddTo);
+                bool wasAdded = AddChangedFileTo(fileName, FileChangeType.Modified, toAddTo);
             }
         }
 
-        private bool AddChangedFileTo(string fileName, ChangeInformation toAddTo)
+        private bool AddChangedFileTo(string fileName, FileChangeType fileChangeType, ChangeInformation toAddTo)
         {
             bool wasAdded = false;
 
@@ -286,7 +326,7 @@ namespace FlatRedBall.Glue.IO
                 bool wasIgnored = TryIgnoreFileChange(fileName);
                 if (!wasIgnored)
                 {
-                    toAddTo.Add(fileName);
+                    toAddTo.Add(fileName, fileChangeType);
                     if (SortDelegate != null)
                     {
                         toAddTo.Sort(SortDelegate);

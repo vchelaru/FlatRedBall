@@ -777,15 +777,21 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddSeparator();
 
                 AddItem(mCreateZipPackage);
+                var rfs = (ReferencedFileSave)targetNode.Tag;
 
                 AddSeparator();
 
-                AddRemoveFromProjectItems();
+                if(rfs.IsCreatedByWildcard == false)
+                {
+                    AddRemoveFromProjectItems();
+                }
 
-                AddItem(mUseContentPipeline);
+                if (rfs.IsCreatedByWildcard == false)
+                {
+                    AddItem(mUseContentPipeline);
+                }
                 //AddItem(form.openWithDEFAULTToolStripMenuItem);
 
-                ReferencedFileSave rfs = (ReferencedFileSave)targetNode.Tag;
 
                 if (FileManager.GetExtension(rfs.Name) == "csv" || rfs.TreatAsCsv)
                 {
@@ -1712,6 +1718,17 @@ namespace FlatRedBall.Glue.FormHelpers
                         }, "Removing Screen");
 
                         askAreYouSure = false;
+                    }
+
+                    if(currentObject is ReferencedFileSave rfs)
+                    {
+                        if(rfs.IsCreatedByWildcard)
+                        {
+                            // for now, don't allow deleting it - must be removed from disk:
+                            GlueCommands.Self.DialogCommands.ShowMessageBox("Cannot remove this file through the FRB Editor - it's a wildcard file, so it must be removed from disk.");
+                            askAreYouSure = false;
+                            reallyRemoveResult = DialogResult.No;
+                        }
                     }
 
 

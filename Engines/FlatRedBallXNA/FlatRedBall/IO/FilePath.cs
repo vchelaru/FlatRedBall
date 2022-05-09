@@ -28,6 +28,10 @@ namespace FlatRedBall.IO
 
         public static implicit operator FilePath(string s)
         {
+            if(s == null)
+            {
+                return null;
+            }
             // Code to convert the book into an XML structure
             return new FilePath(s);
         }

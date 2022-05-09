@@ -122,6 +122,7 @@
     <None Remove="TreeViewPlugin\Content\icon_entity_list.png" />
     <None Remove="TreeViewPlugin\Content\icon_event.png" />
     <None Remove="TreeViewPlugin\Content\icon_file_standard.png" />
+    <None Remove="TreeViewPlugin\Content\icon_file_wildcard.png" />
     <None Remove="TreeViewPlugin\Content\icon_folder.png" />
     <None Remove="TreeViewPlugin\Content\icon_folder_open.png" />
     <None Remove="TreeViewPlugin\Content\icon_forward.png" />
@@ -253,6 +254,7 @@
     <Resource Include="TreeViewPlugin\Content\icon_entity_list.png" />
     <Resource Include="TreeViewPlugin\Content\icon_event.png" />
     <Resource Include="TreeViewPlugin\Content\icon_file_standard.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_file_wildcard.png" />
     <Resource Include="TreeViewPlugin\Content\icon_folder.png" />
     <Resource Include="TreeViewPlugin\Content\icon_folder_open.png" />
     <Resource Include="TreeViewPlugin\Content\icon_forward.png" />
