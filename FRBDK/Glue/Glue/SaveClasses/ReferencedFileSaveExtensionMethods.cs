@@ -141,6 +141,11 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
+        /// <summary>
+        /// Returns the name of variable generated in code.
+        /// </summary>
+        /// <param name="instance">The ReferencedFileSave to generate.</param>
+        /// <returns>The name as generated.</returns>
         public static string GetInstanceName(this ReferencedFileSave instance)
         {
             string toReturn =

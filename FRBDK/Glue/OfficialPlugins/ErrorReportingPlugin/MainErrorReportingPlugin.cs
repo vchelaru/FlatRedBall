@@ -24,6 +24,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
         public override void StartUp()
         {
             AddErrorReporter(new NamedObjectSaveErrorReporter());
+            AddErrorReporter(new ReferencedFileSaveErrorReporter());
 
             this.ReactToFileChangeHandler += HandleFileChanged;
             this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
