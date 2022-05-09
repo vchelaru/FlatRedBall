@@ -85,6 +85,7 @@ namespace FlatRedBall.Glue.SaveClasses
             set => File = value;
         }
 
+        // Need to do this since it doesn't have a no-arg constructor and...should it?
         [XmlIgnore]
         [JsonIgnore]
         public FilePath File
