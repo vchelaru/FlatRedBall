@@ -324,6 +324,30 @@ namespace GlueControl.Editing
                 minY = minMax.MinYAbsolute;
                 maxY = minMax.MaxYAbsolute;
             }
+            else if (itemOver is Text asText)
+            {
+                switch (asText.HorizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:
+                        minX = Math.Min(asText.X, minX);
+                        maxX = Math.Max(asText.X + asText.Width, maxX);
+
+                        break;
+                    case HorizontalAlignment.Right:
+                        minX = Math.Min(asText.X - asText.Width, minX);
+                        maxX = Math.Max(asText.X, maxX);
+
+                        break;
+                    case HorizontalAlignment.Center:
+                        minX = Math.Min(asText.X - asText.Width / 2.0f, minX);
+                        maxX = Math.Max(asText.X + asText.Width / 2.0f, maxX);
+                        break;
+                }
+
+                // todo - support alignment
+                minY = Math.Min(minY, itemOver.Y - asText.Height / 2.0f);
+                maxY = Math.Max(maxY, itemOver.Y + asText.Height / 2.0f);
+            }
             else if (itemOver is IReadOnlyScalable asScalable)
             {
                 minX = Math.Min(minX, itemOver.X - asScalable.ScaleX);
