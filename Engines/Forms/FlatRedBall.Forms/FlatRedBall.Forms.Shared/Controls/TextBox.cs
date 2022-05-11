@@ -27,6 +27,8 @@ namespace FlatRedBall.Forms.Controls
 
                     TextChanged?.Invoke(this, null);
 
+                    UpdatePlaceholderVisibility();
+
                     PushValueToViewModel();
                 }
             }
