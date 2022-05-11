@@ -143,9 +143,50 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
         }
 
-        private void HandleRefreshGlobalContentTreeNode()
+        private async void HandleRefreshGlobalContentTreeNode()
         {
+            ITreeNode parentTreeNode = SelectionLogic.CurrentNode?.Parent;
+            var parentNodeViewModel = parentTreeNode as NodeViewModel;
+            var oldRfs = SelectionLogic.CurrentNode?.Tag as ReferencedFileSave;
+            var isGlobalContentRfs =
+                SelectionLogic.CurrentNode != null &&
+                oldRfs != null &&
+                parentTreeNode != null &&
+                (parentTreeNode.IsGlobalContentContainerNode() || parentTreeNode.IsChildOfGlobalContent());
+
+            int? indexInParent = null;
+
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            if (parentTreeNode != null)
+            {
+                indexInParent = SelectionLogic.CurrentNode?.Parent.Children.IndexOf(SelectionLogic.CurrentNode);
+            }
+
+            var oldSelection = SelectionLogic.CurrentNode;
+
             MainViewModel.RefreshGlobalContentTreeNodes();
+
+
+            if (oldRfs != null && !MainViewModel.IsInTreeView(oldSelection) && indexInParent > -1 &&
+                glueProject.GlobalFiles.Count > 0)
+            {
+                var index = indexInParent.Value;
+                if(index >= parentNodeViewModel.Children.Count)
+                {
+                    index = parentNodeViewModel.Children.Count - 1;
+                }
+
+                if(index > -1 && MainViewModel.IsInTreeView(parentNodeViewModel))
+                {
+                    var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                    // If the tag changed, push it back out:
+                    SelectionLogic.IsPushingSelectionOutToGlue = true;
+                    var newSelection = parentNodeViewModel.Children[index];
+                    await SelectionLogic.SelectByTreeNode(newSelection);
+                    SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+                }
+            }
         }
 
         private void HandleGluxLoadedEarly()
@@ -224,8 +265,18 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleRefreshDirectoryTreeNodes()
         {
+            var oldTag = SelectionLogic.CurrentNode?.Tag;
+
             MainViewModel.RefreshDirectoryNodes();
             
+            if(oldTag != null && SelectionLogic.CurrentNode?.Tag != oldTag)
+            {
+                var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                // If the tag changed, push it back out:
+                SelectionLogic.IsPushingSelectionOutToGlue = false;
+                SelectionLogic.SelectByTag(oldTag);
+                SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+            }
         }
 
         private void HandleFocusOnTreeView()

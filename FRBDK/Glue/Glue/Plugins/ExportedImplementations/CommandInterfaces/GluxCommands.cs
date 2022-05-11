@@ -761,6 +761,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        [Obsolete("Use RemoveReferencedFileAsync")]
         public void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         {
             TaskManager.Self.AddOrRunIfTasked(() =>

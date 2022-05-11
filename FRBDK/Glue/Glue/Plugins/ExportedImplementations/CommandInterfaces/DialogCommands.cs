@@ -382,17 +382,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (saveAndRegenerate)
                 {
-                    if (GlueState.Self.CurrentScreenSave != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
-                        var screen = GlueState.Self.CurrentScreenSave;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
                     }
-                    else if (GlueState.Self.CurrentEntitySave != null)
-                    {
-                        var entity = GlueState.Self.CurrentEntitySave;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                    }
-                    else if (GlueState.Self.CurrentReferencedFileSave != null)
+                    else //if (GlueState.Self.CurrentReferencedFileSave != null)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
 
