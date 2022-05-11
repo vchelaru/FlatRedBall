@@ -471,7 +471,7 @@ namespace FlatRedBall.Forms.Controls
                         MoveCursorDownOneLine();
                         break;
                     case Microsoft.Xna.Framework.Input.Keys.Delete:
-                        if (caretIndex < (DisplayedText?.Length ?? 0))
+                        if (caretIndex < (DisplayedText?.Length ?? 0) || selectionLength > 0)
                         {
                             HandleDelete();
                         }
