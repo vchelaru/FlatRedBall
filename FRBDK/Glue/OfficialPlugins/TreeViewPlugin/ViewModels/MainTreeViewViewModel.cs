@@ -779,6 +779,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return found;
         }
 
+        public bool IsInTreeView(NodeViewModel node)
+        {
+            var rootParent = node.Root();
+
+            return 
+                rootParent == GlobalContentRootNode ||
+                rootParent == EntityRootNode ||
+                rootParent == ScreenRootNode;
+
+        }
+
         #endregion
 
         private void PushSearchToContainedObject()

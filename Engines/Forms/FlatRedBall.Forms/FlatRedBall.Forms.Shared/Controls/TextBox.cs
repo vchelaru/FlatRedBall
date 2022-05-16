@@ -27,6 +27,8 @@ namespace FlatRedBall.Forms.Controls
 
                     TextChanged?.Invoke(this, null);
 
+                    UpdatePlaceholderVisibility();
+
                     PushValueToViewModel();
                 }
             }
@@ -103,8 +105,8 @@ namespace FlatRedBall.Forms.Controls
         public override void HandleBackspace(bool isCtrlDown = false)
         {
             //if (IsFocused && caretIndex > 0 && Text != null)
-            if (caretIndex > 0 && Text != null)
-                {
+            if ((caretIndex > 0 || selectionLength > 0) && Text != null)
+            {
                 if(selectionLength > 0)
                 {
                     DeleteSelection();

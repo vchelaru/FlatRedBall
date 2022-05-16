@@ -2,179 +2,60 @@
   "UserEvents": {
     "vchel": [
       {
-        "NewName": "ComboScoreBar",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 0,
-        "TimestampUtc": "2022-02-04T02:43:47.8525905Z"
-      },
-      {
-        "NewName": "ComboScoreBar.ColoredRectangleInstance",
+        "NewName": "DefaultForms/TextBox.TextInstance1",
         "OldName": null,
         "ElementType": "Components",
         "EventType": 5,
-        "TimestampUtc": "2022-02-04T02:44:07.1939006Z"
+        "TimestampUtc": "2022-05-11T14:03:47.784035Z"
       },
       {
-        "NewName": null,
-        "OldName": "ComboScoreBar",
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
         "ElementType": "Components",
-        "EventType": 1,
-        "TimestampUtc": "2022-02-04T02:50:19.4339362Z"
-      },
-      {
-        "NewName": " MainMenuGum.ButtonInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:18.5926872Z"
-      },
-      {
-        "NewName": " MainMenuGum.CheckBoxInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:21.7017151Z"
-      },
-      {
-        "NewName": " MainMenuGum.ComboBoxInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:24.7501114Z"
-      },
-      {
-        "NewName": " MainMenuGum.ListBoxInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:37.4232099Z"
-      },
-      {
-        "NewName": " MainMenuGum.RadioButtonInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:46.6254491Z"
-      },
-      {
-        "NewName": " MainMenuGum.SliderInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:25:52.1505603Z"
-      },
-      {
-        "NewName": " MainMenuGum.TextBoxInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T19:26:01.5273736Z"
-      },
-      {
-        "NewName": " MainMenuGum.RadioButtonInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T20:50:32.7124364Z"
-      },
-      {
-        "NewName": " MainMenuGum.LabelInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-05T22:09:57.6287377Z"
-      },
-      {
-        "NewName": " MainMenuGum.RadioButtonInstance2",
-        "OldName": " MainMenuGum.RadioButtonInstance1",
-        "ElementType": "Screens",
         "EventType": 7,
-        "TimestampUtc": "2022-02-05T23:10:44.940642Z"
+        "TimestampUtc": "2022-05-11T14:03:54.7495254Z"
       },
       {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/Button ButtonInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8047152Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/CheckBox CheckBoxInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8057136Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/ComboBox ComboBoxInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.807714Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/ListBox ListBoxInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8127121Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/RadioButton RadioButtonInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8147164Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/RadioButton RadioButtonInstance2 in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8187121Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/Slider SliderInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8197159Z"
-      },
-      {
-        "NewName": null,
-        "OldName": " MainMenuGum.DefaultForms/Label LabelInstance in  MainMenuGum",
-        "ElementType": "Screens",
-        "EventType": 6,
-        "TimestampUtc": "2022-02-06T03:20:32.8237118Z"
-      },
-      {
-        "NewName": " MainMenuGum.KeyboardInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-06T03:20:50.6902053Z"
-      },
-      {
-        "NewName": " MainMenuGum.ButtonInstance",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-06T21:59:48.2495636Z"
-      },
-      {
-        "NewName": " MainMenuGum.ButtonInstance1",
-        "OldName": null,
-        "ElementType": "Screens",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-06T22:00:11.5281484Z"
-      },
-      {
-        "NewName": " MainMenuGum.ButtonInstance2",
-        "OldName": " MainMenuGum.ButtonInstance1",
-        "ElementType": "Screens",
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
         "EventType": 7,
-        "TimestampUtc": "2022-02-06T22:00:21.3551018Z"
+        "TimestampUtc": "2022-05-11T14:03:54.7505252Z"
+      },
+      {
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2022-05-11T14:03:54.7515253Z"
+      },
+      {
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2022-05-11T14:03:54.7545255Z"
+      },
+      {
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2022-05-11T14:03:54.7555273Z"
+      },
+      {
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2022-05-11T14:03:54.7585283Z"
+      },
+      {
+        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
+        "OldName": "DefaultForms/TextBox.TextInstance1",
+        "ElementType": "Components",
+        "EventType": 7,
+        "TimestampUtc": "2022-05-11T14:03:54.7585283Z"
       }
     ],
     "Owner": []

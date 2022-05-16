@@ -1701,6 +1701,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
                     GlueElement deletedElement = null;
+                    ReferencedFileSave deletedRfs = null;
                     #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
                     DialogResult reallyRemoveResult = DialogResult.Yes;
 
@@ -1781,18 +1782,12 @@ namespace FlatRedBall.Glue.FormHelpers
                             // the GluxCommand handles saving and regenerate internally, no need to do it twice
                             saveAndRegenerate = false;
                             var toRemove = GlueState.Self.CurrentReferencedFileSave;
-
+                            deletedRfs = GlueState.Self.CurrentReferencedFileSave;
                             if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                             {
-                                IElement element = GlueState.Self.CurrentElement;
+                                var element = GlueState.Self.CurrentElement;
 
-                                // this could happen at the same time as file flushing, which can cause locks.  Therefore we need to add this as a task:
-                                TaskManager.Self.AddOrRunIfTasked(() =>
-                                {
-                                    GluxCommands.Self.RemoveReferencedFile(toRemove, filesToRemove, regenerateAndSave: true);
-                                },
-                                "Remove file " + toRemove.ToString());
-
+                                await GluxCommands.Self.RemoveReferencedFileAsync(toRemove, filesToRemove, regenerateAndSave: true);
                             }
 
                         }
@@ -1901,7 +1896,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #endregion
 
-                        if(deletedElement == null && GlueState.Self.CurrentElement == null)
+                        if(deletedElement == null && GlueState.Self.CurrentElement == null && currentElementBeforeRemoval != null)
                         {
                             GlueState.Self.CurrentElement = currentElementBeforeRemoval;
                         }
