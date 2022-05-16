@@ -115,7 +115,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        GetFilesForWildcard(directory, remainderSuffix, files);
+                        GetFilesForWildcard(directory, "**/" + remainderSuffix, files);
                     }
                 }
             }
