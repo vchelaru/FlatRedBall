@@ -444,6 +444,11 @@ namespace FlatRedBall.Content
 
 			if (shouldCheckForXnb && !FileManager.FileExists(fileToCheckFor))
 			{
+				// Restore the old RelativeDirectory just in case the user intentionally 
+				// catches the exception and RelativeDirectory is left with an invalid path.
+				// This invalid path could make the next content load fail.
+				FileManager.RelativeDirectory = oldRelativePath;
+
 				string errorString = "Could not find the file " + fileToCheckFor + "\n";
 
 				throw new FileNotFoundException(errorString);
