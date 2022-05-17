@@ -74,8 +74,11 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveParallelTasks.Count + asyncTasks + taskQueue.Where(item => item.Value.IsCancelled == false).Count();
-                    if(CurrentlyRunningTask != null)
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                        //taskQueue.Where(item => item.Value.IsCancelled == false).Count();
+                        // This could be much faster with systems that have a lot of tasks
+                        taskQueueCount;
+                    if (CurrentlyRunningTask != null)
                     {
                         toReturn++;
                     }
@@ -212,13 +215,20 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if(isTaskProcessingEnabled)
                     {
-                        await RunTask(item.Value, markAsCurrent:true);
+                        if (item.Value.IsCancelled == false)
+                        {
+                            taskQueueCount--;
+                            await RunTask(item.Value, markAsCurrent:true);
+
+                        }
 
                     }
                     else
                     {
+                        taskQueueCount--;
                         AddInternal(item.Value);
                         System.Threading.Thread.Sleep(50);
+
                     }
                 }
                 catch (Exception ex)
@@ -407,7 +417,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        //Dictionary<string, int> addCalls = new Dictionary<string, int>();
         ulong taskoffset = 0;
+        int taskQueueCount = 0;
         private void AddInternal(GlueTaskBase glueTask)
         {
             var priorityValue = (ulong)glueTask.TaskExecutionPreference;
@@ -423,12 +435,15 @@ namespace FlatRedBall.Glue.Managers
                 if (existing.Key != 0)
                 {
                     existing.Value.IsCancelled = true;
+                    taskQueueCount--;
                 }
 
             }
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+            taskQueueCount++;
+
         }
 
 
@@ -586,6 +601,18 @@ namespace FlatRedBall.Glue.Managers
             else
             {
                 global::Glue.MainGlueWindow.Self.Invoke(action);
+            }
+        }
+
+        public void BeginOnUiThread(Action action)
+        {
+            if (IsOnUiThread)
+            {
+                action();
+            }
+            else
+            {
+                global::Glue.MainGlueWindow.Self.BeginInvoke(action);
             }
         }
 
