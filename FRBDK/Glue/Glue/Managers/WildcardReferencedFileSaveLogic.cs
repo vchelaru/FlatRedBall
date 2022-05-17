@@ -14,27 +14,55 @@ namespace FlatRedBall.Glue.Managers
         {
             var wildcardRfses = mainGlueProjectSave.GlobalFiles.Where(item => item.Name.Contains("*")).ToArray();
 
+            // the csproj may not have loaded yet, so we can't rely on that:
+            FilePath glueProjectDirectory = fileName.GetDirectoryContainingThis();
+            var contentFolder = glueProjectDirectory + "Content/";
+            var globalContentFolder = contentFolder + "GlobalContent/";
+
+            // To save comparisons, let's do a dictionary:
+            Dictionary<FilePath, ReferencedFileSave> rfsDictionary = new Dictionary<FilePath, ReferencedFileSave>();
+            foreach (var file in mainGlueProjectSave.GlobalFiles)
+            {
+                var filePath = GetAbsoluteFilePathFor(contentFolder, file);
+
+                rfsDictionary.Add(filePath, file);
+            }
+            foreach (var screen in mainGlueProjectSave.Screens)
+            {
+                foreach (var file in screen.ReferencedFiles)
+                {
+                    var filePath = GetAbsoluteFilePathFor(contentFolder, file);
+
+                    rfsDictionary.Add(filePath, file);
+                }
+            }
+            foreach (var entity in mainGlueProjectSave.Entities)
+            {
+                foreach (var file in entity.ReferencedFiles)
+                {
+
+                    var filePath = GetAbsoluteFilePathFor(contentFolder, file);
+
+                    rfsDictionary.Add(filePath, file);
+                }
+            }
+
             foreach (var wildcardRfs in wildcardRfses)
             {
                 mainGlueProjectSave.GlobalFiles.Remove(wildcardRfs);
-
-                // the csproj may not have loaded yet, so we can't rely on this:
-                FilePath glueProjectDirectory = fileName.GetDirectoryContainingThis();
-                var contentFolder = glueProjectDirectory + "Content/";
-                var globalContentFolder = contentFolder + "GlobalContent/";
                 //var absoluteFile = GlueCommands.Self.GetAbsoluteFilePath(wildcardRfs);
                 var absoluteFile = new FilePath(contentFolder + wildcardRfs.Name);
                 var files = GetFilesForWildcard(absoluteFile);
 
-                foreach (var file in files)
+                foreach (var filePathForPossibleRfs in files)
                 {
-                    var existingFile = GetRfsFromFile(mainGlueProjectSave, file, glueProjectDirectory);
-                    if (existingFile == null)
+                    if(!rfsDictionary.ContainsKey(filePathForPossibleRfs))
                     {
                         var clone = wildcardRfs.Clone();
                         clone.IsCreatedByWildcard = true;
-                        clone.Name = file.RelativeTo(contentFolder);
+                        clone.Name = filePathForPossibleRfs.RelativeTo(contentFolder);
                         mainGlueProjectSave.GlobalFiles.Add(clone);
+                        rfsDictionary.Add(filePathForPossibleRfs, clone);
                     }
                 }
                 mainGlueProjectSave.GlobalFileWildcards.Add(wildcardRfs);
