@@ -368,9 +368,7 @@ namespace FlatRedBall.Glue.IO
                 ProjectManager.GlueProjectSave.UpdateIfTranslationIsUsed();
 
                 Section.GetAndStartContextAndTime("Add items");
-
-                SetInitWindowText("Creating project view...", initializationWindow);
-                
+                               
 
                 //AddEmptyTreeItems();
 
@@ -389,8 +387,6 @@ namespace FlatRedBall.Glue.IO
                 // popup count.
                 SetInitWindowText("Refreshing Source File Cache...", initializationWindow);
                 RefreshSourceFileCache();
-
-                SetInitWindowText("Refreshing TiledCache", initializationWindow);
                 GlueState.Self.TiledCache.RefreshCache();
 
                 SetInitWindowText("Building out-of-date external files...", initializationWindow);
@@ -398,12 +394,16 @@ namespace FlatRedBall.Glue.IO
                 Section.EndContextAndTime();
                 
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
-                foreach (var rfs in allReferencedFileSaves)
+                Managers.TaskManager.Self.Add(() =>
                 {
-                    Managers.TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs), 
-                        $"Calling UpdateFileMembershipInProject on {rfs.ToString()}",
-                        TaskExecutionPreference.AddOrMoveToEnd);
-                }
+                    foreach (var rfs in allReferencedFileSaves)
+                    {
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                    }
+                },
+                $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",
+                TaskExecutionPreference.AddOrMoveToEnd);
+                
 
                 foreach(var element in ObjectFinder.Self.GlueProject.Screens)
                 {
@@ -621,7 +621,6 @@ namespace FlatRedBall.Glue.IO
             if (initializationWindow != null)
             {
                 initializationWindow.SubMessage = subtext;
-                Application.DoEvents();
             }
         }
 

@@ -193,8 +193,6 @@ namespace Glue
                 initializationWindow.Message = "Loading Custom Type Info";
                 Application.DoEvents();
 
-
-                Application.DoEvents();
                 // Gotta do this too before Loading Glue Settings
                 ProjectManager.Initialize();
 
