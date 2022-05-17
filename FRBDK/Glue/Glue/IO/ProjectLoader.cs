@@ -401,7 +401,7 @@ namespace FlatRedBall.Glue.IO
                 foreach (var rfs in allReferencedFileSaves)
                 {
                     Managers.TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs), 
-                        $"Refreshing file {rfs.ToString()}",
+                        $"Calling UpdateFileMembershipInProject on {rfs.ToString()}",
                         TaskExecutionPreference.AddOrMoveToEnd);
                 }
 

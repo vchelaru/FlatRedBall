@@ -2094,6 +2094,14 @@ namespace FlatRedBall.Glue.FormHelpers
                 else if (targetNode.IsDirectoryNode() || targetNode.IsGlobalContentContainerNode())
                 {
                     locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                    // global content may not have yet been created. If not, just show the level above:
+                    if(targetNode.IsGlobalContentContainerNode() && !File.Exists(locationToShow))
+                    {
+                        // actually, we should just create the directory. Maybe the user wants to put
+                        // a file there?
+                        //locationToShow = FileManager.GetDirectory(locationToShow);
+                        System.IO.Directory.CreateDirectory(locationToShow);
+                    }
                 }
                 else if (targetNode.IsFilesContainerNode() || targetNode.IsFolderInFilesContainerNode())
                 {

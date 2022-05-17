@@ -428,6 +428,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
+            AddReferencedFileToGlobalContent(referencedFileSave, generateAndSave: true, updateUi: true);
+        }
+
+        public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool generateAndSave, bool updateUi)
+        {
             if (TaskManager.Self.IsInTask() == false)
             {
                 int m = 3;
@@ -448,9 +453,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 element.HasChanged = true;
             }
 
-            GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
+            if(generateAndSave)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+            }
+
+            if(updateUi)
+            {
+                GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
+            }
 
         }
+
 
         // Vic asks: What's the difference between AddSingleFileTo and CreateReferencedFileSaveForExistingFile? The name 
         // CreateReferencedFileSaveForExistingFile suggests it's newer/more complete, but why not obsolete this?

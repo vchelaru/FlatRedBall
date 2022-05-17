@@ -274,7 +274,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 // If the type changed, the Property Grid needs to be re-made so that the new
                 // grid will have the right type for the DefaultValue cell:
-                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
             }
             #endregion
