@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.Managers
                 {
                     var filePath = GetAbsoluteFilePathFor(contentFolder, file);
 
-                    rfsDictionary.Add(filePath, file);
+                    rfsDictionary[filePath] = file;
                 }
             }
             foreach (var entity in mainGlueProjectSave.Entities)
@@ -43,7 +43,7 @@ namespace FlatRedBall.Glue.Managers
 
                     var filePath = GetAbsoluteFilePathFor(contentFolder, file);
 
-                    rfsDictionary.Add(filePath, file);
+                    rfsDictionary[filePath] = file;
                 }
             }
 
@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.Managers
                         clone.IsCreatedByWildcard = true;
                         clone.Name = filePathForPossibleRfs.RelativeTo(contentFolder);
                         mainGlueProjectSave.GlobalFiles.Add(clone);
-                        rfsDictionary.Add(filePathForPossibleRfs, clone);
+                        rfsDictionary[filePathForPossibleRfs] = clone;
                     }
                 }
                 mainGlueProjectSave.GlobalFileWildcards.Add(wildcardRfs);
