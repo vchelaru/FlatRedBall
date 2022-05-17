@@ -155,12 +155,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
 
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false);
+                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs:referencedFileSave);
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
                     VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
-                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true);
+                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs:referencedFileSave);
                 }
             }
             return wasAnythingAdded;
@@ -176,7 +176,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns>Whether the project was modified.</returns>
-        public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
+        public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null, ReferencedFileSave fileRfs = null)
         {
             bool wasProjectModified = false;
             ///////////////////Early Out/////////////////////
@@ -198,7 +198,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             
             if (!useContentPipeline)
             {
-                useContentPipeline = GetIfShouldUseContentPipeline(fileToAddAbsolute);
+                useContentPipeline = GetIfShouldUseContentPipeline(fileToAddAbsolute, fileRfs);
             }
 
             if (useContentPipeline)
@@ -329,10 +329,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return wasProjectModified;
         }
 
-        private static bool GetIfShouldUseContentPipeline(string fileAbsolute)
+        private static bool GetIfShouldUseContentPipeline(string fileAbsolute, ReferencedFileSave rfs = null)
         {
             // grab the RFS and see if the rfs forces it
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileAbsolute);
+            rfs = rfs ?? GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileAbsolute);
             bool useContentPipeline = false;
             if (rfs != null && rfs.UseContentPipeline)
             {

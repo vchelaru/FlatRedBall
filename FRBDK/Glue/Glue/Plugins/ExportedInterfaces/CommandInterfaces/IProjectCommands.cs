@@ -89,8 +89,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="useContentPipeline">Whether to force the file to use the content pipeline.</param>
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
+        /// <param name="fileRfs">The ReferencedFileSave for fileName if it is already known. If not, a search will be perfored internally to find it. Passing the ReferencedFileSave
+        /// can improve performance slightly, but it can make a difference if this method is called a lot.</param>
         /// <returns></returns>
-        bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null);
+        bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null,
+            ReferencedFileSave fileRfs = null);
 
         void CreateNewProject();
     }
