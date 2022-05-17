@@ -430,7 +430,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("MakeGeneratedItemsNested");
 
                 // This should happen after loading synced projects
-                SetInitWindowText("Nesting generated items", initializationWindow);
+                SetInitWindowText("Nesting generated code files in .csproj", initializationWindow);
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GlobalContent");
@@ -438,7 +438,7 @@ namespace FlatRedBall.Glue.IO
 
                 #region Update GlobalContent UI and code
 
-                SetInitWindowText("Updating global content", initializationWindow);
+                SetInitWindowText("Updating global content tree nodes", initializationWindow);
 
                 GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 

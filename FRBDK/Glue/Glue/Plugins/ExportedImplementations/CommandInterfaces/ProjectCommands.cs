@@ -125,8 +125,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddContentFileToProject(string absoluteFileName, bool saveProjects = true)
         {
-            string relativeFileName = FileManager.MakeRelative(absoluteFileName, ProjectManager.ProjectBase.ContentProject.Directory);
-            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, relativeFileName, false, false, null);
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, absoluteFileName, false, false, null);
             if (saveProjects)
             {
                 SaveProjects();
@@ -156,12 +155,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
 
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, referencedFileSave.GetRelativePath(), useContentPipeline, false);
+                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false);
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
                     VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
-                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.FilePath, useContentPipeline, true);
+                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true);
                 }
             }
             return wasAnythingAdded;
@@ -177,7 +176,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
         /// <returns>Whether the project was modified.</returns>
-        public bool UpdateFileMembershipInProject(VisualStudioProject project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
+        public bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null)
         {
             bool wasProjectModified = false;
             ///////////////////Early Out/////////////////////
@@ -185,7 +184,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             /////////////////End Early Out//////////////////
 
-            string fileToAddAbsolute = GlueCommands.Self.GetAbsoluteFileName(fileName, isContent:true);
+            string fileToAddAbsolute = fileName.FullPath;
 
             fileToAddAbsolute = fileToAddAbsolute.Replace("/", "\\");
 
@@ -213,7 +212,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (!needsToBeInContentProject)
             {
-                isFileAlreadyPartOfProject = project.IsFilePartOfProject(fileName, BuildItemMembershipType.CompileOrContentPipeline);
+                isFileAlreadyPartOfProject = project.IsFilePartOfProject(fileName.FullPath, BuildItemMembershipType.CompileOrContentPipeline);
             }
 
             string fileRelativeToContent = FileManager.MakeRelative(
@@ -294,7 +293,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool shouldAddChildren = true;
 
 
-            if (fileName.EndsWith(".x") || useContentPipeline)
+            if (fileName.Extension == "x" || useContentPipeline)
             {
                 shouldAddChildren = false;
             }

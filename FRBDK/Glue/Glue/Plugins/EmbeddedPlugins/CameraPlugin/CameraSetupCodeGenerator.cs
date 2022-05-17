@@ -121,11 +121,11 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
-                string fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
+                FilePath fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
 
                 string newContents = GetCameraSetupCsContents();
 
-                GlueCommands.Self.TryMultipleTimes(() => FileManager.SaveText(newContents, fileName), 5);
+                GlueCommands.Self.TryMultipleTimes(() => FileManager.SaveText(newContents, fileName.FullPath), 5);
 
                 // Now, verify that this thing is part of the project.
                 bool wasAdded = GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, fileName, false, false);

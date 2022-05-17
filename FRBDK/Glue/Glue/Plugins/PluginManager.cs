@@ -1942,26 +1942,9 @@ namespace FlatRedBall.Glue.Plugins
         {
             bool? toReturn = null;
 
-            var plugins = mInstances
-                .Select(item => (PluginManager)item)
-                .Where(item =>item?.ImportedPlugins != null)
-                .SelectMany(item => item.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null))
-                .ToArray();
-
-            foreach (var plugin in plugins)
-            {
-                var container = GetContainerFor(plugin);
-
-                
-                if (container.IsEnabled)
-                {
-                    PluginBase plugin1 = plugin;
-                    PluginCommand(() =>
-                    {
-                        toReturn = plugin1.GetIfUsesContentPipeline(fileAbsolute);
-                    }, container, "Failed in GetIfUsesContentPipeline");
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => toReturn = plugin.GetIfUsesContentPipeline(fileAbsolute),
+                plugin => plugin.GetIfUsesContentPipeline != null);
 
             return toReturn;
         }
@@ -2012,57 +1995,57 @@ namespace FlatRedBall.Glue.Plugins
         public static void ReactToFileBuildCommand(ReferencedFileSave rfs)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToFileBuildCommand(rfs),
-                (plugin) => plugin.ReactToFileBuildCommand != null);
+                plugin => plugin.ReactToFileBuildCommand(rfs),
+                plugin => plugin.ReactToFileBuildCommand != null);
         }
 
         public static void ReactToImportedElement(GlueElement newElement)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToImportedElement(newElement),
-                (plugin) => plugin.ReactToImportedElement != null);
+                plugin => plugin.ReactToImportedElement(newElement),
+                plugin => plugin.ReactToImportedElement != null);
         }
 
         public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
-                (plugin) => plugin.ReactToObjectContainerChanged != null);
+                plugin => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
+                plugin => plugin.ReactToObjectContainerChanged != null);
         }
 
         public static void ReactToMainWindowMoved()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToMainWindowMoved(),
-                (plugin) => plugin.ReactToMainWindowMoved != null);
+                plugin => plugin.ReactToMainWindowMoved(),
+                plugin => plugin.ReactToMainWindowMoved != null);
         }
 
         public static void ReactToMainWindowResizeEnd()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToMainWindowResizeEnd(),
-                (plugin) => plugin.ReactToMainWindowResizeEnd != null);
+                plugin => plugin.ReactToMainWindowResizeEnd(),
+                plugin => plugin.ReactToMainWindowResizeEnd != null);
         }
 
         public static void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
-                (plugin) => plugin.RefreshTreeNodeFor != null);
+                plugin => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
+                plugin => plugin.RefreshTreeNodeFor != null);
         }
 
         public static void RefreshGlobalContentTreeNode()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshGlobalContentTreeNode(),
-                (plugin) => plugin.RefreshGlobalContentTreeNode != null);
+                plugin => plugin.RefreshGlobalContentTreeNode(),
+                plugin => plugin.RefreshGlobalContentTreeNode != null);
         }
 
         public static void RefreshDirectoryTreeNodes()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshDirectoryTreeNodes(),
-                (plugin) => plugin.RefreshDirectoryTreeNodes != null);
+                plugin => plugin.RefreshDirectoryTreeNodes(),
+                plugin => plugin.RefreshDirectoryTreeNodes != null);
         }
 
         public static void ReactToFocusOnTreeView()

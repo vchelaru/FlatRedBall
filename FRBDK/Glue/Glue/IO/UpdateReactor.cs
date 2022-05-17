@@ -153,10 +153,9 @@ namespace FlatRedBall.Glue.IO
 
                     if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
                     {
-                        string relativePath = ProjectManager.MakeRelativeContent(changedFile);
-
+                        FilePath changedFilePath = changedFile;
                         shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
-                            ProjectManager.ProjectBase, relativePath, false, false);
+                            ProjectManager.ProjectBase, changedFilePath, false, false);
                         handled |= shouldSave;
 
                     }

@@ -318,8 +318,8 @@ namespace FlatRedBall.Glue.Parsing
 
         public static void AddGeneratedPerformanceTypes()
         {
-            string poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
-            string iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
+            FilePath poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
+            FilePath iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
 
 
             string embeddedResourcePrefix = "FlatRedBall.Glue.Resources.";
@@ -328,12 +328,12 @@ namespace FlatRedBall.Glue.Parsing
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "PoolList.cs");
             var contents = System.Text.Encoding.Default.GetString(byteArray);
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, poolListFileName);
+            FileManager.SaveText(contents, poolListFileName.FullPath);
 
             byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "IEntityFactory.cs");
             contents = System.Text.Encoding.Default.GetString(byteArray);
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, iEntityFactoryFileName);
+            FileManager.SaveText(contents, iEntityFactoryFileName.FullPath);
 
 
 
