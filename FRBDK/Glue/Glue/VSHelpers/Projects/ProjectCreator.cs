@@ -5,6 +5,7 @@ using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Collections.Generic;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Controls;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -225,7 +226,7 @@ Additional Info:
 
                 foreach (var call in loadCalls)
                 {
-                    if(preProcessorConstants.Contains(call.Preprocessor))
+                    if(preProcessorConstants?.Contains(call.Preprocessor) == true)
                     {
                         toReturn = call.Func();
                         break;
@@ -261,6 +262,24 @@ Additional Info:
                             message += "\n" + preprocessor.Preprocessor;
                         }
                     }
+                }
+
+                var mbmb = new MultiButtonMessageBoxWpf();
+
+                mbmb.MessageText = "FlatRedBall could not determine the project type. Would you like to manually set the project type?";
+
+                foreach(var loadCall in loadCalls)
+                {
+                    mbmb.AddButton(loadCall.Preprocessor, loadCall.Func);
+                }
+
+                mbmb.AddButton("No, do not manually set the type", null);
+
+                var showResult = mbmb.ShowDialog();
+
+                if(mbmb.ClickedResult is Func<ProjectBase> asFunc)
+                {
+                    toReturn = asFunc();
                 }
             }
 
