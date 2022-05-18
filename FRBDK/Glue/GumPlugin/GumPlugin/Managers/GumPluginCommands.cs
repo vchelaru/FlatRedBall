@@ -168,7 +168,7 @@ namespace GumPlugin.Managers
             // Select the screen to add the file to this
             GlueState.Self.CurrentScreenSave = glueScreen;
 
-            RightClickManager.Self.AddScreenByName(gumScreenName, glueScreen);
+            RightClickManager.Self.AddGumScreenScreenByName(gumScreenName, glueScreen);
         }
 
         internal async Task RemoveScreen(ScreenSave gumScreen, bool save = true)
