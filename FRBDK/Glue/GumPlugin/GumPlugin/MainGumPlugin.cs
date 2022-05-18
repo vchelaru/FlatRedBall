@@ -782,11 +782,11 @@ namespace GumPlugin
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
                         await FormsAddManager.GenerateBehaviors();
-                        FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
-                    CodeGeneratorManager.Self.RegenerateEntireProjectCode();
+                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(forceReload:true);
                 }
                 propertiesManager.IsReactingToProperyChanges = true;
 

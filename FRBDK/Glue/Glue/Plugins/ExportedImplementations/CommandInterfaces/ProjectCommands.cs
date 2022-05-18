@@ -36,6 +36,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         
         public void SaveProjectsImmediately()
         {
+            TaskManager.Self.WarnIfNotInTask();
             var toLock = ProjectManager.ProjectBase;
             lock (toLock)
             {

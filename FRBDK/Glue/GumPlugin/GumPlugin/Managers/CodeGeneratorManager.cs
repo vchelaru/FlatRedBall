@@ -69,7 +69,18 @@ namespace GumPlugin.Managers
             string extension = file.Extension;
             if(extension == "gumx")
             {
-                RegenerateEntireProjectCode();
+                foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
+                {
+                    GenerateDueToFileChangeTask(screen);
+                }
+                foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
+                {
+                    GenerateDueToFileChangeTask(component);
+                }
+                foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
+                {
+                    GenerateDueToFileChangeTask(standard);
+                }
             }
             else
             {
@@ -81,22 +92,6 @@ namespace GumPlugin.Managers
                     GenerateDueToFileChangeTask(changedElement);
                 }
 
-            }
-        }
-
-        public void RegenerateEntireProjectCode()
-        {
-            foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
-            {
-                GenerateDueToFileChangeTask(screen);
-            }
-            foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
-            {
-                GenerateDueToFileChangeTask(component);
-            }
-            foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
-            {
-                GenerateDueToFileChangeTask(standard);
             }
         }
 
@@ -212,9 +207,10 @@ namespace GumPlugin.Managers
             return null;
         }
 
-        public void GenerateDerivedGueRuntimes()
+        public void GenerateDerivedGueRuntimes(bool forceReload = false)
         {
-            if (AppState.Self.GumProjectSave == null &&
+            TaskManager.Self.WarnIfNotInTask();
+            if ((forceReload || AppState.Self.GumProjectSave == null) &&
                 FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
             {
                 var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
@@ -222,11 +218,11 @@ namespace GumPlugin.Managers
 
                 if (rfs != null)
                 {
-                    string fullFileName = FlatRedBall.Glue.ProjectManager.ContentDirectory + rfs.Name;
+                    string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
 
                     string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
 
-                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory);
+                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
                 }
             }
 

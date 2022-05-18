@@ -20,7 +20,7 @@ namespace GumPlugin.DataGeneration
             "UISpriteSheet.png"
         };
 
-        public static void SaveComponents(Assembly assembly)
+        public static async Task SaveComponents(Assembly assembly)
         {
             var names = assembly.GetManifestResourceNames();
 
@@ -93,11 +93,10 @@ namespace GumPlugin.DataGeneration
                 }
             }
 
+            var wasAnythingAdded = false;
             // Now that everything is on disk, add the files to the Gum project if necessary
-            TaskManager.Self.Add(() =>
+            await TaskManager.Self.AddAsync(() =>
             {
-                var wasAnythingAdded = false;
-
                 foreach(var file in addedFileDestinations)
                 {
                     if(file.Extension == "gucx")
@@ -116,12 +115,12 @@ namespace GumPlugin.DataGeneration
 
                 UpdateTextStateCategory();
 
-                if(wasAnythingAdded)
-                {
-                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
-                }
             }, "Updating Gum project with Forms Components");
 
+            if(wasAnythingAdded)
+            {
+                await GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
+            }
 
         }
 

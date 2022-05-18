@@ -62,29 +62,40 @@ namespace FlatRedBall.Glue.IO
         {
             fileName = FileManager.Standardize(fileName);
 
-            var contains = mChangedFiles.Any(item => item.FilePath == fileName);
-
-            if (!contains)
+            lock(mChangedFiles)
             {
+                var contains = mChangedFiles.Any(item => item.FilePath == fileName);
 
-                mChangedFiles.Add(new FileChange
+                if (!contains)
                 {
-                    FilePath = fileName,
-                    ChangeType = changeType
-                });
+
+                    mChangedFiles.Add(new FileChange
+                    {
+                        FilePath = fileName,
+                        ChangeType = changeType
+                    });
+                }
+
+                LastAdd = DateTime.Now;
             }
 
-            LastAdd = DateTime.Now;
         }
 
         public void Clear()
         {
-            mChangedFiles.Clear();
+            lock(mChangedFiles)
+            {
+                mChangedFiles.Clear();
+            }
         }
 
         public void Sort(Comparison<FileChange> comparison)
         {
-            mChangedFiles.Sort(comparison);
+            lock(mChangedFiles)
+            {
+                mChangedFiles.Sort(comparison);
+            }
+
         }
     }
 

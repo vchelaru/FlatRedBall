@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => TaskCount == 0;
+        public bool AreAllAsyncTasksDone => TaskCountAccurate == 0;
 
         /// <summary>
         /// Returns the task count, including cancelled tasks.
@@ -81,6 +81,32 @@ namespace FlatRedBall.Glue.Managers
                     if (CurrentlyRunningTask != null)
                     {
                         toReturn++;
+                    }
+                    return toReturn;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of tasks by actually counting them rather than relying on the taskQueueCount which could be incorrect
+        /// </summary>
+        public int TaskCountAccurate
+        {
+            get
+            {
+                lock (mActiveParallelTasks)
+                {
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                        taskQueue.Where(item => item.Value.IsCancelled == false).Count();
+                    // This could be much faster with systems that have a lot of tasks
+
+                    if (CurrentlyRunningTask != null)
+                    {
+                        toReturn++;
+                    }
+                    if(toReturn == 0)
+                    {
+                        taskQueueCount = 0;
                     }
                     return toReturn;
                 }
