@@ -234,13 +234,32 @@ Additional Info:
                 message = null;
                 if(toReturn == null)
                 {
-                    message = $"Could not determine project type from preprocessor directives." +
-                        $"\nThe project beign loaded has the folowing preprocessor directives\"{preProcessorConstants}\"" +
-                        $"\nThe following are preprocessor directives to determine project type:";
+                    var areEmpty = string.IsNullOrEmpty(preProcessorConstants);
 
-                    foreach(var preprocessor in loadCalls)
+
+
+                    message = $"Could not determine project type from preprocessor directives." +
+                        $"\n\nThe project being loaded from {coreVisualStudioProject.ProjectFileLocation} has the folowing preprocessor directives\"{preProcessorConstants}\"";
+
+                    if(areEmpty)
                     {
-                        message += "\n" + preprocessor.Preprocessor;
+                        message += "\n\nThis project has no preprocessor directives. An unknown error has occurred.";
+
+                        message += "\n\nThe project has the following properties:";
+                        foreach (var property in coreVisualStudioProject.Properties)
+                        {
+                            message += $"{property.Name} {property.EvaluatedValue}";
+                        }
+                    }
+                    else
+                    {
+                        message += 
+                            $"\n\nThe following are preprocessor directives to determine project type:";
+
+                        foreach(var preprocessor in loadCalls)
+                        {
+                            message += "\n" + preprocessor.Preprocessor;
+                        }
                     }
                 }
             }
