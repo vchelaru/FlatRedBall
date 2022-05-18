@@ -32,9 +32,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateCurrentElementCode()
         {
-            GlueElement element = null;
-
-            GlueCommands.DoOnUiThread(() => element = GlueState.CurrentElement);
+            GlueElement element = GlueState.CurrentElement;
             if (element != null)
             {
                 TaskManager.Self.AddOrRunIfTasked(()  =>
@@ -44,6 +42,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        [Obsolete("use GenerateElementCodeAsync")]
         public void GenerateElementCode(GlueElement element)
         {
             if(element == null)
@@ -52,7 +51,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
@@ -61,7 +60,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            return TaskManager.Self.AddAsync(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            return TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }

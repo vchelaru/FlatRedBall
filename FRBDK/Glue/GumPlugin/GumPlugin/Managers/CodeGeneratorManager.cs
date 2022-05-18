@@ -69,18 +69,7 @@ namespace GumPlugin.Managers
             string extension = file.Extension;
             if(extension == "gumx")
             {
-                foreach(var screen in ObjectFinder.Self.GumProjectSave.Screens)
-                {
-                    GenerateDueToFileChangeTask(screen);
-                }
-                foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
-                {
-                    GenerateDueToFileChangeTask(component);
-                }
-                foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
-                {
-                    GenerateDueToFileChangeTask(standard);
-                }
+                RegenerateEntireProjectCode();
             }
             else
             {
@@ -92,6 +81,22 @@ namespace GumPlugin.Managers
                     GenerateDueToFileChangeTask(changedElement);
                 }
 
+            }
+        }
+
+        public void RegenerateEntireProjectCode()
+        {
+            foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
+            {
+                GenerateDueToFileChangeTask(screen);
+            }
+            foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
+            {
+                GenerateDueToFileChangeTask(component);
+            }
+            foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
+            {
+                GenerateDueToFileChangeTask(standard);
             }
         }
 

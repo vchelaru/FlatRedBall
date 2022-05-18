@@ -534,7 +534,7 @@ namespace GumPlugin
             EventCodeGenerator.Self.HandleGetEventSignatureArgs(namedObject, eventResponseSave, out type, out args);
         }
 
-        private async void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newFrbScreen)
+        private async Task HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newFrbScreen)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -705,12 +705,12 @@ namespace GumPlugin
             AskToCreateGumProject();
         }
 
-        public async void CreateGumProjectWithForms()
+        public async Task CreateGumProjectWithForms()
         {
             await CreateGumProjectInternal(shouldAlsoAddForms: true);
         }
 
-        public async void CreateGumProjectNoForms()
+        public async Task CreateGumProjectNoForms()
         {
             await CreateGumProjectInternal(shouldAlsoAddForms: false);
         }
@@ -785,6 +785,8 @@ namespace GumPlugin
                         FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
+
+                    CodeGeneratorManager.Self.RegenerateEntireProjectCode();
                 }
                 propertiesManager.IsReactingToProperyChanges = true;
 

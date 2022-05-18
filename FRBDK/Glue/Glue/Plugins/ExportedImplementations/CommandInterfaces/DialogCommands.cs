@@ -770,7 +770,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 else
                 {
                     var screen =
-                        GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
+                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
 
                     GlueState.Self.CurrentElement = screen;
 

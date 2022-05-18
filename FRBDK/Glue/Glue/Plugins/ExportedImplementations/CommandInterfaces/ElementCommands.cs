@@ -286,17 +286,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Add Screen
 
-        public SaveClasses.ScreenSave AddScreen(string screenName)
+        public async Task<SaveClasses.ScreenSave> AddScreen(string screenName)
         {
             ScreenSave screenSave = new ScreenSave();
             screenSave.Name = @"Screens\" + screenName;
 
-            AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
+            await AddScreen(screenSave, suppressAlreadyExistingFileMessage:false);
 
             return screenSave;
         }
 
-        public void AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
+        public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
         {
             var glueProject = GlueState.Self.CurrentGlueProject;
 
@@ -375,7 +375,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
 
-            PluginManager.ReactToNewScreenCreated(screenSave);
+            await PluginManager.ReactToNewScreenCreated(screenSave);
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();

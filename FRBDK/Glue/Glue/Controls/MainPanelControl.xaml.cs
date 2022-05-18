@@ -262,7 +262,9 @@ namespace GlueFormsCore.Controls
             // hotkeys (ctrl+f) but not others (delete)?
             var isTextBox = e.OriginalSource is TextBoxBase;
 
-            if (HotkeyManager.Self.TryHandleKeys(e, isTextBox))
+            var isHandled = HotkeyManager.Self.TryHandleKeys(e, isTextBox).Result;
+
+            if (isHandled)
             {
                 e.Handled = true;
             }

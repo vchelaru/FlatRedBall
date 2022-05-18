@@ -338,11 +338,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Screen Created
 
-        internal void HandleNewScreenCreated()
+        internal async Task HandleNewScreenCreated()
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartAsync($"New screen created");
+                await StopAndRestartAsync($"New screen created");
             }
         }
 

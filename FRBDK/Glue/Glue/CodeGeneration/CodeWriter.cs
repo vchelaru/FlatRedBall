@@ -22,6 +22,7 @@ using FlatRedBall.Glue.FormHelpers;
 using System.Windows.Forms;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -203,7 +204,7 @@ namespace FlatRedBallAddOns.Entities
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
         }
 
-        public static async void GenerateCode(GlueElement element)
+        public static async Task GenerateCode(GlueElement element)
         {
 
             #region Prepare for generation

@@ -224,7 +224,7 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Action raised when a new Glue screen is created.
         /// </summary>
-        public Action<ScreenSave> NewScreenCreated { get; protected set; }
+        public Func<ScreenSave, Task> NewScreenCreated { get; protected set; }
         public Action<EntitySave> NewEntityCreated { get; protected set; }
 
         public Action<ScreenSave, AddScreenWindow> NewScreenCreatedWithUi { get; protected set; }

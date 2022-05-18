@@ -208,10 +208,10 @@ namespace OfficialPlugins.Compiler
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
-            this.NewScreenCreated += (newScreen) =>
+            this.NewScreenCreated += async (newScreen) =>
             {
                 ToolbarController.Self.HandleNewScreenCreated(newScreen);
-                RefreshManager.Self.HandleNewScreenCreated();
+                await RefreshManager.Self.HandleNewScreenCreated();
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...

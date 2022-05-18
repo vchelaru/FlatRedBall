@@ -16,6 +16,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Ionic.Zip;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -109,7 +110,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        public static GlueElement ImportElementFromFile(string fileName, bool moveToSelectedFolderTreeNode, string subDirectory = null)
+        public static async Task<GlueElement> ImportElementFromFile(string fileName, bool moveToSelectedFolderTreeNode, string subDirectory = null)
         {
             string unpackDirectory;
 
@@ -144,11 +145,15 @@ namespace FlatRedBall.Glue.IO
             
             if (extension == "entx")
             {
-                ImportEntity(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, ref desiredNamespace, ref newElement);
+                var result = await ImportEntity(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, desiredNamespace, newElement);
+                desiredNamespace = result.desiredNamespace;
+                newElement = result.newElement;
             }
             else
             {
-                ImportScreen(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, ref desiredNamespace, ref newElement);
+                var result = await ImportScreen(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, moveToSelectedFolderTreeNode, desiredNamespace, newElement);
+                desiredNamespace = result.desiredNamespace;
+                newElement = result.newElement;
             }
 
             ResolveElementReferences(newElement);
@@ -171,20 +176,25 @@ namespace FlatRedBall.Glue.IO
             return newElement;
         }
 
-        private static void ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
+        private static async Task<(string desiredNamespace, GlueElement newElement)> ImportScreen(string unpackDirectory, List<string> filesToAddToContent, 
+            List<string> codeFiles, string elementName, string extension, bool moveToSelectedFolderTreeNode, string desiredNamespace, GlueElement newElement)
         {
-            ImportElement<ScreenSave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, ref desiredNamespace, ref newElement);
+            var result = await ImportElement<ScreenSave>(unpackDirectory, filesToAddToContent, codeFiles, elementName, extension, desiredNamespace, newElement);
 
             PluginManager.ReactToImportedElement(newElement);
 
+            return (desiredNamespace, newElement);
         }
 
-        private static void ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
+        private static async Task<(string desiredNamespace, GlueElement newElement)> ImportEntity(string unpackDirectory, List<string> filesToAddToContent, 
             List<string> codeFilesInZip, string elementName, string extension, 
-            bool moveToSelectedFolderTreeNode, ref string desiredNamespace, ref GlueElement newElement)
+            bool moveToSelectedFolderTreeNode, string desiredNamespace, GlueElement newElement)
         {
-            string targetCs = ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, ref desiredNamespace, ref newElement);
+            var result = await ImportElement<EntitySave>(unpackDirectory, filesToAddToContent, codeFilesInZip, elementName, extension, desiredNamespace, newElement);
+            string targetCs = result.targetCs;
+            desiredNamespace = result.desiredNamespace;
+            newElement = result.newElement;
+
             EntitySave entitySave = (EntitySave)newElement;
 
             var shouldSave = false;
@@ -208,10 +218,11 @@ namespace FlatRedBall.Glue.IO
                 GluxCommands.Self.SaveGlux();
             }
 
+            return (desiredNamespace, newElement);
         }
 
-        private static string ImportElement<T>(string unpackDirectory, List<string> filesToAddToContent, 
-            List<string> codeFilesInZip, string elementName, string extension, ref string desiredNamespace, ref GlueElement newElement) where T : GlueElement
+        private static async Task<(string targetCs, string desiredNamespace, GlueElement newElement)> ImportElement<T>(string unpackDirectory, List<string> filesToAddToContent, 
+            List<string> codeFilesInZip, string elementName, string extension, string desiredNamespace, GlueElement newElement) where T : GlueElement
         {
             var whatToDeserialize = unpackDirectory + FileManager.RemovePath(elementName) + "." + extension;
 
@@ -320,7 +331,7 @@ namespace FlatRedBall.Glue.IO
 
             if (newElement is ScreenSave)
             {
-                GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen((ScreenSave)newElement, suppressAlreadyExistingFileMessage: true);
+                await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen((ScreenSave)newElement, suppressAlreadyExistingFileMessage: true);
             }
             else
             {
@@ -329,7 +340,7 @@ namespace FlatRedBall.Glue.IO
 
             #endregion
 
-            return targetCs;
+            return (targetCs, desiredNamespace, newElement);
         }
 
         private static void AddContentFilesToProject(GlueElement newElement)

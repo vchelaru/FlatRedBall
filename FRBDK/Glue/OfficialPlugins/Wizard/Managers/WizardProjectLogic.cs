@@ -67,7 +67,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
-                Add("Add Gum", () => HandleAddGum(vm));
+                AddTask("Add Gum", () => HandleAddGum(vm));
             }
 
             #endregion
@@ -100,7 +100,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
 
-                    TaskManager.Self.AddOrRunIfTasked(() => HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity), "Adding player instance");
+                    HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
                 });
             }
 
@@ -129,7 +129,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if(vm.AdditionalNonGameScreens?.Count > 0)
             {
-                Add("Adding Additional Screens", () =>
+                AddTask("Adding Additional Screens", () =>
                     AddAdditionalScreens(vm));
             }
 
@@ -358,21 +358,21 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void HandleAddGum(WizardData vm)
+        private static async Task HandleAddGum(WizardData vm)
         {
             if (vm.AddFlatRedBallForms)
             {
-                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms");
             }
             else
             {
-                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms");
             }
         }
 
         private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardData vm)
         {
-            ScreenSave gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+            ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
             NamedObjectSave solidCollisionNos = null;
             NamedObjectSave cloudCollisionNos = null;
 
@@ -472,7 +472,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if(FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
             {
-                playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile);
+                playerEntity = (EntitySave)
+                    (await GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile));
             }
             else
             {
@@ -486,7 +487,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (result.Succeeded)
                 {
-                    playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                    playerEntity = (EntitySave)
+                        (await GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName));
                 }
             }
 
@@ -633,7 +635,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 var levelName = "Level" + (i + 1);
 
-                var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
+                var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
                 levelScreen.BaseScreen = gameScreen.Name;
                 GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
                 GlueState.Self.CurrentScreenSave = levelScreen;
@@ -692,11 +694,11 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void AddAdditionalScreens(WizardData vm)
+        private static async Task AddAdditionalScreens(WizardData vm)
         {
             foreach (var screenName in vm.AdditionalNonGameScreens)
             {
-                TaskManager.Self.Add(() => GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
+                await TaskManager.Self.AddAsync(async () => await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
             }
         }
 

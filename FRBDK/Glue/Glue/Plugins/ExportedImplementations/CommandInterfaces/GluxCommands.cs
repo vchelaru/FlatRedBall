@@ -2130,7 +2130,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         // Eventually support copy/paste into different folders
         public async Task CopyGlueElement(GlueElement original)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 GlueElement newElement = null;
 
@@ -2152,7 +2152,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (newElement is ScreenSave newScreenSave)
                 {
-                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
+                    await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreenSave);
                 }
                 else if (newElement is EntitySave newEntitySave)
                 {
@@ -2504,9 +2504,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Import
 
-        public GlueElement ImportScreenOrEntityFromFile(FilePath filePath)
+        public async Task<GlueElement> ImportScreenOrEntityFromFile(FilePath filePath)
         {
-            return ElementImporter.ImportElementFromFile(filePath.FullPath, moveToSelectedFolderTreeNode: false);
+            return await ElementImporter.ImportElementFromFile(filePath.FullPath, moveToSelectedFolderTreeNode: false);
         }
 
 

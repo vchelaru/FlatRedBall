@@ -278,7 +278,7 @@ namespace TiledPluginCore.Controllers
 
         #region Glue Project
 
-        private void GenerateScreensForAllTmxFiles()
+        private async void GenerateScreensForAllTmxFiles()
         {
             var tmxFiles = GetAllLevelTmxFiles();
 
@@ -298,7 +298,7 @@ namespace TiledPluginCore.Controllers
                     newScreen.IsHiddenInTreeView = viewModel.ShowLevelScreensInTreeView == false;
                     newScreen.BaseScreen = "Screens\\GameScreen";
 
-                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
+                    await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
                     newScreen.UpdateFromBaseType();
 
 

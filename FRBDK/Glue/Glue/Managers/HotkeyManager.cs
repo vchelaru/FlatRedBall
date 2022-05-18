@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Managers
 {
     public class HotkeyManager : Singleton<HotkeyManager>
     {
-        public bool TryHandleKeys(Keys keyData)
+        public async Task<bool> TryHandleKeys(Keys keyData)
         {
             switch (keyData)
             {
@@ -49,7 +49,7 @@ namespace FlatRedBall.Glue.Managers
                     RightClickHelper.MoveToTop();
                     return true;
                 case Keys.F5:
-                    PluginManager.CallPluginMethod(
+                    await PluginManager.CallPluginMethodAsync(
                         "Glue Compiler",
                         "BuildAndRun");
                     return true;
@@ -65,7 +65,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public bool TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)
+        public async Task<bool> TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)
         {
             var ctrlDown = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
             var altDown = (Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
@@ -141,7 +141,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     break;
                 case Key.F5:
-                    PluginManager.CallPluginMethod(
+                    await PluginManager.CallPluginMethodAsync(
                         "Glue Compiler",
                         "BuildAndRun");
                     FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");

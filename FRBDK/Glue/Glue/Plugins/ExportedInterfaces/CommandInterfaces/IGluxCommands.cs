@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Import
 
-        GlueElement ImportScreenOrEntityFromFile(FilePath filePath);
+        Task<GlueElement> ImportScreenOrEntityFromFile(FilePath filePath);
 
         #endregion
     }
