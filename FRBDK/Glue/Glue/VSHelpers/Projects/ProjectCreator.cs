@@ -264,22 +264,25 @@ Additional Info:
                     }
                 }
 
-                var mbmb = new MultiButtonMessageBoxWpf();
-
-                mbmb.MessageText = "FlatRedBall could not determine the project type. Would you like to manually set the project type?";
-
-                foreach(var loadCall in loadCalls)
+                if(toReturn == null)
                 {
-                    mbmb.AddButton(loadCall.Preprocessor, loadCall.Func);
-                }
+                    var mbmb = new MultiButtonMessageBoxWpf();
 
-                mbmb.AddButton("No, do not manually set the type", null);
+                    mbmb.MessageText = "FlatRedBall could not determine the project type. Would you like to manually set the project type?";
 
-                var showResult = mbmb.ShowDialog();
+                    foreach(var loadCall in loadCalls)
+                    {
+                        mbmb.AddButton(loadCall.Preprocessor, loadCall.Func);
+                    }
 
-                if(mbmb.ClickedResult is Func<ProjectBase> asFunc)
-                {
-                    toReturn = asFunc();
+                    mbmb.AddButton("No, do not manually set the type", null);
+
+                    var showResult = mbmb.ShowDialog();
+
+                    if(mbmb.ClickedResult is Func<ProjectBase> asFunc)
+                    {
+                        toReturn = asFunc();
+                    }
                 }
             }
 

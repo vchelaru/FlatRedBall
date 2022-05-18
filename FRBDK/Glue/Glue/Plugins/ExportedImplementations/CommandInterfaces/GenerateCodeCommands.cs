@@ -46,6 +46,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateElementCode(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
             TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),

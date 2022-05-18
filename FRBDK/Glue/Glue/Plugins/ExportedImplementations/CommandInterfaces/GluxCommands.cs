@@ -577,10 +577,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 TaskManager.Self.OnUiThread(() =>
                 {
-                    if (GlueState.Self.CurrentElement != null)
+                    var element = GlueState.Self.CurrentElement;
+                    if (element != null)
                     {
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
                     else
                     {
