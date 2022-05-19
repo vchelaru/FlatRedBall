@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
@@ -66,7 +67,11 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             {
                 return true;
             }
-            if (AvailableFileStringConverter.GetAvailableOptions(container, true, false).Contains(sourceFile))
+            var availableOptions = AvailableFileStringConverter.GetAvailableOptions(container, true, false)
+                .Select(item => item.ToLowerInvariant())
+                .ToArray();
+
+            if (availableOptions.Contains(sourceFile.ToLowerInvariant()))
             {
                 return true;
             }

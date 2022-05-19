@@ -31,7 +31,9 @@ namespace OfficialPlugins.ErrorReportingPlugin
             var project = GlueState.Self.CurrentGlueProject;
             foreach (var screen in project.Screens)
             {
-                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(screen, true, false);
+                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(screen, true, false)
+                    .Select(item => item.ToLowerInvariant())
+                    .ToList();
 
                 foreach (var nos in screen.AllNamedObjects)
                 {
@@ -40,7 +42,9 @@ namespace OfficialPlugins.ErrorReportingPlugin
             }
             foreach (var entity in project.Entities)
             {
-                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(entity, true, false);
+                var availableSourceFiles = AvailableFileStringConverter.GetAvailableOptions(entity, true, false)
+                    .Select(item => item.ToLowerInvariant())
+                    .ToList();
 
                 foreach (var nos in entity.AllNamedObjects)
                 {
@@ -49,13 +53,14 @@ namespace OfficialPlugins.ErrorReportingPlugin
             }
         }
 
+
         private void FillWithBadFileRelatedProperties(NamedObjectSave nos, List<string> availableSourceFiles, List<ErrorViewModel> errors)
         { 
             if (nos.SourceType == SourceType.File)
             {
                 if(!string.IsNullOrEmpty(nos.SourceFile))
                 { 
-                    if(availableSourceFiles.Contains(nos.SourceFile) == false)
+                    if(availableSourceFiles.Contains(nos.SourceFile.ToLowerInvariant()) == false)
                     {
                         var error = new MissingNamedObjectSourceFileViewModel(nos);
                         errors.Add(error);
