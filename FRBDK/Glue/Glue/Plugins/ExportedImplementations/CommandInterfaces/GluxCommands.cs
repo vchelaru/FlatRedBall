@@ -322,11 +322,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region ReferencedFileSave
 
-        public async Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, object creationOptions = null)
+        public async Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, GlueElement element, object creationOptions = null)
         {
             ReferencedFileSave rfs = null;
 
-            var element = GlueState.Self.CurrentElement;
+            element = element ?? GlueState.Self.CurrentElement;
             string directory = null;
 
             if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)

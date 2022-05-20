@@ -428,7 +428,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, option);
+                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, GlueState.Self.CurrentElement,  option);
 
             }
 

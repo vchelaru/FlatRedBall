@@ -666,7 +666,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 addNewFileVm.ForcedType = tmxAti;
                 addNewFileVm.FileName = levelName + "Map";
-                await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm);
+                await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm, levelScreen);
 
                 var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
                 if (mapObject != null)
