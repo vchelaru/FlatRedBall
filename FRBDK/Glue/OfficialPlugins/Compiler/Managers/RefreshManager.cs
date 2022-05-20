@@ -196,8 +196,11 @@ namespace OfficialPlugins.Compiler.Managers
                             if(ViewModel.IsRunning)
                             {
                                 var extension = fileName.Extension;
-                                var shouldReload = extension == "csv";
-                                if(shouldReload)
+                                var shouldReloadFile = extension == "csv";
+
+                                var shouldReloadScreen = false;
+
+                                if (shouldReloadFile)
                                 {
                                     printOutput($"Sending force reload for file: {strippedName}");
 
@@ -209,11 +212,19 @@ namespace OfficialPlugins.Compiler.Managers
                                         ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
                                     await CommandSender.Send(dto);
+
+                                    // Typically localization is applied in custom code, so we can't
+                                    // apply these changes without reloading the screen
+                                    shouldReloadScreen = dto.IsLocalizationDatabase;
                                 }
                                 else
                                 {
                                     printOutput($"Telling game to restart screen");
+                                    shouldReloadScreen = true;
+                                }
 
+                                if(shouldReloadScreen)
+                                { 
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
                                     await CommandSender.Send(dto);

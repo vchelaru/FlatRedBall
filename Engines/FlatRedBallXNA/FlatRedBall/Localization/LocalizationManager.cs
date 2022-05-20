@@ -32,16 +32,25 @@ namespace FlatRedBall.Localization
             set;
         }
 
+        static List<string> databaseFileNames;
+        static ReadOnlyCollection<string> databaseFileNamesReadOnly;
+        public static ReadOnlyCollection<string> DatabaseFileNames
+        {
+            get => databaseFileNamesReadOnly;
+        }
+
         #endregion
 
         static LocalizationManager()
         {
             Languages = new ReadOnlyCollection<string>(new List<string>());
+            databaseFileNames = new List<string>();
+            databaseFileNamesReadOnly = new ReadOnlyCollection<string>(databaseFileNames);
         }
 
         public static void AddDatabase(string fileName, char delimiter)
         {
-
+            databaseFileNames.Add(fileName);
             RuntimeCsvRepresentation rcr;
 
             char oldDelimiter = CsvFileManager.Delimiter;
@@ -71,11 +80,19 @@ namespace FlatRedBall.Localization
 
         public static void ClearDatabase()
         {
+            databaseFileNames.Clear();
+
             mStringDatabase.Clear();
             HasDatabase = false;
             Languages = new ReadOnlyCollection<string>(new List<string>());
         }
 
+        /// <summary>
+        /// Returns the translated string for the argument language. If stringId is null, "NULL STRING" is returned.
+        /// </summary>
+        /// <param name="stringID">The stringId to translate.</param>
+        /// <param name="language">The language index. Typically 0 is the string IDs, and languages begin with index 1</param>
+        /// <returns>The translated string.</returns>
         public static string TranslateForLanguage(string stringID, int language)
         {
 

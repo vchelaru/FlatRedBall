@@ -952,9 +952,17 @@ namespace GlueControl
 
             if (file != null)
             {
-                GlobalContent.Reload(dto.StrippedFileName);
+                GlobalContent.Reload(dto);
             }
 
+
+
+            if (dto.IsLocalizationDatabase)
+            {
+                FlatRedBall.Localization.LocalizationManager.ClearDatabase();
+                // assume this uses commas, not tabs. 
+                FlatRedBall.Localization.LocalizationManager.AddDatabase(dto.FileRelativeToProject, ',');
+            }
         }
 
         #endregion
