@@ -121,25 +121,29 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.AddCameraController && vm.AddGameScreen)
             {
-                Add("Create Camera", () =>
-                    ApplyCameraController(vm, gameScreen));
+                AddTask("Create Camera", async () =>
+                    await ApplyCameraController(vm, gameScreen));
             }
 
             #endregion
 
-            if(vm.AdditionalNonGameScreens?.Count > 0)
+            #region Adding Additional Screens
+            if (vm.AdditionalNonGameScreens?.Count > 0)
             {
                 AddTask("Adding Additional Screens", () =>
                     AddAdditionalScreens(vm));
             }
+            #endregion
 
-            if(vm.ElementImportUrls.Count > 0)
+            #region Importing Screens/Entities
+            if (vm.ElementImportUrls.Count > 0)
             {
                 Add("Importing Screens/Entities", () =>
                     ImportElements(vm));
             }
+            #endregion
 
-            if(!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
+            if (!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
             {
                 Add("Adding additional Objects", () =>
                     ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
@@ -634,63 +638,67 @@ namespace OfficialPluginsCore.Wizard.Managers
             for (int i = 0; i < vm.NumberOfLevels; i++)
             {
                 var levelName = "Level" + (i + 1);
+                await CreateLevel(vm, gameScreen, i, levelName);
+            }
+        }
 
-                var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
-                levelScreen.BaseScreen = gameScreen.Name;
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
-                GlueState.Self.CurrentScreenSave = levelScreen;
+        private static async Task CreateLevel(WizardData vm, ScreenSave gameScreen, int i, string levelName)
+        {
+            var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
+            levelScreen.BaseScreen = gameScreen.Name;
+            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
+            GlueState.Self.CurrentScreenSave = levelScreen;
 
 
-                if (i == 0)
+            if (i == 0)
+            {
+                GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
+            }
+
+            if (vm.AddGameScreen && vm.AddTiledMap)
+            {
+                // add a regular TMX
+                var addNewFileVm = new AddNewFileViewModel();
+
+                var tmxAti =
+                    AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                addNewFileVm.SelectedAssetTypeInfo = tmxAti;
+
+                addNewFileVm.ForcedType = tmxAti;
+                addNewFileVm.FileName = levelName + "Map";
+                await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm);
+
+                var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                if (mapObject != null)
                 {
-                    GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
+                    mapObject.SourceType = SourceType.File;
+                    mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
+                    mapObject.SourceName = "Entire File (LayeredTileMap)";
                 }
 
-                if (vm.AddGameScreen && vm.AddTiledMap)
+                void SelectTmxRfs()
                 {
-                    // add a regular TMX
-                    var addNewFileVm = new AddNewFileViewModel();
-
-                    var tmxAti =
-                        AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                    addNewFileVm.SelectedAssetTypeInfo = tmxAti;
-
-                    addNewFileVm.ForcedType = tmxAti;
-                    addNewFileVm.FileName = levelName + "Map";
-                    await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm);
-
-                    var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                    if (mapObject != null)
-                    {
-                        mapObject.SourceType = SourceType.File;
-                        mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
-                        mapObject.SourceName = "Entire File (LayeredTileMap)";
-                    }
-
-                    void SelectTmxRfs()
-                    {
-                        GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                            .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
-                    }
-
-                    if (vm.IncludStandardTilesetInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
-                    }
-                    if (vm.IncludeGameplayLayerInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
-                    }
-
-                    if (vm.IncludeCollisionBorderInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
-                    }
-
+                    GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                        .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
                 }
+
+                if (vm.IncludStandardTilesetInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                }
+                if (vm.IncludeGameplayLayerInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                }
+
+                if (vm.IncludeCollisionBorderInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                }
+
             }
         }
 
@@ -702,7 +710,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void ApplyCameraController(WizardData vm, ScreenSave gameScreen)
+        private static async Task ApplyCameraController(WizardData vm, ScreenSave gameScreen)
         {
             var addCameraControllerVm = new AddObjectViewModel();
             addCameraControllerVm.ForcedElementToAddTo = gameScreen;
@@ -710,7 +718,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
             addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
 
-            var cameraNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addCameraControllerVm, gameScreen, null);
+            var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos:false);
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {

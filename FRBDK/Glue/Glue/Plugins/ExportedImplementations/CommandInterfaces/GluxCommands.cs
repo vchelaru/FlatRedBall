@@ -326,6 +326,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             ReferencedFileSave rfs = null;
 
+            var element = GlueState.Self.CurrentElement;
+            string directory = null;
+
+            if (GlueState.Self.CurrentTreeNode?.IsDirectoryNode() == true)
+            {
+                directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath().Replace("/", "\\");
+            }
+
             await TaskManager.Self.AddAsync(() =>
             {
                 string name = viewModel.FileName;
@@ -333,13 +341,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 string errorMessage;
-                string directory = null;
-                var element = GlueState.Self.CurrentElement;
-
-                if (GlueState.Self.CurrentTreeNode.IsDirectoryNode())
-                {
-                    directory = GlueState.Self.CurrentTreeNode.GetRelativeFilePath().Replace("/", "\\");
-                }
 
 
                 rfs = GlueProjectSaveExtensionMethods.AddReferencedFileSave(
@@ -360,10 +361,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         CsvCodeGenerator.GenerateAndSaveDataClass(rfs, AvailableDelimiters.Comma);
                     }
 
-                    if (GlueState.Self.CurrentElement != null)
+                    if (element != null)
                     {
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(GlueState.Self.CurrentElement);
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
                     else
                     {
