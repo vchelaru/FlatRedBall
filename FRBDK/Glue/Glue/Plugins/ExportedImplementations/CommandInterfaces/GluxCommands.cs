@@ -1826,7 +1826,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // get the old value before calling SetVariableOnInner:
                 object oldValue = assignment.NamedObjectSave.GetCustomVariable(assignment.VariableName)?.Value;
 
-                SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false,
+                await SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false,
                     notifyPlugins:false);
                 nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
 
@@ -1878,10 +1878,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
-            SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins:true);
+            await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins:true);
         }
 
-        private async void SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+        private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true, bool notifyPlugins = true)
         { 
             // XML serialization doesn't like enums
