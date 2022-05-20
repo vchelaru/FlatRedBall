@@ -79,7 +79,7 @@ namespace OfficialPlugins.Compiler.Views
             
 
             var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 
-            restartScreenOnContentChangeMember.DetailText = "If unchecked, the game will only respond to file changes (like TMX) in edit mode";
+            restartScreenOnContentChangeMember.DetailText = "This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode";
             //this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.Show), "Grid and Markings");
 
             TypeMemberDisplayProperties properties = new TypeMemberDisplayProperties();
