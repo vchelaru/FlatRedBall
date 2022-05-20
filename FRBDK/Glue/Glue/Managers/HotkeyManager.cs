@@ -141,9 +141,13 @@ namespace FlatRedBall.Glue.Managers
                     }
                     break;
                 case Key.F5:
-                    await PluginManager.CallPluginMethodAsync(
+                    // fire and forget it, otherwise this blocks the app:
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    PluginManager.CallPluginMethodAsync(
                         "Glue Compiler",
                         "BuildAndRun");
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
                     return true;
                 case Key.F12:
