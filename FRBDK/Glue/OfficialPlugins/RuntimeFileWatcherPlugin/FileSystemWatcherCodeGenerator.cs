@@ -43,7 +43,9 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
                 tryBlock.Line("var fullFileName = e.FullPath;");
                 tryBlock.Line("var relativeFileName = FlatRedBall.IO.FileManager.MakeRelative(FlatRedBall.IO.FileManager.Standardize(fullFileName));");
 
-                foreach(var rfs in GlueState.Self.CurrentGlueProject.GlobalFiles)
+                var project = GlueState.Self.CurrentGlueProject;
+
+                foreach(var rfs in project.GlobalFiles)
                 {
                     var ati = rfs.GetAssetTypeInfo();
 
@@ -71,6 +73,28 @@ namespace OfficialPlugins.RuntimeFileWatcherPlugin
                         }
                     }
                 }
+
+                // Vic says - we used to rely on the game to detect changes to reload. This worked on windows, but it didn't
+                // give FRB much control over what to reload when, and it doesn't work on other platforms. instead we'll rely on 
+                // the Compiler plugin's RefreshManager to handle reloading
+                //var hasLocalizationDb = project.GlobalFiles.Any(item => item.IsDatabaseForLocalizing);
+                //if(hasLocalizationDb && project.FileVersion >= (int)GlueProjectSave.GluxVersions.HasLocalizationDatabaseFileNames)
+                //{
+                //    tryBlock.Line("var isDb = false;");
+                //    var foreachBlock = tryBlock.ForEach("var loadedDb in LocalizationManager.DatabaseFileNames");
+                //    {
+                //        var innerIf = foreachBlock.If("loadedDb.ToLowerInvariant() == relativeFileName");
+                //        {
+                //            innerIf.Line("isDb = true;");
+                //        }
+                //    }
+                //    var isDbIf = tryBlock.If("if (isDb)");
+                //    {
+                //        isDbIf.Line("LocalizationManager.ClearDatabase();");
+                //        isDbIf.Line("LocalizationManager.AddDatabase(relativeFileName, ',');");
+                //    }
+                //}
+
                 var catchBlock = tryBlock.End().Line("catch{}");
             }
         }
