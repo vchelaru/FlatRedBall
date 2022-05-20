@@ -371,7 +371,11 @@ namespace OfficialPlugins.Compiler.Dtos
     {
         public bool LoadInGlobalContent { get; set; }
         public List<string> ElementsContainingFile { get; set; }
+
+        public bool IsLocalizationDatabase { get; set; }
+
         public string StrippedFileName { get; set; }
+        public string FileRelativeToProject { get; set; }
     }
     #endregion
 

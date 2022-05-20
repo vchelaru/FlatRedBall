@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.CodeGeneration;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -202,6 +203,10 @@ namespace OfficialPlugins.Compiler.Managers
 
                                     var dto = new Dtos.ForceReloadFileDto();
                                     dto.ElementsContainingFile = containerNames.ToList();
+                                    dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
+                                    dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
+                                    dto.FileRelativeToProject =
+                                        ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
                                     await CommandSender.Send(dto);
                                 }

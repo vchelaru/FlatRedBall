@@ -802,10 +802,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static string GetFileToLoadForRfs(ReferencedFileSave referencedFile, AssetTypeInfo ati)
+        public static string GetFileToLoadForRfs(ReferencedFileSave referencedFile, AssetTypeInfo ati = null)
         {
             string referencedFileName = "content/" +  referencedFile.Name;
-
+            ati = ati ?? referencedFile.GetAssetTypeInfo();
             if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
             {
                 referencedFileName = FileManager.RemoveExtension(referencedFileName);
@@ -924,7 +924,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     containerName = container.Name;
                 }
                 AddCodeforFileLoad(referencedFile, ref codeBlock, container,
-                    ref directives, isProjectSpecific, ref fileName, project, loadType, containerName);
+                    ref directives, isProjectSpecific, fileName, project, loadType, containerName);
             }
 
             if (directives == true)
@@ -965,7 +965,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void AddCodeforFileLoad(ReferencedFileSave referencedFile, ref ICodeBlock codeBlock, 
             IElement container, ref bool directives, bool isProjectSpecific, 
-            ref string fileName, ProjectBase project, LoadType loadType, string containerName)
+            string fileName, ProjectBase project, LoadType loadType, string containerName)
         {
             if (project != null)
             {

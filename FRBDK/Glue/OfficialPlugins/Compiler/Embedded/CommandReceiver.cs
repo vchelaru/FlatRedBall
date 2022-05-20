@@ -948,6 +948,13 @@ namespace GlueControl
 
             }
 
+            var file = GlobalContent.GetFile(dto.StrippedFileName);
+
+            if (file != null)
+            {
+                GlobalContent.Reload(dto.StrippedFileName);
+            }
+
         }
 
         #endregion
