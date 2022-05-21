@@ -13,6 +13,11 @@ using FlatRedBall.Math.Paths;
 
 namespace GlueControl.Editing
 {
+    /// <summary>
+    /// Object used to create immediate-mode graphics (fire and forget). This can be used to display debug information
+    /// when the game is running or markers and other indicators in edit mode. All calls must be made every frame for the objects
+    /// to appear.
+    /// </summary>
     public class EditorVisuals : FlatRedBall.Managers.IManager
     {
         #region Fields/Properties
@@ -59,7 +64,7 @@ namespace GlueControl.Editing
             Color textColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Graphics.Text();
             }
@@ -98,7 +103,7 @@ namespace GlueControl.Editing
             Color lineColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 var tempLine = new Line();
                 tempLine.Name = "Temp line returned when screen is transitioning";
@@ -135,7 +140,7 @@ namespace GlueControl.Editing
             }
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Arrow(DefaultLayer);
             }
@@ -164,7 +169,7 @@ namespace GlueControl.Editing
             }
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Sprite();
             }
@@ -217,7 +222,7 @@ namespace GlueControl.Editing
             Color rectColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new AxisAlignedRectangle();
             }
@@ -253,7 +258,7 @@ namespace GlueControl.Editing
             Color color = Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Math.Geometry.Circle();
             }
@@ -288,7 +293,7 @@ namespace GlueControl.Editing
             Color polygonColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Polygon();
             }
