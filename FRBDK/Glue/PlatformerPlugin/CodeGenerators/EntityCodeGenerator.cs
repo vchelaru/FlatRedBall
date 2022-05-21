@@ -122,6 +122,15 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             codeBlock.Line("public bool WasOnGroundLastFrame{ get; private set; }");
 
+            codeBlock.Line("/// <summary>");
+            codeBlock.Line("/// Whether the platformer object is forcefully ignoring cloud collision.");
+            codeBlock.Line("/// Setting this to true will disable all cloud collision. Note that cloud collision");
+            codeBlock.Line("/// may still be temporarily ignored due to internal logic, such as when holding down");
+            codeBlock.Line("/// and pressing jump, but if so that will not be reflected in this property.");
+            codeBlock.Line("/// </summary>"); 
+            codeBlock.Line("public bool ForceIgnoreCloudCollision{ get; set; }");
+
+
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
                 .Line("get;")
                 .Line("private set;");
@@ -789,6 +798,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                         // User is in the air, holding 'down', and the current movement allows the user to fall through clouds
                         canCheckCollision = false;
                     }
+                }
+
+                if(ForceIgnoreCloudCollision)
+                {
+                    canCheckCollision = false;
                 }
             }
 

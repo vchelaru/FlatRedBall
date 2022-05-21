@@ -273,6 +273,10 @@ namespace FlatRedBall.Input
             return "Position" + mPosition.ToString();
         }
 
+        /// <summary>
+        /// Updates the internal values (position, DPad simulated values, velocity) according to the argument newPosition.
+        /// </summary>
+        /// <param name="newPosition">The normalized (-1 to +1) position of the analog stick.</param>
         public void Update(Vector2 newPosition)
         {
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Up] = AsDPadDown(Xbox360GamePad.DPadDirection.Up);

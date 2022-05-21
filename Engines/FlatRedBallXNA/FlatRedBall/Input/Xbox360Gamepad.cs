@@ -7,6 +7,15 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
+
+    public enum DeadzoneType
+    {
+        Radial= 0,
+        //BoundingBox = 1, // Not currently supported
+        Cross
+        
+    }
+
     public class Xbox360GamePad : IInputDevice
     {
         #region Enums
@@ -96,10 +105,12 @@ namespace FlatRedBall.Input
         #region Properties
 
         /// <summary>
-        /// The deadzone amount (axis independent) between 0 and 1. Values which 
-        /// are smaller than this (absolute value) will be treated as 0.
+        /// The deadzone value. The application of this value depends on the DeadzoneType
         /// </summary>
         public float Deadzone { get; set; } = .1f;
+
+        public DeadzoneType DeadzoneType { get; set; } 
+            = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
 
         public I1DInput DPadHorizontal
         {
@@ -1100,6 +1111,36 @@ namespace FlatRedBall.Input
             }
         }
 
+        Vector2 GetRadialDeadzoneValue(Vector2 originalValue)
+        {
+            var deadzoneSquared = Deadzone * Deadzone;
+
+            var originalValueLengthSquared =
+                (originalValue.X * originalValue.X) +
+                (originalValue.Y * originalValue.Y);
+
+            if (originalValueLengthSquared < deadzoneSquared)
+            {
+                return Vector2.Zero;
+            }
+            else
+            {
+                return originalValue;
+            }
+        }
+
+        Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
+        {
+            if(originalValue.X < Deadzone && originalValue.X > -Deadzone)
+            {
+                originalValue.X = 0;
+            }
+            if(originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
+            {
+                originalValue.Y = 0;
+            }
+            return originalValue;
+        }
         private void UpdateAnalogStickAndTriggerValues()
         {
             if (mButtonMap == null)
@@ -1109,24 +1150,16 @@ namespace FlatRedBall.Input
 
                 if(Deadzone > 0)
                 {
-                    var deadzoneSquared = Deadzone * Deadzone;
-
-                    var leftStickLengthSquared =
-                        (leftStick.X * leftStick.X) +
-                        (leftStick.Y * leftStick.Y);
-
-                    if(leftStickLengthSquared < deadzoneSquared)
+                    switch(DeadzoneType)
                     {
-                        leftStick = Vector2.Zero;
-                    }
-
-                    var rightStickLengthSquared =
-                        (rightStick.X * rightStick.X) +
-                        (rightStick.Y * rightStick.Y);
-
-                    if (rightStickLengthSquared < deadzoneSquared)
-                    {
-                        rightStick = Vector2.Zero;
+                        case DeadzoneType.Radial:
+                            leftStick = GetRadialDeadzoneValue(leftStick);
+                            rightStick = GetRadialDeadzoneValue(rightStick);
+                            break;
+                        case DeadzoneType.Cross:
+                            leftStick = GetCrossDeadzoneValue(leftStick);
+                            rightStick = GetCrossDeadzoneValue(rightStick);
+                            break;
                     }
 
                 }
@@ -1135,12 +1168,13 @@ namespace FlatRedBall.Input
 
                 mLeftTrigger.Update(mGamePadState.Triggers.Left);
                 mRightTrigger.Update(mGamePadState.Triggers.Right);
+
             }
             else
             {
                 Vector2 newPosition = new Vector2();
 
-#region Set the left analog stick position
+                #region Set the left analog stick position
                 if (mButtonMap.LeftAnalogLeft != Keys.None && InputManager.Keyboard.KeyDown(mButtonMap.LeftAnalogLeft))
                 {
                     newPosition.X = -1;
@@ -1171,9 +1205,9 @@ namespace FlatRedBall.Input
 
                 mLeftStick.Update(newPosition);
 
-#endregion
+                #endregion
 
-#region Set the right analog stick position
+                #region Set the right analog stick position
 
                 newPosition = new Vector2();
 
@@ -1207,9 +1241,9 @@ namespace FlatRedBall.Input
 
                 mRightStick.Update(newPosition);
 
-#endregion
+                #endregion
 
-#region Set the trigger positions
+                #region Set the trigger positions
 
                 float newAnalogPosition = 0;
 
@@ -1235,7 +1269,7 @@ namespace FlatRedBall.Input
 
                 mRightTrigger.Update(newAnalogPosition);
 
-#endregion
+                #endregion
 
                 // Button remapping is used when the methods for push, release, and down are called.
                 // Nothing to do here.
