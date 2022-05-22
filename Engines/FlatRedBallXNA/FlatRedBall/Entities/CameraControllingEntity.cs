@@ -215,18 +215,58 @@ namespace FlatRedBall.Entities
 
             #endregion
 
-            #region Convert the average positions to a target given the BehaviorType
-
             Vector2 target = Vector2.Zero;
-            switch (BehaviorType)
+            //#region Convert the average positions to a target given the BehaviorType
+
+            //switch (BehaviorType)
+            //{
+            //    case CameraBehaviorType.PositionLocking:
+            //        target.X = averagePosition.X;
+            //        target.Y = averagePosition.Y;
+            //        break;
+            //}
+
+            //#endregion
+
+
+
+            // Compare the target with the window
+            var windowWidthHalf = ScrollingWindowWidth / 2.0f;
+            var windowHeightHalf = ScrollingWindowHeight / 2.0f;
+
+            var effectiveThis = this.Parent ?? this;
+
+            var windowLeft = effectiveThis.X - windowWidthHalf;
+            var windowRight = effectiveThis.X + windowWidthHalf;
+
+            var windowBottom = effectiveThis.Y - windowHeightHalf;
+            var windowTop = effectiveThis.Y + windowHeightHalf;
+
+            if(averagePosition.X < windowLeft)
             {
-                case CameraBehaviorType.PositionLocking:
-                    target.X = averagePosition.X;
-                    target.Y = averagePosition.Y;
-                    break;
+                target.X = averagePosition.X + windowWidthHalf;
+            }
+            else if(averagePosition.X > windowRight)
+            {
+                target.X = averagePosition.X - windowWidthHalf;
+            }
+            else
+            {
+                target.X = effectiveThis.X;
             }
 
-            #endregion
+            if(averagePosition.Y < windowBottom)
+            {
+                target.Y = averagePosition.Y + windowHeightHalf;
+            }
+            else if(averagePosition.Y > windowTop)
+            {
+                target.Y = averagePosition.Y - windowHeightHalf;
+            }
+            else
+            {
+                target.Y = effectiveThis.Y;
+            }
 
             #region Limit the target position based on the map
 
@@ -235,9 +275,8 @@ namespace FlatRedBall.Entities
                 // window sizes allow the target to be closer to the edge. For example, if the
                 // window were the size of the actual screen, then the target could go all the way
                 // to the edge and still be in the window
-                var effectivePaddingX = ExtraMapPadding - ScrollingWindowWidth/2;
-                var effectivePaddingY = ExtraMapPadding - ScrollingWindowHeight/2;
-
+                var effectivePaddingX = ExtraMapPadding;
+                var effectivePaddingY = ExtraMapPadding;
 
 
                 var mapLeft = Map.Left + effectivePaddingX;
@@ -308,65 +347,23 @@ namespace FlatRedBall.Entities
 
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
         {
-            // see if the target is outside of the window
-
-            var objectToMove = this.Parent ?? this;
-            var windowWidthHalf = ScrollingWindowWidth / 2.0f;
-            var windowHeightHalf = ScrollingWindowHeight / 2.0f;
-
-            var windowLeft = objectToMove.Position.X - windowWidthHalf;
-            var windowRight = objectToMove.Position.X + windowWidthHalf;
-
-            var windowBottom = objectToMove.Position.Y - ScrollingWindowHeight / 2.0f;
-            var windowTop = objectToMove.Position.Y + ScrollingWindowHeight / 2.0f;
-
-
+            var effectiveThis = this.Parent ?? this;
 
             if (lerpSmooth == false)
             {
-                if(target.X < windowLeft)
-                {
-                    objectToMove.Position.X = target.X + windowWidthHalf;
-                }
-                else if(target.X > windowRight)
-                {
-                    objectToMove.Position.X = target.X - windowWidthHalf;
-                }
-
-                if(target.Y < windowBottom)
-                {
-                    objectToMove.Position.Y = target.Y + windowHeightHalf;
-                }
-                else if(target.Y > windowTop)
-                {
-                    objectToMove.Position.Y = target.Y - windowHeightHalf;
-                }
+                effectiveThis.Position.X = target.X;
+                effectiveThis.Position.Y = target.Y;
             }
             else
             {
                 float xDifference = 0;
                 float yDifference = 0;
 
-                if(target.X < windowLeft)
-                {
-                    xDifference = target.X - windowLeft;
-                }
-                else if(target.X > windowRight)
-                {
-                    xDifference = target.X - windowRight;
-                }
+                xDifference = target.X - effectiveThis.Position.X;
+                yDifference = target.Y - effectiveThis.Position.Y;
 
-                if(target.Y < windowBottom)
-                {
-                    yDifference = target.Y - windowBottom;
-                }
-                else if (target.Y > windowTop)
-                {
-                    yDifference = target.Y - windowTop;
-                }
-
-                objectToMove.Velocity.X = xDifference * LerpCoefficient;
-                objectToMove.Velocity.Y = yDifference * LerpCoefficient;
+                effectiveThis.Velocity.X = xDifference * LerpCoefficient;
+                effectiveThis.Velocity.Y = yDifference * LerpCoefficient;
             }
 
 
@@ -376,14 +373,14 @@ namespace FlatRedBall.Entities
 
                 var invertZoom = 1 / zoom;
 
-                Camera.Main.X = MathFunctions.RoundFloat(objectToMove.X, invertZoom) + SnapToPixelOffset * invertZoom;
-                Camera.Main.Y = MathFunctions.RoundFloat(objectToMove.Y, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Main.X = MathFunctions.RoundFloat(effectiveThis.X, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Main.Y = MathFunctions.RoundFloat(effectiveThis.Y, invertZoom) + SnapToPixelOffset * invertZoom;
 
             }
             else
             {
-                Camera.Main.X = objectToMove.X;
-                Camera.Main.Y = objectToMove.Y;
+                Camera.Main.X = effectiveThis.X;
+                Camera.Main.Y = effectiveThis.Y;
             }
         }
 
