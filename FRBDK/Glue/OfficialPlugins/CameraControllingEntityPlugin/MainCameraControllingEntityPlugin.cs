@@ -79,7 +79,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpSmooth),
                 Type = "bool",
-                DefaultValue = CodeParser.ConvertValueToCodeString(defaultInstance.LerpSmooth),
+                DefaultValue = ValueToString(defaultInstance.LerpSmooth),
                 Category = "Coefficients"
 
             });
@@ -88,7 +88,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.LerpCoefficient),
                 Type = "float",
-                DefaultValue = CodeParser.ConvertValueToCodeString(defaultInstance.LerpCoefficient),
+                DefaultValue = ValueToString(defaultInstance.LerpCoefficient),
                 Category = "Coefficients"
             });
 
@@ -97,7 +97,7 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.SnapToPixel),
                 Type = "bool",
-                DefaultValue = CodeParser.ConvertValueToCodeString(defaultInstance.SnapToPixel),
+                DefaultValue = ValueToString(defaultInstance.SnapToPixel),
                 Category = "Coefficients"
             });
 
@@ -105,12 +105,22 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
             {
                 Name = nameof(FlatRedBall.Entities.CameraControllingEntity.SnapToPixelOffset),
                 Type = "float",
-                DefaultValue = CodeParser.ConvertValueToCodeString(defaultInstance.SnapToPixelOffset),
+                DefaultValue = ValueToString(defaultInstance.SnapToPixelOffset),
                 Category = "Coefficients"
             });
             
 
             AvailableAssetTypes.Self.AddAssetType(ati);
+        }
+
+        string ValueToString(object value)
+        {
+            var valueAsString = CodeParser.ConvertValueToCodeString(value);
+            if(value is float && valueAsString.EndsWith("f"))
+            {
+                valueAsString = valueAsString.Substring(0, valueAsString.Length - 1);
+            }
+            return valueAsString;
         }
 
         private List<string> GetAvailableTargets(IElement element, NamedObjectSave arg2, ReferencedFileSave arg3)
