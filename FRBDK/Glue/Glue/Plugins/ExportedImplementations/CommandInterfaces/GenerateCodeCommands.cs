@@ -67,17 +67,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task GenerateElementAndReferencedObjectCode(GlueElement element)
         {
+            HashSet<GlueElement> toRegenerateHashSet = new HashSet<GlueElement>();
             if (element != null)
             {
-                await GenerateElementCodeAsync(element);
+                toRegenerateHashSet.Add(element);
+
 
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
-
+                
                 foreach (var nos in namedObjects)
                 {
                     var nosElement = ObjectFinder.Self.GetElementContaining(nos);
-                    await GenerateElementCodeAsync(element);
+                    toRegenerateHashSet.Add(nosElement);
+
                 }
+            }
+            foreach(var elementToRegenerate in toRegenerateHashSet)
+            {
+                await GenerateElementCodeAsync(elementToRegenerate);
             }
         }
 
