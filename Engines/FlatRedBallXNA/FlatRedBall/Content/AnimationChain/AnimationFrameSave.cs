@@ -8,6 +8,7 @@ using FlatRedBall.Graphics.Texture;
 using FlatRedBall.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Content.Scene;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.Content.AnimationChain
 {
@@ -16,41 +17,33 @@ namespace FlatRedBall.Content.AnimationChain
 #endif
     public class AnimationFrameSave
     {
-        #region XML Docs
         /// <summary>
         /// Whether the texture should be flipped horizontally.
         /// </summary>
-        #endregion
         public bool FlipHorizontal;
         public bool ShouldSerializeFlipHorizontal()
         {
             return FlipHorizontal == true;
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether the texture should be flipped on the vertidally.
         /// </summary>
-        #endregion
         public bool FlipVertical;
         public bool ShouldSerializeFlipVertical()
         {
             return FlipVertical == true;
         }
 
-        #region XML Docs
         /// <summary>
         /// Used in XML Serialization of AnimationChains - this should
         /// not explicitly be set by the user.
         /// </summary>
-        #endregion
         public string TextureName;
 
-        #region XML Docs
         /// <summary>
         /// The amount of time in seconds the AnimationFrame should be shown for.
         /// </summary>
-        #endregion
         public float FrameLength;
 
         /// <summary>
@@ -77,36 +70,45 @@ namespace FlatRedBall.Content.AnimationChain
         /// </summary>
         public float BottomCoordinate = 1;
 
-        #region XML Docs
         /// <summary>
         /// The relative X position of the object that is using this AnimationFrame.  This
         /// is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
         /// set to true.
         /// </summary>
-        #endregion
         public float RelativeX;
         public bool ShouldSerializeRelativeX()
         {
             return RelativeX != 0;
         }
 
-        #region XML Docs
         /// <summary>
         /// The relative Y position of the object that is using this AnimationFrame.  This
         /// is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
         /// set to true.
         /// </summary>
-        #endregion
         public float RelativeY;
         public bool ShouldSerializeRelativeY()
         {
             return RelativeY != 0;
         }
 
+        public ShapeCollectionSave ShapeCollectionSave
+        {
+            get; set;
+        }
+        public bool ShouldSerializeShapeCollectionSave =>
+            ShapeCollectionSave != null &&
+            (
+                ShapeCollectionSave.AxisAlignedRectangleSaves.Count > 0 ||
+                ShapeCollectionSave.CircleSaves.Count > 0 ||
+                ShapeCollectionSave.PolygonSaves.Count > 0 ||
+                ShapeCollectionSave.AxisAlignedCubeSaves.Count > 0 ||
+                ShapeCollectionSave.SphereSaves.Count > 0 
+            );
 
         [XmlIgnore]
         [ExternalInstance]
-#if !WINDOWS_PHONE && !WINDOWS_8 && !UWP
+#if !UWP
         [NonSerialized]
 #endif
         internal Texture2D mTextureInstance;
@@ -211,34 +213,6 @@ namespace FlatRedBall.Content.AnimationChain
 
             return frame;
         }
-
-        //public AnimationFrame ToAnimationFrame(TextureAtlas textureAtlas)
-        //{
-        //    AnimationFrame toReturn = ToAnimationFrame(null, false);
-        //    var entry = textureAtlas.GetEntryFor(this.TextureName);
-
-        //    if (entry != null)
-        //    {
-
-        //        float left;
-        //        float right;
-        //        float top;
-        //        float bottom;
-
-
-        //        entry.FullToReduced(toReturn.LeftCoordinate, toReturn.RightCoordinate,
-        //            toReturn.TopCoordinate, toReturn.BottomCoordinate,
-        //            out left, out right, out top, out bottom);
-
-        //        toReturn.LeftCoordinate = left;
-        //        toReturn.RightCoordinate = right;
-        //        toReturn.TopCoordinate = top;
-        //        toReturn.BottomCoordinate = bottom;
-
-        //    }
-
-        //    return toReturn;
-        //}
 
 
         internal static AnimationFrameSave FromXElement(System.Xml.Linq.XElement element)

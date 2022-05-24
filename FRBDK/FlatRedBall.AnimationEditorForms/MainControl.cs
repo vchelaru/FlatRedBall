@@ -23,6 +23,7 @@ using FlatRedBall.SpecializedXnaControls.Scrolling;
 using FlatRedBall.AnimationEditorForms.Content;
 using RenderingLibrary.Content;
 using FilePath = ToolsUtilities.FilePath;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -523,6 +524,67 @@ namespace FlatRedBall.AnimationEditorForms
         private void WireframeTopUiControl_Load(object sender, EventArgs e)
         {
 
+        }
+
+
+        public T Invoke<T>(Func<T> func)
+        {
+
+            T toReturn = default(T);
+            base.Invoke((MethodInvoker)delegate
+            {
+                toReturn = func();
+            });
+
+            return toReturn;
+        }
+
+        public Task Invoke(Func<Task> func)
+        {
+            Task toReturn = Task.CompletedTask;
+
+            var asyncResult = base.BeginInvoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    toReturn = func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            asyncResult.AsyncWaitHandle.WaitOne();
+
+            return toReturn;
+        }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    toReturn = func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
         }
     }
 }
