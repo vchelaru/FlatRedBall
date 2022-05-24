@@ -8,6 +8,7 @@ using FlatRedBall.AnimationEditorForms.Preview;
 using System.Drawing;
 using ToolsUtilities;
 using FlatRedBall.Math;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -79,57 +80,59 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void RefreshTreeView()
         {
-            mTreeView.Invoke((MethodInvoker)delegate()
+            ApplicationCommands.Self.DoOnUiThread(RefreshTreeViewInternal);
+
+        }
+
+        void RefreshTreeViewInternal()
+        {
+            AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
+            var selectedAnimationChains = SelectedState.Self.SelectedChains;
+
+            List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
+
+            foreach (TreeNode treeNode in mTreeView.Nodes)
             {
-                AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
-                var selectedAnimationChains = SelectedState.Self.SelectedChains;
-
-                List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
-
-                foreach(TreeNode treeNode in mTreeView.Nodes)
+                if (treeNode.IsExpanded)
                 {
-                    if(treeNode.IsExpanded)
+                    expandedAnimationChains.Add(treeNode.Tag as AnimationChainSave);
+                }
+            }
+
+            mTreeView.Nodes.Clear();
+
+
+            if (ProjectManager.Self.AnimationChainListSave != null)
+            {
+                TreeNode[] nodesToAdd = new TreeNode[ProjectManager.Self.AnimationChainListSave.AnimationChains.Count];
+
+                int index = 0;
+                foreach (var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
+                {
+                    TreeNode treeNode = new TreeNode();
+
+                    nodesToAdd[index] = treeNode;
+
+                    WithoutInvokeRefreshTreeNode(treeNode, animationChain);
+                    if (expandedAnimationChains.Contains(animationChain))
                     {
-                        expandedAnimationChains.Add(treeNode.Tag as AnimationChainSave);
+                        treeNode.Expand();
                     }
+                    index++;
                 }
 
-                mTreeView.Nodes.Clear();
+                mTreeView.Nodes.AddRange(nodesToAdd);
 
 
-                if (ProjectManager.Self.AnimationChainListSave != null)
+                if (selectedAnimationFrame != null)
                 {
-                    TreeNode[] nodesToAdd = new TreeNode[ProjectManager.Self.AnimationChainListSave.AnimationChains.Count];
-
-                    int index = 0;
-                    foreach (var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
-                    {
-                        TreeNode treeNode = new TreeNode();
-
-                        nodesToAdd[index] = treeNode;
-
-                        WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
-                        if(expandedAnimationChains.Contains(animationChain))
-                        {
-                            treeNode.Expand();
-                        }
-                        index++;
-                    }
-
-                    mTreeView.Nodes.AddRange(nodesToAdd);
-
-
-                    if (selectedAnimationFrame != null)
-                    {
-                        SelectedState.Self.SelectedFrame = selectedAnimationFrame;
-                    }
-                    if (mTreeView.SelectedNode == null && selectedAnimationChains.Count > 0)
-                    {
-                        SelectedState.Self.SelectedChains = selectedAnimationChains;
-                    }
+                    SelectedState.Self.SelectedFrame = selectedAnimationFrame;
                 }
-            });
-
+                if (mTreeView.SelectedNode == null && selectedAnimationChains.Count > 0)
+                {
+                    SelectedState.Self.SelectedChains = selectedAnimationChains;
+                }
+            }
         }
 
         public void RefreshTreeNode(AnimationChainSave animationChain)
@@ -146,7 +149,7 @@ namespace FlatRedBall.AnimationEditorForms
                         mTreeView.Nodes.Add(treeNode);
                     }
 
-                    WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
+                    WithoutInvokeRefreshTreeNode(treeNode, animationChain);
                 });
             }
         }
@@ -180,7 +183,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        private void WithoutEnvokeRefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
+        private void WithoutInvokeRefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
         {
             treeNode.Nodes.Clear();
             treeNode.Tag = animationChain;
@@ -189,28 +192,30 @@ namespace FlatRedBall.AnimationEditorForms
             foreach (var frame in animationChain.Frames)
             {
                 TreeNode frameNode = new TreeNode();
-                frameNode.Text = frame.TextureName;
-                if (string.IsNullOrEmpty(frame.TextureName))
-                {
-                    frameNode.Text = "<UNTEXTURED>";
-                }
-                else
-                {
-                    var texture = WireframeManager.Self.GetTextureForFrame(frame);
-                    if (texture != null)
-                    {
-                        frameNode.Text += string.Format(
-                            " {0},{1}", frame.LeftCoordinate * texture.Width, frame.TopCoordinate * texture.Height);
-                    }
-                }
-
-                frameNode.Tag = frame;
-
-                
-
+                WithoutInvokeRefreshTreeNode(frameNode, frame);
 
                 treeNode.Nodes.Add(frameNode);
             }
+        }
+
+        private static void WithoutInvokeRefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
+        {
+            frameNode.Text = animationFrame.TextureName;
+            if (string.IsNullOrEmpty(animationFrame.TextureName))
+            {
+                frameNode.Text = "<UNTEXTURED>";
+            }
+            else
+            {
+                var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
+                if (texture != null)
+                {
+                    frameNode.Text += string.Format(
+                        " {0},{1}", animationFrame.LeftCoordinate * texture.Width, animationFrame.TopCoordinate * texture.Height);
+                }
+            }
+
+            frameNode.Tag = animationFrame;
         }
 
         public void AfterTreeItemSelect()
