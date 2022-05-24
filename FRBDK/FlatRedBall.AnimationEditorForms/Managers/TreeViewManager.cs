@@ -78,6 +78,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
+        #region Refresh/Update
+
         public void RefreshTreeView()
         {
             ApplicationCommands.Self.DoOnUiThread(RefreshTreeViewInternal);
@@ -113,7 +115,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                     nodesToAdd[index] = treeNode;
 
-                    WithoutInvokeRefreshTreeNode(treeNode, animationChain);
+                    RefreshTreeNode(treeNode, animationChain);
                     if (expandedAnimationChains.Contains(animationChain))
                     {
                         treeNode.Expand();
@@ -149,7 +151,7 @@ namespace FlatRedBall.AnimationEditorForms
                         mTreeView.Nodes.Add(treeNode);
                     }
 
-                    WithoutInvokeRefreshTreeNode(treeNode, animationChain);
+                    RefreshTreeNode(treeNode, animationChain);
                 });
             }
         }
@@ -183,7 +185,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        private void WithoutInvokeRefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
+        private void RefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
         {
             treeNode.Nodes.Clear();
             treeNode.Tag = animationChain;
@@ -192,13 +194,13 @@ namespace FlatRedBall.AnimationEditorForms
             foreach (var frame in animationChain.Frames)
             {
                 TreeNode frameNode = new TreeNode();
-                WithoutInvokeRefreshTreeNode(frameNode, frame);
+                RefreshTreeNode(frameNode, frame);
 
                 treeNode.Nodes.Add(frameNode);
             }
         }
 
-        private static void WithoutInvokeRefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
+        private static void RefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
         {
             frameNode.Text = animationFrame.TextureName;
             if (string.IsNullOrEmpty(animationFrame.TextureName))
@@ -210,13 +212,16 @@ namespace FlatRedBall.AnimationEditorForms
                 var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
                 if (texture != null)
                 {
-                    frameNode.Text += string.Format(
-                        " {0},{1}", animationFrame.LeftCoordinate * texture.Width, animationFrame.TopCoordinate * texture.Height);
+                    frameNode.Text += $"{animationFrame.LeftCoordinate * texture.Width},{animationFrame.TopCoordinate * texture.Height}";
                 }
             }
 
+            //if(animationFrame.)
+
             frameNode.Tag = animationFrame;
         }
+
+        #endregion
 
         public void AfterTreeItemSelect()
         {
@@ -262,6 +267,8 @@ namespace FlatRedBall.AnimationEditorForms
 
             System.IO.File.WriteAllText(WireframeSettingsFileName, serialized);
         }
+
+        #region Get/Find
 
         public TreeNode GetTreeNodeFor(AnimationFrameSave afs)
         {
@@ -310,6 +317,8 @@ namespace FlatRedBall.AnimationEditorForms
             return null;
         }
 
+        #endregion
+
         void CallAnimationChainsChange()
         {
             if (AnimationChainsChange != null)
@@ -317,6 +326,8 @@ namespace FlatRedBall.AnimationEditorForms
                 AnimationChainsChange(this, null);
             }
         }
+
+        #region Drag+drop
 
         internal void HandleDrop(object sender, DragEventArgs e)
         {
@@ -518,6 +529,41 @@ namespace FlatRedBall.AnimationEditorForms
             MainControl.Self.LoadAnimationChain(fileName);
         }
 
+        internal static void DragOver(object sender, DragEventArgs e)
+        {
+            TreeView tree = (TreeView)sender;
+            Point pt = new Point(e.X, e.Y);
+            pt = tree.PointToClient(pt);
+
+            e.Effect = DragDropEffects.Move;
+        }
+
+        internal void ItemDrag(object sender, ItemDragEventArgs e)
+        {
+
+            // Get the tree.
+            TreeView tree = (TreeView)sender;
+
+            // Get the node underneath the mouse.
+            TreeNode node = e.Item as TreeNode;
+            //tree.SelectedNode = node;
+
+            // Start the drag-and-drop operation with a cloned copy of the node.
+            if (node != null)
+            {
+                mGrabbedNode = node;
+                //ElementViewWindow.TreeNodeDraggedOff = node;
+
+                TreeNode targetNode = null;
+                //ElementViewWindow.ButtonUsed = e.Button;
+
+                //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
+                tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
+            }
+        }
+
+        #endregion
+
         internal void HandleKeyPress(KeyPressEventArgs e)
         {
             // these numbers were determined through trial and error - put a breakpoint, do the command, see what value comes in
@@ -613,39 +659,6 @@ namespace FlatRedBall.AnimationEditorForms
                 SelectedState.Self.SelectedFrame = chain.Frames[0];
             }
 
-        }
-
-        internal static void DragOver(object sender, DragEventArgs e)
-        {
-            TreeView tree = (TreeView)sender;
-            Point pt = new Point(e.X, e.Y);
-            pt = tree.PointToClient(pt);
-
-            e.Effect = DragDropEffects.Move;
-        }
-
-        internal void ItemDrag(object sender, ItemDragEventArgs e)
-        {
-
-            // Get the tree.
-            TreeView tree = (TreeView)sender;
-
-            // Get the node underneath the mouse.
-            TreeNode node = e.Item as TreeNode;
-            //tree.SelectedNode = node;
-
-            // Start the drag-and-drop operation with a cloned copy of the node.
-            if (node != null)
-            {
-                mGrabbedNode = node;
-                //ElementViewWindow.TreeNodeDraggedOff = node;
-
-                TreeNode targetNode = null;
-                //ElementViewWindow.ButtonUsed = e.Button;
-
-                //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-                tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-            }
         }
     }
 }
