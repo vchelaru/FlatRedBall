@@ -334,10 +334,10 @@ namespace GlueControl.Editing
                 {
                     variableName = TryConvertVariableNameToExposedVariableName(variableName, targetInstance);
 
-                    var effectiveTarget = targetInstance;
+                    object effectiveTarget = targetInstance;
                     if (targetInstance is NameableWrapper nameableWrapper)
                     {
-                        effectiveTarget = nameableWrapper;
+                        effectiveTarget = nameableWrapper.ContainedObject;
                     }
 
                     response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, effectiveTarget);

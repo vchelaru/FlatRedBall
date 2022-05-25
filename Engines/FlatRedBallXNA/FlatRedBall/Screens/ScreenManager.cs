@@ -629,19 +629,27 @@ namespace FlatRedBall.Screens
                 if (SpriteManager.DrawableBatches.Count != 0)
                 {
                     int drawableBatchCount = 0;
+                    IDrawableBatch firstDrawableBatch = null;
                     foreach(var item in SpriteManager.DrawableBatches)
                     {
                         if(!PersistentDrawableBatches.Contains(item))
                         {
                             drawableBatchCount++;
+                            firstDrawableBatch = item;
                         }
                     }
 
                     if (drawableBatchCount > 0)
                     {
-                        messages.Add("There are " + drawableBatchCount +
+                        var message = "There are " + drawableBatchCount +
                             " DrawableBatches in the SpriteManager.  " +
-                            "See  \"FlatRedBall.SpriteManager.DrawableBatches\"");
+                            "See  \"FlatRedBall.SpriteManager.DrawableBatches\"";
+
+                        message += $"\nFirst IDB type: {firstDrawableBatch.GetType()}";
+
+                        messages.Add(message);
+
+
                     }
                 }
 

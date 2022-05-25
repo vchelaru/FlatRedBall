@@ -387,14 +387,17 @@ namespace GlueControl.Editing
             {
                 var gue = gumWrapper.GumObject;
 
-                var absoluteOrigin = gumWrapper.GetAbsolutePositionInFrbSpace(gue);
+                if(gue.Visible)
+                {
+                    var absoluteOrigin = gumWrapper.GetAbsolutePositionInFrbSpace(gue);
 
-                // assume top left origin for now
-                minX = Math.Min(minX, absoluteOrigin.X - gue.GetAbsoluteWidth()/2.0f);
-                maxX = Math.Max(maxX, absoluteOrigin.X + gue.GetAbsoluteWidth()/2.0f);
+                    // assume top left origin for now
+                    minX = Math.Min(minX, absoluteOrigin.X - gue.GetAbsoluteWidth()/2.0f);
+                    maxX = Math.Max(maxX, absoluteOrigin.X + gue.GetAbsoluteWidth()/2.0f);
 
-                minY = Math.Min(minY, absoluteOrigin.Y - gue.GetAbsoluteHeight()/2.0f);
-                maxY = Math.Max(maxY, absoluteOrigin.Y + gue.GetAbsoluteHeight() / 2.0f);
+                    minY = Math.Min(minY, absoluteOrigin.Y - gue.GetAbsoluteHeight()/2.0f);
+                    maxY = Math.Max(maxY, absoluteOrigin.Y + gue.GetAbsoluteHeight() / 2.0f);
+                }
             }
 
 #endif
