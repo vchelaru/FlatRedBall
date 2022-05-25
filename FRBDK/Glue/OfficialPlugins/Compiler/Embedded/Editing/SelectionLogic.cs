@@ -231,6 +231,10 @@ namespace GlueControl.Editing
                 return positionedObject.CreationSource == "Glue" && 
                     (positionedObject is FlatRedBall.TileGraphics.LayeredTileMap) == false ;
             }
+            else if(nameable is NameableWrapper)
+            {
+                return true;
+            }
             else
             {
                 return nameable is FlatRedBall.TileCollisions.TileShapeCollection;
