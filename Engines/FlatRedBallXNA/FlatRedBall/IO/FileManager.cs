@@ -137,7 +137,16 @@ namespace FlatRedBall.IO
 #endif
                 if (mRelativeDirectoryDictionary.ContainsKey(threadID))
                 {
-                    return mRelativeDirectoryDictionary[threadID];
+                    // VERY rare, but possible:
+                    try
+                    {
+                        // the thread ID could go away inbetween the if.
+                        return mRelativeDirectoryDictionary[threadID];
+                    }
+                    catch
+                    {
+                        return DefaultRelativeDirectory;
+                    }
                 }
                 else
                 {

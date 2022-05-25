@@ -83,28 +83,79 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateInitializeForEvent(ICodeBlock codeBlock, IElement element, EventResponseSave ers)
         {
-            bool wasEventAdded = false;
-
             //We always want this to happen, even if it's 
             // emtpy
             //if (!string.IsNullOrEmpty(ers.Contents))
             //{
-            NamedObjectSave sourceNos = null;
-            bool shouldCloseIfStatementForNos = false;
+            bool hasIfStatementForNos;
+            string leftSide;
+            GetEventGenerationInfo(element, ers, out hasIfStatementForNos, out leftSide);
 
+            if (!string.IsNullOrEmpty(leftSide))
+            {
+                if (hasIfStatementForNos)
+                {
+                    NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, element.GetNamedObject(ers.SourceObject));
+                }
+                var rightSide = "On" + ers.EventName;
+
+                var isPooled = element is EntitySave entitySave && entitySave.PooledByFactory;
+                if (isPooled)
+                {
+                    codeBlock.Line("// This entity is pooled and has events. This is a bad mix! We have to do extra checks to prevent duplicate assignments which is slow. This may defeat the purpose of pooling");
+                    codeBlock.If($"{leftSide}?.GetInvocationList().Any(item => item.Method.Name == nameof({rightSide})) != true")
+                        .Line(leftSide + " += " + rightSide + ";");
+                }
+                else
+                {
+                    codeBlock.Line(leftSide + " += " + rightSide + ";");
+
+                }
+                if (!string.IsNullOrEmpty(ers.SourceObject) && !string.IsNullOrEmpty(ers.SourceObjectEvent))
+                {
+                    var innerLeft = ers.SourceObject + "." + ers.SourceObjectEvent;
+                    var innerRight = "On" + ers.EventName + "Tunnel";
+                    if (isPooled)
+                    {
+                        codeBlock.Line("// This entity is pooled and has events. This is a bad mix! We have to do extra checks to prevent duplicate assignments which is slow. This may defeat the purpose of pooling");
+                        codeBlock.If($"{innerLeft}?.GetInvocationList().Any(item => item.Method.Name == nameof({innerRight})) != true")
+                                .Line(innerLeft + " += " + innerRight + "Tunnel;");
+
+                    }
+                    else
+                    {
+                        codeBlock.Line(innerLeft + " += " + innerRight + "Tunnel;");
+                    }
+                    if (hasIfStatementForNos)
+                    {
+                        NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, element.GetNamedObject(ers.SourceObject));
+                    }
+                }
+            }
+
+        }
+
+        public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
+        {
+            base.GenerateRemoveFromManagers(codeBlock, element);
+        }
+
+        private static void GetEventGenerationInfo(IElement element, EventResponseSave ers, out bool hasIfStatementForNos, out string leftSide)
+        {
+            hasIfStatementForNos = false;
+            leftSide = null;
             if (!string.IsNullOrEmpty(ers.SourceVariable))
             {
                 // This is tied to a variable, so the name comes from the variable event rather than the
                 // event name itself
                 string eventName = ers.BeforeOrAfter.ToString() + ers.SourceVariable + "Set";
-                codeBlock.Line("this." + eventName + " += On" + ers.EventName + ";");
-                wasEventAdded = true;
+
+                leftSide = "this." + eventName;
             }
 
             else if (string.IsNullOrEmpty(ers.SourceObject) || ers.SourceObject == "<NONE>")
             {
 
-                string leftSide = null;
                 EventSave eventSave = ers.GetEventSave();
                 if (eventSave == null || string.IsNullOrEmpty(eventSave.ExternalEvent))
                 {
@@ -114,38 +165,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     leftSide = eventSave.ExternalEvent;
                 }
-
-
-
-                codeBlock.Line(leftSide + " += On" + ers.EventName + ";");
-                wasEventAdded = true;
             }
             else if (!string.IsNullOrEmpty(ers.SourceObjectEvent))
             {
                 // Only append this if the source NOS is fully-defined.  If not, we don't want to generate compile errors.
-                sourceNos = element.GetNamedObject(ers.SourceObject);
+                NamedObjectSave sourceNos = element.GetNamedObject(ers.SourceObject);
 
                 if (sourceNos != null && sourceNos.IsFullyDefined)
                 {
-                    NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, sourceNos);
-
-                    string leftSide = null;
-
                     leftSide = ers.SourceObject + "." + ers.SourceObjectEvent;
-
-                    codeBlock.Line(leftSide + " += On" + ers.EventName + ";");
-                    wasEventAdded = true;
-                    shouldCloseIfStatementForNos = true;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(ers.SourceObject) && !string.IsNullOrEmpty(ers.SourceObjectEvent) && wasEventAdded)
-            {
-
-                codeBlock.Line(ers.SourceObject + "." + ers.SourceObjectEvent + " += On" + ers.EventName + "Tunnel;");
-                if (shouldCloseIfStatementForNos)
-                {
-                    NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, sourceNos);
+                    hasIfStatementForNos = true;
                 }
             }
         }
@@ -177,6 +206,34 @@ namespace FlatRedBall.Glue.CodeGeneration
                 if (eventSave != null && !string.IsNullOrEmpty(eventSave.ExternalEvent))
                 {
                     codeBlock.Line(eventSave.ExternalEvent + " -= On" + ers.EventName + ";");
+                }
+                else
+                {
+                    bool hasIfStatementForNos;
+                    string leftSide;
+                    GetEventGenerationInfo(element, ers, out hasIfStatementForNos, out leftSide);
+
+                    //if(leftSide != null)
+                    //{
+                    //    codeBlock.Line(leftSide + " -= On" + ers.EventName + ";");
+                    //}
+                    if (!string.IsNullOrEmpty(leftSide))
+                    {
+                        if (hasIfStatementForNos)
+                        {
+                            NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, element.GetNamedObject(ers.SourceObject));
+                        }
+                        codeBlock.Line(leftSide + " = null;");
+                        if (!string.IsNullOrEmpty(ers.SourceObject) && !string.IsNullOrEmpty(ers.SourceObjectEvent))
+                        {
+                            codeBlock.Line(ers.SourceObject + "." + ers.SourceObjectEvent + " -= On" + ers.EventName + "Tunnel;");
+                            if (hasIfStatementForNos)
+                            {
+                                NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, element.GetNamedObject(ers.SourceObject));
+                            }
+                        }
+                    }
+
                 }
 
 
