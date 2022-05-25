@@ -1590,8 +1590,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 // that instances aren't added multiple times to this list, so we need to add an 
                                 // if-statement if this is pooled.
                                 bool isPooled = element is EntitySave && ((EntitySave)element).PooledByFactory;
-
-                                if(isPooled)
+                                // actually it seems even non-pooled do:
+                                //if(isPooled)
                                 {
                                     codeBlock = codeBlock.If($"!{container.InstanceName}.Contains({nos.InstanceName})");
                                 }
@@ -1600,7 +1600,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 codeBlock.Line(container.InstanceName + ".Add(" + nos.InstanceName + ");");
 
 
-                                if (isPooled)
+                                //if (isPooled)
                                 {
                                     codeBlock = codeBlock.End();
                                 }

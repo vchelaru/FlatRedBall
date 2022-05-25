@@ -119,12 +119,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         codeBlock.Line("// This entity is pooled and has events. This is a bad mix! We have to do extra checks to prevent duplicate assignments which is slow. This may defeat the purpose of pooling");
                         codeBlock.If($"{innerLeft}?.GetInvocationList().Any(item => item.Method.Name == nameof({innerRight})) != true")
-                                .Line(innerLeft + " += " + innerRight + "Tunnel;");
+                                .Line(innerLeft + " += " + innerRight + ";");
 
                     }
                     else
                     {
-                        codeBlock.Line(innerLeft + " += " + innerRight + "Tunnel;");
+                        codeBlock.Line(innerLeft + " += " + innerRight + ";");
                     }
                     if (hasIfStatementForNos)
                     {
