@@ -82,7 +82,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void RefreshTreeView()
         {
-            ApplicationCommands.Self.DoOnUiThread(RefreshTreeViewInternal);
+            AppCommands.Self.DoOnUiThread(RefreshTreeViewInternal);
 
         }
 
@@ -216,9 +216,26 @@ namespace FlatRedBall.AnimationEditorForms
                 }
             }
 
-            //if(animationFrame.)
+
+            RefreshShapeCollectionsOn(frameNode, animationFrame);
+
 
             frameNode.Tag = animationFrame;
+        }
+
+        private static void RefreshShapeCollectionsOn(TreeNode treeNode, AnimationFrameSave animationFrameSave)
+        {
+            var shouldShowShapes =
+                animationFrameSave.ShapeCollectionSave?.AxisAlignedCubeSaves.Count > 0 ||
+                animationFrameSave.ShapeCollectionSave?.AxisAlignedRectangleSaves.Count > 0 ||
+                animationFrameSave.ShapeCollectionSave?.CircleSaves.Count > 0 ||
+                animationFrameSave.ShapeCollectionSave?.PolygonSaves.Count > 0 ||
+                animationFrameSave.ShapeCollectionSave?.SphereSaves.Count > 0;
+
+            if(shouldShowShapes)
+            {
+
+            }
         }
 
         #endregion

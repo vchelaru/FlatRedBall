@@ -283,7 +283,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 chain.Frames.Add(afs);
 
-                TreeViewManager.Self.RefreshTreeNode(chain);
+                AppCommands.Self.RefreshTreeNode(chain);
 
                 SelectedState.Self.SelectedFrame = afs;
 

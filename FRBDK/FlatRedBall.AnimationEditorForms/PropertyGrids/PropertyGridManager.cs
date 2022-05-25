@@ -82,7 +82,7 @@ namespace FlatRedBall.AnimationEditorForms
             // item is an AnimationChain:
             if (SelectedState.Self.SelectedFrame == null)
             {
-                TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
+                AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
             }
             
             if (AnimationChainChange != null)

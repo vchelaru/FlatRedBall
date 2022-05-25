@@ -6,6 +6,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Content.AnimationChain;
 using System.Windows.Forms;
 using FlatRedBall.Utilities;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -74,7 +75,7 @@ namespace FlatRedBall.AnimationEditorForms
                     AnimationFrameSave whatToCopy = dataObject.GetData("frame") as AnimationFrameSave;
                     AnimationFrameSave newAfs = FileManager.CloneObject(whatToCopy);
                     SelectedState.Self.SelectedChain.Frames.Add(newAfs);
-                    TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
+                    AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
                     SelectedState.Self.SelectedFrame = newAfs;
                     MainControl.Self.RaiseAnimationChainChanges(null, null);
                 }
@@ -101,7 +102,7 @@ namespace FlatRedBall.AnimationEditorForms
 
 
             ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(newAcs);
-            TreeViewManager.Self.RefreshTreeNode(newAcs);
+            AppCommands.Self.RefreshTreeNode(newAcs);
 
             MainControl.Self.RaiseAnimationChainChanges(null, null);
 

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainControl));
             this.TreeViewAndEverythingElse = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.AnimationsTab = new System.Windows.Forms.TabPage();
@@ -57,6 +58,9 @@
             this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.CursorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.TreeViewAndEverythingElse)).BeginInit();
             this.TreeViewAndEverythingElse.Panel1.SuspendLayout();
             this.TreeViewAndEverythingElse.Panel2.SuspendLayout();
@@ -74,6 +78,8 @@
             this.PreviewSplitContainer.SuspendLayout();
             this.MenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TreeViewAndEverythingElse
@@ -122,11 +128,14 @@
             // AnimationTreeView
             // 
             this.AnimationTreeView.AllowDrop = true;
+            this.AnimationTreeView.AlwaysHaveOneNodeSelected = false;
             this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
             this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AnimationTreeView.HideSelection = false;
             this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
+            this.AnimationTreeView.MultiSelectBehavior = CommonFormsAndControls.MultiSelectBehavior.CtrlDown;
             this.AnimationTreeView.Name = "AnimationTreeView";
+            this.AnimationTreeView.SelectedNodes = ((System.Collections.Generic.List<System.Windows.Forms.TreeNode>)(resources.GetObject("AnimationTreeView.SelectedNodes")));
             this.AnimationTreeView.Size = new System.Drawing.Size(147, 327);
             this.AnimationTreeView.TabIndex = 0;
             this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
@@ -160,7 +169,7 @@
             this.TexturesPage.Location = new System.Drawing.Point(4, 22);
             this.TexturesPage.Name = "TexturesPage";
             this.TexturesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.TexturesPage.Size = new System.Drawing.Size(153, 358);
+            this.TexturesPage.Size = new System.Drawing.Size(153, 363);
             this.TexturesPage.TabIndex = 1;
             this.TexturesPage.Text = "Textures";
             this.TexturesPage.UseVisualStyleBackColor = true;
@@ -173,7 +182,7 @@
             this.TexturesTreeView.HideSelection = false;
             this.TexturesTreeView.Location = new System.Drawing.Point(3, 3);
             this.TexturesTreeView.Name = "TexturesTreeView";
-            this.TexturesTreeView.Size = new System.Drawing.Size(147, 352);
+            this.TexturesTreeView.Size = new System.Drawing.Size(147, 357);
             this.TexturesTreeView.TabIndex = 1;
             // 
             // splitContainer1
@@ -192,7 +201,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.PreviewSplitContainer);
+            this.splitContainer1.Panel2.Controls.Add(this.tabControl2);
             this.splitContainer1.Size = new System.Drawing.Size(859, 393);
             this.splitContainer1.SplitterDistance = 151;
             this.splitContainer1.TabIndex = 0;
@@ -232,7 +241,7 @@
             this.PreviewSplitContainer.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.PreviewSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PreviewSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.PreviewSplitContainer.Location = new System.Drawing.Point(0, 0);
+            this.PreviewSplitContainer.Location = new System.Drawing.Point(3, 3);
             this.PreviewSplitContainer.Name = "PreviewSplitContainer";
             this.PreviewSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -245,8 +254,8 @@
             // 
             this.PreviewSplitContainer.Panel2.Controls.Add(this.PreviewGraphicsControl);
             this.PreviewSplitContainer.Panel2.Controls.Add(this.previewControls1);
-            this.PreviewSplitContainer.Size = new System.Drawing.Size(704, 393);
-            this.PreviewSplitContainer.SplitterDistance = 274;
+            this.PreviewSplitContainer.Size = new System.Drawing.Size(686, 357);
+            this.PreviewSplitContainer.SplitterDistance = 314;
             this.PreviewSplitContainer.TabIndex = 1;
             // 
             // WireframeTopUiControl
@@ -256,7 +265,7 @@
             this.WireframeTopUiControl.Location = new System.Drawing.Point(0, 0);
             this.WireframeTopUiControl.Name = "WireframeTopUiControl";
             this.WireframeTopUiControl.PercentageValue = 100;
-            this.WireframeTopUiControl.Size = new System.Drawing.Size(700, 23);
+            this.WireframeTopUiControl.Size = new System.Drawing.Size(682, 23);
             this.WireframeTopUiControl.TabIndex = 1;
             this.WireframeTopUiControl.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
             this.WireframeTopUiControl.Load += new System.EventHandler(this.WireframeTopUiControl_Load);
@@ -267,7 +276,7 @@
             this.PreviewGraphicsControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PreviewGraphicsControl.Location = new System.Drawing.Point(0, 22);
             this.PreviewGraphicsControl.Name = "PreviewGraphicsControl";
-            this.PreviewGraphicsControl.Size = new System.Drawing.Size(700, 89);
+            this.PreviewGraphicsControl.Size = new System.Drawing.Size(682, 13);
             this.PreviewGraphicsControl.TabIndex = 0;
             this.PreviewGraphicsControl.Text = "graphicsDeviceControl1";
             // 
@@ -279,7 +288,7 @@
             this.previewControls1.Name = "previewControls1";
             this.previewControls1.OffsetMultiplier = 1F;
             this.previewControls1.PercentageValue = 100;
-            this.previewControls1.Size = new System.Drawing.Size(700, 22);
+            this.previewControls1.Size = new System.Drawing.Size(682, 22);
             this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
             this.previewControls1.TabIndex = 1;
             this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
@@ -372,6 +381,38 @@
             this.CursorStatusLabel.Size = new System.Drawing.Size(76, 17);
             this.CursorStatusLabel.Text = "Cursor: (X, Y)";
             // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPage1);
+            this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(0, 0);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(700, 389);
+            this.tabControl2.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.PreviewSplitContainer);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(692, 363);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "EditWindow";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(692, 363);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Edit Window (new)";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // MainControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -400,6 +441,8 @@
             this.MenuStrip.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -435,5 +478,8 @@
         public System.Windows.Forms.ComboBox UnitTypeComboBox;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private Controls.AnimationsListToolBar animationsListToolBar1;
+        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
     }
 }
