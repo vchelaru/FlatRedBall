@@ -119,7 +119,7 @@ namespace EntityInputMovementPlugin
         {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
 
-            var firstTopDownEntity = entities.First(item =>
+            var firstTopDownEntity = entities.FirstOrDefault(item =>
             {
                 var properties = item.Properties;
                 return properties.GetValue<bool>(nameof(TopDownPlugin.ViewModels.TopDownEntityViewModel.IsTopDown));

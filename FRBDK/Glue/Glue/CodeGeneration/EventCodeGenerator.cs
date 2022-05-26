@@ -223,7 +223,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, element.GetNamedObject(ers.SourceObject));
                         }
-                        codeBlock.Line(leftSide + " = null;");
                         if (!string.IsNullOrEmpty(ers.SourceObject) && !string.IsNullOrEmpty(ers.SourceObjectEvent))
                         {
                             codeBlock.Line(ers.SourceObject + "." + ers.SourceObjectEvent + " -= On" + ers.EventName + "Tunnel;");
@@ -231,6 +230,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                             {
                                 NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, element.GetNamedObject(ers.SourceObject));
                             }
+                        }
+                        else
+                        {
+                            // only null it out if it doesn't have a source object. Otherwise, we can't assign null on an event that isn't owned by this class
+                            codeBlock.Line(leftSide + " = null;");
                         }
                     }
 
