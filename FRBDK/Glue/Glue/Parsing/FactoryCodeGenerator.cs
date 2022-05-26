@@ -165,19 +165,30 @@ namespace FlatRedBall.Glue.Parsing
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     (nos.SourceClassGenericType.StartsWith("Entities\\") || nos.SourceClassGenericType.StartsWith("Entities/")))
                 .ToList();
-            entitiesToInitializeFactoriesFor = new List<EntitySave>();
+            HashSet<EntitySave> entitiesToInitializeFactoriesForHash = new HashSet<EntitySave>();
+
             foreach (var listNos in entityLists)
             {
                 EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
                 if (sourceEntitySave != null)
                 {
-                    if (sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave) && !IsAbstract(sourceEntitySave))
+                    if (sourceEntitySave.CreatedByOtherEntities && !IsAbstract(sourceEntitySave))
                     {
-                        entitiesToInitializeFactoriesFor.Add(sourceEntitySave);
+                        entitiesToInitializeFactoriesForHash.Add(sourceEntitySave);
+                    }
+                    var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(sourceEntitySave);
+                    foreach(EntitySave derived in allDerived)
+                    {
+                        if(derived.CreatedByOtherEntities && !IsAbstract(derived))
+                        {
+                            entitiesToInitializeFactoriesForHash.Add(derived);
+                        }
                     }
                 }
             }
+
+            entitiesToInitializeFactoriesFor = entitiesToInitializeFactoriesForHash.ToList();
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)

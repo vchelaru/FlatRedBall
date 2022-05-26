@@ -31,6 +31,12 @@ namespace GlueControl.Editing
 
     #region Classes
 
+    class NameableWrapper : INameable
+    {
+        public string Name { get; set; }
+        public object ContainedObject { get; set; }
+    }
+
     class PropertyChangeArgs
     {
         public INameable Nameable { get; set; }
@@ -835,7 +841,7 @@ namespace GlueControl.Editing
         public INameable GetObjectByName(string objectName)
         {
             INameable foundObject = null;
-
+            object foundObjectAsObject = null;
             if (!string.IsNullOrEmpty(objectName))
             {
                 var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
@@ -850,12 +856,19 @@ namespace GlueControl.Editing
                     foundObject = instance as INameable;
                 }
 
+
+
                 if (foundObject == null && ScreenManager.CurrentScreen is Screens.EntityViewingScreen entityViewingScreen)
                 {
                     try
                     {
-                        foundObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(
-                            entityViewingScreen.CurrentEntity, objectName) as INameable;
+                        foundObjectAsObject = FlatRedBall.Instructions.Reflection.LateBinder.GetValueStatic(
+                            entityViewingScreen.CurrentEntity, objectName);
+
+                        if (foundObjectAsObject != null)
+                        {
+                            foundObject = foundObjectAsObject as INameable ?? new NameableWrapper { Name = objectName, ContainedObject = foundObjectAsObject };
+                        }
                     }
                     catch
                     {
@@ -866,12 +879,16 @@ namespace GlueControl.Editing
 
             if (foundObject == null)
             {
+                var message = $"Tried to get object by name {objectName} but couldn't find anything";
                 // This object may not exist. Should we tell Glue? I guess...
-                Managers.GlueCommands.Self.PrintOutput($"Tried to get object by name {objectName} but couldn't find anything");
+                if (foundObjectAsObject != null)
+                {
+                    message += "\n...but was able to find an object of type {}, but it isn't an INameable so it can't be used in the editor.";
+                }
+                Managers.GlueCommands.Self.PrintOutput(message);
             }
 
             return foundObject;
-
         }
 
         void RemoveFromSelection(NamedObjectSave namedObject)

@@ -62,7 +62,7 @@ namespace GlueControl.Editing
             CopiedObjects.AddRange(selectedObjects);
             CopiedNamedObjects.AddRange(selectedNamedObjects);
 
-#if HasGum
+#if HasGum && SupportsEditMode
             string message = "";
             if(selectedNamedObjects.Count == 1)
             {

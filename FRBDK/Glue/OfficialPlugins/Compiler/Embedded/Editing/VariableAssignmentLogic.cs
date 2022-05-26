@@ -85,7 +85,13 @@ namespace GlueControl.Editing
                                 else
                                 {
                                     targetInstance = screen.GetInstance(splitVariable[1] + ".Whatever", item);
+                                    if (targetInstance != null && !(targetInstance is INameable))
+                                    {
+                                        // wrap it
+                                        targetInstance = new NameableWrapper() { Name = splitVariable[1], ContainedObject = targetInstance };
+                                    }
                                 }
+
                                 SetValueOnObjectInElement(variableValue, response, screen, splitVariable[1], variableName, targetInstance as INameable);
                                 //SetValueOnObjectInScreen(variableNameOnObjectInInstance, variableValue, item);
                                 //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
@@ -327,7 +333,14 @@ namespace GlueControl.Editing
                 else
                 {
                     variableName = TryConvertVariableNameToExposedVariableName(variableName, targetInstance);
-                    response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, targetInstance);
+
+                    object effectiveTarget = targetInstance;
+                    if (targetInstance is NameableWrapper nameableWrapper)
+                    {
+                        effectiveTarget = nameableWrapper.ContainedObject;
+                    }
+
+                    response.WasVariableAssigned = screen.ApplyVariable(variableName, variableValue, effectiveTarget);
                 }
 
                 if (response.WasVariableAssigned && targetInstance is PositionedObject targetAsPositionedObject)

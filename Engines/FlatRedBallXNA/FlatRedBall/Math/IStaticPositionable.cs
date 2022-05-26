@@ -14,27 +14,21 @@ namespace FlatRedBall.Math
     #endregion
     public interface IStaticPositionable
     {
-        #region XML Docs
         /// <summary>
         /// The absolute X position.
         /// </summary>
-        #endregion
         float X { get; set;}
 
 
-        #region XML Docs
         /// <summary>
         /// The absolute Y position.
         /// </summary>
-        #endregion
         float Y { get; set;}
 
 
-        #region XML Docs
         /// <summary>
         /// The absolute Z position.
         /// </summary>
-        #endregion
         float Z { get; set;}
     }
 }

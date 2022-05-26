@@ -45,23 +45,27 @@ namespace TopDownPlugin.DataGenerators
             return absoluteFileName;
         }
 
-        internal void GenerateFor(EntitySave entity, bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
+        internal Task GenerateFor(EntitySave entity, bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] lastHeaders)
         {
-            string contents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
-
-            string fileName = CsvTopdownFileFor(entity).FullPath;
-
-            try
+            return TaskManager.Self.AddAsync(() =>
             {
-                GlueCommands.Self.TryMultipleTimes(() =>
+                string contents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
+
+                string fileName = CsvTopdownFileFor(entity).FullPath;
+
+                try
                 {
-                    FileManager.SaveText(contents, fileName);
-                });
-            }
-            catch (System.IO.IOException)
-            {
-                GlueCommands.Self.PrintError($"Trying to save top down CSV {fileName} but failed due to IO - maybe file is open?");
-            }
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        FileManager.SaveText(contents, fileName);
+                    });
+                }
+                catch (System.IO.IOException)
+                {
+                    GlueCommands.Self.PrintError($"Trying to save top down CSV {fileName} but failed due to IO - maybe file is open?");
+                }
+
+            }, $"Generating Platformer CSV for {entity}");
         }
 
         /// <summary>
@@ -91,11 +95,14 @@ namespace TopDownPlugin.DataGenerators
 
             var newHeaders = rcr.Headers.ToList();
 
-            foreach(var oldHeader in oldHeaders)
+            if(oldHeaders != null)
             {
-                if(newHeaders.Any(item => item.Name == oldHeader.Name) == false)
+                foreach(var oldHeader in oldHeaders)
                 {
-                    newHeaders.Add(oldHeader);
+                    if(newHeaders.Any(item => item.Name == oldHeader.Name) == false)
+                    {
+                        newHeaders.Add(oldHeader);
+                    }
                 }
             }
 

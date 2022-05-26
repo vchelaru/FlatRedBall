@@ -431,7 +431,7 @@ namespace FlatRedBall.Graphics
                     #region Count how many Sprites to draw and store it in numberToDraw
                     numberToDraw = 0;
 
-                    if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector)
+                    if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
                         sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
                     else
                         sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
@@ -445,7 +445,7 @@ namespace FlatRedBall.Graphics
                             break;
                         }
 
-                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector)
+                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
                             sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
                         else
                             sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();

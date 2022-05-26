@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Controls;
 using EntityInputMovementPlugin.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
+using System.Threading.Tasks;
 
 namespace EntityInputMovementPlugin
 {
@@ -42,6 +43,8 @@ namespace EntityInputMovementPlugin
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
+
+
         }
 
         private void AssignEvents()
@@ -67,7 +70,7 @@ namespace EntityInputMovementPlugin
 
         private async void HandleGluxLoaded()
         {
-            bool didChangeGlux = UpdateTopDownCodePresenceInProject();
+            bool didChangeGlux = await UpdateTopDownCodePresenceInProject();
 
             UpdatePlatformerCodePresenceInProject();
 
@@ -89,9 +92,9 @@ namespace EntityInputMovementPlugin
             }
         }
 
-        private void HandleEntityImported(GlueElement newElement)
+        private async void HandleEntityImported(GlueElement newElement)
         {
-            UpdateTopDownCodePresenceInProject();
+            await UpdateTopDownCodePresenceInProject();
             UpdatePlatformerCodePresenceInProject();
         }
 
@@ -112,17 +115,17 @@ namespace EntityInputMovementPlugin
             }
         }
 
-        private static bool UpdateTopDownCodePresenceInProject()
+        private static async Task<bool> UpdateTopDownCodePresenceInProject()
         {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
 
-            var anyTopDownEntities = entities.Any(item =>
+            var firstTopDownEntity = entities.FirstOrDefault(item =>
             {
                 var properties = item.Properties;
                 return properties.GetValue<bool>(nameof(TopDownPlugin.ViewModels.TopDownEntityViewModel.IsTopDown));
             });
 
-            if (anyTopDownEntities)
+            if (firstTopDownEntity != null)
             {
                 // just in case it's not there:
                 TopDownPlugin.CodeGenerators.EnumFileGenerator.Self.GenerateAndSave();
@@ -131,6 +134,11 @@ namespace EntityInputMovementPlugin
                 TopDownPluginCore.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AnimationCodeGenerator.Self.GenerateAndSave();
 
+                var topDownController = TopDownPlugin.Controllers.MainController.Self;
+
+                await topDownController.GenerateAndAddCsv(
+                    firstTopDownEntity,
+                    TopDownPlugin.Controllers.MainController.Self.GetViewModel());
             }
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:

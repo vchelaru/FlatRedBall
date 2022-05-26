@@ -912,6 +912,13 @@ namespace FlatRedBallAddOns.Entities
 
             #region Call PostInitialize *again* if this is a pooled, base Entity
 
+            // May 24, 2022
+            // This code is quite
+            // old, but I believe this
+            // is necessary because it re-initializes
+            // the entity after being destroyed. "old" recycled
+            // entities may have their internal objects shifted around,
+            // so a post-init will reset them. 
             FactoryCodeGenerator.CallPostInitializeIfNecessary(saveObject, currentBlock);
 
 
@@ -1912,6 +1919,9 @@ namespace FlatRedBallAddOns.Entities
 
         public static void GeneratePostInitialize(ICodeBlock codeBlock, IElement saveObject)
         {
+            // PostInitialize is a method which can be called multiple times if an entity is pooled. Therefore, any "add" calls here must
+            // be protected with if-checks.
+
             var currentBlock = codeBlock;
             bool inheritsFromElement = saveObject.InheritsFromElement();
             currentBlock = currentBlock

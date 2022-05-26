@@ -151,7 +151,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
                 }
 
-                await GenerateCsv(entity, viewModel);
+                await GenerateAndAddCsv(entity, viewModel);
             }
 
             if(shouldAddPlatformerVariables)
@@ -183,7 +183,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private static async Task GenerateCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
+        private static async Task GenerateAndAddCsv(EntitySave entity, PlatformerEntityViewModel viewModel)
         {
             // this could fail so we're going to try multiple times, but we need it immediately because
             // subsequent selections depend on it
