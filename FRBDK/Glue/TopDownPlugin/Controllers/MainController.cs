@@ -233,66 +233,74 @@ namespace TopDownPlugin.Controllers
             }
         }
 
-        private async Task GenerateAndAddCsv(EntitySave entity, TopDownEntityViewModel viewModel)
+        public async Task GenerateAndAddCsv(EntitySave entity, TopDownEntityViewModel viewModel)
         {
-            await TaskManager.Self.AddAsync(
-                                () => CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromTopDown(entity), viewModel, lastHeaders),
-                                "Generating Top Down CSV for " + entity.Name);
-
-
-            await TaskManager.Self.AddAsync(() =>
+            var didGenerate = false;
+            try
             {
-                string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
-                bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
-
-                if (!isAlreadyAdded)
+                await CsvGenerator.Self.GenerateFor(entity, GetIfInheritsFromTopDown(entity), viewModel, lastHeaders);
+                didGenerate = true;
+            }
+            catch (System.IO.IOException ioException)
+            {
+                GlueCommands.Self.PrintError($"Could not generate CSV for entity {entity}:\n{ioException.Message}");
+            }
+            if (didGenerate)
+            {
+                await TaskManager.Self.AddAsync(() =>
                 {
-                    var newCsvRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(
-                        CsvGenerator.Self.CsvTopdownFileFor(entity).FullPath,
-                        CsvGenerator.RelativeCsvFile,
-                        "",
-                        null,
-                        false,
-                        null,
-                        entity,
-                        null,
-                        selectFileAfterCreation:false
-                        );
+                    string rfsName = entity.Name.Replace("\\", "/") + "/" + CsvGenerator.RelativeCsvFile;
+                    bool isAlreadyAdded = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName) != null;
 
-                    newCsvRfs.HasPublicProperty = true;
-                }
-
-                var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
-
-                if (rfs != null && rfs.CreatesDictionary == false)
-                {
-                    rfs.CreatesDictionary = true;
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                }
-
-                const string customClassName = "TopDownValues";
-                if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
-                {
-                    CustomClassSave throwaway;
-                    GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
-                }
-
-                var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
-                    .FirstOrDefault(item => item.Name == customClassName);
-
-                if (rfs != null)
-                {
-                    if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                    if (!isAlreadyAdded)
                     {
-                        FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+                        var newCsvRfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(
+                            CsvGenerator.Self.CsvTopdownFileFor(entity).FullPath,
+                            CsvGenerator.RelativeCsvFile,
+                            "",
+                            null,
+                            false,
+                            null,
+                            entity,
+                            null,
+                            selectFileAfterCreation:false
+                            );
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        newCsvRfs.HasPublicProperty = true;
                     }
-                }
-            },
-            "Adding csv to top down entity"
-            );
+
+                    var rfs = entity.ReferencedFiles.FirstOrDefault(item => item.Name == rfsName);
+
+                    if (rfs != null && rfs.CreatesDictionary == false)
+                    {
+                        rfs.CreatesDictionary = true;
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
+                    }
+
+                    const string customClassName = "TopDownValues";
+                    if (GlueState.Self.CurrentGlueProject.CustomClasses.Any(item => item.Name == customClassName) == false)
+                    {
+                        CustomClassSave throwaway;
+                        GlueCommands.Self.GluxCommands.AddNewCustomClass(customClassName, out throwaway);
+                    }
+
+                    var customClass = GlueState.Self.CurrentGlueProject.CustomClasses
+                        .FirstOrDefault(item => item.Name == customClassName);
+
+                    if (rfs != null)
+                    {
+                        if (customClass != null && customClass.CsvFilesUsingThis.Contains(rfs.Name) == false)
+                        {
+                            FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
+
+                            GlueCommands.Self.GluxCommands.SaveGlux();
+                        }
+                    }
+                },
+                "Adding csv to top down entity"
+                );
+            }
         }
 
 

@@ -754,11 +754,11 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
-
             var response = new Dtos.GeneralCommandResponse
             {
                 Succeeded = true,
             };
+
 
             if (ScreenManager.CurrentScreen == null)
             {
@@ -794,6 +794,8 @@ namespace GlueControl
             }
 
             return response;
+#else 
+            return null;
 #endif
         }
 

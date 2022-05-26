@@ -80,28 +80,6 @@ namespace TopDownPlugin
             }
         }
 
-        private void HandleGluxLoaded()
-        {
-            var entities = GlueState.Self.CurrentGlueProject.Entities;
-
-            var anyTopDownEntities = entities.Any(item =>
-            {
-                var properties = item.Properties;
-                return properties.GetValue<bool>(nameof(TopDownEntityViewModel.IsTopDown));
-            });
-
-            if (anyTopDownEntities)
-            {
-                // just in case it's not there:
-                EnumFileGenerator.Self.GenerateAndSave();
-                InterfacesFileGenerator.Self.GenerateAndSave();
-                AiCodeGenerator.Self.GenerateAndSave();
-                AiTargetLogicCodeGenerator.Self.GenerateAndSave();
-                AnimationCodeGenerator.Self.GenerateAndSave();
-
-            }
-        }
-
         //private void HandleItemSelected(System.Windows.Forms.TreeNode selectedTreeNode)
         //{
         //    bool shouldShow = GlueState.Self.CurrentEntitySave != null &&
