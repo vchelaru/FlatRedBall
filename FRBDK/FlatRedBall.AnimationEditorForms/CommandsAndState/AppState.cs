@@ -1,11 +1,12 @@
-﻿using System;
+﻿using FlatRedBall.Content.AnimationChain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace FlatRedBall.AnimationEditorForms.CommandsAndState
 {
-    public class ApplicationState : Singleton<ApplicationState>
+    public class AppState : Singleton<AppState>
     {
         /// <summary>
         /// The absolute path of the project which this .achx is a part of.  If this is not null/empty, then
@@ -55,5 +56,11 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             get => WireframeManager.Self.WireframeEditControlsViewModel.GridSize;
             set => WireframeManager.Self.WireframeEditControlsViewModel.GridSize = value;
         }
+
+        public AnimationFrameSave CurrentFrame
+        {
+            get => SelectedState.Self.SelectedFrame;
+        }
+
     }
 }

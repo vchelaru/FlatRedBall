@@ -55,7 +55,7 @@ namespace PreviewProject
 
         private void HandleAchxLoaded(string fileName)
         {
-            mMainControl.LoadAnimationChain(fileName);
+            AppCommands.Self.LoadAnimationChain(fileName);
 
             appSettings.AddFile(fileName);
 
@@ -103,7 +103,7 @@ namespace PreviewProject
             wasAnimationLoaded = false;
             if (commandLineArgs.Length == 2)
             {
-                mMainControl.LoadAnimationChain(commandLineArgs[1]);
+                AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
                 SetFormTextToLoadedFile();
 
                 wasAnimationLoaded = true;
@@ -200,7 +200,7 @@ namespace PreviewProject
             }
             else
             {
-                mMainControl.SaveCurrentAnimationChain();
+                AppCommands.Self.SaveCurrentAnimationChainList();
 
                 this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
             }
@@ -218,7 +218,7 @@ namespace PreviewProject
 
             if(autosave && !string.IsNullOrEmpty(ProjectManager.Self.FileName))
             {
-                mMainControl.SaveCurrentAnimationChain();
+                AppCommands.Self.SaveCurrentAnimationChainList();
 
                 this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
 

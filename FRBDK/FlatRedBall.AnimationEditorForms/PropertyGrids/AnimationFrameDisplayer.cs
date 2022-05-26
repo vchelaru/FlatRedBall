@@ -343,7 +343,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (shouldAsk)
             {
-                string projectFolder = FlatRedBall.AnimationEditorForms.CommandsAndState.ApplicationState.Self.ProjectFolder;
+                string projectFolder = FlatRedBall.AnimationEditorForms.CommandsAndState.AppState.Self.ProjectFolder;
 
                 if (!string.IsNullOrEmpty(projectFolder) && FileManager.IsRelativeTo(absoluteFileName, projectFolder))
                 {

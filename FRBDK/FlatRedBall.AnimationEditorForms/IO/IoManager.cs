@@ -31,9 +31,9 @@ namespace FlatRedBall.AnimationEditorForms.IO
 
             settingsSave.ExpandedNodes.Clear();
             settingsSave.ExpandedNodes.AddRange(TreeViewManager.Self.GetExpandedNodeAnimationChainNames());
-            settingsSave.UnitType = ApplicationState.Self.UnitType;
-            settingsSave.GridSize = ApplicationState.Self.GridSize;
-            settingsSave.SnapToGrid = ApplicationState.Self.IsSnapToGridChecked;
+            settingsSave.UnitType = AppState.Self.UnitType;
+            settingsSave.GridSize = AppState.Self.GridSize;
+            settingsSave.SnapToGrid = AppState.Self.IsSnapToGridChecked;
 
             var locationToSave = GetCompanionFileFor(fileName);
 
@@ -87,9 +87,9 @@ namespace FlatRedBall.AnimationEditorForms.IO
             {
                 TreeViewManager.Self.ExpandNodes(loadedInstance.ExpandedNodes);
             }
-            ApplicationState.Self.UnitType = loadedInstance.UnitType;
-            ApplicationState.Self.IsSnapToGridChecked = loadedInstance.SnapToGrid;
-            ApplicationState.Self.GridSize = loadedInstance.GridSize;
+            AppState.Self.UnitType = loadedInstance.UnitType;
+            AppState.Self.IsSnapToGridChecked = loadedInstance.SnapToGrid;
+            AppState.Self.GridSize = loadedInstance.GridSize;
 
 
         }

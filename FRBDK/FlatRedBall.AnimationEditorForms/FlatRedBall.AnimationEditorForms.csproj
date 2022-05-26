@@ -133,7 +133,7 @@
     </Compile>
     <Compile Include="CommandsAndState\AppCommands.cs" />
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
-    <Compile Include="CommandsAndState\ApplicationState.cs" />
+    <Compile Include="CommandsAndState\AppState.cs" />
     <Compile Include="Content\DateCheckingContentLoader.cs" />
     <Compile Include="Controls\AdjustOffsetControlWpf.xaml.cs">
       <DependentUpon>AdjustOffsetControlWpf.xaml</DependentUpon>

@@ -100,7 +100,7 @@ namespace FlatRedBall.AnimationEditorForms
             ApplicationEvents.Self.WireframeTextureChange += ScrollBarHandleTextureChange;
             ApplicationEvents.Self.AfterZoomChange += delegate
             {
-                mScrollBarControlLogic.ZoomPercentage = (float)ApplicationState.Self.WireframeZoomValue;
+                mScrollBarControlLogic.ZoomPercentage = (float)AppState.Self.WireframeZoomValue;
                 mScrollBarControlLogic.UpdateScrollBars();
             };
 
@@ -289,26 +289,6 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        public void LoadAnimationChain(string fileName)
-        {
-            lock (RenderingLibrary.Graphics.Renderer.LockObject)
-            {
-                WireframeEditControlsViewModel.SelectedTextureFilePath = null;
-                ProjectManager.Self.LoadAnimationChain(fileName);
-
-                TreeViewManager.Self.RefreshTreeView();
-                // do this after refreshing the tree node:
-                IoManager.Self.LoadAndApplyCompanionFileFor(fileName);
-                WireframeManager.Self.RefreshAll();
-                PreviewManager.Self.RefreshAll();
-            }
-        }
-
-        public void SaveCurrentAnimationChain()
-        {
-            SaveCurrentAnimationChain(ProjectManager.Self.FileName);
-        }
-
         public void SaveCurrentAnimationChain(FilePath fileName)
         {
             // If it's null, we probably want to make one, right?
@@ -365,7 +345,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UnitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ApplicationState.Self.UnitType = (UnitType)UnitTypeComboBox.SelectedItem;
+            AppState.Self.UnitType = (UnitType)UnitTypeComboBox.SelectedItem;
         }
 
         private void AnimationTreeView_MouseClick(object sender, MouseEventArgs e)

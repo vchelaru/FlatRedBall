@@ -71,6 +71,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 acls = AnimationChainListSave.FromFile(fileName.FullPath);
 
+                AddShapeCollectionsToFrames(acls);
 
                 AnimationChainListSave = acls;
 
@@ -80,10 +81,21 @@ namespace FlatRedBall.AnimationEditorForms
 
 
 
-                // The app prefers UV coordinates....I think?
+                // The app prefers UV coordinates
                 if (acls.CoordinateType == Graphics.TextureCoordinateType.Pixel)
                 {
                     acls.ConvertToUvCoordinates();
+                }
+            }
+        }
+
+        private void AddShapeCollectionsToFrames(AnimationChainListSave acls)
+        {
+            foreach(var chain in acls.AnimationChains)
+            {
+                foreach(var frame in chain.Frames)
+                {
+                    frame.ShapeCollectionSave = frame.ShapeCollectionSave ?? new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
                 }
             }
         }

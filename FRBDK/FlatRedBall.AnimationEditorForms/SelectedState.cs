@@ -8,6 +8,7 @@ using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.AnimationEditorForms.Data;
 using Microsoft.Xna.Framework.Graphics;
 using CommonFormsAndControls;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -77,14 +78,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         public TreeNode SelectedNode
         {
-            get
-            {
-                return mTreeView.SelectedNode;
-            }
-            set
-            {
-                mTreeView.SelectedNode = value;
-            }
+            get => mTreeView.SelectedNode;
+            set => mTreeView.SelectedNode = value;
         }
 
         public List<TreeNode> SelectedNodes
@@ -208,6 +203,24 @@ namespace FlatRedBall.AnimationEditorForms
                     return null;
                 }
             }
+        }
+
+        public AxisAlignedRectangleSave SelectedRectangle
+        {
+            get => SelectedNode?.Tag as AxisAlignedRectangleSave;
+            set
+            {
+                if(value != null)
+                {
+                    TreeNode treeNode = TreeViewManager.Self.GetTreeNodeByTag(value);
+                    if(treeNode != null)
+                    {
+                        SelectedNode = treeNode;
+                    }
+                }
+
+            }
+
         }
 
         public Texture2D SelectedTexture

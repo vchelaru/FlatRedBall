@@ -145,7 +145,7 @@ namespace FlatRedBall.AnimationEditorForms
                 tileMapInfo.Name = fileName;
                 ProjectManager.Self.TileMapInformationList.TileMapInfos.Add(tileMapInfo);
             }
-            if (SelectedState.Self.SelectedFrame == null || ApplicationState.Self.UnitType != AnimationEditorForms.UnitType.SpriteSheet)
+            if (SelectedState.Self.SelectedFrame == null || AppState.Self.UnitType != AnimationEditorForms.UnitType.SpriteSheet)
             {
                 this.mTileMapInfoWindow.Visible = false;
             }

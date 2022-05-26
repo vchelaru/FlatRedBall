@@ -164,23 +164,10 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     var node = GetTreeNodeFor(animationFrame);
 
-                    node.Text = animationFrame.TextureName;
-                    if (string.IsNullOrEmpty(animationFrame.TextureName))
+                    if(node != null)
                     {
-                        node.Text = "<UNTEXTURED>";
+                        RefreshTreeNode(node, animationFrame);
                     }
-                    else
-                    {
-                        var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
-
-                        int left = MathFunctions.RoundToInt(animationFrame.LeftCoordinate * texture.Width);
-                        int top = MathFunctions.RoundToInt(animationFrame.TopCoordinate * texture.Height);
-
-
-                        node.Text += string.Format(
-                            " {0},{1}", left, top);
-                    }
-
                 });
             }
         }
@@ -200,7 +187,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
-        private static void RefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
+        private void RefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
         {
             frameNode.Text = animationFrame.TextureName;
             if (string.IsNullOrEmpty(animationFrame.TextureName))
@@ -223,19 +210,94 @@ namespace FlatRedBall.AnimationEditorForms
             frameNode.Tag = animationFrame;
         }
 
-        private static void RefreshShapeCollectionsOn(TreeNode treeNode, AnimationFrameSave animationFrameSave)
+        private void RefreshShapeCollectionsOn(TreeNode treeNode, AnimationFrameSave animationFrameSave)
         {
-            var shouldShowShapes =
-                animationFrameSave.ShapeCollectionSave?.AxisAlignedCubeSaves.Count > 0 ||
-                animationFrameSave.ShapeCollectionSave?.AxisAlignedRectangleSaves.Count > 0 ||
-                animationFrameSave.ShapeCollectionSave?.CircleSaves.Count > 0 ||
-                animationFrameSave.ShapeCollectionSave?.PolygonSaves.Count > 0 ||
-                animationFrameSave.ShapeCollectionSave?.SphereSaves.Count > 0;
-
-            if(shouldShowShapes)
+            if (animationFrameSave.ShapeCollectionSave != null)
             {
+                foreach (var cube in animationFrameSave.ShapeCollectionSave.AxisAlignedCubeSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, cube);
+                }
+                foreach (var rect in animationFrameSave.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, rect);
 
+                }
+                foreach (var circle in animationFrameSave.ShapeCollectionSave.CircleSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, circle);
+
+                }
+                foreach (var polygon in animationFrameSave.ShapeCollectionSave.PolygonSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, polygon);
+
+                }
+                foreach (var sphere in animationFrameSave.ShapeCollectionSave.SphereSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, sphere);
+                }
             }
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.AxisAlignedCubeSave cube)
+        {
+            var node = GetTreeNodeByTag(cube, parentNode);
+            if(node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = cube.Name;
+            node.Tag = cube;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.AxisAlignedRectangleSave rect)
+        {
+            var node = GetTreeNodeByTag(rect, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = rect.Name;
+            node.Tag = rect;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.CircleSave circle)
+        {
+            var node = GetTreeNodeByTag(circle, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = circle.Name;
+            node.Tag = circle;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Polygon.PolygonSave polygon)
+        {
+            var node = GetTreeNodeByTag(polygon, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = polygon.Name;
+            node.Tag = polygon;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.SphereSave sphere)
+        {
+            var node = GetTreeNodeByTag(sphere, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = sphere.Name;
+            node.Tag = sphere;
         }
 
         #endregion
@@ -312,10 +374,23 @@ namespace FlatRedBall.AnimationEditorForms
                 return GetTreeNodeByTag(acs, mTreeView.Nodes);
 
             }
-
         }
 
-        private TreeNode GetTreeNodeByTag(object tag, TreeNodeCollection treeNodeCollection)
+        public TreeNode GetTreeNodeByTag(object tag)
+        {
+            if (tag == null)
+            {
+                return null;
+            }
+            else
+            {
+                return GetTreeNodeByTag(tag, mTreeView.Nodes);
+
+            }
+        }
+
+        TreeNode GetTreeNodeByTag(object tag, TreeNode parentTreeNode) => GetTreeNodeByTag(tag, parentTreeNode.Nodes);
+        TreeNode GetTreeNodeByTag(object tag, TreeNodeCollection treeNodeCollection)
         {
             foreach (TreeNode treeNode in treeNodeCollection)
             {
@@ -543,7 +618,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void HandleDroppedAchxFile(string fileName)
         {
-            MainControl.Self.LoadAnimationChain(fileName);
+            AppCommands.Self.LoadAnimationChain(fileName);
         }
 
         internal static void DragOver(object sender, DragEventArgs e)

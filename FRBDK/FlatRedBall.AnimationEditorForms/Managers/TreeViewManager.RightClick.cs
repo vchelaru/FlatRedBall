@@ -9,6 +9,8 @@ using System.Diagnostics;
 using FlatRedBall.AnimationEditorForms.Controls;
 using FlatRedBall.AnimationEditorForms.Preview;
 using FlatRedBall.IO;
+using FlatRedBall.Content.Math.Geometry;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -38,12 +40,16 @@ namespace FlatRedBall.AnimationEditorForms
 
             // If a frame is not null, then the chain will always be not null, 
             // so check the frame first
+            #region Animation Frame
             if (state.SelectedFrame != null)
             {
                 AddReorderOptions();
 
                 mMenu.Items.Add("-");
 
+                mMenu.Items.Add("Add AxisAlignedRectangle", null, HandleAddAxisAlignedRectangle);
+
+                mMenu.Items.Add("-");
 
                 mMenu.Items.Add("Copy", null, CopyClick);
                 mMenu.Items.Add("Paste", null, PasteClick);
@@ -52,6 +58,10 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("Delete AnimationFrame", null, DeleteAnimationFrameClick);
 
             }
+            #endregion
+
+            #region AnimationChain
+
             else if (state.SelectedChain != null)
             {
                 AddReorderOptions();
@@ -76,6 +86,9 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("-");
                 mMenu.Items.Add("Delete AnimationChain", null, DeleteAnimationChainClick);
             }
+
+            #endregion
+
             else
             {
                 mMenu.Items.Add("Add AnimationChain", null, AddChainClick);
@@ -91,6 +104,25 @@ namespace FlatRedBall.AnimationEditorForms
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
             
+        }
+
+        private void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
+        {
+            var selectedFrames = SelectedState.Self.SelectedFrames;
+
+            foreach(var frame in selectedFrames)
+            {
+                var rectangleSave = new AxisAlignedRectangleSave();
+                rectangleSave.ScaleX = 8;
+                rectangleSave.ScaleY = 8;
+                rectangleSave.Name = "Default"; // todo - make unique
+                frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleSave);
+
+                AppCommands.Self.RefreshAnimationFrameDisplay();
+                AppCommands.Self.RefreshTreeNode(frame);
+                SelectedState.Self.SelectedRectangle = rectangleSave;
+                AppCommands.Self.SaveCurrentAnimationChainList();
+            }
         }
 
         internal void HandleExpandAllTreeView(object sender, EventArgs e)
