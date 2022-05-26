@@ -246,6 +246,11 @@ namespace FlatRedBall
                     {
                         string error = "There is no animation named " + value;
 
+                        if(mAnimationChains?.Name != null)
+                        {
+                            error += $" in AnimationChain {mAnimationChains?.Name}";
+                        }
+
                         if(mAnimationChains.Count == 0)
                         {
                             error += "\nThis sprite has no animations";
