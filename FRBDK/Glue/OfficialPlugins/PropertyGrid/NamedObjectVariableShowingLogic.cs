@@ -830,7 +830,7 @@ namespace OfficialPlugins.VariableDisplay
 
                         StateSaveCategory matchingStateCategory = null;
 
-                        if(possibleStateCustomVariable.Type != null)
+                        if(possibleStateCustomVariable?.Type != null)
                         {
                             matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
                         }
