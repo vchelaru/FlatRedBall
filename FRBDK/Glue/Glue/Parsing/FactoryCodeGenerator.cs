@@ -78,6 +78,14 @@ namespace FlatRedBall.Glue.Parsing
             // will initialize the list, and this could
             // cause the list to become the one that the
             // factory fills.
+            // Update May 30, 2022 - Now that we are supporting
+            // the concept of "rooms", these rooms may instantiate
+            // entities which should end up in the lists of the rooms.
+            // Therefore, we need to have lists be able to add themselves
+            // to the factories.
+            // This addition will be temporary, only when the TileEntityInstantiator
+            // creates the entities. Therefore, the TileEntityInstantor code generator
+            // will also be modifying the factory lists.
             /////////////////////EARLY OUT///////////////////////
             if (!(element is ScreenSave))
             {

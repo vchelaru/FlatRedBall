@@ -1746,8 +1746,9 @@ namespace FlatRedBall.Glue.Plugins
 
                 PluginBase[] pluginArray = plugins.ToArray();
 
-                foreach (var plugin in pluginArray)
+                for (int i = 0; i < pluginArray.Length; i++)
                 {
+                    PluginBase plugin = pluginArray[i];
                     PluginContainer container = manager.PluginContainers[plugin];
 
                     if (container.IsEnabled)
