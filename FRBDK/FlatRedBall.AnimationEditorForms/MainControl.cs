@@ -134,12 +134,13 @@ namespace FlatRedBall.AnimationEditorForms
                 this.imageRegionSelectionControl1.XnaUpdate += new Action(HandleXnaUpdate);
             }
             PropertyGridManager.Self.Initialize(SelectedItemPropertyGrid, this.tileMapInfoWindow1);
-            PropertyGridManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
+            PropertyGridManager.Self.AnimationChainChange += (not, used) =>
+                    ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
             PropertyGridManager.Self.AnimationFrameChange += HandleAnimationFrameChanges;
 
-
             TreeViewManager.Self.Initialize(AnimationTreeView);
-            TreeViewManager.Self.AnimationChainsChange += RaiseAnimationChainChanges;
+            
             TreeViewManager.Self.AnimationChainSelected += (not, used) => AnimationChainSelected?.Invoke(this, null);
 
             RenderingLibrary.Graphics.Renderer.UseBasicEffectRendering = false;
@@ -253,18 +254,10 @@ namespace FlatRedBall.AnimationEditorForms
             UnitTypeComboBox.SelectedItem = UnitTypeComboBox.Items[0];
         }
 
-        public void RaiseAnimationChainChanges(object sender, EventArgs args)
-        {
-            if (AnimationChainChange != null)
-            {
-                AnimationChainChange(this, null);
-            }
-        }
 
         void HandleAnimationFrameChanges(object sender, EventArgs args)
         {
             PreviewManager.Self.ReactToAnimationFrameChange();
-
         }
 
         void HandleRegionXnaInitialize()
@@ -272,7 +265,9 @@ namespace FlatRedBall.AnimationEditorForms
             try
             {
                 WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, WireframeTopUiControl, WireframeEditControlsViewModel);
-                WireframeManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
+                WireframeManager.Self.AnimationChainChange += (not, used) =>
+                        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
 
                 mScrollBarControlLogic.Managers = imageRegionSelectionControl1.SystemManagers;
                 var contentLoader = new DateCheckingContentLoader(imageRegionSelectionControl1.SystemManagers);

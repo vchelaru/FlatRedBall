@@ -77,7 +77,7 @@ namespace FlatRedBall.AnimationEditorForms
                     SelectedState.Self.SelectedChain.Frames.Add(newAfs);
                     AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
                     SelectedState.Self.SelectedFrame = newAfs;
-                    MainControl.Self.RaiseAnimationChainChanges(null, null);
+                    ApplicationEvents.Self.RaiseAnimationChainsChanged();
                 }
                 else if (dataObject.GetDataPresent("chain"))
                 {
@@ -104,7 +104,7 @@ namespace FlatRedBall.AnimationEditorForms
             ProjectManager.Self.AnimationChainListSave.AnimationChains.Add(newAcs);
             AppCommands.Self.RefreshTreeNode(newAcs);
 
-            MainControl.Self.RaiseAnimationChainChanges(null, null);
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
 
             SelectedState.Self.SelectedChain = newAcs;
 

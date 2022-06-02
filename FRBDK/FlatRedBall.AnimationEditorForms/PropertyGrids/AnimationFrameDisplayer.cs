@@ -74,7 +74,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         public UnitType CoordinateType
         {
-            get { return mCoordinateType; }
+            get => mCoordinateType; 
             set
             {
                 mCoordinateType = value;

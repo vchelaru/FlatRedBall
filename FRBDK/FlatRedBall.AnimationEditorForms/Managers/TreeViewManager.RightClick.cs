@@ -616,7 +616,7 @@ namespace FlatRedBall.AnimationEditorForms
             else
             {
                 AnimationFrameSave afs = new AnimationFrameSave();
-
+                afs.ShapeCollectionSave = new ShapeCollectionSave(); // animation editor always assumes frames have shape collections
                 if (chain.Frames.Count != 0)
                 {
                     AnimationFrameSave copyFrom = chain.Frames[0];
@@ -693,34 +693,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (SelectedState.Self.SelectedChains.Count > 0)
             {
-                string message = "Delete the following animation(s)?\n\n";
-
-                foreach(var chain in SelectedState.Self.SelectedChains)
-                {
-                    message += chain.Name + "\n";
-                }
-
-                DialogResult result = 
-                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    var chainsCopy = SelectedState.Self.SelectedChains.ToArray();
-                    foreach(var chain in chainsCopy)
-                    {
-                        ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                    }
-
-                    // refresh the tree view before refreshing the PreviewManager, since refreshing the tree view deselects the animation
-                    TreeViewManager.Self.RefreshTreeView();
-
-                    PreviewManager.Self.RefreshAll();
-
-
-                    CallAnimationChainsChange();
-
-                    WireframeManager.Self.RefreshAll();
-                }
+                AppCommands.Self.AskToDelete(SelectedState.Self.SelectedChains);
             }
         }
 
@@ -728,29 +701,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (SelectedState.Self.SelectedFrames.Count > 0)
             {
-                string message = $"Delete the following {SelectedState.Self.SelectedFrames.Count} frame(s)?\n\n";
-                foreach(var frame in SelectedState.Self.SelectedFrames)
-                {
-                    message += $"Frame {frame.TextureName}\n";
-                }
-                DialogResult result = 
-                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    var framesToDelete = SelectedState.Self.SelectedFrames.ToArray();
-                    foreach(var frame in framesToDelete)
-                    {
-                        SelectedState.Self.SelectedChain.Frames.Remove(frame);
-                    }
-
-                    TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
-
-                    WireframeManager.Self.RefreshAll();
-
-                    CallAnimationChainsChange();
-                }
-
+                AppCommands.Self.AskToDelete(SelectedState.Self.SelectedFrames);
             }
         }
 

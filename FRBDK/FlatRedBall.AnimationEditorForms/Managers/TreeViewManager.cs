@@ -9,6 +9,8 @@ using System.Drawing;
 using ToolsUtilities;
 using FlatRedBall.Math;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.AnimationEditorForms.Managers;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -48,8 +50,6 @@ namespace FlatRedBall.AnimationEditorForms
         #endregion
 
         #region Events
-
-        public event EventHandler AnimationChainsChange;
 
         public event EventHandler AnimationChainSelected;
 
@@ -238,6 +238,26 @@ namespace FlatRedBall.AnimationEditorForms
                     AddAndRefreshTreeNode(treeNode, sphere);
                 }
             }
+
+            System.Collections.IList list = treeNode.Nodes;
+            for (int i = list.Count-1; i > -1; i--)
+            {
+                TreeNode childNode = (TreeNode)list[i];
+                var shape = childNode.Tag;
+                if(shape is AxisAlignedRectangleSave rectangle)
+                {
+                    // is it referenced?
+                    var isReferenced = animationFrameSave.ShapeCollectionSave?.AxisAlignedRectangleSaves.Contains(rectangle) == true;
+                    if(!isReferenced)
+                    {
+                        treeNode.Nodes.Remove(childNode);
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
         }
 
         private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.AxisAlignedCubeSave cube)
@@ -413,10 +433,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         void CallAnimationChainsChange()
         {
-            if (AnimationChainsChange != null)
-            {
-                AnimationChainsChange(this, null);
-            }
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
         }
 
         #region Drag+drop
@@ -701,6 +718,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (e.KeyCode == Keys.Delete)
             {
+                e.Handled = HotkeyManager.Self.TryHandleKeys(e.KeyCode);
                 if (SelectedState.Self.SelectedFrame != null)
                 {
                     DeleteAnimationFrameClick(null, null);

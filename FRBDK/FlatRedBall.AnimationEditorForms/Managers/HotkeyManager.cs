@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,23 @@ namespace FlatRedBall.AnimationEditorForms.Managers
                 case Keys.Control | Keys.D:
                     CopyManager.Self.HandleDuplicate();
                     return true;
+                case Keys.Delete:
+                    if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
+                    {
+                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedAxisAlignedRectangle, SelectedState.Self.SelectedFrame);
+                    }
+                    else if(SelectedState.Self.SelectedFrames.Count > 0)
+                    {
+                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedFrames);
+
+                    }
+                    else if(SelectedState.Self.SelectedChains.Count > 0)
+                    {
+                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedChains);
+
+                    }
+                    return true;
+
                 default:
                     return false;
             }

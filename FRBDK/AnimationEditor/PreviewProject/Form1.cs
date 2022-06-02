@@ -37,7 +37,7 @@ namespace PreviewProject
             InitializeComponent();
 
             mMainControl = new FlatRedBall.AnimationEditorForms.MainControl();
-            mMainControl.AnimationChainChange += HandleAnimationChainChange;
+            ApplicationEvents.Self.AnimationChainsChanged += HandleAnimationChainChange;
             // We want to make sure to always have a good animation chain:
             this.Controls.Add(mMainControl);
             mMainControl.Dock = DockStyle.Fill;
@@ -212,7 +212,7 @@ namespace PreviewProject
             this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
         }
 
-        private void HandleAnimationChainChange(object sender, EventArgs e)
+        private void HandleAnimationChainChange()
         {
             bool autosave = true;
 

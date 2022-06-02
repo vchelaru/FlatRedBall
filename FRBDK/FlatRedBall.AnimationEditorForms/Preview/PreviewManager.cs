@@ -15,6 +15,8 @@ using InputLibrary;
 using FlatRedBall.SpecializedXnaControls.Input;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.SpecializedXnaControls;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms.Preview
 {
@@ -196,7 +198,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
 
             mManagers.Name = "Preview Window Managers";
-            ShapeManager shapeManager = mManagers.ShapeManager;
+            var shapeManager = mManagers.ShapeManager;
 
             mSprite = new RenderingLibrary.Graphics.Sprite(null);
             mSprite.Name = "Animation PreviewManager Main Sprite";
@@ -311,18 +313,58 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             var frame = AppState.Self.CurrentFrame;
             if (frame != null)
             {
-                foreach(var item in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                foreach(var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
                 {
-                    var rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(mManagers);
-                    rectangle.IsDotted = false;
-                    rectangle.Tag = item;
-                    rectangle.Width = item.ScaleX * 2;
-                    rectangle.Height = item.ScaleY * 2;
-                    rectangle.X = item.X - item.ScaleX;
-                    rectangle.Y = -item.Y - item.ScaleY;
-                    mManagers.ShapeManager.Add(rectangle);
-                    frameRectangles.Add(rectangle);
+                    LineRectangle rectangle = null;
+
+                    rectangle = frameRectangles.FirstOrDefault(possibleRectangle => possibleRectangle.Tag == frameAarectSave);
+
+                    if(rectangle == null)
+                    {
+                        rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(mManagers);
+                        rectangle.IsDotted = false;
+                        rectangle.Tag = frameAarectSave;
+                        mManagers.ShapeManager.Add(rectangle);
+                        frameRectangles.Add(rectangle);
+                    }
+
+                    rectangle.Width = frameAarectSave.ScaleX * 2;
+                    rectangle.Height = frameAarectSave.ScaleY * 2;
+                    rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX;
+                    rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
                 }
+
+                // todo - remove any rectangles not part of the frame
+                for (int i = frameRectangles.Count-1; i > -1; i--)
+                {
+                    var frameRectangle = frameRectangles[i];
+
+                    var tag = frameRectangle.Tag;
+
+                    var isReferencedByCurrentFrame = false;
+
+                    if(tag is AxisAlignedRectangleSave tagAsRectangle)
+                    {
+                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                            .Contains(tagAsRectangle);
+                    }
+
+                    if(!isReferencedByCurrentFrame)
+                    {
+                        mManagers.ShapeManager.Remove(frameRectangle);
+                        frameRectangles.RemoveAt(i);
+                    }
+                }
+            }
+            else
+            {
+                for(int i = 0; i < frameRectangles.Count; i++)
+                {
+                    var rectangle = frameRectangles[i];
+                    mManagers.ShapeManager.Remove(rectangle);
+                }
+
+                frameRectangles.Clear();
             }
         }
 
