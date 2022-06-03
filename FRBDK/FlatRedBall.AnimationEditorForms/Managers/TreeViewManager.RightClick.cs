@@ -11,6 +11,7 @@ using FlatRedBall.AnimationEditorForms.Preview;
 using FlatRedBall.IO;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.Utilities;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -115,7 +116,14 @@ namespace FlatRedBall.AnimationEditorForms
                 var rectangleSave = new AxisAlignedRectangleSave();
                 rectangleSave.ScaleX = 8;
                 rectangleSave.ScaleY = 8;
-                rectangleSave.Name = "Default"; // todo - make unique
+                rectangleSave.Name = "AxisAlignedRectangleInstance";
+
+                // do this before adding it to the list
+                rectangleSave.Name = StringFunctions.MakeStringUnique(rectangleSave.Name,
+                    SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                        .Select(item => item.Name).ToList()
+                    );
+
                 frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleSave);
 
                 AppCommands.Self.RefreshAnimationFrameDisplay();

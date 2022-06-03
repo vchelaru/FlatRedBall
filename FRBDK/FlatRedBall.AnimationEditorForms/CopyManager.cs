@@ -7,6 +7,8 @@ using FlatRedBall.Content.AnimationChain;
 using System.Windows.Forms;
 using FlatRedBall.Utilities;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -39,52 +41,107 @@ namespace FlatRedBall.AnimationEditorForms
 
         internal void HandleCopy()
         {
-
-            if (SelectedState.Self.SelectedFrame != null)
+            if (SelectedState.Self.SelectedRectangle != null)
             {
-                Clipboard.Clear();
-                DataObject dataObject = new DataObject("frame", FileManager.CloneObject(SelectedState.Self.SelectedFrame));
-                var item = dataObject.GetData("frame");
-                Clipboard.SetDataObject(
-                    dataObject, false, 10, 40);
+                PutInClipboard(SelectedState.Self.SelectedRectangle);
+            }
+            else if (SelectedState.Self.SelectedFrame != null)
+            {
+                PutInClipboard(SelectedState.Self.SelectedFrame);
             }
             else if (SelectedState.Self.SelectedChain != null)
             {
+                PutInClipboard(SelectedState.Self.SelectedChain);
+            }
+
+            // I tried to use Clipboard.SetData and for some reason every time I did CTRL+V, the data
+            // in "frame" was null. So instead I'm going with Text which seems more reliable:
+            void PutInClipboard<T>(T objectToPlace)
+            {
                 Clipboard.Clear();
-                var toAdd = FileManager.CloneObject(SelectedState.Self.SelectedChain);
-                DataObject dataObject = new DataObject("chain", toAdd);
-                Clipboard.SetDataObject(
-                    dataObject, false, 10, 40);
+                FileManager.XmlSerialize(objectToPlace, out string serializedString);
+                Clipboard.SetText($"{objectToPlace.GetType().Name}:" + serializedString);
             }
         }
 
         internal AnimationChainSave HandleDuplicate(string requestedName = null)
         {
-            return Duplicate(FileManager.CloneObject(SelectedState.Self.SelectedChain), requestedName);
+            if(SelectedState.Self.SelectedFrame != null)
+            {
+                MessageBox.Show("Cannot currently duplicate frames - create an issue on github if needed");
+                return null;
+            }
+            else
+            {
+                return Duplicate(FileManager.CloneObject(SelectedState.Self.SelectedChain), requestedName);
+            }
         }
 
         internal void HandlePaste()
         {
-            var dataObject = Clipboard.GetDataObject();
+            var text = Clipboard.GetText();
+            AnimationFrameSave pastedFrame = null;
+            AnimationChainSave pastedChain = null;
+            AxisAlignedRectangleSave pastedRectangle = null;
+            if(text?.Contains(":") == true)
+            {
+                var before = text.Substring(0, text.IndexOf(":"));
+                var after = text.Substring(text.IndexOf(":") + 1);
+
+                if(before == "AnimationFrameSave")
+                {
+                    try
+                    {
+                        pastedFrame = FileManager.XmlDeserializeFromString<AnimationFrameSave>(after);
+                    }
+                    catch { } // no biggie
+                }
+                else if(before == "AnimationChainSave")
+                {
+                    try
+                    {
+                        pastedChain = FileManager.XmlDeserializeFromString<AnimationChainSave>(after);
+                    }
+                    catch { } // no biggie
+                }
+                else if(before == nameof(AxisAlignedRectangleSave))
+                {
+                    try { pastedRectangle = FileManager.XmlDeserializeFromString<AxisAlignedRectangleSave>(after); }
+                    catch { }
+                }
+            }
             if (ProjectManager.Self.AnimationChainListSave != null)
             {
-                if (dataObject.GetDataPresent("frame") && SelectedState.Self.SelectedChain != null)
+                if(pastedRectangle != null && SelectedState.Self.SelectedFrame != null)
                 {
-                    // paste this in the chain
-                    // clone it, in case multiple pastes occur:
-                    AnimationFrameSave whatToCopy = dataObject.GetData("frame") as AnimationFrameSave;
-                    AnimationFrameSave newAfs = FileManager.CloneObject(whatToCopy);
-                    SelectedState.Self.SelectedChain.Frames.Add(newAfs);
+                    // do this before adding it to the list:
+                    pastedRectangle.Name = StringFunctions.MakeStringUnique(pastedRectangle.Name,
+                        SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                            .Select(item => item.Name).ToList()
+                        );
+
+                    SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(pastedRectangle);
+
+
+                    AppCommands.Self.RefreshAnimationFrameDisplay();
+                    AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedFrame);
+                    SelectedState.Self.SelectedRectangle = pastedRectangle;
+                    AppCommands.Self.SaveCurrentAnimationChainList();
+                }
+                else if (pastedFrame != null && SelectedState.Self.SelectedChain != null)
+                {
+                    if(pastedFrame.ShapeCollectionSave == null)
+                    {
+                        pastedFrame.ShapeCollectionSave = new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
+                    }
+                    SelectedState.Self.SelectedChain.Frames.Add(pastedFrame);
                     AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
-                    SelectedState.Self.SelectedFrame = newAfs;
+                    SelectedState.Self.SelectedFrame = pastedFrame;
                     ApplicationEvents.Self.RaiseAnimationChainsChanged();
                 }
-                else if (dataObject.GetDataPresent("chain"))
+                else if (pastedChain != null)
                 {
-                    object data = dataObject.GetData("chain");
-                    AnimationChainSave whatToCopy = data as AnimationChainSave;
-                    Duplicate(whatToCopy);
-
+                    Duplicate(pastedChain);
                 }
             }
         }

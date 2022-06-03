@@ -721,14 +721,12 @@ namespace FlatRedBall.Utilities
 
 
 
-        #region XML Docs
         /// <summary>
         /// Renames the argument INameable to prevent duplicate names.  This method is extremely inefficent for large lists.
         /// </summary>
         /// <typeparam name="T">The type of INameable contained int he list.</typeparam>
         /// <param name="nameable">The INameable to rename if necessary.</param>
         /// <param name="list">The list containing the INameables to compare against.</param>
-        #endregion
         public static void MakeNameUnique<T>(T nameable, IList<T> list)
             where T : INameable
         {
