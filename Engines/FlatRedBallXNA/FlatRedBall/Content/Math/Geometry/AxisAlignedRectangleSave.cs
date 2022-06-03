@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -75,7 +76,14 @@ namespace FlatRedBall.Content.Math.Geometry
         public FlatRedBall.Math.Geometry.AxisAlignedRectangle ToAxisAlignedRectangle()
         {
             FlatRedBall.Math.Geometry.AxisAlignedRectangle rectangle = new FlatRedBall.Math.Geometry.AxisAlignedRectangle();
+            SetValuesOn(rectangle);
 
+            return rectangle;
+
+        }
+
+        public void SetValuesOn(AxisAlignedRectangle rectangle)
+        {
             rectangle.X = this.X;
             rectangle.Y = this.Y;
             rectangle.Z = this.Z;
@@ -91,10 +99,6 @@ namespace FlatRedBall.Content.Math.Geometry
                     (byte)(Alpha * 255));
 
             rectangle.Name = this.Name;
-
-            return rectangle;
-
         }
-
     }
 }

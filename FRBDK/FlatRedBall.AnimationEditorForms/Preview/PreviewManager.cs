@@ -171,10 +171,41 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mManagers.SpriteManager.Activity(TimeManager.Self.CurrentTime);
             MoveSpriteAccordingToAlignmentAndOffset(mSprite, SelectedState.Self.SelectedFrame);
             UpdateOutlineRectangleToSprite();
-
+            DoShapeUpdateActivity();
             mManagers.Renderer.Draw(mManagers);
 
 
+        }
+
+        private void DoShapeUpdateActivity()
+        {
+            // Event though we may not be rendering the main Sprite, we want to use the main Sprite's animation:
+            var animation = mSprite.Animation;
+
+            if (animation != null && mSprite.Animate)
+            {
+                int index = mSprite.Animation.CurrentFrameIndex;
+
+                float animationXOffset = 0;
+                float animationYOffset = 0;
+
+                AnimationChainSave chain = SelectedState.Self.SelectedChain;
+
+                AnimationFrameSave frame = null;
+
+                if (chain != null && chain.Frames.Count > index)
+                {
+                    if (frame == null)
+                    {
+                        frame = chain.Frames[index];
+                    }
+
+                    animationXOffset = frame.RelativeX * OffsetMultiplier;
+                    animationYOffset = frame.RelativeY * OffsetMultiplier;
+                }
+
+                UpdateShapesToFrame(frame);
+            }
         }
 
         private void UpdateOutlineRectangleToSprite()
@@ -311,15 +342,20 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void UpdateShapes()
         {
             var frame = AppState.Self.CurrentFrame;
+            UpdateShapesToFrame(frame);
+        }
+
+        private void UpdateShapesToFrame(AnimationFrameSave frame)
+        {
             if (frame != null)
             {
-                foreach(var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                foreach (var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
                 {
                     LineRectangle rectangle = null;
 
                     rectangle = frameRectangles.FirstOrDefault(possibleRectangle => possibleRectangle.Tag == frameAarectSave);
 
-                    if(rectangle == null)
+                    if (rectangle == null)
                     {
                         rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(mManagers);
                         rectangle.IsDotted = false;
@@ -335,7 +371,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                 }
 
                 // todo - remove any rectangles not part of the frame
-                for (int i = frameRectangles.Count-1; i > -1; i--)
+                for (int i = frameRectangles.Count - 1; i > -1; i--)
                 {
                     var frameRectangle = frameRectangles[i];
 
@@ -343,13 +379,13 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
                     var isReferencedByCurrentFrame = false;
 
-                    if(tag is AxisAlignedRectangleSave tagAsRectangle)
+                    if (tag is AxisAlignedRectangleSave tagAsRectangle)
                     {
                         isReferencedByCurrentFrame = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
                             .Contains(tagAsRectangle);
                     }
 
-                    if(!isReferencedByCurrentFrame)
+                    if (!isReferencedByCurrentFrame)
                     {
                         mManagers.ShapeManager.Remove(frameRectangle);
                         frameRectangles.RemoveAt(i);
@@ -358,7 +394,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
             else
             {
-                for(int i = 0; i < frameRectangles.Count; i++)
+                for (int i = 0; i < frameRectangles.Count; i++)
                 {
                     var rectangle = frameRectangles[i];
                     mManagers.ShapeManager.Remove(rectangle);

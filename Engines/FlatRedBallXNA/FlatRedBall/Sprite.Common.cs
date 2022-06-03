@@ -284,11 +284,33 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The current AnimationFrame displayed by this Sprite, or null if no AnimationFrame is being displayed
+        /// </summary>
+        public AnimationFrame CurrentFrame
+        {
+            get
+            {
+                var currentChain = CurrentChain;
+                if(currentChain != null && mCurrentFrameIndex > -1 && mCurrentFrameIndex < currentChain.Count)
+                {
+                    return currentChain[mCurrentFrameIndex];
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Whether this Sprite just changed the AnimationFrame it is displaying due to internal animation activity this frame.
+        /// </summary>
         public bool JustChangedFrame
         {
             get { return mJustChangedFrame; }
         }
 
+        /// <summary>
+        /// Whether this Sprite just cycled its animation (set its CurrentFrameIndex to 0) due to internal animation activity this frame.
+        /// </summary>
         public bool JustCycled
         {
             get { return mJustCycled; }

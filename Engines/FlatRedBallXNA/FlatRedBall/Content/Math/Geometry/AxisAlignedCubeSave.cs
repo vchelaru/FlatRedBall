@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-
+using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
@@ -55,6 +55,14 @@ namespace FlatRedBall.Content.Math.Geometry
         {
             FlatRedBall.Math.Geometry.AxisAlignedCube cube = new FlatRedBall.Math.Geometry.AxisAlignedCube();
 
+            SetValuesOn(cube);
+
+            return cube;
+
+        }
+
+        public void SetValuesOn(AxisAlignedCube cube)
+        {
             cube.X = this.X;
             cube.Y = this.Y;
             cube.Z = this.Z;
@@ -71,10 +79,6 @@ namespace FlatRedBall.Content.Math.Geometry
                     (byte)(Green * 255),
                     (byte)(Blue * 255),
                     (byte)(Alpha * 255));
-
-            return cube;
-
         }
-
     }
 }

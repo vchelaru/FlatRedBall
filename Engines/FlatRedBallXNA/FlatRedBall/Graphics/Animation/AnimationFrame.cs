@@ -10,6 +10,8 @@ using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using System.Xml;
 using System.Xml.Serialization;
 using FlatRedBall.Instructions;
+using FlatRedBall.Content.Math.Geometry;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Graphics.Animation
 {
@@ -26,47 +28,36 @@ namespace FlatRedBall.Graphics.Animation
     {
         #region Fields
 
-        #region XML Docs
         /// <summary>
         /// Empty AnimationFrame.
         /// </summary>
-        #endregion
         public static AnimationFrame Empty;
-        #region XML Docs
+
         /// <summary>
         /// The texture that the AnimationFrame will show.
         /// </summary>
-        #endregion
         [XmlIgnore]
         public Texture2D Texture;
 
-        #region XML Docs
         /// <summary>
         /// Whether the texture should be flipped horizontally.
         /// </summary>
-        #endregion
         public bool FlipHorizontal;
 
-        #region XML Docs
         /// <summary>
         /// Whether the texture should be flipped on the vertidally.
         /// </summary>
-        #endregion
         public bool FlipVertical;
 
-        #region XML Docs
         /// <summary>
         /// Used in XML Serialization of AnimationChains - this should
         /// not explicitly be set by the user.
         /// </summary>
-        #endregion
         public string TextureName;
 
-        #region XML Docs
         /// <summary>
         /// The amount of time in seconds the AnimationFrame should be shown for.
         /// </summary>
-        #endregion
         public float FrameLength;
 
         /// <summary>
@@ -97,23 +88,25 @@ namespace FlatRedBall.Graphics.Animation
         /// </summary>
         public float BottomCoordinate = 1;
 
-        #region XML Docs
         /// <summary>
         /// The relative X position of the object that is using this AnimationFrame.  This
         /// is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
         /// set to true.
         /// </summary>
-        #endregion
         public float RelativeX;
 
-        #region XML Docs
         /// <summary>
         /// The relative Y position of the object that is using this AnimationFrame.  This
         /// is only applied if the IAnimationChainAnimatable's UseAnimationRelativePosition is
         /// set to true.
         /// </summary>
-        #endregion
         public float RelativeY;
+
+        /// <summary>
+        /// Shapes associated with this animation. This may be null, or it may contain any number of shapes which can be used
+        /// for collision.
+        /// </summary>
+        public ShapeCollectionSave ShapeCollectionSave;
 
         #endregion
 
@@ -190,18 +183,22 @@ namespace FlatRedBall.Graphics.Animation
 
         #region Public Methods
 
-        #region XML Docs
         /// <summary>
         /// Creates a new AnimationFrame with identical properties.  The new AnimationFrame
         /// will not belong to the AnimationChain that this AnimationFrameBelongs to unless manually
         /// added.
         /// </summary>
         /// <returns>The new AnimationFrame instance.</returns>
-        #endregion
         public AnimationFrame Clone()
         {
-            AnimationFrame animationFrame = this.MemberwiseClone() as AnimationFrame;
-            return animationFrame;
+            var newAnimationFrame = this.MemberwiseClone() as AnimationFrame;
+
+            if(ShapeCollectionSave != null)
+            {
+                newAnimationFrame.ShapeCollectionSave = FileManager.CloneObject(this.ShapeCollectionSave);
+            }
+
+            return newAnimationFrame;
         }
 
         #region XML Docs

@@ -11,6 +11,10 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
+    /// <summary>
+    /// A serializable class storing shape collection data. If saves as XML using the .schx file format, it 
+    /// can be used by FlatRedBall tools.
+    /// </summary>
     public class ShapeCollectionSave
     {
         #region Fields
@@ -152,6 +156,158 @@ namespace FlatRedBall.Content.Math.Geometry
             return listToReturn;
         }
 
+        public void SetValuesOn(ShapeCollection shapeCollection, PositionedObject newShapeParent, bool createMissingShapes)
+        {
+            foreach (var rectangle in this.AxisAlignedRectangleSaves)
+            {
+                AxisAlignedRectangle match = null;
+
+                for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
+                {
+                    var candidate = shapeCollection.AxisAlignedRectangles[j];
+                    if (candidate.Name == rectangle.Name)
+                    {
+                        match = candidate;
+                        break;
+                    }
+                }
+                if (match == null && createMissingShapes)
+                {
+                    match = new AxisAlignedRectangle();
+                    if(newShapeParent != null)
+                    {
+                        match.AttachTo(newShapeParent);
+                    }
+                    shapeCollection.AxisAlignedRectangles.Add(match);
+                }
+
+                rectangle.SetValuesOn(match);
+                match.RelativeX = rectangle.X;
+                match.RelativeY = rectangle.Y;
+                match.RelativeZ = rectangle.Z;
+            }
+
+            foreach (var circle in this.CircleSaves)
+            {
+                Circle match = null;
+
+                for (int j = 0; j < shapeCollection.Circles.Count; j++)
+                {
+                    var candidate = shapeCollection.Circles[j];
+                    if (candidate.Name == circle.Name)
+                    {
+                        match = candidate;
+                        break;
+                    }
+                }
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new Circle();
+                    if (newShapeParent != null)
+                    {
+                        match.AttachTo(newShapeParent);
+                    }
+                    shapeCollection.Circles.Add(match);
+                }
+
+                circle.SetValuesOn(match);
+                match.RelativeX = circle.X;
+                match.RelativeY = circle.Y;
+                match.RelativeZ = circle.Z;
+            }
+
+            foreach (var cube in this.AxisAlignedCubeSaves)
+            {
+                AxisAlignedCube match = null;
+
+                for (int j = 0; j < shapeCollection.AxisAlignedCubes.Count; j++)
+                {
+                    var candidate = shapeCollection.AxisAlignedCubes[j];
+                    if (candidate.Name == cube.Name)
+                    {
+                        match = candidate;
+                        break;
+                    }
+                }
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new AxisAlignedCube();
+                    if (newShapeParent != null)
+                    {
+                        match.AttachTo(newShapeParent);
+                    }
+                    shapeCollection.AxisAlignedCubes.Add(match);
+                }
+
+                cube.SetValuesOn(match);
+                match.RelativeX = cube.X;
+                match.RelativeY = cube.Y;
+                match.RelativeZ = cube.Z;
+            }
+
+            foreach (var sphere in this.SphereSaves)
+            {
+                Sphere match = null;
+
+                for (int j = 0; j < shapeCollection.Spheres.Count; j++)
+                {
+                    var candidate = shapeCollection.Spheres[j];
+                    if (candidate.Name == sphere.Name)
+                    {
+                        match = candidate;
+                        break;
+                    }
+                }
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new Sphere();
+                    if (newShapeParent != null)
+                    {
+                        match.AttachTo(newShapeParent);
+                    }
+                    shapeCollection.Spheres.Add(match);
+                }
+
+                sphere.SetValuesOn(match);
+                match.RelativeX = sphere.X;
+                match.RelativeY = sphere.Y;
+                match.RelativeZ = sphere.Z;
+            }
+
+            foreach (var polygon in this.PolygonSaves)
+            {
+                FlatRedBall.Math.Geometry.Polygon match = null;
+
+                for (int j = 0; j < shapeCollection.Polygons.Count; j++)
+                {
+                    var candidate = shapeCollection.Polygons[j];
+                    if (candidate.Name == polygon.Name)
+                    {
+                        match = candidate;
+                        break;
+                    }
+                }
+
+                if (match == null && createMissingShapes)
+                {
+                    match = new FlatRedBall.Math.Geometry.Polygon();
+                    if (newShapeParent != null)
+                    {
+                        match.AttachTo(newShapeParent);
+                    }
+                    shapeCollection.Polygons.Add(match);
+                }
+
+                polygon.SetValuesOn(match);
+                match.RelativeX = polygon.X;
+                match.RelativeY = polygon.Y;
+                match.RelativeZ = polygon.Z;
+            }
+        }
+
         public PositionedObjectList<FlatRedBall.Math.Geometry.AxisAlignedRectangle> ToAxisAlignedRectangleList()
         {
             PositionedObjectList<FlatRedBall.Math.Geometry.AxisAlignedRectangle> listToReturn = new PositionedObjectList<FlatRedBall.Math.Geometry.AxisAlignedRectangle>();
@@ -218,6 +374,7 @@ namespace FlatRedBall.Content.Math.Geometry
             }
             newShapeCollection.Name = mFileName;
         }
+
 
         public void Shift(Vector3 shiftAmount)
         {

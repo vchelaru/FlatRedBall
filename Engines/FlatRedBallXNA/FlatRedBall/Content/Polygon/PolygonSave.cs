@@ -83,6 +83,14 @@ namespace FlatRedBall.Content.Polygon
         public FlatRedBall.Math.Geometry.Polygon ToPolygon()
         {
             FlatRedBall.Math.Geometry.Polygon polygon = new FlatRedBall.Math.Geometry.Polygon();
+
+            SetValuesOn(polygon);
+
+            return polygon;
+        }
+
+        public void SetValuesOn(FlatRedBall.Math.Geometry.Polygon polygon)
+        {
             polygon.Points = Points;
 
             polygon.Position.X = X;
@@ -101,8 +109,6 @@ namespace FlatRedBall.Content.Polygon
                     (byte)(Alpha * 255));
 
             polygon.FillVertexArray();
-
-            return polygon;
         }
 
         #endregion

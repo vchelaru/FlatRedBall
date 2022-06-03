@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
@@ -56,6 +57,14 @@ namespace FlatRedBall.Content.Math.Geometry
         {
             FlatRedBall.Math.Geometry.Sphere sphere = new FlatRedBall.Math.Geometry.Sphere();
 
+            SetValuesOn(sphere);
+
+            return sphere;
+
+        }
+
+        public void SetValuesOn(Sphere sphere)
+        {
             sphere.X = this.X;
             sphere.Y = this.Y;
             sphere.Z = this.Z;
@@ -70,9 +79,6 @@ namespace FlatRedBall.Content.Math.Geometry
                     (byte)(Green * 255),
                     (byte)(Blue * 255),
                     (byte)(Alpha * 255));
-
-            return sphere;
-
         }
 
         #endregion

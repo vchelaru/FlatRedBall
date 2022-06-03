@@ -128,6 +128,8 @@ namespace FlatRedBall.Content.AnimationChain
             TopCoordinate = template.TopCoordinate;
             BottomCoordinate = template.BottomCoordinate;
 
+            ShapeCollectionSave = template.ShapeCollectionSave;
+
             RelativeX = template.RelativeX;
             RelativeY = template.RelativeY;
 
@@ -208,6 +210,8 @@ namespace FlatRedBall.Content.AnimationChain
             
             frame.RelativeX = RelativeX;
             frame.RelativeY = RelativeY;
+
+            frame.ShapeCollectionSave = ShapeCollectionSave;
 
             #endregion
 
