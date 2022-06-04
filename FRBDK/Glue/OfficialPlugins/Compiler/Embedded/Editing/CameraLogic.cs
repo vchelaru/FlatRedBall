@@ -94,7 +94,11 @@ namespace GlueControl.Editing
 
                 // EditorVisuals places things on the top layer by default, so move this to the bottom layer:
                 SpriteManager.RemoveSprite(sprite);
-                SpriteManager.AddToLayer(sprite, SpriteManager.UnderAllDrawnLayer);
+                if (ScreenManager.CurrentScreen?.IsActivityFinished == false)
+                {
+                    // only add it if not in edit mode. This code could actually run even if not in edit mode:
+                    SpriteManager.AddToLayer(sprite, SpriteManager.UnderAllDrawnLayer);
+                }
             }
         }
 
