@@ -140,11 +140,19 @@ namespace FlatRedBall.Screens
 		}
 		
         /// <summary>
-        /// Event to run before a screen's CustomInitialize is run, allowing systems (like the level editor) to
+        /// Event raised before a screen's CustomInitialize is called, allowing systems (like the level editor) to
         /// run code before the user's custom code.
         /// </summary>
         public static event Action<Screen> BeforeScreenCustomInitialize;
         public static event Action<Screen> ScreenLoaded;
+
+        /// <summary>
+        /// Event raised after a screen's Destroy is called.
+        /// </summary>
+        /// <remarks>
+        /// This is called before checking for leftover objects (such as Entities which haven't been destroyed).
+        /// </remarks>
+        public static event Action<Screen> AfterScreenDestroyed;
 
         #region Methods
 
@@ -215,6 +223,8 @@ namespace FlatRedBall.Screens
                 // destroy. Now we want to call Destroy on the screen first
                 // in case Destroy happens to change the time factor:
                 mCurrentScreen.Destroy();
+
+                AfterScreenDestroyed?.Invoke(mCurrentScreen);
 
                 mWasFixedTimeStep = FlatRedBallServices.Game.IsFixedTimeStep;
                 mLastTimeFactor = TimeManager.TimeFactor;
