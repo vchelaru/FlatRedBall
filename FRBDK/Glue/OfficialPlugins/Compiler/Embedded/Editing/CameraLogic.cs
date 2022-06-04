@@ -91,6 +91,10 @@ namespace GlueControl.Editing
                 sprite.Height = Camera.Main.RelativeYEdgeAt(sprite.Z) * 2.01f;
                 sprite.X = Camera.Main.X;
                 sprite.Y = Camera.Main.Y;
+
+                // EditorVisuals places things on the top layer by default, so move this to the bottom layer:
+                SpriteManager.RemoveSprite(sprite);
+                SpriteManager.AddToLayer(sprite, SpriteManager.UnderAllDrawnLayer);
             }
         }
 

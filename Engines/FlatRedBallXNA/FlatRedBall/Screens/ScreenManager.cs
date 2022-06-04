@@ -11,6 +11,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using System.Linq;
+using Microsoft.Xna.Framework.Content;
 #if !SILVERLIGHT
 #endif
 
@@ -569,31 +570,25 @@ namespace FlatRedBall.Screens
                 #region Automatically updated Sprites
                 if (SpriteManager.AutomaticallyUpdatedSprites.Count != 0)
                 {
-                    int spriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
+                    var remainingSprites = SpriteManager.AutomaticallyUpdatedSprites.ToList();
+                    remainingSprites.RemoveAll(item => mPersistentSpriteFrames.Any(frame => frame.IsSpriteComponentOfThis(item)));
+                    remainingSprites.RemoveAll(item => PersistentSprites.Contains(item));
 
-                    foreach (var spriteFrame in mPersistentSpriteFrames)
-                    {
-                        foreach (Sprite sprite in SpriteManager.AutomaticallyUpdatedSprites)
-                        {
-                            if (spriteFrame.IsSpriteComponentOfThis(sprite))
-                            {
-                                spriteCount--;
-                            }
-                        }
-                    }
-
-                    foreach(var sprite in PersistentSprites)
-                    {
-                        if(sprite.ListsBelongingTo.Contains(SpriteManager.mAutomaticallyUpdatedSprites))
-                        {
-                            spriteCount--;
-                        }
-                    }
+                    int spriteCount = remainingSprites.Count;
 
                     if (spriteCount != 0)
                     {
-                        messages.Add("There are " + spriteCount +
-                            " AutomaticallyUpdatedSprites in the SpriteManager. See \"FlatRedBall.SpriteManager.AutomaticallyUpdatedSprites\"");
+                        var message = "There are " + spriteCount +
+                            " AutomaticallyUpdatedSprites in the SpriteManager. See \"FlatRedBall.SpriteManager.AutomaticallyUpdatedSprites\"";
+
+                        var first = remainingSprites.FirstOrDefault();
+
+                        if(first != null)
+                        {
+                            message += $"\nFirst sprite Name:{first.Name}, Parent:{first.Parent?.Name ?? "<null>"}, Texture:{first.Texture?.Name ?? "<null>"}";
+                        }
+
+                        messages.Add(message);
                     }
 
                 }

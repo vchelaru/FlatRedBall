@@ -502,15 +502,19 @@ namespace OfficialPlugins.Compiler
 
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
 
-                        if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
-                        {
+                        // Vic says - this causes problems when a game crashes. It continues to print this out
+                        // which makes it harder to see the callstack. I don't know if this is needed anymore now
+                        // that we have a more reliable communication system from glue<->game, so I'm going to comment
+                        // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
+                        //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
+                        //{
 
-                            MainControl.PrintOutput(
-                                $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
-                                $"{response?.Commands.Count}" +
-                                $"\n\tGet: {getDuration}" +
-                                $"\n\tHandle: {handleDuration}");
-                        }
+                        //    MainControl.PrintOutput(
+                        //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
+                        //        $"{response?.Commands.Count}" +
+                        //        $"\n\tGet: {getDuration}" +
+                        //        $"\n\tHandle: {handleDuration}");
+                        //}
                     }
                 }
                 catch
@@ -647,6 +651,8 @@ namespace OfficialPlugins.Compiler
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
         {
+            // force the view model to not be in edit mode if this was clicked
+            CompilerViewModel.PlayOrEdit = PlayOrEdit.Play;
             await BuildAndRun();
         }
 
