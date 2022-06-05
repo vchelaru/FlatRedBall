@@ -377,14 +377,16 @@ namespace GlueControl
             }
             else
             {
-                elementGameType = ScreenManager.CurrentScreen.GetType().Name;
+                elementGameType = ScreenManager.CurrentScreen?.GetType().Name;
             }
 
+            if(!string.IsNullOrEmpty(elementGameType))
+            {
+                var split = elementGameType.Split('.').ToList().Skip(1);
+                dto.ElementNameGlue = string.Join("\\", split);
 
-            var split = elementGameType.Split('.').ToList().Skip(1);
-            dto.ElementNameGlue = string.Join("\\", split);
-
-            SendToGlue(dto);
+                SendToGlue(dto);
+            }
         }
 
         int nextRespondableId = 1;

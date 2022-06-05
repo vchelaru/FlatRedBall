@@ -593,16 +593,27 @@ namespace FlatRedBall.Glue.Parsing
             if (poolObjects)
             {
 
-                // only throw exception if pooled. This requires the user to pool the factory.
+                // only throw exception if pooled. This requires the user to Init the factory.
                 // But do we want to have an explicit "IsInitialized" value? Maybe if this causes problems in the future...
-                codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
-                            .Line("throw new System.Exception(\"You must first initialize the factory for this type because it is pooled. You can either add PositionedObjectList of type " +
-                                className + " (the most common solution) or call Initialize in custom code\");")
-                        .End();
+                // Update June 5, 2022
+                // This code was modified 
+                // in December 2017 to only 
+                // throw exceptions if pooled.
+                // But why? Pooled entities should
+                // be destroyed when a screen unloads,
+                // and the factory will be using the same
+                // content manager as the screen in most cases.
+                // So why not just tolerate it?
+                // I think we should:
+                //codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
+                //            .Line("throw new System.Exception(\"You must first initialize the factory for this type because it is pooled. " +
+                //            "You can either add PositionedObjectList of type " +
+                //                className + " (the most common solution) or call Initialize in custom code\");")
+                //        .End();
                 codeBlock
                     .Line("instance = mPool.GetNextAvailable();")
                     .If("instance == null")
-                        .Line("mPool.AddToPool(new " + className + "(mContentManagerName, false));")
+                        .Line("mPool.AddToPool(new " + className + "(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false));")
                         .Line("instance =  mPool.GetNextAvailable();")
                     .End()
                     .Line("instance.AddToManagers(layer);");
@@ -676,9 +687,22 @@ namespace FlatRedBall.Glue.Parsing
         {
             string entityClassName = factoryClassName.Substring(0, factoryClassName.Length - "Factory".Length);
 
+            var functionBlock =
             codeBlock
-                .Function("private static void", "FactoryInitialize", "")
-                    .Line("const int numberToPreAllocate = " + numberToPreAllocate + ";")
+                .Function("private static void", "FactoryInitialize", "");
+
+            functionBlock.Line("int numberToPreAllocate = " + numberToPreAllocate + ";");
+
+            var glueProject = GlueState.Self.CurrentGlueProject;
+            var hasEditMode = glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            if(hasEditMode)
+            {
+                functionBlock.Line("// If in edit mode and viewing a screen, don't pre-allocate because the content manager may not be set which would cause a crash");
+                functionBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode && FlatRedBall.Screens.ScreenManager.CurrentScreen?.GetType().Name == \"EntityViewingScreen\"")
+                    .Line("numberToPreAllocate = 0;");
+            }
+
+            functionBlock
                     .For("int i = 0; i < numberToPreAllocate; i++")
                         .Line(string.Format("{0} instance = new {0}(mContentManagerName, false);", entityClassName))
                         .Line("mPool.AddToPool(instance);")
