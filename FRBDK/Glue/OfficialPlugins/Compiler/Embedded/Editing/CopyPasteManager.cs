@@ -35,7 +35,7 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, PositionedObject itemGrabbed)
+        public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, IStaticPositionable itemGrabbed)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -99,7 +99,7 @@ namespace GlueControl.Editing
             return (x, y);
         }
 
-        private async void HandlePaste(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
+        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
         {
             var currentElement = GlueState.Self.CurrentElement;
             NamedObjectSave newObjectToSelect = null;
@@ -167,28 +167,31 @@ namespace GlueControl.Editing
             }
         }
 
-        private void GetOffsetForPasting(PositionedObject itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
+        private void GetOffsetForPasting(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
         {
             offsetX = null;
             offsetY = null;
             NamedObjectSave matchingNos = null;
             if (itemGrabbed != null)
             {
-                matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbed.Name);
+                var itemGrabbedName = (itemGrabbed as INameable)?.Name;
+                matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbedName);
             }
             if (matchingNos != null)
             {
                 (float originalX, float originalY) = GetXY(matchingNos);
 
-                if (itemGrabbed.Parent == null)
+                var asPositionedObject = itemGrabbed as PositionedObject;
+
+                if (asPositionedObject?.Parent == null)
                 {
                     offsetX = itemGrabbed.X - originalX;
                     offsetY = itemGrabbed.Y - originalY;
                 }
                 else
                 {
-                    offsetX = itemGrabbed.RelativeX - originalX;
-                    offsetY = itemGrabbed.RelativeY - originalY;
+                    offsetX = asPositionedObject.RelativeX - originalX;
+                    offsetY = asPositionedObject.RelativeY - originalY;
                 }
             }
         }

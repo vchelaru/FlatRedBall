@@ -31,10 +31,55 @@ namespace GlueControl.Editing
 
     #region Classes
 
-    class NameableWrapper : INameable
+    class NameableWrapper : INameable, IStaticPositionable
     {
         public string Name { get; set; }
-        public object ContainedObject { get; set; }
+
+        IStaticPositionable containedAsPositionable;
+        object containedObject;
+        public object ContainedObject
+        {
+            get => containedObject;
+            set
+            {
+                containedObject = value;
+                containedAsPositionable = value as IStaticPositionable;
+            }
+        }
+
+        public float X
+        {
+            get => containedAsPositionable?.X ?? 0;
+            set
+            {
+                if (containedAsPositionable != null)
+                {
+                    containedAsPositionable.X = value;
+                }
+            }
+        }
+        public float Y
+        {
+            get => containedAsPositionable?.Y ?? 0;
+            set
+            {
+                if (containedAsPositionable != null)
+                {
+                    containedAsPositionable.Y = value;
+                }
+            }
+        }
+        public float Z
+        {
+            get => containedAsPositionable?.Z ?? 0;
+            set
+            {
+                if (containedAsPositionable != null)
+                {
+                    containedAsPositionable.Z = value;
+                }
+            }
+        }
     }
 
     class PropertyChangeArgs
@@ -64,8 +109,8 @@ namespace GlueControl.Editing
         List<INameable> itemsOver = new List<INameable>();
         public IEnumerable<INameable> ItemsOver => itemsOver;
 
-        PositionedObject itemGrabbed;
-        public PositionedObject ItemGrabbed => itemGrabbed;
+        IStaticPositionable itemGrabbed;
+        public IStaticPositionable ItemGrabbed => itemGrabbed;
         ResizeSide SideGrabbed = ResizeSide.None;
 
         List<INameable> itemsSelected = new List<INameable>();
@@ -323,7 +368,7 @@ namespace GlueControl.Editing
             if (cursor.PrimaryPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
-                itemGrabbed = itemOver as PositionedObject;
+                itemGrabbed = itemOver as IStaticPositionable;
                 if (itemGrabbed == null)
                 {
                     SideGrabbed = ResizeSide.None;
@@ -385,9 +430,9 @@ namespace GlueControl.Editing
                         marker.HandleCursorPushed();
                     }
 
-                    var markerOver = MarkerFor(itemGrabbed) as SelectionMarker;
+                    var markerOver = MarkerFor(itemGrabbed as INameable) as SelectionMarker;
                     SideGrabbed = markerOver?.GetSideOver() ?? ResizeSide.None;
-                    ObjectSelected(itemGrabbed);
+                    ObjectSelected(itemGrabbed as INameable);
                 }
             }
         }

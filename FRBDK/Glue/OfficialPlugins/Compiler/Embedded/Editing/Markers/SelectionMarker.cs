@@ -287,10 +287,17 @@ namespace GlueControl.Editing
         float GrabbedTextureScale;
 
         PositionedObject ownerAsPositionedObject;
+        IStaticPositionable ownerAsPositionable;
+        INameable ownerAsNameable;
         public INameable Owner
         {
-            get => ownerAsPositionedObject;
-            set => ownerAsPositionedObject = value as PositionedObject;
+            get => ownerAsNameable;
+            set
+            {
+                ownerAsPositionedObject = value as PositionedObject;
+                ownerAsPositionable = value as IStaticPositionable;
+                ownerAsNameable = value;
+            }
         }
 
         #endregion
@@ -365,15 +372,28 @@ namespace GlueControl.Editing
 
             Visible = Owner != null;
 
-            UpdateScreenPointPushed(ownerAsPositionedObject);
+            UpdateScreenPointPushed();
 
-            UpdateMainRectangleSizeToItem(ownerAsPositionedObject);
+            IStaticPositionable effectiveOwner = null;
+            if (Owner is NameableWrapper nameableWrapper)
+            {
+                effectiveOwner = nameableWrapper.ContainedObject as IStaticPositionable;
+            }
+            else
+            {
+                effectiveOwner = Owner as IStaticPositionable;
+            }
+
+            UpdateMainRectangleSizeToItem(effectiveOwner);
 
             UpdateColor();
 
-            ApplyPrimaryDownDragEditing(ownerAsPositionedObject, sideGrabbed);
+            ApplyPrimaryDownDragEditing(effectiveOwner, sideGrabbed);
 
-            UpdateHandles(ownerAsPositionedObject, sideGrabbed);
+            if (ownerAsPositionedObject != null)
+            {
+                UpdateHandles(ownerAsPositionedObject, sideGrabbed);
+            }
 
 
             if (CanMoveItem)
@@ -397,25 +417,25 @@ namespace GlueControl.Editing
             }
         }
 
-        private void UpdateScreenPointPushed(PositionedObject item)
+        private void UpdateScreenPointPushed()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
             if (cursor.PrimaryPush)
             {
                 ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
-                if (item != null)
+                if (ownerAsPositionable != null)
                 {
-                    if (item.Parent == null)
+                    if (ownerAsPositionedObject?.Parent == null)
                     {
-                        unsnappedItemPosition = item.Position;
+                        unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
                     }
                     else
                     {
-                        unsnappedItemPosition = item.RelativePosition;
+                        unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
                     }
 
-                    if (item is IScalable scalable)
+                    if (ownerAsPositionable is IScalable scalable)
                     {
                         unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
                     }
@@ -436,7 +456,7 @@ namespace GlueControl.Editing
             rectangle.Blue = value * BrightColor.B / 255.0f;
         }
 
-        private void UpdateMainRectangleSizeToItem(PositionedObject item)
+        private void UpdateMainRectangleSizeToItem(IStaticPositionable item)
         {
             if (item != null)
             {
@@ -535,7 +555,7 @@ namespace GlueControl.Editing
         float lastWorldX = 0;
         float lastWorldY = 0;
 
-        private void ApplyPrimaryDownDragEditing(PositionedObject item, ResizeSide sideGrabbed)
+        private void ApplyPrimaryDownDragEditing(IStaticPositionable item, ResizeSide sideGrabbed)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
@@ -552,7 +572,15 @@ namespace GlueControl.Editing
 
             var didCursorMove = xChange != 0 || yChange != 0;
 
-            if (CanMoveItem && cursor.PrimaryDown && didCursorMove)
+            if (CanMoveItem && cursor.PrimaryDown && didCursorMove &&
+                // Currently only PositionedObjects can be moved. If an object is
+                // IStaticPositionalbe, techincally we could move it by changing its X
+                // and Y values (and that has been tested), but the objet's Glue representation
+                // may not have X and Y values, which would lead to confusing behavior. Ultimately
+                // we need to have plugins that can map one value (such as X) to another value (such
+                // as XOffset) so that changes in the game can make their way back into Glue. Until then
+                // we'll only allow moving PositionedObjects.
+                item is PositionedObject)
             {
                 var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
                     Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
@@ -567,7 +595,7 @@ namespace GlueControl.Editing
                     }
                     else
                     {
-                        ChangeSizeBy(item, sideGrabbed, xChange, yChange);
+                        ChangeSizeBy(item as PositionedObject, sideGrabbed, xChange, yChange);
                     }
                 }
             }
@@ -577,7 +605,7 @@ namespace GlueControl.Editing
         }
 
 
-        private Vector3 ChangePositionBy(PositionedObject item, float xChange, float yChange, bool isShiftDown)
+        private Vector3 ChangePositionBy(IStaticPositionable item, float xChange, float yChange, bool isShiftDown)
         {
             unsnappedItemPosition.X += xChange;
             unsnappedItemPosition.Y += yChange;
@@ -601,19 +629,25 @@ namespace GlueControl.Editing
 
             Vector3 changeAfterSnapping = Vector3.Zero;
 
-            if (item.Parent == null)
+            var itemAsPositionedObject = item as PositionedObject;
+            if (itemAsPositionedObject?.Parent == null)
             {
-                var before = item.Position;
-                item.X = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                item.Y = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
-                changeAfterSnapping = item.Position - before;
+                var before = itemAsPositionedObject?.Position ?? new Vector3(item.X, item.Y, item.Z);
+
+                var newX =
+                    MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
+                var newY =
+                    MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
+                item.X = newX;
+                item.Y = newY;
+                changeAfterSnapping = (itemAsPositionedObject?.Position ?? new Vector3(newX, newY, item.Z)) - before;
             }
             else
             {
-                var before = item.RelativePosition;
-                item.RelativeX = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                item.RelativeY = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
-                changeAfterSnapping = item.RelativePosition - before;
+                var before = itemAsPositionedObject.RelativePosition;
+                itemAsPositionedObject.RelativeX = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
+                itemAsPositionedObject.RelativeY = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
+                changeAfterSnapping = itemAsPositionedObject.RelativePosition - before;
             }
             return changeAfterSnapping;
         }
@@ -858,19 +892,20 @@ namespace GlueControl.Editing
         public void HandleCursorRelease()
         {
 
-            if (ownerAsPositionedObject.X != GrabbedPosition.X)
+
+            if (ownerAsPositionable.X != GrabbedPosition.X)
             {
-                var value = ownerAsPositionedObject.Parent == null
-                    ? ownerAsPositionedObject.X
+                var value = ownerAsPositionedObject?.Parent == null
+                    ? ownerAsPositionable.X
                     : ownerAsPositionedObject.RelativeX;
-                PropertyChanged(Owner, nameof(ownerAsPositionedObject.X), value);
+                PropertyChanged(Owner, nameof(ownerAsPositionable.X), value);
             }
-            if (ownerAsPositionedObject.Y != GrabbedPosition.Y)
+            if (ownerAsPositionable.Y != GrabbedPosition.Y)
             {
-                var value = ownerAsPositionedObject.Parent == null
-                    ? ownerAsPositionedObject.Y
+                var value = ownerAsPositionedObject?.Parent == null
+                    ? ownerAsPositionable.Y
                     : ownerAsPositionedObject.RelativeY;
-                PropertyChanged(Owner, nameof(ownerAsPositionedObject.Y), value);
+                PropertyChanged(Owner, nameof(ownerAsPositionable.Y), value);
             }
 
             if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
@@ -905,7 +940,7 @@ namespace GlueControl.Editing
 
         public void HandleCursorPushed()
         {
-            GrabbedPosition = ownerAsPositionedObject.Position;
+            GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
 
             if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
             {

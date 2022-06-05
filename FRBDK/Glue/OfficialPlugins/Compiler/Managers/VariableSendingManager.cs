@@ -327,10 +327,18 @@ namespace OfficialPlugins.Compiler.Managers
 
             #region X, Y, Z
             if (currentElement is EntitySave && nos.AttachToContainer &&
+
                 (changedMember == "X" || changedMember == "Y" || changedMember == "Z" ||
                  changedMember == "RotationX" || changedMember == "RotationY" || changedMember == "RotationZ"))
             {
-                changedMember = $"Relative{changedMember}";
+                if(ati != null && ati.IsPositionedObject == false)
+                {
+                    // do nothing
+                }
+                else
+                {
+                    changedMember = $"Relative{changedMember}";
+                }
             }
             #endregion
 

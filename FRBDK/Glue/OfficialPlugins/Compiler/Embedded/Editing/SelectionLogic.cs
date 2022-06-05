@@ -75,7 +75,7 @@ namespace GlueControl.Editing
                 if (availableItems != null)
                 {
                     // here we sort every frame. This could be slow if we have a lot of objects so we may need to cache this somehow
-                    foreach (PositionedObject objectAtI in availableItems.OrderByDescending(item => item.Z))
+                    foreach (var objectAtI in availableItems.OrderByDescending(item => item.Z))
                     {
                         if (IsSelectable(objectAtI))
                         {
@@ -273,7 +273,7 @@ namespace GlueControl.Editing
 
         #region Get Dimensions
 
-        internal static void GetDimensionsFor(PositionedObject itemOver,
+        internal static void GetDimensionsFor(IStaticPositionable itemOver,
             out float minX, out float maxX, out float minY, out float maxY)
         {
             // We used to use the position as part of the min and max bounds, but this causes problems
@@ -317,7 +317,7 @@ namespace GlueControl.Editing
 
         }
 
-        private static void GetDimensionsForInner(PositionedObject itemOver,
+        private static void GetDimensionsForInner(IStaticPositionable itemOver,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
             if (itemOver is IMinMax minMax)
@@ -451,11 +451,11 @@ namespace GlueControl.Editing
                     maxY = Math.Max(maxY, text.Y + text.Height);
                 }
             }
-            else
+            else if (itemOver is PositionedObject positionedObject)
             {
-                for (int i = 0; i < itemOver.Children.Count; i++)
+                for (int i = 0; i < positionedObject.Children.Count; i++)
                 {
-                    var child = itemOver.Children[i];
+                    var child = positionedObject.Children[i];
 
                     var shouldConsiderChild = true;
 
