@@ -26,7 +26,7 @@
         <Grid Grid.Row="1">
             <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
                 <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
-            <xctk:SplitButton Content="Add Control Values" Click="AddDefaultValuesClick" x:Name="AddControlButtonInstance">
+            <xctk:SplitButton Content="Add Movement Type" Click="AddDefaultValuesClick" x:Name="AddControlButtonInstance">
                 <xctk:SplitButton.DropDownContent>
                     <StackPanel>
                         <Button Click="AddDefaultValuesClick">Default Values</Button>

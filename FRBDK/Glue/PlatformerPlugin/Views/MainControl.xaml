@@ -29,7 +29,7 @@
         <Grid Visibility="{Binding PlatformerUiVisibility}" Grid.Row="2">
             <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
             <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
-            <xctk:SplitButton Content="Add Control Values" Click="AddEmptyPlatformerValuesClick" x:Name="AddControlButtonInstance">
+            <xctk:SplitButton Content="Add Movement Type" Click="AddEmptyPlatformerValuesClick" x:Name="AddControlButtonInstance">
                 <xctk:SplitButton.DropDownContent>
                     <StackPanel>
                         <Button Click="AddEmptyPlatformerValuesClick">Empty Values</Button>
