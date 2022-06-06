@@ -242,16 +242,28 @@ namespace FlatRedBall.Math.Geometry
         {
             mCircles.Add(circle);
         }
+        public bool Contains(Circle circle) => mCircles.Contains(circle);
 
         public void Add(AxisAlignedRectangle rectangle)
         {
             mAxisAlignedRectangles.Add(rectangle);
         }
 
+        public bool Contains(AxisAlignedRectangle rectangle) => mAxisAlignedRectangles.Contains(rectangle);
+
         public void Add(Polygon polygon)
         {
             mPolygons.Add(polygon);
         }
+
+        public bool Contains(Polygon polygon) => mPolygons.Contains(polygon);
+
+        public void Add(AxisAlignedCube cube) => mAxisAlignedCubes.Add(cube);
+        public bool Contains(AxisAlignedCube cube) => mAxisAlignedCubes.Contains(cube);
+
+        public void Add(Sphere sphere) => mSpheres.Add(sphere);
+        public bool Contains(Sphere sphere) => mSpheres.Contains(sphere);
+
 
         public void AddToManagers()
         {
