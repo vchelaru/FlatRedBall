@@ -370,6 +370,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (glueProject.Screens.Count == 1)
             {
                 GlueState.Self.CurrentGlueProject.StartUpScreen = screenSave.Name;
+                GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
             }
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
