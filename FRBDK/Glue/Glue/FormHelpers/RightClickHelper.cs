@@ -2217,7 +2217,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     }
                 }
-                else if (targetNode.IsFolderInFilesContainerNode())
+                else if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsChildOfGlobalContent())
                 {
                     List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
                     GetAllReferencedFileSavesIn(targetNode, allReferencedFileSaves);
