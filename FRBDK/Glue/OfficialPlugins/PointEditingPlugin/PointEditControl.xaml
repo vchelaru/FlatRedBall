@@ -29,21 +29,34 @@
                 <Button Click="RemoveButtonClicked" Grid.Column="1">Remove</Button>
             </Grid>
         </Grid>
-
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Label>X</Label>
-            <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"></TextBox>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Button Height="24" Click="HandleAddRectanglePointsClicked">
+                    <Button.ToolTip>Adds or replaces all points on the polygon to create a rectangle.</Button.ToolTip>
 
-            <Label Grid.Row="1">Y</Label>
-            <TextBox Margin="3" x:Name="YTextBox" Grid.Column="1" TextChanged="YTextBox_TextChanged_1" Grid.Row="1"></TextBox>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddRectanglePoints.png"></Image>
+                </Button>
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label>X</Label>
+                <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"></TextBox>
+
+                <Label Grid.Row="1">Y</Label>
+                <TextBox Margin="3" x:Name="YTextBox" Grid.Column="1" TextChanged="YTextBox_TextChanged_1" Grid.Row="1"></TextBox>
+            </Grid>
+
         </Grid>
     </Grid>
 </UserControl>
