@@ -2169,6 +2169,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
+        /// <summary>
+        /// Deletes the folder represented by this tree node. Note that this should only be called on tree nodes which
+        /// are folders.
+        /// </summary>
+        /// <param name="targetNode">The tree node to delete.</param>
         public static void DeleteFolderClick(ITreeNode targetNode)
         {
             // delete folder, deletefolder
