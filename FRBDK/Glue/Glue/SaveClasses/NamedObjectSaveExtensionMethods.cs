@@ -10,6 +10,7 @@ using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -211,8 +212,10 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         public static NamedObjectSave Clone(this NamedObjectSave instance)
         {
-            NamedObjectSave newNamedObjectSave = FileManager.CloneObject(instance);
-
+            // This doesn't work as well in XML due to enum values, so let's use Json instead
+            //NamedObjectSave newNamedObjectSave = FileManager.CloneObject(instance);
+            var serialized = JsonConvert.SerializeObject(instance);
+            var newNamedObjectSave = JsonConvert.DeserializeObject<NamedObjectSave>(serialized);
             newNamedObjectSave.TypedMembers.Clear();
 
             newNamedObjectSave.UpdateCustomProperties();
@@ -233,17 +236,18 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for (int i = 0; i < instance.InstructionSaves.Count; i++)
             {
-                //var duplicateInstruction =
-                //    instance.InstructionSaves[i].Clone<CustomVariableInNamedObject>();
+                // See above on why we use json 
+                var instructionSerialized = JsonConvert.SerializeObject(instance.InstructionSaves[i]);
 
-                var duplicateInstruction =
-                    FileManager.CloneObject(instance.InstructionSaves[i]);
+                var duplicateInstruction = JsonConvert.DeserializeObject<CustomVariableInNamedObject>(instructionSerialized);
+                    //FileManager.CloneObject(instance.InstructionSaves[i]);
 
                 // Events are instance-specific so we prob don't want to copy those
                 duplicateInstruction.EventOnSet = null;
 
                 newNamedObjectSave.InstructionSaves.Add(duplicateInstruction);
             }
+            newNamedObjectSave.FixAllTypes();
 
             foreach (NamedObjectSave containedNamedObject in instance.ContainedObjects)
             {
