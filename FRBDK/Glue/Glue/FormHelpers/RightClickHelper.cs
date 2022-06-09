@@ -221,7 +221,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public bool IsFolderForGlobalContentFiles()
         {
-            if (Parent == null)
+            if (Parent == null || Tag != null)
             {
                 return false;
             }
