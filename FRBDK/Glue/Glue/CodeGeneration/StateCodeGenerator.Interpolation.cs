@@ -56,9 +56,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             //Adding instructions for default values
             var category = element.GetStateCategory(enumType);
+            
             foreach(var variable in element.CustomVariables)
             {
-                if (category.ExcludedVariables.Contains(variable.Name))
+                if (category?.ExcludedVariables.Contains(variable.Name) == true)
                     continue;
 
                 if (currentInstructionSaves.Any(item => item.Member == variable.Name))
