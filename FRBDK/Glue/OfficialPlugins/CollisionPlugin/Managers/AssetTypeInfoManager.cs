@@ -43,6 +43,23 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             toReturn.QualifiedRuntimeTypeName.QualifiedType =
               "FlatRedBall.Math.Collision.CollisionRelationship";
 
+            // June 10 2022
+            // In the future
+            // the ATI's VariableDefinition
+            // will determine all variables that
+            // should be displayed. Unfortunately,
+            // for now, if an ATI has no variables, 
+            // then Glue defaults to reflection. We don't
+            // want any reflected values to be shown in the
+            // variables tab, so we'll just put one of the mor
+            // harmless values here:
+            toReturn.VariableDefinitions.Add(new VariableDefinition
+            {
+                Name = nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive),
+                Type = "bool",
+                DefaultValue = "true",
+            });
+
             toReturn.ConstructorFunc = (element, namedObjectSave, referencedFileSave) =>
             {
                 if(namedObjectSave != null)
