@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -185,6 +186,45 @@ namespace OfficialPluginsCore.PointEditingPlugin
                     }
                 }
             }
+        }
+
+        private void HandleAddRectanglePointsClicked(object sender, RoutedEventArgs e)
+        {
+            var shouldContinue = true;
+            if(Data?.Count > 0)
+            {
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?",
+                    AddRectanglePoints);
+            }
+            else
+            {
+                AddRectanglePoints();
+            }
+        }
+
+        private void AddRectanglePoints()
+        {
+            if(Data == null)
+            {
+                Data = new List<Vector2>();
+            }
+            else
+            {
+                Data.Clear();
+            }
+
+            Data.Add(new Vector2(-16, 16));
+            Data.Add(new Vector2( 16, 16));
+            Data.Add(new Vector2( 16,-16));
+            Data.Add(new Vector2(-16,-16));
+            Data.Add(new Vector2(-16, 16));
+
+
+            UpdateToData();
+
+            ListBox.SelectedIndex = ListBox.Items.Count - 1;
+
+            CallDataChanged();
         }
     }
 }

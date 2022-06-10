@@ -221,7 +221,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public bool IsFolderForGlobalContentFiles()
         {
-            if (Parent == null)
+            if (Parent == null || Tag != null)
             {
                 return false;
             }
@@ -2169,6 +2169,11 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
+        /// <summary>
+        /// Deletes the folder represented by this tree node. Note that this should only be called on tree nodes which
+        /// are folders.
+        /// </summary>
+        /// <param name="targetNode">The tree node to delete.</param>
         public static void DeleteFolderClick(ITreeNode targetNode)
         {
             // delete folder, deletefolder
@@ -2217,7 +2222,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                     }
                 }
-                else if (targetNode.IsFolderInFilesContainerNode())
+                else if (targetNode.IsFolderInFilesContainerNode() || targetNode.IsChildOfGlobalContent())
                 {
                     List<ReferencedFileSave> allReferencedFileSaves = new List<ReferencedFileSave>();
                     GetAllReferencedFileSavesIn(targetNode, allReferencedFileSaves);
