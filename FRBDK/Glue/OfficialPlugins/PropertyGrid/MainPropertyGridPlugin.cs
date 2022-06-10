@@ -13,6 +13,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Elements;
 using OfficialPluginsCore.PropertyGrid.Views;
 using OfficialPluginsCore.PropertyGrid.ViewModels;
+using OfficialPlugins.PropertyGrid.Managers;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -37,6 +38,8 @@ namespace OfficialPlugins.VariableDisplay
 
         public override void StartUp()
         {
+            VariableDisplayerTypeManager.FillTypeNameAssociations();
+
             this.ReactToItemSelectHandler += HandleItemSelect;
 
             this.ReactToLoadedGlux += HandleLoadedGlux;

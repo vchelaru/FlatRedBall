@@ -294,6 +294,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
         //[XmlIgnore]
         //public Scope
+        public string PreferredDisplayerTypeName
+        {
+            get; set;
+        }
 
         #endregion
 

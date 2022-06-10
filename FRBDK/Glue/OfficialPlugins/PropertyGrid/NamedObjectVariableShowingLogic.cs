@@ -23,6 +23,7 @@ using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Errors;
+using OfficialPlugins.PropertyGrid.Managers;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -132,58 +133,16 @@ namespace OfficialPlugins.VariableDisplay
         private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
-            // May 13, 2017
-            // I'd like to get
-            // completely rid of 
-            // TypedMembers and move
-            // to using the custom variables.
-            // We'll try this out:
-            if (ati?.VariableDefinitions != null && ati.VariableDefinitions.Count > 0)
+            List<VariableDefinition> variableDefinitions = null;
+
+            if(ati?.VariableDefinitions.Count > 0)
             {
-                foreach (var variableDefinition in ati.VariableDefinitions)
-                {
-                    bool fallBackToTypedMember = false;
-                    try
-                    {
-                        var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                        TypedMemberBase typedMember = null;
-
-                        if (type == null)
-                        {
-                            fallBackToTypedMember = true;
-                        }
-                        else
-                        {
-                            typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                            InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
-                            if (instanceMember != null)
-                            {
-                                var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember);
-                                categoryToAddTo.Members.Add(instanceMember);
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        fallBackToTypedMember = true;
-                    }
-
-                    if (fallBackToTypedMember)
-                    {
-                        // this new code isn't working with some things like generics. Until I fix that, let's fall back:
-
-                        var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableDefinition.Name);
-
-                        if (typedMember != null)
-                        {
-                            AddForTypedMember(instance, container, categories, ati, typedMember);
-                        }
-                    }
-                }
+                variableDefinitions = ati.VariableDefinitions;
             }
-
-            else // This is used when viewing a  NOS that is of entity type (no ATI)
+            else
             {
+                variableDefinitions = new List<VariableDefinition>();
+
                 var instanceElement = ObjectFinder.Self.GetElement(instance);
                 for (int i = 0; i < instance.TypedMembers.Count; i++)
                 {
@@ -210,11 +169,61 @@ namespace OfficialPlugins.VariableDisplay
                             baseVariableDefinition.Name = variableInElement.Name;
                             baseVariableDefinition.Category = variableInElement.Category;
                             baseVariableDefinition.Type = variableInElement.Type;
+
+                            if(!string.IsNullOrWhiteSpace(variableInElement.PreferredDisplayerTypeName) &&
+                                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variableInElement.PreferredDisplayerTypeName))
+                            {
+                                baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
+                                    [variableInElement.PreferredDisplayerTypeName];
+                            }
                         }
                     }
-                    AddForTypedMember(instance, container, categories, ati, typedMember, baseVariableDefinition);
+                    variableDefinitions.Add(baseVariableDefinition);
                 }
             }
+
+            
+            foreach (var variableDefinition in variableDefinitions)
+            {
+                bool fallBackToTypedMember = false;
+                try
+                {
+                    var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
+                    TypedMemberBase typedMember = null;
+
+                    if (type == null)
+                    {
+                        fallBackToTypedMember = true;
+                    }
+                    else
+                    {
+                        typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
+                        if (instanceMember != null)
+                        {
+                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
+                            categoryToAddTo.Members.Add(instanceMember);
+                        }
+                    }
+                }
+                catch
+                {
+                    fallBackToTypedMember = true;
+                }
+
+                if (fallBackToTypedMember)
+                {
+                    // this new code isn't working with some things like generics. Until I fix that, let's fall back:
+
+                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableDefinition.Name);
+
+                    if (typedMember != null)
+                    {
+                        AddForTypedMember(instance, container, categories, ati, typedMember);
+                    }
+                }
+            }
+            
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
                 !string.IsNullOrEmpty(instance.SourceFile);
 

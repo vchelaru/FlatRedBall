@@ -14,6 +14,7 @@ using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using GlueFormsCore.Controls;
+using OfficialPlugins.PropertyGrid.Managers;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -106,6 +107,13 @@ namespace OfficialPlugins.VariableDisplay
 
                 TypeConverter converter = variable.GetTypeConverter(element);
                 instanceMember.TypeConverter = converter;
+
+                if(!string.IsNullOrEmpty(variable.PreferredDisplayerTypeName) &&
+                    VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variable.PreferredDisplayerTypeName))
+                {
+                    instanceMember.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
+                        [variable.PreferredDisplayerTypeName];
+                }
                 
                 instanceMember.CustomSetEvent += (intance, value) =>
                 {
