@@ -33,7 +33,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
             set => Set(value);
         }
 
-        bool requiredByProject;
         public bool RequiredByProject
         {
             get => Get<bool>();
