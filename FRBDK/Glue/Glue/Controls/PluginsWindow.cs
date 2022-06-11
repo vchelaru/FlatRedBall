@@ -20,6 +20,7 @@ using Glue;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.Rss;
 using System.Threading;
+using System.Windows.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Controls
@@ -93,8 +94,10 @@ namespace FlatRedBall.Glue.Controls
                     toReturn.LoadOnStartup = IsLoadedOnStartup(SelectedPlugin);
                     toReturn.RequiredByProject = IsRequiredByProject(SelectedPlugin);
                     toReturn.LastUpdatedText = GetInfoForContainer(SelectedPlugin);
-
+                    toReturn.GithubRepoAddress = GetGithubAddress(SelectedPlugin);
+                   
                     toReturn.PropertyChanged += HandlePluginPropertyChanged;
+                    
 
                     
                     toReturn.BackingData = SelectedPlugin;
@@ -277,8 +280,20 @@ namespace FlatRedBall.Glue.Controls
                     text += container.FailureException.ToString();
 
                 }
+                
                 return text;
             }
+        }
+
+        private static string GetGithubAddress(PluginContainer container)
+        {
+            var plugin = container.Plugin;
+            if (string.IsNullOrWhiteSpace(plugin.GithubRepoName) || string.IsNullOrWhiteSpace(plugin.GithubRepoOwner))
+            {
+                return null;
+            }
+
+            return $"https://github.com/{plugin.GithubRepoOwner}/{plugin.GithubRepoName}";
         }
 
         private void UpdateViewToFeed()
@@ -506,7 +521,6 @@ namespace FlatRedBall.Glue.Controls
                 }
             }
         }
-
 
         void AfterDownload()
         {

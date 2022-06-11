@@ -206,7 +206,9 @@ namespace FlatRedBall.Glue.Plugins
 
         public abstract string FriendlyName { get; }
         public abstract Version Version { get; }
-
+        public virtual string GithubRepoOwner => null;
+        public virtual string GithubRepoName => null;
+        public virtual bool CheckGithubForNewRelease => false;
 
         protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
 

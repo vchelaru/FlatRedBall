@@ -18,6 +18,9 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
     {
         string FriendlyName {get;}
         Version Version {get;}
+        string GithubRepoOwner { get; }
+        string GithubRepoName { get; }
+        bool CheckGithubForNewRelease { get; }
         void StartUp();
         bool ShutDown(PluginShutDownReason shutDownReason);
     }
