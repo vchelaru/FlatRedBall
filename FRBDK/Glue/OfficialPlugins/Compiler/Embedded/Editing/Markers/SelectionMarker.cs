@@ -370,7 +370,7 @@ namespace GlueControl.Editing
         {
             LastUpdateMovement = Vector3.Zero;
 
-            Visible = Owner != null;
+            Visible = ownerAsPositionable != null;
 
             UpdateScreenPointPushed();
 
