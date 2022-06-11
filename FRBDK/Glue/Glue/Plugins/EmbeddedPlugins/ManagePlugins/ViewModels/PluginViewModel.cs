@@ -9,61 +9,35 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
 {
     public class PluginViewModel : ViewModel
     {
-
-
         public PluginContainer BackingData
         {
             get;
             set;
         }
 
-        bool loadOnStartup;
         public bool LoadOnStartup
         {
-            get
-            {
-                return loadOnStartup;
-            }
-            set
-            {
-                loadOnStartup = value;
-                base.NotifyPropertyChanged(nameof(LoadOnStartup));
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
 
-        string lastUpdatedText;
         public string LastUpdatedText
         {
-            get
-            {
-                return lastUpdatedText;
-            }
-            set
-            {
-                base.ChangeAndNotify(ref lastUpdatedText, value);
-            }
+            get => Get<string>();
+            set => Set(value);
         }
 
-        private string githubRepoAddress;
         public string GithubRepoAddress
         {
-            get => githubRepoAddress;
-            set => ChangeAndNotify(ref githubRepoAddress, value);
+            get => Get<string>();
+            set => Set(value);
         }
 
         bool requiredByProject;
         public bool RequiredByProject
         {
-            get
-            {
-                return requiredByProject;
-            }
-            set
-            {
-                base.ChangeAndNotify(ref requiredByProject, value);
-            }
+            get => Get<bool>();
+            set => Set(value);
         }
-
-
     }
 }
