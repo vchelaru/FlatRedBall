@@ -44,6 +44,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels
             }
         }
 
+        private string githubRepoAddress;
+        public string GithubRepoAddress
+        {
+            get => githubRepoAddress;
+            set => ChangeAndNotify(ref githubRepoAddress, value);
+        }
+
         bool requiredByProject;
         public bool RequiredByProject
         {

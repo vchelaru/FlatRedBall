@@ -83,6 +83,10 @@ namespace PluginTestbed.PerformanceMeasurement
             get { return new Version(1, 0); }
         }
 
+        public string GithubRepoOwner => null;
+        public string GithubRepoName => null;
+        public bool CheckGithubForNewRelease => false;
+
         public void StartUp()
         {
         }
