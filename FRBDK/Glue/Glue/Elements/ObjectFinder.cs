@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Events;
 
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Content.Instructions;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -1156,6 +1157,139 @@ namespace FlatRedBall.Glue.Elements
 
             return customVariable;
         }
+
+        public static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+
+            var typeName = variableDefinition?.Type;
+            Type type = null;
+            if (!string.IsNullOrEmpty(typeName))
+            {
+                type = TypeManager.GetTypeFromString(typeName);
+            }
+
+            return GetValueRecursively(instance, container, memberName, type, variableDefinition);
+        }
+
+        private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
+        {
+            var instruction = instance.GetCustomVariable(memberName);
+
+            if (instruction == null)
+            {
+                // Get the value for this variable from the base element. 
+
+                var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
+
+                if (getVariableResponse.customVariable != null)
+                {
+                    return getVariableResponse.customVariable.DefaultValue;
+                }
+                else if (getVariableResponse.instructionOnState != null)
+                {
+                    return getVariableResponse.instructionOnState.Value;
+                }
+
+                return variableDefinition?.GetCastedDefaultValue();
+            }
+            else
+            {
+                if (instruction.Value is int && memberType.IsEnum)
+                {
+                    return Enum.ToObject(memberType, instruction.Value);
+                }
+                else
+                {
+                    return instruction.Value;
+                }
+            }
+        }
+
+        private static (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            CustomVariable foundVariable = null;
+            FlatRedBall.Content.Instructions.InstructionSave valueOnState = null;
+
+            var instanceElementType = ObjectFinder.Self.GetElement(instance);
+            if (instanceElementType != null)
+            {
+
+
+                foreach (var instructionOnObject in instance.InstructionSaves)
+                {
+                    var variableOnInstanceName = instructionOnObject.Member;
+                    var variableOnInstanceValue = instructionOnObject.Value;
+
+                    // is it a state?
+                    CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                    StateSaveCategory matchingStateCategory = null;
+                    if (possibleStateCustomVariable != null)
+                    {
+                        matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                    }
+                    if (matchingStateCategory != null)
+                    {
+                        var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                        if (matchingState != null)
+                        {
+                            // does the state set the member?
+                            valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                        }
+                    }
+                    if (valueOnState != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (valueOnState == null)
+                {
+                    // See if this variable is set by any states on the instance first
+                    var variablesOnThisInstance = container.CustomVariables.Where(item => item.SourceObject == instance.InstanceName);
+
+                    foreach (var variableOnInstance in variablesOnThisInstance)
+                    {
+                        var variableOnInstanceName = variableOnInstance.Name;
+                        var variableOnInstanceValue = variableOnInstance.DefaultValue;
+                        // is it a state?
+                        CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                        StateSaveCategory matchingStateCategory = null;
+
+                        if (possibleStateCustomVariable?.Type != null)
+                        {
+                            matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                        }
+
+                        if (matchingStateCategory != null)
+                        {
+                            var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                            if (matchingState != null)
+                            {
+                                // does the state set the member?
+                                valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                            }
+                        }
+                        if (valueOnState != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if (valueOnState == null)
+                {
+                    foundVariable = instanceElementType.GetCustomVariableRecursively(memberName);
+                }
+            }
+
+            return (foundVariable, valueOnState);
+        }
+
 
         #endregion
 

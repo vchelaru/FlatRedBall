@@ -266,7 +266,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
             {
                 var ati = nosReferencing.GetAssetTypeInfo();
 
-                var variable = ati.VariableDefinitions.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
+                var variable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
 
                 // This is a quick test to see if it's a state. States generate nullable types (as of Feb 2, 2022)
                 if(variable?.Type.EndsWith("?") == true)

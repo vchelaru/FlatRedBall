@@ -1,13 +1,18 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math;
+using OfficialPlugins.Common.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using WpfDataUi.Controls;
 using WpfDataUiCore.Controls;
 
 namespace OfficialPlugins.SpritePlugin
@@ -15,14 +20,13 @@ namespace OfficialPlugins.SpritePlugin
     [Export(typeof(PluginBase))]
     internal class MainSpritePlugin : PluginBase
     {
+        #region Fields/Properties
+
         public override string FriendlyName => "Sprite Plugin";
 
         public override Version Version => new Version(1,0);
 
-        public override bool ShutDown(PluginShutDownReason shutDownReason)
-        {
-            return true;
-        }
+        #endregion
 
         public override void StartUp()
         {
@@ -100,7 +104,80 @@ namespace OfficialPlugins.SpritePlugin
                 textureVariable.PreferredDisplayer = typeof(EditableComboBoxDisplay);
             }
 
+            //var colorVariableDefinition = new VariableDefinition();
+            //colorVariableDefinition.PreferredDisplayer = typeof (ColorDisplay);
+            //colorVariableDefinition.Name = "Color";
+            //colorVariableDefinition.Type = "Color";
+            //colorVariableDefinition.DefaultValue = null;
+            //colorVariableDefinition.Category = "Appearance";
+            //ati.VariableDefinitions.Add(colorVariableDefinition);
+
+            var redVariableDefinition = ati.VariableDefinitions.Find(item => item.Name == "Red");
+            redVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
+            redVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DisplayedValueMultiplier)] = 255.0;
+            redVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DecimalPointsFromSlider)] = 0;
+            
+
+            var greenVariableDefinition = ati.VariableDefinitions.Find(item => item.Name == "Green");
+            greenVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
+            greenVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DisplayedValueMultiplier)] = 255.0;
+            greenVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DecimalPointsFromSlider)] = 0;
+
+            var blueVariableDefinition = ati.VariableDefinitions.Find(item => item.Name == "Blue");
+            blueVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
+            blueVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DisplayedValueMultiplier)] = 255.0;
+            blueVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DecimalPointsFromSlider)] = 0;
+
+            var blueIndex = ati.VariableDefinitions.IndexOf(blueVariableDefinition);
+
+            var colorHexValueDefinition = new VariableDefinition();
+            colorHexValueDefinition.Name = "Color Hex";
+            colorHexValueDefinition.Category = "Appearance";
+            colorHexValueDefinition.DefaultValue = null;
+            colorHexValueDefinition.Type = "string";
+            colorHexValueDefinition.UsesCustomCodeGeneration = true;
+            colorHexValueDefinition.CustomVariableGet = (element, nos) =>
+            {
+                var red = ((ObjectFinder.GetValueRecursively(nos, element, "Red") as float?) ?? 0) * 255;
+                var green = ((ObjectFinder.GetValueRecursively(nos, element, "Green") as float?) ?? 0) * 255;
+                var blue = ((ObjectFinder.GetValueRecursively(nos, element, "Blue") as float?) ?? 0) * 255;
+
+                var redInt = MathFunctions.RoundToInt(red);
+                var greenInt = MathFunctions.RoundToInt(green);
+                var blueInt = MathFunctions.RoundToInt(blue);
+
+                // source: https://stackoverflow.com/questions/39137486/converting-colour-name-to-hex-in-c-sharp
+                var hexValue = $"{redInt:X2}{greenInt:X2}{blueInt:X2}";
+                return hexValue;
+            };
+            colorHexValueDefinition.CustomVariableSet = (element, nos, newValue) =>
+            {
+                var colorConverter = new ColorConverter();
+                var newValueAsString = newValue as string;
+                if(!string.IsNullOrEmpty(newValueAsString))
+                {
+                    if(!newValueAsString.StartsWith("#"))
+                    {
+                        newValueAsString = "#" + newValueAsString;
+                    }
+                    try
+                    {
+                        var color = (Color)colorConverter.ConvertFromString(newValueAsString);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Red", color.R / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Green", color.G / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Blue", color.B / 255.0f, performSaveAndGenerateCode: true, updateUi: true);
+                    }
+                    catch
+                    {
+                        // do we want to do anything?
+                    }
+
+                }
+            };
+            ati.VariableDefinitions.Insert(blueIndex + 1, colorHexValueDefinition);
 
         }
+
+        public override bool ShutDown(PluginShutDownReason shutDownReason) => true;
     }
 }

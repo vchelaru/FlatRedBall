@@ -545,6 +545,20 @@ namespace OfficialPlugins.VariableDisplay
                 if (variableDefinition?.PreferredDisplayer != null)
                 {
                     instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
+
+                    if(instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition.MinValue != null && variableDefinition.MaxValue != null)
+                    {
+                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                            variableDefinition.MaxValue.Value;
+                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                            variableDefinition.MinValue.Value;
+                    }
+
+                    foreach(var item in variableDefinition.PropertiesToSetOnDisplayer)
+                    {
+                        instanceMember.PropertiesToSetOnDisplayer[item.Key] = item.Value;
+                    }
+                    
                 }
                 else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
                 {
@@ -627,75 +641,83 @@ namespace OfficialPlugins.VariableDisplay
                     // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
                     // runtime errors.
                     //
-                    bool makeDefault = false;
-                    var ati = instance.GetAssetTypeInfo();
-                    var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-                    if (foundVariable?.Type == nameof(AnimationChainList))
-                    {
-                        if (value is string && ((string)value) == "<NONE>")
-                        {
-                            value = null;
-                            makeDefault = true;
 
-                            // Let's also set the CurrentChainName to null
-                            GlueCommands.Self.GluxCommands.SetVariableOn(
-                                instance,
-                                "CurrentChainName",
-                                null);
-                        }
+                    if(variableDefinition.CustomVariableSet != null)
+                    {
+                        variableDefinition.CustomVariableSet(container, instance, value);
                     }
-                    instanceMember.IsDefault = makeDefault;
-
-                    // If we ignore the next refresh, then AnimationChains won't update when the user
-                    // picks an AnimationChainList from a combo box:
-                    //RefreshLogic.IgnoreNextRefresh();
-
-                    // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-
-                    GlueCommands.Self.GluxCommands.SetVariableOn(
-                        instance,
-                        memberName,
-                        value, performSaveAndGenerateCode: false, updateUi: false);
-
-
-                    await System.Threading.Tasks.Task.Delay(400);
-
-                    // Set subtext before refreshing property grid
-                    AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
-
-                    instanceMember.IsDefault = makeDefault;
-
-                    await TaskManager.Self.AddAsync(async () =>
+                    else
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
-                        EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
-
-                        GlueCommands.Self.DoOnUiThread(() =>
+                        bool makeDefault = false;
+                        var ati = instance.GetAssetTypeInfo();
+                        var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+                        if (foundVariable?.Type == nameof(AnimationChainList))
                         {
-                            MainGlueWindow.Self.PropertyGrid.Refresh();
-                            PropertyGridHelper.UpdateNamedObjectDisplay();
-                            if(instanceMember.DisplayName == "Name")
+                            if (value is string && ((string)value) == "<NONE>")
                             {
-                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container, 
-                                    // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
-                                    FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                                value = null;
+                                makeDefault = true;
+
+                                // Let's also set the CurrentChainName to null
+                                GlueCommands.Self.GluxCommands.SetVariableOn(
+                                    instance,
+                                    "CurrentChainName",
+                                    null);
                             }
-                        });
-                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                        }
+                        instanceMember.IsDefault = makeDefault;
+
+                        // If we ignore the next refresh, then AnimationChains won't update when the user
+                        // picks an AnimationChainList from a combo box:
+                        //RefreshLogic.IgnoreNextRefresh();
+
+                        // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
+
+                        GlueCommands.Self.GluxCommands.SetVariableOn(
+                            instance,
+                            memberName,
+                            value, performSaveAndGenerateCode: false, updateUi: false);
 
 
-                    }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
+                        await System.Threading.Tasks.Task.Delay(400);
 
+                        // Set subtext before refreshing property grid
+                        AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
+
+                        instanceMember.IsDefault = makeDefault;
+
+                        await TaskManager.Self.AddAsync(async () =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+                            GlueCommands.Self.DoOnUiThread(() =>
+                            {
+                                MainGlueWindow.Self.PropertyGrid.Refresh();
+                                PropertyGridHelper.UpdateNamedObjectDisplay();
+                                if(instanceMember.DisplayName == "Name")
+                                {
+                                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container, 
+                                        // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
+                                        FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                                }
+                            });
+                            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+
+
+                        }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
+
+                    }
                 };
 
                 instanceMember.IsDefaultSet += (owner, args) =>
                 {
                     if (instanceMember.IsDefault)
                     {
-                    // June 29 2021 - this used to get called whenever
-                    // IsDefault is set to either true or false, but we
-                    // only want to call MakeDefault if the value is set to true.
-                    MakeDefault(instance, memberName);
+                        // June 29 2021 - this used to get called whenever
+                        // IsDefault is set to either true or false, but we
+                        // only want to call MakeDefault if the value is set to true.
+                        MakeDefault(instance, memberName);
 
                     }
                 };
@@ -730,28 +752,23 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
         {
-            instanceMember.CustomGetEvent += (throwaway) =>
+            if (variableDefinition.CustomVariableGet != null)
             {
-                return GetValueRecursively(instance, container, memberName, memberType, variableDefinition);
-            };
-        }
-
-        // Vic says - I suppose this could go to ObjectFinder, but that would require a bit of work. For now, making it static, and if this is
-        // needed in more places, we could migrate:
-        public static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
-        {
-            var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-
-            var typeName = variableDefinition?.Type;
-            Type type = null;
-            if (!string.IsNullOrEmpty(typeName))
-            {
-                type = TypeManager.GetTypeFromString(typeName);
+                instanceMember.CustomGetEvent += (throwaway) =>
+                {
+                    return variableDefinition.CustomVariableGet(container, instance);
+                };
             }
-
-            return GetValueRecursively(instance, container, memberName, type, variableDefinition);
+            else
+            {
+                instanceMember.CustomGetEvent += (throwaway) =>
+                {
+                    return GetValueRecursively(instance, container, memberName, memberType, variableDefinition);
+                };
+            }
         }
 
+        // This exists in ObjectFinder too, but for performance reasons we're keeping this here so it can use the version that already knows the type and variable definition
         private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
         {
             var instruction = instance.GetCustomVariable(memberName);
@@ -968,23 +985,19 @@ namespace OfficialPlugins.VariableDisplay
         {
             PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
 
-            var element = GlueState.Self.CurrentElement;
+            var element = ObjectFinder.Self.GetElementContaining(instance);
 
-            // do we want to run this async?
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            if(element != null)
+            {
+                // do we want to run this async?
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
 
-            // normally we want to refresh only the variables
-            // However, refreshing the variables means "re-assign all variables"
-            // If a variable is made default, then re-assigning won't un-assign the
-            // already-assigned default value. Therefore, the easiest way to fix this
-            // is to just refresh everything. At some point we may want to have the ability
-            // to refresh a single variable, but that will be a lot more work.
-            //bool sendRefreshCommands = false;
-            //GlueCommands.Self.GluxCommands.SaveGlux(sendRefreshCommands);
-            //GlueCommands.Self.GlueViewCommands.SendRefreshVariablesCommand();
             GlueCommands.Self.GluxCommands.SaveGlux();
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
+
+            PluginManager.ReactToChangedProperty(memberName, null, element);
         }
 
 
