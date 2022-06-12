@@ -15,6 +15,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Elements;
 using GlueFormsCore.Controls;
 using OfficialPlugins.PropertyGrid.Managers;
+using WpfDataUi.Controls;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -87,102 +88,14 @@ namespace OfficialPlugins.VariableDisplay
 
             foreach (CustomVariable variable in element.CustomVariables)
             {
-                Type type = variable.GetRuntimeType();
-                if (type == null)
-                {
-                    type = typeof(string);
-                }
-
-                string name = variable.Name;
-
-                var instanceMember = new DataGridItem();
-                instanceMember.CustomGetTypeEvent += (throwaway) => type;
-                string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
-
-                // Currently this only works on TextBox variables - eventually will expand
-                instanceMember.DetailText = variable.Summary;
-                
-                instanceMember.DisplayName = displayName;
-                instanceMember.UnmodifiedVariableName = name;
-
-                TypeConverter converter = variable.GetTypeConverter(element);
-                instanceMember.TypeConverter = converter;
-
-                if(!string.IsNullOrEmpty(variable.PreferredDisplayerTypeName) &&
-                    VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variable.PreferredDisplayerTypeName))
-                {
-                    instanceMember.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
-                        [variable.PreferredDisplayerTypeName];
-                }
-                
-                instanceMember.CustomSetEvent += (intance, value) =>
-                {
-                    instanceMember.IsDefault = false;
-
-                    RefreshLogic.IgnoreNextRefresh();
-
-
-                    var oldValue = variable.DefaultValue;
-
-                    variable.DefaultValue = value;
-
-                    EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
-                        "DefaultValue", variable, oldValue);
-
-
-
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-
-                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                };
-
-                instanceMember.CustomGetEvent += (instance) =>
-                {
-                    return element.GetVariableValueRecursively(name);
-
-                };
-
-                instanceMember.IsDefault = element.GetCustomVariable(name)?.DefaultValue == null;
-
-                // Assing the IsDefaultSet event setting IsDefault *after* 
-                instanceMember.IsDefaultSet += (owner, args) =>
-                {
-                    
-                    element.GetCustomVariableRecursively(name).DefaultValue = null;
-
-
-                    GlueCommands.Self.GluxCommands.SaveGlux();
-
-                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                };
-
-                instanceMember.SetValueError = (newValue) =>
-                {
-                    if (newValue is string && string.IsNullOrEmpty(newValue as string))
-                    {
-                        element.GetCustomVariableRecursively(name).DefaultValue = null;
-
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-
-                        GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                        GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-                    }
-                };
-
-                instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
+                DataGridItem instanceMember = CreateInstanceMemberForVariable(element, variable);
 
                 var categoryName = !string.IsNullOrWhiteSpace(variable.Category) ?
                     variable.Category : "Variables";
 
                 var category = categories.FirstOrDefault(item => item.Name == categoryName);
 
-                if(category == null)
+                if (category == null)
                 {
                     category = CreateAndAddCategory(categories, categoryName);
                 }
@@ -191,7 +104,7 @@ namespace OfficialPlugins.VariableDisplay
             }
 
 
-            foreach(var variable in variableDefinitions)
+            foreach (var variable in variableDefinitions)
             {
                 var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variable.Type);
 
@@ -282,6 +195,133 @@ namespace OfficialPlugins.VariableDisplay
 
                 //category.Members.Add(instanceMember);
             }
+        }
+
+        private static DataGridItem CreateInstanceMemberForVariable(GlueElement element, CustomVariable variable)
+        {
+            Type type = variable.GetRuntimeType();
+            if (type == null)
+            {
+                type = typeof(string);
+            }
+
+            string name = variable.Name;
+
+            var instanceMember = new DataGridItem();
+            instanceMember.CustomGetTypeEvent += (throwaway) => type;
+            string displayName = StringFunctions.InsertSpacesInCamelCaseString(name);
+
+            // Currently this only works on TextBox variables - eventually will expand
+            instanceMember.DetailText = variable.Summary;
+
+            instanceMember.DisplayName = displayName;
+            instanceMember.UnmodifiedVariableName = name;
+
+            TypeConverter converter = variable.GetTypeConverter(element);
+            instanceMember.TypeConverter = converter;
+
+            VariableDefinition variableDefinition = null;
+            if(!string.IsNullOrEmpty(variable.SourceObject ))
+            {
+                NamedObjectSave variableNosOwner = null;
+                variableNosOwner = element.GetNamedObjectRecursively(variable.SourceObject);
+                variableDefinition = variableNosOwner?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variable.SourceObjectProperty);
+            }
+
+
+            if (!string.IsNullOrEmpty(variable.PreferredDisplayerTypeName) &&
+                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variable.PreferredDisplayerTypeName))
+            {
+                instanceMember.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
+                    [variable.PreferredDisplayerTypeName];
+            }
+            else if(variableDefinition?.PreferredDisplayer != null)
+            {
+                instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
+                foreach(var property in variableDefinition.PropertiesToSetOnDisplayer)
+                {
+                    instanceMember.PropertiesToSetOnDisplayer[property.Key] = property.Value;
+                }
+            }
+            else if(instanceMember.PreferredDisplayer == null && variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
+            {
+                instanceMember.PreferredDisplayer = typeof(SliderDisplay);
+                instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                    variableDefinition.MaxValue.Value;
+                instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                    variableDefinition.MinValue.Value;
+            }
+
+            if (instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
+            {
+                instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                    variableDefinition.MaxValue.Value;
+                instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                    variableDefinition.MinValue.Value;
+            }
+
+            instanceMember.CustomSetEvent += (intance, value) =>
+            {
+                instanceMember.IsDefault = false;
+
+                RefreshLogic.IgnoreNextRefresh();
+
+
+                var oldValue = variable.DefaultValue;
+
+                variable.DefaultValue = value;
+
+                EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                    "DefaultValue", variable, oldValue);
+
+
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            };
+
+            instanceMember.CustomGetEvent += (instance) =>
+            {
+                return element.GetVariableValueRecursively(name);
+
+            };
+
+            instanceMember.IsDefault = element.GetCustomVariable(name)?.DefaultValue == null;
+
+            // Assing the IsDefaultSet event setting IsDefault *after* 
+            instanceMember.IsDefaultSet += (owner, args) =>
+            {
+
+                element.GetCustomVariableRecursively(name).DefaultValue = null;
+
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+            };
+
+            instanceMember.SetValueError = (newValue) =>
+            {
+                if (newValue is string && string.IsNullOrEmpty(newValue as string))
+                {
+                    element.GetCustomVariableRecursively(name).DefaultValue = null;
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
+            };
+
+            instanceMember.ContextMenuEvents.Add("Variable Properties", (sender, args) => GlueState.Self.CurrentCustomVariable = variable);
+            return instanceMember;
         }
     }
 }
