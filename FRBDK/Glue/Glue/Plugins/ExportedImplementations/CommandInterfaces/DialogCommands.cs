@@ -659,6 +659,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.TypeConverter = typeConverter;
                     }
 
+                    if(!string.IsNullOrEmpty( sourceObject ))
+                    {
+                        var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
+                        if(namedObjectSource != null)
+                        {
+                            var ati = namedObjectSource.GetAssetTypeInfo();
+
+                            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
+
+                            newVariable.Category = variableDefinition?.Category;
+                        }
+                    }
+
                     GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
                 }
             }
