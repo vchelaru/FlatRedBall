@@ -118,10 +118,19 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (nos != null)
                     {
-                        CustomVariableInNamedObject cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
+                        var cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
 
                         // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
                         // need to do anything.
+                        // Update June 12, 2022
+                        // Actually, if we don't
+                        // set this, then changing
+                        // the tunneled value will not
+                        // change the SourceObject value
+                        // which can cause confusion.
+
+
+
                         if (cvino != null)
                         {
                             if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
@@ -133,7 +142,18 @@ namespace FlatRedBall.Glue.SetVariable
                                 cvino.Value = null;
                             }
                         }
-
+                        else
+                        {
+                            // This is a new add June 12, 2022. Not sure if we should globally
+                            // add this value, or if it should only be for NOS's which have an ATI
+                            // with a variable definition. Let's be safe and require ATIs for now:
+                            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions
+                                .Find(item => item.Name == customVariable.SourceObjectProperty);
+                            if(variableDefinition != null)
+                            {
+                                GlueCommands.Self.GluxCommands.SetVariableOn(nos, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                            }
+                        }
                     }
                 }
 
