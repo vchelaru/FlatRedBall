@@ -104,14 +104,6 @@ namespace OfficialPlugins.SpritePlugin
                 textureVariable.PreferredDisplayer = typeof(EditableComboBoxDisplay);
             }
 
-            //var colorVariableDefinition = new VariableDefinition();
-            //colorVariableDefinition.PreferredDisplayer = typeof (ColorDisplay);
-            //colorVariableDefinition.Name = "Color";
-            //colorVariableDefinition.Type = "Color";
-            //colorVariableDefinition.DefaultValue = null;
-            //colorVariableDefinition.Category = "Appearance";
-            //ati.VariableDefinitions.Add(colorVariableDefinition);
-
             var redVariableDefinition = ati.VariableDefinitions.Find(item => item.Name == "Red");
             redVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
             redVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DisplayedValueMultiplier)] = 255.0;
@@ -131,7 +123,7 @@ namespace OfficialPlugins.SpritePlugin
             var blueIndex = ati.VariableDefinitions.IndexOf(blueVariableDefinition);
 
             var colorHexValueDefinition = new VariableDefinition();
-            colorHexValueDefinition.Name = "Color Hex";
+            colorHexValueDefinition.Name = "ColorHex";
             colorHexValueDefinition.Category = "Appearance";
             colorHexValueDefinition.DefaultValue = null;
             colorHexValueDefinition.Type = "string";

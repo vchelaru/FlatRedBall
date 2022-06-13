@@ -23,7 +23,7 @@ namespace OfficialPlugins.VariableDisplay
         #region Fields
 
         DataUiGrid settingsGrid;
-        VariableView variableGrid;
+        public static VariableView VariableGrid;
 
         VariableViewModel variableViewModel;
 
@@ -55,9 +55,9 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleRefreshProperties(string changedMember, object oldValue, GlueElement glueElement)
         {
-            if (this.variableGrid != null)
+            if (VariableGrid != null)
             {
-                RefreshLogic.RefreshGrid(variableGrid.DataUiGrid);
+                RefreshLogic.RefreshGrid(VariableGrid.DataUiGrid);
             }
         }
 
@@ -125,8 +125,8 @@ namespace OfficialPlugins.VariableDisplay
             AddOrShowVariableGrid();
 
             variableViewModel.CanAddVariable = true;
-            variableGrid.DataUiGrid.Instance = GlueState.Self.CurrentElement;
-            ElementVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, GlueState.Self.CurrentElement);
+            VariableGrid.DataUiGrid.Instance = GlueState.Self.CurrentElement;
+            ElementVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, GlueState.Self.CurrentElement);
         }
 
         private void HandleNamedObjectSelect(NamedObjectSave namedObject)
@@ -206,10 +206,10 @@ namespace OfficialPlugins.VariableDisplay
             AddOrShowVariableGrid();
             // can't add variables on the instance:
             variableViewModel.CanAddVariable = false;
-            variableGrid.DataUiGrid.Instance = namedObject;
-            variableGrid.Visibility = System.Windows.Visibility.Visible;
+            VariableGrid.DataUiGrid.Instance = namedObject;
+            VariableGrid.Visibility = System.Windows.Visibility.Visible;
 
-            NamedObjectVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, namedObject,
+            NamedObjectVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, namedObject,
                 GlueState.Self.CurrentElement, ati);
 
         }
@@ -228,14 +228,14 @@ namespace OfficialPlugins.VariableDisplay
 
         private void AddOrShowVariableGrid()
         {
-            if(variableGrid == null)
+            if(VariableGrid == null)
             {
-                variableGrid = new VariableView();
+                VariableGrid = new VariableView();
 
                 variableViewModel = new VariableViewModel();
-                variableGrid.DataContext = variableViewModel;
+                VariableGrid.DataContext = variableViewModel;
 
-                variableTab = this.CreateTab(variableGrid, "Variables");
+                variableTab = this.CreateTab(VariableGrid, "Variables");
                 variableTab.IsPreferredDisplayerForType = (typeName) =>
                 {
                     if (typeName == "Variables") return true;
@@ -255,7 +255,7 @@ namespace OfficialPlugins.VariableDisplay
                     }
                     else if(currentElement != null)
                     {
-                        ElementVariableShowingLogic.UpdateShownVariables(variableGrid.DataUiGrid, currentElement);
+                        ElementVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, currentElement);
                     }
 
                 };

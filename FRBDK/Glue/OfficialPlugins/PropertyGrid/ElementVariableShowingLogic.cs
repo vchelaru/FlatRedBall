@@ -221,9 +221,9 @@ namespace OfficialPlugins.VariableDisplay
             instanceMember.TypeConverter = converter;
 
             VariableDefinition variableDefinition = null;
+            NamedObjectSave variableNosOwner = null;
             if(!string.IsNullOrEmpty(variable.SourceObject ))
             {
-                NamedObjectSave variableNosOwner = null;
                 variableNosOwner = element.GetNamedObjectRecursively(variable.SourceObject);
                 variableDefinition = variableNosOwner?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variable.SourceObjectProperty);
             }
@@ -264,7 +264,7 @@ namespace OfficialPlugins.VariableDisplay
             {
                 instanceMember.IsDefault = false;
 
-                RefreshLogic.IgnoreNextRefresh();
+                //RefreshLogic.IgnoreNextRefresh();
 
 
                 var oldValue = variable.DefaultValue;
@@ -281,11 +281,20 @@ namespace OfficialPlugins.VariableDisplay
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                RefreshLogic.RefreshGrid();
             };
 
             instanceMember.CustomGetEvent += (instance) =>
             {
-                return element.GetVariableValueRecursively(name);
+                if(variableDefinition?.CustomVariableGet != null)
+                {
+                    return variableDefinition.CustomVariableGet(element, variableNosOwner);
+                }
+                else
+                {
+                    return element.GetVariableValueRecursively(name);
+                }
 
             };
 
