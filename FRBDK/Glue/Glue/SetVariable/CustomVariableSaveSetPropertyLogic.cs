@@ -120,38 +120,47 @@ namespace FlatRedBall.Glue.SetVariable
                     {
                         var cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
 
-                        // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
-                        // need to do anything.
-                        // Update June 12, 2022
-                        // Actually, if we don't
-                        // set this, then changing
-                        // the tunneled value will not
-                        // change the SourceObject value
-                        // which can cause confusion.
+                        var variableDefinition = nos.GetAssetTypeInfo()
+                            .VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
 
-
-
-                        if (cvino != null)
+                        if (variableDefinition?.CustomVariableSet != null)
                         {
-                            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                            {
-                                cvino.Value = customVariable.DefaultValue;
-                            }
-                            else
-                            {
-                                cvino.Value = null;
-                            }
+                            variableDefinition.CustomVariableSet(
+                                element, nos, customVariable.DefaultValue);
                         }
                         else
                         {
-                            // This is a new add June 12, 2022. Not sure if we should globally
-                            // add this value, or if it should only be for NOS's which have an ATI
-                            // with a variable definition. Let's be safe and require ATIs for now:
-                            var variableDefinition = nos.GetAssetTypeInfo()?.VariableDefinitions
-                                .Find(item => item.Name == customVariable.SourceObjectProperty);
-                            if(variableDefinition != null)
+                            // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
+                            // need to do anything.
+                            // Update June 12, 2022
+                            // Actually, if we don't
+                            // set this, then changing
+                            // the tunneled value will not
+                            // change the SourceObject value
+                            // which can cause confusion.
+
+
+
+                            if (cvino != null)
                             {
-                                GlueCommands.Self.GluxCommands.SetVariableOn(nos, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                                if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                                {
+                                    cvino.Value = customVariable.DefaultValue;
+                                }
+                                else
+                                {
+                                    cvino.Value = null;
+                                }
+                            }
+                            else
+                            {
+                                // This is a new add June 12, 2022. Not sure if we should globally
+                                // add this value, or if it should only be for NOS's which have an ATI
+                                // with a variable definition. Let's be safe and require ATIs for now:
+                                if (variableDefinition != null)
+                                {
+                                    GlueCommands.Self.GluxCommands.SetVariableOn(nos, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                                }
                             }
                         }
                     }

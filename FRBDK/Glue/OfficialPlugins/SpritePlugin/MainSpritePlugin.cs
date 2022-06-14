@@ -128,6 +128,7 @@ namespace OfficialPlugins.SpritePlugin
             colorHexValueDefinition.DefaultValue = null;
             colorHexValueDefinition.Type = "string";
             colorHexValueDefinition.UsesCustomCodeGeneration = true;
+            colorHexValueDefinition.PreferredDisplayer = typeof(ColorHexTextBox);
             colorHexValueDefinition.CustomVariableGet = (element, nos) =>
             {
                 var red = ((ObjectFinder.GetValueRecursively(nos, element, "Red") as float?) ?? 0) * 255;
