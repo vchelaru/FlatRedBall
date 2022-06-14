@@ -283,7 +283,7 @@ namespace FlatRedBallAddOns.Entities
             var codeBlock = GenerateClassHeader(element, namespaceBlock);
 
 
-            GenerateFields(element, codeBlock);
+            GenerateFieldsAndProperties(element, codeBlock);
 
             GenerateConstructors(element, codeBlock);
 
@@ -654,7 +654,7 @@ namespace FlatRedBallAddOns.Entities
             NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
         }
 
-        internal static ICodeBlock GenerateFields(IElement glueElement, ICodeBlock codeBlock)
+        internal static ICodeBlock GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
         {
             if(glueElement is EntitySave)
             {
