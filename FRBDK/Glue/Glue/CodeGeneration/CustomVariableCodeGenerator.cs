@@ -50,7 +50,17 @@ namespace FlatRedBall.Glue.CodeGeneration
             // the use will be able to override virtual properties and give each class a specific implementation
             // Regarding customVariable.CreatesEvent - 
             // If this event creates an event, then we need to create a property for it, even if there is a base property.
-            if (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.IsShared || customVariable.CreatesEvent)
+            var shouldGenerate = !customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.IsShared || customVariable.CreatesEvent;
+            if(variableDefinition != null)
+            {
+                // This is tricky - if a variable uses custom code generation it may...
+                // * not be a generated variable at all, only used in the editor
+                // * be generated, but have custom get/set properties
+                // It's hard to know which, so for now we'll just exclude generation completely, and see
+                // if this causes problems...
+                shouldGenerate = variableDefinition.UsesCustomCodeGeneration == false;
+            }
+            if (shouldGenerate)
             {
                 #region if Tunneled Variable
                 if (customVariable.IsTunneling && IsSourceObjectEnabled(saveObject, customVariable))

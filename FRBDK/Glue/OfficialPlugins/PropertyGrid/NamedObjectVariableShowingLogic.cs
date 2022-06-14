@@ -133,16 +133,18 @@ namespace OfficialPlugins.VariableDisplay
         private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
-            List<VariableDefinition> variableDefinitions = null;
+            Dictionary<string, VariableDefinition> variableDefinitions = new Dictionary<string, VariableDefinition>();
 
             if(ati?.VariableDefinitions.Count > 0)
             {
-                variableDefinitions = ati.VariableDefinitions;
+                foreach(var definition in ati.VariableDefinitions)
+                {
+                    variableDefinitions[definition.Name] = definition;
+
+                }
             }
             else
             {
-                variableDefinitions = new List<VariableDefinition>();
-
                 var instanceElement = ObjectFinder.Self.GetElement(instance);
                 for (int i = 0; i < instance.TypedMembers.Count; i++)
                 {
@@ -178,13 +180,15 @@ namespace OfficialPlugins.VariableDisplay
                             }
                         }
                     }
-                    variableDefinitions.Add(baseVariableDefinition);
+                    variableDefinitions.Add(typedMember.CustomTypeName??typedMember.MemberName, baseVariableDefinition);
                 }
             }
 
             
-            foreach (var variableDefinition in variableDefinitions)
+            foreach (var kvp in variableDefinitions)
             {
+                var variableDefinition = kvp.Value;
+                var variableName = kvp.Key;
                 bool fallBackToTypedMember = false;
                 try
                 {
@@ -197,8 +201,8 @@ namespace OfficialPlugins.VariableDisplay
                     }
                     else
                     {
-                        typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableDefinition.Name, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
+                        typedMember = TypedMemberBase.GetTypedMember(variableName, type);
+                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableName, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
                         if (instanceMember != null)
                         {
                             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
@@ -215,7 +219,7 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     // this new code isn't working with some things like generics. Until I fix that, let's fall back:
 
-                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableDefinition.Name);
+                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableName);
 
                     if (typedMember != null)
                     {
