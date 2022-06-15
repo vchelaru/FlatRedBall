@@ -289,7 +289,7 @@ namespace OfficialPlugins.VariableDisplay
             {
                 if(variableDefinition?.CustomVariableGet != null)
                 {
-                    return variableDefinition.CustomVariableGet(element, variableNosOwner);
+                    return variableDefinition.CustomVariableGet(element, variableNosOwner, null);
                 }
                 else
                 {

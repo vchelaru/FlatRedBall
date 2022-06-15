@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.Elements
 
         [XmlIgnore]
         [JsonIgnore]
-        public Func<GlueElement, NamedObjectSave, object> CustomVariableGet;
+        public Func<GlueElement, NamedObjectSave, string, object> CustomVariableGet;
         
         [XmlIgnore]
         [JsonIgnore] 

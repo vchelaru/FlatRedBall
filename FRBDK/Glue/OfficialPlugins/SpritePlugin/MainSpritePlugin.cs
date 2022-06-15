@@ -24,7 +24,7 @@ namespace OfficialPlugins.SpritePlugin
 
         public override string FriendlyName => "Sprite Plugin";
 
-        public override Version Version => new Version(1,0);
+        public override Version Version => new Version(1, 0);
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace OfficialPlugins.SpritePlugin
 
         private void HandleGluxLoaded()
         {
-            var shouldHaveUseAnimationTextureFlip = 
+            var shouldHaveUseAnimationTextureFlip =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasUseAnimationTextureFlip;
 
             var ati = AvailableAssetTypes.CommonAtis.Sprite;
@@ -51,7 +51,7 @@ namespace OfficialPlugins.SpritePlugin
             var doesAtiAlreadyHaveUseAnimationTextureFlip = existingUseAnimationTextureVariableDefinition != null;
 
             // Update the presence of the UseAnimationTextureFlip variable definition
-            if(shouldHaveUseAnimationTextureFlip && !doesAtiAlreadyHaveUseAnimationTextureFlip)
+            if (shouldHaveUseAnimationTextureFlip && !doesAtiAlreadyHaveUseAnimationTextureFlip)
             {
                 var useAnimationTextureFlipVariableDefinition = new VariableDefinition();
                 useAnimationTextureFlipVariableDefinition.Type = "bool";
@@ -61,7 +61,7 @@ namespace OfficialPlugins.SpritePlugin
 
                 var useAnimationRelativePositionVariableDefinition = ati.VariableDefinitions.FirstOrDefault(item =>
                     item.Name == nameof(FlatRedBall.Sprite.UseAnimationRelativePosition));
-                if(useAnimationRelativePositionVariableDefinition != null)
+                if (useAnimationRelativePositionVariableDefinition != null)
                 {
                     var indexOf = ati.VariableDefinitions.IndexOf(useAnimationRelativePositionVariableDefinition);
 
@@ -73,16 +73,16 @@ namespace OfficialPlugins.SpritePlugin
                     ati.VariableDefinitions.Add(useAnimationTextureFlipVariableDefinition);
                 }
             }
-            else if(!shouldHaveUseAnimationTextureFlip && doesAtiAlreadyHaveUseAnimationTextureFlip)
+            else if (!shouldHaveUseAnimationTextureFlip && doesAtiAlreadyHaveUseAnimationTextureFlip)
             {
                 ati.VariableDefinitions.Remove(existingUseAnimationTextureVariableDefinition);
             }
 
-            if(shouldHaveUseAnimationTextureFlip && existingIgnoreAnimationTextureFlipVariableDefinition != null)
+            if (shouldHaveUseAnimationTextureFlip && existingIgnoreAnimationTextureFlipVariableDefinition != null)
             {
                 ati.VariableDefinitions.Remove(existingIgnoreAnimationTextureFlipVariableDefinition);
             }
-            if(!shouldHaveUseAnimationTextureFlip && existingIgnoreAnimationTextureFlipVariableDefinition == null)
+            if (!shouldHaveUseAnimationTextureFlip && existingIgnoreAnimationTextureFlipVariableDefinition == null)
             {
                 var ignoreAnimationTextureFlipVariableDefinition = new VariableDefinition();
                 ignoreAnimationTextureFlipVariableDefinition.Type = "bool";
@@ -108,7 +108,7 @@ namespace OfficialPlugins.SpritePlugin
             redVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
             redVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DisplayedValueMultiplier)] = 255.0;
             redVariableDefinition.PropertiesToSetOnDisplayer[nameof(SliderDisplay.DecimalPointsFromSlider)] = 0;
-            
+
 
             var greenVariableDefinition = ati.VariableDefinitions.Find(item => item.Name == "Green");
             greenVariableDefinition.PreferredDisplayer = typeof(SliderDisplay);
@@ -129,27 +129,14 @@ namespace OfficialPlugins.SpritePlugin
             colorHexValueDefinition.Type = "string";
             colorHexValueDefinition.UsesCustomCodeGeneration = true;
             colorHexValueDefinition.PreferredDisplayer = typeof(ColorHexTextBox);
-            colorHexValueDefinition.CustomVariableGet = (element, nos) =>
-            {
-                var red = ((ObjectFinder.GetValueRecursively(nos, element, "Red") as float?) ?? 0) * 255;
-                var green = ((ObjectFinder.GetValueRecursively(nos, element, "Green") as float?) ?? 0) * 255;
-                var blue = ((ObjectFinder.GetValueRecursively(nos, element, "Blue") as float?) ?? 0) * 255;
-
-                var redInt = MathFunctions.RoundToInt(red);
-                var greenInt = MathFunctions.RoundToInt(green);
-                var blueInt = MathFunctions.RoundToInt(blue);
-
-                // source: https://stackoverflow.com/questions/39137486/converting-colour-name-to-hex-in-c-sharp
-                var hexValue = $"{redInt:X2}{greenInt:X2}{blueInt:X2}";
-                return hexValue;
-            };
+            colorHexValueDefinition.CustomVariableGet = ColorHexVariableGet;
             colorHexValueDefinition.CustomVariableSet = (element, nos, newValue) =>
             {
                 var colorConverter = new ColorConverter();
                 var newValueAsString = newValue as string;
-                if(!string.IsNullOrEmpty(newValueAsString))
+                if (!string.IsNullOrEmpty(newValueAsString))
                 {
-                    if(!newValueAsString.StartsWith("#"))
+                    if (!newValueAsString.StartsWith("#"))
                     {
                         newValueAsString = "#" + newValueAsString;
                     }
@@ -171,6 +158,47 @@ namespace OfficialPlugins.SpritePlugin
 
         }
 
+        private static object ColorHexVariableGet(GlueElement element, NamedObjectSave nos, string variableName)
+        {
+            var nosAti = nos.GetAssetTypeInfo();
+            if (nosAti == AvailableAssetTypes.CommonAtis.Sprite)
+            {
+                var red = ((ObjectFinder.GetValueRecursively(nos, element, "Red") as float?) ?? 0) * 255;
+                var green = ((ObjectFinder.GetValueRecursively(nos, element, "Green") as float?) ?? 0) * 255;
+                var blue = ((ObjectFinder.GetValueRecursively(nos, element, "Blue") as float?) ?? 0) * 255;
+
+                var redInt = MathFunctions.RoundToInt(red);
+                var greenInt = MathFunctions.RoundToInt(green);
+                var blueInt = MathFunctions.RoundToInt(blue);
+
+                // source: https://stackoverflow.com/questions/39137486/converting-colour-name-to-hex-in-c-sharp
+                var hexValue = $"{redInt:X2}{greenInt:X2}{blueInt:X2}";
+                return hexValue;
+            }
+            else if(nos.SourceType == SourceType.Entity && variableName != null)
+            {
+                var entityType = ObjectFinder.Self.GetElement(nos);
+                if(entityType != null)
+                {
+                    var foundVariable = entityType.CustomVariables.Find(item => item.Name == variableName);
+                    finish here tomorrow
+                    if (foundVariable != null)
+                    {
+                        var objectInEntity = entityType.GetNamedObject(foundVariable.SourceObject);
+
+                        if(objectInEntity != null)
+                        {
+                            return ColorHexVariableGet(entityType, objectInEntity, null);
+                        }
+                    }
+
+                }
+                return "";
+            }
+            return "";
+        }
         public override bool ShutDown(PluginShutDownReason shutDownReason) => true;
     }
+
 }
+

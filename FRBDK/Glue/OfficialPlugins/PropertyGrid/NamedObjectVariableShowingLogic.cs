@@ -754,13 +754,14 @@ namespace OfficialPlugins.VariableDisplay
             return instanceMember;
         }
 
-        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, 
+            string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
         {
             if (variableDefinition.CustomVariableGet != null)
             {
                 instanceMember.CustomGetEvent += (throwaway) =>
                 {
-                    return variableDefinition.CustomVariableGet(container, instance);
+                    return variableDefinition.CustomVariableGet(container, instance, memberName);
                 };
             }
             else
