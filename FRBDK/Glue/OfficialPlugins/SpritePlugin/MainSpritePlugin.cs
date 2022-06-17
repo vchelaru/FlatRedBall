@@ -31,13 +31,22 @@ namespace OfficialPlugins.SpritePlugin
 
         public override void StartUp()
         {
-            ModifySpriteAti();
+            AddSpriteColorAtiVariables();
+
+            AddTextureCoordinateVariables();
 
             // This should be early so the variable can be added before codegen:
             this.ReactToLoadedGluxEarly += HandleGluxLoaded;
         }
 
         private void HandleGluxLoaded()
+        {
+            AdjustIgnoreAnimationVariables();
+
+            this.CreateAndAddTab(new TextureCoordinateSelectionView(), "Test");
+        }
+
+        private static void AdjustIgnoreAnimationVariables()
         {
             var shouldHaveUseAnimationTextureFlip =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasUseAnimationTextureFlip;
@@ -93,11 +102,9 @@ namespace OfficialPlugins.SpritePlugin
 
                 ati.VariableDefinitions.Add(ignoreAnimationTextureFlipVariableDefinition);
             }
-
-            this.CreateAndAddTab(new TextureCoordinateSelectionView(), "Test");
         }
 
-        private static void ModifySpriteAti()
+        private static void AddSpriteColorAtiVariables()
         {
             var ati = AvailableAssetTypes.CommonAtis.Sprite;
 
@@ -136,6 +143,18 @@ namespace OfficialPlugins.SpritePlugin
             colorHexValueDefinition.CustomVariableSet = ColorHexVariableSet;
             ati.VariableDefinitions.Insert(blueIndex + 1, colorHexValueDefinition);
 
+        }
+
+        private void AddTextureCoordinateVariables()
+        {
+            var ati = AvailableAssetTypes.CommonAtis.Sprite;
+
+            var mapSpriteTextureVariable = new VariableDefinition();
+            mapSpriteTextureVariable.PreferredDisplayer = typeof(MapTextureButtonContainer);
+            mapSpriteTextureVariable.UsesCustomCodeGeneration = true;
+            mapSpriteTextureVariable.Type = "string"; // not used
+            mapSpriteTextureVariable.Name = "MapSpriteTexturePlaceholder";
+            ati.VariableDefinitions.Add(mapSpriteTextureVariable);
         }
 
         private static void ColorHexVariableSet(GlueElement element, NamedObjectSave nos, string variableName, object newValue)
