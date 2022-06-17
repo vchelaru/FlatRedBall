@@ -161,11 +161,50 @@ namespace OfficialPlugins.SpritePlugin
         private static object ColorHexVariableGet(GlueElement element, NamedObjectSave nos, string variableName)
         {
             var nosAti = nos.GetAssetTypeInfo();
+
+            #region Get variableNames to use for red, green, blue (may be tunneled variables)
+
+            string redVariableName = null;
+            string greenVariableName = null;
+            string blueVariableName = null;
+
             if (nosAti == AvailableAssetTypes.CommonAtis.Sprite)
             {
-                var red = ((ObjectFinder.GetValueRecursively(nos, element, "Red") as float?) ?? 0) * 255;
-                var green = ((ObjectFinder.GetValueRecursively(nos, element, "Green") as float?) ?? 0) * 255;
-                var blue = ((ObjectFinder.GetValueRecursively(nos, element, "Blue") as float?) ?? 0) * 255;
+                redVariableName = "Red";
+                greenVariableName = "Green";
+                blueVariableName = "Blue";
+            }
+            else if(nos.SourceType == SourceType.Entity && variableName != null)
+            {
+                var entityType = ObjectFinder.Self.GetElement(nos);
+                if(entityType != null)
+                {
+                    var foundVariable = entityType.CustomVariables.Find(item => item.Name == variableName);
+
+                    if (foundVariable != null)
+                    {
+                        var objectInEntity = entityType.GetNamedObject(foundVariable.SourceObject);
+
+                        if(objectInEntity?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
+                        {
+                            redVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Red")?.Name;
+                            greenVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Green")?.Name;
+                            blueVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Blue")?.Name;
+
+                        }
+                    }
+
+                }
+            }
+
+            #endregion
+
+            if (!string.IsNullOrEmpty(redVariableName) && !string.IsNullOrEmpty(greenVariableName) && 
+                !string.IsNullOrEmpty(blueVariableName))
+            {
+                var red = ((ObjectFinder.GetValueRecursively(nos, element, redVariableName) as float?) ?? 0) * 255;
+                var green = ((ObjectFinder.GetValueRecursively(nos, element, greenVariableName) as float?) ?? 0) * 255;
+                var blue = ((ObjectFinder.GetValueRecursively(nos, element, blueVariableName) as float?) ?? 0) * 255;
 
                 var redInt = MathFunctions.RoundToInt(red);
                 var greenInt = MathFunctions.RoundToInt(green);
@@ -175,26 +214,8 @@ namespace OfficialPlugins.SpritePlugin
                 var hexValue = $"{redInt:X2}{greenInt:X2}{blueInt:X2}";
                 return hexValue;
             }
-            else if(nos.SourceType == SourceType.Entity && variableName != null)
-            {
-                var entityType = ObjectFinder.Self.GetElement(nos);
-                if(entityType != null)
-                {
-                    var foundVariable = entityType.CustomVariables.Find(item => item.Name == variableName);
-                    finish here tomorrow
-                    if (foundVariable != null)
-                    {
-                        var objectInEntity = entityType.GetNamedObject(foundVariable.SourceObject);
 
-                        if(objectInEntity != null)
-                        {
-                            return ColorHexVariableGet(entityType, objectInEntity, null);
-                        }
-                    }
 
-                }
-                return "";
-            }
             return "";
         }
         public override bool ShutDown(PluginShutDownReason shutDownReason) => true;
