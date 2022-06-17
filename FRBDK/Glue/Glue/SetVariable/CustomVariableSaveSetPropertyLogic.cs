@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.SetVariable
                         if (variableDefinition?.CustomVariableSet != null)
                         {
                             variableDefinition.CustomVariableSet(
-                                element, nos, customVariable.DefaultValue);
+                                element, nos, customVariable.Name, customVariable.DefaultValue);
                         }
                         else
                         {

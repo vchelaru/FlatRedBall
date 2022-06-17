@@ -130,76 +130,49 @@ namespace OfficialPlugins.SpritePlugin
             colorHexValueDefinition.UsesCustomCodeGeneration = true;
             colorHexValueDefinition.PreferredDisplayer = typeof(ColorHexTextBox);
             colorHexValueDefinition.CustomVariableGet = ColorHexVariableGet;
-            colorHexValueDefinition.CustomVariableSet = (element, nos, newValue) =>
-            {
-                var colorConverter = new ColorConverter();
-                var newValueAsString = newValue as string;
-                if (!string.IsNullOrEmpty(newValueAsString))
-                {
-                    if (!newValueAsString.StartsWith("#"))
-                    {
-                        newValueAsString = "#" + newValueAsString;
-                    }
-                    try
-                    {
-                        var color = (Color)colorConverter.ConvertFromString(newValueAsString);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Red", color.R / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Green", color.G / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
-                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, "Blue", color.B / 255.0f, performSaveAndGenerateCode: true, updateUi: true);
-                    }
-                    catch
-                    {
-                        // do we want to do anything?
-                    }
-
-                }
-            };
+            colorHexValueDefinition.CustomVariableSet = ColorHexVariableSet;
             ati.VariableDefinitions.Insert(blueIndex + 1, colorHexValueDefinition);
 
         }
 
+        private static void ColorHexVariableSet(GlueElement element, NamedObjectSave nos, string variableName, object newValue)
+        {
+            var colorConverter = new ColorConverter();
+            var newValueAsString = newValue as string;
+            if (!string.IsNullOrEmpty(newValueAsString))
+            {
+                if (!newValueAsString.StartsWith("#"))
+                {
+                    newValueAsString = "#" + newValueAsString;
+                }
+                try
+                {
+                    string redVariableName, greenVariableName, blueVariableName;
+                    GetRedGreenBlueVariableNames(nos, variableName, out redVariableName, out greenVariableName, out blueVariableName);
+
+                    if (!string.IsNullOrEmpty(redVariableName) && !string.IsNullOrEmpty(greenVariableName) &&
+                        !string.IsNullOrEmpty(blueVariableName))
+                    {
+                        var color = (Color)colorConverter.ConvertFromString(newValueAsString);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, redVariableName, color.R / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, greenVariableName, color.G / 255.0f, performSaveAndGenerateCode: false, updateUi: false);
+                        GlueCommands.Self.GluxCommands.SetVariableOn(nos, blueVariableName, color.B / 255.0f, performSaveAndGenerateCode: true, updateUi: true);
+                    }
+                }
+                catch
+                {
+                    // do we want to do anything?
+                }
+
+            }
+        }
+
         private static object ColorHexVariableGet(GlueElement element, NamedObjectSave nos, string variableName)
         {
-            var nosAti = nos.GetAssetTypeInfo();
+            string redVariableName, greenVariableName, blueVariableName;
+            GetRedGreenBlueVariableNames(nos, variableName, out redVariableName, out greenVariableName, out blueVariableName);
 
-            #region Get variableNames to use for red, green, blue (may be tunneled variables)
-
-            string redVariableName = null;
-            string greenVariableName = null;
-            string blueVariableName = null;
-
-            if (nosAti == AvailableAssetTypes.CommonAtis.Sprite)
-            {
-                redVariableName = "Red";
-                greenVariableName = "Green";
-                blueVariableName = "Blue";
-            }
-            else if(nos.SourceType == SourceType.Entity && variableName != null)
-            {
-                var entityType = ObjectFinder.Self.GetElement(nos);
-                if(entityType != null)
-                {
-                    var foundVariable = entityType.CustomVariables.Find(item => item.Name == variableName);
-
-                    if (foundVariable != null)
-                    {
-                        var objectInEntity = entityType.GetNamedObject(foundVariable.SourceObject);
-
-                        if(objectInEntity?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
-                        {
-                            redVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Red")?.Name;
-                            greenVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Green")?.Name;
-                            blueVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Blue")?.Name;
-
-                        }
-                    }
-
-                }
-            }
-
-            #endregion
-
-            if (!string.IsNullOrEmpty(redVariableName) && !string.IsNullOrEmpty(greenVariableName) && 
+            if (!string.IsNullOrEmpty(redVariableName) && !string.IsNullOrEmpty(greenVariableName) &&
                 !string.IsNullOrEmpty(blueVariableName))
             {
                 var red = ((ObjectFinder.GetValueRecursively(nos, element, redVariableName) as float?) ?? 0) * 255;
@@ -218,6 +191,43 @@ namespace OfficialPlugins.SpritePlugin
 
             return "";
         }
+
+        private static void GetRedGreenBlueVariableNames(NamedObjectSave nos, string variableName, out string redVariableName, out string greenVariableName, out string blueVariableName)
+        {
+            var nosAti = nos.GetAssetTypeInfo();
+            redVariableName = null;
+            greenVariableName = null;
+            blueVariableName = null;
+            if (nosAti == AvailableAssetTypes.CommonAtis.Sprite)
+            {
+                redVariableName = "Red";
+                greenVariableName = "Green";
+                blueVariableName = "Blue";
+            }
+            else if (nos.SourceType == SourceType.Entity && variableName != null)
+            {
+                var entityType = ObjectFinder.Self.GetElement(nos);
+                if (entityType != null)
+                {
+                    var foundVariable = entityType.CustomVariables.Find(item => item.Name == variableName);
+
+                    if (foundVariable != null)
+                    {
+                        var objectInEntity = entityType.GetNamedObject(foundVariable.SourceObject);
+
+                        if (objectInEntity?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite)
+                        {
+                            redVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Red")?.Name;
+                            greenVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Green")?.Name;
+                            blueVariableName = entityType.CustomVariables.FirstOrDefault(item => item.SourceObject == objectInEntity.InstanceName && item.SourceObjectProperty == "Blue")?.Name;
+
+                        }
+                    }
+
+                }
+            }
+        }
+
         public override bool ShutDown(PluginShutDownReason shutDownReason) => true;
     }
 

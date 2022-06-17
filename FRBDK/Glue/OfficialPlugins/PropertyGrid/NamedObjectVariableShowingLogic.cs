@@ -648,7 +648,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     if(variableDefinition.CustomVariableSet != null)
                     {
-                        variableDefinition.CustomVariableSet(container, instance, value);
+                        variableDefinition.CustomVariableSet(container, instance, memberName, value);
                     }
                     else
                     {

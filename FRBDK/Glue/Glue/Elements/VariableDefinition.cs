@@ -85,7 +85,7 @@ namespace FlatRedBall.Glue.Elements
         
         [XmlIgnore]
         [JsonIgnore] 
-        public Action<GlueElement, NamedObjectSave, object> CustomVariableSet;
+        public Action<GlueElement, NamedObjectSave, string, object> CustomVariableSet;
 
         // Vic says - maybe we'll need this? Not sure...
         //public CsvInclusion PrimaryCsvInclusion { get; set; } = CsvInclusion.InThisElement;

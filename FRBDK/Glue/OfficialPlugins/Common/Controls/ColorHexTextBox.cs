@@ -16,6 +16,8 @@ namespace OfficialPlugins.Common.Controls
             border = new Border();
             border.CornerRadius = new System.Windows.CornerRadius(4);
             border.Background = Brushes.Red;
+            border.BorderBrush = Brushes.Black;
+            border.BorderThickness = new System.Windows.Thickness(1);
             border.Width = 15;
             border.Height = 15;
             border.Margin = new System.Windows.Thickness(3, 0, 3, 0);
