@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.2.32519.379
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBall.PropertyGrid", "FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj", "{5FE94178-9907-4878-AFAC-8F347CA86B50}"
 EndProject
@@ -79,11 +79,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewProjectCreator", "NewPro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NpcWpfLib", "NpcWpfLib\NpcWpfLib.csproj", "{A995B312-E16C-4427-BBDF-282A24115CFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGum", "..\..\..\Gum\SkiaGum\SkiaGum.csproj", "{83853D93-164D-4F18-971C-D24D54AB6CA3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGum.Wpf.NetCore3_0", "..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.NetCore3_0.csproj", "{C558F902-C842-44E2-9A60-39690FC3BBAF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGumMonogame", "..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj", "{0040D9E0-8B3A-4D78-9575-57B9077D4931}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
+		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{26dd17aa-55ae-46ab-9394-a2319728869a}*SharedItemsImports = 5
+		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
+		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
+		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -299,14 +306,6 @@ Global
 		{A995B312-E16C-4427-BBDF-282A24115CFB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A995B312-E16C-4427-BBDF-282A24115CFB}.Release|x86.ActiveCfg = Release|Any CPU
 		{A995B312-E16C-4427-BBDF-282A24115CFB}.Release|x86.Build.0 = Release|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Debug|x86.Build.0 = Debug|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Release|x86.ActiveCfg = Release|Any CPU
-		{83853D93-164D-4F18-971C-D24D54AB6CA3}.Release|x86.Build.0 = Release|Any CPU
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -315,6 +314,14 @@ Global
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Release|x86.ActiveCfg = Release|Any CPU
 		{C558F902-C842-44E2-9A60-39690FC3BBAF}.Release|x86.Build.0 = Release|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Debug|x86.Build.0 = Debug|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Release|x86.ActiveCfg = Release|Any CPU
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -352,17 +359,10 @@ Global
 		{3A3BC604-F991-4F55-8130-78AD55170B42} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 		{25FCA2B1-7E69-4587-B237-2B663DF58DBB} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 		{A995B312-E16C-4427-BBDF-282A24115CFB} = {25FCA2B1-7E69-4587-B237-2B663DF58DBB}
-		{83853D93-164D-4F18-971C-D24D54AB6CA3} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{C558F902-C842-44E2-9A60-39690FC3BBAF} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
+		{0040D9E0-8B3A-4D78-9575-57B9077D4931} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
-		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{26dd17aa-55ae-46ab-9394-a2319728869a}*SharedItemsImports = 5
-		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
-		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
-		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

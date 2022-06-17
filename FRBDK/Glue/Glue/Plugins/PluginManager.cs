@@ -43,6 +43,8 @@ using GlueFormsCore.ViewModels;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using Gum.Wireframe;
+using Gum.Converters;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -137,6 +139,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             // Forces this class to be accesed. Vic is not sure if this is needed as of Sept 13, 2021
             var throwaway8 = typeof(Microsoft.Build.Utilities.AssemblyFoldersFromConfigInfo);
+            var throwaway2 = typeof(GraphicalUiElement);
+            var gue = new GraphicalUiElement();
+            gue.XUnits = GeneralUnitType.PixelsFromMiddle;
+            var throwaway3 = typeof(GeneralUnitType);
+            
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }

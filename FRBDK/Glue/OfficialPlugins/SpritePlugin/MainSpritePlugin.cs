@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.Common.Controls;
+using OfficialPlugins.SpritePlugin.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -92,6 +93,8 @@ namespace OfficialPlugins.SpritePlugin
 
                 ati.VariableDefinitions.Add(ignoreAnimationTextureFlipVariableDefinition);
             }
+
+            this.CreateAndAddTab(new TextureCoordinateSelectionView(), "Test");
         }
 
         private static void ModifySpriteAti()
