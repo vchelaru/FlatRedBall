@@ -1,4 +1,5 @@
 ﻿using OfficialPlugins.SpritePlugin.Views;
+using RenderingLibrary;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,9 +13,18 @@ namespace OfficialPlugins.SpritePlugin.Managers
         public static Point? LastMiddleMouseButtonPoint { get; private set; }
         static TextureCoordinateSelectionView View;
 
+        static Camera Camera => View.Canvas.SystemManagers.Renderer.Camera;
+
         public static void Initialize(TextureCoordinateSelectionView view)
         {
             View = view;
+
+            //Camera.X = -20;
+            //Camera.Y = -20;
+            View.Background.X = Camera.X;
+            View.Background.Y = Camera.Y;
+
+            View.Canvas.InvalidateVisual();
         }
 
         public static void HandleMousePush(MouseButtonEventArgs args)
@@ -30,12 +40,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             if(args.MiddleButton == MouseButtonState.Pressed && newPosition != LastMiddleMouseButtonPoint)
             {
-                var managers = View.Canvas.SystemManagers;
-                var camera = managers.Renderer.Camera;
+                var camera = Camera;
 
                 camera.X -= (float)(newPosition.X - LastMiddleMouseButtonPoint.Value.X);
                 camera.Y -= (float)(newPosition.Y - LastMiddleMouseButtonPoint.Value.Y);
-
+                View.Background.X = Camera.X;
+                View.Background.Y = Camera.Y;
                 View.Canvas.InvalidateVisual();
 
                 LastMiddleMouseButtonPoint = newPosition;

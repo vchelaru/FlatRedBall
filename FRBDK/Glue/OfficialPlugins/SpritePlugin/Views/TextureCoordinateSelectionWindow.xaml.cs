@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.IO;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,6 +24,8 @@ namespace OfficialPlugins.SpritePlugin.Views
             get => InnerView.TextureFilePath;
             set => InnerView.TextureFilePath = value;
         }
+        public SKBitmap Texture => InnerView.Texture;
+
         public TextureCoordinateSelectionWindow()
         {
             InitializeComponent();

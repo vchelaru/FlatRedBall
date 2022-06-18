@@ -1,6 +1,8 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.SpritePlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -72,6 +74,36 @@ namespace OfficialPlugins.SpritePlugin.Views
 
                 var window = new TextureCoordinateSelectionWindow();
                 window.TextureFilePath = fullFile;
+                var viewModel = new TextureCoordinateSelectionViewModel();
+
+                var left = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                    nameof(Sprite.LeftTextureCoordinate)) as float? ?? 0;
+
+                var top = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                    nameof(Sprite.TopTextureCoordinate)) as float? ?? 0;
+
+                float defaultWidth = 256;
+                float defaultHeight = 256;
+                if(window.Texture != null)
+                {
+                    defaultWidth = window.Texture.Width;
+                    defaultHeight = window.Texture.Height;
+                }
+                var right = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                    nameof(Sprite.RightTextureCoordinate)) as float? ?? defaultWidth;
+
+                var bottom = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                    nameof(Sprite.BottomTextureCoordinate)) as float? ?? defaultHeight;
+
+
+                viewModel.LeftTexturePixel = (int)left;
+                viewModel.TopTexturePixel = (int)top;
+                viewModel.SelectedWidthPixels = (int)(right - left);
+                viewModel.SelectedHeightPixels = (int)(bottom - top);
+
+
+
+                window.DataContext = viewModel;
                 var result = window.ShowDialog();
 
             }
