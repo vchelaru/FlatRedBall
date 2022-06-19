@@ -73,6 +73,8 @@ namespace OfficialPlugins.SpritePlugin.GumComponents
 
             handle.StrokeWidth = 1;
             handle.CornerRadius = 2;
+            handle.CornerRadiusUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
+
             handle.XUnits = xUnits;
             handle.YUnits = yUnits;
             handle.XOrigin = xOrigin;
@@ -95,7 +97,7 @@ namespace OfficialPlugins.SpritePlugin.GumComponents
 
         internal void MakeHighlighted(RoundedRectangleRuntime handle)
         {
-            const int handleSize = 16;
+            const int handleSize = 14;
             handle.Width = handleSize;
             handle.Height = handleSize;
             handle.IsFilled = true;

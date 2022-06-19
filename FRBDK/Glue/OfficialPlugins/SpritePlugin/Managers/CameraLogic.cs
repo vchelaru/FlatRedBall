@@ -20,12 +20,16 @@ namespace OfficialPlugins.SpritePlugin.Managers
         static List<int> ZoomPercentages { get; set; } =
             new List<int>
             {
-                4000,
-                2000,
+                4000,// 0
+                2000,// 1
+                1500,// 2
                 1000,
+                750,
                 500,
+                350,
                 200,
                 100,
+                75,
                 50,
                 25,
                 10,
@@ -34,14 +38,14 @@ namespace OfficialPlugins.SpritePlugin.Managers
         public static float CurrentZoomScale =>
             ZoomPercentages[CurrentZoomLevelIndex] / 100.0f;
 
-        static int CurrentZoomLevelIndex = 5;
+        static int CurrentZoomLevelIndex = 8;
 
         #endregion
 
         public static void Initialize(TextureCoordinateSelectionView view)
         {
             View = view;
-
+            CurrentZoomLevelIndex = ZoomPercentages.IndexOf(100);
             Camera.X = -20;
             Camera.Y = -20;
             UpdateBackgroundPosition();

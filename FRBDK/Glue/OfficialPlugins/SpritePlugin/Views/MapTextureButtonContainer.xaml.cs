@@ -116,46 +116,51 @@ namespace OfficialPlugins.SpritePlugin.Views
 
                 if(result == true)
                 {
-                    bool didAnyChange = false;
-                    if(viewModel.LeftTexturePixel != (int)left)
-                    {
-                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
-                            nameof(Sprite.LeftTexturePixel), 
-                            (float)viewModel.LeftTexturePixel, 
-                            performSaveAndGenerateCode:false, updateUi:true);
-                        didAnyChange = true;
-                    }
-                    if(viewModel.TopTexturePixel != (int)top)
-                    {
-                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
-                            nameof(Sprite.TopTexturePixel), 
-                            (float)viewModel.TopTexturePixel, 
-                            performSaveAndGenerateCode: false, updateUi: true);
-                        didAnyChange = true;
-                    }
-                    if (viewModel.SelectedWidthPixels != (int)(right - left))
-                    {
-                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
-                            nameof(Sprite.RightTexturePixel), 
-                            (float)(viewModel.LeftTexturePixel + viewModel.SelectedWidthPixels),
-                            performSaveAndGenerateCode: false, updateUi: true);
-                        didAnyChange = true;
-                    }
-                    if (viewModel.SelectedHeightPixels != (int)(bottom - top))
-                    {
-                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
-                            nameof(Sprite.BottomTexturePixel),
-                            (float)(viewModel.TopTexturePixel + viewModel.SelectedHeightPixels), 
-                            performSaveAndGenerateCode: false, updateUi: true);
-                        didAnyChange = true;
-                    }
-
-                    if(didAnyChange)
-                    {
-                        GlueCommands.Self.GluxCommands.SaveGlux();
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
-                    }
+                    ApplyViewModel(currentNos, currentElement, viewModel, left, top, right, bottom);
                 }
+            }
+        }
+
+        private static void ApplyViewModel(NamedObjectSave currentNos, GlueElement currentElement, TextureCoordinateSelectionViewModel viewModel, float left, float top, float right, float bottom)
+        {
+            bool didAnyChange = false;
+            if (viewModel.LeftTexturePixelInt != (int)left)
+            {
+                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                    nameof(Sprite.LeftTexturePixel),
+                    (float)viewModel.LeftTexturePixelInt,
+                    performSaveAndGenerateCode: false, updateUi: true);
+                didAnyChange = true;
+            }
+            if (viewModel.TopTexturePixelInt != (int)top)
+            {
+                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                    nameof(Sprite.TopTexturePixel),
+                    (float)viewModel.TopTexturePixelInt,
+                    performSaveAndGenerateCode: false, updateUi: true);
+                didAnyChange = true;
+            }
+            if (viewModel.SelectedWidthPixelsInt != (int)(right - left))
+            {
+                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                    nameof(Sprite.RightTexturePixel),
+                    (float)(viewModel.LeftTexturePixelInt + viewModel.SelectedWidthPixelsInt),
+                    performSaveAndGenerateCode: false, updateUi: true);
+                didAnyChange = true;
+            }
+            if (viewModel.SelectedHeightPixelsInt != (int)(bottom - top))
+            {
+                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                    nameof(Sprite.BottomTexturePixel),
+                    (float)(viewModel.TopTexturePixelInt + viewModel.SelectedHeightPixelsInt),
+                    performSaveAndGenerateCode: false, updateUi: true);
+                didAnyChange = true;
+            }
+
+            if (didAnyChange)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
             }
         }
     }

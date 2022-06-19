@@ -91,19 +91,19 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.X),
-                nameof(ViewModel.LeftTexturePixel));
+                nameof(ViewModel.LeftTexturePixelInt));
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.Y),
-                nameof(ViewModel.TopTexturePixel));
+                nameof(ViewModel.TopTexturePixelInt));
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.Width),
-                nameof(ViewModel.SelectedWidthPixels));
+                nameof(ViewModel.SelectedWidthPixelsInt));
 
             TextureCoordinateRectangle.SetBinding(
                 nameof(TextureCoordinateRectangle.Height),
-                nameof(ViewModel.SelectedHeightPixels));
+                nameof(ViewModel.SelectedHeightPixelsInt));
 
             this.Canvas.Children.Add(TextureCoordinateRectangle);
         }
@@ -216,5 +216,9 @@ namespace OfficialPlugins.SpritePlugin.Views
             y += camera.Y;
         }
 
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MouseEditingLogic.HandleMouseUp(e);
+        }
     }
 }

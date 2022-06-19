@@ -41,7 +41,10 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         public static void HandleMouseMove(MouseEventArgs args)
         {
-            UpdateHandleOver(args);
+            if(HandleGrabbed == null)
+            {
+                UpdateHandleOver(args);
+            }
             //var point = args.GetPosition(View.Canvas); 
             //View.GetWorldPosition(point, out double x, out double y);
             //circle.X = (float)x;
@@ -50,6 +53,42 @@ namespace OfficialPlugins.SpritePlugin.Managers
             //System.Diagnostics.Debug.WriteLine($"Skia:{x}, {y} Window:({point})");
 
             UpdateGrabbed(args);
+
+            UpdateHandleHighlight();
+        }
+
+        internal static void HandleMouseUp(MouseButtonEventArgs e)
+        {
+            if(HandleGrabbed != null)
+            {
+                View.TextureCoordinateRectangle.MakeNormal(HandleGrabbed);
+
+
+                HandleGrabbed = null;
+
+                UpdateHandleOver(e);
+                RefreshHandleVisuals();
+                View.Canvas.InvalidateVisual();
+            }
+
+            // Copy int to decimal values to prevent "flickering" due to half pixels when moving on subsequent grabs:
+            View.ViewModel.TopTexturePixel = View.ViewModel.TopTexturePixelInt;
+            View.ViewModel.LeftTexturePixel = View.ViewModel.LeftTexturePixelInt;
+            View.ViewModel.SelectedWidthPixels = View.ViewModel.SelectedWidthPixelsInt;
+            View.ViewModel.SelectedHeightPixels = View.ViewModel.SelectedHeightPixelsInt;
+        }
+
+        private static void UpdateHandleHighlight()
+        {
+            if(HandleOver != null)
+            {
+                View.TextureCoordinateRectangle.MakeHighlighted(HandleOver);
+            }
+            if (HandleOver != null)
+            {
+                View.TextureCoordinateRectangle.MakeHighlighted(HandleOver);
+            }
+
         }
 
         private static void UpdateGrabbed(MouseEventArgs args)
@@ -109,19 +148,27 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             if(oldHandleOver != newHandleOver)
             {
-                if(oldHandleOver != null)
-                {
-                    View.TextureCoordinateRectangle.MakeNormal(oldHandleOver);
-                }
-                if(newHandleOver != null)
-                {
-                    View.TextureCoordinateRectangle.MakeHighlighted(newHandleOver);
-                }
                 HandleOver = newHandleOver;
+                RefreshHandleVisuals();
 
                 View.Canvas.InvalidateVisual();
             }
 
+        }
+
+        private static void RefreshHandleVisuals()
+        {
+            foreach(var handle in View.TextureCoordinateRectangle.Handles)
+            {
+                if(handle == HandleOver || handle == HandleGrabbed)
+                {
+                    View.TextureCoordinateRectangle.MakeHighlighted(handle);
+                }
+                else
+                {
+                    View.TextureCoordinateRectangle.MakeNormal(handle);
+                }
+            }
         }
 
         private static void UpdateHandleGrabbed(MouseButtonEventArgs args)
@@ -132,6 +179,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 var handleOver = View.GetHandleAt(LastGrabbedMousePoint);
 
                 HandleGrabbed = handleOver;
+                RefreshHandleVisuals();
 
                 var textureCoordinateRectangle = View.TextureCoordinateRectangle;
                 View.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
@@ -141,8 +189,11 @@ namespace OfficialPlugins.SpritePlugin.Managers
                     worldY >= textureCoordinateRectangle.GetAbsoluteTop() &&
                     worldY <= textureCoordinateRectangle.GetAbsoluteBottom();
 
+                View.Canvas.InvalidateVisual();
+
             }
         }
+
 
     }
 }

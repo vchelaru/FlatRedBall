@@ -10,6 +10,7 @@
         <wpf1:GumSKElement x:Name="Canvas" 
                            MouseDown="Canvas_MouseDown"
                            MouseMove="Canvas_MouseMove"
-                           MouseWheel="Canvas_MouseWheel"></wpf1:GumSKElement>
+                           MouseWheel="Canvas_MouseWheel"
+                           MouseUp="Canvas_MouseUp"></wpf1:GumSKElement>
     </Grid>
 </UserControl>
