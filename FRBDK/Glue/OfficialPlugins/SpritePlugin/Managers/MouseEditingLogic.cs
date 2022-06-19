@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.SpritePlugin.Views;
+﻿using OfficialPlugins.SpritePlugin.ViewModels;
+using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using System;
@@ -19,6 +20,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
         private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleOver;
         private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleGrabbed;
         private static bool IsBodyGrabbed;
+
+        static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
+
         #endregion
 
         public static void Initialize(TextureCoordinateSelectionView view)
@@ -97,8 +101,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             if (args.LeftButton == MouseButtonState.Pressed && newPosition != LastGrabbedMousePoint)
             {
-                var xDifference = (float)(newPosition.X - LastGrabbedMousePoint.X) / CameraLogic.CurrentZoomScale;
-                var yDifference = (float)(newPosition.Y - LastGrabbedMousePoint.Y) / CameraLogic.CurrentZoomScale;
+                var xDifference = (float)(newPosition.X - LastGrabbedMousePoint.X) / ViewModel.CurrentZoomScale;
+                var yDifference = (float)(newPosition.Y - LastGrabbedMousePoint.Y) / ViewModel.CurrentZoomScale;
 
                 if (HandleGrabbed != null)
                 {

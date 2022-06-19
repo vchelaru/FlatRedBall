@@ -7,7 +7,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="400">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ComboBox Width="100" ItemsSource="{Binding ZoomPercentages}" SelectedIndex="{Binding CurrentZoomLevelIndex}">
+                
+            </ComboBox>
+        </StackPanel>
         <wpf1:GumSKElement x:Name="Canvas" 
+                           Grid.Row="1"
                            MouseDown="Canvas_MouseDown"
                            MouseMove="Canvas_MouseMove"
                            MouseWheel="Canvas_MouseWheel"

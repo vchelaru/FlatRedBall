@@ -43,7 +43,7 @@ namespace OfficialPlugins.SpritePlugin
         {
             AdjustIgnoreAnimationVariables();
 
-            this.CreateAndAddTab(new TextureCoordinateSelectionView(), "Test");
+            //this.CreateAndAddTab(new TextureCoordinateSelectionView(), "Test");
         }
 
         private static void AdjustIgnoreAnimationVariables()

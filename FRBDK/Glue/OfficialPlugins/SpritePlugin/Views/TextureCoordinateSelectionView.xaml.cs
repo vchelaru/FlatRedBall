@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using OfficialPlugins.SpritePlugin.ViewModels;
 using RenderingLibrary;
 using RenderingLibrary.Graphics;
+using System.ComponentModel;
 
 namespace OfficialPlugins.SpritePlugin.Views
 {
@@ -67,6 +68,8 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public TextureCoordinateRectangle TextureCoordinateRectangle { get; private set; }
 
+        double? windowsScaleFactor = null;
+
         #endregion
 
         #region Constructor/Initialize
@@ -106,12 +109,15 @@ namespace OfficialPlugins.SpritePlugin.Views
                 nameof(ViewModel.SelectedHeightPixelsInt));
 
             this.Canvas.Children.Add(TextureCoordinateRectangle);
+
+            this.DataContextChanged += HandleDataContextChanged;
         }
 
         private void CreateSpriteOutline()
         {
             var outline = new RoundedRectangleRuntime();
             outline.StrokeWidth = 1;
+            outline.StrokeWidthUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
             outline.CornerRadius = 0;
             outline.Color = new SKColor(255, 255, 255, 128);
             // Normally I'd want 1 more pixel outside of the Sprite.
@@ -145,6 +151,25 @@ namespace OfficialPlugins.SpritePlugin.Views
             this.Canvas.Children.Add(Background);
         }
 
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(ViewModel != null)
+            {
+                ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            }
+        }
+
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(ViewModel.CurrentZoomLevelIndex):
+                    CameraLogic.RefreshCameraZoomToViewModel();
+
+                    break;
+            }
+        }
+
         #endregion
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -163,6 +188,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             CameraLogic.HandleMouseWheel(e);
 
+        }
+
+        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            MouseEditingLogic.HandleMouseUp(e);
         }
 
         internal RoundedRectangleRuntime GetHandleAt(Point lastMousePoint)
@@ -186,11 +216,10 @@ namespace OfficialPlugins.SpritePlugin.Views
             return null;
         }
 
-        double? scaleFactor = null;
 
         public void GetWorldPosition(Point lastMousePoint, out double x, out double y)
         {
-            if(scaleFactor == null)
+            if(windowsScaleFactor == null)
             {
                 // todo - fix on a computer that has scaling using:
                 // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
@@ -216,9 +245,5 @@ namespace OfficialPlugins.SpritePlugin.Views
             y += camera.Y;
         }
 
-        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            MouseEditingLogic.HandleMouseUp(e);
-        }
     }
 }

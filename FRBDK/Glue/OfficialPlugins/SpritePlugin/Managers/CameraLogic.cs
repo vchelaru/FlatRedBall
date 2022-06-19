@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.SpritePlugin.Views;
+﻿using OfficialPlugins.SpritePlugin.ViewModels;
+using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
 using System;
 using System.Collections.Generic;
@@ -17,35 +18,13 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         static Camera Camera => View.Canvas.SystemManagers.Renderer.Camera;
 
-        static List<int> ZoomPercentages { get; set; } =
-            new List<int>
-            {
-                4000,// 0
-                2000,// 1
-                1500,// 2
-                1000,
-                750,
-                500,
-                350,
-                200,
-                100,
-                75,
-                50,
-                25,
-                10,
-                5
-            };
-        public static float CurrentZoomScale =>
-            ZoomPercentages[CurrentZoomLevelIndex] / 100.0f;
-
-        static int CurrentZoomLevelIndex = 8;
+        static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
         #endregion
 
         public static void Initialize(TextureCoordinateSelectionView view)
         {
             View = view;
-            CurrentZoomLevelIndex = ZoomPercentages.IndexOf(100);
             Camera.X = -20;
             Camera.Y = -20;
             UpdateBackgroundPosition();
@@ -75,8 +54,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 var camera = Camera;
 
-                camera.X -= (float)(newPosition.X - LastMiddleMouseButtonPoint.Value.X) / CurrentZoomScale;
-                camera.Y -= (float)(newPosition.Y - LastMiddleMouseButtonPoint.Value.Y) / CurrentZoomScale;
+                camera.X -= (float)(newPosition.X - LastMiddleMouseButtonPoint.Value.X) / ViewModel.CurrentZoomScale;
+                camera.Y -= (float)(newPosition.Y - LastMiddleMouseButtonPoint.Value.Y) / ViewModel.CurrentZoomScale;
                 UpdateBackgroundPosition();
 
                 View.Canvas.InvalidateVisual();
@@ -91,26 +70,32 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 var screenPosition = args.GetPosition(View.Canvas);
                 View.GetWorldPosition(screenPosition, out double worldBeforeX, out double worldBeforeY);
-                if(args.Delta > 0)
+                var newValue = ViewModel.CurrentZoomLevelIndex;
+                if (args.Delta > 0)
                 {
-                    CurrentZoomLevelIndex--;
-                    CurrentZoomLevelIndex = Math.Max(0, CurrentZoomLevelIndex);
+                    newValue--;
+                    newValue = Math.Max(0, newValue);
                 }
                 else if(args.Delta < 0)
                 {
-                    CurrentZoomLevelIndex++;
-                    CurrentZoomLevelIndex = Math.Min(CurrentZoomLevelIndex, ZoomPercentages.Count-1);
+                    newValue++;
+                    newValue = Math.Min(newValue, ViewModel.ZoomPercentages.Count-1);
                 }
 
-                Camera.Zoom = CurrentZoomScale;
+                ViewModel.CurrentZoomLevelIndex = newValue;
 
-                Camera.X = (float)(worldBeforeX - screenPosition.X / CurrentZoomScale);
-                Camera.Y = (float)(worldBeforeY - screenPosition.Y / CurrentZoomScale);
+                Camera.X = (float)(worldBeforeX - screenPosition.X / ViewModel.CurrentZoomScale);
+                Camera.Y = (float)(worldBeforeY - screenPosition.Y / ViewModel.CurrentZoomScale);
 
-                UpdateBackgroundPosition();
-
-                View.Canvas.InvalidateVisual();
+                RefreshCameraZoomToViewModel();
             }
+        }
+
+        public static void RefreshCameraZoomToViewModel()
+        {
+            Camera.Zoom = ViewModel.CurrentZoomScale;
+            UpdateBackgroundPosition();
+            View.Canvas.InvalidateVisual();
         }
     }
 }
