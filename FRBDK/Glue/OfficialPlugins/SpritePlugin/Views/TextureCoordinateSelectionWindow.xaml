@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPlugins.SpritePlugin.Views"
         mc:Ignorable="d"
-        Title="TextureCoordinateSelectionWindow" Height="450" Width="800">
+        Title="TextureCoordinateSelectionWindow" Height="300" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -13,8 +13,8 @@
         </Grid.RowDefinitions>
         <local:TextureCoordinateSelectionView x:Name="InnerView"></local:TextureCoordinateSelectionView>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Width="50">OK</Button>
-            <Button Width="50" Margin="5,0,0,0">Cancel</Button>
+            <Button Width="50" Click="OkButtonClick">OK</Button>
+            <Button Width="50" Click="CancelButtonClick"  Margin="5,0,0,0">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

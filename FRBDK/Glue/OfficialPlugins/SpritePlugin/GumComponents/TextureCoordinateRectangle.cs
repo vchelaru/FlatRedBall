@@ -11,9 +11,14 @@ namespace OfficialPlugins.SpritePlugin.GumComponents
 {
     public class TextureCoordinateRectangle : ContainerRuntime
     {
-        public TextureCoordinateRectangle() : base() { Initialize(); }
+        #region Fields/Properties
 
         public RoundedRectangleRuntime[] Handles { get; private set; } = new RoundedRectangleRuntime[8];
+
+        #endregion
+
+        public TextureCoordinateRectangle() : base() { Initialize(); }
+
 
 
         private void Initialize()
@@ -62,7 +67,10 @@ namespace OfficialPlugins.SpritePlugin.GumComponents
             var handle = CreateLineRectangle();
             const int handleSize = 12;
             handle.Width = handleSize;
+            handle.WidthUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
             handle.Height = handleSize;
+            handle.HeightUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
+
             handle.StrokeWidth = 1;
             handle.CornerRadius = 2;
             handle.XUnits = xUnits;
@@ -77,10 +85,27 @@ namespace OfficialPlugins.SpritePlugin.GumComponents
             return handle;
         }
 
+        internal void MakeNormal(RoundedRectangleRuntime handle)
+        {
+            const int handleSize = 12;
+            handle.Width = handleSize;
+            handle.Height = handleSize;
+            handle.IsFilled = false;
+        }
+
+        internal void MakeHighlighted(RoundedRectangleRuntime handle)
+        {
+            const int handleSize = 16;
+            handle.Width = handleSize;
+            handle.Height = handleSize;
+            handle.IsFilled = true;
+        }
+
         private static RoundedRectangleRuntime CreateLineRectangle()
         {
             var rectangle = new RoundedRectangleRuntime();
             rectangle.Color = SKColors.White;
+            rectangle.StrokeWidthUnits = Gum.DataTypes.DimensionUnitType.ScreenPixel;
             rectangle.IsFilled = false;
             rectangle.OutlineThickness = 1;
             return rectangle;

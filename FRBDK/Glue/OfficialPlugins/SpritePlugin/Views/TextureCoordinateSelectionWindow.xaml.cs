@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,23 @@ namespace OfficialPlugins.SpritePlugin.Views
         public TextureCoordinateSelectionWindow()
         {
             InitializeComponent();
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            GlueCommands.Self.DialogCommands.MoveToCursor(this);
+        }
+
+        private void OkButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+        }
+
+        private void CancelButtonClick(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = false;
         }
     }
 }

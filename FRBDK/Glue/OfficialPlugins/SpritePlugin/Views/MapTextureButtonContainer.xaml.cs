@@ -77,10 +77,10 @@ namespace OfficialPlugins.SpritePlugin.Views
                 var viewModel = new TextureCoordinateSelectionViewModel();
 
                 var left = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.LeftTextureCoordinate)) as float? ?? 0;
+                    nameof(Sprite.LeftTexturePixel)) as float? ?? 0;
 
                 var top = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.TopTextureCoordinate)) as float? ?? 0;
+                    nameof(Sprite.TopTexturePixel)) as float? ?? 0;
 
                 float defaultWidth = 256;
                 float defaultHeight = 256;
@@ -89,23 +89,73 @@ namespace OfficialPlugins.SpritePlugin.Views
                     defaultWidth = window.Texture.Width;
                     defaultHeight = window.Texture.Height;
                 }
+
                 var right = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.RightTextureCoordinate)) as float? ?? defaultWidth;
+                    nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;
+
+                if(right == 0)
+                {
+                    right = defaultWidth;
+                }
 
                 var bottom = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.BottomTextureCoordinate)) as float? ?? defaultHeight;
+                    nameof(Sprite.BottomTexturePixel)) as float? ?? defaultHeight;
 
+                if(bottom == 0)
+                {
+                    bottom = defaultHeight;
+                }
 
                 viewModel.LeftTexturePixel = (int)left;
                 viewModel.TopTexturePixel = (int)top;
                 viewModel.SelectedWidthPixels = (int)(right - left);
                 viewModel.SelectedHeightPixels = (int)(bottom - top);
 
-
-
                 window.DataContext = viewModel;
                 var result = window.ShowDialog();
 
+                if(result == true)
+                {
+                    bool didAnyChange = false;
+                    if(viewModel.LeftTexturePixel != (int)left)
+                    {
+                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
+                            nameof(Sprite.LeftTexturePixel), 
+                            (float)viewModel.LeftTexturePixel, 
+                            performSaveAndGenerateCode:false, updateUi:true);
+                        didAnyChange = true;
+                    }
+                    if(viewModel.TopTexturePixel != (int)top)
+                    {
+                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
+                            nameof(Sprite.TopTexturePixel), 
+                            (float)viewModel.TopTexturePixel, 
+                            performSaveAndGenerateCode: false, updateUi: true);
+                        didAnyChange = true;
+                    }
+                    if (viewModel.SelectedWidthPixels != (int)(right - left))
+                    {
+                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos, 
+                            nameof(Sprite.RightTexturePixel), 
+                            (float)(viewModel.LeftTexturePixel + viewModel.SelectedWidthPixels),
+                            performSaveAndGenerateCode: false, updateUi: true);
+                        didAnyChange = true;
+                    }
+                    if (viewModel.SelectedHeightPixels != (int)(bottom - top))
+                    {
+                        GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                            nameof(Sprite.BottomTexturePixel),
+                            (float)(viewModel.TopTexturePixel + viewModel.SelectedHeightPixels), 
+                            performSaveAndGenerateCode: false, updateUi: true);
+                        didAnyChange = true;
+                    }
+
+                    if(didAnyChange)
+                    {
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
+                    }
+                }
             }
         }
     }

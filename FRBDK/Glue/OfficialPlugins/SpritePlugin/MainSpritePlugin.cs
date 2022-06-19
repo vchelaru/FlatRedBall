@@ -154,7 +154,10 @@ namespace OfficialPlugins.SpritePlugin
             mapSpriteTextureVariable.UsesCustomCodeGeneration = true;
             mapSpriteTextureVariable.Type = "string"; // not used
             mapSpriteTextureVariable.Name = "MapSpriteTexturePlaceholder";
-            ati.VariableDefinitions.Add(mapSpriteTextureVariable);
+            mapSpriteTextureVariable.Category = "Texture";
+            var bottomTexturePixelVariable = ati.VariableDefinitions.FirstOrDefault(item => item.Name == nameof(Sprite.BottomTexturePixel));
+            var index = ati.VariableDefinitions.IndexOf(bottomTexturePixelVariable);
+            ati.VariableDefinitions.Insert(index+1, mapSpriteTextureVariable);
         }
 
         private static void ColorHexVariableSet(GlueElement element, NamedObjectSave nos, string variableName, object newValue)

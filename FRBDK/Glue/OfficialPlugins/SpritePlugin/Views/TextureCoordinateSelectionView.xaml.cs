@@ -74,19 +74,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             InitializeComponent();
 
-            Background = new SolidRectangleRuntime();
-            Background.Color = SKColors.Purple;
-            Background.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            Background.Width = 100;
-            Background.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
-            Background.Height = 100;
-            this.Canvas.Children.Add(Background);
+            CreateBackground();
 
-            MainSprite = new SpriteRuntime();
-            MainSprite.Width = 100;
-            MainSprite.Height = 100;
-            MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-            MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            CreateMainSprite();
+
+            CreateSpriteOutline();
 
             this.Canvas.Children.Add(MainSprite);
 
@@ -116,6 +108,43 @@ namespace OfficialPlugins.SpritePlugin.Views
             this.Canvas.Children.Add(TextureCoordinateRectangle);
         }
 
+        private void CreateSpriteOutline()
+        {
+            var outline = new RoundedRectangleRuntime();
+            outline.StrokeWidth = 1;
+            outline.CornerRadius = 0;
+            outline.Color = new SKColor(255, 255, 255, 128);
+            // Normally I'd want 1 more pixel outside of the Sprite.
+            // No such layout exists currently and it's probably easier to 
+            // just have it match the size for now:
+            outline.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            outline.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            outline.Width = 0;
+            outline.Height = 0;
+            outline.IsFilled = false;
+            MainSprite.Children.Add(outline);
+        }
+
+        private void CreateMainSprite()
+        {
+            MainSprite = new SpriteRuntime();
+            MainSprite.Width = 100;
+            MainSprite.Height = 100;
+            MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+        }
+
+        private void CreateBackground()
+        {
+            Background = new SolidRectangleRuntime();
+            Background.Color = new SKColor(68, 34, 136);
+            Background.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            Background.Width = 100;
+            Background.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            Background.Height = 100;
+            this.Canvas.Children.Add(Background);
+        }
+
         #endregion
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -128,6 +157,12 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             CameraLogic.HandleMouseMove(e);
             MouseEditingLogic.HandleMouseMove(e);
+        }
+
+        private void Canvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            CameraLogic.HandleMouseWheel(e);
+
         }
 
         internal RoundedRectangleRuntime GetHandleAt(Point lastMousePoint)
@@ -157,12 +192,17 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             if(scaleFactor == null)
             {
-                var userKey = Microsoft.Win32.Registry.CurrentUser;
-                var softKey = userKey.OpenSubKey("Software");
-                var micKey = softKey.OpenSubKey("Microsoft");
-                var accKey = micKey.OpenSubKey("Accessibility");
+                // todo - fix on a computer that has scaling using:
+                // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
 
-                var factor = accKey.GetValue("TextScaleFactor");
+                // This doesn't seem to work on Windows11:
+                //var userKey = Microsoft.Win32.Registry.CurrentUser;
+                //var softKey = userKey.OpenSubKey("Software");
+                //var micKey = softKey.OpenSubKey("Microsoft");
+                //var accKey = micKey.OpenSubKey("Accessibility");
+
+                //var factor = accKey.GetValue("TextScaleFactor");
+
             }
 
             var camera = this.Canvas.SystemManagers.Renderer.Camera;
@@ -175,5 +215,6 @@ namespace OfficialPlugins.SpritePlugin.Views
             x += camera.X;
             y += camera.Y;
         }
+
     }
 }
