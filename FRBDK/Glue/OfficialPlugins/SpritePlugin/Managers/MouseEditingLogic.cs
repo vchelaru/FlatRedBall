@@ -101,9 +101,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             if (args.LeftButton == MouseButtonState.Pressed && newPosition != LastGrabbedMousePoint)
             {
-                var xDifference = (float)(newPosition.X - LastGrabbedMousePoint.X) / ViewModel.CurrentZoomScale;
-                var yDifference = (float)(newPosition.Y - LastGrabbedMousePoint.Y) / ViewModel.CurrentZoomScale;
+                var xDifference = (float)(
+                    (newPosition.X - LastGrabbedMousePoint.X) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+                var yDifference = (float)(
+                    (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
 
+                
                 if (HandleGrabbed != null)
                 {
                     var viewModel = View.ViewModel;

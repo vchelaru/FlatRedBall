@@ -69,6 +69,31 @@ namespace OfficialPlugins.SpritePlugin.Views
         public TextureCoordinateRectangle TextureCoordinateRectangle { get; private set; }
 
         double? windowsScaleFactor = null;
+        public double WindowsScaleFactor
+        {
+            get
+            {
+                if (windowsScaleFactor == null)
+                {
+                    // todo - fix on a computer that has scaling using:
+                    // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
+
+                    // This doesn't seem to work on Windows11:
+                    //var userKey = Microsoft.Win32.Registry.CurrentUser;
+                    //var softKey = userKey.OpenSubKey("Software");
+                    //var micKey = softKey.OpenSubKey("Microsoft");
+                    //var accKey = micKey.OpenSubKey("Accessibility");
+
+                    //var factor = accKey.GetValue("TextScaleFactor");
+                    // this returns text scale, not window scale
+                    //var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                    //windowsScaleFactor = uiSettings.
+                    windowsScaleFactor =
+                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+                }
+                return windowsScaleFactor.Value;
+            }
+        }
 
         #endregion
 
@@ -219,25 +244,12 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public void GetWorldPosition(Point lastMousePoint, out double x, out double y)
         {
-            if(windowsScaleFactor == null)
-            {
-                // todo - fix on a computer that has scaling using:
-                // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
 
-                // This doesn't seem to work on Windows11:
-                //var userKey = Microsoft.Win32.Registry.CurrentUser;
-                //var softKey = userKey.OpenSubKey("Software");
-                //var micKey = softKey.OpenSubKey("Microsoft");
-                //var accKey = micKey.OpenSubKey("Accessibility");
-
-                //var factor = accKey.GetValue("TextScaleFactor");
-
-            }
 
             var camera = this.Canvas.SystemManagers.Renderer.Camera;
           
-            x = lastMousePoint.X;
-            y = lastMousePoint.Y;
+            x = lastMousePoint.X * WindowsScaleFactor;
+            y = lastMousePoint.Y * WindowsScaleFactor;
             x /= camera.Zoom;
             y /= camera.Zoom;
             // vic says - did I get the zoom right here?
