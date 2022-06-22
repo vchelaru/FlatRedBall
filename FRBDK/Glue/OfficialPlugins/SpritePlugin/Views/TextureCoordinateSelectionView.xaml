@@ -5,16 +5,19 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.SpritePlugin.Views" xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF" xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.NetCore3_0"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="400">
+             d:DesignHeight="200" d:DesignWidth="250">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <ComboBox Width="100" ItemsSource="{Binding ZoomPercentages}" SelectedIndex="{Binding CurrentZoomLevelIndex}">
-                
-            </ComboBox>
+            <TextBlock VerticalAlignment="Center">Zoom:</TextBlock>
+            <ComboBox Width="100" ItemsSource="{Binding ZoomPercentages}" SelectedIndex="{Binding CurrentZoomLevelIndex}"
+                      Margin="0,0,10,0"/>
+            <TextBlock VerticalAlignment="Center">Snapping:</TextBlock>
+            <TextBox Width="40" Text="{Binding Snapping}"></TextBox>
         </StackPanel>
         <wpf1:GumSKElement x:Name="Canvas" 
                            Grid.Row="1"
@@ -22,5 +25,6 @@
                            MouseMove="Canvas_MouseMove"
                            MouseWheel="Canvas_MouseWheel"
                            MouseUp="Canvas_MouseUp"></wpf1:GumSKElement>
+        <TextBlock Grid.Row="2" Text="{Binding CoordinateDisplay}"></TextBlock>
     </Grid>
 </UserControl>

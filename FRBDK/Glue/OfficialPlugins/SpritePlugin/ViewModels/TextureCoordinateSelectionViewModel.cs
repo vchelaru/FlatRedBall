@@ -9,16 +9,13 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
     public class TextureCoordinateSelectionViewModel : ViewModel
     {
 
-        int snapping = 1;
-
-
         public decimal LeftTexturePixel
         {
             get => Get<decimal>();
             set => Set(value);
         }
 
-        int Rounded(decimal value) => MathFunctions.RoundToInt( MathFunctions.RoundDouble( (double)value, snapping) );
+        int Rounded(decimal value) => MathFunctions.RoundToInt( (double)value );
 
         [DependsOn(nameof(LeftTexturePixel))]
         public int LeftTexturePixelInt => Rounded(LeftTexturePixel);
@@ -84,9 +81,22 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
             }
         } 
 
+        public decimal Snapping
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(LeftTexturePixel))]
+        [DependsOn(nameof(TopTexturePixel))]
+        [DependsOn(nameof(SelectedWidthPixels))]
+        [DependsOn(nameof(SelectedHeightPixels))]
+        public string CoordinateDisplay => $"X:{LeftTexturePixel} Y:{TopTexturePixel} Width:{SelectedWidthPixels} Height:{SelectedHeightPixels}";
+
         public TextureCoordinateSelectionViewModel()
         {
-            CurrentZoomLevelIndex = 8; 
+            CurrentZoomLevelIndex = 8;
+            Snapping = 4;
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using OfficialPlugins.SpritePlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
+using RenderingLibrary.Graphics;
+using RenderingLibrary.Math;
 using SkiaGum.GueDeriving;
 using System;
 using System.Collections.Generic;
@@ -9,9 +11,32 @@ using System.Windows.Input;
 
 namespace OfficialPlugins.SpritePlugin.Managers
 {
+    #region Enums
+
+    enum XSide
+    {
+        Left,
+        Right
+    }
+
+    enum YSide
+    {
+        Top,
+        Bottom
+    }
+
+    #endregion
+
     static class MouseEditingLogic
     {
         #region Fields/Properties
+
+        static XSide? xSideGrabbed;
+        static YSide? ySideGrabbed;
+        static decimal xAnchor;
+        static decimal yAnchor;
+        static decimal grabbedDifferenceX;
+        static decimal grabbedDifferenceY;
 
         static TextureCoordinateSelectionView View;
         private static System.Windows.Point LastGrabbedMousePoint;
@@ -45,7 +70,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         public static void HandleMouseMove(MouseEventArgs args)
         {
-            if(HandleGrabbed == null)
+            if (HandleGrabbed == null)
             {
                 UpdateHandleOver(args);
             }
@@ -63,7 +88,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         internal static void HandleMouseUp(MouseButtonEventArgs e)
         {
-            if(HandleGrabbed != null)
+            if (HandleGrabbed != null)
             {
                 View.TextureCoordinateRectangle.MakeNormal(HandleGrabbed);
 
@@ -84,7 +109,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         private static void UpdateHandleHighlight()
         {
-            if(HandleOver != null)
+            if (HandleOver != null)
             {
                 View.TextureCoordinateRectangle.MakeHighlighted(HandleOver);
             }
@@ -99,52 +124,66 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             var newPosition = args.GetPosition(View.Canvas);
 
-            if (args.LeftButton == MouseButtonState.Pressed && newPosition != LastGrabbedMousePoint)
+            /////////////////////Early Out//////////////////////
+            if (args.LeftButton != MouseButtonState.Pressed || newPosition == LastGrabbedMousePoint)
             {
-                var xDifference = (float)(
-                    (newPosition.X - LastGrabbedMousePoint.X) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
-                var yDifference = (float)(
-                    (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
-
-                
-                if (HandleGrabbed != null)
-                {
-                    var viewModel = View.ViewModel;
-
-                    if (xDifference != 0)
-                    {
-                        if (HandleGrabbed.XOrigin == RenderingLibrary.Graphics.HorizontalAlignment.Right)
-                        {
-                            viewModel.LeftTexturePixel += (decimal)xDifference;
-                            viewModel.SelectedWidthPixels -= (decimal)xDifference;
-                        }
-                        else if (HandleGrabbed.XOrigin == RenderingLibrary.Graphics.HorizontalAlignment.Left)
-                        {
-                            viewModel.SelectedWidthPixels += (decimal)xDifference;
-                        }
-                    }
-                    if (yDifference != 0)
-                    {
-                        if (HandleGrabbed.YOrigin == RenderingLibrary.Graphics.VerticalAlignment.Bottom)
-                        {
-                            viewModel.TopTexturePixel += (decimal)yDifference;
-                            viewModel.SelectedHeightPixels -= (decimal)yDifference;
-                        }
-                        else if (HandleGrabbed.YOrigin == RenderingLibrary.Graphics.VerticalAlignment.Top)
-                        {
-                            viewModel.SelectedHeightPixels += (decimal)yDifference;
-                        }
-                    }
-                }
-                else if(IsBodyGrabbed)
-                {
-                    var viewModel = View.ViewModel;
-                    viewModel.LeftTexturePixel += (decimal)xDifference;
-                    viewModel.TopTexturePixel += (decimal)yDifference;
-                }
-
-                LastGrabbedMousePoint = newPosition;
+                return;
             }
+            ///////////////////End Early Out////////////////////
+
+            var xDifference = (decimal)(
+                (newPosition.X - LastGrabbedMousePoint.X) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+            var yDifference = (decimal)(
+                (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+
+            decimal Snapped(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.Snapping);
+            if (HandleGrabbed != null)
+            {
+                var viewModel = View.ViewModel;
+
+                if (xDifference != 0)
+                {
+                    if(xSideGrabbed == XSide.Left)
+                    {
+                        grabbedDifferenceX -= xDifference;
+
+                        viewModel.SelectedWidthPixels = Snapped( grabbedDifferenceX);
+                        viewModel.LeftTexturePixel = xAnchor - Snapped(grabbedDifferenceX);
+                    }
+                    else if(xSideGrabbed == XSide.Right)
+                    {
+                        grabbedDifferenceX += xDifference;
+
+                        viewModel.SelectedWidthPixels = Snapped( grabbedDifferenceX);
+                    }
+
+                }
+                if (yDifference != 0)
+                {
+                    if(ySideGrabbed == YSide.Top)
+                    {
+                        grabbedDifferenceY -= yDifference;
+                        viewModel.SelectedHeightPixels = Snapped(grabbedDifferenceY);
+                        viewModel.TopTexturePixel = yAnchor - Snapped(grabbedDifferenceY);
+                    }
+                    else if(ySideGrabbed == YSide.Bottom)
+                    {
+                        grabbedDifferenceY += yDifference;
+                        viewModel.SelectedHeightPixels = Snapped(grabbedDifferenceY);
+                    }
+                }
+            }
+            else if (IsBodyGrabbed)
+            {
+                var viewModel = View.ViewModel;
+                grabbedDifferenceX += (decimal)xDifference;
+                grabbedDifferenceY += (decimal)yDifference;
+
+                viewModel.LeftTexturePixel = xAnchor + Snapped(grabbedDifferenceX);
+                viewModel.TopTexturePixel = yAnchor + Snapped(grabbedDifferenceY);
+            }
+
+            LastGrabbedMousePoint = newPosition;
         }
 
         private static void UpdateHandleOver(MouseEventArgs args)
@@ -153,7 +192,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             var newHandleOver = View.GetHandleAt(args.GetPosition(View.Canvas));
 
-            if(oldHandleOver != newHandleOver)
+            if (oldHandleOver != newHandleOver)
             {
                 HandleOver = newHandleOver;
                 RefreshHandleVisuals();
@@ -165,9 +204,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         private static void RefreshHandleVisuals()
         {
-            foreach(var handle in View.TextureCoordinateRectangle.Handles)
+            foreach (var handle in View.TextureCoordinateRectangle.Handles)
             {
-                if(handle == HandleOver || handle == HandleGrabbed)
+                if (handle == HandleOver || handle == HandleGrabbed)
                 {
                     View.TextureCoordinateRectangle.MakeHighlighted(handle);
                 }
@@ -198,6 +237,49 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
                 View.Canvas.InvalidateVisual();
 
+
+                if(IsBodyGrabbed)
+                {
+                    xAnchor = ViewModel.LeftTexturePixel;
+                    yAnchor = ViewModel.TopTexturePixel;
+                    grabbedDifferenceX = 0;
+                    grabbedDifferenceY = 0;
+                }
+
+                if (HandleGrabbed?.XOrigin == HorizontalAlignment.Right)
+                {
+                    xSideGrabbed = XSide.Left;
+                    xAnchor = ViewModel.LeftTexturePixel + ViewModel.SelectedWidthPixels;
+                    grabbedDifferenceX = ViewModel.SelectedWidthPixels;
+                }
+                else if (HandleGrabbed?.XOrigin == HorizontalAlignment.Left)
+                {
+                    xSideGrabbed = XSide.Right;
+                    xAnchor = ViewModel.LeftTexturePixel;
+                    grabbedDifferenceX = ViewModel.SelectedWidthPixels;
+
+                }
+                else
+                {
+                    xSideGrabbed = null;
+                }
+
+                if (HandleGrabbed?.YOrigin == VerticalAlignment.Bottom)
+                {
+                    ySideGrabbed = YSide.Top;
+                    yAnchor = ViewModel.TopTexturePixel + ViewModel.SelectedHeightPixels;
+                    grabbedDifferenceY = ViewModel.SelectedHeightPixels;
+                }
+                else if (HandleGrabbed?.YOrigin == VerticalAlignment.Top)
+                {
+                    ySideGrabbed = YSide.Bottom;
+                    yAnchor = ViewModel.TopTexturePixel;
+                    grabbedDifferenceY = ViewModel.SelectedHeightPixels;
+                }
+                else
+                {
+                    ySideGrabbed = null;
+                }
             }
         }
 
