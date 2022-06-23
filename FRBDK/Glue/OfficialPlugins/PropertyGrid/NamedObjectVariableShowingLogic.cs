@@ -550,7 +550,7 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
 
-                    if(instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition.MinValue != null && variableDefinition.MaxValue != null)
+                    if (instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition.MinValue != null && variableDefinition.MaxValue != null)
                     {
                         instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
                             variableDefinition.MaxValue.Value;
@@ -558,11 +558,11 @@ namespace OfficialPlugins.VariableDisplay
                             variableDefinition.MinValue.Value;
                     }
 
-                    foreach(var item in variableDefinition.PropertiesToSetOnDisplayer)
+                    foreach (var item in variableDefinition.PropertiesToSetOnDisplayer)
                     {
                         instanceMember.PropertiesToSetOnDisplayer[item.Key] = item.Value;
                     }
-                    
+
                 }
                 else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
                 {
@@ -591,6 +591,8 @@ namespace OfficialPlugins.VariableDisplay
                 instanceMember.DisplayName = displayName;
 
                 instanceMember.TypeConverter = typeConverter;
+
+
 
                 // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
                 // shader situation solved. But until then, these cause crashes so let's remove them.
@@ -646,7 +648,7 @@ namespace OfficialPlugins.VariableDisplay
                     // runtime errors.
                     //
 
-                    if(variableDefinition.CustomVariableSet != null)
+                    if (variableDefinition.CustomVariableSet != null)
                     {
                         variableDefinition.CustomVariableSet(container, instance, memberName, value);
                     }
@@ -699,9 +701,9 @@ namespace OfficialPlugins.VariableDisplay
                             {
                                 MainGlueWindow.Self.PropertyGrid.Refresh();
                                 PropertyGridHelper.UpdateNamedObjectDisplay();
-                                if(instanceMember.DisplayName == "Name")
+                                if (instanceMember.DisplayName == "Name")
                                 {
-                                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container, 
+                                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container,
                                         // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
                                         FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
                                 }
@@ -733,8 +735,19 @@ namespace OfficialPlugins.VariableDisplay
                         MakeDefault(instance, memberName);
                     }
                 };
+                AddContextMenuEvents(instance, container, memberName, variableDefinition, instanceMember);
+            }
+            return instanceMember;
+        }
 
-                instanceMember.ContextMenuEvents.Add("Tunnel Variable", (not, used) =>
+        private static void AddContextMenuEvents(NamedObjectSave instance, GlueElement container, string memberName, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        {
+            var isAlreadyTunneled = container.CustomVariables.Any(item =>
+                item.SourceObject == instance.InstanceName && item.SourceObjectProperty == memberName);
+
+            if(!isAlreadyTunneled)
+            {
+                instanceMember.ContextMenuEvents.Add("Tunnel Variable...", (not, used) =>
                 {
                     string variableToTunnel = null;
                     if (variableDefinition != null)
@@ -750,8 +763,22 @@ namespace OfficialPlugins.VariableDisplay
                         instance.InstanceName,
                         variableToTunnel);
                 });
+
+                instanceMember.ContextMenuEvents[$"Tunnel as {instance.InstanceName}{memberName}"] = (not, used) =>
+                {
+                    //GlueCommands.Self.DialogCommands.ShowAddNewVariableDialog();
+                    CustomVariable newVariable = new CustomVariable();
+                    newVariable.Name = instance.InstanceName + memberName;
+                    newVariable.Type = variableDefinition.Type;
+                    newVariable.SourceObject = instance.InstanceName;
+                    newVariable.SourceObjectProperty = memberName;
+
+                    newVariable.Category = variableDefinition?.Category;
+
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, container);
+
+                };
             }
-            return instanceMember;
         }
 
         private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, 
