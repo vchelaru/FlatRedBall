@@ -49,15 +49,25 @@ namespace TopDownPlugin.DataGenerators
         {
             return TaskManager.Self.AddAsync(() =>
             {
-                string contents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
+                string newContents = GenerateCsvContents(inheritsFromTopDown, viewModel, lastHeaders);
 
-                string fileName = CsvTopdownFileFor(entity).FullPath;
+                var fileName = CsvTopdownFileFor(entity);
 
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() =>
                     {
-                        FileManager.SaveText(contents, fileName);
+                        var shouldSave = true;
+                        if (fileName.Exists())
+                        {
+                            var existingContents = System.IO.File.ReadAllText(fileName.FullPath);
+                            shouldSave = existingContents != newContents;
+
+                        }
+                        if (shouldSave)
+                        {
+                            FileManager.SaveText(newContents, fileName.FullPath);
+                        }
                     });
                 }
                 catch (System.IO.IOException)
@@ -77,7 +87,7 @@ namespace TopDownPlugin.DataGenerators
         /// <returns>The CSV string</returns>
         private string GenerateCsvContents(bool inheritsFromTopDown, TopDownEntityViewModel viewModel, CsvHeader[] oldHeaders)
         {
-             List<TopDownValues> values = new List<TopDownValues>();
+            List<TopDownValues> values = new List<TopDownValues>();
 
             foreach(var valuesViewModel in viewModel.TopDownValues)
             {
