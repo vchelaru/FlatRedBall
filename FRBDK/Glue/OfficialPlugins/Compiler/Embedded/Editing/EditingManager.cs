@@ -103,6 +103,42 @@ namespace GlueControl.Editing
             set => Guides.GridSpacing = value;
         }
 
+        float snapSize = 8;
+        public float SnapSize
+        {
+            get => snapSize;
+            set
+            {
+                snapSize = value;
+                foreach (var marker in SelectedMarkers)
+                {
+                    if (marker is SelectionMarker selectionMarker)
+                    {
+                        selectionMarker.PositionSnappingSize = snapSize;
+                        selectionMarker.SizeSnappingSize = snapSize;
+                    }
+                }
+            }
+        }
+
+        bool isSnappingEnabled;
+        public bool IsSnappingEnabled
+        {
+            get => isSnappingEnabled;
+            set
+            {
+                isSnappingEnabled = value;
+                foreach (var marker in SelectedMarkers)
+                {
+                    if (marker is SelectionMarker selectionMarker)
+                    {
+                        selectionMarker.IsSnappingEnabled = isSnappingEnabled;
+                        selectionMarker.IsSnappingEnabled = isSnappingEnabled;
+                    }
+                }
+            }
+        }
+
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
 
@@ -254,9 +290,14 @@ namespace GlueControl.Editing
             }
             else
             {
-                newMarker = new SelectionMarker(owner);
+                var selectionMarker = new SelectionMarker(owner);
+                selectionMarker.SizeSnappingSize = SnapSize;
+                selectionMarker.PositionSnappingSize = SnapSize;
+                selectionMarker.IsSnappingEnabled = IsSnappingEnabled;
+                newMarker = selectionMarker;
             }
             newMarker.MakePersistent();
+
             newMarker.Name = "Selection Marker";
             newMarker.CanMoveItem = true;
             newMarker.PropertyChanged += HandleMarkerPropertyChanged;

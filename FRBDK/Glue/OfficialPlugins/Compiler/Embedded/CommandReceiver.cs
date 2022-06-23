@@ -1052,6 +1052,10 @@ namespace GlueControl
                 CameraLogic.BackgroundGreen = null;
                 CameraLogic.BackgroundBlue = null;
             }
+
+            EditingManager.Self.SnapSize = (float)dto.SnapSize;
+            EditingManager.Self.IsSnappingEnabled = dto.EnableSnapping;
+
         }
 
         private static void ApplyNewNamedObjects(UpdateCurrentElementDto dto)

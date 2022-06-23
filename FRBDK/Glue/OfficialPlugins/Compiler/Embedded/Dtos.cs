@@ -385,6 +385,9 @@ namespace GlueControl.Dtos
         public int BackgroundRed { get; set; }
         public int BackgroundGreen { get; set; }
         public int BackgroundBlue { get; set; }
+
+        public bool EnableSnapping { get; set; }
+        public decimal SnapSize { get; set; }
     }
     #endregion
 

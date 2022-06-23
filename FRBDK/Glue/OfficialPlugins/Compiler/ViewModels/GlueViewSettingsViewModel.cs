@@ -76,9 +76,24 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public bool EnableSnapping
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+
+        public decimal SnapSize
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
 
         [DependsOn(nameof(EnableGameEditMode))]
         public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
+
+
 
         internal void SetFrom(CompilerSettingsModel model)
         {
@@ -93,7 +108,8 @@ namespace OfficialPlugins.Compiler.ViewModels
             this.EmbedGameInGameTab = model.EmbedGameInGameTab;
             this.RestartScreenOnLevelContentChange = model.RestartScreenOnLevelContentChange;
 
-
+            this.EnableSnapping = model.EnableSnapping;
+            this.SnapSize = model.SnapSize;
         }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
@@ -111,7 +127,12 @@ namespace OfficialPlugins.Compiler.ViewModels
             compilerSettings.GenerateGlueControlManagerCode = this.EnableGameEditMode;
             compilerSettings.EmbedGameInGameTab = this.EmbedGameInGameTab;
             compilerSettings.RestartScreenOnLevelContentChange = this.RestartScreenOnLevelContentChange;
+
+            compilerSettings.EnableSnapping = this.EnableSnapping ;
+            compilerSettings.SnapSize = this.SnapSize;
+            
             compilerSettings.ToolbarEntitiesAndStates.Clear();
+
 
         }
     }

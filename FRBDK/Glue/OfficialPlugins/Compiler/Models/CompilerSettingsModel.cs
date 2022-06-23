@@ -23,6 +23,9 @@ namespace OfficialPlugins.Compiler.Models
         public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
         public decimal GridSize { get; set; } = 32;
 
+        public bool EnableSnapping { get; set; }
+        public decimal SnapSize { get; set; }
+
         public bool SetBackgroundColor { get; set; } = false;
         public int BackgroundRed { get; set; }
         public int BackgroundGreen { get; set; }
@@ -34,6 +37,9 @@ namespace OfficialPlugins.Compiler.Models
             EmbedGameInGameTab = true;
             ShowScreenBoundsWhenViewingEntities = true;
             RestartScreenOnLevelContentChange = true;
+
+            EnableSnapping = true;
+            SnapSize = 8;
         }
     }
 }

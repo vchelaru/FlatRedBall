@@ -60,7 +60,6 @@ namespace OfficialPlugins.Compiler.Views
 
                 var whatToRemove = category.Members
                     .FirstOrDefault(item => item.Name == nameof(GlueViewSettingsViewModel.ShowWindowDefenderUi));
-
                 if(whatToRemove != null)
                 {
                     category.Members.Remove(whatToRemove);
@@ -70,13 +69,13 @@ namespace OfficialPlugins.Compiler.Views
 
 
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), "Content");
-
-
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), "Grid and Markings");
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), "Grid and Markings");
-            
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), "Grid and Markings");
-            
+
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), "Snapping");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), "Snapping");
+
 
             var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 
             restartScreenOnContentChangeMember.DetailText = "This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode";

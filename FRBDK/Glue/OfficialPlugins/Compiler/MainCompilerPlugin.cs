@@ -119,7 +119,6 @@ namespace OfficialPlugins.Compiler
                     MoveGameToHost();
                 }
                 
-                await SendGlueViewSettingsToGame();
 
                 if(CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
                 {
@@ -718,6 +717,8 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundGreen):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundBlue):
+                case nameof(ViewModels.GlueViewSettingsViewModel.SnapSize):
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableSnapping):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
                     await SendGlueViewSettingsToGame();
                     break;
@@ -738,6 +739,8 @@ namespace OfficialPlugins.Compiler
                 BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
                 BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,
                 BackgroundBlue = GlueViewSettingsViewModel.BackgroundBlue,
+                EnableSnapping = GlueViewSettingsViewModel.EnableSnapping,
+                SnapSize = GlueViewSettingsViewModel.SnapSize
             };
 
             await CommandSender.Send(dto);
@@ -848,6 +851,7 @@ namespace OfficialPlugins.Compiler
                     }
                 }
 
+                await SendGlueViewSettingsToGame();
             }
             else
             {

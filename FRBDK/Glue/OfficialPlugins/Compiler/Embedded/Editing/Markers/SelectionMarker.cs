@@ -276,8 +276,9 @@ namespace GlueControl.Editing
         Vector3 unsnappedItemPosition;
         Vector2 unsnappedItemSize;
 
-        const float positionSnappingSize = 8;
-        const float sizeSnappingSize = 8;
+        public float PositionSnappingSize = 8;
+        public float SizeSnappingSize = 8;
+        public bool IsSnappingEnabled = true;
 
         public Vector3 LastUpdateMovement { get; private set; }
 
@@ -630,14 +631,16 @@ namespace GlueControl.Editing
             Vector3 changeAfterSnapping = Vector3.Zero;
 
             var itemAsPositionedObject = item as PositionedObject;
+            float Snap(float value) =>
+                IsSnappingEnabled
+                ? MathFunctions.RoundFloat(value, PositionSnappingSize)
+                : value;
             if (itemAsPositionedObject?.Parent == null)
             {
                 var before = itemAsPositionedObject?.Position ?? new Vector3(item.X, item.Y, item.Z);
 
-                var newX =
-                    MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                var newY =
-                    MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
+                var newX = Snap(positionConsideringShift.X);
+                var newY = Snap(positionConsideringShift.Y);
                 item.X = newX;
                 item.Y = newY;
                 changeAfterSnapping = (itemAsPositionedObject?.Position ?? new Vector3(newX, newY, item.Z)) - before;
@@ -645,8 +648,8 @@ namespace GlueControl.Editing
             else
             {
                 var before = itemAsPositionedObject.RelativePosition;
-                itemAsPositionedObject.RelativeX = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                itemAsPositionedObject.RelativeY = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
+                itemAsPositionedObject.RelativeX = Snap(positionConsideringShift.X);
+                itemAsPositionedObject.RelativeY = Snap(positionConsideringShift.Y);
                 changeAfterSnapping = itemAsPositionedObject.RelativePosition - before;
             }
             return changeAfterSnapping;
@@ -802,7 +805,10 @@ namespace GlueControl.Editing
             }
             else
             {
-
+                float Snap(float value) =>
+                    IsSnappingEnabled
+                    ? MathFunctions.RoundFloat(value, SizeSnappingSize)
+                    : value;
                 if (xChange * xPositionMultiple != 0)
                 {
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
@@ -812,13 +818,13 @@ namespace GlueControl.Editing
                     unsnappedItemSize.X = unsnappedItemSize.X + cursorXChange * widthMultiple;
                     unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                    var newScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
+                    var newScaleX = Snap(unsnappedItemSize.X / 2.0f);
                     var scaleXChange = newScaleX - scalable.ScaleX;
 
                     xChangeForPosition = 0;
                     if (scaleXChange != 0)
                     {
-                        scalable.ScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
+                        scalable.ScaleX = Snap(unsnappedItemSize.X / 2.0f);
                         xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
                     }
                 }
@@ -831,13 +837,13 @@ namespace GlueControl.Editing
                     unsnappedItemSize.Y = unsnappedItemSize.Y + cursorYChange * heightMultiple;
                     unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
 
-                    var newScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
+                    var newScaleY = Snap(unsnappedItemSize.Y / 2.0f);
                     var scaleYChange = newScaleY - scalable.ScaleY;
 
                     yChangeForPosition = 0;
                     if (scaleYChange != 0)
                     {
-                        scalable.ScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
+                        scalable.ScaleY = Snap(unsnappedItemSize.Y / 2.0f);
                         yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
                     }
                 }
@@ -967,5 +973,6 @@ namespace GlueControl.Editing
 #endif
         }
     }
+
 
 }
