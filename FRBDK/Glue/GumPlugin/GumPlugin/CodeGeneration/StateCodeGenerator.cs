@@ -79,6 +79,7 @@ namespace GumPlugin.CodeGeneration
             //mVariableNamesToSkipForStates.Add("SourceFile");
             mVariableNamesToSkipForStates.Add("Contained Type");
             mVariableNamesToSkipForStates.Add("IsXamarinFormsControl");
+            mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
             //mVariableNamesToSkipForStates.Add("IsBold");
 
 

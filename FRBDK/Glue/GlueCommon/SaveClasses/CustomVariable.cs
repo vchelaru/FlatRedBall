@@ -292,6 +292,15 @@ namespace FlatRedBall.Glue.SaveClasses
             set => Properties.SetValue(nameof(Category), value);
         }
 
+        /// <summary>
+        /// The class name of the preferred displayer. If this variable is tied to a VariableDefinition, then this
+        /// value will override the VariableDefinition's PreferredDisplayer.
+        /// </summary>
+        public string PreferredDisplayer
+        {
+            get; set;
+        }
+
         //[XmlIgnore]
         //public Scope
         public string PreferredDisplayerTypeName
