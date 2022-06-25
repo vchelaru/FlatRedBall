@@ -133,15 +133,14 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        #region XML Docs
+
         /// <summary>
         /// Gets or sets the color of this line segment. This color is pre-multiplied, so the R,G,B values must be adjusted accordingly if not fully opaque.
         /// </summary>
-        #endregion
         public Color Color
         {
-            get { return mColor; }
-            set { mColor = value; }
+            get => mColor; 
+            set=> mColor = value;
         }
 
         #endregion

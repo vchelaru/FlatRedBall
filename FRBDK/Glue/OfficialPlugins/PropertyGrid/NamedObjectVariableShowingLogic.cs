@@ -162,7 +162,8 @@ namespace OfficialPlugins.VariableDisplay
                             baseVariableDefinition = ownerNosAti?.VariableDefinitions
                                 .FirstOrDefault(item => item.Name == variableInElement.SourceObjectProperty);
                         }
-                        else if (variableInElement != null)
+                        // This could be null if the ownerNos doesn't have an ATI.
+                        if (variableInElement != null && baseVariableDefinition == null)
                         {
                             // we can create a new VariableDefinition here with the category:
                             baseVariableDefinition = new VariableDefinition();
@@ -180,6 +181,7 @@ namespace OfficialPlugins.VariableDisplay
                             }
                         }
                     }
+
                     variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
                 }
             }
