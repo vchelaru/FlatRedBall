@@ -180,7 +180,7 @@ namespace OfficialPlugins.VariableDisplay
                             }
                         }
                     }
-                    variableDefinitions.Add(typedMember.CustomTypeName??typedMember.MemberName, baseVariableDefinition);
+                    variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
                 }
             }
 
@@ -192,8 +192,11 @@ namespace OfficialPlugins.VariableDisplay
                 bool fallBackToTypedMember = false;
                 try
                 {
-                    var type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                    TypedMemberBase typedMember = null;
+                    Type type = null;
+                    if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
+                    {
+                        type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
+                    }
 
                     if (type == null)
                     {
@@ -201,6 +204,7 @@ namespace OfficialPlugins.VariableDisplay
                     }
                     else
                     {
+                        TypedMemberBase typedMember = null;
                         typedMember = TypedMemberBase.GetTypedMember(variableName, type);
                         InstanceMember instanceMember = CreateInstanceMember(instance, container, variableName, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
                         if (instanceMember != null)
@@ -223,7 +227,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     if (typedMember != null)
                     {
-                        AddForTypedMember(instance, container, categories, ati, typedMember);
+                        AddForTypedMember(instance, container, categories, ati, typedMember, variableDefinition);
                     }
                 }
             }
@@ -239,7 +243,7 @@ namespace OfficialPlugins.VariableDisplay
         }
 
         private static void AddForTypedMember(NamedObjectSave instance, GlueElement container, List<MemberCategory> categories,
-            AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
+            AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember.CustomTypeName, ati, variableDefinition, categories);
