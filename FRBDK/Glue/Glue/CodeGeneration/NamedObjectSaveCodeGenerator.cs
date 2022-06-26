@@ -92,7 +92,27 @@ namespace FlatRedBall.Glue.CodeGeneration
                 #endregion
 
                 string variableName = namedObjectSave.FieldName;
-                codeBlock.Line(StringHelper.SpaceStrings(accessModifier, typeName, variableName) + ";");
+
+                // June 26, 2022
+                // There's a special
+                // case for Lists which
+                // need to be instantiated
+                // before any other logic (such
+                // as adding items to the list) is
+                // performed. However, if this is a
+                // derived entity, the base will have
+                // its initialize called before the derived
+                // and that means instances will be added to
+                // the list when it's null. To address this, the
+                // list will be initialized here:
+                if(namedObjectSave.IsList)
+                {
+                    codeBlock.Line(StringHelper.SpaceStrings(accessModifier, typeName, variableName) + $" = new {typeName}();");
+                }
+                else
+                {
+                    codeBlock.Line(StringHelper.SpaceStrings(accessModifier, typeName, variableName) + ";");
+                }
 
                 #region If should create public property
 
@@ -180,7 +200,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #region Perform instantiation
 
-            if (!namedObject.InstantiatedByBase)
+            var shouldInstantiate = !namedObject.InstantiatedByBase;
+
+            if (shouldInstantiate)
             {
                 // Ensure that the nos is only instantiated where it should be. Since this method
                 // can be called for the constructor or Initialize() method, we need to check that
@@ -195,7 +217,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // added in. This isn't necessary for scenes, but it's needed for pooled entities.
                 if (namedObject.IsList && instantiateInConstructor && !inConstructor)
                 {
-                    codeBlock.Line($"{namedObject.FieldName}.Clear();");
+                    // If this list is declared in a derived entity but not the base, then
+                    // this code can get called before the instance is instantiated. In that
+                    // case we don't care about actually clearing it because it's null anyway. 
+                    // Therefore, adding null coalescing:
+                    codeBlock.Line($"{namedObject.FieldName}?.Clear();");
                 }
             }
             else
@@ -580,7 +606,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
-                        codeBlock.Line($"{objectName} = new {qualifiedName}();");
+                        var isInstantiatedOnField = namedObject.IsList;
+                        if(!isInstantiatedOnField)
+                        {
+                            codeBlock.Line($"{objectName} = new {qualifiedName}();");
+                        }
 
                         if (namedObject.IsLayer || 
                             namedObject.SourceType == SourceType.FlatRedBallType)
