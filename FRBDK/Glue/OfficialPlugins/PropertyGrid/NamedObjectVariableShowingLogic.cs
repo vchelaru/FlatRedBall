@@ -182,7 +182,10 @@ namespace OfficialPlugins.VariableDisplay
                         }
                     }
 
-                    variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
+                    if(baseVariableDefinition != null)
+                    {
+                        variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
+                    }
                 }
             }
 

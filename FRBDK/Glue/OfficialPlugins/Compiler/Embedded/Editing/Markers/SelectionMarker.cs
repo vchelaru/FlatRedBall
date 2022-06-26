@@ -809,7 +809,7 @@ namespace GlueControl.Editing
                     IsSnappingEnabled
                     ? MathFunctions.RoundFloat(value, SizeSnappingSize)
                     : value;
-                if (xChange * xPositionMultiple != 0)
+                if (xChange != 0)
                 {
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
@@ -829,7 +829,7 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (yChange * yPositionMultiple != 0)
+                if (yChange != 0)
                 {
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
@@ -929,7 +929,7 @@ namespace GlueControl.Editing
                     {
                         PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
                     }
-                    if (didChangeWidth)
+                    if (didChangeHeight)
                     {
                         PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
                     }

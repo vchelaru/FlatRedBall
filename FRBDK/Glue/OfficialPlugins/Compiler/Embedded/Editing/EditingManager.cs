@@ -141,6 +141,7 @@ namespace GlueControl.Editing
 
         List<ISelectionMarker> SelectedMarkers = new List<ISelectionMarker>();
         SelectionMarker HighlightMarker;
+        MeasurementMarker MeasurementMarker;
 
         List<INameable> itemsOver = new List<INameable>();
         public IEnumerable<INameable> ItemsOver => itemsOver;
@@ -187,7 +188,7 @@ namespace GlueControl.Editing
             HighlightMarker.MakePersistent();
             HighlightMarker.Name = nameof(HighlightMarker);
 
-
+            MeasurementMarker = new MeasurementMarker();
 
             Guides = new Guides();
         }
@@ -374,6 +375,8 @@ namespace GlueControl.Editing
                 DoForwardBackActivity();
 
                 UpdateMarkers(didChangeItemOver);
+
+                MeasurementMarker.Update();
 
             }
             else

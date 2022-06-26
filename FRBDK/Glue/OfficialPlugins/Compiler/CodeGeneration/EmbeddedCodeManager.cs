@@ -35,6 +35,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Managers.RefreshCommands.cs");
 
 
+            SaveEmbeddedFile("Editing.Markers.MeasurementMarker.cs");
             SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs");
             SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs");
 
