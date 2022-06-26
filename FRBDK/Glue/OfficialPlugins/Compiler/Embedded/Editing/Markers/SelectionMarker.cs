@@ -608,12 +608,15 @@ namespace GlueControl.Editing
                 lastWorldY = cursor.WorldYAt(itemZ);
             }
 
-            var xChange = cursor.WorldXAt(itemZ) - lastWorldX;
-            var yChange = cursor.WorldYAt(itemZ) - lastWorldY;
+            var xChangeScreenSpace = cursor.WorldXAt(itemZ) - lastWorldX;
+            var yChangeScreenSpace = cursor.WorldYAt(itemZ) - lastWorldY;
 
-            var didCursorMove = xChange != 0 || yChange != 0;
+            var didCursorMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
 
-            if (CanMoveItem && cursor.PrimaryDown && didCursorMove &&
+            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
+                Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+
+            if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
                 // Currently only PositionedObjects can be moved. If an object is
                 // IStaticPositionalbe, techincally we could move it by changing its X
                 // and Y values (and that has been tested), but the objet's Glue representation
@@ -623,21 +626,15 @@ namespace GlueControl.Editing
                 // we'll only allow moving PositionedObjects.
                 item is PositionedObject)
             {
-                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
-                    Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
-
-                if (item != null && hasMovedEnough)
+                if (sideGrabbed == ResizeSide.None)
                 {
-                    if (sideGrabbed == ResizeSide.None)
-                    {
-                        var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+                    var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
-                        LastUpdateMovement = ChangePositionBy(item, xChange, yChange, keyboard.IsShiftDown);
-                    }
-                    else
-                    {
-                        ChangeSizeBy(item as PositionedObject, sideGrabbed, xChange, yChange);
-                    }
+                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace, yChangeScreenSpace, keyboard.IsShiftDown);
+                }
+                else
+                {
+                    ChangeSizeBy(item as PositionedObject, sideGrabbed);
                 }
             }
 
@@ -695,77 +692,72 @@ namespace GlueControl.Editing
             return changeAfterSnapping;
         }
 
-        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float xChange, float yChange)
+        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
         {
-            float xPositionMultiple = 0;
-            float yPositionMultiple = 0;
+            Vector3 rotatedPositionMultiple = new Vector3();
+            Vector3 unrotatedPositionMultiple = new Vector3();
+
             float widthMultiple = 0;
             float heightMultiple = 0;
 
             switch (sideOver)
             {
                 case ResizeSide.TopLeft:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
                     widthMultiple = -1;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.Top:
-                    xPositionMultiple = 0;
-                    widthMultiple = 0;
+                    rotatedPositionMultiple = item.RotationMatrix.Up / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Up / 2.0f;
 
-                    yPositionMultiple = 1 / 2.0f;
+                    widthMultiple = 0;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.TopRight:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
+
                     widthMultiple = 1;
-
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
-
                     break;
                 case ResizeSide.Right:
-                    xPositionMultiple = 1 / 2.0f;
-                    widthMultiple = 1;
+                    rotatedPositionMultiple = item.RotationMatrix.Right / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Right / 2.0f;
 
-                    yPositionMultiple = 0;
+                    widthMultiple = 1;
                     heightMultiple = 0;
                     break;
 
                 case ResizeSide.BottomRight:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
+
                     widthMultiple = 1;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
-
                     break;
 
                 case ResizeSide.Bottom:
-                    xPositionMultiple = 0;
+                    rotatedPositionMultiple = item.RotationMatrix.Up / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Up / 2.0f;
+
                     widthMultiple = 0;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
-
                     break;
                 case ResizeSide.BottomLeft:
-                    xPositionMultiple = 1 / 2.0f;
-                    widthMultiple = -1;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
 
-                    yPositionMultiple = 1 / 2.0f;
+                    widthMultiple = -1;
                     heightMultiple = -1;
                     break;
                 case ResizeSide.Left:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = item.RotationMatrix.Right / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Right / 2.0f;
+
                     widthMultiple = -1;
-
-                    yPositionMultiple = 0;
                     heightMultiple = 0;
-
                     break;
             }
 
@@ -776,12 +768,12 @@ namespace GlueControl.Editing
             {
                 if (item.RelativeX == 0)
                 {
-                    xPositionMultiple = 0;
+                    rotatedPositionMultiple.X = 0;
                     widthMultiple *= 2;
                 }
                 if (item.RelativeY == 0)
                 {
-                    yPositionMultiple = 0;
+                    rotatedPositionMultiple.Y = 0;
                     heightMultiple *= 2;
                 }
             }
@@ -792,11 +784,12 @@ namespace GlueControl.Editing
 
             var scalable = item as IScalable;
 
-            var cursorXChange = cursor.WorldXChangeAt(item.Z);
-            var cursorYChange = cursor.WorldYChangeAt(item.Z);
+            var cursorChange = new Vector3(cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(item.Z), 0);
 
-            float xChangeForPosition = xPositionMultiple * cursor.WorldXChangeAt(item.Z);
-            float yChangeForPosition = yPositionMultiple * cursor.WorldYChangeAt(item.Z);
+            cursorChange = cursorChange.RotatedBy(-item.RotationZ);
+
+            float xChangeForPosition = rotatedPositionMultiple.X * cursorChange.X;
+            float yChangeForPosition = rotatedPositionMultiple.Y * cursorChange.Y;
 
             bool setsTextureScale = GetIfSetsTextureScale(item);
 
@@ -806,15 +799,15 @@ namespace GlueControl.Editing
                 var currentScaleX = asSprite.ScaleX;
                 var currentScaleY = asSprite.ScaleY;
 
-                if (cursorXChange != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                if (cursorChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
                 {
-                    var newRatio = (currentScaleX + 0.5f * cursorXChange * widthMultiple) / currentScaleX;
+                    var newRatio = (currentScaleX + 0.5f * cursorChange.X * widthMultiple) / currentScaleX;
 
                     asSprite.TextureScale *= newRatio;
                 }
-                else if (cursorYChange != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                else if (cursorChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
                 {
-                    var newRatio = (currentScaleY + 0.5f * cursorYChange * heightMultiple) / currentScaleY;
+                    var newRatio = (currentScaleY + 0.5f * cursorChange.Y * heightMultiple) / currentScaleY;
 
                     asSprite.TextureScale *= newRatio;
                 }
@@ -822,13 +815,13 @@ namespace GlueControl.Editing
             else if (item is Circle asCircle)
             {
                 float? newRadius = null;
-                if (cursorXChange != 0 && widthMultiple != 0)
+                if (cursorChange.X != 0 && widthMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorXChange * widthMultiple / 2.0f;
+                    newRadius = asCircle.Radius + cursorChange.X * widthMultiple / 2.0f;
                 }
-                else if (cursorYChange != 0 && heightMultiple != 0)
+                else if (cursorChange.Y != 0 && heightMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorYChange * heightMultiple / 2.0f;
+                    newRadius = asCircle.Radius + cursorChange.Y * heightMultiple / 2.0f;
                 }
                 if (newRadius != null)
                 {
@@ -849,44 +842,53 @@ namespace GlueControl.Editing
                     IsSnappingEnabled
                     ? MathFunctions.RoundFloat(value, SizeSnappingSize)
                     : value;
-                if (xChange != 0)
+
+                float scaleXChange = 0;
+                float scaleYChange = 0;
+                if (cursorChange.X != 0)
                 {
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
                     //scalable.ScaleX = newScaleX;
                     // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
-                    unsnappedItemSize.X = unsnappedItemSize.X + cursorXChange * widthMultiple;
+                    unsnappedItemSize.X = unsnappedItemSize.X + cursorChange.X * widthMultiple;
                     unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
                     var newScaleX = Snap(unsnappedItemSize.X / 2.0f);
-                    var scaleXChange = newScaleX - scalable.ScaleX;
+                    scaleXChange = newScaleX - scalable.ScaleX;
 
-                    xChangeForPosition = 0;
                     if (scaleXChange != 0)
                     {
                         scalable.ScaleX = Snap(unsnappedItemSize.X / 2.0f);
-                        xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
                     }
                 }
 
-                if (yChange != 0)
+
+                if (cursorChange.Y != 0)
                 {
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
                     //scalable.ScaleY = newScaleY;
-                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorYChange * heightMultiple;
+                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorChange.Y * heightMultiple;
                     unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
 
                     var newScaleY = Snap(unsnappedItemSize.Y / 2.0f);
-                    var scaleYChange = newScaleY - scalable.ScaleY;
+                    scaleYChange = newScaleY - scalable.ScaleY;
 
-                    yChangeForPosition = 0;
                     if (scaleYChange != 0)
                     {
                         scalable.ScaleY = Snap(unsnappedItemSize.Y / 2.0f);
-                        yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
                     }
                 }
+
+                var scaleChange = new Vector3(scaleXChange, scaleYChange, 0);
+                var widthHeightMultiple = new Vector3(widthMultiple, heightMultiple, 0);
+
+                var xComponent = (scaleChange.X * 2 * widthHeightMultiple.X * unrotatedPositionMultiple.X) * item.RotationMatrix.Right;
+                var yComponent = (scaleChange.Y * 2 * widthHeightMultiple.Y * unrotatedPositionMultiple.Y) * item.RotationMatrix.Up;
+
+                xChangeForPosition = (xComponent + yComponent).X;
+                yChangeForPosition = (xComponent + yComponent).Y;
             }
             ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown);
         }
@@ -1013,6 +1015,4 @@ namespace GlueControl.Editing
 #endif
         }
     }
-
-
 }
