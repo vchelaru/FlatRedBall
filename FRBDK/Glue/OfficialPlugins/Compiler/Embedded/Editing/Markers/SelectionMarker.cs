@@ -145,7 +145,7 @@ namespace GlueControl.Editing
             }
         }
 
-        public void UpdateHandlePositions(IScalable owner, Vector3 objectCenter)
+        public void UpdateHandlePositions(IReadOnlyScalable owner, Vector3 objectCenter)
         {
             var handle = rectangles[0];
             handle.X = -owner.ScaleX - handle.Width / 2;
@@ -179,9 +179,14 @@ namespace GlueControl.Editing
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = 0;
 
+            var rotationMatrix = Matrix.Identity;
+            if (owner is IRotatable asRotatable)
+            {
+                rotationMatrix = asRotatable.RotationMatrix;
+            }
             foreach (var rect in rectangles)
             {
-                rect.Position += objectCenter;
+                rect.Position = objectCenter + Vector3.Transform(rect.Position, rotationMatrix);
             }
 
         }
@@ -213,41 +218,61 @@ namespace GlueControl.Editing
 
     #endregion
 
-    public class SelectionMarker : ISelectionMarker
+    public class SelectionMarker : ISelectionMarker, IReadOnlyScalable
     {
         #region Fields/Properties
 
-        AxisAlignedRectangle rectangle;
+        Polygon mainPolygon;
 
         Handles Handles;
 
         public float ExtraPaddingInPixels { get; set; } = 2;
 
-        float ScaleX
+        float scaleX;
+        public float ScaleX
         {
-            get => rectangle.ScaleX;
-            set => rectangle.ScaleX = value;
+            get => scaleX;
+            set
+            {
+                scaleX = value;
+                UpdatePolygonPoints();
+            }
         }
-        float ScaleY
+
+        float scaleY;
+        public float ScaleY
         {
-            get => rectangle.ScaleY;
-            set => rectangle.ScaleY = value;
+            get => scaleY;
+            set
+            {
+                scaleY = value;
+                UpdatePolygonPoints();
+            }
+        }
+
+        private void UpdatePolygonPoints()
+        {
+            mainPolygon.SetPoint(0, -scaleX, scaleY);
+            mainPolygon.SetPoint(1, scaleX, scaleY);
+            mainPolygon.SetPoint(2, scaleX, -scaleY);
+            mainPolygon.SetPoint(3, -scaleX, -scaleY);
+            mainPolygon.SetPoint(4, -scaleX, scaleY);
         }
 
         Vector3 Position
         {
-            get => rectangle.Position;
-            set => rectangle.Position = value;
+            get => mainPolygon.Position;
+            set => mainPolygon.Position = value;
         }
 
         public bool Visible
         {
-            get => rectangle.Visible;
+            get => mainPolygon.Visible;
             set
             {
-                if (value != rectangle.Visible)
+                if (value != mainPolygon.Visible)
                 {
-                    rectangle.Visible = value;
+                    mainPolygon.Visible = value;
                 }
             }
         }
@@ -266,7 +291,7 @@ namespace GlueControl.Editing
             set
             {
                 name = value;
-                rectangle.Name = $"{name}Rectangle";
+                mainPolygon.Name = $"{name}Rectangle";
             }
         }
 
@@ -311,10 +336,11 @@ namespace GlueControl.Editing
         public SelectionMarker(INameable owner)
         {
             this.Owner = owner;
-            rectangle = new AxisAlignedRectangle();
+            mainPolygon = Polygon.CreateRectangle(scaleX, scaleY);
+            mainPolygon.Name = "Main Polygon for SelectionMarker";
 
-            rectangle.Visible = false;
-            ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+            mainPolygon.Visible = false;
+            ShapeManager.AddToLayer(mainPolygon, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
 
             Handles = new Handles();
 
@@ -324,7 +350,7 @@ namespace GlueControl.Editing
         {
 #if SupportsEditMode
 
-            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
+            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Add(mainPolygon);
 
             Handles.MakePersistent();
 #endif
@@ -337,21 +363,21 @@ namespace GlueControl.Editing
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
             var endingExtraPadding = endingExtraPaddingBeforeZoom;
-            TweenerManager.Self.StopAllTweenersOwnedBy(rectangle);
+            TweenerManager.Self.StopAllTweenersOwnedBy(mainPolygon);
 
             IsFadingInAndOut = false;
             ExtraPaddingInPixels = 0;
             const float growTime = 0.25f;
             float extraPaddingFromBump = 10;
 
-            var tweener = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, extraPaddingFromBump, growTime,
+            var tweener = mainPolygon.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, extraPaddingFromBump, growTime,
                 FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                 FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
             tweener.Ended += () =>
             {
                 var shrinkTime = growTime;
-                var tweener2 = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, endingExtraPadding, shrinkTime,
+                var tweener2 = mainPolygon.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, endingExtraPadding, shrinkTime,
                     FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                     FlatRedBall.Glue.StateInterpolation.Easing.InOut);
 
@@ -385,7 +411,7 @@ namespace GlueControl.Editing
                 effectiveOwner = Owner as IStaticPositionable;
             }
 
-            UpdateMainRectangleSizeToItem(effectiveOwner);
+            UpdateMainPolygonToItem(effectiveOwner);
 
             UpdateColor();
 
@@ -396,6 +422,7 @@ namespace GlueControl.Editing
                 UpdateHandles(ownerAsPositionedObject, sideGrabbed);
             }
 
+            mainPolygon.UpdateDependencies(TimeManager.CurrentTime);
 
             if (CanMoveItem)
             {
@@ -452,12 +479,13 @@ namespace GlueControl.Editing
                 value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
             }
 
-            rectangle.Red = value * BrightColor.R / 255.0f;
-            rectangle.Green = value * BrightColor.G / 255.0f;
-            rectangle.Blue = value * BrightColor.B / 255.0f;
+            mainPolygon.Color = new Color(
+                value * BrightColor.R / 255.0f,
+                value * BrightColor.G / 255.0f,
+                value * BrightColor.B / 255.0f);
         }
 
-        private void UpdateMainRectangleSizeToItem(IStaticPositionable item)
+        private void UpdateMainPolygonToItem(IStaticPositionable item)
         {
             if (item != null)
             {
@@ -474,6 +502,15 @@ namespace GlueControl.Editing
 
                 ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
                 ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
+
+                if (item is IRotatable asRotatable)
+                {
+                    mainPolygon.RotationMatrix = asRotatable.RotationMatrix;
+                }
+                else
+                {
+                    mainPolygon.RotationMatrix = Matrix.Identity;
+                }
             }
         }
 
@@ -489,7 +526,7 @@ namespace GlueControl.Editing
                 {
                     sideOver = GetSideOver();
                 }
-                Handles.UpdateHandlePositions(rectangle, this.Position);
+                Handles.UpdateHandlePositions(this, this.Position);
 
                 FillSidesToHighlight(item, sideOver);
 
@@ -866,7 +903,7 @@ namespace GlueControl.Editing
         public bool IsCursorOverThis()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (cursor.IsOn3D(rectangle))
+            if (cursor.IsOn3D(mainPolygon))
             {
                 return true;
             }
@@ -966,8 +1003,8 @@ namespace GlueControl.Editing
         {
 #if SupportsEditMode
 
-            rectangle.Visible = false;
-            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
+            mainPolygon.Visible = false;
+            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Remove(mainPolygon);
 
             Handles.Destroy();
 #endif

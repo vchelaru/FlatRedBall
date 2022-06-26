@@ -114,6 +114,11 @@ namespace FlatRedBall.Screens
             get; private set;
         } = new PositionedObjectList<AxisAlignedRectangle>();
 
+        public static PositionedObjectList<Polygon> PersistentPolygons
+        {
+            get; private set;
+        } = new PositionedObjectList<Polygon>();
+
         public static PositionedObjectList<Line> PersistentLines
         {
             get; private set;
@@ -788,8 +793,13 @@ namespace FlatRedBall.Screens
                 #region Managed Shapes
                 if (ShapeManager.AutomaticallyUpdatedShapes.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.AutomaticallyUpdatedShapes.Count +
-                        " Automatically Updated Shapes in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.AutomaticallyUpdatedShapes\"");
+                    var message = "There are " + ShapeManager.AutomaticallyUpdatedShapes.Count +
+                        " Automatically Updated Shapes in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.AutomaticallyUpdatedShapes\"";
+
+                    var first = ShapeManager.AutomaticallyUpdatedShapes[0];
+                    message += $"\nFirst shape: {first}";
+                    
+                    messages.Add(message);
                 }
                 #endregion
 
@@ -826,8 +836,20 @@ namespace FlatRedBall.Screens
 
                 if (ShapeManager.VisiblePolygons.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.VisiblePolygons.Count +
-                        " visible Polygons in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisiblePolygons\"");
+                    var polygonCount = ShapeManager.VisiblePolygons.Count;
+                    foreach(var polygon in PersistentPolygons)
+                    {
+                        if(ShapeManager.VisiblePolygons.Contains(polygon))
+                        {
+                            polygonCount--;
+                        }
+                    }
+                    if(polygonCount != 0)
+                    {
+                        messages.Add("There are " + polygonCount +
+                            " visible Polygons in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisiblePolygons\"");
+
+                    }
                 }
                 #endregion
 

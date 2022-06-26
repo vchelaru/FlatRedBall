@@ -991,11 +991,6 @@ namespace FlatRedBall.Math.Geometry
                 bool shouldMakeVisible = polygon.mLayerBelongingTo == null && polygon.ListsBelongingTo.Contains(mRectangles) == false
                     && polygon.Visible;
 
-                if (!polygon.ListsBelongingTo.Contains(mAutomaticallyUpdated))
-                {
-                    mAutomaticallyUpdated.Add(polygon);
-                }
-
                 if (polygon.Visible)
                 {
                     if (polygon.mLayerBelongingTo != null)

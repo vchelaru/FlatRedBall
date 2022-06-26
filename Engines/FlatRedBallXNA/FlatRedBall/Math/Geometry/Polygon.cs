@@ -2131,7 +2131,7 @@ namespace FlatRedBall.Math.Geometry
 
         public override string ToString()
         {
-            return "Points: " + mPoints.Length;
+            return $"Name: {Name ?? "<NULL>"} Points: {mPoints.Length}";
 
 
         }
