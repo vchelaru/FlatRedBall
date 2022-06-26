@@ -526,7 +526,10 @@ namespace GlueControl.Editing
                 {
                     sideOver = GetSideOver();
                 }
-                Handles.UpdateHandlePositions(this, this.Position);
+                if (this.Owner is IReadOnlyScalable scalable)
+                {
+                    Handles.UpdateHandlePositions(scalable, this.Position);
+                }
 
                 FillSidesToHighlight(item, sideOver);
 
