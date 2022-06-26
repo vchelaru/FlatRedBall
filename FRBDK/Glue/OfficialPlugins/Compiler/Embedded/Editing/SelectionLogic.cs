@@ -252,6 +252,18 @@ namespace GlueControl.Editing
 
             GetDimensionsFor(objectAtI, out float minX, out float maxX, out float minY, out float maxY);
 
+            if (objectAtI.RotationZ != 0)
+            {
+                var offset = new Vector3(
+                    worldX - objectAtI.X,
+                    worldY - objectAtI.Y,
+                    0);
+
+                MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref offset, -objectAtI.RotationZ);
+
+                worldX = objectAtI.X + offset.X;
+                worldY = objectAtI.Y + offset.Y;
+            }
             return
                 objectAtI.Z < (Camera.Main.Z - Camera.Main.NearClipPlane) &&
                 worldX >= minX &&
