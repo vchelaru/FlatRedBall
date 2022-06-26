@@ -788,6 +788,20 @@ namespace GlueControl
                     variableValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)asLong;
                 }
             }
+            else if (
+                instruction.Type == typeof(FlatRedBall.Graphics.ColorOperation).Name ||
+                instruction.Type == typeof(FlatRedBall.Graphics.ColorOperation).FullName
+                )
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (FlatRedBall.Graphics.ColorOperation)asInt;
+                }
+                if (variableValue is long asLong)
+                {
+                    variableValue = (FlatRedBall.Graphics.ColorOperation)asLong;
+                }
+            }
 
             try
             {

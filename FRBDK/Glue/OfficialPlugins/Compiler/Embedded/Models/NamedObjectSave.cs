@@ -241,11 +241,18 @@ namespace GlueControl.Models
             set;
         }
 
-
         public bool IncludeInIClickable
         {
             get;
             set;
+        }
+
+        [System.Xml.Serialization.XmlIgnore]
+        [JsonIgnore]
+        public bool IsEditingLocked
+        {
+            get => Properties.GetValue<bool>(nameof(IsEditingLocked));
+            set => Properties.SetValue(nameof(IsEditingLocked), value);
         }
 
         string mSourceName;

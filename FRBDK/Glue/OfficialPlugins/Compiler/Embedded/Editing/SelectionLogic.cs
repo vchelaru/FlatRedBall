@@ -1,5 +1,6 @@
 ﻿{CompilerDirectives}
 
+
 using FlatRedBall;
 using FlatRedBall.Entities;
 using FlatRedBall.Graphics;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GlueControl.Managers;
 
 namespace GlueControl.Editing
 {
@@ -33,7 +35,7 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public static void GetInstanceOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
+        public static void GetItemsOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
             if (itemsOverToFill.Count > 0)
@@ -81,14 +83,24 @@ namespace GlueControl.Editing
                         {
                             if (IsCursorOver(objectAtI))
                             {
-                                if (punchThrough)
+                                var nos =
+                                    GlueState.Self.CurrentElement?.AllNamedObjects.FirstOrDefault(
+                                        item => item.InstanceName == objectAtI.Name);
+
+                                // don't select it if it is locked
+                                var isLocked = nos?.IsEditingLocked == true;
+
+                                if (!isLocked)
                                 {
-                                    tempPunchThroughList.Add(objectAtI);
-                                }
-                                else
-                                {
-                                    objectOver = objectAtI;
-                                    break;
+                                    if (punchThrough)
+                                    {
+                                        tempPunchThroughList.Add(objectAtI);
+                                    }
+                                    else
+                                    {
+                                        objectOver = objectAtI;
+                                        break;
+                                    }
                                 }
                             }
                         }

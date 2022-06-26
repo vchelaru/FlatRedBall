@@ -75,9 +75,12 @@ namespace OfficialPlugins.VariableDisplay
 
             if (categories.Count != 0)
             {
+                MemberCategory topmostCategory = CreateTopmostCategory(categories);
+
                 // "Name" should be the very first property:
-                var nameCategory = CreateNameInstanceMember(instance);
-                categories.Insert(0, nameCategory);
+                topmostCategory.Members.Add(CreateNameInstanceMember(instance));
+                topmostCategory.Members.Add(CreateIsLockedMember(instance));
+
             }
 
             SetAlternatingColors(grid, categories);
@@ -88,6 +91,15 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             grid.Refresh();
+        }
+
+        private static MemberCategory CreateTopmostCategory(List<MemberCategory> categories)
+        {
+            MemberCategory topmostCategory = new MemberCategory();
+            topmostCategory.Name = "";
+            topmostCategory.HideHeader = true;
+            categories.Insert(0, topmostCategory);
+            return topmostCategory;
         }
 
         private static void AssignVariableSubtext(NamedObjectSave instance, List<MemberCategory> categories, AssetTypeInfo assetTypeInfo)
@@ -350,7 +362,7 @@ namespace OfficialPlugins.VariableDisplay
 
         }
 
-        private static MemberCategory CreateNameInstanceMember(NamedObjectSave instance)
+        private static DataGridItem CreateNameInstanceMember(NamedObjectSave instance)
         {
             var instanceMember = new DataGridItem();
             instanceMember.DisplayName = "Name";
@@ -390,19 +402,56 @@ namespace OfficialPlugins.VariableDisplay
 
                 oldValue = (string)value;
             };
-            instanceMember.CustomGetEvent += (throwaway) =>
-                {
-                    return instance.InstanceName;
-                };
+            instanceMember.CustomGetEvent += throwaway => instance.InstanceName;
 
-            instanceMember.CustomGetTypeEvent += (throwaway) => typeof(string);
+            instanceMember.CustomGetTypeEvent += throwaway => typeof(string);
 
-            MemberCategory category = new MemberCategory();
-            category.Name = "";
-            category.HideHeader = true;
-            category.Members.Add(instanceMember);
+            return instanceMember;
+        }
 
-            return category;
+        private static DataGridItem CreateIsLockedMember(NamedObjectSave instance)
+        {
+            var instanceMember = new DataGridItem();
+            instanceMember.DisplayName = 
+                StringFunctions.InsertSpacesInCamelCaseString(nameof(instance.IsEditingLocked));
+            instanceMember.UnmodifiedVariableName =
+                nameof(instance.IsEditingLocked);
+            
+            var oldValue = instance.IsEditingLocked;
+
+            instanceMember.CustomSetEvent += (throwaway, value) =>
+            {
+                instanceMember.IsDefault = false;
+                RefreshLogic.IgnoreNextRefresh();
+
+                var valueAsBool = value as bool? ?? false;
+                instance.IsEditingLocked = valueAsBool;
+
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                    nameof(instance.IsEditingLocked), oldValue, nameof(instance.IsEditingLocked), null);
+
+
+                //GlueCommands.Self.GluxCommands.SetVariableOn(
+                //    instance,
+                //    "Name",
+                //    typeof(string),
+                //    value);
+
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+                oldValue = valueAsBool;
+            };
+
+            instanceMember.CustomGetEvent += throwaway => instance.IsEditingLocked;
+
+            instanceMember.CustomGetTypeEvent += throwaway => typeof(bool);
+
+            return instanceMember;
         }
 
         private static void SortCategoriesAndMembers(ref List<MemberCategory> categories, AssetTypeInfo ati)

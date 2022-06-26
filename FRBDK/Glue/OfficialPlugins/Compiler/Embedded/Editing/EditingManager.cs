@@ -357,7 +357,7 @@ namespace GlueControl.Editing
                     SelectionLogic.DoDragSelectLogic();
                 }
 
-                SelectionLogic.GetInstanceOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
 
                 var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
                     itemsOver.Any(item => !itemsOverLastFrame.Contains(item));

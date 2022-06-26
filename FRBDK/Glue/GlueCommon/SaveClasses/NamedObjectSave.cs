@@ -691,10 +691,12 @@ namespace FlatRedBall.Glue.SaveClasses
             set => Properties.SetValue(nameof(AssociateWithFactory), value);
         }
 
-        public bool IsLocked
+        [XmlIgnore]
+        [JsonIgnore]
+        public bool IsEditingLocked
         {
-            get => Properties.GetValue<bool>(nameof(IsLocked));
-            set => Properties.SetValue(nameof(IsLocked), value);
+            get => Properties.GetValue<bool>(nameof(IsEditingLocked));
+            set => Properties.SetValue(nameof(IsEditingLocked), value);
         }
 
         #region Layer Properties
