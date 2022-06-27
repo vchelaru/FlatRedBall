@@ -106,7 +106,10 @@ namespace BuildServerUploaderConsole.Processes
                 CopyDirectory(DirectoryHelper.FrbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
             }
 
-
+            if(!System.IO.Directory.Exists(GluePublishDestinationFolder))
+            {
+                throw new System.Exception($"The GluePublishDestinationFolder {GluePublishDestinationFolder} doesn't exist but it should");
+            }
             CopyDirectory(GluePublishDestinationFolder, "Copied " + GluePublishDestinationFolder);
             CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 

@@ -2227,7 +2227,11 @@ namespace FlatRedBall.IO
 
 		private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
 		{
-			destDirectory = FileManager.Standardize(destDirectory);
+            if(!System.IO.Directory.Exists(sourceDirectory))
+            {
+                throw new ArgumentException($"Could not find source directory {sourceDirectory}");
+            }
+            destDirectory = FileManager.Standardize(destDirectory);
 
 			if (!destDirectory.EndsWith(@"\") && !destDirectory.EndsWith(@"/"))
 			{
