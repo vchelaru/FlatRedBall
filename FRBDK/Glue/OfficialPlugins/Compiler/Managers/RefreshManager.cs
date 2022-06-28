@@ -764,7 +764,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-        internal async void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        internal async void HandleNamedObjectVariableOrPropertyChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {

@@ -340,7 +340,12 @@ namespace GlueControl.Editing
             mainPolygon.Name = "Main Polygon for SelectionMarker";
 
             mainPolygon.Visible = false;
+            // Due to a bug in FRB, the polygon will be added to the automatically
+            // updated list. We don't want this! This is fixed in the version that supports
+            // PersistenPolygons so let's put that if:
+#if ScreenManagerHasPersistentPolygons
             ShapeManager.AddToLayer(mainPolygon, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+#endif
 
             Handles = new Handles();
 
@@ -350,8 +355,9 @@ namespace GlueControl.Editing
         {
 #if SupportsEditMode
 
+#if ScreenManagerHasPersistentPolygons
             FlatRedBall.Screens.ScreenManager.PersistentPolygons.Add(mainPolygon);
-
+#endif
             Handles.MakePersistent();
 #endif
         }
@@ -1009,8 +1015,10 @@ namespace GlueControl.Editing
 #if SupportsEditMode
 
             mainPolygon.Visible = false;
-            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Remove(mainPolygon);
+#if ScreenManagerHasPersistentPolygons
 
+            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Remove(mainPolygon);
+#endif
             Handles.Destroy();
 #endif
         }

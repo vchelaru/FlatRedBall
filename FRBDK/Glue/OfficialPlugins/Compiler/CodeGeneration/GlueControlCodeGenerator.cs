@@ -33,6 +33,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             {
                 compilerDirectives += "#define SupportsEditMode\r\n";
             }
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenManagerHasPersistentPolygons)
+            {
+                compilerDirectives += "#define ScreenManagerHasPersistentPolygons\r\n";
+            }
 
             var hasGumResponse = PluginManager.CallPluginMethod("Gum Plugin", "HasGum");
             var asBool = hasGumResponse as bool?;

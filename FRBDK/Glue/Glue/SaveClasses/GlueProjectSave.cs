@@ -69,6 +69,7 @@ namespace FlatRedBall.Glue.SaveClasses
             RemoveAutoLocalizationOfVariables = 14,
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
+            ScreenManagerHasPersistentPolygons = 17,
         }
 
         #endregion

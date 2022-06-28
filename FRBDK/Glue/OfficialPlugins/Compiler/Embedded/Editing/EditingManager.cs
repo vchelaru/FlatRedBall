@@ -691,18 +691,25 @@ namespace GlueControl.Editing
                         nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
                     }
 
+                    var didSelect = false;
+
                     if (nos != null)
                     {
-                        Select(nos, addToExistingSelection: isFirst == false, playBump: true);
+                        if (nos.IsEditingLocked == false)
+                        {
+                            Select(nos, addToExistingSelection: isFirst == false, playBump: true);
+                            didSelect = true;
+                        }
                     }
                     else
                     {
                         // this shouldn't happen, but for now we tolerate it until the current is sent
                         Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
+                        didSelect = true;
                     }
 
                     // This pushes the selection up for the first item so that Glue can match the selection. Eventually Glue will accept a list for multi-select, but not yet...
-                    if (isFirst)
+                    if (isFirst && didSelect)
                     {
                         ObjectSelected(itemOver);
                     }
@@ -763,10 +770,18 @@ namespace GlueControl.Editing
 
             if (newContainer != null)
             {
+                if (oldNos != null)
+                {
+                    newContainer.ContainedObjects.Remove(oldNos);
+                }
                 newContainer.ContainedObjects.Add(nos);
             }
             else
             {
+                if (oldNos != null)
+                {
+                    CurrentGlueElement.NamedObjects.Remove(oldNos);
+                }
                 CurrentGlueElement.NamedObjects.Add(nos);
             }
 
@@ -793,6 +808,7 @@ namespace GlueControl.Editing
 
             nos.FixAllTypes();
         }
+
 
         #region Diagnostics
 
@@ -1045,6 +1061,15 @@ namespace GlueControl.Editing
             }
 
             var shouldSuppress = markerToAsk?.ShouldSuppress(variableName) == true;
+
+            if (!shouldSuppress)
+            {
+                if (variableName == nameof(NamedObjectSave.IsEditingLocked))
+                {
+                    shouldSuppress = true; // this simply gets copied over by the NOS
+                }
+            }
+
             return shouldSuppress;
         }
 

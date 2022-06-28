@@ -223,7 +223,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         // Send this back to the game so the game. When the game receives this, it will store it in
                         // a list and will re-run the commands as necessary (such as whenever a screen is reloaded).
                         GlueCommands.Self.DoOnUiThread(() =>
-                            RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
+                            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(setVariableDto.VariableName, null, nos, 
                             // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
                             AssignOrRecordOnly.RecordOnly)
                         );

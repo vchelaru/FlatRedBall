@@ -35,6 +35,7 @@ namespace GlueFormsCore.Controls
     {
         #region Fields/Properties
 
+        //public static string AppTheme = "Dark";
         public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
         public static bool IsExiting { get; private set; }

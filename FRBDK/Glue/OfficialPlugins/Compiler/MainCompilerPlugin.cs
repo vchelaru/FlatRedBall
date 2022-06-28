@@ -397,7 +397,7 @@ namespace OfficialPlugins.Compiler
 
         private void HandleNamedObjectVariableOrPropertyChanged(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
-            RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
+            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
