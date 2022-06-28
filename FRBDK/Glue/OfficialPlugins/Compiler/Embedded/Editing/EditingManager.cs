@@ -344,7 +344,7 @@ namespace GlueControl.Editing
 
             Guides.Visible = isInEditMode;
 
-            if (isInEditMode)
+            if (isInEditMode && !ScreenManager.CurrentScreen.IsActivityFinished)
             {
                 Guides.UpdateGridLines();
 
