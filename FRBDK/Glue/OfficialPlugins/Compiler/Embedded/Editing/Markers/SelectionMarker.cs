@@ -150,34 +150,42 @@ namespace GlueControl.Editing
             var handle = rectangles[0];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[1];
             handle.X = 0;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[2];
             handle.X = owner.ScaleX + handle.Width / 2;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[3];
             handle.X = owner.ScaleX + handle.Width / 2;
             handle.Y = 0;
+            handle.Z = 0;
 
             handle = rectangles[4];
             handle.X = +owner.ScaleX + handle.Width / 2;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[5];
             handle.X = 0;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[6];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[7];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = 0;
+            handle.Z = 0;
 
             var rotationMatrix = Matrix.Identity;
             if (owner is IRotatable asRotatable)
