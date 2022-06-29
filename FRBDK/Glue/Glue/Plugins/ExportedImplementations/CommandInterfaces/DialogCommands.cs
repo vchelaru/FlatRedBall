@@ -208,9 +208,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(genericType))
                 {
-                    addObjectViewModel.SelectedAti =
+                    var selectedAti =
                         AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item =>
                             item.FriendlyName == genericType || item.QualifiedRuntimeTypeName.QualifiedType == genericType);
+                    addObjectViewModel.SelectedAti =
+                        selectedAti;
 
                     var genericEntityType =
                         ObjectFinder.Self.GetEntitySave(genericType);
@@ -218,10 +220,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         addObjectViewModel.SourceType = SourceType.Entity;
                         addObjectViewModel.SelectedEntitySave = genericEntityType;
+
+                        // filter down all entities to anything that is of this type or inherits from this type:
+                        var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(genericEntityType)
+                            .Select(item => item as EntitySave);
+
+                        addObjectViewModel.AvailableEntities.Clear();
+                        addObjectViewModel.AvailableEntities.Add(genericEntityType);
+                        addObjectViewModel.AvailableEntities.AddRange(derived);
+
+                        addObjectViewModel.IsTypePredetermined = addObjectViewModel.AvailableEntities.Count < 2;
+                        addObjectViewModel.IsObjectTypeRadioButtonPredetermined = true;
+
+                        addObjectViewModel.RefreshAllSelectedItems();
+                        addObjectViewModel.RefreshFilteredItems();
                     }
                     else
                     {
                         addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                        if(selectedAti != null)
+                        {
+                            addObjectViewModel.FlatRedBallAndCustomTypes.Clear();
+                            addObjectViewModel.FlatRedBallAndCustomTypes.Add(selectedAti);
+                            // re-select since clearing the list will deselect
+                            addObjectViewModel.SelectedAti = selectedAti;
+                            addObjectViewModel.IsObjectTypeRadioButtonPredetermined = true;
+
+                            addObjectViewModel.RefreshAllSelectedItems();
+                            addObjectViewModel.RefreshFilteredItems();
+                        }
                     }
                 }
             }

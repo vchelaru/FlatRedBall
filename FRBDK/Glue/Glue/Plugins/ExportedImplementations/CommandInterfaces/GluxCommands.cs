@@ -1144,7 +1144,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             var isMatchingList = currentList != null && currentList.IsList &&
-                currentList.SourceClassGenericType == addObjectViewModel.SourceClassType;
+                (currentList.SourceClassGenericType == addObjectViewModel.SourceClassType ||
+                 currentList.SourceClassGenericType == addObjectViewModel.SelectedAti?.FriendlyName ||
+                 currentList.SourceClassGenericType == addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType);
 
             if (!isMatchingList && currentList != null)
             {
