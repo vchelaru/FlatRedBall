@@ -23,7 +23,7 @@ namespace FlatRedBall.Math.Geometry
         public static bool TolerateEmptyPolygons = false;
 
         // Victor Chelaru May 17 2008
-        // At the tine of this writing there are no velocity or rate
+        // At the time of this writing there are no velocity or rate
         // fields in the Polygon class that don't exist in the PositionedObject class.
         // Therefore, the Polygon Pause instruction will simply use the PositionedObject's.
         // If any rate values are added to this class, the Pause method should be updated.  Likely

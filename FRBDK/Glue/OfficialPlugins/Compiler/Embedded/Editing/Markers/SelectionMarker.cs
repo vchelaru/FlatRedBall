@@ -425,18 +425,20 @@ namespace GlueControl.Editing
                 effectiveOwner = Owner as IStaticPositionable;
             }
 
-            UpdateMainPolygonToItem(effectiveOwner);
 
             UpdateColor();
 
             ApplyPrimaryDownDragEditing(effectiveOwner, sideGrabbed);
+
+            UpdateMainPolygonToItem(effectiveOwner);
 
             if (ownerAsPositionedObject != null)
             {
                 UpdateHandles(ownerAsPositionedObject, sideGrabbed);
             }
 
-            mainPolygon.UpdateDependencies(TimeManager.CurrentTime);
+
+            mainPolygon.ForceUpdateDependenciesDeep();
 
             if (CanMoveItem)
             {
@@ -630,6 +632,11 @@ namespace GlueControl.Editing
             var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
                 Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
 
+            string output = $"Unsnapped width: {unsnappedItemSize.X}" +
+                $"\nSnapped width: {SnapSize(unsnappedItemSize.X)}" +
+                $"\nWidth: {(item as IScalable)?.ScaleX * 2}";
+            FlatRedBall.Debugging.Debugger.Write(output);
+
             if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
                 // Currently only PositionedObjects can be moved. If an object is
                 // IStaticPositionalbe, techincally we could move it by changing its X
@@ -657,8 +664,22 @@ namespace GlueControl.Editing
         }
 
 
-        private Vector3 ChangePositionBy(IStaticPositionable item, float xChange, float yChange, bool isShiftDown)
+        private Vector3 ChangePositionBy(IStaticPositionable item, float xChange, float yChange, bool isShiftDown,
+            // Snapping is controlled potentially by 2 things:
+            // 1. If the user is dragging an object to move it, then snapping is controlled by the global scale in the editor
+            // 2. If the user is resizing, then we want to disable snapping because a resize may result in the positioin being moved a "half snap". Explanation:
+            //    Consider an object at X = 32, width = 16. If the user shrinks it with the handles, the size may snap to width 16, which should set the X to 8. 8
+            //    is not a valid X position if snapping is considered. Therefore, when resizing handles, X snapping should be force disabled
+            // 
+            bool forceDisableSnapping = false)
         {
+            float Snap(float value) =>
+                IsSnappingEnabled && !forceDisableSnapping
+                ? MathFunctions.RoundFloat(value, PositionSnappingSize)
+                : value;
+
+
+
             unsnappedItemPosition.X += xChange;
             unsnappedItemPosition.Y += yChange;
 
@@ -682,10 +703,6 @@ namespace GlueControl.Editing
             Vector3 changeAfterSnapping = Vector3.Zero;
 
             var itemAsPositionedObject = item as PositionedObject;
-            float Snap(float value) =>
-                IsSnappingEnabled
-                ? MathFunctions.RoundFloat(value, PositionSnappingSize)
-                : value;
             if (itemAsPositionedObject?.Parent == null)
             {
                 var before = itemAsPositionedObject?.Position ?? new Vector3(item.X, item.Y, item.Z);
@@ -705,6 +722,11 @@ namespace GlueControl.Editing
             }
             return changeAfterSnapping;
         }
+
+        float SnapSize(float value) =>
+            IsSnappingEnabled
+            ? MathFunctions.RoundFloat(value, SizeSnappingSize)
+            : value;
 
         private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
         {
@@ -852,10 +874,6 @@ namespace GlueControl.Editing
             }
             else
             {
-                float Snap(float value) =>
-                    IsSnappingEnabled
-                    ? MathFunctions.RoundFloat(value, SizeSnappingSize)
-                    : value;
 
                 float scaleXChange = 0;
                 float scaleYChange = 0;
@@ -868,12 +886,12 @@ namespace GlueControl.Editing
                     unsnappedItemSize.X = unsnappedItemSize.X + cursorChange.X * widthMultiple;
                     unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                    var newScaleX = Snap(unsnappedItemSize.X / 2.0f);
+                    var newScaleX = SnapSize(unsnappedItemSize.X) / 2.0f;
                     scaleXChange = newScaleX - scalable.ScaleX;
 
                     if (scaleXChange != 0)
                     {
-                        scalable.ScaleX = Snap(unsnappedItemSize.X / 2.0f);
+                        scalable.ScaleX = newScaleX;
                     }
                 }
 
@@ -886,12 +904,12 @@ namespace GlueControl.Editing
                     unsnappedItemSize.Y = unsnappedItemSize.Y + cursorChange.Y * heightMultiple;
                     unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
 
-                    var newScaleY = Snap(unsnappedItemSize.Y / 2.0f);
+                    var newScaleY = SnapSize(unsnappedItemSize.Y) / 2.0f;
                     scaleYChange = newScaleY - scalable.ScaleY;
 
                     if (scaleYChange != 0)
                     {
-                        scalable.ScaleY = Snap(unsnappedItemSize.Y / 2.0f);
+                        scalable.ScaleY = newScaleY;
                     }
                 }
 
@@ -904,7 +922,8 @@ namespace GlueControl.Editing
                 xChangeForPosition = (xComponent + yComponent).X;
                 yChangeForPosition = (xComponent + yComponent).Y;
             }
-            ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown);
+            ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown, forceDisableSnapping: true);
+            item.ForceUpdateDependencies();
         }
 
         private static bool GetIfSetsTextureScale(PositionedObject item)
