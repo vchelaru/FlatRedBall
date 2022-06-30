@@ -439,7 +439,7 @@ namespace GlueControl.Editing
             }
 
 
-            mainPolygon.ForceUpdateDependenciesDeep();
+            mainPolygon.ForceUpdateDependencies();
 
             if (CanMoveItem)
             {

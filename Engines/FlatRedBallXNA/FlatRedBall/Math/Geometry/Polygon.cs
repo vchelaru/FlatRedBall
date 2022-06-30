@@ -1532,7 +1532,13 @@ namespace FlatRedBall.Math.Geometry
             base.ForceUpdateDependencies();
 
             FillVertexArray();
+        }
 
+        public override void ForceUpdateDependenciesDeep()
+        {
+            base.ForceUpdateDependenciesDeep();
+
+            FillVertexArray();
         }
 
 
