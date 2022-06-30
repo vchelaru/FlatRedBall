@@ -115,7 +115,6 @@ namespace GlueControl.Editing
                     if (marker is SelectionMarker selectionMarker)
                     {
                         selectionMarker.PositionSnappingSize = snapSize;
-                        selectionMarker.SizeSnappingSize = snapSize;
                     }
                 }
             }
@@ -132,7 +131,6 @@ namespace GlueControl.Editing
                 {
                     if (marker is SelectionMarker selectionMarker)
                     {
-                        selectionMarker.IsSnappingEnabled = isSnappingEnabled;
                         selectionMarker.IsSnappingEnabled = isSnappingEnabled;
                     }
                 }
@@ -292,7 +290,6 @@ namespace GlueControl.Editing
             else
             {
                 var selectionMarker = new SelectionMarker(owner);
-                selectionMarker.SizeSnappingSize = SnapSize;
                 selectionMarker.PositionSnappingSize = SnapSize;
                 selectionMarker.IsSnappingEnabled = IsSnappingEnabled;
                 newMarker = selectionMarker;
