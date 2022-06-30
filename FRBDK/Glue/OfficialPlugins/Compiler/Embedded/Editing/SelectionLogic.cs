@@ -38,6 +38,10 @@ namespace GlueControl.Editing
         public static void GetItemsOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
+            if (GuiManager.Cursor.SecondaryPush)
+            {
+                int m = 3;
+            }
             if (itemsOverToFill.Count > 0)
             {
                 itemsOverToFill.Clear();
@@ -256,32 +260,183 @@ namespace GlueControl.Editing
 #endif
         }
 
-        private static bool IsCursorOver(PositionedObject objectAtI)
+        static Polygon polygonForCursorOver = new Polygon();
+
+        private static bool IsCursorOver(PositionedObject positionedObject)
         {
-            var cursor = GuiManager.Cursor;
-            var worldX = cursor.WorldXAt(objectAtI.Z);
-            var worldY = cursor.WorldYAt(objectAtI.Z);
-
-            GetDimensionsFor(objectAtI, out float minX, out float maxX, out float minY, out float maxY);
-
-            if (objectAtI.RotationZ != 0)
+            if (IsOverSpecificItem(positionedObject))
             {
-                var offset = new Vector3(
-                    worldX - objectAtI.X,
-                    worldY - objectAtI.Y,
-                    0);
-
-                MathFunctions.RotatePointAroundPoint(Vector3.Zero, ref offset, -objectAtI.RotationZ);
-
-                worldX = objectAtI.X + offset.X;
-                worldY = objectAtI.Y + offset.Y;
+                return true;
             }
-            return
-                objectAtI.Z < (Camera.Main.Z - Camera.Main.NearClipPlane) &&
-                worldX >= minX &&
-                worldX <= maxX &&
-                worldY >= minY &&
-                worldY <= maxY;
+            else
+            {
+                for (int i = 0; i < positionedObject.Children.Count; i++)
+                {
+                    var child = positionedObject.Children[i];
+
+                    var shouldConsiderChild = true;
+
+                    if (child is IVisible asIVisible)
+                    {
+                        shouldConsiderChild = asIVisible.Visible;
+                    }
+
+                    if (shouldConsiderChild)
+                    {
+                        var isOverChild = IsCursorOver(child);
+                        if (isOverChild)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static bool IsOverSpecificItem(IStaticPositionable collisionObject)
+        {
+            GetShapeFor(collisionObject, out Polygon polygon, out Circle circle);
+            polygon?.ForceUpdateDependencies();
+            return polygon?.IsMouseOver(GuiManager.Cursor) == true ||
+                circle?.IsMouseOver(GuiManager.Cursor) == true;
+        }
+
+        private static void GetShapeFor(IStaticPositionable collisionObject, out Polygon polygon, out Circle circle)
+        {
+            circle = null;
+            polygon = null;
+
+            void MakePolygonRectangle(float width, float height)
+            {
+                var points = new List<FlatRedBall.Math.Geometry.Point>();
+                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
+                points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, height / 2));
+                points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, -height / 2));
+                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, -height / 2));
+                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
+                polygonForCursorOver.Points = points;
+            }
+
+            void MakePolygonRectangleMinMax(float minXInner, float maxXInner, float minYInner, float maxYInner)
+            {
+                MakePolygonRectangle(maxXInner - minXInner, maxYInner - minYInner);
+                polygonForCursorOver.X = (maxXInner + minXInner) / 2.0f;
+                polygonForCursorOver.Y = (maxYInner + minYInner) / 2.0f;
+            }
+
+            float minX = 0;
+            float maxX = 0;
+            float minY = 0;
+            float maxY = 0;
+            if (collisionObject is Circle asCircle)
+            {
+                circle = asCircle;
+            }
+            else if (collisionObject is IMinMax minMax)
+            {
+                minX = minMax.MinXAbsolute;
+                maxX = minMax.MaxXAbsolute;
+
+                minY = minMax.MinYAbsolute;
+                maxY = minMax.MaxYAbsolute;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+            }
+            else if (collisionObject is Text asText)
+            {
+                switch (asText.HorizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:
+                        minX = asText.X;
+                        maxX = asText.X + asText.Width;
+
+                        break;
+                    case HorizontalAlignment.Right:
+                        minX = asText.X - asText.Width;
+                        maxX = asText.X;
+
+                        break;
+                    case HorizontalAlignment.Center:
+                        minX = asText.X - asText.Width / 2.0f;
+                        maxX = asText.X + asText.Width / 2.0f;
+                        break;
+                }
+
+                // todo - support alignment
+                minY = asText.Y - asText.Height / 2.0f;
+                maxY = asText.Y + asText.Height / 2.0f;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+                polygon.RotationMatrix = asText.RotationMatrix;
+            }
+            else if (collisionObject is IReadOnlyScalable asScalable)
+            {
+                minX = collisionObject.X - asScalable.ScaleX;
+                maxX = collisionObject.X + asScalable.ScaleX;
+
+                minY = collisionObject.Y - asScalable.ScaleY;
+                maxY = collisionObject.Y + asScalable.ScaleY;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+                if (collisionObject is PositionedObject positionedObject)
+                {
+                    polygon.RotationMatrix = positionedObject.RotationMatrix;
+                }
+            }
+            else if (collisionObject is Line asLine)
+            {
+                minX = asLine.X + (float)asLine.RelativePoint1.X;
+                maxX = asLine.X + (float)asLine.RelativePoint1.X;
+
+                minY = asLine.Y - (float)asLine.RelativePoint1.Y;
+                maxY = asLine.Y + (float)asLine.RelativePoint1.Y;
+
+                minX = Math.Min(minX, asLine.X + (float)asLine.RelativePoint2.X);
+                maxX = Math.Max(maxX, asLine.X + (float)asLine.RelativePoint2.X);
+
+                minY = Math.Min(minY, asLine.Y - (float)asLine.RelativePoint2.Y);
+                maxY = Math.Max(maxY, asLine.Y + (float)asLine.RelativePoint2.Y);
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+                polygon.RotationMatrix = asLine.RotationMatrix;
+            }
+#if HasGum
+            else if (collisionObject is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
+            {
+                var gue = gumWrapper.GumObject;
+
+                if (gue.Visible)
+                {
+                    var absoluteOrigin = gumWrapper.GetAbsolutePositionInFrbSpace(gue);
+
+                    // assume top left origin for now
+                    minX = absoluteOrigin.X - gue.GetAbsoluteWidth() / 2.0f;
+                    maxX = absoluteOrigin.X + gue.GetAbsoluteWidth() / 2.0f;
+
+                    minY = absoluteOrigin.Y - gue.GetAbsoluteHeight() / 2.0f;
+                    maxY = absoluteOrigin.Y + gue.GetAbsoluteHeight() / 2.0f;
+
+                    MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                    polygon = polygonForCursorOver;
+
+                    polygon.RotationMatrix = gumWrapper.RotationMatrix;
+                }
+            }
+
+#endif
+            else if (collisionObject is Polygon asPolygon)
+            {
+                polygon = asPolygon;
+            }
         }
 
         private static bool IsRectangleSelectionOver(PositionedObject item)
