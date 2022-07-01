@@ -71,6 +71,7 @@ namespace GlueControl.Dtos
     class SetEditMode
     {
         public bool IsInEditMode { get; set; }
+        public string AbsoluteGlueProjectFilePath { get; set; }
     }
     #endregion
 

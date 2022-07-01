@@ -20,6 +20,12 @@ namespace FlatRedBall.Math.Geometry
     {
         #region Fields
 
+        /// <summary>
+        /// Whether the Polygon object can have its Points assigned to null.
+        /// Normally this is false, which means assigning Points to null will 
+        /// result in an exception. This is set to true in edit mode to enable
+        /// the user to change polygon points without the game crashing.
+        /// </summary>
         public static bool TolerateEmptyPolygons = false;
 
         // Victor Chelaru May 17 2008

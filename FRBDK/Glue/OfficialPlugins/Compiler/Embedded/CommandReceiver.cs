@@ -13,8 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using {ProjectNamespace};
 using GlueControl.Models;
+using GlueControl.Managers;
 
 
 namespace GlueControl
@@ -287,6 +287,8 @@ namespace GlueControl
 
         #endregion
 
+        #region Get Camera Position
+
         private static object HandleDto(GetCameraPosition dto)
         {
             var toReturn = string.Empty;
@@ -297,6 +299,8 @@ namespace GlueControl
             getCameraPositionResponse.Z = Camera.Main.Z;
             return getCameraPositionResponse;
         }
+
+        #endregion
 
         #region Set Camera Position
 
@@ -524,7 +528,6 @@ namespace GlueControl
         }
 
         #endregion
-
 
         #region ChangeZoomDto
 
@@ -776,6 +779,12 @@ namespace GlueControl
                 if (value)
                 {
                     FlatRedBallServices.Game.IsMouseVisible = true;
+
+                    if(ObjectFinder.Self.GlueProject == null)
+                    {
+                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
+                    }
+
                     // If in edit mode, polygons can get sent over from Glue
                     // without points. We don't want to crash the game when this
                     // happens.

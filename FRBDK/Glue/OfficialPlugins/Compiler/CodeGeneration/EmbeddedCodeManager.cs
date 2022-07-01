@@ -32,6 +32,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
             SaveEmbeddedFile("Editing.Managers.GlueState.cs");
             SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
+            SaveEmbeddedFile("Editing.Managers.ObjectFinder.cs");
             SaveEmbeddedFile("Editing.Managers.RefreshCommands.cs");
 
 
@@ -56,6 +57,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
 
             SaveEmbeddedFile("Models.CustomVariable.cs");
             SaveEmbeddedFile("Models.GlueElement.cs");
+            SaveEmbeddedFile("Models.GlueElementFileReference.cs");
+            SaveEmbeddedFile("Models.GlueProjectSave.cs");
+            SaveEmbeddedFile("Models.GlueProjectSaveExtensions.cs");
             SaveEmbeddedFile("Models.IElementExtensionMethods.cs");
             SaveEmbeddedFile("Models.NamedObjectSave.cs");
             SaveEmbeddedFile("Models.StateSave.cs");

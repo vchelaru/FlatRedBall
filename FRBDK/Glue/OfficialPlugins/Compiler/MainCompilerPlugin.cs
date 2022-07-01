@@ -796,7 +796,11 @@ namespace OfficialPlugins.Compiler
         private async Task ReactToPlayOrEditSet()
         {
             var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-            var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
+            var dto = new Dtos.SetEditMode 
+            { 
+                IsInEditMode = inEditMode ,
+                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName.FullPath
+            };
             var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
             if (response?.Succeeded != true)

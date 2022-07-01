@@ -34,6 +34,7 @@
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueState.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
@@ -48,6 +49,9 @@
     <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
     <Compile Remove="Compiler\Embedded\Models\CustomVariable.cs" />
     <Compile Remove="Compiler\Embedded\Models\GlueElement.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueElementFileReference.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueProjectSave.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
     <Compile Remove="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
     <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
@@ -156,6 +160,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueState.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
@@ -169,6 +174,9 @@
     <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\CustomVariable.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueElement.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueElementFileReference.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSave.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />

@@ -1,9 +1,12 @@
-﻿using System;
+﻿{CompilerDirectives}
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Dtos;
+using GlueControl.Models;
 
 
 namespace GlueControl.Managers
@@ -40,6 +43,13 @@ namespace GlueControl.Managers
         private Task<object> SendMethodCallToGame(string caller = null, params object[] parameters)
         {
             return base.SendMethodCallToGame(new GlueCommandDto(), caller, parameters);
+        }
+
+        // It's async in Glue but we just do non-async here
+        //public void LoadProjectAsync(string fileName)
+        public void LoadProject(string fileName)
+        {
+            ObjectFinder.Self.GlueProject = GlueProjectSaveExtensions.Load(fileName);
         }
     }
 }

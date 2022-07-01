@@ -20,29 +20,9 @@ namespace FlatRedBall.Glue.Elements
         #region Fields/Properties
 
         static ObjectFinder mSelf = new ObjectFinder();
+        public static ObjectFinder Self = mSelf;
 
-        public static ObjectFinder Self
-        {
-            get
-            {
-                return mSelf;
-            }
-        }
-
-
-        GlueProjectSave mGlueProjectSave;
-
-        public GlueProjectSave GlueProject
-        {
-            get
-            {
-                return mGlueProjectSave;
-            }
-            set
-            {
-                mGlueProjectSave = value;
-            }
-        }
+        public GlueProjectSave GlueProject { get; set; }
 
         #endregion
 
@@ -578,7 +558,7 @@ namespace FlatRedBall.Glue.Elements
 
         public CustomClassSave GetCustomClassFor(ReferencedFileSave rfs)
         {
-            foreach(var customClass in mGlueProjectSave.CustomClasses)
+            foreach(var customClass in GlueProject.CustomClasses)
             {
                 if(customClass.CsvFilesUsingThis.Contains(rfs.Name))
                 {
