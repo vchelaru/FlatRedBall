@@ -302,7 +302,7 @@ namespace GlueControl.Editing
                 circle?.IsMouseOver(GuiManager.Cursor) == true;
         }
 
-        private static void GetShapeFor(IStaticPositionable collisionObject, out Polygon polygon, out Circle circle)
+        public static void GetShapeFor(IStaticPositionable collisionObject, out Polygon polygon, out Circle circle)
         {
             circle = null;
             polygon = null;
@@ -452,6 +452,29 @@ namespace GlueControl.Editing
 
         #region Get Dimensions
 
+        static void UpdateMinsAndMaxes(Polygon polygon,
+            ref float minX, ref float maxX, ref float minY, ref float maxY)
+        {
+            for (int i = 0; i < polygon.Points.Count; i++)
+            {
+                var point = polygon.AbsolutePointPosition(i);
+                minX = Math.Min(minX, point.X);
+                maxX = Math.Max(maxX, point.X);
+                minY = Math.Min(minY, point.Y);
+                maxY = Math.Max(maxY, point.Y);
+            }
+        }
+
+        static void UpdateMinsAndMaxes(Circle circle,
+            ref float minX, ref float maxX, ref float minY, ref float maxY)
+        {
+            minX = Math.Min(minX, circle.X - circle.Radius);
+            maxX = Math.Max(maxX, circle.X + circle.Radius);
+            minY = Math.Min(minY, circle.Y - circle.Radius);
+            maxY = Math.Max(maxY, circle.Y + circle.Radius);
+        }
+
+
         internal static void GetDimensionsFor(IStaticPositionable itemOver,
             out float minX, out float maxX, out float minY, out float maxY)
         {
@@ -462,6 +485,7 @@ namespace GlueControl.Editing
             maxX = itemOver.X;
             minY = itemOver.Y;
             maxY = itemOver.Y;
+
             GetDimensionsForInner(itemOver, ref minX, ref maxX, ref minY, ref maxY);
 
             float minDimension = 0;
@@ -499,138 +523,19 @@ namespace GlueControl.Editing
         private static void GetDimensionsForInner(IStaticPositionable itemOver,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
-            if (itemOver is IMinMax minMax)
-            {
-                minX = minMax.MinXAbsolute;
-                maxX = minMax.MaxXAbsolute;
+            GetShapeFor(itemOver, out Polygon polygon, out Circle circle);
 
-                minY = minMax.MinYAbsolute;
-                maxY = minMax.MaxYAbsolute;
+            if (polygon != null)
+            {
+                polygon.ForceUpdateDependencies();
+                UpdateMinsAndMaxes(polygon, ref minX, ref maxX, ref minY, ref maxY);
             }
-            else if (itemOver is Text asText)
+            else if (circle != null)
             {
-                switch (asText.HorizontalAlignment)
-                {
-                    case HorizontalAlignment.Left:
-                        minX = Math.Min(asText.X, minX);
-                        maxX = Math.Max(asText.X + asText.Width, maxX);
-
-                        break;
-                    case HorizontalAlignment.Right:
-                        minX = Math.Min(asText.X - asText.Width, minX);
-                        maxX = Math.Max(asText.X, maxX);
-
-                        break;
-                    case HorizontalAlignment.Center:
-                        minX = Math.Min(asText.X - asText.Width / 2.0f, minX);
-                        maxX = Math.Max(asText.X + asText.Width / 2.0f, maxX);
-                        break;
-                }
-
-                // todo - support alignment
-                minY = Math.Min(minY, itemOver.Y - asText.Height / 2.0f);
-                maxY = Math.Max(maxY, itemOver.Y + asText.Height / 2.0f);
-            }
-            else if (itemOver is IReadOnlyScalable asScalable)
-            {
-                minX = Math.Min(minX, itemOver.X - asScalable.ScaleX);
-                maxX = Math.Max(maxX, itemOver.X + asScalable.ScaleX);
-
-                minY = Math.Min(minY, itemOver.Y - asScalable.ScaleY);
-                maxY = Math.Max(maxY, itemOver.Y + asScalable.ScaleY);
-            }
-            else if (itemOver is Circle asCircle)
-            {
-                minX = Math.Min(minX, itemOver.X - asCircle.Radius);
-                maxX = Math.Max(maxX, itemOver.X + asCircle.Radius);
-
-                minY = Math.Min(minY, itemOver.Y - asCircle.Radius);
-                maxY = Math.Max(maxY, itemOver.Y + asCircle.Radius);
-            }
-            else if (itemOver is Line asLine)
-            {
-                minX = Math.Min(minX, asLine.X + (float)asLine.RelativePoint1.X);
-                maxX = Math.Max(maxX, asLine.X + (float)asLine.RelativePoint1.X);
-
-                minY = Math.Min(minY, asLine.Y - (float)asLine.RelativePoint1.Y);
-                maxY = Math.Max(maxY, asLine.Y + (float)asLine.RelativePoint1.Y);
-
-                minX = Math.Min(minX, asLine.X + (float)asLine.RelativePoint2.X);
-                maxX = Math.Max(maxX, asLine.X + (float)asLine.RelativePoint2.X);
-
-                minY = Math.Min(minY, asLine.Y - (float)asLine.RelativePoint2.Y);
-                maxY = Math.Max(maxY, asLine.Y + (float)asLine.RelativePoint2.Y);
-            }
-#if HasGum
-            else if(itemOver is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
-            {
-                var gue = gumWrapper.GumObject;
-
-                if(gue.Visible)
-                {
-                    var absoluteOrigin = gumWrapper.GetAbsolutePositionInFrbSpace(gue);
-
-                    // assume top left origin for now
-                    minX = Math.Min(minX, absoluteOrigin.X - gue.GetAbsoluteWidth()/2.0f);
-                    maxX = Math.Max(maxX, absoluteOrigin.X + gue.GetAbsoluteWidth()/2.0f);
-
-                    minY = Math.Min(minY, absoluteOrigin.Y - gue.GetAbsoluteHeight()/2.0f);
-                    maxY = Math.Max(maxY, absoluteOrigin.Y + gue.GetAbsoluteHeight() / 2.0f);
-                }
+                UpdateMinsAndMaxes(circle, ref minX, ref maxX, ref minY, ref maxY);
             }
 
-#endif
-            else if (itemOver is Polygon polygon)
-            {
-                if (polygon.Points != null)
-                {
-                    for (int i = 0; i < polygon.Points.Count; i++)
-                    {
-                        var absolute = polygon.AbsolutePointPosition(i);
-
-                        minX = Math.Min(minX, absolute.X);
-                        maxX = Math.Max(maxX, absolute.X);
-
-                        minY = Math.Min(minY, absolute.Y);
-                        maxY = Math.Max(maxY, absolute.Y);
-                    }
-                }
-            }
-            else if (itemOver is Text text)
-            {
-                if (text.HorizontalAlignment == HorizontalAlignment.Left)
-                {
-                    minX = Math.Min(minX, text.X);
-                    maxX = Math.Max(maxX, text.X + text.Width);
-                }
-                else if (text.HorizontalAlignment == HorizontalAlignment.Center)
-                {
-                    minX = Math.Min(minX, text.X - text.Width / 2.0f);
-                    maxX = Math.Max(maxX, text.X + text.Width / 2.0f);
-                }
-                else // right
-                {
-                    minX = Math.Min(minX, text.X - text.Width);
-                    maxX = Math.Max(maxX, text.X);
-                }
-
-                if (text.VerticalAlignment == VerticalAlignment.Top)
-                {
-                    minY = Math.Min(minY, text.Y - text.Height);
-                    maxY = Math.Max(maxY, text.Y);
-                }
-                else if (text.VerticalAlignment == VerticalAlignment.Center)
-                {
-                    minY = Math.Min(minY, text.Y - text.Height / 2.0f);
-                    maxY = Math.Max(maxY, text.Y + text.Height / 2.0f);
-                }
-                else // bottom
-                {
-                    minY = Math.Min(minY, text.Y);
-                    maxY = Math.Max(maxY, text.Y + text.Height);
-                }
-            }
-            else if (itemOver is PositionedObject positionedObject)
+            if (itemOver is PositionedObject positionedObject)
             {
                 for (int i = 0; i < positionedObject.Children.Count; i++)
                 {

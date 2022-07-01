@@ -530,26 +530,41 @@ namespace GlueControl.Editing
         {
             if (item != null)
             {
-                SelectionLogic.GetDimensionsFor(item,
-                    out float minX, out float maxX,
-                    out float minY, out float maxY);
-
-                var newPosition = new Vector3();
-                newPosition.X = (maxX + minX) / 2.0f;
-                newPosition.Y = (maxY + minY) / 2.0f;
-                newPosition.Z = item.Z;
-
-                Position = newPosition;
-
-                ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
-                ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
-
-                if (item is IRotatable asRotatable)
+                float minX, minY, maxX, maxY;
+                var handledByPolygon = false;
+                if (item is PositionedObject asPositionedObject && asPositionedObject.RotationZ != 0)
                 {
-                    mainPolygon.RotationMatrix = asRotatable.RotationMatrix;
+                    // it's rotated, so we want to get the acutal shape and try to match that:
+                    SelectionLogic.GetShapeFor(item, out Polygon polygon, out Circle circle);
+                    if (polygon != null && polygon.Points.Count == 5)
+                    {
+                        Position = polygon.Position;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            mainPolygon.SetPoint(i, polygon.Points[i]);
+                        }
+                        mainPolygon.RotationMatrix = polygon.RotationMatrix;
+                        handledByPolygon = true;
+                    }
                 }
-                else
+
+                if (!handledByPolygon)
                 {
+                    SelectionLogic.GetDimensionsFor(item,
+                        out minX, out maxX,
+                        out minY, out maxY);
+
+
+                    var newPosition = new Vector3();
+                    newPosition.X = (maxX + minX) / 2.0f;
+                    newPosition.Y = (maxY + minY) / 2.0f;
+                    newPosition.Z = item.Z;
+
+                    Position = newPosition;
+
+                    ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
+                    ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
+
                     mainPolygon.RotationMatrix = Matrix.Identity;
                 }
             }
