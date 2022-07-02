@@ -20,6 +20,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("CommandReceiver.cs");
 
             SaveEmbeddedFile("Dtos.cs");
+            SaveEmbeddedFile("GlueCallsClassGenerationManager.cs");
 
             SaveEmbeddedFile("Editing.CameraLogic.cs");
             SaveEmbeddedFile("Editing.CopyPasteManager.cs");
@@ -31,7 +32,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
             SaveEmbeddedFile("Editing.Managers.GlueState.cs");
-            SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
+            //SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
             SaveEmbeddedFile("Editing.Managers.ObjectFinder.cs");
             SaveEmbeddedFile("Editing.Managers.RefreshCommands.cs");
 
@@ -74,6 +75,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Screens.EntityViewingScreen.cs");
 
         }
+
+        
+
+        
 
         private static void RemoveEmbeddedFile(string relativePath)
         {
