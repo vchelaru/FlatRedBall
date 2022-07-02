@@ -1011,7 +1011,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Referenced File
 
-        public void MoveReferencedFile(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        public async Task MoveReferencedFile(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             var response = GeneralResponse.SuccessfulResponse;
 
@@ -1092,7 +1092,7 @@ namespace FlatRedBall.Glue.Managers
                     // dropping on an object in the same element
                     targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
                 {
-                    response = HandleDroppingFileOnObjectInSameElement(targetNode, referencedFileSave);
+                    response = await HandleDroppingFileOnObjectInSameElement(targetNode, referencedFileSave);
 
                 }
 
@@ -1424,7 +1424,7 @@ namespace FlatRedBall.Glue.Managers
             return response;
         }
 
-        private static GeneralResponse HandleDroppingFileOnObjectInSameElement(ITreeNode targetNode, ReferencedFileSave referencedFileSave)
+        private static async Task<GeneralResponse> HandleDroppingFileOnObjectInSameElement(ITreeNode targetNode, ReferencedFileSave referencedFileSave)
         {
             var namedObject = (NamedObjectSave)targetNode.Tag;
 
@@ -1434,7 +1434,7 @@ namespace FlatRedBall.Glue.Managers
 
             if(!handled)
             {
-                handled = TrySetVariableOnNos(referencedFileSave, namedObject);
+                handled = await TrySetVariableOnNos(referencedFileSave, namedObject);
             }
 
             if(!handled)
@@ -1447,7 +1447,7 @@ namespace FlatRedBall.Glue.Managers
             return response;
         }
 
-        private static bool TrySetVariableOnNos(ReferencedFileSave referencedFileSave, NamedObjectSave namedObject)
+        private static async Task<bool> TrySetVariableOnNos(ReferencedFileSave referencedFileSave, NamedObjectSave namedObject)
         {
             var nosAti = namedObject.GetAssetTypeInfo();
             var fileAti = referencedFileSave.GetAssetTypeInfo();
@@ -1470,7 +1470,7 @@ namespace FlatRedBall.Glue.Managers
 
             if(matchingVariable != null)
             {
-                GlueCommands.Self.GluxCommands.SetVariableOn(namedObject, matchingVariable.Name, FileManager.RemovePath(FileManager.RemoveExtension( referencedFileSave.Name)) );
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(namedObject, matchingVariable.Name, FileManager.RemovePath(FileManager.RemoveExtension( referencedFileSave.Name)) );
                 return true;
             }
 
@@ -1634,7 +1634,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (nodeMoving.IsReferencedFile())
                 {
-                    DragDropManager.Self.MoveReferencedFile(nodeMoving, targetNode);
+                    await DragDropManager.Self.MoveReferencedFile(nodeMoving, targetNode);
                     shouldSaveGlux = true;
                 }
                 else if (nodeMoving.IsNamedObjectNode())

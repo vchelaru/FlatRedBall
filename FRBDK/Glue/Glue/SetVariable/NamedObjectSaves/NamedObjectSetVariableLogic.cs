@@ -19,6 +19,7 @@ using Glue.IO;
 using Microsoft.Xna.Framework.Graphics;
 using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.NamedObjectSaves;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -42,7 +43,7 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="parentPropertyName">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
         public void ReactToNamedObjectChangedValue(string changedMember, object oldValue, string parentPropertyName = null, NamedObjectSave namedObjectSave = null)
         {
-            GlueElement element = null;
+            GlueElement element;
             if(namedObjectSave == null)
             {
                 namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
@@ -52,6 +53,8 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 element = ObjectFinder.Self.GetElementContaining(namedObjectSave);
             }
+
+            TaskManager.Self.WarnIfNotInTask();
 
             if (PropertiesToMethods.ContainsKey(changedMember))
             {

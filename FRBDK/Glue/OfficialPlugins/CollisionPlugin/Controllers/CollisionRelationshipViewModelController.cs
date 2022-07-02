@@ -686,7 +686,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     // This is important otherwise references to this (like events) won't update their references
                     EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                        nameof(NamedObjectSave.InstanceName), oldName);
+                        nameof(NamedObjectSave.InstanceName), oldName, namedObjectSave:namedObject);
 
 
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element as GlueElement);

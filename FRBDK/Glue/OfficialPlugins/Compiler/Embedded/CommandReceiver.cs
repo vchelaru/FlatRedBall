@@ -230,7 +230,10 @@ namespace GlueControl
 
                 if (dto.GlueElement != null)
                 {
-                    ObjectFinder.Self.Replace(dto.GlueElement);
+                    if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                    {
+                        ObjectFinder.Self.Replace(dto.GlueElement);
+                    }
                     Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
                     if (oldName != null && newName != null)
                     {
@@ -364,8 +367,10 @@ namespace GlueControl
 
             try
             {
-                ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
-
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                {
+                    ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
+                }
                 Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
             }
             catch (ArgumentException e)
@@ -589,7 +594,10 @@ namespace GlueControl
             }
             var response = InstanceLogic.Self.HandleDeleteInstanceCommandFromGlue(removeObjectDto);
 
-            ObjectFinder.Self.Replace(removeObjectDto.GlueElement);
+            if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                ObjectFinder.Self.Replace(removeObjectDto.GlueElement);
+            }
 
             Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
 
@@ -1080,5 +1088,6 @@ namespace GlueControl
             }
         }
     }
+
 
 }

@@ -1877,10 +1877,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        [Obsolete("Use SetVariableOnAsync")]
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
             await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins:true);
+        }
+
+        
+        public async Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
+        {
+            await TaskManager.Self.AddAsync(
+                () => SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true),
+                nameof(SetVariableOnAsync));
         }
 
         private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
@@ -1981,6 +1991,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if(updateUi)
                 {
                     // Avoids accumulation when dragging a slider around:
+                    // Even though this is inside a task, still add so we can move to end
                     TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
                 }
 

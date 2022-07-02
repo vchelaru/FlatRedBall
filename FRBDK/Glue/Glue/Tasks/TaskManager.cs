@@ -307,6 +307,9 @@ namespace FlatRedBall.Glue.Managers
         /// </summary>
         public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
+        /// <summary>
+        /// Force adds a task to the queue, even if already in a task
+        /// </summary>
         public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueTask();
@@ -331,6 +334,9 @@ namespace FlatRedBall.Glue.Managers
             return glueTask;
         }
 
+        /// <summary>
+        /// Force adds a task to the queue, even if already in a task
+        /// </summary>
         public GlueAsyncTask Add(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueAsyncTask();
@@ -684,13 +690,16 @@ namespace FlatRedBall.Glue.Managers
             {
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
-                if (frameText.StartsWith("RunOnUiThreadTasked") ||
+
+                var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
                     // Vic says - not sure why but sometimes thread IDs change when in an async function.
                     // So I thought I could check if the thread is the main task thread, but this won't work
                     // because command receiving from the game runs on a separate thread, so that would behave
                     // as if it's tasked, even though it's not
                     // so we check this:
-                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ")) ;
+                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+
+                if (isTasked) 
                 {
                     return true;
                 }

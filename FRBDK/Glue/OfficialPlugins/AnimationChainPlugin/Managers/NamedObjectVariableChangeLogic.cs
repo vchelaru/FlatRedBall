@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPluginsCore.AnimationChainPlugin;
@@ -33,7 +34,11 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
                 if (firstAnimationName != null)
                 {
-                    GlueCommands.Self.GluxCommands.SetVariableOn(namedObject, nameof(FlatRedBall.Sprite.CurrentChainName), firstAnimationName);
+                    // We're inside a plugin (and maybe task?)
+                    //TaskManager.Self.Add
+                    TaskManager.Self.Add(
+                        () => GlueCommands.Self.GluxCommands.SetVariableOnAsync(namedObject, nameof(FlatRedBall.Sprite.CurrentChainName), firstAnimationName),
+                        "Set AnimationChain name");
                 }
             }
 
