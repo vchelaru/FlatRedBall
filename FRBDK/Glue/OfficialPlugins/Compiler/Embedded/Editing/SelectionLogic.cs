@@ -94,7 +94,10 @@ namespace GlueControl.Editing
                                 // don't select it if it is locked
                                 var isLocked = nos?.IsEditingLocked == true;
 
-                                if (!isLocked)
+                                var isEditingLocked = nos != null &&
+                                    ObjectFinder.Self.GetPropertyValueRecursively<bool>(
+                                        nos, nameof(nos.IsEditingLocked));
+                                if (!isEditingLocked)
                                 {
                                     if (punchThrough)
                                     {

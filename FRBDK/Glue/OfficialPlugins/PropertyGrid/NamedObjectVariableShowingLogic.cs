@@ -447,7 +447,16 @@ namespace OfficialPlugins.VariableDisplay
                 oldValue = valueAsBool;
             };
 
-            instanceMember.CustomGetEvent += throwaway => instance.IsEditingLocked;
+            instanceMember.CustomGetEvent += throwaway =>
+            {
+                //return instance.IsEditingLocked;
+                return ObjectFinder.Self.GetPropertyValueRecursively<bool>(instance, nameof(NamedObjectSave.IsEditingLocked));
+            };
+
+            instanceMember.IsDefaultSet += (sender, args) =>
+            {
+                instance.Properties.RemoveAll(item => item.Name == nameof(NamedObjectSave.IsEditingLocked));
+            };
 
             instanceMember.CustomGetTypeEvent += throwaway => typeof(bool);
 

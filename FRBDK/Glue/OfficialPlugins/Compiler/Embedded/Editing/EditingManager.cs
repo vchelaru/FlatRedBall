@@ -692,7 +692,10 @@ namespace GlueControl.Editing
 
                     if (nos != null)
                     {
-                        if (nos.IsEditingLocked == false)
+                        var isEditingLocked =
+                            ObjectFinder.Self.GetPropertyValueRecursively<bool>(
+                                nos, nameof(nos.IsEditingLocked));
+                        if (isEditingLocked == false)
                         {
                             Select(nos, addToExistingSelection: isFirst == false, playBump: true);
                             didSelect = true;

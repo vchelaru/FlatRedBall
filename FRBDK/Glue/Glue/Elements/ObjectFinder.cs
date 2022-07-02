@@ -152,7 +152,23 @@ namespace FlatRedBall.Glue.Elements
             // is valid.
             if (GlueProject != null)
             {
-                return GlueProject.GetEntitySave(entityName);
+                if (!string.IsNullOrEmpty(entityName))
+                {
+                    // We don't know what project is using the Glue classes, and it may prefer
+                    // forward slashes or back slashes.  Therefore we should tolerate either when
+                    // making comparisons
+                    entityName = entityName.Replace('/', '\\');
+
+                    for (int i = 0; i < GlueProject.Entities.Count; i++)
+                    {
+                        EntitySave entitySave = GlueProject.Entities[i];
+
+                        if (entitySave.Name.Replace('/', '\\') == entityName)
+                        {
+                            return entitySave;
+                        }
+                    }
+                }
             }
 
             return null;

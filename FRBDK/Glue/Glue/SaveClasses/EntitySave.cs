@@ -144,14 +144,6 @@ namespace FlatRedBall.Glue.SaveClasses
             set { mBaseEntity = value; }
         }
 
-
-
-        internal int VerificationIndex
-        {
-            get;
-            set;
-        }
-
         [CategoryAttribute("Performance")]
         public bool CreatedByOtherEntities
         {

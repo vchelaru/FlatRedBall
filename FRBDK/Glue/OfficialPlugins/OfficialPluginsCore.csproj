@@ -53,7 +53,9 @@
     <Compile Remove="Compiler\Embedded\Models\GlueProjectSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
     <Compile Remove="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
+    <Compile Remove="Compiler\Embedded\Models\INamedObjectContainer.cs" />
     <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
+    <Compile Remove="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <Compile Remove="Compiler\Embedded\Runtime\DynamicEntity.cs" />
@@ -178,7 +180,9 @@
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\INamedObjectContainer.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />

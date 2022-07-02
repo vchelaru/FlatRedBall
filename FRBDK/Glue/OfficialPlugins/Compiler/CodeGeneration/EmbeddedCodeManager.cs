@@ -61,7 +61,9 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             SaveEmbeddedFile("Models.GlueProjectSave.cs");
             SaveEmbeddedFile("Models.GlueProjectSaveExtensions.cs");
             SaveEmbeddedFile("Models.IElementExtensionMethods.cs");
+            SaveEmbeddedFile("Models.INamedObjectContainer.cs");
             SaveEmbeddedFile("Models.NamedObjectSave.cs");
+            SaveEmbeddedFile("Models.NamedObjectSaveExtensionMethods.cs");
             SaveEmbeddedFile("Models.StateSave.cs");
             SaveEmbeddedFile("Models.StateSaveCategory.cs");
 
