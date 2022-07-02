@@ -14,6 +14,34 @@ namespace GlueControl.Managers
         public static ObjectFinder Self => mSelf;
         public GlueProjectSave GlueProject { get; set; }
 
+        #region Replace (needed only for game to replace elements from disk/glue)
+
+        public void Replace(GlueElement element)
+        {
+            if (element is ScreenSave screenSave)
+            {
+                var existing = GlueProject.Screens.FirstOrDefault(item => item.Name == element.Name);
+
+                if (existing != null)
+                {
+                    GlueProject.Screens.Remove(existing);
+                }
+                GlueProject.Screens.Add(screenSave);
+            }
+            else if (element is EntitySave entitySave)
+            {
+                var existing = GlueProject.Entities.FirstOrDefault(item => item.Name == element.Name);
+
+                if (existing != null)
+                {
+                    GlueProject.Entities.Remove(existing);
+                }
+                GlueProject.Entities.Add(entitySave);
+            }
+        }
+
+        #endregion
+
 
         #region Get Element
 
