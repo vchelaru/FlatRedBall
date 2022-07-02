@@ -1238,7 +1238,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (element != null)
             {
-                element.NamedObjects.Add(newNos);
+                if(newNos.IsList)
+                {
+                    var firstInstance = element.NamedObjects.FirstOrDefault(
+                        item => item.IsList == false && item.IsLayer == false && item.IsCollisionRelationship() == false);
+
+                    if(firstInstance != null)
+                    {
+                        var index = element.NamedObjects.IndexOf(firstInstance);
+                        element.NamedObjects.Insert(index, newNos);
+                    }
+                    else
+                    {
+                        element.NamedObjects.Add(newNos);
+                    }
+                }
+                else
+                {
+                    element.NamedObjects.Add(newNos);
+                }
             }
             if (ati != null && ati.DefaultPublic)
             {
