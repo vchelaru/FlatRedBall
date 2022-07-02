@@ -694,7 +694,7 @@ namespace FlatRedBall.IO
             if (i != -1)
             {
                 bool hasDotSlash = false;
-                if (i < fileName.Length + 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
+                if (i < fileName.Length - 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
                 {
                     hasDotSlash = true;
                 }
