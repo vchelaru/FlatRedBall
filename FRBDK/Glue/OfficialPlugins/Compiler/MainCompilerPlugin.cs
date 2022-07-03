@@ -50,7 +50,7 @@ namespace OfficialPlugins.Compiler
 
         public CompilerViewModel CompilerViewModel { get; private set; }
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
-        public MainControl MainControl { get; private set; } 
+        public BuildTabView MainControl { get; private set; } 
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
@@ -666,7 +666,7 @@ namespace OfficialPlugins.Compiler
 
             MainViewModel = CompilerViewModel;
 
-            MainControl = new MainControl();
+            MainControl = new BuildTabView();
             MainControl.DataContext = CompilerViewModel;
 
             Runner.Self.ViewModel = CompilerViewModel;

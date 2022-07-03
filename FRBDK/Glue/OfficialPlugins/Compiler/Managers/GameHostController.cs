@@ -19,9 +19,9 @@ namespace OfficialPlugins.Compiler.Managers
         PluginTab glueViewSettingsTab;
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
-        MainControl mainControl;
+        BuildTabView mainControl;
         GameHostView gameHostView;
-        public void Initialize(GameHostView gameHostView, MainControl mainControl, 
+        public void Initialize(GameHostView gameHostView, BuildTabView mainControl, 
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
             PluginTab glueViewSettingsTab)
         {

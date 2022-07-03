@@ -18,7 +18,7 @@ namespace OfficialPlugins.Compiler
     /// <summary>
     /// Interaction logic for MainControl.xaml
     /// </summary>
-    public partial class MainControl : UserControl
+    public partial class BuildTabView : UserControl
     {
         #region Fields/Properties
 
@@ -34,7 +34,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        public MainControl()
+        public BuildTabView()
         {
             outputParser = new OutputParser();
 
