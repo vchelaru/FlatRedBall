@@ -29,6 +29,7 @@
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
+    <Compile Remove="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
@@ -187,6 +188,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />

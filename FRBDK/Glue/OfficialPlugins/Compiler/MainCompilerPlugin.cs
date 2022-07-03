@@ -36,6 +36,7 @@ using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.FormHelpers;
 using System.Windows.Media.Imaging;
 using FlatRedBall.Glue.ViewModels;
+using OfficialPlugins.Compiler.CodeGeneration.GlueCalls;
 
 namespace OfficialPlugins.Compiler
 {
@@ -629,6 +630,7 @@ namespace OfficialPlugins.Compiler
             if(IsFrbNewEnough())
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
@@ -928,6 +930,7 @@ namespace OfficialPlugins.Compiler
             if (IsFrbNewEnough())
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEditMode), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
