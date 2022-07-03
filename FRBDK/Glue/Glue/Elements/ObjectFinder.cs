@@ -1002,8 +1002,10 @@ namespace FlatRedBall.Glue.Elements
                 {
                     var baseElement = GetBaseElement(elementContaining);
                     var nosInBase = baseElement.GetNamedObject(nos.InstanceName);
-
-                    return GetPropertyValueRecursively<T>(nosInBase, propertyName);
+                    if(nosInBase != null)
+                    {
+                        return GetPropertyValueRecursively<T>(nosInBase, propertyName);
+                    }
                 }
             }
             return default(T);

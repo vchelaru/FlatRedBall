@@ -93,7 +93,10 @@ namespace FlatRedBall.Glue.Managers
                 case System.Windows.Input.Key.V:
                     if (ctrlDown && !isTextBoxFocused)
                     {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                        // Don't await this or it freezes Glue
                         CopyPasteManager.Self.HandlePaste();
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         return true;
                     }
                     break;

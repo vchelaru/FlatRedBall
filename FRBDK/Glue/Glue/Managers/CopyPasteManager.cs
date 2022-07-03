@@ -40,7 +40,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else if(copiedObjectClone is NamedObjectSave asNos)
             {
-                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
+                var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
             }
             else if(copiedObjectClone is GlueElement element)
             {
