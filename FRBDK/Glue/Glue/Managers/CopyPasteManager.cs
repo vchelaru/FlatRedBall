@@ -41,6 +41,10 @@ namespace FlatRedBall.Glue.Managers
             else if(copiedObjectClone is NamedObjectSave asNos)
             {
                 var response = await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(asNos, GlueState.Self.CurrentElement);
+                if(response.Succeeded == false)
+                {
+                    GlueCommands.Self.PrintError(response.Message);
+                }
             }
             else if(copiedObjectClone is GlueElement element)
             {

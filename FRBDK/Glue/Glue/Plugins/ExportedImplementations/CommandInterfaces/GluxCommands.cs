@@ -1556,7 +1556,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (referenceCheck == ProjectManager.CheckResult.Failed)
             {
-                generalResponse.Message = $"Could not copy {nos} because it would result in a circular reference";
+                generalResponse.Message = $"Could not copy {nos.InstanceName} because it would result in a circular reference";
                 succeeded = false;
                 // VerifyReferenceGraph (currently) shows a popup so we don't have to here
                 //MessageBox.Show("This movement would result in a circular reference");
@@ -1568,6 +1568,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     targetElement.NamedObjects.Remove(newNos);
                 }
+            }
+            if(succeeded && nos.DefinedByBase)
+            {
+                succeeded = false;
+                generalResponse.Message = $"Could not copy {nos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
             }
 
             if (succeeded)
