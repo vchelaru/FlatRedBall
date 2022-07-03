@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GlueControl.Dtos;
 using GlueControl.Managers;
 using GlueControl.Models;
+using Newtonsoft.Json.Linq;
 
 namespace GlueControl
 {
@@ -22,7 +23,7 @@ namespace GlueControl
             public bool EchoToGame { get; set; }
         }
 
-        public static async Task ConvertToMethodCallToGame(MethodBase method, Dictionary<string, GlueParameters> parameters, CallMethodParameters callMethodParameters)
+        public static async Task<object> ConvertToMethodCallToGame(MethodInfo method, Dictionary<string, GlueParameters> parameters, CallMethodParameters callMethodParameters)
         {
             var methodParms = method.GetParameters();
 
@@ -43,17 +44,78 @@ namespace GlueControl
                 }
                 else
                 {
-                    convertedParms.Add(ConvertItem(parm.ParameterType, parameters[parm.Name], parameters[parm.Name].Dependencies));
+                    convertedParms.Add(ConvertItem(parm.ParameterType, parameters[parm.Name].Value, parameters[parm.Name].Dependencies));
                 }
             }
 
+            object returnValue;
             if (callMethodParameters.EchoToGame)
             {
-                await SendMethodCallToGameWithEcho(method.Name, convertedParms.ToArray());
+                returnValue = await SendMethodCallToGameWithEcho(method.Name, convertedParms.ToArray());
             }
             else
             {
-                await SendMethodCallToGame(method.Name, convertedParms.ToArray());
+                returnValue = await SendMethodCallToGame(method.Name, convertedParms.ToArray());
+            }
+
+            if(method.ReturnType != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                var subType = method.ReturnType.GetGenericArguments()[0];
+                
+                if(subType.IsGenericType && subType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return ConvertResponseList(subType.GetGenericArguments()[0], returnValue as JArray);
+                }
+                else
+                {
+                    return ConvertResponseItem(subType, (returnValue as JObject).ToObject(subType));
+                }
+            }
+
+            return returnValue;
+        }
+
+        private static object ConvertResponseList(Type type, JArray responseAsJArray)
+        {
+            IList returnList = null;
+
+            foreach(var item in responseAsJArray)
+            {
+                var convertedItem = ConvertResponseItem(type, item.ToObject(type));
+
+                if (returnList == null)
+                    returnList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(convertedItem.GetType()));
+
+                returnList.Add(convertedItem);
+            }
+
+            if (returnList == null)
+                return (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
+
+            return returnList;
+        }
+
+        private static object ConvertResponseItem(Type type, object item)
+        {
+            if (!item.GetType().IsGenericType || item.GetType().GetGenericTypeDefinition() != typeof(GeneralResponse<>))
+            {
+                throw new Exception("Response not wrapped in General Response wrapper");
+            }
+
+            if(type.GetGenericArguments()[0] == typeof(NamedObjectSave))
+            {
+                var generalResponse = (GeneralResponse<NamedObjectSave>)item;
+
+                if(generalResponse.Data != null)
+                {
+                    generalResponse.Data.FixAllTypes();
+                }
+
+                return generalResponse;
+            }
+            else
+            {
+                throw new Exception("Response Type not implemented");
             }
         }
 
@@ -71,6 +133,9 @@ namespace GlueControl
                 returnList.Add(convertedItem);
             }
 
+            if (returnList == null)
+                return new List<object>();
+
             return returnList;
         }
 
@@ -85,6 +150,16 @@ namespace GlueControl
                     VariableName = typedItem.VariableName,
                     Value = TypedParameter.FromValue(typedItem.Value)
                 };
+            }
+            else if(type == typeof(NamedObjectSave))
+            {
+                var typedItem = (NamedObjectSave)item;
+                return NamedObjectSaveReference.From(typedItem, (GlueElement)dependencies["nosOwner"]);
+            }
+            else if(type == typeof(GlueElement))
+            {
+                var typedItem = (GlueElement)item;
+                return GlueElementReference.From(typedItem);
             }
             else
             {

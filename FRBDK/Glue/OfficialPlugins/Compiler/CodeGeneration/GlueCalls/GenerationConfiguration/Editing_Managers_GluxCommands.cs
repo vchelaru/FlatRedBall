@@ -11,7 +11,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
         {
             return new GenerationOptions
             {
-                Name = "GluxCommandsTest",
+                Name = "GluxCommands",
                 BaseClass = "GlueCommandsStateBase",
                 Namespace = "GlueControl.Managers",
                 Defines = new[] { "IncludeSetVariable", "SupportsEditMode", "HasGum" },
@@ -73,7 +73,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             new Parameter
                             {
                                 Type = "bool",
-                                Name = "updateUI",
+                                Name = "updateUi",
                                 DefaultValue = "true",
                                 GlueParameterOrder = 3
                             }
@@ -123,7 +123,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             new Parameter
                             {
                                 Type = "bool",
-                                Name = "updateUI",
+                                Name = "updateUi",
                                 DefaultValue = "true",
                                 GlueParameterOrder = 3
                             }
@@ -178,7 +178,8 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
         {
             return new Method
             {
-                Name = "CopyNamedObjectIntoElement",
+                Name = "CopyNamedObjectListIntoElement",
+                ReturnType = "List<GeneralResponse<NamedObjectSave>>",
                 Parameters = new[]
                         {
                             new Parameter
@@ -196,21 +197,22 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                              new Parameter
                              {
                                  Type = "GlueElement",
-                                 Name = "targetElement"
+                                 Name = "targetElement",
+                                 GlueParameterOrder= 2,
                              },
                              new Parameter
                              {
                                  Type = "bool",
                                  Name = "performSaveAndGenerateCode",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 2
+                                 GlueParameterOrder = 3
                              },
                              new Parameter
                              {
                                  Type = "bool",
                                  Name = "updateUi",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 3
+                                 GlueParameterOrder = 4
                              }
                         }
             };

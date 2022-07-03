@@ -115,6 +115,10 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
 
                     first = false;
                 }
+
+                if (m.AddEchoToGame)
+                    bldr.Append(", typeof(bool) ");
+
                 bldr.AppendLine(" });");
 
                 bldr.AppendLine($"           var parameters = new Dictionary<string, GlueCallsClassGenerationManager.GlueParameters>");
@@ -145,7 +149,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
                 }
                 bldr.AppendLine("           };");
 
-                bldr.AppendLine("           await GlueCallsClassGenerationManager.ConvertToMethodCallToGame(currentMethod, parameters, new GlueCallsClassGenerationManager.CallMethodParameters");
+                bldr.AppendLine($"           {(!string.IsNullOrEmpty(m.ReturnType) ? $"return ({m.ReturnType}) " : "")}await GlueCallsClassGenerationManager.ConvertToMethodCallToGame(currentMethod, parameters, new GlueCallsClassGenerationManager.CallMethodParameters");
                 bldr.AppendLine("           {");
                 bldr.AppendLine($"              EchoToGame = {(m.AddEchoToGame ? "echoToGame" : "false")}");
                 bldr.AppendLine($"           }});");
