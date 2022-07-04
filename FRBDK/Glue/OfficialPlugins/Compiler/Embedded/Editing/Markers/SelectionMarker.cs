@@ -237,15 +237,37 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void HandleCursorRelease()
+        private void HandleCursorRelease()
         {
             SideGrabbed = ResizeSide.None;
         }
 
         internal void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
         {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            ShouldResizeXFromCenter = false;
+            ShouldResizeYFromCenter = false;
+
             if (ownerAsPositionedObject != null)
             {
+                if (ownerAsPositionedObject is IScalable scalable)
+                {
+                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
+                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+                    // values to 0 and double the dimension values
+                    if (shouldAttemptResizeFromCenter)
+                    {
+                        if (ownerAsPositionedObject.RelativeX == 0)
+                        {
+                            ShouldResizeXFromCenter = true;
+                        }
+                        if (ownerAsPositionedObject.RelativeY == 0)
+                        {
+                            ShouldResizeYFromCenter = true;
+                        }
+                    }
+                }
                 SideGrabbed = GetSideOver();
             }
             else
@@ -390,6 +412,11 @@ namespace GlueControl.Editing
                     {
                         ResizeMode = ResizeMode.None;
                     }
+                }
+
+                if (cursor.PrimaryClick)
+                {
+                    HandleCursorRelease();
                 }
 
             }
@@ -667,7 +694,6 @@ namespace GlueControl.Editing
                 }
             }
 
-            Handles.HandleCursorRelease();
         }
 
         private void DoUpdatePushedLogic()
@@ -682,8 +708,6 @@ namespace GlueControl.Editing
             /////////End Early Out///////////////
 
 
-            Handles.ShouldResizeXFromCenter = false;
-            Handles.ShouldResizeYFromCenter = false;
 
             ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
             if (ownerAsPositionable != null)
@@ -700,24 +724,7 @@ namespace GlueControl.Editing
                 if (ownerAsPositionable is IScalable scalable)
                 {
                     unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
-
-                    bool shouldAttemptResizeFromCenter = Handles.GetIfShouldResizeFromCenter(ownerAsPositionedObject);
-                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
-                    // values to 0 and double the dimension values
-                    if (shouldAttemptResizeFromCenter)
-                    {
-                        if (ownerAsPositionedObject.RelativeX == 0)
-                        {
-                            Handles.ShouldResizeXFromCenter = true;
-                        }
-                        if (ownerAsPositionedObject.RelativeY == 0)
-                        {
-                            Handles.ShouldResizeYFromCenter = true;
-                        }
-                    }
                 }
-
-
 
                 GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
 
