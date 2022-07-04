@@ -82,7 +82,11 @@ namespace GlueControl.Editing
         public bool ShouldResizeXFromCenter;
         public bool ShouldResizeYFromCenter;
 
-        public ResizeSide SideGrabbed = ResizeSide.None;
+        public ResizeSide SideGrabbed
+        {
+            get;
+            private set;
+        } = ResizeSide.None;
 
         HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
 
@@ -318,6 +322,79 @@ namespace GlueControl.Editing
         {
             return item.Parent != null;
         }
+
+        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
+        {
+            Visible = selectionMarker.Visible;
+
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+
+            UpdateVisibilityConsideringResizeMode();
+
+            if (Visible)
+            {
+                // Update the "should resize" values if the cursor isn't down so that
+                // highlights reflect whether opposite sides will be resized. 
+                // Do not do this if the cursor is down because we want to take a snapshot
+                // of these values when the cursor is pressed and continue to use those values
+                // during the duration of the drag.
+                if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
+                {
+                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(item);
+                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+                    // values to 0 and double the dimension values
+                    if (shouldAttemptResizeFromCenter)
+                    {
+                        if (item.RelativeX == 0)
+                        {
+                            ShouldResizeXFromCenter = true;
+                        }
+                        if (item.RelativeY == 0)
+                        {
+                            ShouldResizeYFromCenter = true;
+                        }
+                    }
+
+                }
+
+
+                FillSidesToHighlight(item);
+
+                // UpdateDimension before UpdateHandlePositions because
+                // UpdateHandlePositions depends on the size of the handles
+                // to position them correctly. If the order is inverted then
+                // handles will "pop" for 1 frame. Not a huge deal but looks unprofessional.
+                UpdateDimension();
+
+                if (item is IReadOnlyScalable scalable)
+                {
+                    UpdateHandlePositions(scalable, selectionMarker.Position);
+                }
+
+                if (selectionMarker.CanMoveItem)
+                {
+                    if (item is Sprite asSprite && asSprite.TextureScale > 0)
+                    {
+                        ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (item is FlatRedBall.Math.Geometry.Circle)
+                    {
+                        ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (item is FlatRedBall.Math.Geometry.IScalable)
+                    {
+                        ResizeMode = ResizeMode.EightWay;
+                    }
+                    else
+                    {
+                        ResizeMode = ResizeMode.None;
+                    }
+                }
+
+            }
+        }
+
     }
 
     #endregion
@@ -363,7 +440,7 @@ namespace GlueControl.Editing
             mainPolygon.SetPoint(4, -scaleX, scaleY);
         }
 
-        Vector3 Position
+        public Vector3 Position
         {
             get => mainPolygon.Position;
             set => mainPolygon.Position = value;
@@ -527,7 +604,7 @@ namespace GlueControl.Editing
 
             if (ownerAsPositionedObject != null)
             {
-                UpdateHandles(ownerAsPositionedObject);
+                Handles.EveryFrameUpdate(ownerAsPositionedObject, this);
             }
 
 
@@ -719,80 +796,6 @@ namespace GlueControl.Editing
             }
         }
 
-        private void UpdateHandles(PositionedObject item)
-        {
-            Handles.Visible = Visible;
-
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
-
-            Handles.UpdateVisibilityConsideringResizeMode();
-
-            if (Visible)
-            {
-                // Update the "should resize" values if the cursor isn't down so that
-                // highlights reflect whether opposite sides will be resized. 
-                // Do not do this if the cursor is down because we want to take a snapshot
-                // of these values when the cursor is pressed and continue to use those values
-                // during the duration of the drag.
-                if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
-                {
-                    bool shouldAttemptResizeFromCenter = Handles.GetIfShouldResizeFromCenter(ownerAsPositionedObject);
-                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
-                    // values to 0 and double the dimension values
-                    if (shouldAttemptResizeFromCenter)
-                    {
-                        if (ownerAsPositionedObject.RelativeX == 0)
-                        {
-                            Handles.ShouldResizeXFromCenter = true;
-                        }
-                        if (ownerAsPositionedObject.RelativeY == 0)
-                        {
-                            Handles.ShouldResizeYFromCenter = true;
-                        }
-                    }
-
-                }
-
-
-                Handles.FillSidesToHighlight(item);
-
-                // UpdateDimension before UpdateHandlePositions because
-                // UpdateHandlePositions depends on the size of the handles
-                // to position them correctly. If the order is inverted then
-                // handles will "pop" for 1 frame. Not a huge deal but looks unprofessional.
-                Handles.UpdateDimension();
-
-                if (this.Owner is IReadOnlyScalable scalable)
-                {
-                    Handles.UpdateHandlePositions(scalable, this.Position);
-                }
-
-                if (CanMoveItem)
-                {
-                    if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
-                    {
-                        Handles.ResizeMode = ResizeMode.Cardinal;
-                    }
-                    else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
-                    {
-                        Handles.ResizeMode = ResizeMode.Cardinal;
-                    }
-                    else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
-                    {
-                        Handles.ResizeMode = ResizeMode.EightWay;
-                    }
-                    else
-                    {
-                        Handles.ResizeMode = ResizeMode.None;
-                    }
-                }
-
-            }
-        }
-
-
-
         #endregion
 
         #region Drag to move/resize
@@ -981,8 +984,6 @@ namespace GlueControl.Editing
                     break;
             }
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            var scalable = item as IScalable;
 
             if (Handles.ShouldResizeXFromCenter)
             {
@@ -1000,6 +1001,8 @@ namespace GlueControl.Editing
                 heightMultiple *= 2;
             }
 
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var scalable = item as IScalable;
             var cursorChange = new Vector3(cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(item.Z), 0);
             cursorChange = cursorChange.RotatedBy(-item.RotationZ);
 
