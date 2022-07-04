@@ -59,7 +59,7 @@ namespace GlueControl.Editing
 
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
-        void Update(ResizeSide sideGrabbed);
+        void Update();
         bool ShouldSuppress(string memberName);
 
         bool IsCursorOverThis();
@@ -78,6 +78,7 @@ namespace GlueControl.Editing
         //const int HighlightedHandleDimension = 14;
         const int HighlightedHandleDimension = 16;
 
+        public bool Visible { get; set; }
 
         public ResizeMode ResizeMode { get; set; }
 
@@ -103,22 +104,22 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void UpdateVisibilityConsideringResizeMode(bool isVisible)
+        internal void UpdateVisibilityConsideringResizeMode()
         {
-            if (ResizeMode == ResizeMode.EightWay)
+            if (Visible && ResizeMode == ResizeMode.EightWay)
             {
                 foreach (var handle in rectangles)
                 {
-                    handle.Visible = isVisible;
+                    handle.Visible = true;
                 }
             }
-            else if (ResizeMode == ResizeMode.Cardinal)
+            else if (Visible && ResizeMode == ResizeMode.Cardinal)
             {
                 for (int i = 0; i < rectangles.Length; i++)
                 {
                     var handle = rectangles[i];
                     // every other one, starting with index 1
-                    handle.Visible = isVisible && (i % 2) == 1;
+                    handle.Visible = (i % 2) == 1;
                 }
             }
             else
@@ -318,6 +319,9 @@ namespace GlueControl.Editing
         public float SizeSnappingSize => PositionSnappingSize * 2;
         public bool IsSnappingEnabled = true;
 
+        ResizeSide SideGrabbed = ResizeSide.None;
+
+
         public Vector3 LastUpdateMovement { get; private set; }
 
         Vector3 GrabbedPosition;
@@ -327,6 +331,10 @@ namespace GlueControl.Editing
 
         PositionedObject ownerAsPositionedObject;
         IStaticPositionable ownerAsPositionable;
+        IStaticPositionable EffectiveOwner => Owner is NameableWrapper nameableWrapper
+            ? nameableWrapper.ContainedObject as IStaticPositionable
+            : Owner as IStaticPositionable;
+
         INameable ownerAsNameable;
         public INameable Owner
         {
@@ -412,7 +420,7 @@ namespace GlueControl.Editing
             };
         }
 
-        public void Update(ResizeSide sideGrabbed)
+        public void Update()
         {
             LastUpdateMovement = Vector3.Zero;
 
@@ -420,50 +428,21 @@ namespace GlueControl.Editing
 
             DoUpdatePushedLogic();
 
-            IStaticPositionable effectiveOwner = null;
-            if (Owner is NameableWrapper nameableWrapper)
-            {
-                effectiveOwner = nameableWrapper.ContainedObject as IStaticPositionable;
-            }
-            else
-            {
-                effectiveOwner = Owner as IStaticPositionable;
-            }
-
-
             UpdateColor();
 
-            ApplyPrimaryDownDragEditing(effectiveOwner, sideGrabbed);
+            ApplyPrimaryDownDragEditing(EffectiveOwner, SideGrabbed);
 
-            UpdateMainPolygonToItem(effectiveOwner);
+            UpdateMainPolygonToItem(EffectiveOwner);
 
             if (ownerAsPositionedObject != null)
             {
-                UpdateHandles(ownerAsPositionedObject, sideGrabbed);
+                UpdateHandles(ownerAsPositionedObject, SideGrabbed);
             }
 
 
             mainPolygon.ForceUpdateDependencies();
 
-            if (CanMoveItem)
-            {
-                if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
-                {
-                    Handles.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
-                {
-                    Handles.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
-                {
-                    Handles.ResizeMode = ResizeMode.EightWay;
-                }
-                else
-                {
-                    Handles.ResizeMode = ResizeMode.None;
-                }
-            }
+
 
             DoUpdateReleasedLogic();
         }
@@ -520,6 +499,8 @@ namespace GlueControl.Editing
                     PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
                 }
             }
+
+            SideGrabbed = ResizeSide.None;
         }
 
         private void DoUpdatePushedLogic()
@@ -569,6 +550,8 @@ namespace GlueControl.Editing
                     }
                 }
 
+                SideGrabbed = GetSideOver();
+
 
                 GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
 
@@ -584,6 +567,11 @@ namespace GlueControl.Editing
                 {
                     GrabbedRadius = circle.Radius;
                 }
+            }
+
+            else
+            {
+                SideGrabbed = ResizeSide.None;
             }
         }
 
@@ -648,7 +636,9 @@ namespace GlueControl.Editing
         static HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
         private void UpdateHandles(PositionedObject item, ResizeSide sideGrabbed)
         {
-            Handles.UpdateVisibilityConsideringResizeMode(Visible);
+            Handles.Visible = Visible;
+
+            Handles.UpdateVisibilityConsideringResizeMode();
 
             if (Visible)
             {
@@ -694,6 +684,27 @@ namespace GlueControl.Editing
                 {
                     Handles.UpdateHandlePositions(scalable, this.Position);
                 }
+
+                if (CanMoveItem)
+                {
+                    if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
+                    {
+                        Handles.ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
+                    {
+                        Handles.ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
+                    {
+                        Handles.ResizeMode = ResizeMode.EightWay;
+                    }
+                    else
+                    {
+                        Handles.ResizeMode = ResizeMode.None;
+                    }
+                }
+
             }
         }
 

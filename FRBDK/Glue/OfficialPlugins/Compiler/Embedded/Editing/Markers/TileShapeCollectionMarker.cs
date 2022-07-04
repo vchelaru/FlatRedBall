@@ -148,7 +148,7 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public void Update(ResizeSide sideGrabbed)
+        public void Update()
         {
             ////////////////early out//////////////////////////////
             if (map == null)

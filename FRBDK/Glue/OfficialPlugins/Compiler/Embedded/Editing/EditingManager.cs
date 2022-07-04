@@ -148,7 +148,6 @@ namespace GlueControl.Editing
 
         IStaticPositionable itemGrabbed;
         public IStaticPositionable ItemGrabbed => itemGrabbed;
-        ResizeSide SideGrabbed = ResizeSide.None;
 
         List<INameable> itemsSelected = new List<INameable>();
         List<INameable> itemsOverLastFrame = new List<INameable>();
@@ -207,7 +206,7 @@ namespace GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             // do we want to show multiple highlights? Probably?
             HighlightMarker.Owner = itemsOver.FirstOrDefault();
-            HighlightMarker.Update(SideGrabbed);
+            HighlightMarker.Update();
 
             UpdateSelectedMarkers();
         }
@@ -220,7 +219,7 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = itemsSelected[i];
 
-                marker.Update(SideGrabbed);
+                marker.Update();
                 if (item == itemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
@@ -412,10 +411,6 @@ namespace GlueControl.Editing
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
-                if (itemGrabbed == null)
-                {
-                    SideGrabbed = ResizeSide.None;
-                }
 
                 var clickedOnSelectedItem = itemsSelected.Contains(itemOver);
 
@@ -471,8 +466,6 @@ namespace GlueControl.Editing
                         marker.CanMoveItem = item == itemGrabbed;
                     }
 
-                    var markerOver = MarkerFor(itemGrabbed as INameable) as SelectionMarker;
-                    SideGrabbed = markerOver?.GetSideOver() ?? ResizeSide.None;
                     ObjectSelected(itemGrabbed as INameable);
                 }
             }
@@ -508,7 +501,6 @@ namespace GlueControl.Editing
             }
 
             itemGrabbed = null;
-            SideGrabbed = ResizeSide.None;
         }
 
         private void DoHotkeyLogic()
