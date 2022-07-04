@@ -78,6 +78,14 @@ namespace GlueControl.Editing
         //const int HighlightedHandleDimension = 14;
         const int HighlightedHandleDimension = 16;
 
+
+        public bool ShouldResizeXFromCenter;
+        public bool ShouldResizeYFromCenter;
+
+        public ResizeSide SideGrabbed = ResizeSide.None;
+
+        HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
+
         public bool Visible { get; set; }
 
         public ResizeMode ResizeMode { get; set; }
@@ -131,7 +139,7 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void UpdateDimension(HashSet<ResizeSide> sidesToHighlight)
+        internal void UpdateDimension()
         {
 
             for (int i = 0; i < rectangles.Count(); i++)
@@ -224,6 +232,86 @@ namespace GlueControl.Editing
                 rectangles[i].Visible = false;
             }
         }
+
+        internal void HandleCursorRelease()
+        {
+            SideGrabbed = ResizeSide.None;
+        }
+
+        internal void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
+        {
+            if (ownerAsPositionedObject != null)
+            {
+                SideGrabbed = GetSideOver();
+            }
+            else
+            {
+                SideGrabbed = ResizeSide.None;
+            }
+        }
+
+        public void FillSidesToHighlight(PositionedObject item)
+        {
+
+            sidesToHighlight.Clear();
+
+            sidesToHighlight.Add(SideGrabbed);
+
+            if (GetIfShouldResizeFromCenter(item))
+            {
+                if (SideGrabbed == ResizeSide.Left && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
+                if (SideGrabbed == ResizeSide.Top && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
+                if (SideGrabbed == ResizeSide.Right && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
+                if (SideGrabbed == ResizeSide.Bottom && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
+
+                // if we grab a diagonal, all can be resized:
+                if (SideGrabbed == ResizeSide.TopLeft ||
+                    SideGrabbed == ResizeSide.TopRight ||
+                    SideGrabbed == ResizeSide.BottomRight ||
+                    SideGrabbed == ResizeSide.BottomLeft)
+                {
+                    if (ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
+                    if (ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
+                    if (ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
+                    if (ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
+                }
+            }
+
+            if (item is Circle || GetIfSetsTextureScale(item))
+            {
+                if (SideGrabbed == ResizeSide.Left)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (SideGrabbed == ResizeSide.Top)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+                else if (SideGrabbed == ResizeSide.Right)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (SideGrabbed == ResizeSide.Bottom)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+            }
+        }
+
+
+        public bool GetIfSetsTextureScale(PositionedObject item)
+        {
+            return item is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null;
+        }
+
+        public bool GetIfShouldResizeFromCenter(PositionedObject item)
+        {
+            return item.Parent != null;
+        }
     }
 
     #endregion
@@ -311,15 +399,12 @@ namespace GlueControl.Editing
         Vector3 unsnappedItemPosition;
         Vector2 unsnappedItemSize;
 
-        bool shouldResizeXFromCenter;
-        bool shouldResizeYFromCenter;
 
         public float PositionSnappingSize = 8;
         // Size snapping has to be 2x as big as position snapping, otherwise resizing through a handle can result in half-snap positions which is confusing
         public float SizeSnappingSize => PositionSnappingSize * 2;
         public bool IsSnappingEnabled = true;
 
-        ResizeSide SideGrabbed = ResizeSide.None;
 
 
         public Vector3 LastUpdateMovement { get; private set; }
@@ -430,13 +515,13 @@ namespace GlueControl.Editing
 
             UpdateColor();
 
-            ApplyPrimaryDownDragEditing(EffectiveOwner, SideGrabbed);
+            ApplyPrimaryDownDragEditing(EffectiveOwner);
 
             UpdateMainPolygonToItem(EffectiveOwner);
 
             if (ownerAsPositionedObject != null)
             {
-                UpdateHandles(ownerAsPositionedObject, SideGrabbed);
+                UpdateHandles(ownerAsPositionedObject);
             }
 
 
@@ -450,8 +535,7 @@ namespace GlueControl.Editing
         private void DoUpdateReleasedLogic()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (!cursor.PrimaryClick || ownerAsPositionedObject == null ||
-                PropertyChanged == null)
+            if (!cursor.PrimaryClick || ownerAsPositionedObject == null)
             {
                 return;
             }
@@ -461,14 +545,14 @@ namespace GlueControl.Editing
                 var value = ownerAsPositionedObject?.Parent == null
                     ? ownerAsPositionable.X
                     : ownerAsPositionedObject.RelativeX;
-                PropertyChanged(Owner, nameof(ownerAsPositionable.X), value);
+                PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.X), value);
             }
             if (ownerAsPositionable.Y != GrabbedPosition.Y)
             {
                 var value = ownerAsPositionedObject?.Parent == null
                     ? ownerAsPositionable.Y
                     : ownerAsPositionedObject.RelativeY;
-                PropertyChanged(Owner, nameof(ownerAsPositionable.Y), value);
+                PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.Y), value);
             }
 
             if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
@@ -478,17 +562,17 @@ namespace GlueControl.Editing
                 if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
                     GrabbedTextureScale != asSprite.TextureScale)
                 {
-                    PropertyChanged(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
+                    PropertyChanged?.Invoke(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
                 }
                 else
                 {
                     if (didChangeWidth)
                     {
-                        PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
+                        PropertyChanged?.Invoke(Owner, "Width", asScalable.ScaleX * 2);
                     }
                     if (didChangeHeight)
                     {
-                        PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
+                        PropertyChanged?.Invoke(Owner, "Height", asScalable.ScaleY * 2);
                     }
                 }
             }
@@ -496,11 +580,11 @@ namespace GlueControl.Editing
             {
                 if (GrabbedRadius != circle.Radius)
                 {
-                    PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
+                    PropertyChanged?.Invoke(Owner, nameof(circle.Radius), circle.Radius);
                 }
             }
 
-            SideGrabbed = ResizeSide.None;
+            Handles.HandleCursorRelease();
         }
 
         private void DoUpdatePushedLogic()
@@ -515,8 +599,8 @@ namespace GlueControl.Editing
             /////////End Early Out///////////////
 
 
-            shouldResizeXFromCenter = false;
-            shouldResizeYFromCenter = false;
+            Handles.ShouldResizeXFromCenter = false;
+            Handles.ShouldResizeYFromCenter = false;
 
             ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
             if (ownerAsPositionable != null)
@@ -534,23 +618,22 @@ namespace GlueControl.Editing
                 {
                     unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
 
-                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
+                    bool shouldAttemptResizeFromCenter = Handles.GetIfShouldResizeFromCenter(ownerAsPositionedObject);
                     // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
                     // values to 0 and double the dimension values
                     if (shouldAttemptResizeFromCenter)
                     {
                         if (ownerAsPositionedObject.RelativeX == 0)
                         {
-                            shouldResizeXFromCenter = true;
+                            Handles.ShouldResizeXFromCenter = true;
                         }
                         if (ownerAsPositionedObject.RelativeY == 0)
                         {
-                            shouldResizeYFromCenter = true;
+                            Handles.ShouldResizeYFromCenter = true;
                         }
                     }
                 }
 
-                SideGrabbed = GetSideOver();
 
 
                 GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
@@ -569,10 +652,7 @@ namespace GlueControl.Editing
                 }
             }
 
-            else
-            {
-                SideGrabbed = ResizeSide.None;
-            }
+            Handles.HandleCursorPushed(ownerAsPositionedObject);
         }
 
         private void UpdateColor()
@@ -633,8 +713,7 @@ namespace GlueControl.Editing
             }
         }
 
-        static HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
-        private void UpdateHandles(PositionedObject item, ResizeSide sideGrabbed)
+        private void UpdateHandles(PositionedObject item)
         {
             Handles.Visible = Visible;
 
@@ -649,36 +728,31 @@ namespace GlueControl.Editing
                 // during the duration of the drag.
                 if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
                 {
-                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
+                    bool shouldAttemptResizeFromCenter = Handles.GetIfShouldResizeFromCenter(ownerAsPositionedObject);
                     // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
                     // values to 0 and double the dimension values
                     if (shouldAttemptResizeFromCenter)
                     {
                         if (ownerAsPositionedObject.RelativeX == 0)
                         {
-                            shouldResizeXFromCenter = true;
+                            Handles.ShouldResizeXFromCenter = true;
                         }
                         if (ownerAsPositionedObject.RelativeY == 0)
                         {
-                            shouldResizeYFromCenter = true;
+                            Handles.ShouldResizeYFromCenter = true;
                         }
                     }
 
                 }
 
-                ResizeSide sideOver = sideGrabbed;
-                if (sideOver == ResizeSide.None)
-                {
-                    sideOver = GetSideOver();
-                }
 
-                FillSidesToHighlight(item, sideOver);
+                Handles.FillSidesToHighlight(item);
 
                 // UpdateDimension before UpdateHandlePositions because
                 // UpdateHandlePositions depends on the size of the handles
                 // to position them correctly. If the order is inverted then
                 // handles will "pop" for 1 frame. Not a huge deal but looks unprofessional.
-                Handles.UpdateDimension(sidesToHighlight);
+                Handles.UpdateDimension();
 
                 if (this.Owner is IReadOnlyScalable scalable)
                 {
@@ -708,56 +782,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void FillSidesToHighlight(PositionedObject item, ResizeSide sideGrabbed)
-        {
-            sidesToHighlight.Clear();
 
-            sidesToHighlight.Add(sideGrabbed);
-
-            if (GetIfShouldResizeFromCenter(item))
-            {
-                if (sideGrabbed == ResizeSide.Left && shouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
-                if (sideGrabbed == ResizeSide.Top && shouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
-                if (sideGrabbed == ResizeSide.Right && shouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
-                if (sideGrabbed == ResizeSide.Bottom && shouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
-
-                // if we grab a diagonal, all can be resized:
-                if (sideGrabbed == ResizeSide.TopLeft ||
-                    sideGrabbed == ResizeSide.TopRight ||
-                    sideGrabbed == ResizeSide.BottomRight ||
-                    sideGrabbed == ResizeSide.BottomLeft)
-                {
-                    if (shouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
-                    if (shouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
-                    if (shouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
-                    if (shouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
-                }
-            }
-
-            if (item is Circle || GetIfSetsTextureScale(item))
-            {
-                if (sideGrabbed == ResizeSide.Left)
-                {
-                    sidesToHighlight.Add(ResizeSide.Top);
-                    sidesToHighlight.Add(ResizeSide.Bottom);
-                }
-                else if (sideGrabbed == ResizeSide.Top)
-                {
-                    sidesToHighlight.Add(ResizeSide.Left);
-                    sidesToHighlight.Add(ResizeSide.Right);
-                }
-                else if (sideGrabbed == ResizeSide.Right)
-                {
-                    sidesToHighlight.Add(ResizeSide.Top);
-                    sidesToHighlight.Add(ResizeSide.Bottom);
-                }
-                else if (sideGrabbed == ResizeSide.Bottom)
-                {
-                    sidesToHighlight.Add(ResizeSide.Left);
-                    sidesToHighlight.Add(ResizeSide.Right);
-                }
-            }
-        }
 
         #endregion
 
@@ -766,7 +791,7 @@ namespace GlueControl.Editing
         float lastWorldX = 0;
         float lastWorldY = 0;
 
-        private void ApplyPrimaryDownDragEditing(IStaticPositionable item, ResizeSide sideGrabbed)
+        private void ApplyPrimaryDownDragEditing(IStaticPositionable item)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
@@ -796,6 +821,7 @@ namespace GlueControl.Editing
                 // we'll only allow moving PositionedObjects.
                 item is PositionedObject)
             {
+                var sideGrabbed = Handles.SideGrabbed;
                 if (sideGrabbed == ResizeSide.None)
                 {
                     var keyboard = FlatRedBall.Input.InputManager.Keyboard;
@@ -949,7 +975,7 @@ namespace GlueControl.Editing
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
             var scalable = item as IScalable;
 
-            if (shouldResizeXFromCenter)
+            if (Handles.ShouldResizeXFromCenter)
             {
                 // Should this be adjusted based on rotation?
                 rotatedPositionMultiple.X = 0;
@@ -957,7 +983,7 @@ namespace GlueControl.Editing
 
                 widthMultiple *= 2;
             }
-            if (shouldResizeYFromCenter)
+            if (Handles.ShouldResizeYFromCenter)
             {
                 // Should this be adjusted based on rotation?
                 rotatedPositionMultiple.Y = 0;
@@ -971,7 +997,7 @@ namespace GlueControl.Editing
             float xChangeForPosition = rotatedPositionMultiple.X * cursorChange.X;
             float yChangeForPosition = rotatedPositionMultiple.Y * cursorChange.Y;
 
-            bool setsTextureScale = GetIfSetsTextureScale(item);
+            bool setsTextureScale = Handles.GetIfSetsTextureScale(item);
 
             if (setsTextureScale)
             {
@@ -1070,15 +1096,6 @@ namespace GlueControl.Editing
             item.ForceUpdateDependencies();
         }
 
-        private static bool GetIfSetsTextureScale(PositionedObject item)
-        {
-            return item is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null;
-        }
-
-        private static bool GetIfShouldResizeFromCenter(PositionedObject item)
-        {
-            return item.Parent != null;
-        }
 
         #endregion
 
@@ -1090,7 +1107,7 @@ namespace GlueControl.Editing
                 return true;
             }
 
-            if (GetSideOver() != ResizeSide.None)
+            if (Handles.GetSideOver() != ResizeSide.None)
             {
                 return true;
             }
@@ -1098,7 +1115,7 @@ namespace GlueControl.Editing
             return false;
         }
 
-        public ResizeSide GetSideOver() => Handles.GetSideOver();
+
 
         public bool ShouldSuppress(string variableName) =>
             variableName == "X" ||
@@ -1127,5 +1144,4 @@ namespace GlueControl.Editing
 #endif
         }
     }
-
 }
