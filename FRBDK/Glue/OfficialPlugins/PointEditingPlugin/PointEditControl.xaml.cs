@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,153 +14,81 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace OfficialPluginsCore.PointEditingPlugin
+namespace OfficialPlugins.PointEditingPlugin
 {
     /// <summary>
     /// Interaction logic for PointEditControl.xaml
     /// </summary>
     public partial class PointEditControl : UserControl
     {
-        List<Vector2> mData;
-
-        public List<Vector2> Data
-        {
-            get
-            {
-                return mData;
-            }
-            set
-            {
-                mData = value;
-
-                UpdateToData();
-            }
-        }
-
-        Vector2 SelectedVector2
-        {
-            get
-            {
-                if (ListBox.SelectedItem != null)
-                {
-                    return (Vector2)ListBox.SelectedItem;
-                }
-                else
-                {
-                    return Vector2.Zero;
-                }
-            }
-        }
-
-        public event EventHandler DataChanged;
-
+        PointEditingViewModel ViewModel => DataContext as PointEditingViewModel;
 
         public PointEditControl()
         {
             InitializeComponent();
+
+            DataContextChanged += HandleDataContextChanged;
         }
 
-        private void UpdateToData()
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            int index = ListBox.SelectedIndex;
-
-            ListBox.Items.Clear();
-
-            if (mData != null)
+            if(ViewModel != null)
             {
-                foreach (var item in mData)
-                {
-                    ListBox.Items.Add(item);
-                }
-            }
-
-            if (index > -1 && index < ListBox.Items.Count)
-            {
-                ListBox.SelectedIndex = index;
+                ViewModel.PropertyChanged += HandleVmPropertyChanged;
             }
         }
 
-        private void CallDataChanged()
+        private void HandleVmPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (DataChanged != null)
-            {
-                DataChanged(this, null);
-            }
-        }
-
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ListBox.SelectedItem != null)
+            if(e.PropertyName == nameof(ViewModel.SelectedPoint))
             {
                 if (!XTextBox.IsFocused)
                 {
-                    XTextBox.Text = SelectedVector2.X.ToString();
+                    XTextBox.Text = ViewModel.SelectedPoint?.X.ToString();
                 }
                 if (!YTextBox.IsFocused)
                 {
-                    YTextBox.Text = SelectedVector2.Y.ToString();
-                }
-            }
-            else
-            {
-                if (!XTextBox.IsFocused)
-                {
-                    XTextBox.Text = null;
-                }
-                if (!YTextBox.IsFocused)
-                {
-                    YTextBox.Text = null;
+                    YTextBox.Text = ViewModel.SelectedPoint?.Y.ToString();
                 }
             }
         }
 
         private void AddButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (Data != null)
+            if (ViewModel.Points != null)
             {
-                Data.Add(new Vector2());
-
-                UpdateToData();
+                ViewModel.Points.Add(new Vector2());
 
                 ListBox.SelectedIndex = ListBox.Items.Count - 1;
-
-                CallDataChanged();
             }
         }
 
         private void RemoveButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (this.Data != null && ListBox.SelectedItem != null)
+            if (ViewModel.Points != null && ListBox.SelectedItem != null)
             {
                 int indexToRemove = ListBox.SelectedIndex;
 
-                this.Data.RemoveAt(indexToRemove);
-
-                UpdateToData();
-
-                CallDataChanged();
-
+                ViewModel.Points.RemoveAt(indexToRemove);
             }
         }
 
         private void XTextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
-            if (ListBox.SelectedItem != null && float.TryParse(XTextBox.Text, out float outValue))
+            if (ViewModel.SelectedPoint != null && float.TryParse(XTextBox.Text, out float outValue))
             {
                 int index = this.ListBox.SelectedIndex;
 
                 if (index != -1)
                 {
-                    Vector2 vector = SelectedVector2;
+                    Vector2 vector = ViewModel.SelectedPoint ?? new Vector2();
                     if (outValue != vector.X)
                     {
                         vector.X = outValue;
 
-                        Data[index] = vector;
-                        UpdateToData();
+                        ViewModel.Points[index] = vector;
 
-                        CallDataChanged();
-
+                        ViewModel.SelectedPoint = vector;
                     }
                 }
             }
@@ -167,22 +96,20 @@ namespace OfficialPluginsCore.PointEditingPlugin
 
         private void YTextBox_TextChanged_1(object sender, TextChangedEventArgs e)
         {
-            if (ListBox.SelectedItem != null && float.TryParse(YTextBox.Text, out float outValue))
+            if (ViewModel.SelectedPoint != null && float.TryParse(YTextBox.Text, out float outValue))
             {
                 int index = this.ListBox.SelectedIndex;
 
                 if (index != -1)
                 {
-                    Vector2 vector = SelectedVector2;
+                    Vector2 vector = ViewModel.SelectedPoint ?? new Vector2();
                     if (outValue != vector.Y)
                     {
                         vector.Y = outValue;
 
-                        Data[index] = vector;
-                        UpdateToData();
+                        ViewModel.Points[index] = vector;
 
-                        CallDataChanged();
-
+                        ViewModel.SelectedPoint = vector;
                     }
                 }
             }
@@ -191,7 +118,7 @@ namespace OfficialPluginsCore.PointEditingPlugin
         private void HandleAddRectanglePointsClicked(object sender, RoutedEventArgs e)
         {
             var shouldContinue = true;
-            if(Data?.Count > 0)
+            if(ViewModel.Points?.Count > 0)
             {
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?",
                     AddRectanglePoints);
@@ -204,27 +131,32 @@ namespace OfficialPluginsCore.PointEditingPlugin
 
         private void AddRectanglePoints()
         {
-            if(Data == null)
-            {
-                Data = new List<Vector2>();
-            }
-            else
-            {
-                Data.Clear();
-            }
 
-            Data.Add(new Vector2(-16, 16));
-            Data.Add(new Vector2( 16, 16));
-            Data.Add(new Vector2( 16,-16));
-            Data.Add(new Vector2(-16,-16));
-            Data.Add(new Vector2(-16, 16));
+            ViewModel.Points.Clear();
 
+            ViewModel.Points.Add(new Vector2(-16, 16));
+            ViewModel.Points.Add(new Vector2( 16, 16));
+            ViewModel.Points.Add(new Vector2( 16,-16));
+            ViewModel.Points.Add(new Vector2(-16,-16));
+            ViewModel.Points.Add(new Vector2(-16, 16));
 
-            UpdateToData();
 
             ListBox.SelectedIndex = ListBox.Items.Count - 1;
+        }
 
-            CallDataChanged();
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MovePointUp(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MovePointDown(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

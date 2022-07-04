@@ -147,7 +147,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="nos">The NamedObjectSave which will have its variable assigned.</param>
         /// <param name="memberName">The name of the variable to assign.</param>
         /// <param name="value">The value of the variable.</param>
-        [Obsolete("Use SetVariableOn")]
+        [Obsolete("Use SetVariableOnAsync")]
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true);
 
