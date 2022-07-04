@@ -63,8 +63,6 @@ namespace GlueControl.Editing
         bool ShouldSuppress(string memberName);
 
         bool IsCursorOverThis();
-        void HandleCursorRelease();
-        void HandleCursorPushed();
         void Destroy();
     }
 
@@ -420,7 +418,7 @@ namespace GlueControl.Editing
 
             Visible = ownerAsPositionable != null;
 
-            UpdateScreenPointPushed();
+            DoUpdatePushedLogic();
 
             IStaticPositionable effectiveOwner = null;
             if (Owner is NameableWrapper nameableWrapper)
@@ -466,48 +464,125 @@ namespace GlueControl.Editing
                     Handles.ResizeMode = ResizeMode.None;
                 }
             }
+
+            DoUpdateReleasedLogic();
         }
 
-        private void UpdateScreenPointPushed()
+        private void DoUpdateReleasedLogic()
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            if (!cursor.PrimaryClick || ownerAsPositionedObject == null ||
+                PropertyChanged == null)
+            {
+                return;
+            }
+
+            if (ownerAsPositionable.X != GrabbedPosition.X)
+            {
+                var value = ownerAsPositionedObject?.Parent == null
+                    ? ownerAsPositionable.X
+                    : ownerAsPositionedObject.RelativeX;
+                PropertyChanged(Owner, nameof(ownerAsPositionable.X), value);
+            }
+            if (ownerAsPositionable.Y != GrabbedPosition.Y)
+            {
+                var value = ownerAsPositionedObject?.Parent == null
+                    ? ownerAsPositionable.Y
+                    : ownerAsPositionedObject.RelativeY;
+                PropertyChanged(Owner, nameof(ownerAsPositionable.Y), value);
+            }
+
+            if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
+            {
+                var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
+                var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
+                if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
+                    GrabbedTextureScale != asSprite.TextureScale)
+                {
+                    PropertyChanged(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
+                }
+                else
+                {
+                    if (didChangeWidth)
+                    {
+                        PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
+                    }
+                    if (didChangeHeight)
+                    {
+                        PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
+                    }
+                }
+            }
+            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
+            {
+                if (GrabbedRadius != circle.Radius)
+                {
+                    PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
+                }
+            }
+        }
+
+        private void DoUpdatePushedLogic()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
-            if (cursor.PrimaryPush)
+            ///////////Early Out////////////////
+            if (!cursor.PrimaryPush)
             {
-                shouldResizeXFromCenter = false;
-                shouldResizeYFromCenter = false;
+                return;
+            }
+            /////////End Early Out///////////////
 
-                ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
-                if (ownerAsPositionable != null)
+
+            shouldResizeXFromCenter = false;
+            shouldResizeYFromCenter = false;
+
+            ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
+            if (ownerAsPositionable != null)
+            {
+                if (ownerAsPositionedObject?.Parent == null)
                 {
-                    if (ownerAsPositionedObject?.Parent == null)
-                    {
-                        unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
-                    }
-                    else
-                    {
-                        unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
-                    }
+                    unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+                }
+                else
+                {
+                    unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
+                }
 
-                    if (ownerAsPositionable is IScalable scalable)
-                    {
-                        unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
+                if (ownerAsPositionable is IScalable scalable)
+                {
+                    unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
 
-                        bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
-                        // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
-                        // values to 0 and double the dimension values
-                        if (shouldAttemptResizeFromCenter)
+                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
+                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+                    // values to 0 and double the dimension values
+                    if (shouldAttemptResizeFromCenter)
+                    {
+                        if (ownerAsPositionedObject.RelativeX == 0)
                         {
-                            if (ownerAsPositionedObject.RelativeX == 0)
-                            {
-                                shouldResizeXFromCenter = true;
-                            }
-                            if (ownerAsPositionedObject.RelativeY == 0)
-                            {
-                                shouldResizeYFromCenter = true;
-                            }
+                            shouldResizeXFromCenter = true;
+                        }
+                        if (ownerAsPositionedObject.RelativeY == 0)
+                        {
+                            shouldResizeYFromCenter = true;
                         }
                     }
+                }
+
+
+                GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+
+                if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+                {
+                    GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                    if (Owner is Sprite asSprite)
+                    {
+                        GrabbedTextureScale = asSprite.TextureScale;
+                    }
+                }
+                else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
+                {
+                    GrabbedRadius = circle.Radius;
                 }
             }
         }
@@ -1028,73 +1103,6 @@ namespace GlueControl.Editing
             variableName == "Radius"
             ;
 
-        public void HandleCursorRelease()
-        {
-
-
-            if (ownerAsPositionable.X != GrabbedPosition.X)
-            {
-                var value = ownerAsPositionedObject?.Parent == null
-                    ? ownerAsPositionable.X
-                    : ownerAsPositionedObject.RelativeX;
-                PropertyChanged(Owner, nameof(ownerAsPositionable.X), value);
-            }
-            if (ownerAsPositionable.Y != GrabbedPosition.Y)
-            {
-                var value = ownerAsPositionedObject?.Parent == null
-                    ? ownerAsPositionable.Y
-                    : ownerAsPositionedObject.RelativeY;
-                PropertyChanged(Owner, nameof(ownerAsPositionable.Y), value);
-            }
-
-            if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
-            {
-                var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
-                var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
-                    GrabbedTextureScale != asSprite.TextureScale)
-                {
-                    PropertyChanged(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
-                }
-                else
-                {
-                    if (didChangeWidth)
-                    {
-                        PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
-                    }
-                    if (didChangeHeight)
-                    {
-                        PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
-                    }
-                }
-            }
-            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
-            {
-                if (GrabbedRadius != circle.Radius)
-                {
-                    PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
-                }
-            }
-        }
-
-        public void HandleCursorPushed()
-        {
-            GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
-
-            if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
-            {
-                GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
-                if (Owner is Sprite asSprite)
-                {
-                    GrabbedTextureScale = asSprite.TextureScale;
-                }
-            }
-            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
-            {
-                GrabbedRadius = circle.Radius;
-            }
-        }
-
         public void Destroy()
         {
 #if SupportsEditMode
@@ -1108,4 +1116,5 @@ namespace GlueControl.Editing
 #endif
         }
     }
+
 }

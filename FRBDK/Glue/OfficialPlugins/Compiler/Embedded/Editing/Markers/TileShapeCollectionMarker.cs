@@ -861,20 +861,11 @@ namespace GlueControl.Editing
             ScreenManager.PersistentAxisAlignedRectangles.Remove(boundsRectangle);
 
         }
+
         public void MakePersistent()
         {
             ScreenManager.PersistentAxisAlignedRectangles.Add(currentTileHighlight);
             ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
-        }
-
-        public void HandleCursorPushed()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void HandleCursorRelease()
-        {
-            throw new NotImplementedException();
         }
 
         public bool IsCursorOverThis()

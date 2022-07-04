@@ -469,8 +469,6 @@ namespace GlueControl.Editing
                         var marker = MarkerFor(item);
 
                         marker.CanMoveItem = item == itemGrabbed;
-
-                        marker.HandleCursorPushed();
                     }
 
                     var markerOver = MarkerFor(itemGrabbed as INameable) as SelectionMarker;
@@ -499,8 +497,6 @@ namespace GlueControl.Editing
                 foreach (var item in itemsSelected)
                 {
                     var marker = MarkerFor(item);
-
-                    marker.HandleCursorRelease();
                 }
                 IsBuffering = false;
                 if (bufferedChangeArgs.Count > 0)
@@ -1077,4 +1073,5 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
 }
