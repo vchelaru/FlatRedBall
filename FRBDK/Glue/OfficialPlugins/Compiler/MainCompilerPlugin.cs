@@ -58,6 +58,7 @@ namespace OfficialPlugins.Compiler
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
         GlueViewSettings glueViewSettingsView;
+        BuildSettingsUser BuildSettingsUser;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -84,6 +85,7 @@ namespace OfficialPlugins.Compiler
         }
 
         FilePath JsonSettingsFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "CompilerSettings.json";
+        FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
         bool ignoreViewModelChanges = false;
 
@@ -179,7 +181,7 @@ namespace OfficialPlugins.Compiler
 
             var busyTimerFrequency = 250; // ms
             busyUpdateTimer = new Timer(busyTimerFrequency);
-            busyUpdateTimer.Elapsed += async (not, used) => await UpdateIsBusyStatus();
+            busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
             busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
             busyUpdateTimer.Start();
 
@@ -463,7 +465,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        private async Task UpdateIsBusyStatus()
+        private async Task DoGetCommandsTimedLogic()
         {
             this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
             var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
@@ -576,6 +578,28 @@ namespace OfficialPlugins.Compiler
             return compilerSettings;
         }
 
+        private void LoadOrCreateBuildSettings()
+        {
+            BuildSettingsUser = null;
+            if (BuildSettingsUserFilePath.Exists())
+            {
+                try
+                {
+                    var text = System.IO.File.ReadAllText(BuildSettingsUserFilePath.FullPath);
+                    BuildSettingsUser = JsonConvert.DeserializeObject<BuildSettingsUser>(text);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+
+            if(BuildSettingsUser == null)
+            {
+                BuildSettingsUser = new BuildSettingsUser();
+            }
+        }
+
         private bool IsFrbNewEnough()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
@@ -592,6 +616,8 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxLoaded()
         {
             var model = LoadOrCreateCompilerSettings();
+            LoadOrCreateBuildSettings();
+            Compiler.Self.BuildSettingsUser = BuildSettingsUser;
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
@@ -1000,8 +1026,27 @@ namespace OfficialPlugins.Compiler
                 }
             };
 
+            MainControl.MSBuildSettingsClicked += () =>
+            {
+                var viewModel = new BuildSettingsWindowViewModel();
+                var view = new BuildSettingsWindow();
+                view.DataContext = viewModel;
+                viewModel.SetFrom(BuildSettingsUser);
 
+                var results = view.ShowDialog();
 
+                if(results == true)
+                {
+                    // apply VM:
+                    viewModel.ApplyTo(BuildSettingsUser);
+
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
+                        System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
+                    });
+                }
+            };
         }
 
 

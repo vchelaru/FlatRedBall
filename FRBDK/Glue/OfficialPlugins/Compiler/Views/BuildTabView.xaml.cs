@@ -30,6 +30,7 @@ namespace OfficialPlugins.Compiler
 
         public event EventHandler BuildClicked;
         public event EventHandler RunClicked;
+        public event Action MSBuildSettingsClicked;
 
 
         #endregion
@@ -43,16 +44,21 @@ namespace OfficialPlugins.Compiler
             TextBox.Document.Blocks.Add(new Paragraph());
         }
 
-        private void HandleCompileClick(object sender, EventArgs e)
+        private void HandleCompileClick()
         {
             TextBox.Document.Blocks.Clear();
             TextBox.Document.Blocks.Add(new Paragraph());
             BuildClicked?.Invoke(this, null);
         }
 
-        private void HandleRunClick(object sender, EventArgs e)
+        private void HandleRunClick()
         {
             RunClicked?.Invoke(this, null);
+        }
+
+        private void HandleMSBuildSettingsClicked()
+        {
+            MSBuildSettingsClicked?.Invoke();
         }
 
         public void PrintOutput(string text)
