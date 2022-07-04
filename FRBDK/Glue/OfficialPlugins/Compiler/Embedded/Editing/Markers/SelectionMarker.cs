@@ -242,7 +242,7 @@ namespace GlueControl.Editing
             SideGrabbed = ResizeSide.None;
         }
 
-        internal void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
+        private void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
@@ -412,6 +412,11 @@ namespace GlueControl.Editing
                     {
                         ResizeMode = ResizeMode.None;
                     }
+                }
+
+                if (cursor.PrimaryPush)
+                {
+                    HandleCursorPushed(item);
                 }
 
                 if (cursor.PrimaryClick)
@@ -742,7 +747,6 @@ namespace GlueControl.Editing
                 }
             }
 
-            Handles.HandleCursorPushed(ownerAsPositionedObject);
         }
 
         private void UpdateColor()
