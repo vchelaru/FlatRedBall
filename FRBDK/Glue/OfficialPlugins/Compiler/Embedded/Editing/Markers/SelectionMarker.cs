@@ -253,22 +253,28 @@ namespace GlueControl.Editing
         public void FillSidesToHighlight(PositionedObject item)
         {
 
+            var sidesForHighlighting = SideGrabbed;
+            if (sidesForHighlighting == ResizeSide.None)
+            {
+                sidesForHighlighting = GetSideOver();
+            }
+
             sidesToHighlight.Clear();
 
-            sidesToHighlight.Add(SideGrabbed);
+            sidesToHighlight.Add(sidesForHighlighting);
 
             if (GetIfShouldResizeFromCenter(item))
             {
-                if (SideGrabbed == ResizeSide.Left && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
-                if (SideGrabbed == ResizeSide.Top && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
-                if (SideGrabbed == ResizeSide.Right && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
-                if (SideGrabbed == ResizeSide.Bottom && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
+                if (sidesForHighlighting == ResizeSide.Left && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
+                if (sidesForHighlighting == ResizeSide.Top && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
+                if (sidesForHighlighting == ResizeSide.Right && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
+                if (sidesForHighlighting == ResizeSide.Bottom && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
 
                 // if we grab a diagonal, all can be resized:
-                if (SideGrabbed == ResizeSide.TopLeft ||
-                    SideGrabbed == ResizeSide.TopRight ||
-                    SideGrabbed == ResizeSide.BottomRight ||
-                    SideGrabbed == ResizeSide.BottomLeft)
+                if (sidesForHighlighting == ResizeSide.TopLeft ||
+                    sidesForHighlighting == ResizeSide.TopRight ||
+                    sidesForHighlighting == ResizeSide.BottomRight ||
+                    sidesForHighlighting == ResizeSide.BottomLeft)
                 {
                     if (ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
                     if (ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
@@ -279,22 +285,22 @@ namespace GlueControl.Editing
 
             if (item is Circle || GetIfSetsTextureScale(item))
             {
-                if (SideGrabbed == ResizeSide.Left)
+                if (sidesForHighlighting == ResizeSide.Left)
                 {
                     sidesToHighlight.Add(ResizeSide.Top);
                     sidesToHighlight.Add(ResizeSide.Bottom);
                 }
-                else if (SideGrabbed == ResizeSide.Top)
+                else if (sidesForHighlighting == ResizeSide.Top)
                 {
                     sidesToHighlight.Add(ResizeSide.Left);
                     sidesToHighlight.Add(ResizeSide.Right);
                 }
-                else if (SideGrabbed == ResizeSide.Right)
+                else if (sidesForHighlighting == ResizeSide.Right)
                 {
                     sidesToHighlight.Add(ResizeSide.Top);
                     sidesToHighlight.Add(ResizeSide.Bottom);
                 }
-                else if (SideGrabbed == ResizeSide.Bottom)
+                else if (sidesForHighlighting == ResizeSide.Bottom)
                 {
                     sidesToHighlight.Add(ResizeSide.Left);
                     sidesToHighlight.Add(ResizeSide.Right);
@@ -717,6 +723,9 @@ namespace GlueControl.Editing
         {
             Handles.Visible = Visible;
 
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+
             Handles.UpdateVisibilityConsideringResizeMode();
 
             if (Visible)
@@ -822,15 +831,15 @@ namespace GlueControl.Editing
                 item is PositionedObject)
             {
                 var sideGrabbed = Handles.SideGrabbed;
-                if (sideGrabbed == ResizeSide.None)
+                if (sideGrabbed != ResizeSide.None)
+                {
+                    ChangeSizeBy(item as PositionedObject, sideGrabbed);
+                }
+                else
                 {
                     var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
                     LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace, yChangeScreenSpace, keyboard.IsShiftDown);
-                }
-                else
-                {
-                    ChangeSizeBy(item as PositionedObject, sideGrabbed);
                 }
             }
 
