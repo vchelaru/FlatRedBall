@@ -21,6 +21,19 @@ namespace OfficialPlugins.PointEditingPlugin
             set => Set(value);
         }
 
+        public int SelectedIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SelectedIndex))]
+        public bool IsMoveUpEnabled => SelectedIndex > 0;
+
+        [DependsOn(nameof(SelectedIndex))]
+        [DependsOn(nameof(Points))]
+        public bool IsMoveDownEnabled => SelectedIndex < Points.Count - 1;
+
         public PointEditingViewModel() => Points = new ObservableCollection<Vector2>();
     }
 }

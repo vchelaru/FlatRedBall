@@ -117,7 +117,6 @@ namespace OfficialPlugins.PointEditingPlugin
 
         private void HandleAddRectanglePointsClicked(object sender, RoutedEventArgs e)
         {
-            var shouldContinue = true;
             if(ViewModel.Points?.Count > 0)
             {
                 GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?",
@@ -144,18 +143,20 @@ namespace OfficialPlugins.PointEditingPlugin
             ListBox.SelectedIndex = ListBox.Items.Count - 1;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void MovePointUp(object sender, RoutedEventArgs e)
         {
-
+            var oldSelectedIndex = ViewModel.SelectedIndex;
+            var newSelectedIndex = ViewModel.SelectedIndex - 1;
+            ViewModel.Points.Move(oldSelectedIndex, newSelectedIndex);
+            ViewModel.SelectedIndex = newSelectedIndex;
         }
 
         private void MovePointDown(object sender, RoutedEventArgs e)
         {
+            var oldSelectedIndex = ViewModel.SelectedIndex;
+            var newSelectedIndex = ViewModel.SelectedIndex + 1;
+            ViewModel.Points.Move(oldSelectedIndex, newSelectedIndex);
+            ViewModel.SelectedIndex = newSelectedIndex;
 
         }
     }
