@@ -74,11 +74,11 @@ namespace GlueControl.Editing
         #region Fields/Properties
 
         AxisAlignedRectangle[] rectangles = new AxisAlignedRectangle[8];
-        const int DefaultHandleDimension = 10;
+        public const int DefaultHandleDimension = 10;
 
         // 14 wasn't noticeable for opposite handles when resizing from center
         //const int HighlightedHandleDimension = 14;
-        const int HighlightedHandleDimension = 16;
+        public const int HighlightedHandleDimension = 16;
 
 
         public bool ShouldResizeXFromCenter { get; private set; }
@@ -448,6 +448,7 @@ namespace GlueControl.Editing
         Polygon mainPolygon;
 
         ResizeHandles ResizeHandles;
+        PolygonPointHandles PolygonPointHandles;
 
         public float ExtraPaddingInPixels { get; set; } = 2;
 
@@ -579,7 +580,7 @@ namespace GlueControl.Editing
 #endif
 
             ResizeHandles = new ResizeHandles();
-
+            PolygonPointHandles = new PolygonPointHandles();
         }
 
         public void MakePersistent()
@@ -648,6 +649,7 @@ namespace GlueControl.Editing
             {
                 ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
             }
+            PolygonPointHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
 
 
             mainPolygon.ForceUpdateDependencies();
@@ -841,10 +843,13 @@ namespace GlueControl.Editing
 
             var didCursorMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
 
+            var handledByPolygonHandles = PolygonPointHandles.PointIndexHighlighted != null;
+
             var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
                 Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
 
             if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
+                !handledByPolygonHandles &&
                 // Currently only PositionedObjects can be moved. If an object is
                 // IStaticPositionalbe, techincally we could move it by changing its X
                 // and Y values (and that has been tested), but the objet's Glue representation
@@ -1144,7 +1149,10 @@ namespace GlueControl.Editing
             {
                 return true;
             }
-
+            if (PolygonPointHandles.PointIndexHighlighted != null)
+            {
+                return true;
+            }
             return false;
         }
 
@@ -1174,7 +1182,10 @@ namespace GlueControl.Editing
             FlatRedBall.Screens.ScreenManager.PersistentPolygons.Remove(mainPolygon);
 #endif
             ResizeHandles.Destroy();
+            PolygonPointHandles.Destroy();
+
 #endif
         }
     }
+
 }

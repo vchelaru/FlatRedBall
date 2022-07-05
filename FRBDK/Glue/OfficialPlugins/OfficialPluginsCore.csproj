@@ -29,6 +29,7 @@
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
     <Compile Remove="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
@@ -168,6 +169,7 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />

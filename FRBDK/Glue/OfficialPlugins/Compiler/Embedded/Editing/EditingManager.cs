@@ -186,6 +186,7 @@ namespace GlueControl.Editing
             HighlightMarker.BrightColor = Color.LightGreen;
             HighlightMarker.MakePersistent();
             HighlightMarker.Name = nameof(HighlightMarker);
+            HighlightMarker.CanMoveItem = false;
 
             MeasurementMarker = new MeasurementMarker();
 
