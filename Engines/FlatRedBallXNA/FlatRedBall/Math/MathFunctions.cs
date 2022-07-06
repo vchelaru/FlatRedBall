@@ -94,7 +94,7 @@ namespace FlatRedBall.Math
         }
 
         /// <summary>
-        /// Determines the shortest absolute difference between two angles. For example, AngleToAngle(PI/4, -PI/4) will return -PI/2
+        /// Determines the shortest absolute difference between two angles. For example, AngleToAngle(PI/4, -PI/4) will return -PI/2.
         /// </summary>
         /// <remarks>
         /// This method will never return a value with absolute value greater than PI.  It will return 

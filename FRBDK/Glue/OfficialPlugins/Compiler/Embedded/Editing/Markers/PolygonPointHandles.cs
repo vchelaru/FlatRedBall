@@ -82,11 +82,36 @@ namespace GlueControl.Editing
 
             itemAsPolygon.ForceUpdateDependencies();
 
+            var handledLast = false;
+            // for now assume polygons have the last point overlapping:
             for (int i = 0; i < itemAsPolygon.Points.Count; i++)
             {
                 var position = itemAsPolygon.AbsolutePointPosition(i);
 
-                rectangles[i].Position = position;
+                var rectangle = rectangles[i];
+
+                rectangle.Position = position;
+
+                if (i < itemAsPolygon.Points.Count - 1 || !handledLast)
+                {
+                    if (i == PointIndexHighlighted)
+                    {
+                        rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                        rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                        if (i == 0)
+                        {
+                            rectangle = rectangles.LastOrDefault();
+                            rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                            rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                            handledLast = true;
+                        }
+                    }
+                    else
+                    {
+                        rectangle.Width = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                        rectangle.Height = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                    }
+                }
             }
         }
 
@@ -137,8 +162,8 @@ namespace GlueControl.Editing
             // todo - move it!
             var absolutePointAtIndex = polygon.AbsolutePointPosition(PointIndexGrabbed.Value);
 
-            absolutePointAtIndex.X += cursor.ScreenXChange;
-            absolutePointAtIndex.Y += -cursor.ScreenYChange;
+            absolutePointAtIndex.X += cursor.ScreenXChange / CameraLogic.CurrentZoomRatio;
+            absolutePointAtIndex.Y += -cursor.ScreenYChange / CameraLogic.CurrentZoomRatio;
 
             if (isEndpoint && areEndPointsOverlapping)
             {
