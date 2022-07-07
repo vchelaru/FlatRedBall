@@ -131,19 +131,23 @@ namespace FlatRedBall.Glue.FormHelpers
             
             PluginManager.AdjustDisplayedNamedObject(GlueState.Self.CurrentNamedObjectSave, mNosDisplayer);
 
-            mNosDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
-
-            // It seems as if the PropertyGrid will scroll to properties when they're added.
-            // That is, the PropertyGrid selects the last property added (I think).
-            // If I don't scroll to the top then the PropertyGrid always selects the "SourceType"
-            // property, which is annoying because users don't expect this. I used to have the ScrollToTop
-            // function inside of the UpdateToState method, but the PropertyGrid is assigned *after* UpdateToState.
-            // Therefore the ScrollToTop must be called after the PropertyGrid is assigned. I don't like that we have
-            // to manually do this but it might be the only option.
-            if (didInstanceChange)
+            GlueCommands.Self.DoOnUiThread(() =>
             {
-                mNosDisplayer.ScrollToTop();
-            }
+                mNosDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
+
+                // It seems as if the PropertyGrid will scroll to properties when they're added.
+                // That is, the PropertyGrid selects the last property added (I think).
+                // If I don't scroll to the top then the PropertyGrid always selects the "SourceType"
+                // property, which is annoying because users don't expect this. I used to have the ScrollToTop
+                // function inside of the UpdateToState method, but the PropertyGrid is assigned *after* UpdateToState.
+                // Therefore the ScrollToTop must be called after the PropertyGrid is assigned. I don't like that we have
+                // to manually do this but it might be the only option.
+                if (didInstanceChange)
+                {
+                    mNosDisplayer.ScrollToTop();
+                }
+            });
+
         }
 
         internal static void UpdateStateSaveDisplay()

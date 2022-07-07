@@ -744,14 +744,24 @@ namespace OfficialPlugins.VariableDisplay
                         // picks an AnimationChainList from a combo box:
                         //RefreshLogic.IgnoreNextRefresh();
 
-                        // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-
+                        // Discussion about SetVariableOn vs SetVariableOnAsync:
+                        // SetVariableOn happens immediately - it does not respect
+                        // the task system. SetVariableOnAsync does use the task system,
+                        // which is safer, since setting the value immediately can cause bugs
+                        // due to variables changing while other tasks are running. However, if
+                        // SetVariableOnAsync is used, then that means the logic for setting the
+                        // variable will not run until the TaskManager gets to this task. If there
+                        // are other tasks running, then that means the variable will not get set right
+                        // away. This can cause the property grid to display the old value after the user
+                        // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
+                        // think of a more sophisticated solution.
                         GlueCommands.Self.GluxCommands.SetVariableOn(
                             instance,
                             memberName,
                             value, performSaveAndGenerateCode: false, updateUi: false);
 
 
+                        // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
                         await System.Threading.Tasks.Task.Delay(400);
 
                         // Set subtext before refreshing property grid

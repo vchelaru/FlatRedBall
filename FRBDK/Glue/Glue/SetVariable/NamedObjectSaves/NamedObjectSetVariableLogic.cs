@@ -54,7 +54,8 @@ namespace FlatRedBall.Glue.SetVariable
                 element = ObjectFinder.Self.GetElementContaining(namedObjectSave);
             }
 
-            TaskManager.Self.WarnIfNotInTask();
+            // See discussion in NamedObjectVariableShowingLogic on why we don't do variable setting async
+            //TaskManager.Self.WarnIfNotInTask();
 
             if (PropertiesToMethods.ContainsKey(changedMember))
             {

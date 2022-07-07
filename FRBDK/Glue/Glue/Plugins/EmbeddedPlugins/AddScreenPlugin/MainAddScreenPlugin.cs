@@ -210,7 +210,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             if (shouldSave)
             {
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newScreen);
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
