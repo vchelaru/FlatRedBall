@@ -447,7 +447,20 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                             GlueState.Self.CurrentNamedObjectSave = nos;
                         }
-                        GlueCommands.Self.DialogCommands.FocusTab("Variables");
+
+                        var showVariables = true;
+                        var canShowPoints = nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon;
+                        var alreadyShownTabs = GlueState.Self.CurrentFocusedTabs;
+
+                        if(canShowPoints && alreadyShownTabs.Contains("Points"))
+                        {
+                            showVariables = false;
+                        }
+
+                        if(showVariables && !alreadyShownTabs.Contains("Variables"))
+                        {
+                            GlueCommands.Self.DialogCommands.FocusTab("Variables");
+                        }
                     });
                 }
             }, "Selecting object from game command");

@@ -1,10 +1,12 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -22,26 +24,28 @@ namespace OfficialPlugins.PointEditingPlugin
         PointEditControl pointEditControl; // This is the control we created
         PluginTab mTab; // This is the tab that will hold our control
         PointEditingViewModel ViewModel;
+        bool IsReactingToGluePropertyChangeEvent = true;
 
         public override void StartUp()
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
 
-            //this.ReactToChangedPropertyHandler += HandlePropertyChanged;
+            this.ReactToNamedObjectChangedValue += HandleNamedObjectValueChange;
 
             InitializeTab();
         }
 
         // Vic asks - why do we need this? Who else will modify points?
         // This causes infinite recursive calls.
-        //private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
-        //{
-        //    var namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
-        //    if(changedMember == "Points" && namedObjectSave != null)
-        //    {
-        //        RefreshToNamedObject(namedObjectSave);
-        //    }
-        //}
+        // Update July 6, 2022
+        // This is needed so the UI can update in response to UI changes 
+        private void HandleNamedObjectValueChange(string changedMember, object oldValue, NamedObjectSave namedObject)
+        {
+            if(namedObject != null & changedMember == nameof(Polygon.Points) && IsReactingToGluePropertyChangeEvent)
+            {
+                RefreshToNamedObject(namedObject);
+            }
+        }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
@@ -117,9 +121,16 @@ namespace OfficialPlugins.PointEditingPlugin
             var nos = GlueState.Self.CurrentNamedObjectSave;
             if(nos != null && respondToVmChanges && shouldRespondToProperty)
             {
-                var newValue = ViewModel.Points.ToList();
-                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
-                    nos, "Points", newValue);
+                TaskManager.Self.Add(async () =>
+                {
+                    var newValue = ViewModel.Points.ToList();
+                    IsReactingToGluePropertyChangeEvent = false;
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        nos, "Points", newValue);
+                    IsReactingToGluePropertyChangeEvent = true;
+
+                }, $"Responding to property changed {e.PropertyName}");
+
             }
         }
 
