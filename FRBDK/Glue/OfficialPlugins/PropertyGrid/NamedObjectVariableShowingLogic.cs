@@ -165,14 +165,14 @@ namespace OfficialPlugins.VariableDisplay
                     if (instanceElement != null)
                     {
                         var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
-
-                        if (variableInElement != null && !string.IsNullOrEmpty(variableInElement.SourceObject))
+                        var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
+                        if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
                         {
-                            var ownerNos = instanceElement.GetNamedObjectRecursively(variableInElement.SourceObject);
+                            var ownerNos = instanceElement.GetNamedObjectRecursively(baseVariable.SourceObject);
 
                             var ownerNosAti = ownerNos.GetAssetTypeInfo();
                             baseVariableDefinition = ownerNosAti?.VariableDefinitions
-                                .FirstOrDefault(item => item.Name == variableInElement.SourceObjectProperty);
+                                .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
                         }
                         // This could be null if the ownerNos doesn't have an ATI.
                         if (variableInElement != null && baseVariableDefinition == null)

@@ -222,18 +222,20 @@ namespace OfficialPlugins.VariableDisplay
 
             VariableDefinition variableDefinition = null;
             NamedObjectSave variableNosOwner = null;
-            if(!string.IsNullOrEmpty(variable.SourceObject ))
+            var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variable, element);
+            if(!string.IsNullOrEmpty(baseVariable?.SourceObject ))
             {
-                variableNosOwner = element.GetNamedObjectRecursively(variable.SourceObject);
-                variableDefinition = variableNosOwner?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variable.SourceObjectProperty);
+                variableNosOwner = element.GetNamedObjectRecursively(baseVariable.SourceObject);
+                variableDefinition = variableNosOwner?.GetAssetTypeInfo()?.VariableDefinitions
+                    .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
             }
 
 
-            if (!string.IsNullOrEmpty(variable.PreferredDisplayerTypeName) &&
-                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variable.PreferredDisplayerTypeName))
+            if (!string.IsNullOrEmpty(baseVariable.PreferredDisplayerTypeName) &&
+                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(baseVariable.PreferredDisplayerTypeName))
             {
                 instanceMember.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
-                    [variable.PreferredDisplayerTypeName];
+                    [baseVariable.PreferredDisplayerTypeName];
             }
             else if(variableDefinition?.PreferredDisplayer != null)
             {
