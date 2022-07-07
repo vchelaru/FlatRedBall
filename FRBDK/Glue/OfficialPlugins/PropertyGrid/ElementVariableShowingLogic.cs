@@ -217,12 +217,12 @@ namespace OfficialPlugins.VariableDisplay
             instanceMember.DisplayName = displayName;
             instanceMember.UnmodifiedVariableName = name;
 
-            TypeConverter converter = variable.GetTypeConverter(element);
+            var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variable, element);
+            TypeConverter converter = baseVariable.GetTypeConverter(element);
             instanceMember.TypeConverter = converter;
 
             VariableDefinition variableDefinition = null;
             NamedObjectSave variableNosOwner = null;
-            var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variable, element);
             if(!string.IsNullOrEmpty(baseVariable?.SourceObject ))
             {
                 variableNosOwner = element.GetNamedObjectRecursively(baseVariable.SourceObject);

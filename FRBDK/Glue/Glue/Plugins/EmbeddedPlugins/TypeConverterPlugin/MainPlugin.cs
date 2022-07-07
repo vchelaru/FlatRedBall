@@ -106,7 +106,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
                         if (customVariable != null)
                         {
-                            typeConverter = customVariable.GetTypeConverter(entity);
+                            var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
+                            typeConverter = baseVariable.GetTypeConverter(entity);
                         }
                     }
                 }
