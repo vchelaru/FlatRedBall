@@ -106,26 +106,28 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "string",
                                 Name = "memberName",
+                                GlueParameterOrder = 2,
 
                             },
                             new Parameter
                             {
                                 Type = "object",
                                 Name = "value",
+                                GlueParameterOrder = 3,
 
                             },
                             new Parameter {
                                 Type = "bool",
                                 Name = "performSaveAndGenerateCode",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 2
+                                GlueParameterOrder = 4
                             },
                             new Parameter
                             {
                                 Type = "bool",
                                 Name = "updateUi",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 3
+                                GlueParameterOrder = 5
                             }
                         },
                 AddEchoToGame = true

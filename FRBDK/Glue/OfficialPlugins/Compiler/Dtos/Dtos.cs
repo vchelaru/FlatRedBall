@@ -433,9 +433,32 @@ namespace OfficialPlugins.Compiler.Dtos
         public static TypedParameter FromValue(object value)
         {
             var toReturn = new TypedParameter();
-            toReturn.Type = value?.GetType().Name;
+            toReturn.Type = GetFriendlyName(value?.GetType());
             toReturn.Value = value;
             return toReturn;
+        }
+
+        static string GetFriendlyName(Type type)
+        {
+            string friendlyName = type?.Name;
+            if (type?.IsGenericType == true)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
         }
     }
 

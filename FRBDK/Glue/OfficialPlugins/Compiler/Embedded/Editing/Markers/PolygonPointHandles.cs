@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GlueControl.Managers;
 
 namespace GlueControl.Editing
 {
@@ -60,7 +61,7 @@ namespace GlueControl.Editing
             }
             if (cursor.PrimaryClick)
             {
-                DoCursorClickActivity();
+                DoCursorClickActivity(itemAsPolygon);
             }
         }
 
@@ -192,9 +193,30 @@ namespace GlueControl.Editing
             }
         }
 
-        private void DoCursorClickActivity()
+        private async void DoCursorClickActivity(Polygon polygon)
         {
-            PointIndexGrabbed = null;
+            if (polygon != null && PointIndexGrabbed != null)
+            {
+                PointIndexGrabbed = null;
+
+                var nos = GlueState.Self.CurrentNamedObjectSave;
+                var owner = GlueState.Self.CurrentElement;
+
+                var newValue = polygon.Points
+                    .Select(item => new Microsoft.Xna.Framework.Vector2((float)item.X, (float)item.Y))
+                    .ToList();
+
+                var assignments = new List<NosVariableAssignment>();
+                assignments.Add(
+                    new NosVariableAssignment
+                    {
+                        NamedObjectSave = nos,
+                        VariableName = nameof(Polygon.Points),
+                        Value = newValue
+                    });
+
+                await GlueCommands.Self.GluxCommands.SetVariableOnList(assignments, owner);
+            }
         }
     }
 

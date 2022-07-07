@@ -906,6 +906,26 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                     converted = list;
                 }
+                else if(typeName == GetFriendlyName(typeof(List<Vector2>)))
+                {
+                    var list = new List<Vector2>();
+                    foreach (JToken item in asJArray)
+                    {
+                        var vector2 = item.ToObject<Vector2>();
+                        list.Add(vector2);
+                    }
+                    converted = list;
+                }
+                else if (typeName == GetFriendlyName(typeof(List<Vector3>)))
+                {
+                    var list = new List<Vector3>();
+                    foreach (JObject item in asJArray)
+                    {
+                        var vector3 = item.ToObject<Vector3>();
+                        list.Add(vector3);
+                    }
+                    converted = list;
+                }
             }
             else if(parameter is double asDouble)
             {

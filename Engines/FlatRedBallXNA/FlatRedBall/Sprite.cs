@@ -667,12 +667,15 @@ namespace FlatRedBall
 
         public TextureAddressMode TextureAddressMode;
 
+        /// <summary>
+        /// Sets the forced texture filter for this sprite. 
+        /// By default this is null, and will use the GraphicsOptions TextureFilter.
+        /// </summary>
         public TextureFilter? TextureFilter;
 
         #endregion
 
 
-        #region XML Docs
         /// <summary>
         /// These can be used to change Sprite appearance
         /// on individual vertices.
@@ -681,11 +684,7 @@ namespace FlatRedBall
         /// The index begins counting at the top left (index 0)
         /// and increases moving clockwise.
         /// </remarks>
-        #endregion
-        public SpriteVertex[] Vertices
-        {
-            get { return mVertices; }
-        }
+        public SpriteVertex[] Vertices => mVertices;
 
         /// <summary>
         /// Represents the four (4) vertices used to render the Sprite.  This value is set
