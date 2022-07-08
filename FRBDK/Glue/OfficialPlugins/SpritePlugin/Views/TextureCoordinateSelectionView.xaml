@@ -17,7 +17,7 @@
             <ComboBox Width="100" ItemsSource="{Binding ZoomPercentages}" SelectedIndex="{Binding CurrentZoomLevelIndex}"
                       Margin="0,0,10,0"/>
             <TextBlock VerticalAlignment="Center">Snapping:</TextBlock>
-            <TextBox Width="40" Text="{Binding Snapping}"></TextBox>
+            <TextBox Width="40" Text="{Binding Snapping, UpdateSourceTrigger=PropertyChanged}" ></TextBox>
         </StackPanel>
         <wpf1:GumSKElement x:Name="Canvas" 
                            Grid.Row="1"
