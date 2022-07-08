@@ -216,6 +216,9 @@ namespace GlueControl.Editing
 
         private void UpdateMarkers(bool didChangeItemOver)
         {
+            // By buffering, we dont' send every command to the game directly. This is important if a group of objects is selected:
+            IsBuffering = true;
+
             if (didChangeItemOver)
             {
                 HighlightMarker.FadingSeed = TimeManager.CurrentTime;
@@ -227,6 +230,14 @@ namespace GlueControl.Editing
             HighlightMarker.Update();
 
             UpdateSelectedMarkers();
+
+            IsBuffering = false;
+            if (bufferedChangeArgs.Count > 0)
+            {
+                PropertyChanged(bufferedChangeArgs.ToList());
+
+                bufferedChangeArgs.Clear();
+            }
         }
 
         private void UpdateSelectedMarkers()
@@ -505,18 +516,11 @@ namespace GlueControl.Editing
 
             if (itemGrabbed != null)
             {
-                IsBuffering = true;
                 foreach (var item in itemsSelected)
                 {
                     var marker = MarkerFor(item);
                 }
-                IsBuffering = false;
-                if (bufferedChangeArgs.Count > 0)
-                {
-                    PropertyChanged(bufferedChangeArgs.ToList());
 
-                    bufferedChangeArgs.Clear();
-                }
             }
 
             itemGrabbed = null;
@@ -1084,5 +1088,4 @@ namespace GlueControl.Editing
 
         #endregion
     }
-
 }
