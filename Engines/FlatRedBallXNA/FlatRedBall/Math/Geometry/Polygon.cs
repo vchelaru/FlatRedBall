@@ -33,7 +33,7 @@ namespace FlatRedBall.Math.Geometry
         // fields in the Polygon class that don't exist in the PositionedObject class.
         // Therefore, the Polygon Pause instruction will simply use the PositionedObject's.
         // If any rate values are added to this class, the Pause method should be updated.  Likely
-        // a new Unpause instruction wll need to be created.
+        // a new Unpause instruction will need to be created.
 
         static internal int NumberOfTimesCollideAgainstPolygonCalled = 0;
         static internal int NumberOfTimesRadiusTestPassed = 0;

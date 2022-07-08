@@ -29,14 +29,22 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             {
                 compilerDirectives += "#define IncludeSetVariable\r\n";
             }
-            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
+
+            var fileVersion =
+                GlueState.Self.CurrentGlueProject.FileVersion;
+
+            if (fileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
             {
                 compilerDirectives += "#define SupportsEditMode\r\n";
             }
-            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenManagerHasPersistentPolygons)
+            if(fileVersion >= (int)GlueProjectSave.GluxVersions.ScreenManagerHasPersistentPolygons)
             {
                 compilerDirectives += "#define ScreenManagerHasPersistentPolygons\r\n";
             }
+            if(fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasTolerateMissingAnimations)
+            {
+                compilerDirectives += "#define SpriteHasTolerateMissingAnimations\r\n";
+            }            
 
             var hasGumResponse = PluginManager.CallPluginMethod("Gum Plugin", "HasGum");
             var asBool = hasGumResponse as bool?;

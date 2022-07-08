@@ -57,28 +57,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                 {
                     for (int i = 0; i < mBuffer.Count; i++)
                     {
-                        //try
-                        //{
-                        //    TextBox.SelectionStart = TextBox.Text.Length;
-                        //}
-                        //catch
-                        //{
-                        //    break;
-                        //}
-
-                        //TextBox.SelectionColor = mBuffer[i].Color;
-
-                        // adding newline adds spaces, as shown here:
-                        // https://stackoverflow.com/questions/22086790/how-to-remove-spacing-in-the-richtextbox
-
                         var block = new Paragraph();
                         block.Margin = new Thickness(0);
                         block.Foreground = mBuffer[i].Brush;
                         block.Inlines.Add(mBuffer[i].Text);
                         this.TextBox.Document.Blocks.Add(block);
-                        //this.TextBox.Document.Blocks.LastBlock.Margin = new Thickness();
 
-                        // It's focused right when the user clicks the tab, so need to figure this out.
                         //if(!this.TextBox.IsFocused)
                         {
                             this.TextBox.ScrollToEnd();
@@ -90,9 +74,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                 }
             }
         }
-
-        // TODO:
-        // 3.  Add buttons to delete entire text
 
         public void OnOutput(string output)
         {

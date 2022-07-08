@@ -52,6 +52,13 @@ namespace FlatRedBall
 
         bool mIgnoreAnimationChainTextureFlip;
 
+        /// <summary>
+        /// Whether the Sprite code will tolerate (not throw exceptions)
+        /// CurrentChainName assignments which do not exist in the code. Normally
+        /// this is false. This is set to true in edit mode.
+        /// </summary>
+        public static bool TolerateMissingAnimations = false;
+
         #endregion
 
         #region Particle Fields
@@ -242,7 +249,7 @@ namespace FlatRedBall
                         }
                     }
 
-                    if (!wasAnimationSet)
+                    if (!wasAnimationSet && !TolerateMissingAnimations) 
                     {
                         string error = "There is no animation named " + value;
 

@@ -807,6 +807,9 @@ namespace GlueControl
                     // added without restarting the app, which would then reset this value back
                     // to false. Let's keep it simple.
                     Polygon.TolerateEmptyPolygons = true;
+#if SpriteHasTolerateMissingAnimations
+                    Sprite.TolerateMissingAnimations = true;
+#endif
                 }
 
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
@@ -816,7 +819,7 @@ namespace GlueControl
             }
 
             return response;
-#else 
+#else
             return null;
 #endif
         }
