@@ -84,16 +84,23 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                 });
 
+            object dto = null;
+            if (matchingMethod != null)
+            {
+                var dtoType = matchingMethod.GetParameters()[0].ParameterType;
+                dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+
+            }
+
+            string outputText = dto is FacadeCommandBase facadeCommandBase
+                ? $"Processing command of type {dtoTypeName}.{facadeCommandBase.Method}"
+                : $"Processing command of type {dtoTypeName}";
+
             await TaskManager.Self.AddAsync(async () =>
             {
-                if(matchingMethod != null)
+                if(dto != null)
                 {
-                    var dtoType = matchingMethod.GetParameters()[0].ParameterType;
-
-                    var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
-
                     var response = ReceiveDto(dto);
-
                 }
                 else
                 {
@@ -117,7 +124,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                 }
             },
-            $"Processing command of type {dtoTypeName}");
+            outputText);
         }
 
         private static object ReceiveDto(object dto)

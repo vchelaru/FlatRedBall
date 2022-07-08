@@ -6,18 +6,19 @@ using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Controls;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
 {
     [Export(typeof(PluginBase))]
     public class OutputPrintPlugin : EmbeddedPlugin
     {
-        OutputWindow mOutputWindow; // This is the control we created
-        PluginTab tab;
+        OutputControl outputControl; // This is the control we created
+
         public override void StartUp()
         {
-            mOutputWindow = new OutputWindow();
-            tab = base.CreateAndAddTab(mOutputWindow, "Output", TabLocation.Bottom);
+            outputControl = new OutputControl();
+            var tab = base.CreateAndAddTab(outputControl, "Output", TabLocation.Bottom);
 
             this.OnOutputHandler += OnOutput;
             this.OnErrorOutputHandler += OnErrorOutput;
@@ -26,17 +27,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
 
         public void OnOutput(string output)
         {
-            if (mOutputWindow != null && !string.IsNullOrWhiteSpace(output))
+            if (!string.IsNullOrWhiteSpace(output))
             {
-                mOutputWindow.OnOutput(output);
+                outputControl.OnOutput(output);
             }
         }
 
         public void OnErrorOutput(string output)
         {
-            if (mOutputWindow != null && !string.IsNullOrWhiteSpace(output))
+            if (!string.IsNullOrWhiteSpace(output))
             {
-                mOutputWindow.OnErrorOutput(output);
+                outputControl?.OnErrorOutput(output);
             }
         }
     }

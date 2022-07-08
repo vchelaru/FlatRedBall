@@ -493,10 +493,11 @@ namespace GlueControl.Editing
 
     #endregion
 
-
     public class SelectionMarker : ISelectionMarker, IReadOnlyScalable
     {
         #region Fields/Properties
+
+        bool IsGrabbed = false;
 
         Polygon mainPolygon;
 
@@ -750,49 +751,54 @@ namespace GlueControl.Editing
                 return;
             }
 
-            if (ownerAsPositionable.X != GrabbedPosition.X)
+            if (IsGrabbed)
             {
-                var value = ownerAsPositionedObject?.Parent == null
-                    ? ownerAsPositionable.X
-                    : ownerAsPositionedObject.RelativeX;
-                PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.X), value);
-            }
-            if (ownerAsPositionable.Y != GrabbedPosition.Y)
-            {
-                var value = ownerAsPositionedObject?.Parent == null
-                    ? ownerAsPositionable.Y
-                    : ownerAsPositionedObject.RelativeY;
-                PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.Y), value);
+                if (ownerAsPositionable.X != GrabbedPosition.X)
+                {
+                    var value = ownerAsPositionedObject?.Parent == null
+                        ? ownerAsPositionable.X
+                        : ownerAsPositionedObject.RelativeX;
+                    PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.X), value);
+                }
+                if (ownerAsPositionable.Y != GrabbedPosition.Y)
+                {
+                    var value = ownerAsPositionedObject?.Parent == null
+                        ? ownerAsPositionable.Y
+                        : ownerAsPositionedObject.RelativeY;
+                    PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.Y), value);
+                }
+
+                if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
+                {
+                    var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
+                    var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
+                    if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
+                        GrabbedTextureScale != asSprite.TextureScale)
+                    {
+                        PropertyChanged?.Invoke(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
+                    }
+                    else
+                    {
+                        if (didChangeWidth)
+                        {
+                            PropertyChanged?.Invoke(Owner, "Width", asScalable.ScaleX * 2);
+                        }
+                        if (didChangeHeight)
+                        {
+                            PropertyChanged?.Invoke(Owner, "Height", asScalable.ScaleY * 2);
+                        }
+                    }
+                }
+                else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
+                {
+                    if (GrabbedRadius != circle.Radius)
+                    {
+                        PropertyChanged?.Invoke(Owner, nameof(circle.Radius), circle.Radius);
+                    }
+                }
             }
 
-            if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
-            {
-                var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
-                var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
-                    GrabbedTextureScale != asSprite.TextureScale)
-                {
-                    PropertyChanged?.Invoke(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
-                }
-                else
-                {
-                    if (didChangeWidth)
-                    {
-                        PropertyChanged?.Invoke(Owner, "Width", asScalable.ScaleX * 2);
-                    }
-                    if (didChangeHeight)
-                    {
-                        PropertyChanged?.Invoke(Owner, "Height", asScalable.ScaleY * 2);
-                    }
-                }
-            }
-            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
-            {
-                if (GrabbedRadius != circle.Radius)
-                {
-                    PropertyChanged?.Invoke(Owner, nameof(circle.Radius), circle.Radius);
-                }
-            }
+            IsGrabbed = false;
 
         }
 
@@ -808,6 +814,7 @@ namespace GlueControl.Editing
             /////////End Early Out///////////////
 
 
+            IsGrabbed = ownerAsPositionable != null;
 
             ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
             if (ownerAsPositionable != null)
@@ -1246,8 +1253,6 @@ namespace GlueControl.Editing
             return false;
         }
 
-
-
         public bool ShouldSuppress(string variableName) =>
             variableName == "X" ||
             variableName == "Y" ||
@@ -1277,6 +1282,5 @@ namespace GlueControl.Editing
 #endif
         }
     }
-
 
 }

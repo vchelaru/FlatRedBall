@@ -165,7 +165,6 @@ namespace FlatRedBall.Glue.IO
 
                 foreach (var file in distinctFiles)
                 {
-                    anyFlushed = true;
 
                     var fileCopy = file;
 
@@ -182,6 +181,7 @@ namespace FlatRedBall.Glue.IO
 
                     if(!skip)
                     {
+                        anyFlushed = true;
                         TaskManager.Self.Add(async () =>
                             {
                                 var didReact = await ReactToChangedFile(fileCopy);
