@@ -527,9 +527,39 @@ namespace GlueControl.Editing
 
 
         public float PositionSnappingSize = 8;
+        float polygonPointSnapSize;
+        public float PolygonPointSnapSize
+        {
+            get => polygonPointSnapSize;
+
+            set
+            {
+                polygonPointSnapSize = value;
+                RefreshPolygonPointSnapSize();
+            }
+        }
+
+        private void RefreshPolygonPointSnapSize()
+        {
+            PolygonPointHandles.PointSnapSize =
+                IsSnappingEnabled
+                    ? polygonPointSnapSize
+                    : (float?)null;
+        }
+
         // Size snapping has to be 2x as big as position snapping, otherwise resizing through a handle can result in half-snap positions which is confusing
         public float SizeSnappingSize => PositionSnappingSize * 2;
-        public bool IsSnappingEnabled = true;
+
+        bool isSnappingEnabled = true;
+        public bool IsSnappingEnabled
+        {
+            get => isSnappingEnabled;
+            set
+            {
+                isSnappingEnabled = value;
+                RefreshPolygonPointSnapSize();
+            }
+        }
 
 
 
@@ -1187,5 +1217,6 @@ namespace GlueControl.Editing
 #endif
         }
     }
+
 
 }

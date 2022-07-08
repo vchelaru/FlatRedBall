@@ -25,6 +25,7 @@ namespace OfficialPlugins.Compiler.Models
 
         public bool EnableSnapping { get; set; }
         public decimal SnapSize { get; set; }
+        public decimal PolygonPointSnapSize { get; set; }
 
         public bool SetBackgroundColor { get; set; } = false;
         public int BackgroundRed { get; set; }
@@ -40,6 +41,7 @@ namespace OfficialPlugins.Compiler.Models
 
             EnableSnapping = true;
             SnapSize = 8;
+            PolygonPointSnapSize = 1;
         }
     }
 }

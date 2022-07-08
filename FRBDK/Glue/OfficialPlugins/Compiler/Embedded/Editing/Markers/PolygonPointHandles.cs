@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Managers;
+using FlatRedBall.Math;
 
 namespace GlueControl.Editing
 {
@@ -13,6 +14,9 @@ namespace GlueControl.Editing
     {
         List<AxisAlignedRectangle> rectangles = new List<AxisAlignedRectangle>();
 
+        Microsoft.Xna.Framework.Vector3 UnsnappedPosition;
+
+        public float? PointSnapSize { get; set; }
 
         int? PointIndexGrabbed;
         public int? PointIndexHighlighted { get; private set; }
@@ -49,7 +53,7 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryPush)
             {
-                DoCursorPushActivity();
+                DoCursorPushActivity(itemAsPolygon);
             }
             if (cursor.PrimaryDown)
             {
@@ -129,7 +133,7 @@ namespace GlueControl.Editing
         }
 
 
-        private void DoCursorPushActivity()
+        private void DoCursorPushActivity(Polygon polygon)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
             PointIndexGrabbed = null;
@@ -140,6 +144,8 @@ namespace GlueControl.Editing
                 {
                     PointIndexGrabbed = i;
                     PointIndexHighlighted = i;
+                    // rectangle and point should be at the same point, but let's go to the source just in case...
+                    UnsnappedPosition = polygon.AbsolutePointPosition(i);
                     break;
                 }
             }
@@ -160,21 +166,27 @@ namespace GlueControl.Editing
             var areEndPointsOverlapping =
                 polygon.AbsolutePointPosition(0) == polygon.AbsolutePointPosition(polygon.Points.Count - 1);
 
-            // todo - move it!
-            var absolutePointAtIndex = polygon.AbsolutePointPosition(PointIndexGrabbed.Value);
 
-            absolutePointAtIndex.X += cursor.ScreenXChange / CameraLogic.CurrentZoomRatio;
-            absolutePointAtIndex.Y += -cursor.ScreenYChange / CameraLogic.CurrentZoomRatio;
+            UnsnappedPosition.X += cursor.ScreenXChange / CameraLogic.CurrentZoomRatio;
+            UnsnappedPosition.Y += -cursor.ScreenYChange / CameraLogic.CurrentZoomRatio;
+
+            float Snap(float value) =>
+                PointSnapSize > 0
+                ? MathFunctions.RoundFloat(value, PointSnapSize.Value)
+                : value;
+
+            var snappedX = Snap(UnsnappedPosition.X);
+            var snappedY = Snap(UnsnappedPosition.Y);
 
             if (isEndpoint && areEndPointsOverlapping)
             {
-                polygon.SetPointFromAbsolutePosition(0, absolutePointAtIndex.X, absolutePointAtIndex.Y);
-                polygon.SetPointFromAbsolutePosition(polygon.Points.Count - 1, absolutePointAtIndex.X, absolutePointAtIndex.Y);
+                polygon.SetPointFromAbsolutePosition(0, snappedX, snappedY);
+                polygon.SetPointFromAbsolutePosition(polygon.Points.Count - 1, snappedX, snappedY);
 
             }
             else
             {
-                polygon.SetPointFromAbsolutePosition(PointIndexGrabbed.Value, absolutePointAtIndex.X, absolutePointAtIndex.Y);
+                polygon.SetPointFromAbsolutePosition(PointIndexGrabbed.Value, snappedX, snappedY);
             }
         }
 

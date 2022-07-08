@@ -1076,6 +1076,7 @@ namespace GlueControl
             }
 
             EditingManager.Self.SnapSize = (float)dto.SnapSize;
+            EditingManager.Self.PolygonPointSnapSize = (float)dto.PolygonPointSnapSize;
             EditingManager.Self.IsSnappingEnabled = dto.EnableSnapping;
 
         }

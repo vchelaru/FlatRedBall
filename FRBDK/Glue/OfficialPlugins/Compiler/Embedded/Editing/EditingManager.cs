@@ -122,6 +122,23 @@ namespace GlueControl.Editing
             }
         }
 
+        float polygonPointSnapSize = 1;
+        public float PolygonPointSnapSize
+        {
+            get => polygonPointSnapSize;
+            set
+            {
+                polygonPointSnapSize = value;
+                foreach (var marker in SelectedMarkers)
+                {
+                    if (marker is SelectionMarker selectionMarker)
+                    {
+                        selectionMarker.PolygonPointSnapSize = polygonPointSnapSize;
+                    }
+                }
+            }
+        }
+
         bool isSnappingEnabled;
         public bool IsSnappingEnabled
         {
@@ -293,6 +310,7 @@ namespace GlueControl.Editing
             {
                 var selectionMarker = new SelectionMarker(owner);
                 selectionMarker.PositionSnappingSize = SnapSize;
+                selectionMarker.PolygonPointSnapSize = PolygonPointSnapSize;
                 selectionMarker.IsSnappingEnabled = IsSnappingEnabled;
                 newMarker = selectionMarker;
             }

@@ -89,6 +89,13 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public decimal PolygonPointSnapSize
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
+
 
         [DependsOn(nameof(EnableGameEditMode))]
         public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
@@ -110,6 +117,7 @@ namespace OfficialPlugins.Compiler.ViewModels
 
             this.EnableSnapping = model.EnableSnapping;
             this.SnapSize = model.SnapSize;
+            this.PolygonPointSnapSize = model.PolygonPointSnapSize;
         }
 
         internal void SetModel(CompilerSettingsModel compilerSettings)
@@ -130,7 +138,8 @@ namespace OfficialPlugins.Compiler.ViewModels
 
             compilerSettings.EnableSnapping = this.EnableSnapping ;
             compilerSettings.SnapSize = this.SnapSize;
-            
+            compilerSettings.PolygonPointSnapSize = this.PolygonPointSnapSize;
+
             compilerSettings.ToolbarEntitiesAndStates.Clear();
 
 

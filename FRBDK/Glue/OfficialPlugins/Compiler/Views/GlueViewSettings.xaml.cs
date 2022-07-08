@@ -75,6 +75,7 @@ namespace OfficialPlugins.Compiler.Views
 
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), "Snapping");
             this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), "Snapping");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.PolygonPointSnapSize), "Snapping");
 
 
             var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 

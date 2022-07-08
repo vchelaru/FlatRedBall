@@ -747,6 +747,7 @@ namespace OfficialPlugins.Compiler
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundBlue):
                 case nameof(ViewModels.GlueViewSettingsViewModel.SnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.EnableSnapping):
+                case nameof(ViewModels.GlueViewSettingsViewModel.PolygonPointSnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
                     await SendGlueViewSettingsToGame();
                     break;
@@ -768,7 +769,8 @@ namespace OfficialPlugins.Compiler
                 BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,
                 BackgroundBlue = GlueViewSettingsViewModel.BackgroundBlue,
                 EnableSnapping = GlueViewSettingsViewModel.EnableSnapping,
-                SnapSize = GlueViewSettingsViewModel.SnapSize
+                SnapSize = GlueViewSettingsViewModel.SnapSize,
+                PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
             };
 
             await CommandSender.Send(dto);
