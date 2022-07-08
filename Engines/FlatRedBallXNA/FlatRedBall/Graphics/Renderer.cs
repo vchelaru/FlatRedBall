@@ -2683,7 +2683,7 @@ namespace FlatRedBall.Graphics
 
             int renderBreakNumber = 0;
 
-
+            var addedNewVertexBuffer = false;
             for (int i = firstSprite; i < firstSprite + numberToDraw; i++)
             {
                 Sprite spriteAtIndex = sa[i];
@@ -2691,7 +2691,7 @@ namespace FlatRedBall.Graphics
                 #region if the Sprite is different from the last RenderBreak, break the batch
 
 
-                if (renderBreaks[renderBreakNumber].DiffersFrom(spriteAtIndex))
+                if (renderBreaks[renderBreakNumber].DiffersFrom(spriteAtIndex) || addedNewVertexBuffer)
                 {
                     renderBreak =
                         new RenderBreak(2000 * vertexBufferNumForRenderBreaks + vertNumForRenderBreaks / 3, spriteAtIndex);
@@ -2709,6 +2709,12 @@ namespace FlatRedBall.Graphics
                 {
                     vertexBufferNumForRenderBreaks++;
                     vertNumForRenderBreaks = 0;
+                    addedNewVertexBuffer = true;
+
+                }
+                else
+                {
+                    addedNewVertexBuffer = false;
                 }
             }
 
