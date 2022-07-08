@@ -1182,7 +1182,11 @@ namespace GlueControl.Editing
 
                     if (scaleXChange != 0)
                     {
+                        var scaleBefore = scalable.ScaleX;
                         scalable.ScaleX = newScaleX;
+                        // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
+                        // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
+                        scaleXChange = scalable.ScaleX - scaleBefore;
                     }
                 }
 
@@ -1200,7 +1204,10 @@ namespace GlueControl.Editing
 
                     if (scaleYChange != 0)
                     {
+                        var scaleBefore = scalable.ScaleY;
                         scalable.ScaleY = newScaleY;
+                        // see the scaleXAssignment above for info on why we use the object:
+                        scaleYChange = scalable.ScaleY - scaleBefore;
                     }
                 }
 
