@@ -31,13 +31,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             InitializeComponent();
 
-            this.Loaded += HandleLoaded;
+            // Intentionally do not move the window to the cursor. Users place this where they want it.
+            //this.Loaded += HandleLoaded;
         }
 
-        private void HandleLoaded(object sender, RoutedEventArgs e)
-        {
-            GlueCommands.Self.DialogCommands.MoveToCursor(this);
-        }
+
 
         private void OkButtonClick(object sender, RoutedEventArgs e)
         {

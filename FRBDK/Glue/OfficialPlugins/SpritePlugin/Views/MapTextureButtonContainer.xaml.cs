@@ -25,6 +25,7 @@ namespace OfficialPlugins.SpritePlugin.Views
     /// </summary>
     public partial class MapTextureButtonContainer : UserControl, IDataUi
     {
+        static TextureCoordinateSelectionViewModel LastViewModel;
         public MapTextureButtonContainer()
         {
             InitializeComponent();
@@ -55,76 +56,106 @@ namespace OfficialPlugins.SpritePlugin.Views
             var currentNos = GlueState.Self.CurrentNamedObjectSave;
             var currentElement = GlueState.Self.CurrentElement;
 
+            ReferencedFileSave textureRfs = GetTextureReferencedFileSave(currentNos, currentElement);
+
+            if (textureRfs != null)
+            {
+                TextureCoordinateSelectionWindow window;
+                TextureCoordinateSelectionViewModel viewModel;
+                float left, top, right, bottom;
+
+                window = new TextureCoordinateSelectionWindow();
+                var fullFile = GlueCommands.Self.FileCommands.GetFilePath(textureRfs);
+                window.TextureFilePath = fullFile;
+
+                viewModel = GetNewViewModel(currentNos, currentElement, window, out left, out top, out right, out bottom);
+
+                if(LastViewModel != null)
+                {
+                    viewModel.Snapping = LastViewModel.Snapping;
+                    viewModel.WindowX = LastViewModel.WindowX;
+                    viewModel.WindowY = LastViewModel.WindowY;
+                    viewModel.WindowWidth = LastViewModel.WindowWidth;
+                    viewModel.WindowHeight = LastViewModel.WindowHeight;
+                }
+                else
+                {
+                    viewModel.WindowWidth = 400;
+                    viewModel.WindowHeight = 400;
+                }
+
+                window.DataContext = viewModel;
+                var result = window.ShowDialog();
+
+                if (result == true)
+                {
+                    ApplyViewModel(currentNos, currentElement, viewModel, left, top, right, bottom);
+                }
+
+                LastViewModel = viewModel;
+            }
+        }
+
+        private static TextureCoordinateSelectionViewModel GetNewViewModel(NamedObjectSave currentNos, GlueElement currentElement, 
+            TextureCoordinateSelectionWindow window, out float left, out float top, out float right, out float bottom)
+        {
+            var viewModel = new TextureCoordinateSelectionViewModel();
+            left = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                nameof(Sprite.LeftTexturePixel)) as float? ?? 0;
+            top = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                nameof(Sprite.TopTexturePixel)) as float? ?? 0;
+            float defaultWidth = 256;
+            float defaultHeight = 256;
+            if (window.Texture != null)
+            {
+                defaultWidth = window.Texture.Width;
+                defaultHeight = window.Texture.Height;
+            }
+
+            right = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;
+            if (right == 0)
+            {
+                right = defaultWidth;
+            }
+
+            bottom = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+                nameof(Sprite.BottomTexturePixel)) as float? ?? defaultHeight;
+            if (bottom == 0)
+            {
+                bottom = defaultHeight;
+            }
+
+            viewModel.LeftTexturePixel = (int)left;
+            viewModel.TopTexturePixel = (int)top;
+            viewModel.SelectedWidthPixels = (int)(right - left);
+            viewModel.SelectedHeightPixels = (int)(bottom - top);
+            return viewModel;
+        }
+
+        private static ReferencedFileSave GetTextureReferencedFileSave(NamedObjectSave currentNos, GlueElement currentElement)
+        {
             ReferencedFileSave textureRfs = null;
 
-            if(currentNos != null && currentElement != null)
+            if (currentNos != null && currentElement != null)
             {
                 var textureValue = ObjectFinder.GetValueRecursively(currentNos, currentElement, "Texture") as string;
 
-                if(textureValue != null)
+                if (textureValue != null)
                 {
                     textureRfs = currentElement.GetReferencedFileSaveRecursively(textureValue);
                 }
 
             }
 
-            if(textureRfs != null)
-            { 
-                var fullFile = GlueCommands.Self.FileCommands.GetFilePath(textureRfs);
-
-                var window = new TextureCoordinateSelectionWindow();
-                window.TextureFilePath = fullFile;
-                var viewModel = new TextureCoordinateSelectionViewModel();
-
-                var left = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.LeftTexturePixel)) as float? ?? 0;
-
-                var top = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.TopTexturePixel)) as float? ?? 0;
-
-                float defaultWidth = 256;
-                float defaultHeight = 256;
-                if(window.Texture != null)
-                {
-                    defaultWidth = window.Texture.Width;
-                    defaultHeight = window.Texture.Height;
-                }
-
-                var right = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;
-
-                if(right == 0)
-                {
-                    right = defaultWidth;
-                }
-
-                var bottom = ObjectFinder.GetValueRecursively(currentNos, currentElement,
-                    nameof(Sprite.BottomTexturePixel)) as float? ?? defaultHeight;
-
-                if(bottom == 0)
-                {
-                    bottom = defaultHeight;
-                }
-
-                viewModel.LeftTexturePixel = (int)left;
-                viewModel.TopTexturePixel = (int)top;
-                viewModel.SelectedWidthPixels = (int)(right - left);
-                viewModel.SelectedHeightPixels = (int)(bottom - top);
-
-                window.DataContext = viewModel;
-                var result = window.ShowDialog();
-
-                if(result == true)
-                {
-                    ApplyViewModel(currentNos, currentElement, viewModel, left, top, right, bottom);
-                }
-            }
+            return textureRfs;
         }
 
-        private static void ApplyViewModel(NamedObjectSave currentNos, GlueElement currentElement, TextureCoordinateSelectionViewModel viewModel, float left, float top, float right, float bottom)
+        private static void ApplyViewModel(NamedObjectSave currentNos, GlueElement currentElement, TextureCoordinateSelectionViewModel viewModel, 
+            float oldLeft, float oldTop, float oldRight, float oldBottom)
         {
             bool didAnyChange = false;
-            if (viewModel.LeftTexturePixelInt != (int)left)
+            if (viewModel.LeftTexturePixelInt != (int)oldLeft)
             {
                 GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
                     nameof(Sprite.LeftTexturePixel),
@@ -132,7 +163,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                     performSaveAndGenerateCode: false, updateUi: true);
                 didAnyChange = true;
             }
-            if (viewModel.TopTexturePixelInt != (int)top)
+            if (viewModel.TopTexturePixelInt != (int)oldTop)
             {
                 GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
                     nameof(Sprite.TopTexturePixel),
@@ -140,7 +171,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                     performSaveAndGenerateCode: false, updateUi: true);
                 didAnyChange = true;
             }
-            if (viewModel.SelectedWidthPixelsInt != (int)(right - left))
+            if (viewModel.SelectedWidthPixelsInt != (int)(oldRight - oldLeft))
             {
                 GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
                     nameof(Sprite.RightTexturePixel),
@@ -148,7 +179,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                     performSaveAndGenerateCode: false, updateUi: true);
                 didAnyChange = true;
             }
-            if (viewModel.SelectedHeightPixelsInt != (int)(bottom - top))
+            if (viewModel.SelectedHeightPixelsInt != (int)(oldBottom - oldTop))
             {
                 GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
                     nameof(Sprite.BottomTexturePixel),

@@ -93,6 +93,12 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
         [DependsOn(nameof(SelectedHeightPixels))]
         public string CoordinateDisplay => $"X:{LeftTexturePixel} Y:{TopTexturePixel} Width:{SelectedWidthPixels} Height:{SelectedHeightPixels}";
 
+        public double WindowX { get; set; }
+        public double WindowY { get; set; }
+
+        public double WindowWidth { get; set; }
+        public double WindowHeight { get; set; }
+
         public TextureCoordinateSelectionViewModel()
         {
             CurrentZoomLevelIndex = 8;
