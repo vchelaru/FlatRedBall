@@ -182,6 +182,10 @@ namespace GlueControl.Editing
                 {
                     UpdateHandlePositions(scalable, selectionMarker.Position);
                 }
+                else if (item is Circle asCircle)
+                {
+                    UpdateHandlePositions(asCircle, selectionMarker.Position);
+                }
 
                 if (selectionMarker.CanMoveItem)
                 {
@@ -313,6 +317,54 @@ namespace GlueControl.Editing
 
         }
 
+        void UpdateHandlePositions(Circle circle, Vector3 objectCenter)
+        {
+            var handle = rectangles[0];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[1];
+            handle.X = 0;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[2];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[3];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = 0;
+            handle.Z = 0;
+
+            handle = rectangles[4];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[5];
+            handle.X = 0;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[6];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[7];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = 0;
+            handle.Z = 0;
+
+            foreach (var rect in rectangles)
+            {
+                rect.Position += objectCenter;
+            }
+        }
+
         private void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
@@ -440,6 +492,7 @@ namespace GlueControl.Editing
     }
 
     #endregion
+
 
     public class SelectionMarker : ISelectionMarker, IReadOnlyScalable
     {

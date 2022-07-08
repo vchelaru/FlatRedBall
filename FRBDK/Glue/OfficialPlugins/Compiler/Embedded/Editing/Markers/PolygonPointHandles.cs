@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Managers;
 using FlatRedBall.Math;
+using FlatRedBall.Gui;
+
 
 namespace GlueControl.Editing
 {
@@ -149,12 +151,23 @@ namespace GlueControl.Editing
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
             ///////////////Early Out////////////
-            if (PointIndexGrabbed == null || (cursor.ScreenXChange == 0 && cursor.ScreenYChange == 0))
+            if (PointIndexGrabbed == null)
             {
                 return;
             }
             /////////////End Early Out//////////
+            var circle = EditorVisuals.Circle(polygon.BoundingRadius, polygon.Position);
+            circle.Color = new Microsoft.Xna.Framework.Color(.5f, .5f, .5f, .5f);
 
+            var didMove = cursor.ScreenXChange != 0 || cursor.ScreenYChange != 0;
+            if (didMove)
+            {
+                DoCursorDownMovement(polygon, cursor);
+            }
+        }
+
+        private void DoCursorDownMovement(Polygon polygon, Cursor cursor)
+        {
             var isEndpoint = PointIndexGrabbed == 0 || PointIndexGrabbed == polygon.Points.Count - 1;
 
             var areEndPointsOverlapping =
@@ -182,9 +195,6 @@ namespace GlueControl.Editing
             {
                 polygon.SetPointFromAbsolutePosition(PointIndexGrabbed.Value, snappedX, snappedY);
             }
-
-            var circle = EditorVisuals.Circle(polygon.BoundingRadius, polygon.Position);
-            circle.Color = new Microsoft.Xna.Framework.Color(.5f, .5f, .5f, .5f);
         }
 
         private void DoCursorHoverActivity()
