@@ -12,6 +12,8 @@ namespace GlueControl.Editing
 {
     internal class PolygonPointHandles
     {
+        #region Fields/Properties
+
         List<AxisAlignedRectangle> rectangles = new List<AxisAlignedRectangle>();
 
         Microsoft.Xna.Framework.Vector3 UnsnappedPosition;
@@ -23,14 +25,7 @@ namespace GlueControl.Editing
 
         public bool Visible { get; set; }
 
-        public void Destroy()
-        {
-            for (int i = 0; i < rectangles.Count; i++)
-            {
-                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
-                rectangles[i].Visible = false;
-            }
-        }
+        #endregion
 
         public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
         {
@@ -73,7 +68,7 @@ namespace GlueControl.Editing
         {
             while (count < rectangles.Count)
             {
-                rectangles.Remove(rectangles.LastOrDefault());
+                RemovePointRectangle(rectangles.LastOrDefault());
             }
             while (count > rectangles.Count)
             {
@@ -126,12 +121,11 @@ namespace GlueControl.Editing
             rectangle.Width = ResizeHandles.DefaultHandleDimension;
             rectangle.Height = ResizeHandles.DefaultHandleDimension;
 
-            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
+            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
             ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
             rectangle.Visible = true;
             rectangles.Add(rectangle);
         }
-
 
         private void DoCursorPushActivity(Polygon polygon)
         {
@@ -188,6 +182,9 @@ namespace GlueControl.Editing
             {
                 polygon.SetPointFromAbsolutePosition(PointIndexGrabbed.Value, snappedX, snappedY);
             }
+
+            var circle = EditorVisuals.Circle(polygon.BoundingRadius, polygon.Position);
+            circle.Color = new Microsoft.Xna.Framework.Color(.5f, .5f, .5f, .5f);
         }
 
         private void DoCursorHoverActivity()
@@ -228,6 +225,23 @@ namespace GlueControl.Editing
                     });
 
                 await GlueCommands.Self.GluxCommands.SetVariableOnList(assignments, owner);
+            }
+        }
+
+        public void RemovePointRectangle(AxisAlignedRectangle rectangle)
+        {
+            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
+            ShapeManager.Remove(rectangle);
+            rectangle.Visible = false;
+            rectangles.Remove(rectangle);
+        }
+
+        public void Destroy()
+        {
+            for (int i = 0; i < rectangles.Count; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
+                rectangles[i].Visible = false;
             }
         }
     }

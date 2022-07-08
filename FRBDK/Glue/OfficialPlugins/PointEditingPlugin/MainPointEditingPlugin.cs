@@ -19,7 +19,7 @@ using System.Windows.Forms;
 namespace OfficialPlugins.PointEditingPlugin
 {
     [Export(typeof(PluginBase))]
-    public class MainPlugin : EmbeddedPlugin
+    public class MainPointEditingPlugin : EmbeddedPlugin
     {
         PointEditControl pointEditControl; // This is the control we created
         PluginTab mTab; // This is the tab that will hold our control

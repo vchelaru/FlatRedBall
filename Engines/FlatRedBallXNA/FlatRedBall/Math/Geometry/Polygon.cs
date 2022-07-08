@@ -156,7 +156,7 @@ namespace FlatRedBall.Math.Geometry
                 }
                 else
                 {
-                    if (value.Count == 0)
+                    if (value.Count == 0 && TolerateEmptyPolygons == false)
                     {
                         throw new System.IndexOutOfRangeException("Cannot set the Points property to an IList of 0 Points");
                     }
@@ -164,7 +164,9 @@ namespace FlatRedBall.Math.Geometry
                     if (mPoints == null || mPoints.Length != value.Count)
                     {
                         mPoints = new Point[value.Count];
-                        int valueCountMinusOne = value.Count - 1;
+                        int valueCountMinusOne = 
+                            // In edit mode we tolerate 0-sizes so we need a Math.Max call to prevent negative values
+                            System.Math.Max(0, value.Count - 1);
 
                         mCenterPoints = new Point3D[valueCountMinusOne];
                     }
