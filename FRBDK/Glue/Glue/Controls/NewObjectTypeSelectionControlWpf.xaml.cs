@@ -161,7 +161,7 @@ namespace GlueFormsCore.Controls
 
         private void HandleEnterEscape(KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && ViewModel.IsOkButtonEnabled)
             {
                 DialogResult = true;
                 e.Handled = true;

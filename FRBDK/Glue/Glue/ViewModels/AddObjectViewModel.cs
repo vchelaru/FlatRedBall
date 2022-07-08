@@ -516,6 +516,14 @@ namespace FlatRedBall.Glue.ViewModels
             }
         }
 
+        [DependsOn(nameof(SelectedItem))]
+        public bool IsOkButtonEnabled
+        {
+            get
+            {
+                return SelectedItem != null;
+            }
+        }
 
         public AddObjectViewModel()
         {
