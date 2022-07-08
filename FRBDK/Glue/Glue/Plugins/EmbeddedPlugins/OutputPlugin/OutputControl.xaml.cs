@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -16,7 +17,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 {
     struct ColoredTextWpf
     {
-        public Color Color;
+        public SolidColorBrush Brush;
         public string Text;
     }
 
@@ -32,6 +33,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 
         System.Windows.Threading.DispatcherTimer timer;
 
+        SolidColorBrush Error;
+        SolidColorBrush Normal;
+
         public OutputControl()
         {
             InitializeComponent();
@@ -40,6 +44,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
             timer.Tick += HandleTimerTick;
             timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Start();
+
+            Error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            Normal = new SolidColorBrush(Color.FromRgb(0, 0, 0));
         }
 
         private void HandleTimerTick(object sender, EventArgs e)
@@ -61,7 +68,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 
                         //TextBox.SelectionColor = mBuffer[i].Color;
 
-                        this.TextBox.AppendText(mBuffer[i].Text + "\n");
+                        // adding newline adds spaces, as shown here:
+                        // https://stackoverflow.com/questions/22086790/how-to-remove-spacing-in-the-richtextbox
+
+                        var block = new Paragraph();
+                        block.Margin = new Thickness(0);
+                        block.Foreground = mBuffer[i].Brush;
+                        block.Inlines.Add(mBuffer[i].Text);
+                        this.TextBox.Document.Blocks.Add(block);
+                        //this.TextBox.Document.Blocks.LastBlock.Margin = new Thickness();
 
                         // It's focused right when the user clicks the tab, so need to figure this out.
                         //if(!this.TextBox.IsFocused)
@@ -77,35 +92,29 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
         }
 
         // TODO:
-        // 1.  Make a maximum length for the text (see how I did this in Mother) - DONE
-        // 2.  Make error text red (see how I did this in Mother) - DONE
         // 3.  Add buttons to delete entire text
 
         public void OnOutput(string output)
         {
             Color color = Color.FromRgb(0,0,0);
 
-            AppendText(output, color);
+            AppendText(output, Normal);
         }
 
         public void OnErrorOutput(string output)
         {
             Color color = Color.FromRgb(255,0,0);
-            AppendText(output, color);
+            AppendText(output, Error);
 
         }
 
 
-        private Color AppendText(string output, Color color)
+        private void AppendText(string output, SolidColorBrush brush)
         {
             lock (mBuffer)
             {
-                mBuffer.Add(new ColoredTextWpf() { Color = color, Text = output });
+                mBuffer.Add(new ColoredTextWpf() { Brush = brush, Text = output });
             }
-
-
-
-            return color;
         }
 
 
@@ -118,6 +127,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                 {
                     this.TextBox.Document.Blocks.Remove(this.TextBox.Document.Blocks.FirstBlock);
                 }
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            lock(mBuffer)
+            {
+                this.TextBox.Document.Blocks.Clear();
             }
         }
     }

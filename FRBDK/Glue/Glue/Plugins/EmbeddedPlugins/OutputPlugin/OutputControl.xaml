@@ -7,7 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <RichTextBox x:Name="TextBox" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Click="Button_Click">
+                <Image IsHitTestVisible="False" Source="/Content/Icons/Delete.png" Width="25" ></Image>
+            </Button>
+        </StackPanel>
+        <RichTextBox x:Name="TextBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1">
             
         </RichTextBox>
     </Grid>
