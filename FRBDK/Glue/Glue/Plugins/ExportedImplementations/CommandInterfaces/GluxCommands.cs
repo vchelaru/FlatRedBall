@@ -2052,6 +2052,51 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public async Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
+        {
+            object oldValue;
+
+            oldValue = nos.Properties.GetValue(propertyName);
+            nos.SetProperty(propertyName, value);
+
+            await ReactToPropertyChanged(nos, propertyName, oldValue, performSaveAndGenerateCode, updateUi);
+        }
+
+        public async Task ReactToPropertyChanged(NamedObjectSave nos, string propertyName, object oldValue, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        {
+            await EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                propertyName, oldValue, namedObjectSave: nos);
+
+            if (updateUi)
+            {
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    MainGlueWindow.Self.PropertyGrid.Refresh();
+                    PropertyGridHelper.UpdateNamedObjectDisplay();
+
+                    // If the user enters text in a text box (such as the X or Y value on
+                    // the Points tab, that causes a refresh for the tree node, which refreshes
+                    // everything and causes the text box to lose focus. Why do we need to update here?
+                    // Is it only if the Name changes? I can't think of any other properties that may require
+                    // tree node refreshes, so let's limit that:
+                    if (propertyName == nameof(NamedObjectSave.InstanceName) ||
+                        propertyName == "Name")
+                    {
+                        var container = ObjectFinder.Self.GetElementContaining(nos);
+                        if (container != null)
+                        {
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
+                        }
+                    }
+                });
+            }
+
+            if (performSaveAndGenerateCode)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            }
+        }
 
         #endregion
 

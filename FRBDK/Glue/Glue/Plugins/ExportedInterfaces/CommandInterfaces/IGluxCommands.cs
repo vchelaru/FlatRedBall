@@ -158,6 +158,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             bool performSaveAndGenerateCode = true,
             bool updateUi = true);
 
+        Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        Task ReactToPropertyChanged(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+
         Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);

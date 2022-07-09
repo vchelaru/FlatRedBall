@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [CategoryAttribute("Source")]
         public string SourceClassType
         {
-            get { return mSourceClassType; }
+            get  => mSourceClassType; 
             set
             {
                 mSourceClassType = value;

@@ -964,6 +964,12 @@ namespace FlatRedBall.Glue.SaveClasses
             return null;
         }
 
+        /// <summary>
+        /// Searches the argument container for any named object, and searches recursively through inheritance.
+        /// </summary>
+        /// <param name="namedObjectContainer"></param>
+        /// <param name="namedObjectName"></param>
+        /// <returns></returns>
         public static NamedObjectSave GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
         {
             List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;
