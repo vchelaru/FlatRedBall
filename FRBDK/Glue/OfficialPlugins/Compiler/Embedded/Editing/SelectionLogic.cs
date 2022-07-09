@@ -534,13 +534,20 @@ namespace GlueControl.Editing
         static void UpdateMinsAndMaxes(PolygonFast polygon,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
-            for (int i = 0; i < polygon.Points.Count; i++)
+            var pointCount = polygon.Points.Count;
+            var right = polygon.RotationMatrix.Right;
+            var up = polygon.RotationMatrix.Up;
+            var absolutePoint = polygon.Position;
+
+            for (int i = 0; i < pointCount; i++)
             {
                 var relativePoint = polygon.Points[i];
-                var absolutePoint = polygon.Position;
-                absolutePoint += (float)relativePoint.X * polygon.RotationMatrix.Right;
-                absolutePoint += (float)relativePoint.Y * polygon.RotationMatrix.Up;
-                // handle Z?
+
+                absolutePoint.X += (float)relativePoint.X * right.X;
+                absolutePoint.Y += (float)relativePoint.X * right.Y;
+
+                absolutePoint.X += (float)relativePoint.Y * up.X;
+                absolutePoint.Y += (float)relativePoint.Y * up.Y;
 
                 minX = Math.Min(minX, absolutePoint.X);
                 maxX = Math.Max(maxX, absolutePoint.X);
@@ -642,6 +649,7 @@ namespace GlueControl.Editing
         #endregion
 
     }
+
 
     #region IMinMax
 

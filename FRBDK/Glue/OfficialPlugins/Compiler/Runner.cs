@@ -158,7 +158,7 @@ namespace OfficialPlugins.Compiler
 
         internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
         {
-            int numberOfTimesToTryGettingProcess = 100;
+            int numberOfTimesToTryGettingProcess = 140;
             int numberOfTimesToTryGettingHandle = 60;
             int millisecondsToWaitBeforeRetry = 100;
             bool didTimeoutOnProcess = false;
