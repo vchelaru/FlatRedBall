@@ -48,12 +48,15 @@ namespace GlueControl.Editing
             }
 
             INameable objectOver = null;
+
+            var ray = GuiManager.Cursor.GetRay();
+
             if (currentEntities.Count > 0 && punchThrough == false)
             {
                 // Vic asks - why do we use the the current entities rather than the markers?
                 var currentObjectOver = currentEntities.FirstOrDefault(item =>
                 {
-                    return item is PositionedObject asPositionedObject && IsCursorOver(item as PositionedObject);
+                    return item is PositionedObject asPositionedObject && IsCursorOver(item as PositionedObject, ray);
                 });
                 if (currentObjectOver == null)
                 {
@@ -85,7 +88,7 @@ namespace GlueControl.Editing
                     {
                         if (IsSelectable(objectAtI))
                         {
-                            if (IsCursorOver(objectAtI))
+                            if (IsCursorOver(objectAtI, ray))
                             {
                                 var nos =
                                     GlueState.Self.CurrentElement?.AllNamedObjects.FirstOrDefault(
@@ -263,11 +266,11 @@ namespace GlueControl.Editing
 #endif
         }
 
-        static Polygon polygonForCursorOver = new Polygon();
+        static PolygonFast polygonForCursorOver = new PolygonFast();
 
-        private static bool IsCursorOver(PositionedObject positionedObject)
+        private static bool IsCursorOver(PositionedObject positionedObject, Ray ray)
         {
-            if (IsOverSpecificItem(positionedObject))
+            if (IsOverSpecificItem(positionedObject, ray))
             {
                 return true;
             }
@@ -286,7 +289,7 @@ namespace GlueControl.Editing
 
                     if (shouldConsiderChild)
                     {
-                        var isOverChild = IsCursorOver(child);
+                        var isOverChild = IsCursorOver(child, ray);
                         if (isOverChild)
                         {
                             return true;
@@ -297,35 +300,106 @@ namespace GlueControl.Editing
             return false;
         }
 
-        private static bool IsOverSpecificItem(IStaticPositionable collisionObject)
+        private static bool IsOverSpecificItem(IStaticPositionable collisionObject, Ray ray)
         {
-            GetShapeFor(collisionObject, out Polygon polygon, out Circle circle);
-            polygon?.ForceUpdateDependencies();
-            return polygon?.IsMouseOver(GuiManager.Cursor) == true ||
-                circle?.IsMouseOver(GuiManager.Cursor) == true;
+            GetShapeFor(collisionObject, out PolygonFast polygon, out Circle circle);
+            if (polygon != null)
+            {
+                //return polygon.IsMouseOver(GuiManager.Cursor);
+                Matrix inverseRotation = polygon.RotationMatrix;
+
+                Matrix.Invert(ref inverseRotation, out inverseRotation);
+
+                Plane plane = new Plane(polygon.Position, polygon.Position + polygon.RotationMatrix.Up,
+                    polygon.Position + polygon.RotationMatrix.Right);
+
+                float? result = ray.Intersects(plane);
+
+                if (!result.HasValue)
+                {
+                    return false;
+                }
+
+                Vector3 intersection = ray.Position + ray.Direction * result.Value;
+
+
+                return polygon.IsPointInside(ref intersection);
+            }
+            else if (circle != null)
+            {
+                return circle.IsMouseOver(GuiManager.Cursor);
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public static void GetShapeFor(IStaticPositionable collisionObject, out Polygon polygon, out Circle circle)
+        public class PolygonFast
+        {
+            public List<FlatRedBall.Math.Geometry.Point> Points = new List<FlatRedBall.Math.Geometry.Point>();
+            public Matrix RotationMatrix;
+            public Vector3 Position;
+
+            static List<Vector3> pointsForIsPointInside = new List<Vector3>();
+
+            public bool IsPointInside(ref Vector3 vector)
+            {
+                while (Points.Count > pointsForIsPointInside.Count)
+                {
+                    pointsForIsPointInside.Add(new Vector3());
+                }
+
+                for (int i = 0; i < Points.Count; i++)
+                {
+                    pointsForIsPointInside[i] = Position +
+                        (RotationMatrix.Right * (float)Points[i].X) +
+                        (RotationMatrix.Up * (float)Points[i].Y);
+                }
+
+                bool b = false;
+                for (int i = 0, j = Points.Count - 1; i < Points.Count; j = i++)
+                {
+
+                    if ((((pointsForIsPointInside[i].Y <= vector.Y) && (vector.Y < pointsForIsPointInside[j].Y)) || ((pointsForIsPointInside[j].Y <= vector.Y) && (vector.Y < pointsForIsPointInside[i].Y))) &&
+                    (vector.X < (pointsForIsPointInside[j].X - pointsForIsPointInside[i].X) * (vector.Y - pointsForIsPointInside[i].Y) / (pointsForIsPointInside[j].Y - pointsForIsPointInside[i].Y) + pointsForIsPointInside[i].X)) b = !b;
+                }
+                return b;
+            }
+        }
+
+        public static void GetShapeFor(IStaticPositionable collisionObject, out PolygonFast polygon, out Circle circle)
         {
             circle = null;
             polygon = null;
 
             void MakePolygonRectangle(float width, float height)
             {
-                var points = new List<FlatRedBall.Math.Geometry.Point>();
-                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
-                points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, height / 2));
-                points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, -height / 2));
-                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, -height / 2));
-                points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
-                polygonForCursorOver.Points = points;
+                if (polygonForCursorOver.Points?.Count != 5)
+                {
+                    var points = new List<FlatRedBall.Math.Geometry.Point>();
+                    points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
+                    points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, height / 2));
+                    points.Add(new FlatRedBall.Math.Geometry.Point(width / 2, -height / 2));
+                    points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, -height / 2));
+                    points.Add(new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2));
+                    polygonForCursorOver.Points = points;
+                }
+                else
+                {
+                    polygonForCursorOver.Points[0] = new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2);
+                    polygonForCursorOver.Points[1] = new FlatRedBall.Math.Geometry.Point(width / 2, height / 2);
+                    polygonForCursorOver.Points[2] = new FlatRedBall.Math.Geometry.Point(width / 2, -height / 2);
+                    polygonForCursorOver.Points[3] = new FlatRedBall.Math.Geometry.Point(-width / 2, -height / 2);
+                    polygonForCursorOver.Points[4] = new FlatRedBall.Math.Geometry.Point(-width / 2, height / 2);
+                }
             }
 
             void MakePolygonRectangleMinMax(float minXInner, float maxXInner, float minYInner, float maxYInner)
             {
                 MakePolygonRectangle(maxXInner - minXInner, maxYInner - minYInner);
-                polygonForCursorOver.X = (maxXInner + minXInner) / 2.0f;
-                polygonForCursorOver.Y = (maxYInner + minYInner) / 2.0f;
+                polygonForCursorOver.Position.X = (maxXInner + minXInner) / 2.0f;
+                polygonForCursorOver.Position.Y = (maxYInner + minYInner) / 2.0f;
             }
 
             float minX = 0;
@@ -438,7 +512,9 @@ namespace GlueControl.Editing
 #endif
             else if (collisionObject is Polygon asPolygon)
             {
-                polygon = asPolygon;
+                polygon.Points = asPolygon.Points.ToList();
+                polygon.Position = asPolygon.Position;
+                polygon.RotationMatrix = asPolygon.RotationMatrix;
             }
         }
 
@@ -455,16 +531,21 @@ namespace GlueControl.Editing
 
         #region Get Dimensions
 
-        static void UpdateMinsAndMaxes(Polygon polygon,
+        static void UpdateMinsAndMaxes(PolygonFast polygon,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
             for (int i = 0; i < polygon.Points.Count; i++)
             {
-                var point = polygon.AbsolutePointPosition(i);
-                minX = Math.Min(minX, point.X);
-                maxX = Math.Max(maxX, point.X);
-                minY = Math.Min(minY, point.Y);
-                maxY = Math.Max(maxY, point.Y);
+                var relativePoint = polygon.Points[i];
+                var absolutePoint = polygon.Position;
+                absolutePoint += (float)relativePoint.X * polygon.RotationMatrix.Right;
+                absolutePoint += (float)relativePoint.Y * polygon.RotationMatrix.Up;
+                // handle Z?
+
+                minX = Math.Min(minX, absolutePoint.X);
+                maxX = Math.Max(maxX, absolutePoint.X);
+                minY = Math.Min(minY, absolutePoint.Y);
+                maxY = Math.Max(maxY, absolutePoint.Y);
             }
         }
 
@@ -526,11 +607,10 @@ namespace GlueControl.Editing
         private static void GetDimensionsForInner(IStaticPositionable itemOver,
             ref float minX, ref float maxX, ref float minY, ref float maxY)
         {
-            GetShapeFor(itemOver, out Polygon polygon, out Circle circle);
+            GetShapeFor(itemOver, out PolygonFast polygon, out Circle circle);
 
             if (polygon != null)
             {
-                polygon.ForceUpdateDependencies();
                 UpdateMinsAndMaxes(polygon, ref minX, ref maxX, ref minY, ref maxY);
             }
             else if (circle != null)

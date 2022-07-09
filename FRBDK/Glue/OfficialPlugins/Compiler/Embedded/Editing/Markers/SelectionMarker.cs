@@ -874,7 +874,7 @@ namespace GlueControl.Editing
                 if (item is PositionedObject asPositionedObject && asPositionedObject.RotationZ != 0)
                 {
                     // it's rotated, so we want to get the acutal shape and try to match that:
-                    SelectionLogic.GetShapeFor(item, out Polygon polygon, out Circle circle);
+                    SelectionLogic.GetShapeFor(item, out SelectionLogic.PolygonFast polygon, out Circle circle);
                     if (polygon != null && polygon.Points.Count == 5)
                     {
                         Position = polygon.Position;

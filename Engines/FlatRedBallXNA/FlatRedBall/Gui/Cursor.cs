@@ -1700,15 +1700,7 @@ namespace FlatRedBall.Gui
         {
             Ray ray = GetRay(layer);
             Matrix inverseRotation = polygon.RotationMatrix;
-#if FRB_MDX
-            inverseRotation.Invert();
 
-            Plane plane = Plane.FromPointNormal(
-                polygon.Position, polygon.RotationMatrix.Backward());
-
-            Vector3 intersection = Plane.IntersectLine(plane, ray.Position,
-                ray.Position + ray.Direction);
-#else
             Matrix.Invert(ref inverseRotation, out inverseRotation);
 
             Plane plane = new Plane(polygon.Position, polygon.Position + polygon.RotationMatrix.Up,
@@ -1723,7 +1715,7 @@ namespace FlatRedBall.Gui
 
             Vector3 intersection = ray.Position + ray.Direction * result.Value;
 
-#endif
+
             return polygon.IsPointInside(ref intersection);
         }
 
