@@ -391,6 +391,8 @@ namespace OfficialPlugins.Compiler.Dtos
     public class GlueViewSettingsDto
     {
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+
+        public bool ShowGrid { get; set; }
         public decimal GridSize { get; set; }
 
         public bool SetBackgroundColor { get; set; }

@@ -20,7 +20,9 @@ namespace OfficialPlugins.Compiler.Models
 
         public bool RestartScreenOnLevelContentChange { get; set; }
         public int PortNumber { get; set; } = 8021;
-        public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
+        public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+
+        public bool ShowGrid { get; set; } = true;
         public decimal GridSize { get; set; } = 32;
 
         public bool EnableSnapping { get; set; }

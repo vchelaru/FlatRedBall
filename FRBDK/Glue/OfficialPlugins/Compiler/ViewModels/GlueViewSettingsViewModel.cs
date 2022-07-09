@@ -59,6 +59,12 @@ namespace OfficialPlugins.Compiler.ViewModels
             set => Set(value);
         }
 
+        public bool ShowGrid
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public decimal GridSize
         {
             get => Get<decimal>();
@@ -106,6 +112,8 @@ namespace OfficialPlugins.Compiler.ViewModels
         {
             this.PortNumber = model.PortNumber;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
+
+            this.ShowGrid = model.ShowGrid;
             this.GridSize = model.GridSize;
             this.SetBackgroundColor = model.SetBackgroundColor;
             this.BackgroundRed = model.BackgroundRed;
@@ -124,6 +132,8 @@ namespace OfficialPlugins.Compiler.ViewModels
         {
             compilerSettings.PortNumber = this.PortNumber;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
+
+            compilerSettings.ShowGrid = this.ShowGrid;
             compilerSettings.GridSize = this.GridSize;
 
             compilerSettings.SetBackgroundColor = this.SetBackgroundColor;

@@ -99,6 +99,17 @@ namespace GlueControl.Editing
 
         Guides Guides;
 
+        bool showGrid = true;
+        public bool ShowGrid
+        {
+            get => showGrid;
+            set
+            {
+                showGrid = value;
+                Guides.Visible = value;
+            }
+        }
+
         public float GuidesGridSpacing
         {
             get => Guides.GridSpacing;
@@ -370,7 +381,8 @@ namespace GlueControl.Editing
 #if SupportsEditMode
             var isInEditMode = ScreenManager.IsInEditMode;
 
-            Guides.Visible = isInEditMode;
+            Guides.Visible = isInEditMode && showGrid;
+
 
             if (isInEditMode && !ScreenManager.CurrentScreen.IsActivityFinished)
             {

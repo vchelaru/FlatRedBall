@@ -740,6 +740,7 @@ namespace OfficialPlugins.Compiler
                     CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
+                case nameof(ViewModels.GlueViewSettingsViewModel.ShowGrid):
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.SetBackgroundColor):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
@@ -762,6 +763,7 @@ namespace OfficialPlugins.Compiler
         {
             var dto = new Dtos.GlueViewSettingsDto
             {
+                ShowGrid = GlueViewSettingsViewModel.ShowGrid,
                 GridSize = GlueViewSettingsViewModel.GridSize,
                 ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
