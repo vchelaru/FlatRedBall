@@ -421,7 +421,7 @@ namespace GlueControl
             }
         }
 
-        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1)
+        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1, bool isMainEntityInScreen = false)
         {
             var containsKey =
                 CustomGlueElements.ContainsKey(entityNameGameType);
@@ -457,7 +457,11 @@ namespace GlueControl
 
                 newEntity = dynamicEntityInstance;
 
-                ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
+                if (!isMainEntityInScreen)
+                {
+                    // If it is, then the game screen will run all the commands. No need to do it here and have 2x the commands run.
+                    ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
+                }
             }
             else
             {

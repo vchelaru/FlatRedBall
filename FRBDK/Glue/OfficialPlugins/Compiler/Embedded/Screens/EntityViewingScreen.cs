@@ -98,7 +98,7 @@ namespace GlueControl.Screens
                 {
 
                     //var instance = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]) as IDestroyable;
-                    var instance = GlueControl.InstanceLogic.Self.CreateEntity(EntityViewingScreen.GameElementTypeToCreate) as IDestroyable;
+                    var instance = GlueControl.InstanceLogic.Self.CreateEntity(EntityViewingScreen.GameElementTypeToCreate, isMainEntityInScreen: true) as IDestroyable;
                     CurrentEntity = instance;
                     var instanceAsPositionedObject = (PositionedObject)instance;
                     instanceAsPositionedObject.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
