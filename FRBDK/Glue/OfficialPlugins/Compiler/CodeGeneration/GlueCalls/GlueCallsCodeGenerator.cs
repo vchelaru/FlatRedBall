@@ -12,9 +12,17 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
     {
         static string glueControlFolder => GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
 
+        public static readonly Dictionary<string, GenerationOptions> GlueCallsGenerated = new Dictionary<string, GenerationOptions>()
+        {
+            { "Editing.Managers.GluxCommands.cs", Editing_Managers_GluxCommands.GetGenerationOptions() }
+        };
+
         public static void GenerateAll()
         {
-            SaveGlueCommunicationGeneratedFile("Editing.Managers.GluxCommands.cs", Editing_Managers_GluxCommands.GetGenerationOptions());
+            foreach(var item in GlueCallsGenerated)
+            {
+                SaveGlueCommunicationGeneratedFile(item.Key, item.Value);
+            }
         }
 
         private static void SaveGlueCommunicationGeneratedFile(string resourcePath, GenerationOptions generationOptions)
