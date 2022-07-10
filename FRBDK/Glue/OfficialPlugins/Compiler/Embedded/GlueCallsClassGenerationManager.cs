@@ -23,6 +23,11 @@ namespace GlueControl
             public bool EchoToGame { get; set; }
         }
 
+        public class CallPropertyParameters
+        {
+            public bool ReturnToPropertyType {  get; set; }
+        }
+
         public static async Task<object> ConvertToMethodCallToGame(MethodInfo method, Dictionary<string, GlueParameters> parameters, CallMethodParameters callMethodParameters)
         {
             var methodParms = method.GetParameters();
@@ -75,6 +80,41 @@ namespace GlueControl
                 else
                 {
                     return ConvertResponseItem(subType, (returnValue as JObject).ToObject(subType));
+                }
+            }
+
+            return returnValue;
+        }
+
+        public static async Task<object> ConvertToPropertyCallToGame(string propertyName, Type propertyType, GlueParameters parameter, CallPropertyParameters callPropertyParameters)
+        {
+            GlueParameters parm = parameter;
+            object convertedParm;
+
+            if (propertyType.IsPrimitive)
+            {
+                convertedParm = parm.Value;
+            }
+            else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                convertedParm = ConvertList(propertyType.GetGenericArguments()[0], (IEnumerable<object>)parm.Value, parm.Dependencies);
+            }
+            else
+            {
+                convertedParm = ConvertItem(propertyType, parm.Value, parm.Dependencies);
+            }
+
+            object returnValue = await SendPropertyToGame(propertyName, convertedParm);
+
+            if (callPropertyParameters.ReturnToPropertyType)
+            {
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return ConvertResponseList(propertyType.GetGenericArguments()[0], returnValue as JArray);
+                }
+                else
+                {
+                    return ConvertResponseItem(propertyType, (returnValue as JObject).ToObject(propertyType));
                 }
             }
 
@@ -176,7 +216,6 @@ namespace GlueControl
         private static Task<object> SendMethodCallToGame(string caller, object[] parameters, Dictionary<string, string> correctTypeForParameters) =>
             SendMethodCallToGame(dto: new GluxCommandDto(), caller: caller, parameters: parameters, correctTypeForParameters: correctTypeForParameters);
 
-
         private static Task<object> SendMethodCallToGameWithEcho(string caller, object[] parameters, Dictionary<string, string> correctTypeForParameters) =>
             SendMethodCallToGame(dto: new GluxCommandDto() { EchoToGame = true }, caller: caller, parameters: parameters, correctTypeForParameters: correctTypeForParameters);
 
@@ -194,6 +233,15 @@ namespace GlueControl
 
             var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
             return objectResponse;
+        }
+
+        private static async Task<object> SendPropertyToGame(string caller, object value)
+        {
+            var dto = new GlueStateDto();
+            dto.SetPropertyName = caller;
+            dto.Parameters.Add(value);
+
+            return await GlueControlManager.Self.SendToGlue(dto);
         }
     }
 
