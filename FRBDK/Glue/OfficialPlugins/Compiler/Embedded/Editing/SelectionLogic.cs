@@ -543,6 +543,7 @@ namespace GlueControl.Editing
             {
                 var relativePoint = polygon.Points[i];
 
+                absolutePoint = polygon.Position;
                 absolutePoint.X += (float)relativePoint.X * right.X;
                 absolutePoint.Y += (float)relativePoint.X * right.Y;
 
