@@ -123,7 +123,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
 
                 bldr.AppendLine($"           var parameters = new Dictionary<string, GlueCallsClassGenerationManager.GlueParameters>");
                 bldr.AppendLine("           {");
-                foreach (var p in m.Parameters.Where(item => item.GlueParameter))
+                foreach (var p in m.Parameters.Where(item => item.IsParameterUsedByGlue))
                 {
                     bldr.Append($"               {{ \"{p.Name}\", new GlueCallsClassGenerationManager.GlueParameters {{ Value = {p.Name}");
 
