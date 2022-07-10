@@ -12,9 +12,18 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
     {
         static string glueControlFolder => GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/";
 
+        public static readonly Dictionary<string, GenerationOptions> GlueCallsGenerated = new Dictionary<string, GenerationOptions>()
+        {
+            { "Editing.Managers.GluxCommands.cs", Editing_Managers_GluxCommands.GetGenerationOptions() },
+            { "Editing.Managers.GlueState.cs", Editing_Managers_GlueState.GetGenerationOptions() }
+        };
+
         public static void GenerateAll()
         {
-            SaveGlueCommunicationGeneratedFile("Editing.Managers.GluxCommands.cs", Editing_Managers_GluxCommands.GetGenerationOptions());
+            foreach(var item in GlueCallsGenerated)
+            {
+                SaveGlueCommunicationGeneratedFile(item.Key, item.Value);
+            }
         }
 
         private static void SaveGlueCommunicationGeneratedFile(string resourcePath, GenerationOptions generationOptions)
@@ -68,6 +77,93 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
                 bldr.Append($" : {generationOptions.BaseClass}");
             bldr.AppendLine();
             bldr.AppendLine("   {");
+
+            if(generationOptions.AddStaticSelfReference)
+            {
+                bldr.AppendLine($"       public static {generationOptions.Name} Self {{ get; }}");
+                bldr.AppendLine($"       static {generationOptions.Name}() => Self = new {generationOptions.Name}();");
+            }
+
+            foreach (var prop in generationOptions.Properties)
+            {
+                if(!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody))
+                {
+                    bldr.AppendLine($"      public {prop.ReturnType} {prop.Name}");
+                    bldr.AppendLine($"      {{");
+                    if(!string.IsNullOrEmpty(prop.GetSimpleBody))
+                    {
+                        bldr.AppendLine($"          get => {prop.GetSimpleBody};");
+                    }
+                    else
+                    {
+                        bldr.AppendLine($"           get {{");
+                        bldr.AppendLine(prop.GetBody);
+                        bldr.AppendLine($"          }}");
+                    }
+                    bldr.AppendLine($"      }}");
+                }
+
+                if(prop.SetMethod != null)
+                {
+                    var m = prop.SetMethod;
+
+                    bldr.Append("       public ");
+
+                    //Return Type
+                    bldr.Append("async Task<object> ");
+
+                    //Name
+                    bldr.Append($"{m.Name}(");
+
+                    bool first = true;
+                    foreach (var p in m.Parameters)
+                    {
+                        if (!first)
+                            bldr.Append(", ");
+
+                        bldr.Append($"{p.Type} ");
+                        bldr.Append($"{p.Name}");
+
+                        if (p.DefaultValue != null)
+                        {
+                            bldr.Append($" = {p.DefaultValue}");
+                        }
+
+                        first = false;
+                    }
+
+                    bldr.Append($")");
+                    bldr.AppendLine($"      {{");
+                    bldr.Append($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
+
+                    if (m.Parameters[0].Dependencies.Length > 0)
+                    {
+                        bldr.Append($", Dependencies = new Dictionary<string, object> {{");
+
+                        bool firstD = true;
+                        foreach(var d in m.Parameters[0].Dependencies)
+                        {
+                            if (!firstD)
+                                bldr.Append($",");
+                            bldr.Append($"{{ \"{d}\", {d} }}");
+
+                            firstD = false;
+                        }
+
+                        bldr.Append($"}}");
+                    }
+
+                    bldr.Append($"}};");
+                    bldr.AppendLine();
+                    bldr.AppendLine();
+
+                    bldr.AppendLine($"          return await GlueCallsClassGenerationManager.ConvertToPropertyCallToGame(nameof({prop.Name}), typeof({prop.ReturnType}), parameter, new GlueCallsClassGenerationManager.CallPropertyParameters");
+                    bldr.AppendLine($"          {{");
+                    bldr.AppendLine($"              ReturnToPropertyType = {prop.ReturnToPropertyType.ToString().ToLower()}");
+                    bldr.AppendLine($"          }});");
+                    bldr.AppendLine($"      }}");
+                }
+            }
 
             foreach (var m in generationOptions.Methods)
             {
@@ -123,7 +219,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
 
                 bldr.AppendLine($"           var parameters = new Dictionary<string, GlueCallsClassGenerationManager.GlueParameters>");
                 bldr.AppendLine("           {");
-                foreach (var p in m.Parameters.Where(item => item.GlueParameterOrder != null).OrderBy(item => item.GlueParameterOrder))
+                foreach (var p in m.Parameters.Where(item => item.IsParameterUsedByGlue))
                 {
                     bldr.Append($"               {{ \"{p.Name}\", new GlueCallsClassGenerationManager.GlueParameters {{ Value = {p.Name}");
 

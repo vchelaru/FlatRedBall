@@ -23,11 +23,17 @@ namespace GlueControl
             public bool EchoToGame { get; set; }
         }
 
+        public class CallPropertyParameters
+        {
+            public bool ReturnToPropertyType {  get; set; }
+        }
+
         public static async Task<object> ConvertToMethodCallToGame(MethodInfo method, Dictionary<string, GlueParameters> parameters, CallMethodParameters callMethodParameters)
         {
             var methodParms = method.GetParameters();
 
             var convertedParms = new List<object>();
+            var correctTypeForParms = new Dictionary<string, string>();
 
             foreach (var parm in methodParms)
             {
@@ -46,16 +52,21 @@ namespace GlueControl
                 {
                     convertedParms.Add(ConvertItem(parm.ParameterType, parameters[parm.Name].Value, parameters[parm.Name].Dependencies));
                 }
+
+                if(parm.ParameterType == typeof(object))
+                {
+                    correctTypeForParms.Add(parm.Name, parameters[parm.Name].Value.GetType().ToString());
+                }
             }
 
             object returnValue;
             if (callMethodParameters.EchoToGame)
             {
-                returnValue = await SendMethodCallToGameWithEcho(method.Name, convertedParms.ToArray());
+                returnValue = await SendMethodCallToGameWithEcho(method.Name, convertedParms.ToArray(), correctTypeForParms);
             }
             else
             {
-                returnValue = await SendMethodCallToGame(method.Name, convertedParms.ToArray());
+                returnValue = await SendMethodCallToGame(method.Name, convertedParms.ToArray(), correctTypeForParms);
             }
 
             if(method.ReturnType != null && method.ReturnType.IsGenericType && method.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
@@ -69,6 +80,41 @@ namespace GlueControl
                 else
                 {
                     return ConvertResponseItem(subType, (returnValue as JObject).ToObject(subType));
+                }
+            }
+
+            return returnValue;
+        }
+
+        public static async Task<object> ConvertToPropertyCallToGame(string propertyName, Type propertyType, GlueParameters parameter, CallPropertyParameters callPropertyParameters)
+        {
+            GlueParameters parm = parameter;
+            object convertedParm;
+
+            if (propertyType.IsPrimitive)
+            {
+                convertedParm = parm.Value;
+            }
+            else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                convertedParm = ConvertList(propertyType.GetGenericArguments()[0], (IEnumerable<object>)parm.Value, parm.Dependencies);
+            }
+            else
+            {
+                convertedParm = ConvertItem(propertyType, parm.Value, parm.Dependencies);
+            }
+
+            object returnValue = await SendPropertyToGame(propertyName, convertedParm);
+
+            if (callPropertyParameters.ReturnToPropertyType)
+            {
+                if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    return ConvertResponseList(propertyType.GetGenericArguments()[0], returnValue as JArray);
+                }
+                else
+                {
+                    return ConvertResponseItem(propertyType, (returnValue as JObject).ToObject(propertyType));
                 }
             }
 
@@ -167,23 +213,35 @@ namespace GlueControl
             }
         }
 
-        private static Task<object> SendMethodCallToGame(string caller = null, params object[] parameters) =>
-            SendMethodCallToGame(new GluxCommandDto(), caller, parameters);
+        private static Task<object> SendMethodCallToGame(string caller, object[] parameters, Dictionary<string, string> correctTypeForParameters) =>
+            SendMethodCallToGame(dto: new GluxCommandDto(), caller: caller, parameters: parameters, correctTypeForParameters: correctTypeForParameters);
 
+        private static Task<object> SendMethodCallToGameWithEcho(string caller, object[] parameters, Dictionary<string, string> correctTypeForParameters) =>
+            SendMethodCallToGame(dto: new GluxCommandDto() { EchoToGame = true }, caller: caller, parameters: parameters, correctTypeForParameters: correctTypeForParameters);
 
-        private static Task<object> SendMethodCallToGameWithEcho(string caller = null, params object[] parameters) =>
-            SendMethodCallToGame(new GluxCommandDto() { EchoToGame = true }, caller, parameters);
-
-        private static async Task<object> SendMethodCallToGame(FacadeCommandBase dto, string caller = null, params object[] parameters)
+        private static async Task<object> SendMethodCallToGame(FacadeCommandBase dto, string caller, object[] parameters, Dictionary<string, string> correctTypeForParameters)
         {
             dto.Method = caller;
             foreach (var parameter in parameters)
             {
                 dto.Parameters.Add(parameter);
             }
+            foreach (var parameter in correctTypeForParameters)
+            {
+                dto.CorrectTypeForParameters.Add(parameter.Key, parameter.Value);
+            }
 
             var objectResponse = await GlueControlManager.Self.SendToGlue(dto);
             return objectResponse;
+        }
+
+        private static async Task<object> SendPropertyToGame(string caller, object value)
+        {
+            var dto = new GlueStateDto();
+            dto.SetPropertyName = caller;
+            dto.Parameters.Add(value);
+
+            return await GlueControlManager.Self.SendToGlue(dto);
         }
     }
 
