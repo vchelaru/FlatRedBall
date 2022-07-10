@@ -37,7 +37,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "TaskExecutionPreference",
                                 Name = "taskExecutionPreference",
-                                GlueParameterOrder = 1,
+                                IsParameterUsedByGlue = true,
                                 DefaultValue = "TaskExecutionPreference.Asap"
                             }
                         }
@@ -55,7 +55,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "List<NosVariableAssignment>",
                                 Name = "nosVariableAssignments",
-                                GlueParameterOrder = 1,
+                                IsParameterUsedByGlue = true,
                                 Dependencies = new [] { "nosOwner" }
                             },
                             new Parameter
@@ -68,14 +68,14 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                                 Type = "bool",
                                 Name = "performSaveAndGenerateCode",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 2
+                                IsParameterUsedByGlue = true
                             },
                             new Parameter
                             {
                                 Type = "bool",
                                 Name = "updateUi",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 3
+                                IsParameterUsedByGlue = true
                             }
                         },
                 AddEchoToGame = true
@@ -93,7 +93,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "NamedObjectSave",
                                 Name = "nos",
-                                GlueParameterOrder = 1,
+                                IsParameterUsedByGlue = true,
                                 Dependencies = new [] { "nosOwner" }
                             },
                             new Parameter
@@ -106,28 +106,28 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "string",
                                 Name = "memberName",
-                                GlueParameterOrder = 2,
+                                IsParameterUsedByGlue = true,
 
                             },
                             new Parameter
                             {
                                 Type = "object",
                                 Name = "value",
-                                GlueParameterOrder = 3,
+                                IsParameterUsedByGlue = true,
 
                             },
                             new Parameter {
                                 Type = "bool",
                                 Name = "performSaveAndGenerateCode",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 4
+                                IsParameterUsedByGlue = true
                             },
                             new Parameter
                             {
                                 Type = "bool",
                                 Name = "updateUi",
                                 DefaultValue = "true",
-                                GlueParameterOrder = 5
+                                IsParameterUsedByGlue = true
                             }
                         },
                 AddEchoToGame = true
@@ -145,7 +145,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "NamedObjectSave",
                                 Name = "nos",
-                                GlueParameterOrder = 1,
+                                IsParameterUsedByGlue = true,
                                 Dependencies = new [] { "nosOwner" }
                             },
                              new Parameter
@@ -163,14 +163,14 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                                  Type = "bool",
                                  Name = "performSaveAndGenerateCode",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 2
+                                 IsParameterUsedByGlue = true
                              },
                              new Parameter
                              {
                                  Type = "bool",
                                  Name = "updateUi",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 3
+                                 IsParameterUsedByGlue = true
                              }
                         }
             };
@@ -188,7 +188,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                             {
                                 Type = "List<NamedObjectSave>",
                                 Name = "nosList",
-                                GlueParameterOrder = 1,
+                                IsParameterUsedByGlue = true,
                                 Dependencies = new [] { "nosOwner" }
                             },
                              new Parameter
@@ -200,21 +200,21 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls.GenerationConfigurat
                              {
                                  Type = "GlueElement",
                                  Name = "targetElement",
-                                 GlueParameterOrder= 2,
+                                 IsParameterUsedByGlue= true,
                              },
                              new Parameter
                              {
                                  Type = "bool",
                                  Name = "performSaveAndGenerateCode",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 3
+                                 IsParameterUsedByGlue = true
                              },
                              new Parameter
                              {
                                  Type = "bool",
                                  Name = "updateUi",
                                  DefaultValue = "true",
-                                 GlueParameterOrder = 4
+                                 IsParameterUsedByGlue = true
                              }
                         }
             };

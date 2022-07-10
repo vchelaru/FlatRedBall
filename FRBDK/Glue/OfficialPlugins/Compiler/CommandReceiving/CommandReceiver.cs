@@ -732,7 +732,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     var parameter = dtoParameters[i];
                     var parameterInfo = methodParameters[i];
-                    var converted = Convert(parameter, parameterInfo.ParameterType);
+                    var parameterType = parameterInfo.ParameterType;
+                    if (dto.CorrectTypeForParameters?.ContainsKey(parameterInfo.Name) == true)
+                        parameterType = Type.GetType(dto.CorrectTypeForParameters[parameterInfo.Name]);
+                    var converted = Convert(parameter, parameterType);
 
                     parameters.Add(converted);
                 }

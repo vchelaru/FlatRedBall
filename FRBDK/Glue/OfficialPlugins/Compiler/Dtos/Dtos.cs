@@ -500,6 +500,7 @@ namespace OfficialPlugins.Compiler.Dtos
         public string GetPropertyName { get; set; }
         public string SetPropertyName { get; set; }
         public List<object> Parameters { get; set; } = new List<object>();
+        public Dictionary<string, string> CorrectTypeForParameters = new Dictionary<string, string>();
 
         public override string ToString()
         {
