@@ -18,9 +18,9 @@ using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
-    class VariableIgnoreData
+    class VariableForcedRecordData
     {
-        public const int SecondsToKeepIgnoreItem = 10;
+        public const int SecondsToKeepRecordItem = 5;
 
         public NamedObjectSave NamedObjectSave { get; set; }
         public string VariableName { get; set; }
@@ -32,7 +32,7 @@ namespace OfficialPlugins.Compiler.Managers
     {
         #region Fields/Properties
 
-        List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
+        List<VariableForcedRecordData> Ignores = new List<VariableForcedRecordData>();
 
         public CompilerViewModel ViewModel
         {
@@ -45,22 +45,27 @@ namespace OfficialPlugins.Compiler.Managers
 
         public void AddOneTimeIgnore(NamedObjectSave nos, string variableName)
         {
-            var ignore = new VariableIgnoreData();
+            var ignore = new VariableForcedRecordData();
             ignore.NamedObjectSave = nos;
             ignore.VariableName = variableName;
             ignore.TimeIgnoreCreated = DateTime.Now;
             Ignores.Add(ignore);
         }
 
-        bool GetIfChangedMemberIsIgnored(NamedObjectSave nos, string changedMember)
+        bool GetIfChangedMemberIsRecordOnly(NamedObjectSave nos, string changedMember)
         {
-            Ignores.RemoveAll(item => item.TimeIgnoreCreated + TimeSpan.FromSeconds(VariableIgnoreData.SecondsToKeepIgnoreItem) < DateTime.Now);
+            Ignores.RemoveAll(item => item.TimeIgnoreCreated + TimeSpan.FromSeconds(VariableForcedRecordData.SecondsToKeepRecordItem) < DateTime.Now);
             var match = Ignores.FirstOrDefault(item => item.NamedObjectSave == nos && item.VariableName == changedMember);
             if(match != null)
             {
                 Ignores.Remove(match);
                 return true;
             }
+            return false;
+        }
+
+        bool GetIfChangedMemberIsIgnored(NamedObjectSave nos, string changedMember)
+        {
             // todo - add more here over time, including making this a HashSet
             return changedMember == nameof(NamedObjectSave.ExposedInDerived);
         }
@@ -233,6 +238,12 @@ namespace OfficialPlugins.Compiler.Managers
                 glueScreenName = string.Join('\\', gameScreenName.Split('.').Skip(2));
 
             }
+
+            var forceRecordOnly = GetIfChangedMemberIsRecordOnly(nos, changedMember);
+
+            assignOrRecordOnly = forceRecordOnly
+                ? AssignOrRecordOnly.RecordOnly
+                : assignOrRecordOnly;
 
             ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
