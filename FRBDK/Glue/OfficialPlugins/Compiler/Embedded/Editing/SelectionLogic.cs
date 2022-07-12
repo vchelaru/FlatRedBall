@@ -512,6 +512,8 @@ namespace GlueControl.Editing
 #endif
             else if (collisionObject is Polygon asPolygon)
             {
+                polygon = polygon ?? new PolygonFast();
+
                 polygon.Points = asPolygon.Points.ToList();
                 polygon.Position = asPolygon.Position;
                 polygon.RotationMatrix = asPolygon.RotationMatrix;
