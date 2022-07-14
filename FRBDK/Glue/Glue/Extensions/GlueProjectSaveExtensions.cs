@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -111,6 +112,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 settings.NullValueHandling = NullValueHandling.Ignore;
                 settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
                 var serialized = JsonConvert.SerializeObject(clone, Formatting.Indented, settings);
+                PluginManager.ReactToGlueJsonSaveAsync(serialized);
                 FileManager.SaveText(serialized, fileName);
 
             }
@@ -155,6 +157,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 var locationToSave = glueDirectory + entity.Name + "." + GlueProjectSave.EntityExtension;
 
+                PluginManager.ReactToEntityJsonSaveAsync(entity.Name, serialized);
                 FileManager.SaveText(serialized, locationToSave);
             }
 
@@ -164,6 +167,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
 
+                PluginManager.ReactToScreenJsonSaveAsync(screen.Name, serialized);
                 FileManager.SaveText(serialized, locationToSave);
             }
 
@@ -238,6 +242,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if(fileName.Exists())
                 {
                     var text = System.IO.File.ReadAllText(fileName.FullPath);
+                    PluginManager.ReactToGlueJsonLoadAsync(text);
                     mainGlueProjectSave = JsonConvert.DeserializeObject<GlueProjectSave>(text);
                 }
                 else if(System.IO.File.Exists( fileName.RemoveExtension() + ".glux"))
@@ -283,6 +288,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (path.Exists())
                 {
                     var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    PluginManager.ReactToScreenJsonLoadAsync(screenReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
 
                     main.Screens.Add(deserialized);
@@ -296,6 +302,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 if (path.Exists())
                 {
                     var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    PluginManager.ReactToEntityJsonLoadAsync(entityReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
 
                     main.Entities.Add(deserialized);

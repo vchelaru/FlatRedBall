@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameJsonCommunicationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameJsonCommunicationPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\GameJsonCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameJsonCommunicationPlugin\GameJsonCommunicationPlugin.dll&quot;" />
+  </Target>
+
+</Project>

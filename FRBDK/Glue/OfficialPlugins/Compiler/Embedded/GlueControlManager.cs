@@ -350,6 +350,7 @@ namespace GlueControl
             }
 
             await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, echoToGame: false);
+            await GlueControl.Json.Operations.JsonOperations.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement);
 #endif
         }
 

@@ -452,6 +452,14 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;
 
+        public Action<string, string> ReactToScreenJsonSave;
+        public Action<string, string> ReactToEntityJsonSave;
+        public Action<string> ReactToGlueJsonSave;
+
+        public Action<string, string> ReactToScreenJsonLoad;
+        public Action<string, string> ReactToEntityJsonLoad;
+        public Action<string> ReactToGlueJsonLoad;
+
         #endregion
 
         public abstract void StartUp();

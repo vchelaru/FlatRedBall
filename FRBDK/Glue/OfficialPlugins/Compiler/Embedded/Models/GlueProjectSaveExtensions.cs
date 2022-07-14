@@ -72,6 +72,7 @@ namespace GlueControl.Models
                 if (path.Exists())
                 {
                     var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    GlueControl.Json.GlueJsonManager.Instance.AddScreen(screenReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<ScreenSave>(fileContents);
 
                     main.Screens.Add(deserialized);
@@ -85,6 +86,7 @@ namespace GlueControl.Models
                 if (path.Exists())
                 {
                     var fileContents = System.IO.File.ReadAllText(path.FullPath);
+                    GlueControl.Json.GlueJsonManager.Instance.AddEntity(entityReference.Name, fileContents);
                     var deserialized = JsonConvert.DeserializeObject<EntitySave>(fileContents);
 
                     main.Entities.Add(deserialized);
