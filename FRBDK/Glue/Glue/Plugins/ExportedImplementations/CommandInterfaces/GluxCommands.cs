@@ -198,6 +198,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     catch (Exception e)
                     {
+                        // break here because we want to look at other threads to see what's running at the same time...
+                        System.Diagnostics.Debugger.Break();
                         var wasAbleToSaveError = false;
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";
                         try

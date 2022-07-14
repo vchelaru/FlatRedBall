@@ -19,19 +19,26 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             string serializedToString;
 
-            var whatToSave = glueProjectSave.ConvertToPartial(tag);
+            GlueProjectSave whatToSave = null;
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                whatToSave = glueProjectSave.ConvertToPartial(tag);
+            });
 
-            if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+            if(whatToSave != null)
             {
-                // The settings really don't matter, but let's simulate the real save here by using the same settings
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.NullValueHandling = NullValueHandling.Ignore;
-                settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
-                serializedToString = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
-            }
-            else
-            {
-                FileManager.XmlSerialize(whatToSave, out serializedToString);
+                if(glueProjectSave.FileVersion >= (int)GlueProjectSave.GluxVersions.GlueSavedToJson)
+                {
+                    // The settings really don't matter, but let's simulate the real save here by using the same settings
+                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    settings.NullValueHandling = NullValueHandling.Ignore;
+                    settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+                    serializedToString = JsonConvert.SerializeObject(glueProjectSave, Formatting.Indented, settings);
+                }
+                else
+                {
+                    FileManager.XmlSerialize(whatToSave, out serializedToString);
+                }
             }
         }
 

@@ -722,11 +722,22 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {
-                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    cameraNos,
+                    nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
+                    value:"PlayerList", 
+                    performSaveAndGenerateCode:false, 
+                    updateUi:false);
             }
             if (vm.KeepCameraInMap && vm.AddTiledMap)
             {
-                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    cameraNos,
+                    nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
+                    value:"Map",
+                    performSaveAndGenerateCode: false,
+                    updateUi: false
+                    );
             }
         }
 
