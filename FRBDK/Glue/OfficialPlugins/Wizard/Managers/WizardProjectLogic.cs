@@ -123,7 +123,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             if (vm.AddCameraController && vm.AddGameScreen)
             {
                 AddTask("Create Camera", async () =>
-                    await ApplyCameraController(vm, gameScreen));
+                    await ApplyCameraValues(vm, gameScreen));
             }
 
             #endregion
@@ -745,6 +745,88 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
+        private static async Task ApplyCameraValues(WizardData vm, ScreenSave gameScreen)
+        {
+            await ApplyCameraController(vm, gameScreen);
+
+            await ApplyMainCameraSettings(vm);
+        }
+
+        private static async Task ApplyMainCameraSettings(WizardData vm)
+        {
+            int width = 800;
+            int height = 600;
+            decimal aspectRatioWidth = 4;
+            decimal aspectRatioHeight = 3;
+
+            int scalePercent = vm.ScalePercent;
+            if(scalePercent <= 0)
+            {
+                scalePercent = 100;
+            }
+
+            switch(vm.SelectedCameraResolution)
+            {
+                case CameraResolution._256x224:
+                    width = 256;
+                    height = 224;
+                    aspectRatioWidth = 8;
+                    aspectRatioHeight = 7;
+                    break;
+                case CameraResolution._360x240:
+                    width = 360;
+                    height = 240;
+                    aspectRatioWidth = 3;
+                    aspectRatioHeight = 2;
+                    break;
+                case CameraResolution._480x360:
+                    width = 480;
+                    height = 360;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3;
+                    break;
+                case CameraResolution._640x480:
+                    width = 640;
+                    height = 480;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._800x600:
+                    width = 800;
+                    height = 600;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._1024x768:
+                    width = 1024;
+                    height = 768;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._1920x1080:
+                    width = 1920;
+                    height = 1080;
+                    aspectRatioWidth = 16;
+                    aspectRatioHeight = 9; 
+                    break;
+
+            }
+
+            await TaskManager.Self.AddAsync(() =>
+            {
+                var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                displaySettings.ResolutionWidth = width;
+                displaySettings.ResolutionHeight = height;
+
+                displaySettings.AspectRatioWidth = aspectRatioWidth;
+                displaySettings.AspectRatioHeight = aspectRatioHeight;
+                displaySettings.FixedAspectRatio = true;
+
+                displaySettings.Scale = scalePercent;
+
+            }, "Setting display settings");
+        }
+
         private static async Task ApplyCameraController(WizardData vm, ScreenSave gameScreen)
         {
             var addCameraControllerVm = new AddObjectViewModel();
@@ -775,6 +857,5 @@ namespace OfficialPluginsCore.Wizard.Managers
                     );
             }
         }
-
     }
 }

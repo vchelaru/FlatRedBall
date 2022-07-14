@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Instructions;
 using Newtonsoft.Json;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Wizard.Managers;
 using OfficialPlugins.Wizard.Views;
 using OfficialPluginsCore.Wizard.ViewModels;
 using OfficialPluginsCore.Wizard.Views;
@@ -42,7 +43,7 @@ namespace OfficialPluginsCore.Wizard.Models
                 var page = new NewWizardWelcomePage();
                 page.PlatformerClicked += () =>
                 {
-                    ViewModel.PlayerControlType = GameType.Platformer;
+                    PlatformerSetupLogic.SetupForDefaultPlatformer(ViewModel);
                     DoneClicked();
                 };
                 page.TopDownClicked += () =>
@@ -259,6 +260,18 @@ namespace OfficialPluginsCore.Wizard.Models
             {
                 var formsData = new WizardPage(ViewModel);
                 formsData.AddTitle("Camera");
+
+                var options = formsData.AddOptions("Game Resolution", nameof(ViewModel.SelectedCameraResolution));
+                options.Add("256x224 (8:7)",    CameraResolution._256x224);
+                options.Add("360x240 (3:2)",    CameraResolution._360x240);
+                options.Add("480x360 (4:3)",    CameraResolution._480x360);
+                options.Add("640x480 (4:3)",    CameraResolution._640x480);
+                options.Add("800x600 (4:3)",    CameraResolution._800x600);
+                options.Add("1024x768 (4:3)",   CameraResolution._1024x768);
+                options.Add("1920x1080 (16:9)", CameraResolution._1920x1080);
+
+                formsData.AddIntValue("Game Scale%", nameof(ViewModel.ScalePercent));
+
                 formsData.AddText("The Camera Controller Entity can simplify code for following a player and staying within the bounds of a map.");
 
                 formsData.AddText("A Camera Controller Entity instance cannot be added because there is no game screen.", nameof(ViewModel.NoGameScreen));
