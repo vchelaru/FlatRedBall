@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Math.Geometry;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using Newtonsoft.Json;
@@ -83,7 +84,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     solidCollisionNos = response.solidCollision;
                     cloudCollisionNos = response.cloudCollisionNos;
 
-                    if(vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
+                    if (vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
                     {
                         await HandleAddGumScreenToLayer(gameScreen);
                     }
@@ -174,6 +175,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                 } while (didWait);
             });
 
+            AddTask("Saving Project", () =>
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                return Task.CompletedTask;
+            });
 
             vm.Tasks = tasks;
 
@@ -208,7 +214,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 currentTask = task;
                 maxTaskCount = 0;
 
-                if(task.Task != null) await task.Task();
+                if (task.Task != null) await task.Task();
                 if (task.Action != null) task.Action();
 
                 await TaskManager.Self.WaitForAllTasksFinished();
@@ -250,7 +256,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 deserialized = JsonConvert.DeserializeObject<Dictionary<string, List<NamedObjectSave>>>(namedObjectSavesSerialized);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // we currently don't have error handling, we need it
                 deserializeException = e;
@@ -258,10 +264,10 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             List<ElementAndNosList> imports = new List<ElementAndNosList>();
 
-            foreach(var kvp in deserialized)
+            foreach (var kvp in deserialized)
             {
                 var elementName = kvp.Key;
-                if(elementName.StartsWith("Screens\\"))
+                if (elementName.StartsWith("Screens\\"))
                 {
                     var screen = ObjectFinder.Self.GetScreenSave(elementName);
 
@@ -272,7 +278,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     });
 
                 }
-                else if(elementName.StartsWith("Entities\\"))
+                else if (elementName.StartsWith("Entities\\"))
                 {
                     var entity = ObjectFinder.Self.GetEntitySave(elementName);
 
@@ -309,17 +315,17 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                         GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement, listToAddTo);
 
-                        if(nos.ExposedInDerived)
+                        if (nos.ExposedInDerived)
                         {
                             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                nameof(nos.ExposedInDerived), 
+                                nameof(nos.ExposedInDerived),
                                 // pretend the value changed from false -> true
                                 false,
-                                namedObjectSave:nos);
+                                namedObjectSave: nos);
                         }
 
                         // remove all children, and then re-add them through the GlueCommands so that all plugins are notified:
-                        if(nos.ContainedObjects.Count > 0)
+                        if (nos.ContainedObjects.Count > 0)
                         {
                             var children = nos.ContainedObjects.ToArray();
 
@@ -396,7 +402,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     setFromMapObject: vm.AddTiledMap);
             }
 
-            if(vm.AddHudLayer)
+            if (vm.AddHudLayer)
             {
                 await AddHudLayer(gameScreen);
             }
@@ -441,7 +447,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
 
 
-            if(playerEntity != null)
+            if (playerEntity != null)
             {
                 // If this is null, the download failed.
                 // If the download fails, what do we do?
@@ -449,7 +455,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 // requires the current entity be set:
                 GlueState.Self.CurrentElement = playerEntity;
 
-                if(vm.PlayerCreationType == PlayerCreationType.SelectOptions)
+                if (vm.PlayerCreationType == PlayerCreationType.SelectOptions)
                 {
                     if (vm.PlayerControlType == GameType.Platformer)
                     {
@@ -474,7 +480,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             EntitySave playerEntity = null;
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
-            if(FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
+            if (FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
             {
                 playerEntity = (EntitySave)
                     (await GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile));
@@ -484,7 +490,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 var playerUrl = vm.PlayerEntityImportUrlOrFile;
 
                 var destinationFileName = downloadFolder + FileManager.RemovePath(playerUrl);
-                
+
                 using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5), };
                 var result = await NetworkManager.Self.DownloadWithProgress(
                     httpClient, playerUrl, destinationFileName, null);
@@ -527,7 +533,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
             },
-                "Adding Player Entity");
+            "Adding Player Entity");
 
 
 
@@ -536,10 +542,39 @@ namespace OfficialPluginsCore.Wizard.Managers
                 int m = 3;
             }
 
+            if (vm.PlayerControlType == GameType.Platformer && vm.PlayerCollisionType == CollisionType.Rectangle)
+            {
+                // this should have an AARect, so let's adjust it to match the right size/position as explained here:
+                // https://github.com/vchelaru/FlatRedBall/issues/651
+                var aaRectNos = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle);
+
+                if (aaRectNos != null)
+                {
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Y),
+                        8.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Width),
+                        10.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Height),
+                        16.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                }
+            }
+
             return playerEntity;
         }
 
-        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, 
+        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
             NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
             NamedObjectSave playerList = null;
@@ -584,7 +619,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
                 {
-                    if(cloudCollisionNos == null)
+                    if (cloudCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(cloudCollisionNos));
                     }
@@ -602,7 +637,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (vm.CollideAgainstSolidCollision && vm.AddSolidCollision)
                 {
-                    if(solidCollisionNos == null)
+                    if (solidCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(solidCollisionNos));
                     }
@@ -718,23 +753,23 @@ namespace OfficialPluginsCore.Wizard.Managers
             addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
             addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
 
-            var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos:false);
+            var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos: false);
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,
                     nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
-                    value:"PlayerList", 
-                    performSaveAndGenerateCode:false, 
-                    updateUi:false);
+                    value: "PlayerList",
+                    performSaveAndGenerateCode: false,
+                    updateUi: false);
             }
             if (vm.KeepCameraInMap && vm.AddTiledMap)
             {
                 await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
                     cameraNos,
                     nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
-                    value:"Map",
+                    value: "Map",
                     performSaveAndGenerateCode: false,
                     updateUi: false
                     );
