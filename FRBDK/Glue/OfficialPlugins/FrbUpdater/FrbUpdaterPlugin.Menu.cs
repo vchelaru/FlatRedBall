@@ -17,6 +17,8 @@ namespace OfficialPlugins.FrbUpdater
         public const string PluginsMenuItem = "Update";
         FrbUpdaterPluginForm mForm;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+
         public FrbUpdaterPlugin()
         {
             mForm = new FrbUpdaterPluginForm(this);
@@ -42,6 +44,8 @@ namespace OfficialPlugins.FrbUpdater
             mForm.Show();
         }
 
-
+        public void HandleEvent(string eventName, string payload)
+        {
+        }
     }
 }

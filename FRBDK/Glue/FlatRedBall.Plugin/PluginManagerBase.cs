@@ -637,10 +637,32 @@ namespace FlatRedBall.Glue.Plugins
                 try
                 {
                     plugin.StartUp();
+                    plugin.ReactToPluginEventAction += HandlePluginEvent;
                 }
                 catch (Exception e)
                 {
                     pluginContainer.Fail(e, "Plugin failed in StartUp");
+                }
+            }
+        }
+
+        private void HandlePluginEvent(IPlugin callingPlugin, string eventName, string payload)
+        {
+            if (mPluginContainers.ContainsKey(callingPlugin) && mPluginContainers[callingPlugin].IsEnabled)
+            {
+                foreach (var pluginContainer in mPluginContainers.Values)
+                {
+                    if (pluginContainer.IsEnabled && pluginContainer.Plugin != callingPlugin)
+                    {
+                        try
+                        {
+                            pluginContainer.Plugin.HandleEvent(eventName, payload);
+                        }
+                        catch (Exception e)
+                        {
+                            pluginContainer.Fail(e, $"Plugin failed while handling event: {eventName}");
+                        }
+                    }
                 }
             }
         }

@@ -31,6 +31,8 @@ namespace FlatRedBall.Glue.Plugins
         public string GithubRepoName => null;
         public bool CheckGithubForNewRelease => false;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+
         public void StartUp()
         {
 
@@ -39,6 +41,10 @@ namespace FlatRedBall.Glue.Plugins
         public bool ShutDown(PluginShutDownReason shutDownReason)
         {
             return true;
+        }
+
+        public void HandleEvent(string eventName, string payload)
+        {
         }
     }
 }

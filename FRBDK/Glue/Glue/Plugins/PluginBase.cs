@@ -460,6 +460,13 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, string> ReactToEntityJsonLoad;
         public Action<string> ReactToGlueJsonLoad;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+
+        protected void ReactToPluginEvent(string eventName, string payload)
+        {
+            ReactToPluginEventAction(this, eventName, payload);
+        }
+
         #endregion
 
         public abstract void StartUp();
@@ -739,6 +746,12 @@ namespace FlatRedBall.Glue.Plugins
         }
 
 
+        #endregion
+
+        #region Overrideable Methods
+        public virtual void HandleEvent(string eventName, string payload)
+        {
+        }
         #endregion
 
     }

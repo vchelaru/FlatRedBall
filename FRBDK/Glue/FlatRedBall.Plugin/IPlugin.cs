@@ -23,5 +23,8 @@ namespace FlatRedBall.Glue.Plugins.Interfaces
         bool CheckGithubForNewRelease { get; }
         void StartUp();
         bool ShutDown(PluginShutDownReason shutDownReason);
+        
+        event Action<IPlugin, string, string> ReactToPluginEventAction;
+        void HandleEvent(string eventName, string payload);
     }
 }

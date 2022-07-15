@@ -115,6 +115,8 @@ namespace PluginTestbed.PerformanceMeasurement
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+
         public void InitializeMenu(System.Windows.Forms.MenuStrip menuStrip)
         {
             mMenuStrip = menuStrip;
@@ -144,6 +146,10 @@ namespace PluginTestbed.PerformanceMeasurement
                 }
             }
             return null;
+        }
+
+        public void HandleEvent(string eventName, string payload)
+        {
         }
 
         #endregion

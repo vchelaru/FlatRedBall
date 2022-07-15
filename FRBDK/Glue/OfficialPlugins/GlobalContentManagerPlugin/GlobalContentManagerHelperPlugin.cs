@@ -25,6 +25,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+
         #region IPlugin Members
 
         public string FriendlyName
@@ -91,6 +93,10 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             }
 
             return null;
+        }
+
+        public void HandleEvent(string eventName, string payload)
+        {
         }
 
         #endregion
