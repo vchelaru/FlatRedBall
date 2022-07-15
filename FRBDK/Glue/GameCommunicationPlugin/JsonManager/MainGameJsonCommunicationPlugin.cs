@@ -1,14 +1,17 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using GameJsonCommunicationPlugin.Common;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 
-namespace GameCommunicationPlugin
+namespace GameJsonCommunicationPlugin.JsonManager
 {
     [Export(typeof(PluginBase))]
     public class MainGameJsonCommunicationPlugin : PluginBase
     {
+        private const string PacketType_JsonUpdate = "JsonUpdate";
         private GlueJsonManager _glueJsonManager;
 
         public override string FriendlyName => "Game JSON Communication Plugin";
@@ -77,6 +80,17 @@ namespace GameCommunicationPlugin
             {
                 Debug.Print($"Changes for Entity {entityName}");
                 Debug.Print(patch.ToString());
+
+                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                {
+                    PacketType = PacketType_JsonUpdate,
+                    Payload = JsonConvert.SerializeObject(new JsonPayload
+                    {
+                        Type = "Entity",
+                        Name = entityName,
+                        Patch = patch.ToString()
+                    })
+                });
             }
         }
 
@@ -90,6 +104,17 @@ namespace GameCommunicationPlugin
             {
                 Debug.Print($"Changes for Screen {screenName}");
                 Debug.Print(patch.ToString());
+
+                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                {
+                    PacketType = PacketType_JsonUpdate,
+                    Payload = JsonConvert.SerializeObject(new JsonPayload
+                    {
+                        Type = "Screen",
+                        Name = screenName,
+                        Patch = patch.ToString()
+                    })
+                });
             }
         }
 
@@ -101,7 +126,25 @@ namespace GameCommunicationPlugin
             {
                 Debug.Print($"Changes for Glue Project Save");
                 Debug.Print(patch.ToString());
+
+                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                {
+                    PacketType = PacketType_JsonUpdate,
+                    Payload = JsonConvert.SerializeObject(new JsonPayload
+                    {
+                        Type = "GlueProjectSave",
+                        Name = "",
+                        Patch = patch.ToString()
+                    })
+                });
             }
         }
+    }
+
+    public class JsonPayload
+    {
+        public string Type { get; set; }
+        public string Name { get; set; }
+        public string Patch { get; set; }
     }
 }
