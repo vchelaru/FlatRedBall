@@ -20,7 +20,7 @@ namespace OfficialPluginsCore.Wizard.Models
         #region Fields/Properties
 
         public List<WizardPage> FormsDataList { get; private set; } = new List<WizardPage>();
-        public WizardData ViewModel { get; private set; }
+        public WizardViewModel ViewModel { get; private set; }
 
         Grid grid;
 
@@ -34,7 +34,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
         public void CreatePages()
         {
-            ViewModel = new WizardData();
+            ViewModel = new WizardViewModel();
             ViewModel.ApplyDefaults();
 
             {
@@ -171,6 +171,9 @@ namespace OfficialPluginsCore.Wizard.Models
                     .Add("None (will still be an ICollidable)", CollisionType.None);
 
                 formsData.AddBoolValue("Add Sprite to Player Entity", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.IsPlayerCreationSelectingOptions));
+
+                formsData.AddBoolValue("Add Platformer Animations", nameof(ViewModel.AddPlayerSpritePlatformerAnimations),
+                    nameof(ViewModel.ShowAddPlayerSpritePlatformerAnimations));
 
                 formsData.AddTitle("Player Instance in GameScreen", nameof(ViewModel.AddPlayerEntity));
 

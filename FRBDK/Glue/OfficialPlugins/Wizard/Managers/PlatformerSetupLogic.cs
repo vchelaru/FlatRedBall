@@ -7,7 +7,7 @@ namespace OfficialPlugins.Wizard.Managers
 {
     internal static class PlatformerSetupLogic
     {
-        public static void SetupForDefaultPlatformer(WizardData viewModel)
+        public static void SetupForDefaultPlatformer(WizardViewModel viewModel)
         {
             viewModel.PlayerControlType = GameType.Platformer;
 
@@ -15,6 +15,7 @@ namespace OfficialPlugins.Wizard.Managers
             viewModel.SelectedCameraResolution = CameraResolution._480x360;
             viewModel.ScalePercent = 200;
 
+            viewModel.AddPlayerSpritePlatformerAnimations = true;
 
         }
     }

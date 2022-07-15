@@ -102,7 +102,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
         private static void SaveToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag)
         {
-            var clone = glueProjectSave.ConvertToPartial(tag);
+            GlueProjectSave clone = null;
+            
+            GlueCommands.Self.TryMultipleTimes(() => clone = glueProjectSave.ConvertToPartial(tag));
 
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {

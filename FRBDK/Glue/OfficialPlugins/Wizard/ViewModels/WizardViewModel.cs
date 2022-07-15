@@ -45,7 +45,7 @@ namespace OfficialPluginsCore.Wizard.Models
 
     #endregion
 
-    public class WizardData : ViewModel
+    public class WizardViewModel : ViewModel
     {
         #region Runtime (ignored) stuff like Configuration
 
@@ -199,6 +199,17 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public bool AddPlayerSpritePlatformerAnimations
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddPlayerSprite))]
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowAddPlayerSpritePlatformerAnimations =>
+            AddPlayerSprite && PlayerControlType == GameType.Platformer;
+
         #endregion
 
         #region Levels
@@ -317,7 +328,7 @@ namespace OfficialPluginsCore.Wizard.Models
             get; set;
         }
 
-        public WizardData()
+        public WizardViewModel()
         {
 
         }

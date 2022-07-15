@@ -33,7 +33,7 @@ namespace OfficialPluginsCore.Wizard.Managers
         }
         #endregion
 
-        public async Task Apply(WizardData vm)
+        public async Task Apply(WizardViewModel vm)
         {
             #region Initialization and utility methods
 
@@ -144,17 +144,21 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
             #endregion
 
+            #region Additional serialized Objects (from json)
             if (!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
             {
                 Add("Adding additional Objects", () =>
                     ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
             }
+            #endregion
 
+            #region Generate all code
             Add("Regenerating All Code", () =>
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
             });
+            #endregion
 
             AddTask("Flushing Files", async () =>
             {
@@ -343,7 +347,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void ImportElements(WizardData vm)
+        private static void ImportElements(WizardViewModel vm)
         {
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
@@ -368,7 +372,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleAddGum(WizardData vm)
+        private static async Task HandleAddGum(WizardViewModel vm)
         {
             if (vm.AddFlatRedBallForms)
             {
@@ -380,7 +384,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardData vm)
+        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
         {
             ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
             NamedObjectSave solidCollisionNos = null;
@@ -431,7 +435,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return nos;
         }
 
-        private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)
+        private static async Task<EntitySave> HandleAddPlayerEntity(WizardViewModel vm)
         {
             EntitySave playerEntity;
 
@@ -462,6 +466,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                         // mark as platformer
                         PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
 
+                        if(vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
+                        {
+                            await AddPlayerPlatformerAnimations(playerEntity);
+                        }
+
                     }
                     else if (vm.PlayerControlType == GameType.Topdown)
                     {
@@ -475,7 +484,47 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static async Task<EntitySave> ImportPlayerEntity(WizardData vm)
+        private static async Task AddPlayerPlatformerAnimations(EntitySave playerEntity)
+        {
+            var playerContentFolder = GlueCommands.Self.FileCommands.GetContentFolder(playerEntity);
+            System.IO.Directory.CreateDirectory(playerContentFolder);
+
+            // 1 - save the PNG to the right location
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.FRBeefcakeSpritesheet.png",
+                playerContentFolder + "FRBeefcakeSpriteSheet.png");
+
+            // 2 - save the .achx to the right locatoin
+            FlatRedBall.IO.FilePath achxDestinationPath = playerContentFolder + "PlatformerAnimations.achx";
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.PlatformerAnimations.achx",
+                achxDestinationPath.FullPath);
+
+            // 3 - add the .achx to the Player entity
+            await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(playerEntity, achxDestinationPath);
+
+            // 4 - Set the animations on the sprite
+            var sprite = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
+            if(sprite != null)
+            {
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.AnimationChains),
+                    "PlatformerAnimations",
+                    false, false
+                    );
+
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.CurrentChainName),
+                    "CharacterWalkRight",
+                    false, false
+                    );
+
+            }
+        }
+
+        private static async Task<EntitySave> ImportPlayerEntity(WizardViewModel vm)
         {
             EntitySave playerEntity = null;
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
@@ -505,7 +554,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardData vm)
+        private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardViewModel vm)
         {
 
             EntitySave playerEntity = null;
@@ -574,7 +623,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
+        private static void HandleAddPlayerInstance(WizardViewModel vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
             NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
             NamedObjectSave playerList = null;
@@ -668,7 +717,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
+        private static async Task HandleCreateLevels(WizardViewModel vm, ScreenSave gameScreen)
         {
             for (int i = 0; i < vm.NumberOfLevels; i++)
             {
@@ -677,7 +726,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task CreateLevel(WizardData vm, ScreenSave gameScreen, int i, string levelName)
+        private static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int i, string levelName)
         {
             var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
             levelScreen.BaseScreen = gameScreen.Name;
@@ -737,7 +786,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task AddAdditionalScreens(WizardData vm)
+        private static async Task AddAdditionalScreens(WizardViewModel vm)
         {
             foreach (var screenName in vm.AdditionalNonGameScreens)
             {
@@ -745,14 +794,14 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task ApplyCameraValues(WizardData vm, ScreenSave gameScreen)
+        private static async Task ApplyCameraValues(WizardViewModel vm, ScreenSave gameScreen)
         {
             await ApplyCameraController(vm, gameScreen);
 
             await ApplyMainCameraSettings(vm);
         }
 
-        private static async Task ApplyMainCameraSettings(WizardData vm)
+        private static async Task ApplyMainCameraSettings(WizardViewModel vm)
         {
             int width = 800;
             int height = 600;
@@ -827,7 +876,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }, "Setting display settings");
         }
 
-        private static async Task ApplyCameraController(WizardData vm, ScreenSave gameScreen)
+        private static async Task ApplyCameraController(WizardViewModel vm, ScreenSave gameScreen)
         {
             var addCameraControllerVm = new AddObjectViewModel();
             addCameraControllerVm.ForcedElementToAddTo = gameScreen;
