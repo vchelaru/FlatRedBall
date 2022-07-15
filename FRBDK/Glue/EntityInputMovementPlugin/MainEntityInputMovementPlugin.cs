@@ -112,6 +112,7 @@ namespace EntityInputMovementPlugin
             {
                 // just in case it's not there:
                 FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.GenerateAndSaveEnumFile();
             }
         }
 

@@ -10,6 +10,19 @@ namespace EntityInputMovementPlugin.CodeGenerators
 {
     class EntityCodeGenerator : ElementComponentCodeGenerator
     {
+        public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
+        {
+            base.AddInheritedTypesToList(listToAddTo, element);
+
+            var entity = element as EntitySave;
+            var isPlatformer = FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator.GetIfIsPlatformer(element);
+
+            if(entity != null && isPlatformer)
+            {
+                listToAddTo.Add("IPlatformer");
+            }
+        }
+
         public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
         {
             var entity = element as EntitySave;

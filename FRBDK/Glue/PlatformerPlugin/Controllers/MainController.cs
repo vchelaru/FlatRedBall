@@ -179,6 +179,8 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
             {
                 EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                IPlatformerCodeGenerator.Self.GenerateAndSaveEnumFile();
+
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
         }

@@ -130,7 +130,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>"); 
             codeBlock.Line("public bool ForceIgnoreCloudCollision{ get; set; }");
 
-
             codeBlock.Property("public FlatRedBall.Input.IInputDevice", "InputDevice")
                 .Line("get;")
                 .Line("private set;");
@@ -156,6 +155,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Property("protected DataTypes.PlatformerValues", "CurrentMovement")
                 .Get()
                     .Line("return mCurrentMovement;");
+
+            codeBlock.Line("public string CurrentMovementName => CurrentMovement?.Name;");
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Which direction the character is facing. This can be explicity set in code, but may get overridden by the current InputDevice.");
