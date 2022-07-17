@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPlugins.Compiler.Models
+namespace CompilerPlugin.Models
 {
     public class BuildSettingsUser
     {

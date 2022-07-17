@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
-using OfficialPlugins.Compiler.Models;
+using CompilerPlugin.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,10 +11,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using CompilerPlugin.ViewModels;
 
-namespace OfficialPlugins.Compiler
+namespace CompilerPlugin.Managers
 {
-    class Compiler : Singleton<Compiler>
+    class Compiler
     {
         List<FilePath> AvailableLocations = new List<FilePath>
         {
@@ -95,6 +96,13 @@ namespace OfficialPlugins.Compiler
         public BuildSettingsUser BuildSettingsUser { get; set; }
 
         FilePath msBuildLocation;
+        private CompilerViewModel _compilerViewModel;
+
+        public Compiler(CompilerViewModel compilerViewModel)
+        {
+            _compilerViewModel = compilerViewModel;
+        }
+
         FilePath MsBuildLocation
         {
             get
@@ -126,123 +134,136 @@ namespace OfficialPlugins.Compiler
         internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
-
-            // At one point I was trying to resolve the VS 22 vs 19 issue and I ran MSBuild through a batch
-            // file. It didn't matter, still broken :(
-            //var batFile = @"C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\BuildMyGame.bat";
-            //var exists = System.IO.File.Exists(batFile);
-            //var process = System.Diagnostics.Process.Start(batFile);
-
-            //return true;
-
-            var shouldCompile = true;
-
-            //var message = GetMissingFrameworkMessage();
-            //if(!string.IsNullOrEmpty(message))
-            //{
-            //    printError("Cannot build due to missing .NET SDK:\n" + message);
-            //    shouldCompile = false;
-            //}
-
-            //do we actually want to do this ?
-            if(shouldCompile)
+            try
             {
-                var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
-
-                var succeeded = false;
-
-                string msBuildPath;
-                string additionalArgumentPrefix = "";
-
-                if (MsBuildLocation != null)
+                while (_compilerViewModel.IsCompiling)
                 {
-                    msBuildPath = MsBuildLocation.FullPath;
-                }
-                else
-                {
-                    // try dotnet msbuild
-                    msBuildPath = "dotnet";
-
-                    additionalArgumentPrefix = "msbuild ";
+                    await Task.Delay(100);
                 }
 
-                #region Restore Nuget
+                _compilerViewModel.IsCompiling = true;
 
+                // At one point I was trying to resolve the VS 22 vs 19 issue and I ran MSBuild through a batch
+                // file. It didn't matter, still broken :(
+                //var batFile = @"C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\BuildMyGame.bat";
+                //var exists = System.IO.File.Exists(batFile);
+                //var process = System.Diagnostics.Process.Start(batFile);
+
+                //return true;
+
+                var shouldCompile = true;
+
+                //var message = GetMissingFrameworkMessage();
+                //if(!string.IsNullOrEmpty(message))
+                //{
+                //    printError("Cannot build due to missing .NET SDK:\n" + message);
+                //    shouldCompile = false;
+                //}
+
+                //do we actually want to do this ?
+                if (shouldCompile)
                 {
-                    string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
-                    string endOutput = "Nuget Restore succeeded";
+                    var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
 
-                    // For info on parameters:
-                    // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                    // \m uses multiple cores
-                    string arguments = 
-                        additionalArgumentPrefix +
-                        $"\"{projectFileName}\" -t:restore " +
-                        "/nologo " +
-                        "/verbosity:minimal";
+                    var succeeded = false;
 
-                    if(printMsBuildCommand)
+                    string msBuildPath;
+                    string additionalArgumentPrefix = "";
+
+                    if (MsBuildLocation != null)
                     {
-                        printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                        msBuildPath = MsBuildLocation.FullPath;
+                    }
+                    else
+                    {
+                        // try dotnet msbuild
+                        msBuildPath = "dotnet";
+
+                        additionalArgumentPrefix = "msbuild ";
                     }
 
-                    succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
-                }
+                    #region Restore Nuget
 
-                #endregion
-
-                #region Build
-
-                if(succeeded)
-                {
-                    string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
-                    string endOutput = "Build succeeded";
-
-                    string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-                    // For info on parameters:
-                    // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                    // \m uses multiple cores
-                    string arguments =
-                        additionalArgumentPrefix +
-                        $"\"{projectFileName}\" " +
-                        $"/p:Configuration=\"{configuration}\" " +
-                        
-                        $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
-                        $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                        $"/p:OutDir=\"{outputDirectory}\" " +
-                        "/m " +
-                        "/nologo " +
-                        "/verbosity:minimal";
-
-                    if (printMsBuildCommand)
                     {
-                        printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
-                    }
+                        string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
+                        string endOutput = "Nuget Restore succeeded";
 
-                    succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
-                }
+                        // For info on parameters:
+                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                        // \m uses multiple cores
+                        string arguments =
+                            additionalArgumentPrefix +
+                            $"\"{projectFileName}\" -t:restore " +
+                            "/nologo " +
+                            "/verbosity:minimal";
 
-                #endregion
-
-                if(!succeeded)
-                {
-                    var fileExists = System.IO.File.Exists(msBuildPath);
-                    if(!fileExists)
-                    {
-                        string cantFindMsBuildMessage =
-                            $"Could not find msbuild.exe. Looked in the following locations:";
-
-                        foreach (var item in AvailableLocations)
+                        if (printMsBuildCommand)
                         {
-                            cantFindMsBuildMessage += $"\n{item}";
+                            printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
                         }
 
-                        printError(cantFindMsBuildMessage);
+                        succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                     }
+
+                    #endregion
+
+                    #region Build
+
+                    if (succeeded)
+                    {
+                        string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
+                        string endOutput = "Build succeeded";
+
+                        string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+                        // For info on parameters:
+                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                        // \m uses multiple cores
+                        string arguments =
+                            additionalArgumentPrefix +
+                            $"\"{projectFileName}\" " +
+                            $"/p:Configuration=\"{configuration}\" " +
+
+                            $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                            $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                            $"/p:OutDir=\"{outputDirectory}\" " +
+                            "/m " +
+                            "/nologo " +
+                            "/verbosity:minimal";
+
+                        if (printMsBuildCommand)
+                        {
+                            printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                        }
+
+                        succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                    }
+
+                    #endregion
+
+                    if (!succeeded)
+                    {
+                        var fileExists = System.IO.File.Exists(msBuildPath);
+                        if (!fileExists)
+                        {
+                            string cantFindMsBuildMessage =
+                                $"Could not find msbuild.exe. Looked in the following locations:";
+
+                            foreach (var item in AvailableLocations)
+                            {
+                                cantFindMsBuildMessage += $"\n{item}";
+                            }
+
+                            printError(cantFindMsBuildMessage);
+                        }
+                    }
+                    return succeeded;
                 }
-                return succeeded;
+                return false;
             }
-            return false;
+            finally
+            {
+                _compilerViewModel.IsCompiling = false;
+            }
         }
 
         private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)

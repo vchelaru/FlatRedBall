@@ -37,6 +37,7 @@ using GlueFormsCore.FormHelpers;
 using System.Windows.Media.Imaging;
 using FlatRedBall.Glue.ViewModels;
 using OfficialPlugins.Compiler.CodeGeneration.GlueCalls;
+using Newtonsoft.Json.Linq;
 
 namespace OfficialPlugins.Compiler
 {
@@ -46,20 +47,15 @@ namespace OfficialPlugins.Compiler
         #region Fields/Properties
 
 
-        Compiler compiler;
-        Runner runner;
-
         public CompilerViewModel CompilerViewModel { get; private set; }
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
-        public BuildTabView MainControl { get; private set; } 
+        
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
 
-        PluginTab buildTab;
         PluginTab glueViewSettingsTab;
         GlueViewSettings glueViewSettingsView;
-        BuildSettingsUser BuildSettingsUser;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -86,7 +82,7 @@ namespace OfficialPlugins.Compiler
         }
 
         FilePath JsonSettingsFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "CompilerSettings.json";
-        FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
+        
 
         bool ignoreViewModelChanges = false;
 
@@ -102,37 +98,19 @@ namespace OfficialPlugins.Compiler
 
         public override void StartUp()
         {
+            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn);
+            _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
+
+            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
+            _variableSendingManager = new VariableSendingManager(_refreshManager);
+            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager);
+
             CreateBuildControl();
 
             CreateToolbar();
 
-            RefreshManager.Self.InitializeEvents(this.MainControl.PrintOutput, this.MainControl.PrintOutput);
+            Output.Initialize((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value));
 
-            Output.Initialize(this.MainControl.PrintOutput);
-
-
-            compiler = Compiler.Self;
-            runner = Runner.Self;
-
-            runner.AfterSuccessfulRun += async () =>
-            {
-                // If we aren't generating the code, we shouldn't try to move the game to Glue since the borders can't be adjusted
-                if(CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked && GlueViewSettingsViewModel.EmbedGameInGameTab)
-                {
-                    MoveGameToHost();
-                }
-                
-
-                if(CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
-                {
-                    await ReactToPlayOrEditSet();
-                }
-
-            };
-            runner.OutputReceived += (output) =>
-            {
-                MainControl.PrintOutput(output);
-            };
 
             game1GlueControlGenerator = new Game1GlueControlGenerator();
             this.RegisterCodeGenerator(game1GlueControlGenerator);
@@ -144,7 +122,7 @@ namespace OfficialPlugins.Compiler
 
             // winforms stuff is here:
             // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
-            gameHostView = new GameHostView();
+            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
             gameHostView.DataContext = CompilerViewModel;
             gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
             {
@@ -171,12 +149,13 @@ namespace OfficialPlugins.Compiler
             // do this after creating the compiler, view model, and control
             AssignEvents();
 
-
-
-            GameHostController.Self.Initialize(gameHostView, MainControl, 
+            _gameHostController = new GameHostController();
+            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
                 CompilerViewModel, 
                 GlueViewSettingsViewModel,
-                glueViewSettingsTab);
+                glueViewSettingsTab,
+                ReactToPluginEventWithReturn,
+                _refreshManager);
 
             #region Start the timer, do it after the gameHostView is created
 
@@ -189,7 +168,7 @@ namespace OfficialPlugins.Compiler
             // This was 250 but it wasn't fast enough to feel responsive
             var dragDropTimerFrequency = 100; // ms
             dragDropTimer = new Timer(dragDropTimerFrequency);
-            dragDropTimer.Elapsed += (not, used) => DragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
+            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
             dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
             dragDropTimer.Start();
 
@@ -198,58 +177,58 @@ namespace OfficialPlugins.Compiler
 
         private void AssignEvents()
         {
-            var manager = new FileChangeManager(MainControl, compiler, CompilerViewModel);
+            var manager = new FileChangeManager((value) => ReactToPluginEvent("Compiler_Output_Standard", value), CompilerViewModel, _refreshManager);
             
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             
-            this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
+            this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
             this.ReactToFileChangeHandler += manager.HandleFileChanged;
-            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
+            this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
-            this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
+            this.NewEntityCreated += _refreshManager.HandleNewEntityCreated;
             this.NewScreenCreated += async (newScreen) =>
             {
                 ToolbarController.Self.HandleNewScreenCreated(newScreen);
-                await RefreshManager.Self.HandleNewScreenCreated();
+                await _refreshManager.HandleNewScreenCreated();
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
 
-            this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
-            this.ReactToNewObjectListAsync += RefreshManager.Self.HandleNewObjectList;
+            this.ReactToNewObjectHandler += _refreshManager.HandleNewObjectCreated;
+            this.ReactToNewObjectListAsync += _refreshManager.HandleNewObjectList;
 
             this.ReactToObjectRemoved += async (owner, nos) =>
-                await RefreshManager.Self.HandleObjectRemoved(owner, nos);
+                await _refreshManager.HandleObjectRemoved(owner, nos);
             this.ReactToObjectListRemoved += async (ownerList, list) =>
-                await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
+                await _refreshManager.HandleObjectListRemoved(ownerList, list);
 
 
             this.ReactToElementVariableChange += HandleElementVariableChanged;
-            this.ReactToNamedObjectChangedValueList += (changeList) => RefreshManager.Self.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
+            this.ReactToNamedObjectChangedValueList += (changeList) => _refreshManager.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
             this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += HandleItemSelected;
-            this.ReactToObjectContainerChanged += RefreshManager.Self.HandleObjectContainerChanged;
+            this.ReactToObjectContainerChanged += _refreshManager.HandleObjectContainerChanged;
             // If a variable is added, that may be used later to control initialization.
             // The game won't reflect that until it has been restarted, so let's just take 
             // care of it now. For variable removal I don't know if any restart is needed...
-            this.ReactToVariableAdded += RefreshManager.Self.HandleVariableAdded;
+            this.ReactToVariableAdded += _refreshManager.HandleVariableAdded;
             this.ReactToChangedPropertyHandler += (changedMember, oldValue, owner) =>
             {
                 if(changedMember == nameof(CustomVariable.Name) && GlueState.Self.CurrentCustomVariable != null)
                 {
-                    RefreshManager.Self.HandleVariableRenamed(GlueState.Self.CurrentCustomVariable);
+                    _refreshManager.HandleVariableRenamed(GlueState.Self.CurrentCustomVariable);
                 }
             };
-            this.ReactToStateCreated += RefreshManager.Self.HandleStateCreated;
-            this.ReactToStateVariableChanged += RefreshManager.Self.HandleStateVariableChanged;
-            this.ReactToStateCategoryExcludedVariablesChanged += RefreshManager.Self.HandleStateCategoryExcludedVariablesChanged;
+            this.ReactToStateCreated += _refreshManager.HandleStateCreated;
+            this.ReactToStateVariableChanged += _refreshManager.HandleStateVariableChanged;
+            this.ReactToStateCategoryExcludedVariablesChanged += _refreshManager.HandleStateCategoryExcludedVariablesChanged;
             //this.ReactToMainWindowMoved += gameHostView.ReactToMainWindowMoved;
             this.ReactToMainWindowResizeEnd += gameHostView.ReactToMainWindowResizeEnd;
-            this.TryHandleTreeNodeDoubleClicked += RefreshManager.Self.HandleTreeNodeDoubleClicked;
+            this.TryHandleTreeNodeDoubleClicked += _refreshManager.HandleTreeNodeDoubleClicked;
             this.GrabbedTreeNodeChanged += HandleGrabbedTreeNodeChanged;
 
             this.ReactToLoadedGlux += () => pluginTab.Show();
@@ -395,17 +374,17 @@ namespace OfficialPlugins.Compiler
 
         private void HandleElementVariableChanged(IElement element, CustomVariable variable)
         {
-            RefreshManager.Self.HandleVariableChanged(element, variable);
+            _refreshManager.HandleVariableChanged(element, variable);
         }
 
         private void HandleNamedObjectVariableOrPropertyChanged(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
-            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
+            _refreshManager.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
-            RefreshManager.Self.HandleItemSelected(selectedTreeNode);
+            _refreshManager.HandleItemSelected(selectedTreeNode);
             this.gameHostView.UpdateToItemSelected();
         }
 
@@ -419,7 +398,7 @@ namespace OfficialPlugins.Compiler
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
                 GlueCommands.Self.DialogCommands.FocusTab("Build");
-                var succeeded = await GameHostController.Self.Compile();
+                var succeeded = await _gameHostController.Compile();
 
                 if (succeeded)
                 {
@@ -429,7 +408,10 @@ namespace OfficialPlugins.Compiler
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
                         GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () =>
                         {
-                            await runner.Run(preventFocus: false);
+                            await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
+                            {
+                                PreventFocus = false
+                            }));
                             CompilerViewModel.IsEditChecked = false;
                         });
                     }
@@ -438,7 +420,10 @@ namespace OfficialPlugins.Compiler
                         PluginManager.ReceiveOutput("Building succeeded. Running project...");
 
                         CompilerViewModel.IsEditChecked = false;
-                        await runner.Run(preventFocus: false);
+                        await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
+                        {
+                            PreventFocus = false
+                        }));
                     }
                 }
                 else
@@ -491,7 +476,7 @@ namespace OfficialPlugins.Compiler
 
                         if (response?.Commands.Count > 0)
                         {
-                            await CommandReceiver.HandleCommandsFromGame(response.Commands,
+                            await _commandReceiver.HandleCommandsFromGame(response.Commands,
                                 GlueViewSettingsViewModel.PortNumber);
                         }
                         else
@@ -579,27 +564,7 @@ namespace OfficialPlugins.Compiler
             return compilerSettings;
         }
 
-        private void LoadOrCreateBuildSettings()
-        {
-            BuildSettingsUser = null;
-            if (BuildSettingsUserFilePath.Exists())
-            {
-                try
-                {
-                    var text = System.IO.File.ReadAllText(BuildSettingsUserFilePath.FullPath);
-                    BuildSettingsUser = JsonConvert.DeserializeObject<BuildSettingsUser>(text);
-                }
-                catch
-                {
-                    // do nothing
-                }
-            }
-
-            if(BuildSettingsUser == null)
-            {
-                BuildSettingsUser = new BuildSettingsUser();
-            }
-        }
+        
 
         private bool IsFrbNewEnough()
         {
@@ -617,8 +582,6 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxLoaded()
         {
             var model = LoadOrCreateCompilerSettings();
-            LoadOrCreateBuildSettings();
-            Compiler.Self.BuildSettingsUser = BuildSettingsUser;
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
@@ -649,7 +612,7 @@ namespace OfficialPlugins.Compiler
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
 
-            RefreshManager.Self.PortNumber = model.PortNumber;
+            _refreshManager.PortNumber = model.PortNumber;
 
             ToolbarController.Self.HandleGluxLoaded();
 
@@ -694,25 +657,24 @@ namespace OfficialPlugins.Compiler
 
             MainViewModel = CompilerViewModel;
 
-            MainControl = new BuildTabView();
-            MainControl.DataContext = CompilerViewModel;
+            //MainControl = new BuildTabView();
+            //MainControl.DataContext = CompilerViewModel;
 
-            Runner.Self.ViewModel = CompilerViewModel;
-            RefreshManager.Self.ViewModel = CompilerViewModel;
-            DragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
-            CommandReceiver.CompilerViewModel = CompilerViewModel;
-            CommandReceiver.PrintOutput = MainControl.PrintOutput;
-            RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            _refreshManager.ViewModel = CompilerViewModel;
+            _dragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
+            _commandReceiver.CompilerViewModel = CompilerViewModel;
+            _commandReceiver.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            _refreshManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
-            VariableSendingManager.Self.ViewModel = CompilerViewModel;
-            VariableSendingManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            _variableSendingManager.ViewModel = CompilerViewModel;
+            _variableSendingManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             CommandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
             CommandSender.CompilerViewModel = CompilerViewModel;
-            CommandSender.PrintOutput = MainControl.PrintOutput;
+            CommandSender.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
 
-            buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
-            buildTab.Show();
+            //buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
+            //buildTab.Show();
 
 
             glueViewSettingsView = new Views.GlueViewSettings();
@@ -801,7 +763,7 @@ namespace OfficialPlugins.Compiler
                     
                     break;
                 case nameof(ViewModels.CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
-                    RefreshManager.Self.IsExplicitlySetRebuildAndRestartEnabled = CompilerViewModel.EffectiveIsRebuildAndRestartEnabled;
+                    _refreshManager.IsExplicitlySetRebuildAndRestartEnabled = CompilerViewModel.EffectiveIsRebuildAndRestartEnabled;
                     break;
                 case nameof(ViewModels.CompilerViewModel.IsToolbarPlayButtonEnabled):
                     ToolbarController.Self.SetEnabled(CompilerViewModel.IsToolbarPlayButtonEnabled);
@@ -846,7 +808,7 @@ namespace OfficialPlugins.Compiler
                 {
                     message += response.Message;
                 }
-                MainControl.PrintOutput(message);
+                ReactToPluginEvent("Compiler_Output_Standard", message);
             }
             else if (CommandSender.IsConnected == false)
             {
@@ -857,7 +819,7 @@ namespace OfficialPlugins.Compiler
                 var currentEntity = GlueState.Self.CurrentEntitySave;
                 if (currentEntity != null)
                 {
-                    await RefreshManager.Self.PushGlueSelectionToGame();
+                    await _refreshManager.PushGlueSelectionToGame();
                 }
                 else
                 {
@@ -881,7 +843,7 @@ namespace OfficialPlugins.Compiler
                             else
                             {
                                 // the screens are the same, so push the object selection from Glue to the game:
-                                await RefreshManager.Self.PushGlueSelectionToGame();
+                                await _refreshManager.PushGlueSelectionToGame();
                             }
                         }
                     }
@@ -896,7 +858,7 @@ namespace OfficialPlugins.Compiler
                 {
                     // push the selection to game
                     var startupScreen = ObjectFinder.Self.GetScreenSave(GlueState.Self.CurrentGlueProject.StartUpScreen);
-                    await RefreshManager.Self.PushGlueSelectionToGame(forcedElement: startupScreen);
+                    await _refreshManager.PushGlueSelectionToGame(forcedElement: startupScreen);
                 }
             }
             var setCameraAspectRatioDto = new SetCameraAspectRatioDto();
@@ -952,10 +914,10 @@ namespace OfficialPlugins.Compiler
 
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
-            MainControl.PrintOutput("Applying changes");
+            ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEditMode && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
-            RefreshManager.Self.PortNumber = GlueViewSettingsViewModel.PortNumber;
+            _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
@@ -968,11 +930,11 @@ namespace OfficialPlugins.Compiler
                 GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
             }
 
-            await RefreshManager.Self.StopAndRestartAsync($"{propertyName} changed");
+            await _refreshManager.StopAndRestartAsync($"{propertyName} changed");
 
-            MainControl.PrintOutput("Waiting for tasks to finish...");
+            ReactToPluginEvent("Compiler_Output_Standard", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();
-            MainControl.PrintOutput("Finishined adding/generating code for GlueControlManager");
+            ReactToPluginEvent("Compiler_Output_Standard", "Finishined adding/generating code for GlueControlManager");
         }
 
         private void SaveCompilerSettingsModel()
@@ -1004,56 +966,56 @@ namespace OfficialPlugins.Compiler
 
         private void AssignControlEvents()
         {
-            MainControl.BuildClicked += async (not, used) =>
-            {
-                var succeeded = await GameHostController.Self.Compile();
-                if(!succeeded)
-                {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
-                }
-            };
+            //MainControl.BuildClicked += async (not, used) =>
+            //{
+            //    var succeeded = await GameHostController.Self.Compile();
+            //    if(!succeeded)
+            //    {
+            //        GlueCommands.Self.DialogCommands.FocusTab("Build");
+            //    }
+            //};
 
 
-            MainControl.RunClicked += async (not, used) =>
-            {
-                var succeeded = await GameHostController.Self.Compile();
-                if (succeeded)
-                {
-                    if (succeeded)
-                    {
-                        CompilerViewModel.IsRunning = false;
-                        await runner.Run(preventFocus: false);
-                    }
-                    else
-                    {
-                        var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
+            //MainControl.RunClicked += async (not, used) =>
+            //{
+            //    var succeeded = await GameHostController.Self.Compile();
+            //    if (succeeded)
+            //    {
+            //        if (succeeded)
+            //        {
+            //            CompilerViewModel.IsRunning = false;
+            //            await runner.Run(preventFocus: false);
+            //        }
+            //        else
+            //        {
+            //            var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
-                    }
-                }
-            };
+            //            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+            //        }
+            //    }
+            //};
 
-            MainControl.MSBuildSettingsClicked += () =>
-            {
-                var viewModel = new BuildSettingsWindowViewModel();
-                var view = new BuildSettingsWindow();
-                view.DataContext = viewModel;
-                viewModel.SetFrom(BuildSettingsUser);
+            //MainControl.MSBuildSettingsClicked += () =>
+            //{
+            //    var viewModel = new BuildSettingsWindowViewModel();
+            //    var view = new BuildSettingsWindow();
+            //    view.DataContext = viewModel;
+            //    viewModel.SetFrom(BuildSettingsUser);
 
-                var results = view.ShowDialog();
+            //    var results = view.ShowDialog();
 
-                if(results == true)
-                {
-                    // apply VM:
-                    viewModel.ApplyTo(BuildSettingsUser);
+            //    if(results == true)
+            //    {
+            //        // apply VM:
+            //        viewModel.ApplyTo(BuildSettingsUser);
 
-                    GlueCommands.Self.TryMultipleTimes(() =>
-                    {
-                        var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
-                        System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
-                    });
-                }
-            };
+            //        GlueCommands.Self.TryMultipleTimes(() =>
+            //        {
+            //            var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
+            //            System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
+            //        });
+            //    }
+            //};
         }
 
 
@@ -1070,11 +1032,11 @@ namespace OfficialPlugins.Compiler
         {
             if (succeeded)
             {
-                MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                ReactToPluginEvent("Compiler_Output_Standard", $"{DateTime.Now.ToLongTimeString()} Build succeeded");
             }
             else
             {
-                MainControl.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
+                ReactToPluginEvent("Compiler_Output_Standard", $"{DateTime.Now.ToLongTimeString()} Build failed");
 
             }
         }
@@ -1088,7 +1050,7 @@ namespace OfficialPlugins.Compiler
 
         public async void ShowState(string stateName, string categoryName)
         {
-            await RefreshManager.Self.PushGlueSelectionToGame(categoryName, stateName);
+            await _refreshManager.PushGlueSelectionToGame(categoryName, stateName);
         }
 
 
@@ -1127,12 +1089,17 @@ namespace OfficialPlugins.Compiler
         GameHostView gameHostView;
 
         Process gameProcess;
+        private GameHostController _gameHostController;
+        private RefreshManager _refreshManager;
+        private DragDropManagerGameWindow _dragDropManagerGameWindow;
+        private VariableSendingManager _variableSendingManager;
+        private CommandReceiver _commandReceiver;
 
         #endregion
 
         public async void MoveGameToHost()
         {
-            gameProcess = Runner.Self.TryFindGameProcess();
+            gameProcess = TryFindGameProcess();
             var handle = gameProcess?.MainWindowHandle;
 
             if (handle != null)
@@ -1169,7 +1136,64 @@ namespace OfficialPlugins.Compiler
             }
         }
 
+        private Process TryFindGameProcess(bool mustHaveWindow = true)
+        {
+            // find a process for game
+            var processes = Process.GetProcesses()
+                .OrderBy(item => item.ProcessName)
+                .ToArray();
 
+            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+
+            var found = processes
+                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&
+                (mustHaveWindow == false || item.MainWindowHandle != IntPtr.Zero));
+            return found;
+        }
+
+        #region Override Methods
+        public override void HandleEvent(string eventName, string payload)
+        {
+            base.HandleEvent(eventName, payload);
+
+            switch(eventName)
+            {
+                case "Runner_GameStarted":
+                    Task.Run(async () =>
+                    {
+                        // If we aren't generating the code, we shouldn't try to move the game to Glue since the borders can't be adjusted
+                        if (CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked && GlueViewSettingsViewModel.EmbedGameInGameTab)
+                        {
+                            MoveGameToHost();
+                        }
+
+
+                        if (CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
+                        {
+                            await ReactToPlayOrEditSet();
+                        }
+                    });
+
+                    break;
+
+                case "Compiler_Prop_IsRunning":
+                    Task.Run(async () =>
+                    {
+                        CompilerViewModel.IsRunning = JObject.Parse(payload).Value<bool>("value");
+                    });
+
+                    break;
+
+                case "Compiler_Prop_IsCompiling":
+                    Task.Run(async () =>
+                    {
+                        CompilerViewModel.IsCompiling = JObject.Parse(payload).Value<bool>("value");
+                    });
+
+                    break;
+            }
+        }
+        #endregion
 
     }
 

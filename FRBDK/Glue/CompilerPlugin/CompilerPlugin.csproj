@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <Platforms>x86</Platforms>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>CompilerPlugin</RootNamespace>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\CompilerPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\CompilerPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\CompilerPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\CompilerPlugin\CompilerPlugin.dll&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <None Remove="Icons\AdvanceOneFrame.png" />
+    <None Remove="Icons\build.png" />
+    <None Remove="Icons\Edit.png" />
+    <None Remove="Icons\EditDeselected.png" />
+    <None Remove="Icons\FirewallEnablePopup.png" />
+    <None Remove="Icons\FocusOnSelection.png" />
+    <None Remove="Icons\icon_magnify.png" />
+    <None Remove="Icons\icon_minus.png" />
+    <None Remove="Icons\icon_plus.png" />
+    <None Remove="Icons\Pause.png" />
+    <None Remove="Icons\play.png" />
+    <None Remove="Icons\RestartGameOnCurrentScreen.png" />
+    <None Remove="Icons\RestartScreen.png" />
+    <None Remove="Icons\Run.png" />
+    <None Remove="Icons\SelectObjectsIcon.png" />
+    <None Remove="Icons\SelectStartupScreen.png" />
+    <None Remove="Icons\Settings.png" />
+    <None Remove="Icons\SlowMotion.png" />
+    <None Remove="Icons\stop.png" />
+    <None Remove="Icons\Unpause.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\AdvanceOneFrame.png" />
+    <Resource Include="Icons\build.png" />
+    <Resource Include="Icons\Edit.png" />
+    <Resource Include="Icons\EditDeselected.png" />
+    <Resource Include="Icons\FirewallEnablePopup.png" />
+    <Resource Include="Icons\FocusOnSelection.png" />
+    <Resource Include="Icons\icon_magnify.png" />
+    <Resource Include="Icons\icon_minus.png" />
+    <Resource Include="Icons\icon_plus.png" />
+    <Resource Include="Icons\Pause.png" />
+    <Resource Include="Icons\play.png" />
+    <Resource Include="Icons\RestartGameOnCurrentScreen.png" />
+    <Resource Include="Icons\RestartScreen.png" />
+    <Resource Include="Icons\Run.png" />
+    <Resource Include="Icons\SelectObjectsIcon.png" />
+    <Resource Include="Icons\SelectStartupScreen.png" />
+    <Resource Include="Icons\Settings.png" />
+    <Resource Include="Icons\SlowMotion.png" />
+    <Resource Include="Icons\stop.png" />
+    <Resource Include="Icons\Unpause.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\WhileStoppedView.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
+</Project>

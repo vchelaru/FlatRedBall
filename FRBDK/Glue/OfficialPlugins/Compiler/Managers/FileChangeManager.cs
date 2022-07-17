@@ -27,15 +27,14 @@ namespace OfficialPlugins.Compiler.Managers
             "json",
             "xnb"
         };
-
-        BuildTabView control;
-        Compiler compiler;
+        private Action<string> _output;
+        private RefreshManager _refreshManager;
         CompilerViewModel viewModel;
 
-        public FileChangeManager(BuildTabView control, Compiler compiler, CompilerViewModel viewModel)
+        public FileChangeManager(Action<string> output, CompilerViewModel viewModel, RefreshManager refreshManager)
         {
-            this.control = control;
-            this.compiler = compiler;
+            this._output = output;
+            _refreshManager = refreshManager;
             this.viewModel = viewModel;
         }
 
@@ -52,7 +51,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             }
 
-            RefreshManager.Self.HandleFileChanged(fileName);
+            _refreshManager.HandleFileChanged(fileName);
         }
 
 
@@ -60,12 +59,11 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (succeeded)
             {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build succeeded");
+                _output($"{DateTime.Now.ToLongTimeString()} Build succeeded");
             }
             else
             {
-                control.PrintOutput($"{DateTime.Now.ToLongTimeString()} Build failed");
-
+                _output($"{DateTime.Now.ToLongTimeString()} Build failed");
             }
         }
     }

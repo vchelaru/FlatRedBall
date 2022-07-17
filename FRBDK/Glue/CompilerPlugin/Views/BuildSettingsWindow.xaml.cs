@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace OfficialPlugins.Compiler.Views
+namespace CompilerPlugin.Views
 {
     /// <summary>
     /// Interaction logic for BuildSettingsWindow.xaml

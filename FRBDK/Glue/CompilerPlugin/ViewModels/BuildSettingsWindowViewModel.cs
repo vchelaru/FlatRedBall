@@ -1,10 +1,10 @@
 ﻿using FlatRedBall.Glue.MVVM;
-using OfficialPlugins.Compiler.Models;
+using CompilerPlugin.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace OfficialPlugins.Compiler.ViewModels
+namespace CompilerPlugin.ViewModels
 {
     internal class BuildSettingsWindowViewModel : ViewModel
     {

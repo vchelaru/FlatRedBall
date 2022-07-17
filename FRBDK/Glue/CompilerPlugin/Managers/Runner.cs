@@ -4,8 +4,8 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
-using OfficialPlugins.Compiler.ViewModels;
-using OfficialPluginsCore.Compiler;
+using CompilerPlugin.ViewModels;
+using CompilerPlugin;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,9 +13,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using GeneralResponse = ToolsUtilities.GeneralResponse;
+using Newtonsoft.Json;
 
-namespace OfficialPlugins.Compiler
+namespace CompilerPlugin.Managers
 {
     #region WindowRectangle
 
@@ -52,31 +52,94 @@ namespace OfficialPlugins.Compiler
     }
     #endregion
 
-    class Runner : Singleton<Runner>
+    class Runner
     {
         #region Fields/Properties
 
         Process runningGameProcess;
 
-        //public bool IsRunning => runningGameProcess != null;
-        //public bool IsCompiling
-        //{
-        //    get; private set;
-        //}
-        //public event EventHandler IsRunningChanged;
-
         bool suppressNextExitCodeAnnouncement = false;
         bool foundAlreadyRunningProcess = false;
-
+        private Action<string, string> _eventCaller;
+        private CompilerViewModel _compilerViewModel;
         System.Windows.Forms.Timer timer;
 
-        public bool DidRunnerStartProcess =>
-            runningGameProcess != null && foundAlreadyRunningProcess == false;
-
-        public CompilerViewModel ViewModel
+        private bool _isWaitingForGameToStart;
+        public bool IsWaitingForGameToStart
         {
-            get; set;
+            get
+            {
+                return _isWaitingForGameToStart;
+            }
+
+            set
+            {
+                if (_isWaitingForGameToStart != value)
+                {
+                    _isWaitingForGameToStart = value;
+                    _compilerViewModel.IsWaitingForGameToStart = value;
+                    CallStatusUpdate();
+                }
+            }
         }
+
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get
+            {
+                return _isRunning;
+            }
+
+            set
+            {
+                if (_isRunning != value)
+                {
+                    _isRunning = value;
+                    _compilerViewModel.IsRunning = value;
+                    CallStatusUpdate();
+                }
+            }
+        }
+
+        private bool _didRunnerStartProcess;
+        public bool DidRunnerStartProcess
+        {
+            get
+            {
+                return _didRunnerStartProcess;
+            }
+
+            set
+            {
+                if (_didRunnerStartProcess != value)
+                {
+                    _didRunnerStartProcess = value;
+                    _compilerViewModel.DidRunnerStartProcess = value;
+                    CallStatusUpdate();
+                }
+            }
+        }
+
+
+
+        private void CallStatusUpdate()
+        {
+            _eventCaller("Runner_StatusUpdate", JsonConvert.SerializeObject(new RunnerStatus
+            {
+                IsWaitingForGameToStart = IsWaitingForGameToStart
+            }));
+        }
+
+        public bool GetDidRunnerStartProcess()
+        {
+            return runningGameProcess != null && foundAlreadyRunningProcess == false;
+        }
+
+        //public CompilerViewModel ViewModel
+        //{
+        //    get; set;
+        //}
 
         #endregion
 
@@ -87,8 +150,15 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        public Runner()
+        public Runner(Action<string, string> eventCaller, CompilerViewModel compilerViewModel)
         {
+            _eventCaller = eventCaller;
+            _compilerViewModel = compilerViewModel;
+
+            _compilerViewModel.IsWaitingForGameToStart = IsWaitingForGameToStart;
+            _compilerViewModel.IsRunning = IsRunning;
+            _compilerViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+
             timer = new System.Windows.Forms.Timer();
             timer.Tick += HandleTimerTick;
             // This was 6 seconds, but that seems a bit much...
@@ -99,15 +169,15 @@ namespace OfficialPlugins.Compiler
         private void HandleTimerTick(object sender, EventArgs e)
         {
             ///////////////Early Out////////////////////
-            if(ViewModel.IsWaitingForGameToStart)
+            if (_isWaitingForGameToStart)
             {
                 return;
             }
             ////////////End Early Out///////////////////
-            
+
             var process = runningGameProcess;
 
-            if(process == null)
+            if (process == null)
             {
                 ProjectBase projectBase = null;
 
@@ -123,8 +193,8 @@ namespace OfficialPlugins.Compiler
                         runningGameProcess.EnableRaisingEvents = true;
                         runningGameProcess.Exited += HandleProcessExit;
 
-                        ViewModel.IsRunning = runningGameProcess != null;
-                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+                        IsRunning = runningGameProcess != null;
+                        DidRunnerStartProcess = GetDidRunnerStartProcess();
 
                     }
                     catch (InvalidOperationException)
@@ -133,11 +203,11 @@ namespace OfficialPlugins.Compiler
                     }
                 }
             }
-            else if(ViewModel.IsRunning == false)
+            else if (IsRunning == false)
             {
                 // we ahve a process, so let's mark the view model as running:
-                ViewModel.IsRunning = runningGameProcess != null;
-                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+                IsRunning = runningGameProcess != null;
+                DidRunnerStartProcess = GetDidRunnerStartProcess();
             }
         }
 
@@ -151,129 +221,156 @@ namespace OfficialPlugins.Compiler
             var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
 
             var found = processes
-                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName && 
+                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&
                 (mustHaveWindow == false || item.MainWindowHandle != IntPtr.Zero));
             return found;
         }
 
-        internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
+        internal async Task<object> Run(bool preventFocus, string runArguments = null)
         {
             int numberOfTimesToTryGettingProcess = 140;
             int numberOfTimesToTryGettingHandle = 60;
             int millisecondsToWaitBeforeRetry = 100;
             bool didTimeoutOnProcess = false;
 
-            ViewModel.IsWaitingForGameToStart = true;
-
-            GeneralResponse toReturn = GeneralResponse.UnsuccessfulResponse;
+            IsWaitingForGameToStart = true;
 
             foundAlreadyRunningProcess = false;
             string exeLocation = GetGameExeLocation();
-            
+
             ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
 
-            if (System.IO.File.Exists(exeLocation))
+            try
             {
-                startResponse = await StartProcess(preventFocus, runArguments, exeLocation);
-
-                if(startResponse.Succeeded)
+                if (System.IO.File.Exists(exeLocation))
                 {
-                    runningGameProcess = TryFindGameProcess();
-                    
-                    int timesTried = 0;
-                    while (runningGameProcess == null)
+                    startResponse = await StartProcess(preventFocus, runArguments, exeLocation);
+
+                    if (startResponse.Succeeded)
                     {
-                        // didn't find it, so let's wait a little and try again:
-
-                        await Task.Delay(millisecondsToWaitBeforeRetry);
-
                         runningGameProcess = TryFindGameProcess();
 
-                        timesTried++;
-
-                        if (timesTried >= numberOfTimesToTryGettingProcess)
+                        int timesTried = 0;
+                        while (runningGameProcess == null)
                         {
-                            didTimeoutOnProcess = true;
-                            break;
-                        }
-                    }
+                            // didn't find it, so let's wait a little and try again:
 
+                            await Task.Delay(millisecondsToWaitBeforeRetry);
 
-                    if (runningGameProcess != null)
-                    {
+                            runningGameProcess = TryFindGameProcess();
 
-                        runningGameProcess.EnableRaisingEvents = true;
-                        runningGameProcess.Exited += HandleProcessExit;
-                        toReturn = GeneralResponse.SuccessfulResponse;
+                            timesTried++;
 
-                        // wait for a handle
-                        for (int i = 0; i < numberOfTimesToTryGettingHandle; i++)
-                        {
-                            var id = runningGameProcess?.MainWindowHandle;
-
-                            if (id == null || id == IntPtr.Zero)
+                            if (timesTried >= numberOfTimesToTryGettingProcess)
                             {
-
-                                await Task.Delay(millisecondsToWaitBeforeRetry);
-                                continue;
+                                didTimeoutOnProcess = true;
+                                break;
                             }
                         }
 
-                        TaskManager.Self.OnUiThread(() =>
-                        {
-                            ViewModel.IsRunning = runningGameProcess != null;
-                            ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
 
-                            AfterSuccessfulRun();
-                        });
-                    }
-                    else
-                    {
-                        toReturn.Succeeded = false;
-                        if(didTimeoutOnProcess)
+                        if (runningGameProcess != null)
                         {
-                            toReturn.Message = $"Launching game .exe timed out after {numberOfTimesToTryGettingProcess * millisecondsToWaitBeforeRetry / 1000} seconds.";
+
+                            runningGameProcess.EnableRaisingEvents = true;
+                            runningGameProcess.Exited += HandleProcessExit;
+
+                            // wait for a handle
+                            for (int i = 0; i < numberOfTimesToTryGettingHandle; i++)
+                            {
+                                var id = runningGameProcess?.MainWindowHandle;
+
+                                if (id == null || id == IntPtr.Zero)
+                                {
+
+                                    await Task.Delay(millisecondsToWaitBeforeRetry);
+                                    continue;
+                                }
+                            }
+
+                            TaskManager.Self.OnUiThread(() =>
+                            {
+                                IsRunning = runningGameProcess != null;
+                                DidRunnerStartProcess = GetDidRunnerStartProcess();
+
+                                AfterSuccessfulRun();
+                            });
+
+                            return new
+                            {
+                                Successful = true
+                            };
                         }
                         else
                         {
-                            toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
-                        }
-                        
-
-                        if(startResponse.Data != null)
-                        {
-                            if(startResponse.Data.HasExited && startResponse.Data.ExitCode != 0)
+                            string error;
+                            if (didTimeoutOnProcess)
                             {
-                                var message = await GetCrashMessage();
+                                error = $"Launching game .exe timed out after {numberOfTimesToTryGettingProcess * millisecondsToWaitBeforeRetry / 1000} seconds.";
+                            }
+                            else
+                            {
+                                error = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+                            }
 
-                                if(!string.IsNullOrEmpty(message))
+
+                            if (startResponse.Data != null)
+                            {
+                                if (startResponse.Data.HasExited && startResponse.Data.ExitCode != 0)
                                 {
-                                    toReturn.Message += "\n" + message;
+                                    var message = await GetCrashMessage();
+
+                                    if (!string.IsNullOrEmpty(message))
+                                    {
+                                        error += "\n" + message;
+                                    }
                                 }
                             }
+
+                            return new
+                            {
+                                Successful = false,
+                                Error = error
+                            };
                         }
+                    }
+                    else
+                    {
+                        return new
+                        {
+                            Successful = false
+                        };
                     }
                 }
                 else
                 {
-                    toReturn = startResponse;
+                    return new
+                    {
+                        Succeeded = false,
+                        Error = $"Could not find game .exe"
+                    };
                 }
             }
-            else
+            finally
             {
-                toReturn.Succeeded = false;
-                toReturn.Message = $"Could not find game .exe";
+                IsWaitingForGameToStart = false;
             }
-            ViewModel.IsWaitingForGameToStart = false;
+        }
 
-            return toReturn;
+        internal void MoveWindow(int x, int y, int width, int height, bool repaint)
+        {
+            var handle = runningGameProcess?.MainWindowHandle;
 
+            if (handle.HasValue)
+            {
+                WindowMover.MoveWindow(handle.Value, x, y, width, height, repaint);
+            }
         }
 
         private static string GetGameExeLocation()
         {
             var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
-            if(string.IsNullOrEmpty(projectFileName))
+            if (string.IsNullOrEmpty(projectFileName))
             {
                 return null;
             }
@@ -289,7 +386,7 @@ namespace OfficialPlugins.Compiler
 
         private async Task<ToolsUtilities.GeneralResponse<Process>> StartProcess(bool preventFocus, string runArguments, string exeLocation)
         {
-            if(preventFocus)
+            if (preventFocus)
             {
                 Win32ProcessStarter.StartProcessPreventFocus(runArguments, exeLocation);
                 // we don't know, so just assume all went okay:
@@ -350,7 +447,7 @@ namespace OfficialPlugins.Compiler
             //Runner.MoveWindow(process.MainWindowHandle, 0, 0, 500, 500, true);
             //Runner.GetWindowRect(id, out RECT windowRect);
 
-            if(foundAlreadyRunningProcess)
+            if (foundAlreadyRunningProcess)
             {
                 foundAlreadyRunningProcess = false;
             }
@@ -360,7 +457,7 @@ namespace OfficialPlugins.Compiler
             }
             else
             {
-                if(process.ExitCode != 0)
+                if (process.ExitCode != 0)
                 {
                     string message = await GetCrashMessage();
                     if (!string.IsNullOrEmpty(message))
@@ -372,19 +469,19 @@ namespace OfficialPlugins.Compiler
 
             runningGameProcess = null;
 
-            if(!global::Glue.MainGlueWindow.Self.IsDisposed)
+            if (!global::Glue.MainGlueWindow.Self.IsDisposed)
             {
                 // This can get disposed in the meantime...
                 try
                 {
                     global::Glue.MainGlueWindow.Self.Invoke(() =>
                     {
-                        ViewModel.IsRunning = runningGameProcess != null;
-                        ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
+                        IsRunning = runningGameProcess != null;
+                        DidRunnerStartProcess = GetDidRunnerStartProcess();
 
                     });
                 }
-                catch(ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                     // do nothing.
                 }
@@ -419,30 +516,38 @@ namespace OfficialPlugins.Compiler
             return message;
         }
 
-        internal void KillGameProcess(Process process = null)
+        internal Task<string> KillGameProcess()
         {
-            process = process ?? runningGameProcess;
-
-            if (process != null)
+            return Task.Run(() =>
             {
-                suppressNextExitCodeAnnouncement = true;
-                try
+                if (runningGameProcess != null)
                 {
-                    process.Kill();
-                    var maxWaitTimeMs = 1000;
-                    if(process.HasExited == false)
+                    suppressNextExitCodeAnnouncement = true;
+                    try
                     {
-                        process.WaitForExit(maxWaitTimeMs);
+                        runningGameProcess.Kill();
+                        var maxWaitTimeMs = 1000;
+                        if (runningGameProcess.HasExited == false)
+                        {
+                            runningGameProcess.WaitForExit(maxWaitTimeMs);
+                        }
                     }
+                    catch
+                    {
+                        // do nothing
+                        runningGameProcess = null;
+                    }
+                    IsRunning = false;
+                    DidRunnerStartProcess = GetDidRunnerStartProcess();
                 }
-                catch
-                {
-                    // do nothing
-                    process = null;
-                }
-                ViewModel.IsRunning = false;
-                ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
-            }
+
+                return "";
+            });
+        }
+
+        private class RunnerStatus
+        {
+            public bool IsWaitingForGameToStart { get; set; }
         }
     }
 }

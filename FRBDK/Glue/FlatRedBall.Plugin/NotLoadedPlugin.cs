@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -32,6 +33,7 @@ namespace FlatRedBall.Glue.Plugins
         public bool CheckGithubForNewRelease => false;
 
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
+        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
 
         public void StartUp()
         {
@@ -44,6 +46,15 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         public void HandleEvent(string eventName, string payload)
+        {
+        }
+
+        public Task<string> HandleEventWithReturn(string eventName, string payload)
+        {
+            return Task.FromResult((string)null);
+        }
+
+        public void HandleEventResponseWithReturn(string payload)
         {
         }
     }

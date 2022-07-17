@@ -2,6 +2,8 @@
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.ViewModels;
@@ -14,37 +16,42 @@ using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
-    public class GameHostController : Singleton<GameHostController>
+    public class GameHostController
     {
         PluginTab glueViewSettingsTab;
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
-        BuildTabView mainControl;
         GameHostView gameHostView;
-        public void Initialize(GameHostView gameHostView, BuildTabView mainControl, 
+        private Func<string, string, Task<string>> _eventCallerWithAction;
+        private RefreshManager _refreshManager;
+
+        public void Initialize(GameHostView gameHostView, Action<string> output,
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
-            PluginTab glueViewSettingsTab)
+            PluginTab glueViewSettingsTab, Func<string, string, Task<string>> eventCallerWithAction, RefreshManager refreshManager)
         {
+            _eventCallerWithAction = eventCallerWithAction;
+            _refreshManager = refreshManager;
             this.gameHostView = gameHostView;
             this.compilerViewModel = compilerViewModel;
             this.glueViewSettingsViewModel = glueViewSettingsViewModel;
-            this.mainControl = mainControl;
             this.glueViewSettingsTab = glueViewSettingsTab;
-            var runner = Runner.Self;
-            gameHostView.StopClicked += (not, used) =>
+            gameHostView.StopClicked += async (not, used) =>
             {
-                runner.KillGameProcess();
+                await eventCallerWithAction("Runner_Kill", "");
             };
 
             gameHostView.RestartGameClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                runner.KillGameProcess();
+                await eventCallerWithAction("Runner_Kill", "");
                 var succeeded = await Compile();
                 if (succeeded)
                 {
                     // don't change if it's in edit mode or not here
-                    await runner.Run(preventFocus: false);
+                    await eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
+                    {
+                        PreventFocus = false
+                    }));
                 }
                 else
                 {
@@ -52,7 +59,7 @@ namespace OfficialPlugins.Compiler.Managers
                 }
             };
 
-            gameHostView.StartInEditModeClicked += StarRunInEditMode;
+            gameHostView.StartInEditModeClicked += StartRunInEditMode;
 
             gameHostView.RestartGameCurrentScreenClicked += async (not, used) =>
             {
@@ -64,31 +71,41 @@ namespace OfficialPlugins.Compiler.Managers
                 string commandLineArgs = await GetCommandLineArgs(isRunning:true);
 
                 compilerViewModel.IsPaused = false;
-                runner.KillGameProcess();
+                await eventCallerWithAction("Runner_Kill", "");
                 var compileSucceeded = await Compile();
-                GeneralResponse runResponse = GeneralResponse.UnsuccessfulResponse;
+                bool runSucceeded = false;
+                string runError = "";
                 if (compileSucceeded)
                 {
                     // don't change if it's in edit mode
-                    runResponse = await runner.Run(preventFocus: false, commandLineArgs);
+                    var runResponse = JObject.Parse(await eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
+                    {
+                        PreventFocus = false,
+                        CommandLineArgs = commandLineArgs
+                    })));
+
+                    runSucceeded = runResponse.Value<bool>("Succeeded");
+
+                    if (runResponse.ContainsKey("Error"))
+                        runError = runResponse.Value<string>("Error");
                 }
                 else
                 {
                     GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
-                if (wasEditChecked && runResponse.Succeeded)
+                if (wasEditChecked && compileSucceeded && runSucceeded)
                 {
                     compilerViewModel.IsEditChecked = true;
 
                     if (isEntityViewingScreen)
                     {
-                        await RefreshManager.Self.PushGlueSelectionToGame();
+                        await _refreshManager.PushGlueSelectionToGame();
                     }
                 }
 
-                if (!runResponse.Succeeded)
+                if (!runSucceeded)
                 {
-                    mainControl.PrintOutput(runResponse.Message);
+                    output(runError);
                 }
             };
 
@@ -134,7 +151,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var selectedNos = GlueState.Self.CurrentNamedObjectSave;
                 if (selectedNos != null)
                 {
-                    await RefreshManager.Self.PushGlueSelectionToGame(bringIntoFocus: true);
+                    await _refreshManager.PushGlueSelectionToGame(bringIntoFocus: true);
 
                 }
             };
@@ -195,29 +212,31 @@ namespace OfficialPlugins.Compiler.Managers
             return args;
         }
 
-        private void StarRunInEditMode(object sender, EventArgs e)
+        private void StartRunInEditMode(object sender, EventArgs e)
         {
             
             compilerViewModel.IsEditChecked = true;
             TaskManager.Self.Add(async () =>
             {
-                var runner = Runner.Self;
-
                 var succeeded = await Compile();
                 if (succeeded)
                 {
                     string commandLineArgs = await GetCommandLineArgs(isRunning:false);
 
-                    var runResponse = await runner.Run(preventFocus: false, runArguments:commandLineArgs);
-                    if (runResponse.Succeeded)
+                    var runResponse = JObject.Parse( await _eventCallerWithAction("Runner_DoRun", JsonConvert.SerializeObject(new
+                    {
+                        PreventFocus = false,
+                        RunArguments = commandLineArgs
+                    })));
+                    if (runResponse.Value<bool>("Succeeded"))
                     {
                         compilerViewModel.IsEditChecked = true;
                     }
                     else
                     {
-                        GlueCommands.Self.PrintError(runResponse.Message);
+                        GlueCommands.Self.PrintError(runResponse.Value<string>("Error"));
                     }
-                    succeeded = runResponse.Succeeded;
+                    succeeded = runResponse.Value<bool>("Succeeded");
                 }
                 else
                 {
@@ -229,24 +248,16 @@ namespace OfficialPlugins.Compiler.Managers
 
         public async Task<bool> Compile()
         {
-            var compiler = Compiler.Self;
-
-            // does it already have it?
-            var existingProcess = Runner.Self.TryFindGameProcess(false);
-
-            if(existingProcess != null)
-            {
-                Runner.Self.KillGameProcess(existingProcess);
-            }
+            await _eventCallerWithAction("Runner_Kill", "");
 
             compilerViewModel.IsCompiling = true;
-            var toReturn = await compiler.Compile(
-                mainControl.PrintOutput,
-                mainControl.PrintOutput,
-                compilerViewModel.Configuration,
-                compilerViewModel.IsPrintMsBuildCommandChecked);
+            var toReturn = JObject.Parse(await _eventCallerWithAction("Compiler_DoCompile", JsonConvert.SerializeObject(new
+            {
+                Configuration = compilerViewModel.Configuration,
+                PrintMsBuildCommand = compilerViewModel.IsPrintMsBuildCommandChecked
+            })));
             compilerViewModel.IsCompiling = false;
-            return toReturn;
+            return toReturn.Value<bool>("Succeeded");
         }
     }
 }

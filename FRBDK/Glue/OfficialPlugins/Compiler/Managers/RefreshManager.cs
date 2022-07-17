@@ -23,6 +23,7 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.CodeGeneration;
+using Newtonsoft.Json.Linq;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -36,8 +37,15 @@ namespace OfficialPlugins.Compiler.Managers
 
     #endregion
 
-    public class RefreshManager : Singleton<RefreshManager>
+    public class RefreshManager
     {
+        public RefreshManager(Func<string, string, Task<string>> eventCaller)
+        {
+            _eventCaller = eventCaller;
+        }
+
+        internal VariableSendingManager VariableSendingManager { get; set; }
+
         #region Fields/Properties
 
         Action<string> printOutput;
@@ -274,7 +282,6 @@ namespace OfficialPlugins.Compiler.Managers
             }
         }
 
-
         internal bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
             if(arg.Tag is NamedObjectSave asNos)
@@ -480,7 +487,7 @@ namespace OfficialPlugins.Compiler.Managers
             foreach(var instruction in nosCopy.InstructionSaves)
             {
                 // qualify here!
-                instruction.Type = VariableSendingManager.Self.GetQualifiedStateTypeName(instruction.Member, null, nosCopy, out bool isState, out StateSaveCategory category);
+                instruction.Type = VariableSendingManager.GetQualifiedStateTypeName(instruction.Member, null, nosCopy, out bool isState, out StateSaveCategory category);
             }
 
             var addObjectDto = new AddObjectDto();
@@ -689,6 +696,8 @@ namespace OfficialPlugins.Compiler.Managers
         // no longer viewing a state now. The LastDtoPushedToGame is
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
+        private Func<string, string, Task<string>> _eventCaller;
+
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
             var element = forcedElement ?? GlueState.Self.CurrentElement;
@@ -760,7 +769,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                await VariableSendingManager.Self.HandleNamedObjectVariableListChanged(variableList, assignOrRecordOnly);
+                await VariableSendingManager.HandleNamedObjectVariableListChanged(variableList, assignOrRecordOnly);
             }
         }
 
@@ -768,7 +777,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                await VariableSendingManager.Self.HandleNamedObjectVariableChanged(variableName, oldValue, nos, assignOrRecordOnly);
+                await VariableSendingManager.HandleNamedObjectVariableChanged(variableName, oldValue, nos, assignOrRecordOnly);
             }
         }
 
@@ -776,7 +785,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                VariableSendingManager.Self.HandleVariableChanged(variableElement as GlueElement, variable);
+                VariableSendingManager.HandleVariableChanged(variableElement as GlueElement, variable);
             }
         }
 
@@ -956,7 +965,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         bool CanRestart => ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
             (
-                Runner.Self.DidRunnerStartProcess || 
+                ViewModel.DidRunnerStartProcess || 
                 (ViewModel.IsRunning == false && failedToRebuildAndRestart) ||
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
@@ -987,9 +996,6 @@ namespace OfficialPlugins.Compiler.Managers
                 return TaskManager.Self.HasRestartTask;
             }
 
-            var runner = Runner.Self;
-            var compiler = Compiler.Self;
-
             if(CanRestart)
             {
 
@@ -1010,13 +1016,19 @@ namespace OfficialPlugins.Compiler.Managers
                         printOutput("Could not get the game's screen, restarting game from startup screen");
                     }
 
-                    runner.KillGameProcess();
+                    var response = await _eventCaller("Runner_Kill", "");
                 }
 
                 bool compileSucceeded = false;
                 if(!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    compileSucceeded = await compiler.Compile(printOutput, printError);
+                    var compileResult = JObject.Parse(await _eventCaller("Compiler_DoCompile", JsonConvert.SerializeObject(new
+                    {
+                        Configuration = "Debug",
+                        PrintMsBuildCommand = false
+                    })));
+
+                    compileSucceeded = compileResult.Value<bool>("Succeeded");
                 }
 
                 if (compileSucceeded)
@@ -1025,12 +1037,16 @@ namespace OfficialPlugins.Compiler.Managers
                     {
                         // If we aren't generating Glue, then the game will not be embedded, so prevent focus
                         var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
-                        var response = await runner.Run(preventFocus, screenToRestartOn);
-                        if(response.Succeeded == false)
+                        var response = JObject.Parse(await _eventCaller("Runner_DoRun", JsonConvert.SerializeObject(new
                         {
-                            printError(response.Message);
+                            PreventFocus = preventFocus,
+                            RunArguments = screenToRestartOn
+                        })));
+                        if(response.Value<bool>("Succeeded") == false)
+                        {
+                            printError(response.Value<string>("Error"));
                         }
-                        failedToRebuildAndRestart = response.Succeeded == false;
+                        failedToRebuildAndRestart = response.Value<bool>("Succeeded") == false;
                     }
                 }
                 else

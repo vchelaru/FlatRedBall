@@ -4,6 +4,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Glue;
 using GlueFormsCore.Controls;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficialPlugins.Compiler;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
@@ -48,6 +50,9 @@ namespace OfficialPlugins.GameHost.Views
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
+        private Func<string, string, Task<string>> _eventCallerWithResult;
+        private Action<string, string> _eventCaller;
+
         #endregion
 
         #region Fields/Properties
@@ -82,11 +87,13 @@ namespace OfficialPlugins.GameHost.Views
         public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
 
-        public GameHostView()
+        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller)
         {
             InitializeComponent();
 
 
+            _eventCallerWithResult = eventCallerWithResult;
+            _eventCaller = eventCaller;
             winformsPanel = new System.Windows.Forms.Panel();
             winformsPanel.BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
             winformsPanel.Width = 20;
@@ -133,15 +140,16 @@ namespace OfficialPlugins.GameHost.Views
 
         public async Task EmbedHwnd(IntPtr handle)
         {
-            SetParent(handle, winformsPanel.Handle);
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                SetParent(handle, winformsPanel.Handle);
+            });
             gameHandle = handle;
             var succeededMakingGameBorderless = await MakeGameBorderless();
 
             if(succeededMakingGameBorderless)
             {
-                WindowRectangle rectangle = new WindowRectangle();
-
-                WindowMover.GetWindowRect(handle, out rectangle);
+                JObject windowInfo = JObject.Parse(await _eventCallerWithResult("Runner_GetWindowInfo", ""));
 
                 // I used to have this code check if the window was at 0,0,
                 // but that doesn't seem to actually work - the loop would run 
@@ -152,10 +160,17 @@ namespace OfficialPlugins.GameHost.Views
                     var delay = 180;
                     await Task.Delay(delay);
 
-                    var width = (int)WinformsHost.ActualWidth;
-                    var height = (int)WinformsHost.ActualHeight;
+                    var width = windowInfo.ContainsKey("ActualWidth") ? windowInfo.Value<int>("ActualWidth") : 0;
+                    var height = windowInfo.ContainsKey("ActualHeight") ? windowInfo.Value<int>("ActualHeight") : 0;
 
-                    WindowMover.MoveWindow(handle, 0, 0, width, height, true);
+                    _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
+                    {
+                        X = 0,
+                        Y = 0,
+                        Width = width,
+                        Height = height,
+                        Repaint = true
+                    }));
                 }
             }
         }
@@ -212,7 +227,14 @@ namespace OfficialPlugins.GameHost.Views
                 var newWidth = (int)WinformsHost.ActualWidth;
                 var newHeight = (int)WinformsHost.ActualHeight;
 
-                WindowMover.MoveWindow(gameHandle, 0, 0, newWidth, newHeight, true);
+                _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
+                {
+                    X = 0,
+                    Y = 0,
+                    Width = newWidth,
+                    Height = newHeight,
+                    Repaint = true
+                }));
             }
 
         }

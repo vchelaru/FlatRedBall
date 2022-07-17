@@ -31,17 +31,20 @@ using Xceed.Wpf.Toolkit.PropertyGrid;
 
 namespace OfficialPluginsCore.Compiler.CommandReceiving
 {
-    static class CommandReceiver
+    class CommandReceiver
     {
-        static int gamePortNumber;
+        int _gamePortNumber;
+        private RefreshManager _refreshManager;
+        private VariableSendingManager _variableSendingManager;
+        System.Reflection.MethodInfo[] AllMethods;
+        public Action<string> PrintOutput { get; set; }
 
-        static System.Reflection.MethodInfo[] AllMethods;
-        public static Action<string> PrintOutput { get; set; }
+        public CompilerViewModel CompilerViewModel { get; set; }
 
-        public static CompilerViewModel CompilerViewModel { get; set; }
-
-        static CommandReceiver()
+        public CommandReceiver(RefreshManager refreshManager, VariableSendingManager variableSendingManager)
         {
+            _refreshManager = refreshManager;
+            _variableSendingManager = variableSendingManager;
             AllMethods = typeof(CommandReceiver).GetMethods(
                 System.Reflection.BindingFlags.Static |
                 System.Reflection.BindingFlags.NonPublic)
@@ -51,7 +54,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region General Functions
 
-        public static async Task HandleCommandsFromGame(List<string> commands, int gamePortNumber)
+        public async Task HandleCommandsFromGame(List<string> commands, int gamePortNumber)
         {
             foreach (var command in commands)
             {
@@ -59,7 +62,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static async Task Receive(string message, int gamePortNumber)
+        private async Task Receive(string message, int gamePortNumber)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;
@@ -74,7 +77,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
 
 
-            CommandReceiver.gamePortNumber = gamePortNumber;
+            _gamePortNumber = gamePortNumber;
 
             var matchingMethod =
                 AllMethods
@@ -127,7 +130,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             outputText);
         }
 
-        private static object ReceiveDto(object dto)
+        private object ReceiveDto(object dto)
         {
             var type = dto.GetType();
 
@@ -170,8 +173,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Remove Object
 
-        //private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
-        private static async void HandleDto(RemoveObjectDto removeObjectDto)
+        //private async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private async void HandleDto(RemoveObjectDto removeObjectDto)
         {
             GlueElement elementToRemoveFrom = await CommandSender.GetCurrentInGameScreen();
             elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
@@ -194,7 +197,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Set Variable
 
-        private static async Task HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true, bool sendBackToGame = true)
+        private async Task HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true, bool sendBackToGame = true)
         {
 
             await TaskManager.Self.AddAsync(() =>
@@ -230,7 +233,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         // Send this back to the game so the game. When the game receives this, it will store it in
                         // a list and will re-run the commands as necessary (such as whenever a screen is reloaded).
                         GlueCommands.Self.DoOnUiThread(() =>
-                            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(setVariableDto.VariableName, null, nos, 
+                            _refreshManager.HandleNamedObjectVariableOrPropertyChanged(setVariableDto.VariableName, null, nos, 
                             // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
                             AssignOrRecordOnly.RecordOnly)
                         );
@@ -255,7 +258,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             TaskExecutionPreference.Fifo);
         }
 
-        private static async Task HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
+        private async Task HandleSetVariableDtoList(SetVariableDtoList setVariableDtoList)
         {
             HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
 
@@ -279,7 +282,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     var foundVariable = nos.GetCustomVariable(setVariableDto.VariableName);
                     //await VariableSendingManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly);
-                    List<GlueVariableSetData> listOfInner = VariableSendingManager.Self.GetNamedObjectValueChangedDtos(
+                    List<GlueVariableSetData> listOfInner = _variableSendingManager.GetNamedObjectValueChangedDtos(
                         setVariableDto.VariableName, null, nos, AssignOrRecordOnly.RecordOnly, gameScreenName);
 
                     listOfVariables.AddRange(listOfInner);
@@ -288,7 +291,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
+            await _variableSendingManager.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
 
             await TaskManager.Self.AddAsync(() =>
             {
@@ -313,7 +316,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         }
 
-        private static object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,
+        private object ConvertVariable(object value, ref string typeName, string variableName, NamedObjectSave owner,
             // We have to pass this because the NOS may not have yet been added to an element if it is a new one, but we still
             // need the element to assign file names
             GlueElement nosContainer)
@@ -416,7 +419,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Select Object
 
-        private static async void HandleSelectObject(SelectObjectDto selectObjectDto)
+        private async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
             var screen = await CommandSender.GetCurrentInGameScreen();
@@ -450,7 +453,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         if(GlueState.Self.CurrentNamedObjectSave != nos)
                         {
-                            RefreshManager.Self.IgnoreNextObjectSelect = true;
+                            _refreshManager.IgnoreNextObjectSelect = true;
 
                             GlueState.Self.CurrentNamedObjectSave = nos;
                         }
@@ -477,7 +480,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Modify Collision (Tile)
 
-        private static void HandleDto(ModifyCollisionDto dto)
+        private void HandleDto(ModifyCollisionDto dto)
         {
 
             ///////////////Early Out///////////////////////////
@@ -552,7 +555,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     mapLayer.data[0].SetTileData(ids, mapLayer.data[0].encoding, mapLayer.data[0].compression);
 
-                    RefreshManager.Self.IgnoreNextChange(tmxFilePath.FullPath);
+                    _refreshManager.IgnoreNextChange(tmxFilePath.FullPath);
 
                     GlueCommands.Self.TryMultipleTimes(() => tiledMapSave.Save(tmxFilePath.FullPath));
 
@@ -577,7 +580,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            static int GetTileIndexFromWorldPosition(Vector2 worldPosition, MapLayer mapLayer)
+            int GetTileIndexFromWorldPosition(Vector2 worldPosition, MapLayer mapLayer)
             {
                 // todo - read tile size properties
                 var xIndex = (int)(worldPosition.X / 16);
@@ -600,7 +603,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
+        private void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
         {
             // Maps can be in entities too for "rooms" so support both entities and screens
             var currentElement = GlueState.Self.CurrentElement;
@@ -655,7 +658,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region GoToDefinitionDto
 
-        private static void HandleDto(GoToDefinitionDto dto)
+        private void HandleDto(GoToDefinitionDto dto)
         {
             GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
         }
@@ -665,14 +668,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region SelectPrevious/Next
 
-        private static void HandleDto(SelectPreviousDto dto) => TreeNodeStackManager.Self.GoBack();
-        private static void HandleDto(SelectNextDto dto) => TreeNodeStackManager.Self.GoForward();
+        private void HandleDto(SelectPreviousDto dto) => TreeNodeStackManager.Self.GoBack();
+        private void HandleDto(SelectNextDto dto) => TreeNodeStackManager.Self.GoForward();
 
         #endregion
 
         #region CurrentDisplayInfoDto
 
-        private static async void HandleDto(CurrentDisplayInfoDto dto)
+        private async void HandleDto(CurrentDisplayInfoDto dto)
         {
             var zoomValue = dto.ZoomPercentage;
 
@@ -696,9 +699,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Glue/XXXX/CommandDto
 
-        private static async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
+        private async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
 
-        private static async void HandleDto(GluxCommandDto dto)
+        private async void HandleDto(GluxCommandDto dto)
         {
             if(dto.Method == nameof(GluxCommands.SetVariableOn) && !dto.EchoToGame)
             {
@@ -706,7 +709,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var nos = (NamedObjectSave) Convert(dto.Parameters[0], typeof(NamedObjectSave));
                 var memberName = (string)dto.Parameters[1];
 
-                VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
+                _variableSendingManager.AddOneTimeIgnore(nos, memberName);
             }
             if(dto.Method == nameof(GluxCommands.SetVariableOnList))
             {
@@ -715,10 +718,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }
 
-        private static async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
-        private static async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
+        private async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
+        private async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
 
-        private static async Task HandleFacadeCommand(object target, FacadeCommandBase dto)
+        private async Task HandleFacadeCommand(object target, FacadeCommandBase dto)
         {
             var targetType = target.GetType();
             if(!string.IsNullOrEmpty( dto.Method ))
@@ -779,7 +782,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
         }
 
-        private static async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
+        private async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
         {
             var response = new ResponseWithContentDto();
             response.Id = -1;
@@ -792,13 +795,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return response;
         }
 
-        private static object Convert(object parameter, Type reflectedParameterType)
+        private object Convert(object parameter, Type reflectedParameterType)
         {
 
             return Convert(parameter, GetFriendlyName(reflectedParameterType));
         }
 
-        static string GetFriendlyName(Type type)
+        string GetFriendlyName(Type type)
         {
             string friendlyName = type.Name;
             if (type.IsGenericType)
@@ -828,7 +831,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             public TypedParameter Value;
         }
 
-        private static object Convert(object parameter, string typeName)
+        private object Convert(object parameter, string typeName)
         { 
             var converted = parameter;
 

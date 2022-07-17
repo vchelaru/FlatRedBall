@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficialPlugins.Compiler
+namespace CompilerPlugin.Managers
 {
     public enum OutputType
     {

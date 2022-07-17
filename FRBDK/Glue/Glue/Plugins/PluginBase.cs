@@ -31,6 +31,9 @@ using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -111,7 +114,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public void Show()
         {
-            if(Page.ParentTabControl == null)
+            if (Page.ParentTabControl == null)
             {
                 var items = GetTabContainerFromLocation(SuggestedLocation);
                 items.Add(Page);
@@ -138,9 +141,9 @@ namespace FlatRedBall.Glue.Plugins
             var desiredTabControl = GetTabContainerFromLocation(tabLocation);
             var parentTabControl = Page.ParentTabControl;
 
-            if(desiredTabControl != parentTabControl)
+            if (desiredTabControl != parentTabControl)
             {
-                if(parentTabControl != null)
+                if (parentTabControl != null)
                 {
                     parentTabControl.Remove(Page);
                 }
@@ -282,7 +285,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
         public Action<List<GlueElement>, List<NamedObjectSave>> ReactToObjectListRemoved { get; protected set; }
-        
+
 
         /// <summary>
         /// Delegate raised when right-clicking on the property grid.
@@ -357,7 +360,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public AdjustDisplayedEntityDelegate AdjustDisplayedEntity { get; protected set; }
 
-        [Obsolete("Use FillWithReferencedFiles instead", error:true)]
+        [Obsolete("Use FillWithReferencedFiles instead", error: true)]
         public Action<string, EditorObjects.Parsing.TopLevelOrRecursive, List<string>> GetFilesReferencedBy { get; protected set; }
 
         public Func<FilePath, List<FilePath>, GeneralResponse> FillWithReferencedFiles { get; protected set; }
@@ -461,10 +464,36 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string> ReactToGlueJsonLoad;
 
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
-
+        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
         protected void ReactToPluginEvent(string eventName, string payload)
+        { 
+        
+            if(ReactToPluginEventAction != null)
+                ReactToPluginEventAction(this, eventName, payload);
+        }
+
+
+        private ConcurrentDictionary<Guid, string> _pendingRequests = new ConcurrentDictionary<Guid, string>();
+        protected async Task<string> ReactToPluginEventWithReturn(string eventName, string payload)
         {
-            ReactToPluginEventAction(this, eventName, payload);
+            var id = Guid.NewGuid();
+            if (!_pendingRequests.TryAdd(id, null))
+                throw new Exception("Failed to add pending request");
+
+            ReactToPluginEventWithReturnAction(this, eventName, JsonConvert.SerializeObject(new
+            {
+                Id = id,
+                Payload = payload
+            }));
+
+            while (_pendingRequests.TryGetValue(id, out var result) && result == null)
+            {
+                await Task.Delay(10);
+            }
+
+            _pendingRequests.TryRemove(id, out var result2);
+
+            return result2;
         }
 
         #endregion
@@ -631,7 +660,7 @@ namespace FlatRedBall.Glue.Plugins
         /// </summary>
         protected void RefreshErrors()
         {
-            foreach(var reporter in ErrorReporters)
+            foreach (var reporter in ErrorReporters)
             {
                 GlueCommands.Self.RefreshCommands.RefreshErrorsFor(reporter);
             }
@@ -647,7 +676,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public void UnregisterAssetTypeInfos()
         {
-            foreach(var ati in AddedAssetTypeInfos)
+            foreach (var ati in AddedAssetTypeInfos)
             {
                 AvailableAssetTypes.Self.RemoveAssetType(ati);
             }
@@ -682,7 +711,7 @@ namespace FlatRedBall.Glue.Plugins
             };
 
             var settings = GlueState.Self.GlueSettingsSave;
-            if(settings.TopTabs.Contains(tabName))
+            if (settings.TopTabs.Contains(tabName))
             {
                 pluginTab.SuggestedLocation = TabLocation.Top;
             }
@@ -752,6 +781,44 @@ namespace FlatRedBall.Glue.Plugins
         public virtual void HandleEvent(string eventName, string payload)
         {
         }
+
+        public async Task<string> HandleEventWithReturn(string eventName, string payload)
+        {
+            var container = JObject.Parse(payload);
+
+            if (container == null || !container.ContainsKey("Id") || !container.ContainsKey("Payload"))
+                return null;
+
+            var returnValue = await HandleEventWithReturnImplementation(eventName, container.Value<string>("Payload"));
+
+            if (returnValue == null)
+                return null;
+            else
+                return JsonConvert.SerializeObject(new
+                {
+                    Id = Guid.Parse(container.Value<string>("Id")),
+                    Payload = returnValue
+                });
+        }
+
+        protected virtual async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
+        {
+            return await Task.Run(() =>
+            {
+                return (string)null;
+            });
+        }
+
+        public void HandleEventResponseWithReturn(string payload)
+        {
+            var container = JObject.Parse(payload);
+
+            if (container == null || !container.ContainsKey("Id") || !container.ContainsKey("Payload"))
+                return;
+
+            _pendingRequests.TryUpdate(Guid.Parse(container.Value<string>("Id")), container.Value<string>("Payload"), null);
+        }
+
         #endregion
 
     }

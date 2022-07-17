@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.Compiler.CommandSending;
+using OfficialPlugins.Compiler.Managers;
 using OfficialPlugins.Compiler.ViewModels;
 using OfficialPlugins.GameHost.Views;
 using System;
@@ -15,14 +16,20 @@ using System.Windows;
 
 namespace OfficialPlugins.Compiler.Managers
 {
-    public static class DragDropManagerGameWindow
+    public class DragDropManagerGameWindow
     {
-        public static CompilerViewModel CompilerViewModel { get; set; }
+        private RefreshManager _refreshManager;
+
+        public CompilerViewModel CompilerViewModel { get; set; }
+
+        public DragDropManagerGameWindow(RefreshManager refreshManager)
+        {
+            _refreshManager = refreshManager;
+        }
 
 
 
-
-        public static async void HandleDragDropTimerElapsed(GameHostView gameHostView)
+        public async void HandleDragDropTimerElapsed(GameHostView gameHostView)
         {
             try
             {
@@ -60,7 +67,7 @@ namespace OfficialPlugins.Compiler.Managers
                     int gameHostWidth = (int)controlForDragDrop.ActualWidth;
                     int gameHostHeight = (int)controlForDragDrop.ActualHeight;
 
-                    await DragDropManagerGameWindow.HandleDragDropOnGameWindow(draggedNode, gameHostWidth, gameHostHeight, screenX, screenY);
+                    await HandleDragDropOnGameWindow(draggedNode, gameHostWidth, gameHostHeight, screenX, screenY);
                 }
 
             }
@@ -68,7 +75,7 @@ namespace OfficialPlugins.Compiler.Managers
             catch { }
         }
 
-        public static async Task HandleDragDropOnGameWindow(ITreeNode treeNode, int gameHostWidth, 
+        public async Task HandleDragDropOnGameWindow(ITreeNode treeNode, int gameHostWidth, 
             int gameHostHeight, float screenX, float screenY)
         {
 
@@ -130,7 +137,7 @@ namespace OfficialPlugins.Compiler.Managers
                         ref worldX, ref worldY, 0, camera,
                         FlatRedBall.Camera.CoordinateRelativity.RelativeToWorld);
 
-                    RefreshManager.Self.ForcedNextObjectPosition = new System.Numerics.Vector2(worldX, worldY);
+                    _refreshManager.ForcedNextObjectPosition = new System.Numerics.Vector2(worldX, worldY);
                     var newTreeNode = await DragDropManager.Self.DropEntityOntoElement(entityToDrop, element);
                     newNamedObject = newTreeNode?.Tag as NamedObjectSave;
                 }
