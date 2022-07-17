@@ -73,8 +73,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
-        ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
 
+        [Obsolete("Use CreateReferencedFileSaveForExistingFileAsync")]
+        ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
+        Task<ReferencedFileSave> CreateReferencedFileSaveForExistingFileAsync(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
         [Obsolete("Use GetReferencedFileSaveFromFile which takes a FilePath")]
         ReferencedFileSave GetReferencedFileSaveFromFile(string filePath);
         ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);

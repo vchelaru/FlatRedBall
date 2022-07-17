@@ -32,9 +32,20 @@ namespace OfficialPluginsCore.Wizard.Models
         ImportEntity
     }
 
+    public enum CameraResolution
+    {
+        _256x224,
+        _360x240,
+        _480x360,
+        _640x480,
+        _800x600,
+        _1024x768,
+        _1920x1080
+    }
+
     #endregion
 
-    public class WizardData : ViewModel
+    public class WizardViewModel : ViewModel
     {
         #region Runtime (ignored) stuff like Configuration
 
@@ -188,6 +199,17 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public bool AddPlayerSpritePlatformerAnimations
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(AddPlayerSprite))]
+        [DependsOn(nameof(PlayerControlType))]
+        public bool ShowAddPlayerSpritePlatformerAnimations =>
+            AddPlayerSprite && PlayerControlType == GameType.Platformer;
+
         #endregion
 
         #region Levels
@@ -268,6 +290,18 @@ namespace OfficialPluginsCore.Wizard.Models
             set => Set(value);
         }
 
+        public CameraResolution SelectedCameraResolution
+        {
+            get => Get<CameraResolution>();
+            set => Set(value);
+        }
+
+        public int ScalePercent
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Additional Entities
@@ -294,7 +328,7 @@ namespace OfficialPluginsCore.Wizard.Models
             get; set;
         }
 
-        public WizardData()
+        public WizardViewModel()
         {
 
         }
@@ -332,6 +366,9 @@ namespace OfficialPluginsCore.Wizard.Models
             AddCameraController = true;
             FollowPlayersWithCamera = true;
             KeepCameraInMap = true;
+
+            SelectedCameraResolution = CameraResolution._480x360;
+            ScalePercent = 200;
         }
 
 

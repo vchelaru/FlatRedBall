@@ -8,12 +8,10 @@ using FlatRedBall.Utilities;
 namespace FlatRedBall.Math
 {
  
-    #region XML Docs
     /// <summary>
     /// A list of IAttachables which is by default two-way.
     /// </summary>
     /// <typeparam name="T">Type of the list which is of IAttachable.</typeparam>
-    #endregion
     public class AttachableList<T> : IAttachableRemovable, INotifyCollectionChanged, INameable, IList, IList<T> where T : IAttachable // Don't limit T to be a class because this creates bad IL.  This is a bug in .NET 2.0
     {
         #region Fields
@@ -39,7 +37,11 @@ namespace FlatRedBall.Math
         internal List<T> mInternalList;
         internal IList mInternalListAsIList;
 
-        #endregion
+#if DEBUG
+        internal HashSet<T> InternalHashSet;
+#endif
+
+#endregion
 
         #region Properties
 
@@ -67,37 +69,75 @@ namespace FlatRedBall.Math
 
         #region Methods
 
-        #region Constructor
+        #region Constructor / Initialize
 
-        #region XML Docs
         /// <summary>
         /// Creates a new AttachableList.
         /// </summary>
-        #endregion
         public AttachableList()
         { 
             mInternalList = new List<T>();
             mInternalListAsIList = mInternalList;
         }
 
-
-        #region XML Docs
         /// <summary>
         /// Creates a new AttachableList with the argument capacity.
         /// </summary>
         /// <param name="capacity">The initial capacity of the new AttachableList.</param>
-        #endregion
         public AttachableList(int capacity) 
         { 
             mInternalList = new List<T>(capacity);
             mInternalListAsIList = mInternalList;
         }
 
+#if DEBUG
+        internal void AddInternalHashSet()
+        {
+            InternalHashSet = new HashSet<T>();
+
+            CollectionChanged += HandleCollectionChangedForHashSet;
+        }
+
+        private void HandleCollectionChangedForHashSet(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch(e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach(T newItem in e.NewItems)
+                    {
+                        InternalHashSet.Add(newItem);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach(T removed in e.OldItems)
+                    {
+                        InternalHashSet.Remove(removed);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    InternalHashSet.Clear();
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    foreach (T removed in e.OldItems)
+                    {
+                        InternalHashSet.Remove(removed);
+                    }
+                    foreach (T newItem in e.NewItems)
+                    {
+                        InternalHashSet.Add(newItem);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    break;
+            }
+        }
+
+#endif
+
         #endregion
 
         #region Public Static Methods
 
-        #region XML Docs
         /// <summary>
         /// Returns the top parents in the argument AttachableList
         /// </summary>
@@ -105,7 +145,6 @@ namespace FlatRedBall.Math
         /// <typeparam name="InType">Tye type of object in the argument list</typeparam>
         /// <param name="poa">The list to search through.</param>
         /// <returns>List of T's that are the top parents of the objects in the argument AttachableList.</returns>
-        #endregion
         public static AttachableList<OutType> GetTopParents<OutType,InType>(AttachableList<InType> poa) 
             where OutType : PositionedObject
             where InType : OutType, IAttachable
@@ -130,16 +169,21 @@ namespace FlatRedBall.Math
 
         #region Add methods
 
-        #region XML Docs
         /// <summary>
         /// Adds the argument to the AttachableList and creates a two-way relationship.
         /// </summary>
         /// <param name="attachable">The IAttachable to add.</param>
-        #endregion
         public void Add(T attachable)
         {
 #if DEBUG
-            if (mInternalList.Contains(attachable))
+            if(InternalHashSet != null)
+            {
+                if(InternalHashSet.Contains(attachable))
+                {
+                    throw new InvalidOperationException("Can't add the following object twice: " + attachable.Name);
+                }
+            }
+            else if (mInternalList.Contains(attachable))
             {
                 throw new InvalidOperationException("Can't add the following object twice: " + attachable.Name);
             }
@@ -334,6 +378,12 @@ namespace FlatRedBall.Math
         #endregion
         public bool Contains(T attachable)
         {
+#if DEBUG
+            if(InternalHashSet != null)
+            {
+                return InternalHashSet.Contains(attachable);
+            }
+#endif
             return (attachable != null &&
                 (attachable.ListsBelongingTo.Contains(this) || mInternalList.Contains(attachable)));
         }
@@ -352,7 +402,6 @@ namespace FlatRedBall.Math
             return default(T);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the first IAttachable with a name containing the argument string.
         /// </summary>
@@ -360,7 +409,6 @@ namespace FlatRedBall.Math
         /// For example, an object with the name "MySprite" would return if the argument was "Sprite".</remarks>
         /// <param name="stringToSearchFor">The string to check IAttachables for.</param>
         /// <returns>The IAttachable with a name containing the argument string or null if none are found.</returns>
-        #endregion
         public T FindWithNameContaining(string stringToSearchFor)
         {
             for (int i = 0; i < this.Count; i++)
@@ -373,7 +421,6 @@ namespace FlatRedBall.Math
             return default(T);
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the first IAttachable with a name containing the argument string, case insensitive.
         /// </summary>
@@ -381,7 +428,6 @@ namespace FlatRedBall.Math
         /// For example, an object with the name "MySprite" would return if the argument was "Sprite".</remarks>
         /// <param name="stringToSearchFor">The string to check IAttachables for.</param>
         /// <returns>The IAttachable with a name containing the argument string or null if none are found.</returns>
-        #endregion
         public T FindWithNameContainingCaseInsensitive(string stringToSearchFor)
         {
             string name;
@@ -415,18 +461,18 @@ namespace FlatRedBall.Math
 
 
 
-        #region XML Docs
         /// <summary>
         /// Inserts the argument IAttachable at the argument index and creates a 
         /// two-way relationship.
         /// </summary>
         /// <param name="index">The index to insert at.</param>
         /// <param name="attachable">The IAttachable to insert.</param>
-        #endregion
         public void Insert(int index, T attachable)
         {
+#if DEBUG
             if (attachable == null)
-                return;
+                throw new ArgumentNullException("Cannot insert a null object");
+#endif
 
             if (attachable.ListsBelongingTo.Contains(this) == false)
                 attachable.ListsBelongingTo.Add(this);
@@ -434,22 +480,16 @@ namespace FlatRedBall.Math
 
             mInternalList.Insert(index, attachable);
 
-            if (this.CollectionChanged != null)
-            {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
-                this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
-            }
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, attachable, 0));
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Inserts the argument IAttachable at the argument index but does not create
         /// a two-way relationship.
         /// </summary>
         /// <param name="index">The index to insert at.</param>
         /// <param name="attachable">The IAttachable to insert.</param>
-        #endregion
         public void InsertOneWay(int index, T attachable)
         {
             mInternalList.Insert(index, attachable);
@@ -462,7 +502,6 @@ namespace FlatRedBall.Math
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Breaks all two-way relationships between this and all contained
         /// IAttachables.
@@ -471,7 +510,6 @@ namespace FlatRedBall.Math
         /// This will still contain the same number of IAttachables before and
         /// after the call.
         /// </remarks>
-        #endregion
         public void MakeOneWay()
         {
             for (int i = 0; i < this.Count; i++)
@@ -735,14 +773,8 @@ namespace FlatRedBall.Math
 
         public T this[int index]
         {
-            get
-            {
-                return mInternalList[index];
-            }
-            set
-            {
-                mInternalList[index] = value;
-            }
+            get => mInternalList[index];
+            set => mInternalList[index] = value;
         }
 
         #endregion
@@ -880,43 +912,25 @@ namespace FlatRedBall.Math
 
             mInternalListAsIList.Remove(attachable);
 
-
-            if (this.CollectionChanged != null)
-            {
-                // We put the index for Silverlight - but I don't want to do indexof for performance reasons so 0 it is
-                this.CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, attachable, 0));
-            }
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, attachable, 0));
         }
 
         #endregion
 
         #region IList Members
 
+        void IList.Clear() => Clear();
 
-        void IList.Clear()
-        {
-            Clear();
-        }
+        bool IList.IsReadOnly => IsReadOnly; 
 
-        bool IList.IsReadOnly
-        {
-            get { return IsReadOnly; }
-        }
-
-        void IList.RemoveAt(int index)
-        {
-            RemoveAt(index);
-        }
+        void IList.RemoveAt(int index) => RemoveAt(index);
 
         #endregion
 
         #region ICollection Members
 
 
-        int ICollection.Count
-        {
-            get { return mInternalList.Count; }
-        }
+        int ICollection.Count => mInternalList.Count; 
 
         #endregion
 

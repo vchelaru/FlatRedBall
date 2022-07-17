@@ -144,6 +144,8 @@
     <None Remove="TreeViewPlugin\Content\icon_screen_startup.png" />
     <None Remove="TreeViewPlugin\Content\icon_state.png" />
     <None Remove="TreeViewPlugin\Content\icon_variable.png" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <None Remove="Wizard\Icons\action_forms.png" />
     <None Remove="Wizard\Icons\action_platformer.png" />
     <None Remove="Wizard\Icons\action_project.png" />
@@ -193,6 +195,8 @@
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
     <EmbeddedResource Include="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />

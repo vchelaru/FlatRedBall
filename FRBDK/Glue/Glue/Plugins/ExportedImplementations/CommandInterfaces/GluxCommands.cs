@@ -198,6 +198,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     catch (Exception e)
                     {
+                        // break here because we want to look at other threads to see what's running at the same time...
+                        System.Diagnostics.Debugger.Break();
                         var wasAbleToSaveError = false;
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";
                         try
@@ -624,7 +626,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
-        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null)
+        [Obsolete("Use CreateReferencedFileSaveForExistingFileAsync")]
+        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null)
         {
             return CreateReferencedFileSaveForExistingFile(containerForFile,
                 null,
@@ -636,7 +639,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 );
         }
 
-        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, string directoryInsideContainer, string absoluteFileName,
+        public Task<ReferencedFileSave> CreateReferencedFileSaveForExistingFileAsync(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null)
+        {
+            return TaskManager.Self.AddAsync(() => CreateReferencedFileSaveForExistingFile(containerForFile,
+                null,
+                filePath.FullPath,
+                PromptHandleEnum.Prompt,
+                ati ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(filePath.Extension),
+                out string creationReport,
+                out string errorMessage
+                ), "CreateReferencedFileSaveForExistingFileAsync");
+        }
+
+
+
+        public ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, string directoryInsideContainer, string absoluteFileName,
             PromptHandleEnum unknownTypeHandle, AssetTypeInfo ati, out string creationReport, out string errorMessage, bool selectFileAfterCreation = true)
         {
             creationReport = "";

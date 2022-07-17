@@ -72,7 +72,7 @@ namespace OfficialPlugins.Compiler.CodeGeneration.GlueCalls
             bldr.AppendLine("{");
             bldr.AppendLine();
 
-            bldr.Append($"   internal class {generationOptions.Name}");
+            bldr.Append($"   internal partial class {generationOptions.Name}");
             if (string.IsNullOrEmpty(generationOptions.BaseClass))
                 bldr.Append($" : {generationOptions.BaseClass}");
             bldr.AppendLine();
