@@ -29,6 +29,259 @@ namespace OfficialPlugins.VariableDisplay
 {
     static class NamedObjectVariableShowingLogic
     {
+
+        private static InstanceMember CreateInstanceMember(NamedObjectSave instance,
+            GlueElement container,
+            string memberName,
+            Type memberType,
+            string customTypeName,
+            AssetTypeInfo ati,
+            VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
+        {
+            bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
+
+            DataGridItem instanceMember = null;
+
+            if (!shouldBeSkipped)
+            {
+                var typeConverter = PluginManager.GetTypeConverter(
+                     container, instance, memberType, memberName, customTypeName);
+
+                bool isObjectInFile = typeConverter is IObjectsInFileConverter;
+
+                if (isObjectInFile)
+                {
+                    var fileInstanceMember = new FileInstanceMember();
+                    instanceMember = fileInstanceMember;
+
+
+                    fileInstanceMember.View += () =>
+                    {
+                        var rfs = (typeConverter as IObjectsInFileConverter).ReferencedFileSave;
+
+                        if (rfs != null)
+                        {
+                            var value = fileInstanceMember.Value as string;
+
+                            GlueCommands.Self.SelectCommands.Select(
+                                rfs,
+                                value);
+                        }
+                    };
+
+                    instanceMember.PreferredDisplayer = typeof(FileReferenceComboBox);
+
+                }
+                else
+                {
+                    instanceMember = new DataGridItem();
+
+                }
+
+                if (variableDefinition?.PreferredDisplayer != null)
+                {
+                    instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
+
+                    if (instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition.MinValue != null && variableDefinition.MaxValue != null)
+                    {
+                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                            variableDefinition.MaxValue.Value;
+                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                            variableDefinition.MinValue.Value;
+                    }
+
+                    foreach (var item in variableDefinition.PropertiesToSetOnDisplayer)
+                    {
+                        instanceMember.PropertiesToSetOnDisplayer[item.Key] = item.Value;
+                    }
+
+                }
+                else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
+                {
+                    instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
+                        AngleType.Radians;
+
+                    // this used to be 1, then 5, but 10 is prob enough resolution. Numbers can be typed.
+                    // 15 is better, gives the user access to 45
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
+                        15m;
+                }
+                else if (variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
+                {
+                    instanceMember.PreferredDisplayer = typeof(SliderDisplay);
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
+                        variableDefinition.MaxValue.Value;
+                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
+                        variableDefinition.MinValue.Value;
+                }
+
+                instanceMember.FirstGridLength = new System.Windows.GridLength(140);
+
+                instanceMember.UnmodifiedVariableName = memberName;
+                string displayName = StringFunctions.InsertSpacesInCamelCaseString(memberName);
+                instanceMember.DisplayName = displayName;
+
+                instanceMember.TypeConverter = typeConverter;
+
+
+
+                // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
+                // shader situation solved. But until then, these cause crashes so let's remove them.
+                // Do this after setting the type converter
+                if (variableDefinition?.Type == nameof(FlatRedBall.Graphics.ColorOperation))
+                {
+                    instanceMember.TypeConverter = null;
+                    // one day?
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Texture);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Add);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Color);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha);
+                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Subtract);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InverseTexture);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate2X);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate4X);
+                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InterpolateColor);
+                }
+
+                // Important - set the forced options after setting the type converter so they have "final say"
+                if (variableDefinition?.ForcedOptions?.Count > 0)
+                {
+                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
+                    var list = new List<object>();
+                    list.AddRange(variableDefinition.ForcedOptions);
+                    instanceMember.CustomOptions = list;
+                }
+                else if (variableDefinition?.CustomGetForcedOptionFunc != null)
+                {
+                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
+                    var list = new List<object>();
+                    list.AddRange(variableDefinition.CustomGetForcedOptionFunc(container, instance, null));
+                    instanceMember.CustomOptions = list;
+                }
+
+                instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
+
+
+                instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
+
+                AssignCustomGetEvent(instance, container, memberName, memberType, variableDefinition, instanceMember);
+
+                instanceMember.CustomSetEvent += async (owner, value) =>
+                {
+                    if (GlueState.Self.CurrentGlueProject == null)
+                        return;
+                    //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
+
+                    //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
+                    //{
+                    // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
+                    // runtime errors.
+                    //
+
+                    if (variableDefinition.CustomVariableSet != null)
+                    {
+                        variableDefinition.CustomVariableSet(container, instance, memberName, value);
+                    }
+                    else
+                    {
+                        bool makeDefault = false;
+                        var ati = instance.GetAssetTypeInfo();
+                        var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+                        if (foundVariable?.Type == nameof(AnimationChainList))
+                        {
+                            if (value is string && ((string)value) == "<NONE>")
+                            {
+                                value = null;
+                                makeDefault = true;
+
+                                // Let's also set the CurrentChainName to null
+                                GlueCommands.Self.GluxCommands.SetVariableOn(
+                                    instance,
+                                    "CurrentChainName",
+                                    null);
+                            }
+                        }
+                        instanceMember.IsDefault = makeDefault;
+
+                        // If we ignore the next refresh, then AnimationChains won't update when the user
+                        // picks an AnimationChainList from a combo box:
+                        //RefreshLogic.IgnoreNextRefresh();
+
+                        // Discussion about SetVariableOn vs SetVariableOnAsync:
+                        // SetVariableOn happens immediately - it does not respect
+                        // the task system. SetVariableOnAsync does use the task system,
+                        // which is safer, since setting the value immediately can cause bugs
+                        // due to variables changing while other tasks are running. However, if
+                        // SetVariableOnAsync is used, then that means the logic for setting the
+                        // variable will not run until the TaskManager gets to this task. If there
+                        // are other tasks running, then that means the variable will not get set right
+                        // away. This can cause the property grid to display the old value after the user
+                        // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
+                        // think of a more sophisticated solution.
+                        GlueCommands.Self.GluxCommands.SetVariableOn(
+                            instance,
+                            memberName,
+                            value, performSaveAndGenerateCode: false, updateUi: false);
+
+
+                        // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
+                        await System.Threading.Tasks.Task.Delay(400);
+
+                        // Set subtext before refreshing property grid
+                        AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
+
+                        instanceMember.IsDefault = makeDefault;
+
+                        await TaskManager.Self.AddAsync(async () =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+                            GlueCommands.Self.DoOnUiThread(() =>
+                            {
+                                MainGlueWindow.Self.PropertyGrid.Refresh();
+                                PropertyGridHelper.UpdateNamedObjectDisplay();
+                                if (instanceMember.DisplayName == "Name")
+                                {
+                                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container,
+                                        // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
+                                        FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                                }
+                            });
+                            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+
+
+                        }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
+
+                    }
+                };
+
+                instanceMember.IsDefaultSet += (owner, args) =>
+                {
+                    if (instanceMember.IsDefault)
+                    {
+                        // June 29 2021 - this used to get called whenever
+                        // IsDefault is set to either true or false, but we
+                        // only want to call MakeDefault if the value is set to true.
+                        MakeDefault(instance, memberName);
+
+                    }
+                };
+
+                instanceMember.SetValueError += (newValue) =>
+                {
+                    if (newValue is string && string.IsNullOrEmpty(newValue as string))
+                    {
+                        MakeDefault(instance, memberName);
+                    }
+                };
+                AddContextMenuEvents(instance, container, memberName, variableDefinition, instanceMember);
+            }
+            return instanceMember;
+        }
+
         public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container,
             AssetTypeInfo assetTypeInfo = null)
         {
@@ -563,258 +816,6 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             return categoryToAddTo;
-        }
-
-        private static InstanceMember CreateInstanceMember(NamedObjectSave instance,
-            GlueElement container,
-            string memberName,
-            Type memberType,
-            string customTypeName,
-            AssetTypeInfo ati,
-            VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
-        {
-            bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
-
-            DataGridItem instanceMember = null;
-
-            if (!shouldBeSkipped)
-            {
-                var typeConverter = PluginManager.GetTypeConverter(
-                     container, instance, memberType, memberName, customTypeName);
-
-                bool isObjectInFile = typeConverter is IObjectsInFileConverter;
-
-                if (isObjectInFile)
-                {
-                    var fileInstanceMember = new FileInstanceMember();
-                    instanceMember = fileInstanceMember;
-
-
-                    fileInstanceMember.View += () =>
-                    {
-                        var rfs = (typeConverter as IObjectsInFileConverter).ReferencedFileSave;
-
-                        if (rfs != null)
-                        {
-                            var value = fileInstanceMember.Value as string;
-
-                            GlueCommands.Self.SelectCommands.Select(
-                                rfs,
-                                value);
-                        }
-                    };
-
-                    instanceMember.PreferredDisplayer = typeof(FileReferenceComboBox);
-
-                }
-                else
-                {
-                    instanceMember = new DataGridItem();
-
-                }
-
-                if (variableDefinition?.PreferredDisplayer != null)
-                {
-                    instanceMember.PreferredDisplayer = variableDefinition.PreferredDisplayer;
-
-                    if (instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition.MinValue != null && variableDefinition.MaxValue != null)
-                    {
-                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
-                            variableDefinition.MaxValue.Value;
-                        instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
-                            variableDefinition.MinValue.Value;
-                    }
-
-                    foreach (var item in variableDefinition.PropertiesToSetOnDisplayer)
-                    {
-                        instanceMember.PropertiesToSetOnDisplayer[item.Key] = item.Value;
-                    }
-
-                }
-                else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
-                {
-                    instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
-                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
-                        AngleType.Radians;
-
-                    // this used to be 1, then 5, but 10 is prob enough resolution. Numbers can be typed.
-                    // 15 is better, gives the user access to 45
-                    instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
-                        15m;
-                }
-                else if (variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
-                {
-                    instanceMember.PreferredDisplayer = typeof(SliderDisplay);
-                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MaxValue)] =
-                        variableDefinition.MaxValue.Value;
-                    instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
-                        variableDefinition.MinValue.Value;
-                }
-
-                instanceMember.FirstGridLength = new System.Windows.GridLength(140);
-
-                instanceMember.UnmodifiedVariableName = memberName;
-                string displayName = StringFunctions.InsertSpacesInCamelCaseString(memberName);
-                instanceMember.DisplayName = displayName;
-
-                instanceMember.TypeConverter = typeConverter;
-
-
-
-                // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
-                // shader situation solved. But until then, these cause crashes so let's remove them.
-                // Do this after setting the type converter
-                if (variableDefinition?.Type == nameof(FlatRedBall.Graphics.ColorOperation))
-                {
-                    instanceMember.TypeConverter = null;
-                    // one day?
-                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Texture);
-                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Add);
-                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Color);
-                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.ColorTextureAlpha);
-                    instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate);
-                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Subtract);
-                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InverseTexture);
-                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate2X);
-                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate4X);
-                    //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InterpolateColor);
-                }
-
-                // Important - set the forced options after setting the type converter so they have "final say"
-                if (variableDefinition?.ForcedOptions?.Count > 0)
-                {
-                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
-                    var list = new List<object>();
-                    list.AddRange(variableDefinition.ForcedOptions);
-                    instanceMember.CustomOptions = list;
-                }
-                else if (variableDefinition?.CustomGetForcedOptionFunc != null)
-                {
-                    instanceMember.PreferredDisplayer = typeof(ComboBoxDisplay);
-                    var list = new List<object>();
-                    list.AddRange(variableDefinition.CustomGetForcedOptionFunc(container, instance, null));
-                    instanceMember.CustomOptions = list;
-                }
-
-                instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
-
-
-                instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
-
-                AssignCustomGetEvent(instance, container, memberName, memberType, variableDefinition, instanceMember);
-
-                instanceMember.CustomSetEvent += async (owner, value) =>
-                {
-                    if (GlueState.Self.CurrentGlueProject == null)
-                        return;
-                    //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
-
-                    //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
-                    //{
-                    // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
-                    // runtime errors.
-                    //
-
-                    if (variableDefinition.CustomVariableSet != null)
-                    {
-                        variableDefinition.CustomVariableSet(container, instance, memberName, value);
-                    }
-                    else
-                    {
-                        bool makeDefault = false;
-                        var ati = instance.GetAssetTypeInfo();
-                        var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-                        if (foundVariable?.Type == nameof(AnimationChainList))
-                        {
-                            if (value is string && ((string)value) == "<NONE>")
-                            {
-                                value = null;
-                                makeDefault = true;
-
-                                // Let's also set the CurrentChainName to null
-                                GlueCommands.Self.GluxCommands.SetVariableOn(
-                                    instance,
-                                    "CurrentChainName",
-                                    null);
-                            }
-                        }
-                        instanceMember.IsDefault = makeDefault;
-
-                        // If we ignore the next refresh, then AnimationChains won't update when the user
-                        // picks an AnimationChainList from a combo box:
-                        //RefreshLogic.IgnoreNextRefresh();
-
-                        // Discussion about SetVariableOn vs SetVariableOnAsync:
-                        // SetVariableOn happens immediately - it does not respect
-                        // the task system. SetVariableOnAsync does use the task system,
-                        // which is safer, since setting the value immediately can cause bugs
-                        // due to variables changing while other tasks are running. However, if
-                        // SetVariableOnAsync is used, then that means the logic for setting the
-                        // variable will not run until the TaskManager gets to this task. If there
-                        // are other tasks running, then that means the variable will not get set right
-                        // away. This can cause the property grid to display the old value after the user
-                        // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
-                        // think of a more sophisticated solution.
-                        GlueCommands.Self.GluxCommands.SetVariableOn(
-                            instance,
-                            memberName,
-                            value, performSaveAndGenerateCode: false, updateUi: false);
-
-
-                        // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-                        await System.Threading.Tasks.Task.Delay(400);
-
-                        // Set subtext before refreshing property grid
-                        AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
-
-                        instanceMember.IsDefault = makeDefault;
-
-                        await TaskManager.Self.AddAsync(async () =>
-                        {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
-                            EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
-
-                            GlueCommands.Self.DoOnUiThread(() =>
-                            {
-                                MainGlueWindow.Self.PropertyGrid.Refresh();
-                                PropertyGridHelper.UpdateNamedObjectDisplay();
-                                if (instanceMember.DisplayName == "Name")
-                                {
-                                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container,
-                                        // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
-                                        FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
-                                }
-                            });
-                            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
-
-
-                        }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
-
-                    }
-                };
-
-                instanceMember.IsDefaultSet += (owner, args) =>
-                {
-                    if (instanceMember.IsDefault)
-                    {
-                        // June 29 2021 - this used to get called whenever
-                        // IsDefault is set to either true or false, but we
-                        // only want to call MakeDefault if the value is set to true.
-                        MakeDefault(instance, memberName);
-
-                    }
-                };
-
-                instanceMember.SetValueError += (newValue) =>
-                {
-                    if (newValue is string && string.IsNullOrEmpty(newValue as string))
-                    {
-                        MakeDefault(instance, memberName);
-                    }
-                };
-                AddContextMenuEvents(instance, container, memberName, variableDefinition, instanceMember);
-            }
-            return instanceMember;
         }
 
         private static void AddContextMenuEvents(NamedObjectSave instance, GlueElement container, string memberName, VariableDefinition variableDefinition, DataGridItem instanceMember)

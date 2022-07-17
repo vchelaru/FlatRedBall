@@ -12,6 +12,7 @@ using EntityInputMovementPlugin.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
+using PlatformerPluginCore.Views;
 
 namespace EntityInputMovementPlugin
 {
@@ -43,8 +44,6 @@ namespace EntityInputMovementPlugin
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
-
-
         }
 
         private void AssignEvents()
@@ -111,8 +110,10 @@ namespace EntityInputMovementPlugin
             if (anyPlatformer)
             {
                 // just in case it's not there:
-                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
-                FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.GenerateAndSaveEnumFile();
+                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSave();
+                FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.GenerateAndSave();
+                FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
+                
             }
         }
 

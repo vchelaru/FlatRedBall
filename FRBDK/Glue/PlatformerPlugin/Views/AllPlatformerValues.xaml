@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="PlatformerPluginCore.Views.AllPlatformerValues"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PlatformerPluginCore.Views" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" xmlns:views="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Grid.Row="1" >
+            <ItemsControl ItemsSource="{Binding PlatformerValues}" HorizontalContentAlignment="Stretch">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <views:PlatformerValuesView XClick="PlatformerValuesXClick"></views:PlatformerValuesView>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <Grid Grid.Row="2">
+            <!--<Button Click="AddPlatformerValuesClick" Grid.Column="0" Height="28">Add Control Values</Button>
+            <Button Click="AddPlatformerValuesClick" Grid.Column="1" Height="28" Width="15">v</Button>-->
+            <xctk:SplitButton Content="Add Movement Type" Click="AddEmptyPlatformerValuesClick" x:Name="AddControlButtonInstance">
+                <xctk:SplitButton.DropDownContent>
+                    <StackPanel>
+                        <Button Click="AddEmptyPlatformerValuesClick">Empty Values</Button>
+                        <Button Click="AddDefaultGroundPlatformerValuesClick">Default Ground Control</Button>
+                        <Button Click="AddDefaultAirPlatformerValuesClick">Default Air Control</Button>
+                    </StackPanel>
+                </xctk:SplitButton.DropDownContent>
+            </xctk:SplitButton>
+        </Grid>
+    </Grid>
+</UserControl>

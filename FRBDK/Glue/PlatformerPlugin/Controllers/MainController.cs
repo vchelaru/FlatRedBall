@@ -178,10 +178,38 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddPlatformerVariables)
             {
-                EnumFileGenerator.Self.GenerateAndSaveEnumFile();
-                IPlatformerCodeGenerator.Self.GenerateAndSaveEnumFile();
-
+                EnumFileGenerator.Self.GenerateAndSave();
+                IPlatformerCodeGenerator.Self.GenerateAndSave();
+                PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
                 GlueCommands.Self.GluxCommands.SaveGlux();
+            }
+        }
+
+        private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 
+            out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddMovementVariables)
+        {
+            var entity = GlueState.Self.CurrentEntitySave;
+            shouldGenerateCsv = false;
+            shouldGenerateEntity = false;
+            shouldAddMovementVariables = false;
+            if (entity != null)
+            {
+                switch (propertyName)
+                {   
+                    case nameof(PlatformerEntityViewModel.IsPlatformer):
+                        entity.Properties.SetValue(propertyName, viewModel.IsPlatformer);
+                        // Don't generate a CSV if it's not a platformer
+                        shouldGenerateCsv = viewModel.IsPlatformer;
+                        shouldAddMovementVariables = viewModel.IsPlatformer;
+                        shouldGenerateEntity = true;
+                        break;
+                    case nameof(PlatformerEntityViewModel.PlatformerValues):
+                        shouldGenerateCsv = true;
+                        // I don't think we need this...yet
+                        shouldGenerateEntity = false;
+                        shouldAddMovementVariables = false;
+                        break;
+                }
             }
         }
 
@@ -260,34 +288,6 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
         }
 
-        private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 
-            out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddMovementVariables)
-        {
-            var entity = GlueState.Self.CurrentEntitySave;
-            shouldGenerateCsv = false;
-            shouldGenerateEntity = false;
-            shouldAddMovementVariables = false;
-            if (entity != null)
-            {
-                switch (propertyName)
-                {   
-                    case nameof(PlatformerEntityViewModel.IsPlatformer):
-                        entity.Properties.SetValue(propertyName, viewModel.IsPlatformer);
-                        // Don't generate a CSV if it's not a platformer
-                        shouldGenerateCsv = viewModel.IsPlatformer;
-                        shouldAddMovementVariables = viewModel.IsPlatformer;
-                        shouldGenerateEntity = true;
-                        break;
-                    case nameof(PlatformerEntityViewModel.PlatformerValues):
-                        shouldGenerateCsv = true;
-                        // I don't think we need this...yet
-                        shouldGenerateEntity = false;
-                        shouldAddMovementVariables = false;
-                        break;
-                }
-            }
-        }
-
         public static async Task ForceCsvGenerationFor(EntitySave entitySave)
         {
             // assume this isn't the current entity so we'll create a new VM on the spot and go from there:
@@ -299,6 +299,8 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             // now that we have a prepared VM, generate it
             await CsvGenerator.Self.GenerateFor(entitySave, inheritsFromPlatformerEntity, vm);
         }
+
+        #region Update To / Refresh From Model
 
         public void UpdateTo(EntitySave currentEntitySave)
         {
@@ -312,8 +314,68 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 platformerValuesViewModel.PropertyChanged += HandlePlatformerValuesChanged;
             }
 
+            // must be called after refreshing the platformer values...at least that's what the top down controller suggests, so I'm following that here.
+            RefreshAnimationValues(currentEntitySave);
+
             ignoresPropertyChanges = false;
         }
+
+        private void RefreshAnimationValues(EntitySave currentEntitySave)
+        {
+            //LoadAnimationData(currentEntitySave);
+
+            //AddNecessaryAnimationMovementValuesFor(currentEntitySave, viewModel.TopDownValues);
+            //RemoveUnneededAnimationMovementValues(currentEntitySave, viewModel.TopDownValues);
+
+            viewModel.AnimationRows.Clear();
+
+            if(IsPlatformer( currentEntitySave))
+            {
+                viewModel.AnimationRows.Add(new PlatformerPluginCore.ViewModels.AnimationRowViewModel
+                {
+
+                });
+
+                viewModel.AnimationRows.Add(new PlatformerPluginCore.ViewModels.AnimationRowViewModel
+                {
+
+                });
+
+            }
+
+            //foreach (var animationValues in topDownAnimationData.Animations)
+            //{
+            //    var row = new AnimationRowViewModel();
+            //    row.AnimationRowName = animationValues.MovementValuesName;
+            //    foreach (var setModel in animationValues.AnimationSets)
+            //    {
+            //        var setViewModel = new AnimationSetViewModel();
+            //        setViewModel.AnimationSetName = setModel.AnimationSetName;
+
+            //        setViewModel.UpLeftAnimation = setModel.UpLeftAnimation;
+            //        setViewModel.UpAnimation = setModel.UpAnimation;
+            //        setViewModel.UpRightAnimation = setModel.UpRightAnimation;
+
+            //        setViewModel.LeftAnimation = setModel.LeftAnimation;
+            //        setViewModel.RightAnimation = setModel.RightAnimation;
+
+            //        setViewModel.DownLeftAnimation = setModel.DownLeftAnimation;
+            //        setViewModel.DownAnimation = setModel.DownAnimation;
+            //        setViewModel.DownRightAnimation = setModel.DownRightAnimation;
+
+            //        setViewModel.PropertyChanged += HandleSetViewModelPropertyChanged;
+
+            //        setViewModel.BackingData = setModel;
+
+            //        row.Animations.Add(setViewModel);
+            //    }
+            //    viewModel.AnimationRows.Add(row);
+            //}
+        }
+
+
+
+        #endregion
 
         public static bool IsPlatformer(EntitySave entitySave) =>
             entitySave.Properties.GetValue<bool>(nameof(PlatformerEntityViewModel.IsPlatformer));

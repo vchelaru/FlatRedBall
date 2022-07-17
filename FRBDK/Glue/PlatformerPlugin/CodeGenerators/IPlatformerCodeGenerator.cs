@@ -11,7 +11,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
     {
         string RelativeFileLocation => "Platformer/IPlatformer.Generated.cs";
 
-        public void GenerateAndSaveEnumFile()
+        public void GenerateAndSave()
         {
             TaskManager.Self.Add(() =>
             {

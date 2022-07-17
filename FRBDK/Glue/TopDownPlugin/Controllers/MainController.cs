@@ -66,7 +66,6 @@ namespace TopDownPlugin.Controllers
             }
         }
 
-
         private void AddTopDownGlueVariables(EntitySave entity)
         {
             // We don't make any variables because currently there's no concept of
@@ -315,17 +314,22 @@ namespace TopDownPlugin.Controllers
         {
             ignoresPropertyChanges = true;
 
+            UpdateViewModelTo(currentEntitySave);
+
+            // must be called after refreshing the top down values
+            RefreshAnimationValues(currentEntitySave);
+
+            ignoresPropertyChanges = false;
+        }
+
+        private void UpdateViewModelTo(EntitySave currentEntitySave)
+        {
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
             var inheritsFromTopDownEntity = GetIfInheritsFromTopDown(currentEntitySave);
             viewModel.InheritsFromTopDown = inheritsFromTopDownEntity;
 
 
             RefreshTopDownValues(currentEntitySave);
-
-            // must be called after refreshing the top down values
-            RefreshAnimationValues(currentEntitySave);
-
-            ignoresPropertyChanges = false;
         }
 
         private void RefreshAnimationValues(EntitySave currentEntitySave)
