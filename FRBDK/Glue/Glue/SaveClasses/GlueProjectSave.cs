@@ -70,7 +70,8 @@ namespace FlatRedBall.Glue.SaveClasses
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
             ScreenManagerHasPersistentPolygons = 17,
-            SpriteHasTolerateMissingAnimations = 18
+            SpriteHasTolerateMissingAnimations = 18,
+            AnimationLayerHasName = 19
         }
 
         #endregion

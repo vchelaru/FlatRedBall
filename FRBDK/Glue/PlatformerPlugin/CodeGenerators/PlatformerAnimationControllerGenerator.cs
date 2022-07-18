@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -97,8 +98,19 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
         public void AddLayer(PlatformerAnimationConfiguration configuration)
         {
             var layer = this.AddLayer();
-            layer.Name = configuration.AnimationName;
+";
 
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AnimationLayerHasName)
+            {
+                toReturn +=
+                    @"
+            layer.Name = configuration.AnimationName;
+";
+
+            }
+
+            toReturn +=
+                @"
             layer.EveryFrameAction = () =>
             {
                 bool shouldSet = true;
