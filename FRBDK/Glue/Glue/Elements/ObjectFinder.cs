@@ -1156,7 +1156,7 @@ namespace FlatRedBall.Glue.Elements
             return customVariable;
         }
 
-        public static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
+        public object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
         {
             var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
 

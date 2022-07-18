@@ -62,13 +62,17 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
                 Visibility.Visible :
                 Visibility.Collapsed;
 
-        public ObservableCollection<AnimationRowViewModel> AnimationRows { get; private set; } =
-            new ObservableCollection<AnimationRowViewModel>();
+        public ObservableCollection<AnimationRowViewModel> AnimationRows
+        {
+            get => Get<ObservableCollection<AnimationRowViewModel>>();
+            set => Set(value);
+        }
 
 
         public PlatformerEntityViewModel()
         {
             PlatformerValues = new ObservableCollection<PlatformerValuesViewModel>();
+            AnimationRows = new ObservableCollection<AnimationRowViewModel>();
 
             PlatformerValues.CollectionChanged += HandlePlatformerValuesChanged;
         }

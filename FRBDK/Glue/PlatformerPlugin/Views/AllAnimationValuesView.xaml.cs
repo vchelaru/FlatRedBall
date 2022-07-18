@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatRedBall.PlatformerPlugin.ViewModels;
+using PlatformerPluginCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -18,9 +20,16 @@ namespace PlatformerPluginCore.Views
     /// </summary>
     public partial class AllAnimationValuesView : UserControl
     {
+        PlatformerEntityViewModel ViewModel => DataContext as PlatformerEntityViewModel;
+
         public AllAnimationValuesView()
         {
             InitializeComponent();
+        }
+
+        private void AddAnimationEntryButtonClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.AnimationRows.Add(new AnimationRowViewModel());
         }
     }
 }

@@ -205,7 +205,7 @@ namespace EntityInputMovementPlugin
             var platformerViewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
             mainViewModel.PlatformerViewModel = platformerViewModel;
             mainView.PlatformerView.DataContext = platformerViewModel;
-
+            PlatformerPluginCore.Controllers.AnimationController.PlatformerViewModel = platformerViewModel;
             #endregion
 
 

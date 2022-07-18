@@ -315,65 +315,13 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
 
             // must be called after refreshing the platformer values...at least that's what the top down controller suggests, so I'm following that here.
-            RefreshAnimationValues(currentEntitySave);
+            if(IsPlatformer(currentEntitySave))
+            {
+                PlatformerPluginCore.Controllers.AnimationController.LoadAnimationFilesFromDisk(currentEntitySave);
+            }
 
             ignoresPropertyChanges = false;
         }
-
-        private void RefreshAnimationValues(EntitySave currentEntitySave)
-        {
-            //LoadAnimationData(currentEntitySave);
-
-            //AddNecessaryAnimationMovementValuesFor(currentEntitySave, viewModel.TopDownValues);
-            //RemoveUnneededAnimationMovementValues(currentEntitySave, viewModel.TopDownValues);
-
-            viewModel.AnimationRows.Clear();
-
-            if(IsPlatformer( currentEntitySave))
-            {
-                viewModel.AnimationRows.Add(new PlatformerPluginCore.ViewModels.AnimationRowViewModel
-                {
-
-                });
-
-                viewModel.AnimationRows.Add(new PlatformerPluginCore.ViewModels.AnimationRowViewModel
-                {
-
-                });
-
-            }
-
-            //foreach (var animationValues in topDownAnimationData.Animations)
-            //{
-            //    var row = new AnimationRowViewModel();
-            //    row.AnimationRowName = animationValues.MovementValuesName;
-            //    foreach (var setModel in animationValues.AnimationSets)
-            //    {
-            //        var setViewModel = new AnimationSetViewModel();
-            //        setViewModel.AnimationSetName = setModel.AnimationSetName;
-
-            //        setViewModel.UpLeftAnimation = setModel.UpLeftAnimation;
-            //        setViewModel.UpAnimation = setModel.UpAnimation;
-            //        setViewModel.UpRightAnimation = setModel.UpRightAnimation;
-
-            //        setViewModel.LeftAnimation = setModel.LeftAnimation;
-            //        setViewModel.RightAnimation = setModel.RightAnimation;
-
-            //        setViewModel.DownLeftAnimation = setModel.DownLeftAnimation;
-            //        setViewModel.DownAnimation = setModel.DownAnimation;
-            //        setViewModel.DownRightAnimation = setModel.DownRightAnimation;
-
-            //        setViewModel.PropertyChanged += HandleSetViewModelPropertyChanged;
-
-            //        setViewModel.BackingData = setModel;
-
-            //        row.Animations.Add(setViewModel);
-            //    }
-            //    viewModel.AnimationRows.Add(row);
-            //}
-        }
-
-
 
         #endregion
 
