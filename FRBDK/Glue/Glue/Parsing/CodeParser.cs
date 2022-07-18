@@ -125,59 +125,78 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static string ConvertValueToCodeString(object objectToParse)
+        public static string ConvertValueToCodeString<T>(T objectToParse)
         {
-            if (objectToParse == null)
-            {
-                return null;
-            }
-            else
-            {
-                string value = "";
-                value = objectToParse.ToString();
 
-                if (objectToParse is bool)
+            string value = "";
+            value = objectToParse?.ToString();
+
+            if (objectToParse is bool || typeof(T) == typeof(bool?))
+            {
+                if (value == null)
+                {
+                    value = "null";
+                }
+                else
                 {
                     value = value.ToLower();
                 }
-                else if (objectToParse is float || objectToParse is float?)
-                {
-                    if (float.IsPositiveInfinity((float)objectToParse))
-                    {
-                        value = "float.PositiveInfinity";
-                    }
-                    else if(float.IsNegativeInfinity((float)objectToParse))
-                    {
-                        value = "float.NegativeInfinity";
-                    }
-                    else
-                    {
-                        string adjusted = ((float)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-                        value = adjusted + "f";
-                    }
-                }
-                else if (objectToParse is double)
-                {
-                    value = ((double)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-                }
-                else if (objectToParse is string)
-                {
-                    value = "\"" + value.ToString() + "\"";
-                }
-                else if (objectToParse.GetType().IsEnum)
-                {
-                    value = objectToParse.GetType().FullName + "." + value.ToString();
-                    // This may be an enumeration contained inside a class.  If so, the ToString
-                    // will return a value with the '+' character separating the container class 
-                    // and the name of the Enum
-                    if (value.Contains("+"))
-                    {
-                        value = value.Replace("+", ".");
-                    }
-                }
-
-                return value;
             }
+            else if (objectToParse is float || typeof(T) == typeof(float?))
+            {
+                if (objectToParse == null)
+                {
+                    value = "null";
+                }
+                else if (float.IsPositiveInfinity((float)(object)objectToParse))
+                {
+                    value = "float.PositiveInfinity";
+                }
+                else if (float.IsNegativeInfinity((float)(object)objectToParse))
+                {
+                    value = "float.NegativeInfinity";
+                }
+                else
+                {
+                    string adjusted = ((float)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = adjusted + "f";
+                }
+            }
+            else if (objectToParse is double || typeof(T) == typeof(double?))
+            {
+                if (objectToParse == null)
+                {
+                    value = "null";
+                }
+                else
+                {
+                    value = ((double)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                }
+            }
+            else if (objectToParse is string || typeof(T) == typeof(string))
+            {
+                if (value == null)
+                {
+                    value = "null";
+                }
+                else
+                {
+                    value = "\"" + value?.ToString() + "\"";
+                }
+            }
+            else if (objectToParse?.GetType().IsEnum == true)
+            {
+                value = objectToParse.GetType().FullName + "." + value.ToString();
+                // This may be an enumeration contained inside a class.  If so, the ToString
+                // will return a value with the '+' character separating the container class 
+                // and the name of the Enum
+                if (value.Contains("+"))
+                {
+                    value = value.Replace("+", ".");
+                }
+            }
+
+            return value;
         }
 
 

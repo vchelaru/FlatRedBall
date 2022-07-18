@@ -42,6 +42,7 @@ namespace EntityInputMovementPlugin
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
+            base.RegisterCodeGenerator(new PlatformerPluginCore.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
         }

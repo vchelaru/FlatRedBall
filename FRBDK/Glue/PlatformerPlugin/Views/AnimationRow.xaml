@@ -7,6 +7,15 @@
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="200">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
         <wpfdataui:DataUiGrid CategoriesOrientation="Horizontal" x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
+        <StackPanel Grid.Column="1">
+            <Button x:Name="CloseButton" Command="{Binding RemoveCommand}">X</Button>
+            <Button x:Name="MoveUpButton" Command="{Binding MoveUpCommand}" Margin="0,5,0,0">^</Button>
+            <Button x:Name="MoveDownButton" Command="{Binding MoveDownCommand}" Width="22">v</Button>
+        </StackPanel>
     </Grid>
 </UserControl>

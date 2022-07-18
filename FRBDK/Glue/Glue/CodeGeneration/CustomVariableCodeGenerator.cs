@@ -1325,7 +1325,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
                         if (referencedNamedObject != null && referencedNamedObject.IsFullyDefined && referencedNamedObject.SourceType == SourceType.Entity)
                         {
-                            rootElementForVariable = ObjectFinder.Self.GetIElement(referencedNamedObject.SourceClassType);
+                            rootElementForVariable = ObjectFinder.Self.GetElement(referencedNamedObject.SourceClassType);
                             rootVariable = customVariable.SourceObjectProperty;
 
                             customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);

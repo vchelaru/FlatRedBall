@@ -24,6 +24,8 @@ namespace PlatformerPluginCore.Controllers
 {
     public static class AnimationController
     {
+        #region Fields/properties
+
         static PlatformerEntityViewModel platformerViewModel;
         public static PlatformerEntityViewModel PlatformerViewModel
         {
@@ -42,6 +44,10 @@ namespace PlatformerPluginCore.Controllers
         }
 
         static bool IsLoadingFromDisk = false;
+
+        #endregion
+
+        #region Initialize/Refresh
 
         public static void InitializeDataUiGridToNewViewModel(DataUiGrid dataUiGrid, AnimationRowViewModel viewModel)
         {
@@ -105,6 +111,11 @@ namespace PlatformerPluginCore.Controllers
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.FalseText)] = "Air Only";
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.NullText)] = "Either";
 
+            foreach(var category in dataUiGrid.Categories)
+            {
+                category.Members.RemoveAll(item => item.PropertyType == typeof(System.Windows.Input.ICommand));
+            }
+
             dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MovementName), "Movement Type");
         }
 
@@ -141,6 +152,29 @@ namespace PlatformerPluginCore.Controllers
             foreach(var item in allAnimationValues.Values)
             {
                 var rowVm = new AnimationRowViewModel();
+                rowVm.MoveUp += () =>
+                {
+                    var index = platformerViewModel.AnimationRows.IndexOf(rowVm);
+                    if(index > 0)
+                    {
+                        platformerViewModel.AnimationRows.Move(index, index - 1);
+                    }
+                };
+
+                rowVm.MoveDown += () =>
+                {
+                    var index = platformerViewModel.AnimationRows.IndexOf(rowVm);
+                    if (index < platformerViewModel.AnimationRows.Count-1)
+                    {
+                        platformerViewModel.AnimationRows.Move(index, index + 1);
+                    }
+                };
+
+                rowVm.Remove += () =>
+                {
+                    platformerViewModel.AnimationRows.Remove(rowVm);
+                };
+
                 rowVm.SetFrom(item);
                 platformerViewModel.AnimationRows.Add(rowVm);
             }
@@ -254,6 +288,10 @@ namespace PlatformerPluginCore.Controllers
             member.CustomOptions = options.Select(item => (object)item).ToList();
         }
 
+        #endregion
+
+        #region Handle Changes
+
         private static void HandlePlatformerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             
@@ -263,6 +301,10 @@ namespace PlatformerPluginCore.Controllers
                     if(!IsLoadingFromDisk)
                     {
                         SaveViewModelFor(GlueState.Self.CurrentElement);
+                        if(GlueState.Self.CurrentElement != null)
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                        }
                     }
                     break;
             }
@@ -283,10 +325,16 @@ namespace PlatformerPluginCore.Controllers
             if (!IsLoadingFromDisk)
             {
                 SaveViewModelFor(GlueState.Self.CurrentElement);
+                if (GlueState.Self.CurrentElement != null)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
             }
         }
 
-        static FilePath PlatformerAnimationsFileLocationFor(GlueElement element) =>
+        #endregion
+
+        public static FilePath PlatformerAnimationsFileLocationFor(GlueElement element) =>
                 GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".PlatformerAnimations.json";
 
 

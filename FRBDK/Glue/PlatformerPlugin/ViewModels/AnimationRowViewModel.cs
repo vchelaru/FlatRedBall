@@ -1,8 +1,10 @@
-﻿using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.Errors;
+using FlatRedBall.Glue.MVVM;
 using PlatformerPluginCore.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Input;
 
 namespace PlatformerPluginCore.ViewModels
 {
@@ -74,10 +76,35 @@ namespace PlatformerPluginCore.ViewModels
         }
 
         // If adding any properties here, update ApplyTo and SetFrom
+        public ICommand MoveUpCommand
+        {
+            get;
+            set;
+        }
+
+        public ICommand MoveDownCommand
+        {
+            get;
+            set;
+        }
+
+        public ICommand RemoveCommand
+        {
+            get;
+            set;
+        }
+
+        public event Action MoveUp;
+        public event Action MoveDown;
+        public event Action Remove;
 
         public AnimationRowViewModel()
         {
             HasLeftAndRight = true;
+
+            MoveUpCommand = new Command(() => MoveUp?.Invoke());
+            MoveDownCommand = new Command(() => MoveDown?.Invoke());
+            RemoveCommand = new Command(() => Remove?.Invoke());
         }
 
         public void ApplyTo(IndividualPlatformerAnimationValues model)
