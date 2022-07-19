@@ -315,7 +315,7 @@ namespace TMXGlueLib
                     string fileAttemptedToLoad = _sourceField;
                     if (FileManager.IsRelative(_sourceField))
                     {
-                        fileAttemptedToLoad = FileManager.RelativeDirectory + _sourceField;
+                        fileAttemptedToLoad = FileManager.RemoveDotDotSlash( FileManager.RelativeDirectory + _sourceField);
                     }
 
                     string message = "Could not find the shared tsx file \n" + fileAttemptedToLoad + 
