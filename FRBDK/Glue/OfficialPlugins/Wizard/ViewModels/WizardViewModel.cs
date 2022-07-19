@@ -210,6 +210,16 @@ namespace OfficialPluginsCore.Wizard.Models
         public bool ShowAddPlayerSpritePlatformerAnimations =>
             AddPlayerSprite && PlayerControlType == GameType.Platformer;
 
+        public bool AddPlatformerAnimationController
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        [DependsOn(nameof(ShowAddPlayerSpritePlatformerAnimations))]
+        [DependsOn(nameof(AddPlayerSpritePlatformerAnimations))]
+        public bool ShowAddPlatformAnimatorController =>
+            ShowAddPlayerSpritePlatformerAnimations && AddPlayerSpritePlatformerAnimations;
+
         #endregion
 
         #region Levels

@@ -175,6 +175,9 @@ namespace OfficialPluginsCore.Wizard.Models
                 formsData.AddBoolValue("Add Platformer Animations", nameof(ViewModel.AddPlayerSpritePlatformerAnimations),
                     nameof(ViewModel.ShowAddPlayerSpritePlatformerAnimations));
 
+                formsData.AddBoolValue("Add Platformer Animation Controller", nameof(ViewModel.AddPlatformerAnimationController),
+                    nameof(ViewModel.ShowAddPlatformAnimatorController));
+
                 formsData.AddTitle("Player Instance in GameScreen", nameof(ViewModel.AddPlayerEntity));
 
                 formsData.AddBoolValue("Add Player list to GameScreen", nameof(ViewModel.AddPlayerListToGameScreen), nameof(ViewModel.AddPlayerEntity));

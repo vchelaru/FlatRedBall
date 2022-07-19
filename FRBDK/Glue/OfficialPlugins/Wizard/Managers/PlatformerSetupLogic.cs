@@ -16,7 +16,7 @@ namespace OfficialPlugins.Wizard.Managers
             viewModel.ScalePercent = 200;
 
             viewModel.AddPlayerSpritePlatformerAnimations = true;
-
+            viewModel.AddPlatformerAnimationController = true;
         }
     }
 }

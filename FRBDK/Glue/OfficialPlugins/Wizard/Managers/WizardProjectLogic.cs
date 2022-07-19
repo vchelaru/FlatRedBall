@@ -471,6 +471,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                             await AddPlayerPlatformerAnimations(playerEntity);
                         }
 
+                        if(vm.ShowAddPlatformAnimatorController && vm.AddPlatformerAnimationController)
+                        {
+                            await AddPlayerPlatformerAnimationController(playerEntity);
+                        }
+
                     }
                     else if (vm.PlayerControlType == GameType.Topdown)
                     {
@@ -522,6 +527,18 @@ namespace OfficialPluginsCore.Wizard.Managers
                     );
 
             }
+        }
+
+        private static Task AddPlayerPlatformerAnimationController(EntitySave playerEntity)
+        {
+            var whereToSave = GlueCommands.Self.GetAbsoluteFilePath(playerEntity).GetDirectoryContainingThis() +
+                "Player.PlatformerAnimations.json";
+            var resourceName = "OfficialPlugins.Wizard.EmbeddedContent.Platformer.Player.PlatformerAnimations.json";
+
+            GlueCommands.Self.TryMultipleTimes(() =>
+                FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, whereToSave));
+
+            return Task.CompletedTask;
         }
 
         private static async Task<EntitySave> ImportPlayerEntity(WizardViewModel vm)

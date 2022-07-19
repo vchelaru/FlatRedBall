@@ -146,6 +146,7 @@
     <None Remove="TreeViewPlugin\Content\icon_variable.png" />
     <None Remove="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
     <None Remove="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <None Remove="Wizard\Icons\action_forms.png" />
     <None Remove="Wizard\Icons\action_platformer.png" />
     <None Remove="Wizard\Icons\action_project.png" />
@@ -197,6 +198,7 @@
     <EmbeddedResource Include="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />
