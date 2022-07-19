@@ -1,31 +1,36 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GameJsonCommunicationPlugin.Common
+namespace GlueCommunication
 {
     internal class GameConnectionManager : IDisposable
     {
+        private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
+        {
+            Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+        }
+
         #region private
         private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
         private IPAddress _addr;
-        private Socket _listener = null;
-        private Socket _client = null;
-        private bool _isListening = false;
+        private Socket _server = null;
         private bool _isConnected = false;
+        private bool _isConnecting = false;
         private CancellationTokenSource _periodicCheckTaskCancellationToken;
-
         #endregion
 
         #region properties
-        private bool _doConnections = true;
+        private bool _doConnections = false;
         public bool DoConnections
         {
             get
@@ -37,8 +42,7 @@ namespace GameJsonCommunicationPlugin.Common
                 _doConnections = value;
                 if (!_doConnections)
                 {
-                    _listener?.Dispose();
-                    _client?.Dispose();
+                    _server?.Dispose();
                 }
             }
         }
@@ -50,11 +54,6 @@ namespace GameJsonCommunicationPlugin.Common
             {
                 return _port;
             }
-            set
-            {
-                _port = value;
-                StartListening();
-            }
         }
         private IPEndPoint EndPoint
         {
@@ -65,65 +64,53 @@ namespace GameJsonCommunicationPlugin.Common
         }
         #endregion
 
-        public GameConnectionManager()
+        public GameConnectionManager(int port)
         {
+            _port = port;
+            OnPacketReceived += HandleOnPacketReceived;
             _addr = IPAddress.Loopback;
-            StartListening();
+            StartConnecting();
             _periodicCheckTaskCancellationToken = new CancellationTokenSource();
-            Task task = StatusCheckTask(_periodicCheckTaskCancellationToken.Token);
+            StatusCheckTask(_periodicCheckTaskCancellationToken.Token);
         }
 
         #region privateMethods
 
-        private void StartListening()
+        private void StartConnecting()
         {
-            if (_listener != null)
-                _listener.Dispose();
+            if (_server != null)
+                _server.Dispose();
 
-            if (_client != null)
+            Task.Run(() =>
             {
-                _client.Dispose();
-                _client = null;
-            }
-
-            if (_doConnections)
-            {
-                _isListening = true;
-
-                Task.Run(() =>
+                try
                 {
-                    try
+                    if (!_isConnecting)
                     {
-                        _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        _isConnecting = true;
 
-                        _listener.Bind(EndPoint);
-                        _listener.Listen(1);
+                        _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                        Debug.WriteLine($"Listening on port {Port}");
+                        Debug.WriteLine($"Connecting on port {Port}");
+                        _server.Connect(EndPoint);
 
-                        EstablishConnection(_listener.Accept());
-                        _listener.Dispose();
-                        _listener = null;
+                        Connected();
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Listening Error: {ex}");
-                    }
-                    finally
-                    {
-                        _isListening = false;
-                    }
-                });
-            }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Listening Error: {ex}");
+                }
+                finally
+                {
+                    _isConnecting = false;
+                }
+            });
         }
 
-        private void EstablishConnection(Socket socket)
+        private void Connected()
         {
             Debug.WriteLine("Connected");
-
-            _client = socket;
-            _sendItems.Clear();
-
             _isConnected = true;
 
             Task.Run(() =>
@@ -133,7 +120,7 @@ namespace GameJsonCommunicationPlugin.Common
                     while (_isConnected)
                     {
                         byte[] bufferSize = new byte[sizeof(long)];
-                        _client.Receive(bufferSize);
+                        _server.Receive(bufferSize);
                         var packetSize = BitConverter.ToInt64(bufferSize, 0);
 
                         using (MemoryStream stream = new MemoryStream())
@@ -143,7 +130,7 @@ namespace GameJsonCommunicationPlugin.Common
                             {
                                 var pullSize = remainingBytes > 1024 ? 1024 : remainingBytes;
                                 byte[] bufferData = new byte[pullSize];
-                                _client.Receive(bufferData);
+                                _server.Receive(bufferData);
                                 stream.Write(bufferData, 0, bufferData.Length);
                                 remainingBytes -= pullSize;
                             }
@@ -160,12 +147,13 @@ namespace GameJsonCommunicationPlugin.Common
                                         Packet = packet
                                     });
                             }
+
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Client Connection Failed: {ex}");
+                    Debug.WriteLine($"Server Connection Failed: {ex}");
                 }
                 finally { _isConnected = false; }
             });
@@ -182,11 +170,11 @@ namespace GameJsonCommunicationPlugin.Common
                             var sendBytes = Encoding.ASCII.GetBytes(packet);
                             long size = sendBytes.LongLength;
 
-                        //Send size
-                            _client.Send(BitConverter.GetBytes(size));
+                            //Send size
+                            _server.Send(BitConverter.GetBytes(size));
 
-                        //Send payload
-                            _client.Send(sendBytes);
+                            //Send payload
+                            _server.Send(sendBytes);
                         }
                         else
                         {
@@ -196,7 +184,7 @@ namespace GameJsonCommunicationPlugin.Common
                 }
                 catch (Exception ex)
                 {
-                    Debug.Write($"Client Connection Failed: {ex}");
+                    Debug.WriteLine($"Server Connection Failed: {ex}");
                 }
                 finally { _isConnected = false; }
             });
@@ -213,9 +201,9 @@ namespace GameJsonCommunicationPlugin.Common
 
         private void StatusCheck()
         {
-            if (!_isListening && !_isConnected && _doConnections)
+            if (!_isConnecting && !_isConnected && _doConnections)
             {
-                StartListening();
+                StartConnecting();
             }
         }
         #endregion
@@ -231,8 +219,8 @@ namespace GameJsonCommunicationPlugin.Common
         public void Dispose()
         {
             try { _periodicCheckTaskCancellationToken.Cancel(); } catch { }
-            try { _listener?.Dispose(); } catch { }
-            try { _client?.Dispose(); } catch { }
+            try { _server?.Dispose(); } catch { }
+            OnPacketReceived -= HandleOnPacketReceived;
         }
 
         #endregion

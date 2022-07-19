@@ -472,6 +472,13 @@ namespace FlatRedBall.Glue.Plugins
                 ReactToPluginEventAction(this, eventName, payload);
         }
 
+        protected void ReactToPluginEvent(string eventName, object payload)
+        {
+
+            if (ReactToPluginEventAction != null)
+                ReactToPluginEventAction(this, eventName, JsonConvert.SerializeObject(payload));
+        }
+
 
         private ConcurrentDictionary<Guid, string> _pendingRequests = new ConcurrentDictionary<Guid, string>();
         protected async Task<string> ReactToPluginEventWithReturn(string eventName, string payload)

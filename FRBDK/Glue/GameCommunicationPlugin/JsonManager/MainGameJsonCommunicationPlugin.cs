@@ -1,7 +1,9 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using GameCommunicationPlugin.Common;
 using GameJsonCommunicationPlugin.Common;
 using Newtonsoft.Json;
+using OfficialPlugins.Compiler.CodeGeneration;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -13,6 +15,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
     {
         private const string PacketType_JsonUpdate = "JsonUpdate";
         private GlueJsonManager _glueJsonManager;
+        private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
 
         public override string FriendlyName => "Game JSON Communication Plugin";
 
@@ -20,6 +23,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            ReactToLoadedGlux -= HandleGluxLoaded;
             ReactToGlueJsonLoad -= HandleReactToGlueJsonLoad;
             ReactToScreenJsonLoad -= HandleReactToScreenJsonLoad;
             ReactToEntityJsonLoad -= HandleReactToEntityJsonLoad;
@@ -44,6 +48,28 @@ namespace GameJsonCommunicationPlugin.JsonManager
             ReactToGlueJsonSave += HandleReactToGlueJsonSave;
             ReactToScreenJsonSave += HandleReactToScreenJsonSave;
             ReactToEntityJsonSave += HandleReactToEntityJsonSave;
+
+            ReactToLoadedGlux += HandleGluxLoaded;
+
+            game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
+            RegisterCodeGenerator(game1GlueCommunicationGenerator);
+        }
+
+        private void HandleGluxLoaded()
+        {
+            if (GameCommunicationHelper.IsFrbNewEnough())
+            {
+                EmbeddedCodeManager.Embed(new System.Collections.Generic.List<string>
+                {
+                    "Json.GlueJsonManager.cs",
+                    "Json.JsonContainer.cs",
+                    "Json.JsonManager.cs",
+                    "Json.ScreenJsonContainer.cs",
+
+                    "Json.Operations.GluxCommands.cs",
+                    "Json.Operations.JsonOperations.cs"
+                });
+            }
         }
 
         private void HandleReactToEntityJsonLoad(string entityName, string json)
@@ -81,7 +107,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
                 Debug.Print($"Changes for Entity {entityName}");
                 Debug.Print(patch.ToString());
 
-                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                ReactToPluginEvent("GameCommunication_SendPacket", new GameConnectionManager.Packet
                 {
                     PacketType = PacketType_JsonUpdate,
                     Payload = JsonConvert.SerializeObject(new JsonPayload
@@ -105,7 +131,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
                 Debug.Print($"Changes for Screen {screenName}");
                 Debug.Print(patch.ToString());
 
-                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                ReactToPluginEvent("GameCommunication_SendPacket", new GameConnectionManager.Packet
                 {
                     PacketType = PacketType_JsonUpdate,
                     Payload = JsonConvert.SerializeObject(new JsonPayload
@@ -127,7 +153,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
                 Debug.Print($"Changes for Glue Project Save");
                 Debug.Print(patch.ToString());
 
-                GameConnectionManager.Instance.SendItem(new GameConnectionManager.Packet
+                ReactToPluginEvent("GameCommunication_SendPacket", new GameConnectionManager.Packet
                 {
                     PacketType = PacketType_JsonUpdate,
                     Payload = JsonConvert.SerializeObject(new JsonPayload
