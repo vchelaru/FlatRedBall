@@ -49,7 +49,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         {
             var toReturn =
 @"
-
+using System.Linq;
 
 namespace " + GlueState.Self.ProjectNamespace + @".Entities
 {
@@ -80,6 +80,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
         public AnimationSpeedAssignment AnimationSpeedAssignment { get; set; }
 
+        public System.Func<bool> AdditionalPredicate;
+
         public override string ToString()
         {
             return AnimationName;
@@ -89,15 +91,26 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
     public class PlatformerAnimationController : FlatRedBall.Graphics.Animation.AnimationController
     {
         IPlatformer PlatformerEntity;
+
+        System.Collections.Generic.List<PlatformerAnimationConfiguration> platformerAnimationConfigurations;
+        public System.Collections.ObjectModel.ReadOnlyCollection<PlatformerAnimationConfiguration> Configurations { get; private set; }
+
         public PlatformerAnimationController(IPlatformer platformerEntity)
         {
             PlatformerEntity = platformerEntity;
+            platformerAnimationConfigurations = new System.Collections.Generic.List<PlatformerAnimationConfiguration>();
+            Configurations = new System.Collections.ObjectModel.ReadOnlyCollection<PlatformerAnimationConfiguration>(platformerAnimationConfigurations);
         }
 
+        public PlatformerAnimationConfiguration GetConfiguration(string animationName) =>
+                    Configurations.First(item => item.AnimationName == animationName);
 
         public void AddLayer(PlatformerAnimationConfiguration configuration)
         {
             var layer = this.AddLayer();
+
+            platformerAnimationConfigurations.Add(configuration);
+
 ";
 
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AnimationLayerHasName)
@@ -128,6 +141,11 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
                 shouldSet = shouldSet &&
                     (configuration.OnGroundRequirement == null || PlatformerEntity.IsOnGround == configuration.OnGroundRequirement);
+
+                if(shouldSet && configuration.AdditionalPredicate != null)
+                {
+                    shouldSet = configuration.AdditionalPredicate();
+                }
 
                 if (shouldSet)
                 {
