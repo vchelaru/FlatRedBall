@@ -627,7 +627,7 @@ namespace FlatRedBall
         {
             mJustChangedFrame = false;
             mJustCycled = false;
-            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mAnimationChains[mCurrentChainIndex].Count == 0) return;
+            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mCurrentChainIndex >= mAnimationChains.Count || mAnimationChains[mCurrentChainIndex].Count == 0 ) return;
 
             int frameBefore = mCurrentFrameIndex;
 
