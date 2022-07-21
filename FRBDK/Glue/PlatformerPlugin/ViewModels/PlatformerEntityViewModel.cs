@@ -103,5 +103,31 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         {
             base.NotifyPropertyChanged(nameof(this.PlatformerValues));
         }
+
+        public void AssignAnimationRowEvents(AnimationRowViewModel viewModel)
+        {
+            viewModel.MoveUp += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index > 0)
+                {
+                    this.AnimationRows.Move(index, index - 1);
+                }
+            };
+
+            viewModel.MoveDown += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index < this.AnimationRows.Count - 1)
+                {
+                    this.AnimationRows.Move(index, index + 1);
+                }
+            };
+
+            viewModel.Remove += () =>
+            {
+                this.AnimationRows.Remove(viewModel);
+            };
+        }
     }
 }

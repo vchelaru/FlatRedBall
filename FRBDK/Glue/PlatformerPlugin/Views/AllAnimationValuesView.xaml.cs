@@ -29,7 +29,9 @@ namespace PlatformerPluginCore.Views
 
         private void AddAnimationEntryButtonClicked(object sender, RoutedEventArgs e)
         {
-            ViewModel.AnimationRows.Add(new AnimationRowViewModel());
+            var newVm = new AnimationRowViewModel();
+            ViewModel.AssignAnimationRowEvents(newVm);
+            ViewModel.AnimationRows.Add(newVm);
         }
     }
 }

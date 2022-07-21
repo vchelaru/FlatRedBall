@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace EntityInputMovementPlugin.CodeGenerators
             var entity = element as EntitySave;
             var isPlatformer = FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator.GetIfIsPlatformer(element);
 
-            if(entity != null && isPlatformer)
+            if(entity != null && isPlatformer && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.IPlatformer)
             {
                 listToAddTo.Add("IPlatformer");
             }

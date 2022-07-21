@@ -8,7 +8,8 @@ namespace PlatformerPluginCore.SaveClasses
     {
         ForceTo1,
         NoAssignment,
-        BasedOnMultiplier
+        BasedOnVelocityMultiplier,
+        BasedOnMaxSpeedRatioMultiplier
     }
     
     public class AllPlatformerAnimationValues
@@ -31,11 +32,17 @@ namespace PlatformerPluginCore.SaveClasses
         public float? AbsoluteXVelocityAnimationSpeedMultiplier { get; set; }
         public float? AbsoluteYVelocityAnimationSpeedMultiplier { get; set; }
 
+        public float? MaxSpeedXRatioMultiplier { get; set; }
+        public float? MaxSpeedYRatioMultiplier { get; set; }
+
+
         public bool? OnGroundRequirement { get; set; }
 
         public string MovementName { get; set; }
+        public string CustomCondition { get; set; }
 
         public AnimationSpeedAssignment AnimationSpeedAssignment { get; set; }
 
+        public string Notes { get; set; }
     }
 }

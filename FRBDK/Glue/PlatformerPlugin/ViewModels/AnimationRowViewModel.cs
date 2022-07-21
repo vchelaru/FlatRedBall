@@ -57,6 +57,17 @@ namespace PlatformerPluginCore.ViewModels
             set => Set(value);
         }
 
+        public float? MaxSpeedXRatioMultiplier
+        {
+            get => Get<float?>();
+            set => Set(value);
+        }
+        public float? MaxSpeedYRatioMultiplier
+        {
+            get => Get<float?>();
+            set => Set(value);
+        }
+
         public bool? OnGroundRequirement
         {
             get => Get<bool?>();
@@ -64,6 +75,12 @@ namespace PlatformerPluginCore.ViewModels
         }
 
         public string MovementName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string CustomCondition
         {
             get => Get<string>();
             set => Set(value);
@@ -98,6 +115,12 @@ namespace PlatformerPluginCore.ViewModels
         public event Action MoveDown;
         public event Action Remove;
 
+        public string Notes
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public AnimationRowViewModel()
         {
             HasLeftAndRight = true;
@@ -121,9 +144,18 @@ namespace PlatformerPluginCore.ViewModels
             model.AbsoluteXVelocityAnimationSpeedMultiplier = AbsoluteXVelocityAnimationSpeedMultiplier;
             model.AbsoluteYVelocityAnimationSpeedMultiplier = AbsoluteYVelocityAnimationSpeedMultiplier;
 
+            model.MaxSpeedXRatioMultiplier = MaxSpeedXRatioMultiplier;
+            model.MaxSpeedYRatioMultiplier = MaxSpeedYRatioMultiplier;
+
+
             model.OnGroundRequirement = OnGroundRequirement;
 
             model.AnimationSpeedAssignment = AnimationSpeedAssignment;
+
+            model.Notes = Notes;
+
+            model.MovementName = MovementName;
+            model.CustomCondition = CustomCondition;
         }
 
         public void SetFrom(IndividualPlatformerAnimationValues model)
@@ -143,6 +175,14 @@ namespace PlatformerPluginCore.ViewModels
             this.OnGroundRequirement = model.OnGroundRequirement;
 
             this.AnimationSpeedAssignment = model.AnimationSpeedAssignment;
+
+            this.MaxSpeedXRatioMultiplier = model.MaxSpeedXRatioMultiplier;
+            this.MaxSpeedYRatioMultiplier = model.MaxSpeedYRatioMultiplier;
+
+            this.MovementName = model.MovementName;
+            this.CustomCondition = model.CustomCondition;
+
+            this.Notes = model.Notes;
         }
     }
 }

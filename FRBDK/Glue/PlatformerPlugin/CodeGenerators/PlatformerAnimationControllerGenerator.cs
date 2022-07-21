@@ -57,7 +57,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
     {
         ForceTo1,
         NoAssignment,
-        BasedOnMultiplier
+        BasedOnVelocityMultiplier,
+        BasedOnMaxSpeedRatioMultiplier
     }
 
     public class PlatformerAnimationConfiguration
@@ -73,6 +74,9 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
         public float? AbsoluteXVelocityAnimationSpeedMultiplier { get; set; }
         public float? AbsoluteYVelocityAnimationSpeedMultiplier { get; set; }
+
+        public float? MaxSpeedXRatioMultiplier { get; set; }
+        public float? MaxSpeedYRatioMultiplier { get; set; }
 
         public bool? OnGroundRequirement { get; set; }
 
@@ -155,12 +159,15 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                             {
                                 var asSprite = this.AnimatedObject as FlatRedBall.Sprite;
 
-                                asSprite.AnimationSpeed = 1;
+                                if(asSprite != null)
+                                {
+                                    asSprite.AnimationSpeed = 1;
+                                }
                             }
                             break;
                         case AnimationSpeedAssignment.NoAssignment:
                             break;
-                        case AnimationSpeedAssignment.BasedOnMultiplier:
+                        case AnimationSpeedAssignment.BasedOnVelocityMultiplier:
                             {
                                 var asSprite = this.AnimatedObject as FlatRedBall.Sprite;
 
@@ -173,6 +180,36 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                                 {
                                     asSprite.AnimationSpeed = configuration.AbsoluteYVelocityAnimationSpeedMultiplier.Value * 
                                         System.Math.Abs(yVelocity);
+                                }
+                            }
+                            break;
+                        case AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier:
+                            {
+                                var asSprite = this.AnimatedObject as FlatRedBall.Sprite;
+                                if(asSprite != null)
+                                {
+                                    if(configuration.MaxSpeedXRatioMultiplier != null)
+                                    {
+                                        if(PlatformerEntity.MaxAbsoluteXVelocity == 0)
+                                        {
+                                            asSprite.AnimationSpeed = 1;
+                                        }
+                                        else
+                                        {
+                                            asSprite.AnimationSpeed = configuration.MaxSpeedXRatioMultiplier.Value * absoluteXVelocity / PlatformerEntity.MaxAbsoluteXVelocity;
+                                        }
+                                    }
+                                    else if(configuration.MaxSpeedYRatioMultiplier != null)
+                                    {
+                                        if (PlatformerEntity.MaxAbsoluteYVelocity == 0)
+                                        {
+                                            asSprite.AnimationSpeed = 1;
+                                        }
+                                        else
+                                        {
+                                            asSprite.AnimationSpeed = configuration.MaxSpeedYRatioMultiplier.Value * System.Math.Abs(yVelocity) / PlatformerEntity.MaxAbsoluteYVelocity;
+                                        }
+                                    }
                                 }
                             }
                             break;

@@ -52,6 +52,8 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
         HorizontalDirection DirectionFacing {{ get; }}
         bool IsOnGround {{ get; }}
         string CurrentMovementName {{ get; }}
+        float MaxAbsoluteXVelocity {{ get; }}
+        float MaxAbsoluteYVelocity {{ get; }}
     }}
 }}";
             return toReturn;

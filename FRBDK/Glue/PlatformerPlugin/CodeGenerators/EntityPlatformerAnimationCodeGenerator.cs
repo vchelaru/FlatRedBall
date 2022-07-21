@@ -24,7 +24,8 @@ namespace PlatformerPluginCore.CodeGenerators
         {
             EntitySave asEntitySave = element as EntitySave;
             var shouldGenerate = asEntitySave != null &&
-                FlatRedBall.PlatformerPlugin.Controllers.MainController.IsPlatformer(asEntitySave);
+                FlatRedBall.PlatformerPlugin.Controllers.MainController.IsPlatformer(asEntitySave) &&
+                GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.IPlatformer;
 
             FilePath platformerAnimationJson = null;
 
@@ -73,24 +74,39 @@ namespace PlatformerPluginCore.CodeGenerators
 
                 foreach (var entry in animationValues.Values)
                 {
+                    codeBlock = codeBlock.Block();
+                    {
+                        string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 
-                    string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 
-                    codeBlock.Line("PlatformerAnimationController.AddLayer(new PlatformerAnimationConfiguration");
-                    codeBlock.Line("{");
-                    var variableAssignmentBlock = codeBlock.CodeBlockIndented();
-                    variableAssignmentBlock.Line($"AnimationName={CodeParser.ConvertValueToCodeString(entry.AnimationName)},");
-                    variableAssignmentBlock.Line($"HasLeftAndRight={CodeParser.ConvertValueToCodeString(entry.HasLeftAndRight)},");
-                    variableAssignmentBlock.Line($"MinXVelocityAbsolute={CodeParser.ConvertValueToCodeString(entry.MinXVelocityAbsolute)},");
-                    variableAssignmentBlock.Line($"MaxXVelocityAbsolute={CodeParser.ConvertValueToCodeString(entry.MaxXVelocityAbsolute)} ,");
-                    variableAssignmentBlock.Line($"MinYVelocity={CodeParser.ConvertValueToCodeString(entry.MinYVelocity)} ,");
-                    variableAssignmentBlock.Line($"MaxYVelocity={CodeParser.ConvertValueToCodeString(entry.MaxYVelocity)} ,");
-                    variableAssignmentBlock.Line($"AbsoluteXVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteXVelocityAnimationSpeedMultiplier)} ,");
-                    variableAssignmentBlock.Line($"AbsoluteYVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteYVelocityAnimationSpeedMultiplier)} ,");
-                    variableAssignmentBlock.Line($"OnGroundRequirement={CodeParser.ConvertValueToCodeString(entry.OnGroundRequirement)} ,");
-                    variableAssignmentBlock.Line($"MovementName={CodeParser.ConvertValueToCodeString(entry.MovementName)} ,");
-                    variableAssignmentBlock.Line($"AnimationSpeedAssignment={animationSpeedAssignment}");
-                    codeBlock.Line("});");
+                        codeBlock.Line("var configuration = new PlatformerAnimationConfiguration");
+                        codeBlock.Line("{");
+                        var variableAssignmentBlock = codeBlock.CodeBlockIndented();
+                        variableAssignmentBlock.Line($"AnimationName={CodeParser.ConvertValueToCodeString(entry.AnimationName)},");
+                        variableAssignmentBlock.Line($"HasLeftAndRight={CodeParser.ConvertValueToCodeString(entry.HasLeftAndRight)},");
+                        variableAssignmentBlock.Line($"MinXVelocityAbsolute={CodeParser.ConvertValueToCodeString(entry.MinXVelocityAbsolute)},");
+                        variableAssignmentBlock.Line($"MaxXVelocityAbsolute={CodeParser.ConvertValueToCodeString(entry.MaxXVelocityAbsolute)} ,");
+                        variableAssignmentBlock.Line($"MinYVelocity={CodeParser.ConvertValueToCodeString(entry.MinYVelocity)} ,");
+                        variableAssignmentBlock.Line($"MaxYVelocity={CodeParser.ConvertValueToCodeString(entry.MaxYVelocity)} ,");
+                        variableAssignmentBlock.Line($"AbsoluteXVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteXVelocityAnimationSpeedMultiplier)} ,");
+                        variableAssignmentBlock.Line($"AbsoluteYVelocityAnimationSpeedMultiplier={CodeParser.ConvertValueToCodeString(entry.AbsoluteYVelocityAnimationSpeedMultiplier)} ,");
+                        variableAssignmentBlock.Line($"MaxSpeedXRatioMultiplier={CodeParser.ConvertValueToCodeString(entry.MaxSpeedXRatioMultiplier)} ,");
+                        variableAssignmentBlock.Line($"MaxSpeedYRatioMultiplier={CodeParser.ConvertValueToCodeString(entry.MaxSpeedYRatioMultiplier)} ,");
+                        variableAssignmentBlock.Line($"OnGroundRequirement={CodeParser.ConvertValueToCodeString(entry.OnGroundRequirement)} ,");
+                        variableAssignmentBlock.Line($"MovementName={CodeParser.ConvertValueToCodeString(entry.MovementName)} ,");
+                        variableAssignmentBlock.Line($"AnimationSpeedAssignment={animationSpeedAssignment}");
+
+
+                        codeBlock.Line("};");
+
+                        codeBlock.Line("PlatformerAnimationController.AddLayer(configuration);");
+
+                        if(!string.IsNullOrWhiteSpace( entry.CustomCondition ))
+                        {
+                            codeBlock.Line($"configuration.AdditionalPredicate += () => {entry.CustomCondition};"); 
+                        }
+                    }
+                    codeBlock = codeBlock.End();
                 }
             }
 

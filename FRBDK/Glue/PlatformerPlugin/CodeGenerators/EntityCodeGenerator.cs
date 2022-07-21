@@ -158,7 +158,10 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             codeBlock.Line("public string CurrentMovementName => CurrentMovement?.Name;");
 
-            codeBlock.Line("/// <summary>");
+            codeBlock.Line("public float MaxAbsoluteXVelocity => CurrentMovement?.MaxSpeedX ?? 0;");
+            codeBlock.Line("public float MaxAbsoluteYVelocity => CurrentMovement?.MaxFallSpeed ?? 0;");
+
+        codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Which direction the character is facing. This can be explicity set in code, but may get overridden by the current InputDevice.");
             codeBlock.Line("/// </summary>");
             codeBlock.Property("public HorizontalDirection", "DirectionFacing")

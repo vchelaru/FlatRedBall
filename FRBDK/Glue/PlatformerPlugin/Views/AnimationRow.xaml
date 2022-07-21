@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlatformerPluginCore.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="200">
+             d:DesignHeight="250" d:DesignWidth="200"
+              BorderThickness="1" BorderBrush="DarkGray">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
