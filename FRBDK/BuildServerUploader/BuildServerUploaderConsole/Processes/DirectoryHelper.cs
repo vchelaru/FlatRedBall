@@ -95,7 +95,7 @@ namespace BuildServerUploaderConsole.Processes
             get
             {
                 // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
-                return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\netcoreapp3.0\win-x86\publish\";
+                return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\win-x86\publish\";
 
             }
         }
