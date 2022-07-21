@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
-        public static async Task<bool> UpdateFile(string changedFile)
+        public static async Task<bool> UpdateFile(string changedFile, FileChangeType changeType = FileChangeType.Modified)
         {
             bool handled = false;
             ///////////////Early Out////////////////////
@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.IO
 
             if (! handled && GlueCommands.Self.FileCommands.IsContent(changedFile))
             {
-                PluginManager.ReactToChangedFile(changedFile);
+                PluginManager.ReactToChangedFile(changedFile, changeType);
             }
 
             #region If it's a CSV, then re-generate the code for the objects
@@ -153,10 +153,9 @@ namespace FlatRedBall.Glue.IO
 
                     if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
                     {
-                        string relativePath = ProjectManager.MakeRelativeContent(changedFile);
-
+                        FilePath changedFilePath = changedFile;
                         shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
-                            ProjectManager.ProjectBase, relativePath, false, false);
+                            ProjectManager.ProjectBase, changedFilePath, false, false);
                         handled |= shouldSave;
 
                     }

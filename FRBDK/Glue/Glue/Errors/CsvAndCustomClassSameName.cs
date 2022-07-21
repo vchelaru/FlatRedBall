@@ -33,10 +33,6 @@ namespace FlatRedBall.Glue.Errors
             var isError =
                 IsError(File, CustomClass);
 
-            if(isError == false)
-            {
-                int m = 3;
-            }
             return isError == false;
         }
 

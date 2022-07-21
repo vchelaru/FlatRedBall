@@ -32,23 +32,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void GenerateCurrentElementCode()
         {
-            GlueElement element = null;
-
-            GlueCommands.DoOnUiThread(() => element = GlueState.CurrentElement);
+            GlueElement element = GlueState.CurrentElement;
             if (element != null)
             {
-                TaskManager.Self.AddOrRunIfTasked(()  =>
+                TaskManager.Self.AddAsync(async ()  =>
                 {
-                    CodeWriter.GenerateCode(element);
+                    // This can happen when the user exits the program, so let's check:
+                    if(GlueState.CurrentGlueProject != null)
+                    {
+                        await CodeWriter.GenerateCode(element);
+                    }
                 }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
+        [Obsolete("use GenerateElementCodeAsync")]
         public void GenerateElementCode(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            TaskManager.Self.AddOrRunIfTasked(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
@@ -57,24 +64,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            return TaskManager.Self.AddAsync(() => CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            return TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
 
-        public void GenerateElementAndReferencedObjectCode(GlueElement element)
+        public async Task GenerateElementAndReferencedObjectCode(GlueElement element)
         {
+            HashSet<GlueElement> toRegenerateHashSet = new HashSet<GlueElement>();
             if (element != null)
             {
-                GenerateElementCode(element);
+                toRegenerateHashSet.Add(element);
+
 
                 var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element);
-
+                
                 foreach (var nos in namedObjects)
                 {
                     var nosElement = ObjectFinder.Self.GetElementContaining(nos);
-                    GenerateElementCode(element);
+                    toRegenerateHashSet.Add(nosElement);
+
                 }
+            }
+            foreach(var elementToRegenerate in toRegenerateHashSet)
+            {
+                await GenerateElementCodeAsync(elementToRegenerate);
             }
         }
 

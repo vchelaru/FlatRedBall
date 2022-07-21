@@ -52,6 +52,13 @@ namespace FlatRedBall
 
         bool mIgnoreAnimationChainTextureFlip;
 
+        /// <summary>
+        /// Whether the Sprite code will tolerate (not throw exceptions)
+        /// CurrentChainName assignments which do not exist in the code. Normally
+        /// this is false. This is set to true in edit mode.
+        /// </summary>
+        public static bool TolerateMissingAnimations = false;
+
         #endregion
 
         #region Particle Fields
@@ -242,9 +249,14 @@ namespace FlatRedBall
                         }
                     }
 
-                    if (!wasAnimationSet)
+                    if (!wasAnimationSet && !TolerateMissingAnimations) 
                     {
                         string error = "There is no animation named " + value;
+
+                        if(mAnimationChains?.Name != null)
+                        {
+                            error += $" in AnimationChain {mAnimationChains?.Name}";
+                        }
 
                         if(mAnimationChains.Count == 0)
                         {
@@ -279,11 +291,33 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// The current AnimationFrame displayed by this Sprite, or null if no AnimationFrame is being displayed
+        /// </summary>
+        public AnimationFrame CurrentFrame
+        {
+            get
+            {
+                var currentChain = CurrentChain;
+                if(currentChain != null && mCurrentFrameIndex > -1 && mCurrentFrameIndex < currentChain.Count)
+                {
+                    return currentChain[mCurrentFrameIndex];
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Whether this Sprite just changed the AnimationFrame it is displaying due to internal animation activity this frame.
+        /// </summary>
         public bool JustChangedFrame
         {
             get { return mJustChangedFrame; }
         }
 
+        /// <summary>
+        /// Whether this Sprite just cycled its animation (set its CurrentFrameIndex to 0) due to internal animation activity this frame.
+        /// </summary>
         public bool JustCycled
         {
             get { return mJustCycled; }
@@ -295,10 +329,17 @@ namespace FlatRedBall
             set { mUseAnimationRelativePosition = value; }
         }
 
+        [Obsolete("Use UseAnimationTextureFlip instead")]
         public bool IgnoreAnimationChainTextureFlip
         {
             get { return mIgnoreAnimationChainTextureFlip; }
             set { mIgnoreAnimationChainTextureFlip = value; }
+        }
+
+        public bool UseAnimationTextureFlip
+        {
+            get => !mIgnoreAnimationChainTextureFlip;
+            set => mIgnoreAnimationChainTextureFlip = !value;
         }
 
         public double TimeIntoAnimation
@@ -586,7 +627,7 @@ namespace FlatRedBall
         {
             mJustChangedFrame = false;
             mJustCycled = false;
-            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mAnimationChains[mCurrentChainIndex].Count == 0) return;
+            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mCurrentChainIndex >= mAnimationChains.Count || mAnimationChains[mCurrentChainIndex].Count == 0 ) return;
 
             int frameBefore = mCurrentFrameIndex;
 

@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Tiled;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -148,6 +149,46 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set
             {
                 CurrentTreeNode = GlueState.Self.Find.TreeNodeByTag(value);
+            }
+        }
+
+        public string[] CurrentFocusedTabs
+        {
+            get
+            {
+                string GetFocusFor(TabContainerViewModel tabContainerVm)
+                {
+                    foreach(var tabPage in tabContainerVm.Tabs)
+                    {
+                        if(tabPage.IsSelected)
+                        {
+                            return tabPage.Title;
+                        }
+                    }
+                    return null;
+                }
+
+                List<string> listToReturn = new List<string>();
+
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    void AddIfNotNull(string value) 
+                    {
+                        if(value != null)
+                        {
+                            listToReturn.Add(value);
+                        }
+                    };
+
+                    AddIfNotNull(GetFocusFor(PluginManager.TabControlViewModel.TopTabItems));
+                    AddIfNotNull(GetFocusFor(PluginManager.TabControlViewModel.BottomTabItems));
+                    AddIfNotNull(GetFocusFor(PluginManager.TabControlViewModel.LeftTabItems));
+                    AddIfNotNull(GetFocusFor(PluginManager.TabControlViewModel.RightTabItems));
+                    AddIfNotNull(GetFocusFor(PluginManager.TabControlViewModel.CenterTabItems));
+
+                });
+
+                return listToReturn.ToArray();
             }
         }
 

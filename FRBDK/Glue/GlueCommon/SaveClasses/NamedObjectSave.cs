@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [CategoryAttribute("Source")]
         public string SourceClassType
         {
-            get { return mSourceClassType; }
+            get  => mSourceClassType; 
             set
             {
                 mSourceClassType = value;
@@ -162,23 +162,14 @@ namespace FlatRedBall.Glue.SaveClasses
         [CategoryAttribute("Source")]
         public SourceType SourceType
         {
-            get
-            {
-                return Properties.GetValue<SourceType>(nameof(SourceType));
-            }
-            set
-            {
-                Properties.SetValue(nameof(SourceType), value);
-            }
+            get => Properties.GetValue<SourceType>(nameof(SourceType));
+            set => Properties.SetValue(nameof(SourceType), value);
         }
 
         [CategoryAttribute("Source")]
         public string SourceFile
         {
-            get
-            {
-                return mSourceFile;
-            }
+            get => mSourceFile;
             set
             {
                 if (!String.IsNullOrEmpty(value) && value.ToLower().Replace("\\", "/").StartsWith("content/"))
@@ -560,12 +551,9 @@ namespace FlatRedBall.Glue.SaveClasses
         [Browsable(false)]
         public bool IsEntireFile
         {
-            get
-            {
-                return SourceType == SourceType.File &&
+            get => SourceType == SourceType.File &&
                     SourceName != null &&
                     SourceName.StartsWith("Entire File (");
-            }
         }
 
 
@@ -672,7 +660,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [CategoryAttribute("Creation")]
         public string CurrentState
         {
-            get { return mCurrentState; }
+            get => mCurrentState; 
             set
             {
                 mCurrentState = value;
@@ -703,28 +691,13 @@ namespace FlatRedBall.Glue.SaveClasses
             set => Properties.SetValue(nameof(AssociateWithFactory), value);
         }
 
-
-        // August 28, 2012
-        // I initially
-        // put this in so
-        // Lists in Entities
-        // wouldn't destroy the
-        // factory that fills them.
-        // I then found out that we should
-        // only Destroy factories in Screens,
-        // so I no longer need this.  But I may
-        // need it in the future if a Screen contains
-        // multiple lists of a given type...but I'll cross
-        // that bridge when I get to it.
-        //public bool InitializesFactory
-        //{
-        //    get;
-        //    set;
-        //}
-        //public bool ShouldSerializeInitializesFactory()
-        //{
-        //    return InitializesFactory == false;
-        //}
+        [XmlIgnore]
+        [JsonIgnore]
+        public bool IsEditingLocked
+        {
+            get => Properties.GetValue<bool>(nameof(IsEditingLocked));
+            set => Properties.SetValue(nameof(IsEditingLocked), value);
+        }
 
         #region Layer Properties
 

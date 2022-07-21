@@ -20,9 +20,10 @@ namespace OfficialPlugins.Compiler.Views
     /// </summary>
     public partial class WhileStoppedView : UserControl
     {
-        public event EventHandler BuildClicked;
-        public event EventHandler BuildContentClicked;
-        public event EventHandler RunClicked;
+        public event Action BuildClicked;
+        public event Action BuildContentClicked;
+        public event Action RunClicked;
+        public event Action MSBuildSettingsClicked;
 
         public WhileStoppedView()
         {
@@ -31,18 +32,17 @@ namespace OfficialPlugins.Compiler.Views
 
         private void HandleCompileClick(object sender, RoutedEventArgs e)
         {
-            BuildClicked?.Invoke(this, null);
+            BuildClicked?.Invoke();
         }
 
-        private void HandleBuildContentClick(object sender, RoutedEventArgs e)
+        private void MSBuildSettingsButtonClicked(object sender, RenderingEventArgs e)
         {
-
-            BuildContentClicked?.Invoke(this, null);
+            MSBuildSettingsClicked?.Invoke();
         }
 
-        private void HandleRunClick(object sender, RoutedEventArgs e)
+        private void MSBuildSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
-            RunClicked?.Invoke(this, null);
+            MSBuildSettingsClicked?.Invoke();
         }
     }
 }

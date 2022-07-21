@@ -28,19 +28,19 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 // See if there is already a tree node for this
                 NodeViewModel foundTreeNode = null;
-                string text = file.FullPath;
 
-                if(glueElement is ScreenSave)
-                {
-                    var path = GlueState.Self.CurrentGlueProjectDirectory + "Screens/";
-                    text = FileManager.MakeRelative(text, path);
-                }
-                else
-                {
-                    var path = GlueState.Self.CurrentGlueProjectDirectory + "Entities/";
-                    text = FileManager.MakeRelative(text, path);
-                }
-                // else entity
+                // Why include the folder? Why not just the name of the file? 
+                //if(glueElement is ScreenSave)
+                //{
+                //    var path = GlueState.Self.CurrentGlueProjectDirectory + "Screens/";
+                //    text = FileManager.MakeRelative(text, path);
+                //}
+                //else
+                //{
+                //    var path = GlueState.Self.CurrentGlueProjectDirectory + "Entities/";
+                //    text = FileManager.MakeRelative(text, path);
+                //}
+                string text = file.NoPath;
 
 
                 foreach (var treeNode in Children)

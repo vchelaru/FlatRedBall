@@ -8,6 +8,9 @@ using FlatRedBall.AnimationEditorForms.Preview;
 using System.Drawing;
 using ToolsUtilities;
 using FlatRedBall.Math;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.AnimationEditorForms.Managers;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -48,8 +51,6 @@ namespace FlatRedBall.AnimationEditorForms
 
         #region Events
 
-        public event EventHandler AnimationChainsChange;
-
         public event EventHandler AnimationChainSelected;
 
         #endregion
@@ -77,59 +78,63 @@ namespace FlatRedBall.AnimationEditorForms
 
         #endregion
 
+        #region Refresh/Update
+
         public void RefreshTreeView()
         {
-            mTreeView.Invoke((MethodInvoker)delegate()
+            AppCommands.Self.DoOnUiThread(RefreshTreeViewInternal);
+
+        }
+
+        void RefreshTreeViewInternal()
+        {
+            AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
+            var selectedAnimationChains = SelectedState.Self.SelectedChains;
+
+            List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
+
+            foreach (TreeNode treeNode in mTreeView.Nodes)
             {
-                AnimationFrameSave selectedAnimationFrame = SelectedState.Self.SelectedFrame;
-                var selectedAnimationChains = SelectedState.Self.SelectedChains;
-
-                List<AnimationChainSave> expandedAnimationChains = new List<AnimationChainSave>();
-
-                foreach(TreeNode treeNode in mTreeView.Nodes)
+                if (treeNode.IsExpanded)
                 {
-                    if(treeNode.IsExpanded)
+                    expandedAnimationChains.Add(treeNode.Tag as AnimationChainSave);
+                }
+            }
+
+            mTreeView.Nodes.Clear();
+
+
+            if (ProjectManager.Self.AnimationChainListSave != null)
+            {
+                TreeNode[] nodesToAdd = new TreeNode[ProjectManager.Self.AnimationChainListSave.AnimationChains.Count];
+
+                int index = 0;
+                foreach (var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
+                {
+                    TreeNode treeNode = new TreeNode();
+
+                    nodesToAdd[index] = treeNode;
+
+                    RefreshTreeNode(treeNode, animationChain);
+                    if (expandedAnimationChains.Contains(animationChain))
                     {
-                        expandedAnimationChains.Add(treeNode.Tag as AnimationChainSave);
+                        treeNode.Expand();
                     }
+                    index++;
                 }
 
-                mTreeView.Nodes.Clear();
+                mTreeView.Nodes.AddRange(nodesToAdd);
 
 
-                if (ProjectManager.Self.AnimationChainListSave != null)
+                if (selectedAnimationFrame != null)
                 {
-                    TreeNode[] nodesToAdd = new TreeNode[ProjectManager.Self.AnimationChainListSave.AnimationChains.Count];
-
-                    int index = 0;
-                    foreach (var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
-                    {
-                        TreeNode treeNode = new TreeNode();
-
-                        nodesToAdd[index] = treeNode;
-
-                        WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
-                        if(expandedAnimationChains.Contains(animationChain))
-                        {
-                            treeNode.Expand();
-                        }
-                        index++;
-                    }
-
-                    mTreeView.Nodes.AddRange(nodesToAdd);
-
-
-                    if (selectedAnimationFrame != null)
-                    {
-                        SelectedState.Self.SelectedFrame = selectedAnimationFrame;
-                    }
-                    if (mTreeView.SelectedNode == null && selectedAnimationChains.Count > 0)
-                    {
-                        SelectedState.Self.SelectedChains = selectedAnimationChains;
-                    }
+                    SelectedState.Self.SelectedFrame = selectedAnimationFrame;
                 }
-            });
-
+                if (mTreeView.SelectedNode == null && selectedAnimationChains.Count > 0)
+                {
+                    SelectedState.Self.SelectedChains = selectedAnimationChains;
+                }
+            }
         }
 
         public void RefreshTreeNode(AnimationChainSave animationChain)
@@ -146,7 +151,7 @@ namespace FlatRedBall.AnimationEditorForms
                         mTreeView.Nodes.Add(treeNode);
                     }
 
-                    WithoutEnvokeRefreshTreeNode(treeNode, animationChain);
+                    RefreshTreeNode(treeNode, animationChain);
                 });
             }
         }
@@ -159,28 +164,15 @@ namespace FlatRedBall.AnimationEditorForms
                 {
                     var node = GetTreeNodeFor(animationFrame);
 
-                    node.Text = animationFrame.TextureName;
-                    if (string.IsNullOrEmpty(animationFrame.TextureName))
+                    if(node != null)
                     {
-                        node.Text = "<UNTEXTURED>";
+                        RefreshTreeNode(node, animationFrame);
                     }
-                    else
-                    {
-                        var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
-
-                        int left = MathFunctions.RoundToInt(animationFrame.LeftCoordinate * texture.Width);
-                        int top = MathFunctions.RoundToInt(animationFrame.TopCoordinate * texture.Height);
-
-
-                        node.Text += string.Format(
-                            " {0},{1}", left, top);
-                    }
-
                 });
             }
         }
 
-        private void WithoutEnvokeRefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
+        private void RefreshTreeNode(TreeNode treeNode, AnimationChainSave animationChain)
         {
             treeNode.Nodes.Clear();
             treeNode.Tag = animationChain;
@@ -189,29 +181,146 @@ namespace FlatRedBall.AnimationEditorForms
             foreach (var frame in animationChain.Frames)
             {
                 TreeNode frameNode = new TreeNode();
-                frameNode.Text = frame.TextureName;
-                if (string.IsNullOrEmpty(frame.TextureName))
-                {
-                    frameNode.Text = "<UNTEXTURED>";
-                }
-                else
-                {
-                    var texture = WireframeManager.Self.GetTextureForFrame(frame);
-                    if (texture != null)
-                    {
-                        frameNode.Text += string.Format(
-                            " {0},{1}", frame.LeftCoordinate * texture.Width, frame.TopCoordinate * texture.Height);
-                    }
-                }
-
-                frameNode.Tag = frame;
-
-                
-
+                RefreshTreeNode(frameNode, frame);
 
                 treeNode.Nodes.Add(frameNode);
             }
         }
+
+        private void RefreshTreeNode(TreeNode frameNode, AnimationFrameSave animationFrame)
+        {
+            frameNode.Text = animationFrame.TextureName;
+            if (string.IsNullOrEmpty(animationFrame.TextureName))
+            {
+                frameNode.Text = "<UNTEXTURED>";
+            }
+            else
+            {
+                var texture = WireframeManager.Self.GetTextureForFrame(animationFrame);
+                if (texture != null)
+                {
+                    frameNode.Text += $"{animationFrame.LeftCoordinate * texture.Width},{animationFrame.TopCoordinate * texture.Height}";
+                }
+            }
+
+
+            RefreshShapeCollectionsOn(frameNode, animationFrame);
+
+
+            frameNode.Tag = animationFrame;
+        }
+
+        private void RefreshShapeCollectionsOn(TreeNode treeNode, AnimationFrameSave animationFrameSave)
+        {
+            if (animationFrameSave.ShapeCollectionSave != null)
+            {
+                foreach (var cube in animationFrameSave.ShapeCollectionSave.AxisAlignedCubeSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, cube);
+                }
+                foreach (var rect in animationFrameSave.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, rect);
+
+                }
+                foreach (var circle in animationFrameSave.ShapeCollectionSave.CircleSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, circle);
+
+                }
+                foreach (var polygon in animationFrameSave.ShapeCollectionSave.PolygonSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, polygon);
+
+                }
+                foreach (var sphere in animationFrameSave.ShapeCollectionSave.SphereSaves)
+                {
+                    AddAndRefreshTreeNode(treeNode, sphere);
+                }
+            }
+
+            System.Collections.IList list = treeNode.Nodes;
+            for (int i = list.Count-1; i > -1; i--)
+            {
+                TreeNode childNode = (TreeNode)list[i];
+                var shape = childNode.Tag;
+                if(shape is AxisAlignedRectangleSave rectangle)
+                {
+                    // is it referenced?
+                    var isReferenced = animationFrameSave.ShapeCollectionSave?.AxisAlignedRectangleSaves.Contains(rectangle) == true;
+                    if(!isReferenced)
+                    {
+                        treeNode.Nodes.Remove(childNode);
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.AxisAlignedCubeSave cube)
+        {
+            var node = GetTreeNodeByTag(cube, parentNode);
+            if(node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = cube.Name;
+            node.Tag = cube;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.AxisAlignedRectangleSave rect)
+        {
+            var node = GetTreeNodeByTag(rect, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = rect.Name;
+            node.Tag = rect;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.CircleSave circle)
+        {
+            var node = GetTreeNodeByTag(circle, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = circle.Name;
+            node.Tag = circle;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Polygon.PolygonSave polygon)
+        {
+            var node = GetTreeNodeByTag(polygon, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = polygon.Name;
+            node.Tag = polygon;
+        }
+
+        private void AddAndRefreshTreeNode(TreeNode parentNode, FlatRedBall.Content.Math.Geometry.SphereSave sphere)
+        {
+            var node = GetTreeNodeByTag(sphere, parentNode);
+            if (node == null)
+            {
+                node = new TreeNode();
+                parentNode.Nodes.Add(node);
+            }
+            node.Text = sphere.Name;
+            node.Tag = sphere;
+        }
+
+        #endregion
 
         public void AfterTreeItemSelect()
         {
@@ -258,6 +367,8 @@ namespace FlatRedBall.AnimationEditorForms
             System.IO.File.WriteAllText(WireframeSettingsFileName, serialized);
         }
 
+        #region Get/Find
+
         public TreeNode GetTreeNodeFor(AnimationFrameSave afs)
         {
             if (afs == null)
@@ -283,10 +394,23 @@ namespace FlatRedBall.AnimationEditorForms
                 return GetTreeNodeByTag(acs, mTreeView.Nodes);
 
             }
-
         }
 
-        private TreeNode GetTreeNodeByTag(object tag, TreeNodeCollection treeNodeCollection)
+        public TreeNode GetTreeNodeByTag(object tag)
+        {
+            if (tag == null)
+            {
+                return null;
+            }
+            else
+            {
+                return GetTreeNodeByTag(tag, mTreeView.Nodes);
+
+            }
+        }
+
+        TreeNode GetTreeNodeByTag(object tag, TreeNode parentTreeNode) => GetTreeNodeByTag(tag, parentTreeNode.Nodes);
+        TreeNode GetTreeNodeByTag(object tag, TreeNodeCollection treeNodeCollection)
         {
             foreach (TreeNode treeNode in treeNodeCollection)
             {
@@ -305,13 +429,14 @@ namespace FlatRedBall.AnimationEditorForms
             return null;
         }
 
+        #endregion
+
         void CallAnimationChainsChange()
         {
-            if (AnimationChainsChange != null)
-            {
-                AnimationChainsChange(this, null);
-            }
+            ApplicationEvents.Self.RaiseAnimationChainsChanged();
         }
+
+        #region Drag+drop
 
         internal void HandleDrop(object sender, DragEventArgs e)
         {
@@ -510,8 +635,43 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void HandleDroppedAchxFile(string fileName)
         {
-            MainControl.Self.LoadAnimationChain(fileName);
+            AppCommands.Self.LoadAnimationChain(fileName);
         }
+
+        internal static void DragOver(object sender, DragEventArgs e)
+        {
+            TreeView tree = (TreeView)sender;
+            Point pt = new Point(e.X, e.Y);
+            pt = tree.PointToClient(pt);
+
+            e.Effect = DragDropEffects.Move;
+        }
+
+        internal void ItemDrag(object sender, ItemDragEventArgs e)
+        {
+
+            // Get the tree.
+            TreeView tree = (TreeView)sender;
+
+            // Get the node underneath the mouse.
+            TreeNode node = e.Item as TreeNode;
+            //tree.SelectedNode = node;
+
+            // Start the drag-and-drop operation with a cloned copy of the node.
+            if (node != null)
+            {
+                mGrabbedNode = node;
+                //ElementViewWindow.TreeNodeDraggedOff = node;
+
+                TreeNode targetNode = null;
+                //ElementViewWindow.ButtonUsed = e.Button;
+
+                //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
+                tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
+            }
+        }
+
+        #endregion
 
         internal void HandleKeyPress(KeyPressEventArgs e)
         {
@@ -558,6 +718,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             if (e.KeyCode == Keys.Delete)
             {
+                e.Handled = HotkeyManager.Self.TryHandleKeys(e.KeyCode);
                 if (SelectedState.Self.SelectedFrame != null)
                 {
                     DeleteAnimationFrameClick(null, null);
@@ -608,39 +769,6 @@ namespace FlatRedBall.AnimationEditorForms
                 SelectedState.Self.SelectedFrame = chain.Frames[0];
             }
 
-        }
-
-        internal static void DragOver(object sender, DragEventArgs e)
-        {
-            TreeView tree = (TreeView)sender;
-            Point pt = new Point(e.X, e.Y);
-            pt = tree.PointToClient(pt);
-
-            e.Effect = DragDropEffects.Move;
-        }
-
-        internal void ItemDrag(object sender, ItemDragEventArgs e)
-        {
-
-            // Get the tree.
-            TreeView tree = (TreeView)sender;
-
-            // Get the node underneath the mouse.
-            TreeNode node = e.Item as TreeNode;
-            //tree.SelectedNode = node;
-
-            // Start the drag-and-drop operation with a cloned copy of the node.
-            if (node != null)
-            {
-                mGrabbedNode = node;
-                //ElementViewWindow.TreeNodeDraggedOff = node;
-
-                TreeNode targetNode = null;
-                //ElementViewWindow.ButtonUsed = e.Button;
-
-                //ElementTreeView_DragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-                tree.DoDragDrop(node, DragDropEffects.Move | DragDropEffects.Copy);
-            }
         }
     }
 }

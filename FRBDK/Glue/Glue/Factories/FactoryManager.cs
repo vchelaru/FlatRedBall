@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Factories
 {
@@ -46,7 +47,7 @@ namespace FlatRedBall.Glue.Factories
         }
 
 
-        public void SetResetVariablesForEntitySave(EntitySave entitySave)
+        public async Task SetResetVariablesForEntitySave(EntitySave entitySave)
         {
             // set reset variables
             bool hasNamedObjectEntities = false;
@@ -211,7 +212,7 @@ namespace FlatRedBall.Glue.Factories
                 StringFunctions.RemoveDuplicates(nos.VariablesToReset);
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
+            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
 
             foreach(var element in entitySave.GetAllBaseEntities())
             {

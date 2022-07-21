@@ -6,7 +6,7 @@ using FlatRedBall.IO;
 using Microsoft.Build.Evaluation;
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// Adds the argument file to the current project if it is not already part of the project. 
         /// </summary>
         /// <param name="codeFilePath">The FilePath to the file.</param>
-        void TryAddCodeFileToProject(FilePath codeFilePath, bool saveOnAdd = false);
+        Task TryAddCodeFileToProjectAsync(FilePath codeFilePath, bool saveOnAdd = false);
 
         void CopyToBuildFolder(ReferencedFileSave rfs);
         void CopyToBuildFolder(FilePath absoluteSource);
@@ -89,8 +89,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="useContentPipeline">Whether to force the file to use the content pipeline.</param>
         /// <param name="shouldLink"></param>
         /// <param name="parentFile"></param>
+        /// <param name="fileRfs">The ReferencedFileSave for fileName if it is already known. If not, a search will be perfored internally to find it. Passing the ReferencedFileSave
+        /// can improve performance slightly, but it can make a difference if this method is called a lot.</param>
         /// <returns></returns>
-        bool UpdateFileMembershipInProject(VisualStudioProject project, string fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null);
+        bool UpdateFileMembershipInProject(VisualStudioProject project, FilePath fileName, bool useContentPipeline, bool shouldLink, string parentFile = null, bool recursive = true, List<string> alreadyReferencedFiles = null,
+            ReferencedFileSave fileRfs = null);
 
         void CreateNewProject();
     }

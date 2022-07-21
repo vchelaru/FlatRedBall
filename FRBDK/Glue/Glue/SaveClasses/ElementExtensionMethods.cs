@@ -113,6 +113,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(derivedNosesToAskAbout.Count > 0)
             {
+                // This can happen whenever, like if a project is reloaded and data is changed on disk. However, this
+                // code should never hit as a result of the user making changes in the UI, that should be caught earlier.
+                // See SetByDerivedSetLogic
                 var singleOrPluralPhrase = derivedNosesToAskAbout.Count == 1 ? "object is" : "objects are";
                 var thisOrTheseObjects = derivedNosesToAskAbout.Count == 1 ? "this object" : "these objects";
 
@@ -154,7 +157,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         referencedObjectsBeforeUpdate.Remove(nos);
                     }
                 }
-                else
+                else if((DialogResult)mbmb.ClickedResult == DialogResult.No)
                 {
                     foreach(var nos in derivedNosesToAskAbout)
                     {

@@ -89,7 +89,9 @@ namespace FlatRedBall.Instructions.Reflection
                     var isAssignable = propertyType.IsAssignableFrom(valueType);
                     if(!isAssignable)
                     {
-                        throw new InvalidOperationException($"Attempting to set property {PropertyInfo.Name} of type {propertyType} to value {value} with type {value.GetType()}");
+                        var message =
+                            $"Attempting to set property {PropertyInfo.Name} of type {propertyType} to value {value} with type {value.GetType()}";
+                        throw new InvalidOperationException(message);
                     }
                 }
 #endif

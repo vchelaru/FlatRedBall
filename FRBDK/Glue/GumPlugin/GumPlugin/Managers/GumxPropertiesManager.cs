@@ -56,7 +56,7 @@ namespace GumPlugin.Managers
                 else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
                 {
                     TaskManager.Self.Add(
-                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
+                        () => CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(),
                         $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
 
                 }
@@ -76,7 +76,7 @@ namespace GumPlugin.Managers
                 else if(propertyChanged == nameof(GumViewModel.MakeGumInstancesPublic))
                 {
                     TaskManager.Self.Add(
-                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes,
+                        () => CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(),
                         $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
                 }
                 else if(propertyChanged == nameof(GumViewModel.IsMatchGameResolutionInGumChecked))

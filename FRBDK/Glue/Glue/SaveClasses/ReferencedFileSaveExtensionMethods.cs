@@ -141,10 +141,28 @@ namespace FlatRedBall.Glue.SaveClasses
             return false;
         }
 
+        /// <summary>
+        /// Returns the name of variable generated in code.
+        /// </summary>
+        /// <param name="instance">The ReferencedFileSave to generate.</param>
+        /// <returns>The name as generated.</returns>
         public static string GetInstanceName(this ReferencedFileSave instance)
         {
             string toReturn =
-                FileManager.RemoveExtension(instance.Name).Replace(" ", "").Replace("-", "_");
+                FileManager.RemoveExtension(instance.Name)
+                    .Replace(" ", "")
+                    .Replace("-", "_")
+                    // May 17, 2022
+                    // File names with 
+                    // invalid characters
+                    // may make their way in
+                    // to a project. In this case
+                    // we will just strip out the invalid
+                    // characters. We treat the dash as a special
+                    // case since it can be converted to an underscore
+                    // and still look somewhat similar. 
+                    .Replace("(", "")
+                    .Replace(")", "");
 
             if (instance.IncludeDirectoryRelativeToContainer)
             {

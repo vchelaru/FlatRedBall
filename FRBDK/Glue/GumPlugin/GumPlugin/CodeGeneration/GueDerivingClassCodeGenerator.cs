@@ -777,17 +777,27 @@ namespace GumPlugin.CodeGeneration
                 if(instance != null)
                 {
 
-                    var element = ObjectFinder.Self.GetElementSave(instance);
+                    var instanceElement = ObjectFinder.Self.GetElementSave(instance);
 
-                    if(element != null)
+                    if(instanceElement != null)
                     {
 
                         var rootName = variableSave.GetRootName();
-                        var variableInInstanceElement = element.DefaultState.Variables.FirstOrDefault(item => item.Name == rootName || item.ExposedAsName == rootName);
+                        var variableInInstanceElement = instanceElement.DefaultState.Variables.FirstOrDefault(item => item.Name == rootName || item.ExposedAsName == rootName);
 
                         if(variableInInstanceElement != null)
                         {
-                            ModifyVariableTypeForProperty(ref variableType, variableInInstanceElement, element);
+                            ModifyVariableTypeForProperty(ref variableType, variableInInstanceElement, instanceElement);
+                        }
+                        else if (variableSave.Type.EndsWith("State"))
+                        {
+                            var typeWithoutState = variableSave.Type.Substring(0, variableSave.Type.Length - "State".Length);
+                            var foundCategory = instanceElement.Categories.FirstOrDefault(item => item.Name == typeWithoutState);
+                            if (foundCategory != null)
+                            {
+                                // categorized state enums are nullable
+                                variableType = $"{instanceElement.Name.Replace('/', '.').Replace('\\', '.')}Runtime.{foundCategory.Name}?";
+                            }
                         }
                     }
                     

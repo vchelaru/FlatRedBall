@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.CodeGeneration;
 
 namespace OfficialPlugins.Compiler.Managers
 {
@@ -86,7 +87,6 @@ namespace OfficialPlugins.Compiler.Managers
             get; set;
         }
 
-        public bool IgnoreNextObjectAdd { get; set; }
         public bool IgnoreNextObjectSelect { get; set; }
 
         public SynchronizedCollection<ExpiringFilePath> FilePathsToIgnore { get; private set; }
@@ -196,20 +196,35 @@ namespace OfficialPlugins.Compiler.Managers
                             if(ViewModel.IsRunning)
                             {
                                 var extension = fileName.Extension;
-                                var shouldReload = extension == "csv";
-                                if(shouldReload)
+                                var shouldReloadFile = extension == "csv";
+
+                                var shouldReloadScreen = false;
+
+                                if (shouldReloadFile)
                                 {
                                     printOutput($"Sending force reload for file: {strippedName}");
 
                                     var dto = new Dtos.ForceReloadFileDto();
                                     dto.ElementsContainingFile = containerNames.ToList();
+                                    dto.LoadInGlobalContent = GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Contains(firstRfs);
+                                    dto.IsLocalizationDatabase = firstRfs.IsDatabaseForLocalizing;
+                                    dto.FileRelativeToProject =
+                                        ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
                                     await CommandSender.Send(dto);
+
+                                    // Typically localization is applied in custom code, so we can't
+                                    // apply these changes without reloading the screen
+                                    shouldReloadScreen = dto.IsLocalizationDatabase;
                                 }
                                 else
                                 {
                                     printOutput($"Telling game to restart screen");
+                                    shouldReloadScreen = true;
+                                }
 
+                                if(shouldReloadScreen)
+                                { 
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
                                     await CommandSender.Send(dto);
@@ -339,11 +354,11 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Screen Created
 
-        internal void HandleNewScreenCreated()
+        internal async Task HandleNewScreenCreated()
         {
             if (ShouldRestartOnChange)
             {
-                StopAndRestartAsync($"New screen created");
+                await StopAndRestartAsync($"New screen created");
             }
         }
 
@@ -389,56 +404,102 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region NamedObject Created
 
+
+        internal async Task HandleNewObjectList(List<NamedObjectSave> newObjectList)
+        {
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            {
+                var list = new Dtos.AddObjectDtoList();
+
+                foreach(var newObject in newObjectList)
+                {
+                    var individualDto = CreateAddObjectDtoFor(newObject);
+
+                    list.Data.Add(individualDto);
+                }
+
+                var response = await CommandSender.Send<AddObjectDtoListResponse>(list);
+
+                if(response.Succeeded == false || 
+                    response.Data.Data == null ||
+                    response.Data.Data.Any(item => item.WasObjectCreated == false))
+                {
+                    await StopAndRestartAsync("Restarting because the add object group failed");
+                }
+                // else do we want to position based on camera? This is likely a copy/paste so...maybe not?
+            }
+        }
+
         internal async void HandleNewObjectCreated(NamedObjectSave newNamedObject)
         {
-            if(IgnoreNextObjectAdd)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                IgnoreNextObjectAdd = false;
-            }
-            else if (ViewModel.IsRunning && ViewModel.IsEditChecked)
-            {
-                var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
-                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(tempSerialized);
-                var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
-                if (containerElement != null)
-                {
-                    addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
-                }
+                AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
 
                 var sendResponse = await CommandSender.Send(addObjectDto);
                 string addResponseAsString = null;
-                if(sendResponse.Succeeded)
+                if (sendResponse.Succeeded)
                 {
                     addResponseAsString = sendResponse.Data;
                 }
 
                 AddObjectDtoResponse addResponse = null;
-                if(!string.IsNullOrEmpty(addResponseAsString))
+                if (!string.IsNullOrEmpty(addResponseAsString))
                 {
                     try
                     {
                         addResponse = JsonConvert.DeserializeObject<AddObjectDtoResponse>(addResponseAsString);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         printOutput($"Error parsing string:\n\n{addResponseAsString}");
                     }
                 }
 
-                if(addResponse?.WasObjectCreated == true)
+                if (addResponse?.WasObjectCreated == true)
                 {
                     var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
                         (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);
-                    if(isPositionedObject)
+                    if (isPositionedObject)
                     {
                         await AdjustNewObjectToCameraPosition(newNamedObject);
                     }
                 }
                 else
                 {
-                    StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
+                    await StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
                 }
             }
+        }
+
+        private AddObjectDto CreateAddObjectDtoFor(NamedObjectSave newNamedObject)
+        {
+            var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
+            var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
+
+            foreach(var instruction in nosCopy.InstructionSaves)
+            {
+                // qualify here!
+                instruction.Type = VariableSendingManager.Self.GetQualifiedStateTypeName(instruction.Member, null, nosCopy, out bool isState, out StateSaveCategory category);
+            }
+
+            var addObjectDto = new AddObjectDto();
+            addObjectDto.NamedObjectSave = nosCopy;
+            var containerElement = ObjectFinder.Self.GetElementContaining(newNamedObject);
+            NamedObjectSave nosList = null;
+            if (containerElement != null)
+            {
+                addObjectDto.ElementNameGame = GetGameTypeFor(containerElement);
+                nosList = containerElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(newNamedObject));
+            }
+
+            addObjectDto.NamedObjectsToUpdate.Add(new NamedObjectWithElementName
+            {
+                NamedObjectSave = nosCopy,
+                GlueElementName = containerElement?.Name,
+                ContainerName = nosList?.InstanceName
+            });
+            return addObjectDto;
         }
 
         public Vector2? ForcedNextObjectPosition { get; set; }
@@ -465,12 +526,12 @@ namespace OfficialPlugins.Compiler.Managers
 
             if (newPosition.X != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X);
+                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X, false, false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y);
+                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y, false, false);
 
                 didSetValue = true;
             }
@@ -695,13 +756,19 @@ namespace OfficialPlugins.Compiler.Managers
 
         #region Variable Changed
 
-
-        internal async void HandleNamedObjectValueChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        internal async void ReactToNamedObjectChangedValueList(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            var foundVariable = nos.GetCustomVariable(variableName);
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            {
+                await VariableSendingManager.Self.HandleNamedObjectVariableListChanged(variableList, assignOrRecordOnly);
+            }
+        }
+
+        internal async void HandleNamedObjectVariableOrPropertyChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
+        {
             if(ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
-                await VariableSendingManager.Self.HandleNamedObjectValueChanged(variableName, oldValue, nos, assignOrRecordOnly);
+                await VariableSendingManager.Self.HandleNamedObjectVariableChanged(variableName, oldValue, nos, assignOrRecordOnly);
             }
         }
 

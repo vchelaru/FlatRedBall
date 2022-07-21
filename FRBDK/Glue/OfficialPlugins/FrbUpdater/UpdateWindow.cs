@@ -214,7 +214,7 @@ namespace OfficialPlugins.FrbUpdater
                     successfullyDownloadedFiles.Add(fileData);
                     response.Close();
                 }
-                catch (WebException e)
+                catch (WebException)
                 {
                     // Victor Chelaru
                     // October 11, 2015

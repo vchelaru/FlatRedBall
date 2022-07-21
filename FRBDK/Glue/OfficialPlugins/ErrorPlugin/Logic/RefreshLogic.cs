@@ -39,6 +39,11 @@ namespace OfficialPlugins.ErrorPlugin.Logic
                         GlueCommands.Self.PrintOutput($"Refreshing errors for reporter {reporter.GetType()}");
                     }
                     var errors = reporter.GetAllErrors();
+                    reporter.ErrorsBelongingToThisReporter.Clear();
+                    if(errors != null)
+                    {
+                        reporter.ErrorsBelongingToThisReporter.AddRange(errors);
+                    }
 
                     var endTime = DateTime.Now;
 

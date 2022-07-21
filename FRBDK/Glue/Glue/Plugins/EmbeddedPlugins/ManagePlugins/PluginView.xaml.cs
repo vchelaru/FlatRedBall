@@ -122,5 +122,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 System.Diagnostics.Process.Start(psi);
             }
         }
+
+        private void Hyperlink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.ToString())
+            {
+                UseShellExecute = true,
+            });
+        }
     }
 }

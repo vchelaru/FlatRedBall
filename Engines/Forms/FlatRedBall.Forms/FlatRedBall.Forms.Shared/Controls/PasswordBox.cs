@@ -160,9 +160,13 @@ namespace FlatRedBall.Forms.Controls
 
         public override void HandleBackspace(bool isCtrlDown = false)
         {
-            if (HasFocus && caretIndex > 0)
+            if (IsFocused && (caretIndex > 0 || SelectionLength > 0))
             {
-                if (isCtrlDown)
+                if (selectionLength > 0)
+                {
+                    DeleteSelection();
+                }
+                else if (isCtrlDown)
                 {
                     for (int i = caretIndex - 1; i > -1; i--)
                     {
@@ -191,6 +195,20 @@ namespace FlatRedBall.Forms.Controls
                 UpdateDisplayedCharacters();
                 PasswordChanged?.Invoke(this, null);
             }
+        }
+
+        public void DeleteSelection()
+        {
+            for(int i = 0; i < SelectionLength; i++)
+            {
+#if UWP
+                password = password.Remove(selectionStart);
+#else
+                SecurePassword.RemoveAt(selectionStart);
+#endif
+            }
+            CaretIndex = selectionStart;
+            SelectionLength = 0;
         }
 
         protected override void HandleDelete()
@@ -242,6 +260,16 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        #endregion
+#endregion
+
+        public override void SelectAll()
+        {
+            if (this.DisplayedText != null)
+            {
+                this.SelectionStart = 0;
+                this.SelectionLength = this.DisplayedText.Length;
+            }
+        }
+
     }
 }

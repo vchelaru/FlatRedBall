@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="OfficialPluginsCore.PointEditingPlugin.PointEditControl"
+﻿<UserControl x:Class="OfficialPlugins.PointEditingPlugin.PointEditControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPluginsCore.PointEditingPlugin"
+             xmlns:local="clr-namespace:OfficialPlugins.PointEditingPlugin"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
@@ -19,7 +19,11 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
-            <ListBox x:Name="ListBox" SelectionChanged="ListBox_SelectionChanged"></ListBox>
+            <ListBox x:Name="ListBox"
+                     ItemsSource="{Binding Points}"
+                     SelectedItem="{Binding SelectedPoint}"
+                     SelectedIndex="{Binding SelectedIndex}"
+                     ></ListBox>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -29,21 +33,46 @@
                 <Button Click="RemoveButtonClicked" Grid.Column="1">Remove</Button>
             </Grid>
         </Grid>
-
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Label>X</Label>
-            <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"></TextBox>
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <Button Height="24" Click="HandleAddRectanglePointsClicked">
+                    <Button.ToolTip>Adds or replaces all points on the polygon to create a rectangle.</Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddRectanglePoints.png"></Image>
+                </Button>
 
-            <Label Grid.Row="1">Y</Label>
-            <TextBox Margin="3" x:Name="YTextBox" Grid.Column="1" TextChanged="YTextBox_TextChanged_1" Grid.Row="1"></TextBox>
+                <Button Height="24" Click="MovePointUp" Margin="4,0,0,0"
+                        IsEnabled="{Binding IsMoveUpEnabled}">
+                    <Button.ToolTip>Moves the selected point up in the list.</Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/MoveUp.png"></Image>
+                </Button>
+                <Button Height="24" Click="MovePointDown"
+                        IsEnabled="{Binding IsMoveDownEnabled}">
+                    <Button.ToolTip>Moves the selected point down in the list.</Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/MoveDown.png"></Image>
+                </Button>
+
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label>X</Label>
+                <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"
+                         ></TextBox>
+
+                <Label Grid.Row="1">Y</Label>
+                <TextBox Margin="3" x:Name="YTextBox" Grid.Column="1" TextChanged="YTextBox_TextChanged_1" Grid.Row="1"></TextBox>
+            </Grid>
+
         </Grid>
     </Grid>
 </UserControl>

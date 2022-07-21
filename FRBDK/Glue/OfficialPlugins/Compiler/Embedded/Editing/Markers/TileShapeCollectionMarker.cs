@@ -56,6 +56,7 @@ namespace GlueControl.Editing
         Models.NamedObjectSave namedObjectSave;
 
         AxisAlignedRectangle currentTileHighlight;
+        Vector3 lastFrameTileHighlight;
         AxisAlignedRectangle boundsRectangle;
 
         public Vector3 LastUpdateMovement => throw new NotImplementedException();
@@ -141,14 +142,13 @@ namespace GlueControl.Editing
 
             if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
             {
-                var foundObject = ScreenManager.CurrentScreen.GetInstanceRecursive("this." + sourceTmxObject + ".throwaway");
-                map = foundObject as FlatRedBall.TileGraphics.LayeredTileMap;
+                map = EditingManager.Self.GetObjectByName(sourceTmxObject) as FlatRedBall.TileGraphics.LayeredTileMap;
             }
         }
 
         #endregion
 
-        public void Update(ResizeSide sideGrabbed)
+        public void Update()
         {
             ////////////////early out//////////////////////////////
             if (map == null)
@@ -208,13 +208,51 @@ namespace GlueControl.Editing
 
             if (EditingMode == EditingMode.Adding)
             {
-                // try to paint
-                var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                var oldXIndex = MathFunctions.RoundToInt(
+                    (lastFrameTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
 
-                if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                var oldYIndex = MathFunctions.RoundToInt(
+                    (lastFrameTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                var newXIndex = MathFunctions.RoundToInt(
+                    (currentTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
+
+                var newYIndex = MathFunctions.RoundToInt(
+                    (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                if (oldXIndex != newXIndex || oldYIndex != newYIndex)
                 {
-                    PaintTileAtHighlight();
+                    // need to paint a line
+                    var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
+
+                    foreach (var pointToPaint in listOfPoints)
+                    {
+                        var xIndex = pointToPaint.X;
+                        var yIndex = pointToPaint.Y;
+
+                        var worldX = owner.LeftSeedX + owner.GridSize / 2 + owner.GridSize * xIndex;
+                        var worldY = owner.BottomSeedY + owner.GridSize / 2 + owner.GridSize * yIndex;
+
+                        var existingRectangle = owner.GetRectangleAtPosition(worldX, worldY);
+
+                        if (existingRectangle == null)
+                        {
+                            PaintTileAtWorldPosition(worldX, worldY);
+                        }
+                    }
                 }
+                else
+                {
+                    // paint a single spot
+                    // try to paint
+                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+
+                    if (existingRectangle == null && boundsRectangle.IsPointInside(currentTileHighlight.X, currentTileHighlight.Y))
+                    {
+                        PaintTileAtHighlight();
+                    }
+                }
+
             }
             else if (EditingMode == EditingMode.AddingLine)
             {
@@ -253,17 +291,39 @@ namespace GlueControl.Editing
             {
                 if (EditingMode == EditingMode.Removing)
                 {
-                    // try to erase
-                    var existingRectangle = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+                    var oldXIndex = MathFunctions.RoundToInt(
+                        (lastFrameTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
 
-                    if (existingRectangle != null && RectanglesAddedOrRemoved.Contains(existingRectangle) == false)
+                    var oldYIndex = MathFunctions.RoundToInt(
+                        (lastFrameTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                    var newXIndex = MathFunctions.RoundToInt(
+                        (currentTileHighlight.X - (owner.LeftSeedX + owner.GridSize / 2)) / owner.GridSize);
+
+                    var newYIndex = MathFunctions.RoundToInt(
+                        (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
+
+                    if (oldXIndex != newXIndex || oldYIndex != newYIndex)
                     {
-                        existingRectangle.Visible = true;
-                        existingRectangle.Color = Color.Red;
-                        existingRectangle.Width = tileDimensions - 2;
-                        existingRectangle.Height = tileDimensions - 2;
+                        var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
 
-                        RectanglesAddedOrRemoved.Add(existingRectangle);
+                        foreach (var pointToPaint in listOfPoints)
+                        {
+                            var xIndex = pointToPaint.X;
+                            var yIndex = pointToPaint.Y;
+
+                            var worldX = owner.LeftSeedX + owner.GridSize / 2 + owner.GridSize * xIndex;
+                            var worldY = owner.BottomSeedY + owner.GridSize / 2 + owner.GridSize * yIndex;
+
+                            EraseTileAtWorld(worldX, worldY);
+                        }
+                    }
+                    else
+                    {
+                        var worldX = currentTileHighlight.X;
+                        var worldY = currentTileHighlight.Y;
+                        EraseTileAtWorld(worldX, worldY);
+
                     }
                 }
             }
@@ -283,8 +343,29 @@ namespace GlueControl.Editing
             }
 
             #endregion
+
+            lastFrameTileHighlight = currentTileHighlight.Position;
         }
 
+        private void EraseTileAtWorld(float worldX, float worldY)
+        {
+            var tileDimensions = owner.GridSize;
+
+            // try to erase
+            var existingRectangle = owner.GetRectangleAtPosition(worldX, worldY);
+
+            if (existingRectangle != null && RectanglesAddedOrRemoved.Contains(existingRectangle) == false)
+            {
+                existingRectangle.Visible = true;
+                existingRectangle.Color = Color.Red;
+                existingRectangle.Width = tileDimensions - 2;
+                existingRectangle.Height = tileDimensions - 2;
+
+                RectanglesAddedOrRemoved.Add(existingRectangle);
+            }
+        }
+
+        public bool ShouldSuppress(string variableName) => false;
 
         private void CommitRemovedTiles()
         {
@@ -512,9 +593,17 @@ namespace GlueControl.Editing
 
         private void PaintTileAtHighlight()
         {
+            var worldX = currentTileHighlight.X;
+            var worldY = currentTileHighlight.Y;
+
+            PaintTileAtWorldPosition(worldX, worldY);
+        }
+
+        private void PaintTileAtWorldPosition(float worldX, float worldY)
+        {
             var tileDimensions = owner.GridSize;
-            owner.AddCollisionAtWorld(currentTileHighlight.X, currentTileHighlight.Y);
-            var newRect = owner.GetRectangleAtPosition(currentTileHighlight.X, currentTileHighlight.Y);
+            owner.AddCollisionAtWorld(worldX, worldY);
+            var newRect = owner.GetRectangleAtPosition(worldX, worldY);
             newRect.Visible = true;
             newRect.Color = Color.Green;
             newRect.Width = tileDimensions - 2;
@@ -528,8 +617,11 @@ namespace GlueControl.Editing
             float startX, startY, endX, endY;
             var currentCursorPosition = GuiManager.Cursor.WorldPosition;
 
-            endX = MathFunctions.RoundFloat(currentCursorPosition.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
-            endY = MathFunctions.RoundFloat(currentCursorPosition.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+            var leftSeed = owner.LeftSeedX + owner.GridSize / 2.0f;
+            var bottomSeed = owner.BottomSeedY + owner.GridSize / 2.0f;
+
+            endX = MathFunctions.RoundFloat(currentCursorPosition.X, owner.GridSize, leftSeed);
+            endY = MathFunctions.RoundFloat(currentCursorPosition.Y, owner.GridSize, bottomSeed);
 
             //////////////////early out///////////////////////////////////
             if (endX == LastLineDrawingPosition.X && endY == LastLineDrawingPosition.Y)
@@ -541,8 +633,8 @@ namespace GlueControl.Editing
             LastLineDrawingPosition.X = endX;
             LastLineDrawingPosition.Y = endY;
 
-            startX = MathFunctions.RoundFloat(PositionPushed.X - owner.GridSize / 2.0f, owner.GridSize, owner.LeftSeedX);
-            startY = MathFunctions.RoundFloat(PositionPushed.Y - owner.GridSize / 2.0f, owner.GridSize, owner.BottomSeedY);
+            startX = MathFunctions.RoundFloat(PositionPushed.X, owner.GridSize, leftSeed);
+            startY = MathFunctions.RoundFloat(PositionPushed.Y, owner.GridSize, bottomSeed);
 
 
             var xDifference = Math.Abs(endX - startX);
@@ -552,19 +644,37 @@ namespace GlueControl.Editing
 
             if (xDifference >= yDifference)
             {
-                FlatRedBall.Debugging.Debugger.Write(xDifference);
                 // horizontal
                 var sign = Math.Sign(endX - startX);
-                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endX - startX) / owner.GridSize));
+
+                var clampedStartX = ClampX(startX);
+                var clampedEndX = ClampX(endX);
+
+                float ClampX(float xValue)
+                {
+                    if (xValue < boundsRectangle.Left)
+                    {
+                        // ...but assign including the offset:
+                        xValue = boundsRectangle.Left + owner.GridSize / 2.0f;
+                    }
+                    if (xValue > boundsRectangle.Right)
+                    {
+                        xValue = boundsRectangle.Right - owner.GridSize / 2.0f;
+                    }
+                    return xValue;
+                }
+
+
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((clampedEndX - clampedStartX) / owner.GridSize));
 
                 ClearRectangles();
 
                 for (int i = 0; i < numberOfTiles; i++)
                 {
-                    var worldX = startX + sign * i * owner.GridSize;
+                    var worldX = clampedStartX + sign * i * owner.GridSize;
                     var worldY = startY;
 
-                    CreateLocalRectangleAt(worldX, worldY, i);
+                    CreateLocalRectangleForLineAt(worldX, worldY, i);
                 }
                 while (numberOfTiles < RectanglesAddedOrRemoved.Count)
                 {
@@ -577,16 +687,35 @@ namespace GlueControl.Editing
             {
                 // vertical
                 var sign = Math.Sign(endY - startY);
-                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((endY - startY) / owner.GridSize));
+
+
+                var clampedStartY = ClampY(startY);
+                var clampedEndY = ClampY(endY);
+
+                float ClampY(float yValue)
+                {
+                    if (yValue < boundsRectangle.Bottom)
+                    {
+                        // ...but assign including the offset:
+                        yValue = boundsRectangle.Bottom + owner.GridSize / 2.0f;
+                    }
+                    if (yValue > boundsRectangle.Top)
+                    {
+                        yValue = boundsRectangle.Top - owner.GridSize / 2.0f;
+                    }
+                    return yValue;
+                }
+
+                var numberOfTiles = 1 + Math.Abs(MathFunctions.RoundToInt((clampedEndY - clampedStartY) / owner.GridSize));
 
                 ClearRectangles();
 
                 for (int i = 0; i < numberOfTiles; i++)
                 {
                     var worldX = startX;
-                    var worldY = startY + sign * i * owner.GridSize;
+                    var worldY = clampedStartY + sign * i * owner.GridSize;
 
-                    CreateLocalRectangleAt(worldX, worldY, i);
+                    CreateLocalRectangleForLineAt(worldX, worldY, i);
                 }
                 while (numberOfTiles < RectanglesAddedOrRemoved.Count)
                 {
@@ -606,7 +735,7 @@ namespace GlueControl.Editing
                 }
             }
 
-            void CreateLocalRectangleAt(float worldX, float worldY, int i)
+            void CreateLocalRectangleForLineAt(float worldX, float worldY, int i)
             {
 
 
@@ -622,6 +751,8 @@ namespace GlueControl.Editing
                 RectanglesAddedOrRemoved.Add(newRect);
             }
         }
+
+
 
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
@@ -730,20 +861,11 @@ namespace GlueControl.Editing
             ScreenManager.PersistentAxisAlignedRectangles.Remove(boundsRectangle);
 
         }
+
         public void MakePersistent()
         {
             ScreenManager.PersistentAxisAlignedRectangles.Add(currentTileHighlight);
             ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
-        }
-
-        public void HandleCursorPushed()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void HandleCursorRelease()
-        {
-            throw new NotImplementedException();
         }
 
         public bool IsCursorOverThis()
@@ -756,4 +878,6 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
+
 }

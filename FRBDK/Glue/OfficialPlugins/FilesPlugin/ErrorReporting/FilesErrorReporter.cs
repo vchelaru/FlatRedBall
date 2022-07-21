@@ -5,9 +5,9 @@ using System.Text;
 
 namespace OfficialPlugins.FilesPlugin.ErrorReporting
 {
-    internal class FilesErrorReporter : IErrorReporter
+    internal class FilesErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             return new ErrorViewModel[0];
         }

@@ -90,14 +90,18 @@ namespace FlatRedBall.Forms.Controls.Popups
 
         private static async void DoLoop()
         {
-            Toast toast = null;
+            const int msDelayBetweenToasts = 100;
 
             foreach (var message in toastMessages.GetConsumingEnumerable(CancellationToken.None))
             {
-                if(toast == null)
+                Toast toast = null;
+                
+                // This must be done on the primary thread in case it loads
+                // the PNG for the first time:
+                await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
                 {
                     toast = new FlatRedBall.Forms.Controls.Popups.Toast();
-                }
+                });
 
                 toast.Text = message.Message;
                 liveToasts.Add(toast);
@@ -105,8 +109,12 @@ namespace FlatRedBall.Forms.Controls.Popups
                 await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
                 toast.Close();
                 liveToasts.Remove(toast);
+                await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
+                {
+                    toast.Visual.RemoveFromManagers();
+                });
                 // so there's a small gap between toasts
-                await Task.Delay(100);
+                await Task.Delay(msDelayBetweenToasts);
             }
         }
     }

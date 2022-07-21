@@ -5,6 +5,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -57,7 +58,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (ProjectManager.ProjectBase != null)
             {
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, false);
+                TaskManager.Self.AddAsync(() =>
+                {
+                    // Why don't we save here?
+                    //GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, false);
+                    GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(absoluteFileName, true);
+                }, $"Creating and adding factory file for {ClassName}");
+
             }
         }
 

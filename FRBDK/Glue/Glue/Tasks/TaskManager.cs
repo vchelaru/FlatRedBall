@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Managers
 
         GlueTaskBase CurrentlyRunningTask;
 
-        public bool AreAllAsyncTasksDone => TaskCount == 0;
+        public bool AreAllAsyncTasksDone => TaskCountAccurate == 0;
 
         /// <summary>
         /// Returns the task count, including cancelled tasks.
@@ -74,10 +74,39 @@ namespace FlatRedBall.Glue.Managers
             {
                 lock (mActiveParallelTasks)
                 {
-                    var toReturn = mActiveParallelTasks.Count + asyncTasks + taskQueue.Where(item => item.Value.IsCancelled == false).Count();
-                    if(CurrentlyRunningTask != null)
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                        //taskQueue.Where(item => item.Value.IsCancelled == false).Count();
+                        // This could be much faster with systems that have a lot of tasks
+                        taskQueueCount;
+                    if (CurrentlyRunningTask != null)
                     {
                         toReturn++;
+                    }
+                    return toReturn;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the number of tasks by actually counting them rather than relying on the taskQueueCount which could be incorrect
+        /// </summary>
+        public int TaskCountAccurate
+        {
+            get
+            {
+                lock (mActiveParallelTasks)
+                {
+                    var toReturn = mActiveParallelTasks.Count + asyncTasks +
+                        taskQueue.Where(item => item.Value.IsCancelled == false).Count();
+                    // This could be much faster with systems that have a lot of tasks
+
+                    if (CurrentlyRunningTask != null)
+                    {
+                        toReturn++;
+                    }
+                    if(toReturn == 0)
+                    {
+                        taskQueueCount = 0;
                     }
                     return toReturn;
                 }
@@ -196,13 +225,13 @@ namespace FlatRedBall.Glue.Managers
 
         public TaskManager()
         {
-            new Thread(Loop)
+            new Thread(DoTaskManagerLoop)
             {
                 IsBackground = true
             }.Start();
         }
 
-        async void Loop()
+        async void DoTaskManagerLoop()
         {
             SyncTaskThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
 
@@ -212,13 +241,20 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if(isTaskProcessingEnabled)
                     {
-                        await RunTask(item.Value, markAsCurrent:true);
+                        if (item.Value.IsCancelled == false)
+                        {
+                            taskQueueCount--;
+                            await RunTask(item.Value, markAsCurrent:true);
+
+                        }
 
                     }
                     else
                     {
+                        taskQueueCount--;
                         AddInternal(item.Value);
                         System.Threading.Thread.Sleep(50);
+
                     }
                 }
                 catch (Exception ex)
@@ -235,7 +271,7 @@ namespace FlatRedBall.Glue.Managers
                 if(markAsCurrent) CurrentlyRunningTask = task;
                 TaskAddedOrRemoved?.Invoke(TaskEvent.Started, task);
                 task.TimeStarted = DateTime.Now;
-                await task.DoAction();
+                await task.Do_Action_Internal();
                 task.TimeEnded = DateTime.Now;
                 // Set it to null before raising the event so that the TaskCount uses a null object.
                 if (markAsCurrent) CurrentlyRunningTask = null;
@@ -271,6 +307,9 @@ namespace FlatRedBall.Glue.Managers
         /// </summary>
         public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
+        /// <summary>
+        /// Force adds a task to the queue, even if already in a task
+        /// </summary>
         public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueTask();
@@ -295,6 +334,9 @@ namespace FlatRedBall.Glue.Managers
             return glueTask;
         }
 
+        /// <summary>
+        /// Force adds a task to the queue, even if already in a task
+        /// </summary>
         public GlueAsyncTask Add(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = new GlueAsyncTask();
@@ -407,7 +449,9 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        //Dictionary<string, int> addCalls = new Dictionary<string, int>();
         ulong taskoffset = 0;
+        int taskQueueCount = 0;
         private void AddInternal(GlueTaskBase glueTask)
         {
             var priorityValue = (ulong)glueTask.TaskExecutionPreference;
@@ -423,12 +467,15 @@ namespace FlatRedBall.Glue.Managers
                 if (existing.Key != 0)
                 {
                     existing.Value.IsCancelled = true;
+                    taskQueueCount--;
                 }
 
             }
 
             TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
+            taskQueueCount++;
+
         }
 
 
@@ -589,6 +636,18 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
+        public void BeginOnUiThread(Action action)
+        {
+            if (IsOnUiThread)
+            {
+                action();
+            }
+            else
+            {
+                global::Glue.MainGlueWindow.Self.BeginInvoke(action);
+            }
+        }
+
         public bool IsOnUiThread => System.Threading.Thread.CurrentThread.ManagedThreadId == global::Glue.MainGlueWindow.UiThreadId;
 
         public bool IsInTask()
@@ -600,27 +659,53 @@ namespace FlatRedBall.Glue.Managers
             }
 
             var stackTrace = new System.Diagnostics.StackTrace();
-            for(int i = stackTrace.FrameCount - 1; i > -1; i--)
+
+
+            /* For debugging:
+             * 
+            List<string> frameTexts = new List<string>();
+            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
             {
                 var frame = stackTrace.GetFrame(i);
                 var frameText = frame.ToString();
-                if(frameText.StartsWith("RunOnUiThreadTasked"))
+
+                frameTexts.Add(frameText);
+            }
+
+            foreach(var frameText in frameTexts)
+            { 
+                if (frameText.StartsWith("RunOnUiThreadTasked ") || 
+                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
+                    // So I thought I could check if the thread is the main task thread, but this won't work
+                    // because command receiving from the game runs on a separate thread, so that would behave
+                    // as if it's tasked, even though it's not
+                    // so we check this:
+                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " "))
+                {
+                    return true;
+                }
+            }
+            */
+            for (int i = stackTrace.FrameCount - 1; i > -1; i--)
+            {
+                var frame = stackTrace.GetFrame(i);
+                var frameText = frame.ToString();
+
+                var isTasked = frameText.StartsWith("RunOnUiThreadTasked") ||
+                    // Vic says - not sure why but sometimes thread IDs change when in an async function.
+                    // So I thought I could check if the thread is the main task thread, but this won't work
+                    // because command receiving from the game runs on a separate thread, so that would behave
+                    // as if it's tasked, even though it's not
+                    // so we check this:
+                    frameText.StartsWith(nameof(GlueTask.Do_Action_Internal) + " ");
+
+                if (isTasked) 
                 {
                     return true;
                 }
             }
 
-            // It seems async calls may change the thread ID from the task so we can't rely on the thread ID matching SyncTaskThreadId
-            // Therefore, we'll just make sure we are not on UI thread:
-
-            if(currentThreadId == global::Glue.MainGlueWindow.UiThreadId)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return false;
         }
 
         public void WarnIfNotInTask()

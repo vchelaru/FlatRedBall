@@ -8,6 +8,7 @@ using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.AnimationEditorForms.Data;
 using Microsoft.Xna.Framework.Graphics;
 using CommonFormsAndControls;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -77,14 +78,8 @@ namespace FlatRedBall.AnimationEditorForms
 
         public TreeNode SelectedNode
         {
-            get
-            {
-                return mTreeView.SelectedNode;
-            }
-            set
-            {
-                mTreeView.SelectedNode = value;
-            }
+            get => mTreeView.SelectedNode;
+            set => mTreeView.SelectedNode = value;
         }
 
         public List<TreeNode> SelectedNodes
@@ -98,14 +93,19 @@ namespace FlatRedBall.AnimationEditorForms
             get
             {
                 TreeNode node = SelectedNode;
-                if (node != null && node.Tag is AnimationChainSave)
+                if (node?.Tag is AnimationChainSave tagAsAnimationChainSave)
                 {
-                    return node.Tag as AnimationChainSave;
+                    return tagAsAnimationChainSave;
                 }
-                else if (node != null && node.Tag is AnimationFrameSave && node.Parent != null &&
-                    node.Parent.Tag != null && node.Parent.Tag is AnimationChainSave)
+                else if (node?.Tag is AnimationFrameSave && 
+                    node?.Parent?.Tag is AnimationChainSave parentTagAsAnimationChainSave)
                 {
-                    return node.Parent.Tag as AnimationChainSave;
+                    return parentTagAsAnimationChainSave;
+                }
+                // could be a shape?
+                else if(node?.Parent?.Parent.Tag is AnimationChainSave grandparentChain)
+                {
+                    return grandparentChain;
                 }
                 else
                 {
@@ -154,12 +154,49 @@ namespace FlatRedBall.AnimationEditorForms
 
         public AnimationFrameSave SelectedFrame
         {
-            get => SelectedNode?.Tag as AnimationFrameSave;
+            get
+            {
+                var node = SelectedNode;
+                if (node?.Tag is AnimationFrameSave asFrame)
+                {
+                    return asFrame;
+                }
+                else if (node?.Parent?.Tag is AnimationFrameSave parentAsFrame)
+                {
+                    return parentAsFrame;
+                }
+                else
+                {
+                    return null;
+                }
+            }
             set
             {
                 var treeNode = TreeViewManager.Self.GetTreeNodeFor(value);
 
                 SelectedNode = treeNode;
+            }
+        }
+
+        public AxisAlignedRectangleSave SelectedAxisAlignedRectangle
+        {
+            get
+            {
+                return SelectedNode?.Tag as AxisAlignedRectangleSave;
+            }
+            set
+            {
+                TreeNode treeNode = null;
+                if (value != null)
+                {
+                    treeNode = TreeViewManager.Self.GetTreeNodeByTag(value);
+
+                }
+
+                if(treeNode != null)
+                {
+                    SelectedNode = treeNode;
+                }
             }
         }
 
@@ -208,6 +245,24 @@ namespace FlatRedBall.AnimationEditorForms
                     return null;
                 }
             }
+        }
+
+        public AxisAlignedRectangleSave SelectedRectangle
+        {
+            get => SelectedNode?.Tag as AxisAlignedRectangleSave;
+            set
+            {
+                if(value != null)
+                {
+                    TreeNode treeNode = TreeViewManager.Self.GetTreeNodeByTag(value);
+                    if(treeNode != null)
+                    {
+                        SelectedNode = treeNode;
+                    }
+                }
+
+            }
+
         }
 
         public Texture2D SelectedTexture

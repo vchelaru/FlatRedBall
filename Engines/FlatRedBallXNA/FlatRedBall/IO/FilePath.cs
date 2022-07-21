@@ -28,6 +28,10 @@ namespace FlatRedBall.IO
 
         public static implicit operator FilePath(string s)
         {
+            if(s == null)
+            {
+                return null;
+            }
             // Code to convert the book into an XML structure
             return new FilePath(s);
         }
@@ -36,7 +40,18 @@ namespace FlatRedBall.IO
 
         #region Properties
 
-        public string Extension { get; private set; }
+        string extensionCache;
+        public string Extension
+        {
+            get
+            {
+                if (extensionCache == null)
+                {
+                    extensionCache = FileManager.GetExtension(Original);
+                }
+                return extensionCache;
+            }
+        }
 
         public string StandardizedNoPathNoExtension
         {
@@ -56,33 +71,60 @@ namespace FlatRedBall.IO
 
         public string NoPath => FileManager.RemovePath(FullPath);
 
-        public string FullPath { get; private set; }
+        string fullPathCache;
+        public string FullPath
+        {
+            get
+            {
+                if(fullPathCache == null)
+                {
+                    fullPathCache = string.IsNullOrEmpty(Original)
+                        ? FileManager.RemoveDotDotSlash(StandardizeInternal(""))
+                        : FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                }
+                return fullPathCache;
+            }
+        }
 
-        public string Standardized { get; private set; }
+        string standardizedCache;
+        public string Standardized
+        {
+            get
+            {
+                if(standardizedCache == null)
+                {
+                    standardizedCache = string.IsNullOrEmpty(Original)
+                        ? FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant()
+                        : FileManager.RemoveDotDotSlash(StandardizeInternal(Original)).ToLowerInvariant();
+                }
+                return standardizedCache;
+            }
+        }
 
-        public string StandardizedCaseSensitive { get; private set; }
+        string standardizedCaseSensitive;
+        public string StandardizedCaseSensitive
+        {
+            get
+            {
+                if(standardizedCaseSensitive == null)
+                {
+                    standardizedCaseSensitive = FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                }
+                return standardizedCaseSensitive;
+            }
+        }
 
         #endregion
 
         /// <summary>
-        /// Creates a file path for the original. If this is an absolute file, then it is stored as such and the Standaridzed property will return the same absolute file. If it is lower-case, then Standardized prepends the current relative directory.
+        /// Creates a file path for the original.
+        /// If this is an absolute file, then it is stored as such and the Standaridzed property will return the same absolute file. 
+        /// If it is relative, then Standardized prepends the current relative directory.
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">the absolute or relative path</param>
         public FilePath(string path)
         {
             Original = path;
-            Standardized = string.IsNullOrEmpty(Original) 
-                    ? FileManager.RemoveDotDotSlash(StandardizeInternal("")).ToLowerInvariant()
-                    : FileManager.RemoveDotDotSlash(StandardizeInternal(Original)).ToLowerInvariant();
-
-            StandardizedCaseSensitive =
-                FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
-
-            FullPath = string.IsNullOrEmpty(Original)
-                ? FileManager.RemoveDotDotSlash(StandardizeInternal(""))
-                : FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
-
-            Extension = FileManager.GetExtension(Original);
         }
 
         public override bool Equals(object obj)

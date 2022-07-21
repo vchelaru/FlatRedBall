@@ -28,9 +28,9 @@
             </StackPanel>
         </GroupBox>
 
+                 <!--AcceptsReturn="True"-->
         <TextBox x:Name="SearchTextBox" 
                  PreviewKeyDown="SearchTextBox_PreviewKeyDown" 
-                 AcceptsReturn="True"
                  Margin="0,5,0,0" 
                  Grid.Row="1"
                  IsEnabled="{Binding IsSelectionEnabled}"
@@ -120,7 +120,7 @@
                 <ColumnDefinition Width="10"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Click="OkClicked">OK</Button>
+            <Button Click="OkClicked" IsEnabled="{Binding IsOkButtonEnabled}">OK</Button>
             <Button Click="CancelClicked" Grid.Column="2">Cancel</Button>
         </Grid>
     </Grid>

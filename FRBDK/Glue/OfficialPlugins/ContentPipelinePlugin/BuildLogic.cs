@@ -41,6 +41,8 @@ namespace OfficialPlugins.MonoGameContent
             if (mgcbToUse == null)
             {
                 // error? output?
+                GlueCommands.PrintError("Could not find the monogame content builder to use. This means that content files like audio will not be built. Try installing MonoGame");
+
                 return;
             }
 

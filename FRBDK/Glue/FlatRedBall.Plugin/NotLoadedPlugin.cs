@@ -27,6 +27,10 @@ namespace FlatRedBall.Glue.Plugins
             get { return new Version(); }
         }
 
+        public string GithubRepoOwner => null;
+        public string GithubRepoName => null;
+        public bool CheckGithubForNewRelease => false;
+
         public void StartUp()
         {
 

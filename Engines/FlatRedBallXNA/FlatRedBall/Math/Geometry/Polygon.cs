@@ -20,14 +20,20 @@ namespace FlatRedBall.Math.Geometry
     {
         #region Fields
 
+        /// <summary>
+        /// Whether the Polygon object can have its Points assigned to null.
+        /// Normally this is false, which means assigning Points to null will 
+        /// result in an exception. This is set to true in edit mode to enable
+        /// the user to change polygon points without the game crashing.
+        /// </summary>
         public static bool TolerateEmptyPolygons = false;
 
         // Victor Chelaru May 17 2008
-        // At the tine of this writing there are no velocity or rate
+        // At the time of this writing there are no velocity or rate
         // fields in the Polygon class that don't exist in the PositionedObject class.
         // Therefore, the Polygon Pause instruction will simply use the PositionedObject's.
         // If any rate values are added to this class, the Pause method should be updated.  Likely
-        // a new Unpause instruction wll need to be created.
+        // a new Unpause instruction will need to be created.
 
         static internal int NumberOfTimesCollideAgainstPolygonCalled = 0;
         static internal int NumberOfTimesRadiusTestPassed = 0;
@@ -90,14 +96,12 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         public RepositionDirections RepositionDirections { get; set; } = RepositionDirections.All;
 
-        public float BoundingRadius
-        {
-            get { return mBoundingRadius; }
-        }
+        public float BoundingRadius => mBoundingRadius;
+        
 
         public bool Visible
         {
-            get { return mVisible; }
+            get => mVisible;
             set
             {
                 // This is here for efficiency; however,
@@ -152,7 +156,7 @@ namespace FlatRedBall.Math.Geometry
                 }
                 else
                 {
-                    if (value.Count == 0)
+                    if (value.Count == 0 && TolerateEmptyPolygons == false)
                     {
                         throw new System.IndexOutOfRangeException("Cannot set the Points property to an IList of 0 Points");
                     }
@@ -160,7 +164,9 @@ namespace FlatRedBall.Math.Geometry
                     if (mPoints == null || mPoints.Length != value.Count)
                     {
                         mPoints = new Point[value.Count];
-                        int valueCountMinusOne = value.Count - 1;
+                        int valueCountMinusOne = 
+                            // In edit mode we tolerate 0-sizes so we need a Math.Max call to prevent negative values
+                            System.Math.Max(0, value.Count - 1);
 
                         mCenterPoints = new Point3D[valueCountMinusOne];
                     }
@@ -1534,7 +1540,13 @@ namespace FlatRedBall.Math.Geometry
             base.ForceUpdateDependencies();
 
             FillVertexArray();
+        }
 
+        public override void ForceUpdateDependenciesDeep()
+        {
+            base.ForceUpdateDependenciesDeep();
+
+            FillVertexArray();
         }
 
 
@@ -2133,7 +2145,7 @@ namespace FlatRedBall.Math.Geometry
 
         public override string ToString()
         {
-            return "Points: " + mPoints.Length;
+            return $"Name: {Name ?? "<NULL>"} Points: {mPoints.Length}";
 
 
         }

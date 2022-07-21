@@ -1,6 +1,7 @@
 ﻿using FlatRedBall;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SaveClasses.Helpers;
@@ -17,9 +18,21 @@ using ToolsUtilities;
 
 namespace OfficialPlugins.Compiler.Managers
 {
+    class VariableForcedRecordData
+    {
+        public const int SecondsToKeepRecordItem = 5;
+
+        public NamedObjectSave NamedObjectSave { get; set; }
+        public string VariableName { get; set; }
+        // Since orphans can exist, let's expire variable assignments after X seconds
+        public DateTime TimeIgnoreCreated { get; set; }
+    }
+
     class VariableSendingManager : Singleton<VariableSendingManager>
     {
         #region Fields/Properties
+
+        List<VariableForcedRecordData> Ignores = new List<VariableForcedRecordData>();
 
         public CompilerViewModel ViewModel
         {
@@ -30,30 +43,79 @@ namespace OfficialPlugins.Compiler.Managers
 
         #endregion
 
-        bool GetIfChangedMemberIsIgnored(string changedMember)
+        public void AddOneTimeIgnore(NamedObjectSave nos, string variableName)
+        {
+            var ignore = new VariableForcedRecordData();
+            ignore.NamedObjectSave = nos;
+            ignore.VariableName = variableName;
+            ignore.TimeIgnoreCreated = DateTime.Now;
+            Ignores.Add(ignore);
+        }
+
+        bool GetIfChangedMemberIsRecordOnly(NamedObjectSave nos, string changedMember)
+        {
+            Ignores.RemoveAll(item => item.TimeIgnoreCreated + TimeSpan.FromSeconds(VariableForcedRecordData.SecondsToKeepRecordItem) < DateTime.Now);
+            var match = Ignores.FirstOrDefault(item => item.NamedObjectSave == nos && item.VariableName == changedMember);
+            if(match != null)
+            {
+                Ignores.Remove(match);
+                return true;
+            }
+            return false;
+        }
+
+        bool GetIfChangedMemberIsIgnored(NamedObjectSave nos, string changedMember)
         {
             // todo - add more here over time, including making this a HashSet
             return changedMember == nameof(NamedObjectSave.ExposedInDerived);
         }
 
-        public async Task HandleNamedObjectValueChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
+
+        internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
+        {
+            var gameScreenName = await CommandSender.GetScreenName();
+            List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
+            List<NamedObjectSave> nosList = new List<NamedObjectSave>();
+            foreach (var variable in variableList)
+            {
+                List<GlueVariableSetData> inner = GetNamedObjectValueChangedDtos(variable.ChangedMember, variable.OldValue, variable.NamedObject, assignOrRecordOnly, gameScreenName);
+                nosList.Add(variable.NamedObject);
+                listOfVariables.AddRange(inner);
+            }
+
+            await PushVariableChangesToGame(listOfVariables, nosList);
+        }
+
+        public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
             var gameScreenName = await CommandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            await PushVariableChangesToGame(listOfVariables);
+            await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
         }
 
-        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables)
+        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 try
                 {
                     var dto = new GlueVariableSetDataList();
                     dto.Data.AddRange(listOfVariables);
 
-                    var sendGeneralResponse = CommandSender.Send(dto).Result;
+                    foreach(var nos in namedObjectsToUpdate)
+                    {
+                        var container = ObjectFinder.Self.GetElementContaining(nos);
+                        var namedObjectWithElement = new NamedObjectWithElementName();
+                        namedObjectWithElement.NamedObjectSave = nos;
+                        namedObjectWithElement.GlueElementName = container?.Name;
+                        var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
+                        namedObjectWithElement.ContainerName = listNos?.InstanceName;
+
+                        dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
+                    }
+
+                    var sendGeneralResponse = await CommandSender.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)
@@ -87,7 +149,7 @@ namespace OfficialPlugins.Compiler.Managers
         {
             List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
             //////////////////Early Out//////////////////////////////
-            var isIgnored = GetIfChangedMemberIsIgnored(changedMember);
+            var isIgnored = GetIfChangedMemberIsIgnored(nos, changedMember);
             if(isIgnored)
             {
                 return toReturn;
@@ -109,50 +171,9 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 typeName = variableDefinition.Type;
             }
-            else if(instruction != null)     
+            else if(instruction != null)
             {
-                typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
-
-                var nosElement = ObjectFinder.Self.GetElement(nos);
-                if( nosElement != null)
-                {
-                    var variable = nosElement.GetCustomVariableRecursively(changedMember);
-                    if(variable != null)
-                    {
-                        var isStateResult = ObjectFinder.Self.GetStateSaveCategory(variable, nosElement);
-                        category = isStateResult.Category;
-                        isState = isStateResult.IsState;
-                    }
-                    if(!isState && typeName != null && typeName.StartsWith("Current") && changedMember.EndsWith("State"))
-                    {
-                        var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
-
-                        isState = nosElement.GetStateCategoryRecursively(strippedName) != null;
-                    }
-                    if (isState)
-                    {
-                        if(changedMember == "VariableState")
-                        {
-                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.VariableState";
-                        }
-                        else if(changedMember.StartsWith("Current") && changedMember.EndsWith("State"))
-                        {
-                            var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
-                            typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
-                        }
-                        else
-                        {
-                            typeName = variable.Type;
-
-                            if(typeName.StartsWith("Entities.") || typeName.StartsWith("Screens."))
-                            {
-                                typeName = GlueState.Self.ProjectNamespace + "." + typeName;
-                            }
-                        }
-
-                        isState = true;
-                    }
-                }
+                typeName = GetQualifiedStateTypeName(changedMember, oldValue, nos, out isState, out category);
             }
             else if(property != null)
             {
@@ -218,6 +239,12 @@ namespace OfficialPlugins.Compiler.Managers
 
             }
 
+            var forceRecordOnly = GetIfChangedMemberIsRecordOnly(nos, changedMember);
+
+            assignOrRecordOnly = forceRecordOnly
+                ? AssignOrRecordOnly.RecordOnly
+                : assignOrRecordOnly;
+
             ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
 
             GlueVariableSetData data = GetGlueVariableSetDataDto(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
@@ -236,13 +263,63 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     foreach(var variableToAssign in variablesToAssign)
                     {
-                        var defaultValue = VariableDisplay.NamedObjectVariableShowingLogic.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+                        var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
                         toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
                     }
                 }
             }
 
             return toReturn;
+        }
+
+        public string GetQualifiedStateTypeName(string changedMember, object oldValue, NamedObjectSave nos, out bool isState, out StateSaveCategory category)
+        {
+            var instruction = nos?.GetCustomVariable(changedMember);
+            isState = false;
+            category = null;
+            string typeName = instruction?.Type ?? instruction.Value?.GetType().ToString() ?? oldValue?.GetType().ToString();
+            var nosElement = ObjectFinder.Self.GetElement(nos);
+            if (nosElement != null)
+            {
+                var variable = nosElement.GetCustomVariableRecursively(changedMember);
+                if (variable != null)
+                {
+                    var isStateResult = ObjectFinder.Self.GetStateSaveCategory(variable, nosElement);
+                    category = isStateResult.Category;
+                    isState = isStateResult.IsState;
+                }
+                if (!isState && typeName != null && typeName.StartsWith("Current") && changedMember.EndsWith("State"))
+                {
+                    var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
+
+                    isState = nosElement.GetStateCategoryRecursively(strippedName) != null;
+                }
+                if (isState)
+                {
+                    if (changedMember == "VariableState")
+                    {
+                        typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.VariableState";
+                    }
+                    else if (changedMember.StartsWith("Current") && changedMember.EndsWith("State"))
+                    {
+                        var strippedName = changedMember.Substring("Current".Length, changedMember.Length - "Current".Length - "State".Length);
+                        typeName = $"{GlueState.Self.ProjectNamespace}.{nosElement.Name.Replace('\\', '.')}.{strippedName}";
+                    }
+                    else
+                    {
+                        typeName = variable.Type;
+
+                        if (typeName.StartsWith("Entities.") || typeName.StartsWith("Screens."))
+                        {
+                            typeName = GlueState.Self.ProjectNamespace + "." + typeName;
+                        }
+                    }
+
+                    isState = true;
+                }
+            }
+
+            return typeName;
         }
 
         private void ConvertValue(ref string changedMember, object oldValue, 
@@ -261,16 +338,26 @@ namespace OfficialPlugins.Compiler.Managers
 
             #region X, Y, Z
             if (currentElement is EntitySave && nos.AttachToContainer &&
+
                 (changedMember == "X" || changedMember == "Y" || changedMember == "Z" ||
                  changedMember == "RotationX" || changedMember == "RotationY" || changedMember == "RotationZ"))
             {
-                changedMember = $"Relative{changedMember}";
+                if(ati != null && ati.IsPositionedObject == false)
+                {
+                    // do nothing
+                }
+                else
+                {
+                    changedMember = $"Relative{changedMember}";
+                }
             }
             #endregion
 
-            if(type?.StartsWith("System.Collections.Generic.List") == true)
+            var isConversionHandled = false;
+            if(type?.StartsWith("System.Collections.Generic.List") == true || type?.StartsWith("List<") == true)
             {
                 value = JsonConvert.SerializeObject(currentValue);
+                isConversionHandled = true;
             }
 
             #region Collision Relationships
@@ -384,7 +471,10 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 var variableDefinition = ati.VariableDefinitions.First(item => item.Name == originalMemberName);
                 type = variableDefinition.Type;
-                value = currentValue?.ToString();
+                if(!isConversionHandled)
+                {
+                    value = currentValue?.ToString();
+                }
             
                 var isFile =
                     variableDefinition.Type == "Microsoft.Xna.Framework.Texture2D" ||
@@ -530,7 +620,7 @@ namespace OfficialPlugins.Compiler.Managers
         internal async Task HandleNamedObjectValueChanged(string changedMember, object oldValue)
         {
             var nos = GlueState.Self.CurrentNamedObjectSave;
-            await HandleNamedObjectValueChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
+            await HandleNamedObjectVariableChanged(changedMember, oldValue, nos, AssignOrRecordOnly.Assign);
         }
 
         internal async void HandleVariableChanged(GlueElement variableElement, CustomVariable variable)
@@ -561,5 +651,6 @@ namespace OfficialPlugins.Compiler.Managers
                 await RefreshManager.Self.StopAndRestartAsync($"Object variable {variable.Name} changed");
             }
         }
+
     }
 }

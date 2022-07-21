@@ -51,8 +51,28 @@ namespace FlatRedBall.Glue.CodeGeneration
                 codeBlock = codeBlock.If($"stateToInterpolateTo == {enumType}.{stateSave.Name}");
                 otherBlock = otherBlock.If($"stateToStop == {enumType}.{stateSave.Name}");
             }
+
+            var currentInstructionSaves = stateSave.InstructionSaves.ToList();
+
+            //Adding instructions for default values
+            var category = element.GetStateCategory(enumType);
             
-            foreach (InstructionSave instruction in stateSave.InstructionSaves)
+            foreach(var variable in element.CustomVariables)
+            {
+                if (category?.ExcludedVariables.Contains(variable.Name) == true)
+                    continue;
+
+                if (currentInstructionSaves.Any(item => item.Member == variable.Name))
+                    continue;
+
+                currentInstructionSaves.Add(new InstructionSave
+                {
+                    Member = variable.Name,
+                    Value = element.GetCustomVariable(variable.Name).DefaultValue
+                });
+            }
+            
+            foreach (InstructionSave instruction in currentInstructionSaves)
             {
 
                 CustomVariable customVariable = null;

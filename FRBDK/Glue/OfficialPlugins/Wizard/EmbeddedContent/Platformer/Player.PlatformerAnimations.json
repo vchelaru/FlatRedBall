@@ -1,0 +1,56 @@
+{
+  "Values": [
+    {
+      "AnimationName": "CharacterIdle",
+      "HasLeftAndRight": true,
+      "MinXVelocityAbsolute": null,
+      "MaxXVelocityAbsolute": null,
+      "MinYVelocity": null,
+      "MaxYVelocity": null,
+      "AbsoluteXVelocityAnimationSpeedMultiplier": null,
+      "AbsoluteYVelocityAnimationSpeedMultiplier": null,
+      "OnGroundRequirement": null,
+      "MovementName": null,
+      "AnimationSpeedAssignment": 0
+    },
+    {
+      "AnimationName": "CharacterWalk",
+      "HasLeftAndRight": true,
+      "MinXVelocityAbsolute": 1.0,
+      "MaxXVelocityAbsolute": null,
+      "MinYVelocity": null,
+      "MaxYVelocity": null,
+      "AbsoluteXVelocityAnimationSpeedMultiplier": null,
+      "AbsoluteYVelocityAnimationSpeedMultiplier": null,
+      "OnGroundRequirement": null,
+      "MovementName": null,
+      "AnimationSpeedAssignment": 0
+    },
+    {
+      "AnimationName": "CharacterFall",
+      "HasLeftAndRight": true,
+      "MinXVelocityAbsolute": null,
+      "MaxXVelocityAbsolute": null,
+      "MinYVelocity": null,
+      "MaxYVelocity": null,
+      "AbsoluteXVelocityAnimationSpeedMultiplier": null,
+      "AbsoluteYVelocityAnimationSpeedMultiplier": null,
+      "OnGroundRequirement": false,
+      "MovementName": null,
+      "AnimationSpeedAssignment": 0
+    },
+    {
+      "AnimationName": "CharacterJump",
+      "HasLeftAndRight": true,
+      "MinXVelocityAbsolute": null,
+      "MaxXVelocityAbsolute": null,
+      "MinYVelocity": 0.0,
+      "MaxYVelocity": null,
+      "AbsoluteXVelocityAnimationSpeedMultiplier": null,
+      "AbsoluteYVelocityAnimationSpeedMultiplier": null,
+      "OnGroundRequirement": false,
+      "MovementName": null,
+      "AnimationSpeedAssignment": 0
+    }
+  ]
+}

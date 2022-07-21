@@ -208,9 +208,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(genericType))
                 {
-                    addObjectViewModel.SelectedAti =
+                    var selectedAti =
                         AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item =>
                             item.FriendlyName == genericType || item.QualifiedRuntimeTypeName.QualifiedType == genericType);
+                    addObjectViewModel.SelectedAti =
+                        selectedAti;
 
                     var genericEntityType =
                         ObjectFinder.Self.GetEntitySave(genericType);
@@ -218,10 +220,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         addObjectViewModel.SourceType = SourceType.Entity;
                         addObjectViewModel.SelectedEntitySave = genericEntityType;
+
+                        // filter down all entities to anything that is of this type or inherits from this type:
+                        var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(genericEntityType)
+                            .Select(item => item as EntitySave);
+
+                        addObjectViewModel.AvailableEntities.Clear();
+                        addObjectViewModel.AvailableEntities.Add(genericEntityType);
+                        addObjectViewModel.AvailableEntities.AddRange(derived);
+
+                        addObjectViewModel.IsTypePredetermined = addObjectViewModel.AvailableEntities.Count < 2;
+                        addObjectViewModel.IsObjectTypeRadioButtonPredetermined = true;
+
+                        addObjectViewModel.RefreshAllSelectedItems();
+                        addObjectViewModel.RefreshFilteredItems();
                     }
                     else
                     {
                         addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                        if(selectedAti != null)
+                        {
+                            addObjectViewModel.FlatRedBallAndCustomTypes.Clear();
+                            addObjectViewModel.FlatRedBallAndCustomTypes.Add(selectedAti);
+                            // re-select since clearing the list will deselect
+                            addObjectViewModel.SelectedAti = selectedAti;
+                            addObjectViewModel.IsObjectTypeRadioButtonPredetermined = true;
+
+                            addObjectViewModel.RefreshAllSelectedItems();
+                            addObjectViewModel.RefreshFilteredItems();
+                        }
                     }
                 }
             }
@@ -265,19 +292,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var viewModel = new RemoveObjectViewModel();
                     viewModel.SetFrom(namedObjectToRemove);
                     var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
-                    var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
+                    if(owner == null)
+                    { System.Diagnostics.Debugger.Break(); }
+                    if(owner != null)
+                    {
+                        var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
 
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.SubObjectsInList.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.CollisionRelationships.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
-                    viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.SubObjectsInList.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.CollisionRelationships.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
+                        viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
 
-                    window.DataContext = viewModel;
+                        window.DataContext = viewModel;
 
-                    var showDialogResult = window.ShowDialog();
+                        var showDialogResult = window.ShowDialog();
 
-                    reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+                        reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+                    }
+
 
                     //string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
 
@@ -376,17 +409,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (saveAndRegenerate)
                 {
-                    if (GlueState.Self.CurrentScreenSave != null)
+                    if (GlueState.Self.CurrentElement != null)
                     {
-                        var screen = GlueState.Self.CurrentScreenSave;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
                     }
-                    else if (GlueState.Self.CurrentEntitySave != null)
-                    {
-                        var entity = GlueState.Self.CurrentEntitySave;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
-                    }
-                    else if (GlueState.Self.CurrentReferencedFileSave != null)
+                    else //if (GlueState.Self.CurrentReferencedFileSave != null)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
 
@@ -428,7 +455,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, option);
+                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, GlueState.Self.CurrentElement,  option);
 
             }
 
@@ -534,7 +561,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             double width = window.Width;
             if (double.IsNaN(width))
             {
-                width = 0;
+                width = 64;
             }
             double height = window.Height;
             if (double.IsNaN(height))
@@ -556,7 +583,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 mousePositionY /= source.CompositionTarget.TransformToDevice.M22;
             }
 
-            window.Left = mousePositionX - width / 2;
+            window.Left = System.Math.Max(0, mousePositionX - width / 2);
             window.Top = mousePositionY - height / 2;
 
             window.ShiftWindowOntoScreen();
@@ -657,6 +684,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         newVariable.OverridingPropertyType = overridingType;
                         newVariable.TypeConverter = typeConverter;
+                    }
+
+                    if(!string.IsNullOrEmpty( sourceObject ))
+                    {
+                        var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
+                        if(namedObjectSource != null)
+                        {
+                            var ati = namedObjectSource.GetAssetTypeInfo();
+
+                            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
+
+                            newVariable.Category = variableDefinition?.Category;
+                        }
                     }
 
                     GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
@@ -770,7 +810,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 else
                 {
                     var screen =
-                        GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
+                        await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(addScreenWindow.Result);
 
                     GlueState.Self.CurrentElement = screen;
 
@@ -788,7 +828,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void ShowAddNewEventDialog(NamedObjectSave eventOwner)
         {
             var name = eventOwner.InstanceName;
-
+            var element = ObjectFinder.Self.GetElementContaining(eventOwner);
+            if(element != GlueState.Self.CurrentElement)
+            {
+                GlueState.Self.CurrentElement = element;
+            }
             AddEventViewModel viewModel = new AddEventViewModel();
             viewModel.TunnelingObject = name;
             viewModel.DesiredEventType = CustomEventType.Tunneled;

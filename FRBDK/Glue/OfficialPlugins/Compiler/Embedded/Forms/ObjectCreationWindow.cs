@@ -62,54 +62,5 @@ namespace GlueControl.Forms
             return button;
         }
 
-        public void PopulateWithAvailableEntities()
-        {
-#if WINDOWS_8 || UWP
-                var assembly = typeof(TileEntityInstantiator).GetTypeInfo().Assembly;
-                var typesInThisAssembly = assembly.DefinedTypes.Select(item=>item.AsType()).ToArray();
-
-#else
-            var assembly = Assembly.GetExecutingAssembly();
-            var typesInThisAssembly = assembly.GetTypes();
-#endif
-
-
-#if WINDOWS_8 || UWP
-            var filteredTypes =
-                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
-                            && t.GetConstructors().Any(c=>c.GetParameters().Count() == 0));
-#else
-            var filteredTypes =
-                typesInThisAssembly.Where(t => t.GetInterfaces().Contains(typeof(IEntityFactory))
-                            && t.GetConstructor(Type.EmptyTypes) != null);
-#endif
-
-            var factories = filteredTypes
-                .Select(
-                    t =>
-                    {
-#if WINDOWS_8 || UWP
-                        var propertyInfo = t.GetProperty("Self");
-#else
-                        var propertyInfo = t.GetProperty("Self");
-#endif
-                        var value = propertyInfo.GetValue(null, null);
-                        return value as IEntityFactory;
-                    }).ToList();
-
-            foreach (var factory in factories)
-            {
-                var factoryName = factory.GetType().Name;
-                var name = factoryName.Substring(0, factoryName.Length - "Factory".Length);
-                var button = AddButton();
-                button.Click += (not, used) =>
-                {
-                    List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
-                    InstanceLogic.Self.CreateInstanceByGame(name, Camera.Main.X, Camera.Main.Y, addedItems);
-                    GlueControlManager.Self.SendToGlue(addedItems);
-                };
-                button.Text = name;
-            }
-        }
     }
 }

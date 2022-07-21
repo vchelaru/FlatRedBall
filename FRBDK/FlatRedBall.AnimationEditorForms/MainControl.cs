@@ -23,6 +23,7 @@ using FlatRedBall.SpecializedXnaControls.Scrolling;
 using FlatRedBall.AnimationEditorForms.Content;
 using RenderingLibrary.Content;
 using FilePath = ToolsUtilities.FilePath;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -99,7 +100,7 @@ namespace FlatRedBall.AnimationEditorForms
             ApplicationEvents.Self.WireframeTextureChange += ScrollBarHandleTextureChange;
             ApplicationEvents.Self.AfterZoomChange += delegate
             {
-                mScrollBarControlLogic.ZoomPercentage = (float)ApplicationState.Self.WireframeZoomValue;
+                mScrollBarControlLogic.ZoomPercentage = (float)AppState.Self.WireframeZoomValue;
                 mScrollBarControlLogic.UpdateScrollBars();
             };
 
@@ -133,12 +134,13 @@ namespace FlatRedBall.AnimationEditorForms
                 this.imageRegionSelectionControl1.XnaUpdate += new Action(HandleXnaUpdate);
             }
             PropertyGridManager.Self.Initialize(SelectedItemPropertyGrid, this.tileMapInfoWindow1);
-            PropertyGridManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
+            PropertyGridManager.Self.AnimationChainChange += (not, used) =>
+                    ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
             PropertyGridManager.Self.AnimationFrameChange += HandleAnimationFrameChanges;
 
-
             TreeViewManager.Self.Initialize(AnimationTreeView);
-            TreeViewManager.Self.AnimationChainsChange += RaiseAnimationChainChanges;
+            
             TreeViewManager.Self.AnimationChainSelected += (not, used) => AnimationChainSelected?.Invoke(this, null);
 
             RenderingLibrary.Graphics.Renderer.UseBasicEffectRendering = false;
@@ -252,18 +254,10 @@ namespace FlatRedBall.AnimationEditorForms
             UnitTypeComboBox.SelectedItem = UnitTypeComboBox.Items[0];
         }
 
-        public void RaiseAnimationChainChanges(object sender, EventArgs args)
-        {
-            if (AnimationChainChange != null)
-            {
-                AnimationChainChange(this, null);
-            }
-        }
 
         void HandleAnimationFrameChanges(object sender, EventArgs args)
         {
             PreviewManager.Self.ReactToAnimationFrameChange();
-
         }
 
         void HandleRegionXnaInitialize()
@@ -271,7 +265,9 @@ namespace FlatRedBall.AnimationEditorForms
             try
             {
                 WireframeManager.Self.Initialize(imageRegionSelectionControl1, imageRegionSelectionControl1.SystemManagers, WireframeTopUiControl, WireframeEditControlsViewModel);
-                WireframeManager.Self.AnimationChainChange += RaiseAnimationChainChanges;
+                WireframeManager.Self.AnimationChainChange += (not, used) =>
+                        ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
 
                 mScrollBarControlLogic.Managers = imageRegionSelectionControl1.SystemManagers;
                 var contentLoader = new DateCheckingContentLoader(imageRegionSelectionControl1.SystemManagers);
@@ -286,26 +282,6 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 MessageBox.Show("Error initializing main AnimationEditor control:\n" + e.ToString());
             }
-        }
-
-        public void LoadAnimationChain(string fileName)
-        {
-            lock (RenderingLibrary.Graphics.Renderer.LockObject)
-            {
-                WireframeEditControlsViewModel.SelectedTextureFilePath = null;
-                ProjectManager.Self.LoadAnimationChain(fileName);
-
-                TreeViewManager.Self.RefreshTreeView();
-                // do this after refreshing the tree node:
-                IoManager.Self.LoadAndApplyCompanionFileFor(fileName);
-                WireframeManager.Self.RefreshAll();
-                PreviewManager.Self.RefreshAll();
-            }
-        }
-
-        public void SaveCurrentAnimationChain()
-        {
-            SaveCurrentAnimationChain(ProjectManager.Self.FileName);
         }
 
         public void SaveCurrentAnimationChain(FilePath fileName)
@@ -364,7 +340,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void UnitTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ApplicationState.Self.UnitType = (UnitType)UnitTypeComboBox.SelectedItem;
+            AppState.Self.UnitType = (UnitType)UnitTypeComboBox.SelectedItem;
         }
 
         private void AnimationTreeView_MouseClick(object sender, MouseEventArgs e)
@@ -523,6 +499,67 @@ namespace FlatRedBall.AnimationEditorForms
         private void WireframeTopUiControl_Load(object sender, EventArgs e)
         {
 
+        }
+
+
+        public T Invoke<T>(Func<T> func)
+        {
+
+            T toReturn = default(T);
+            base.Invoke((MethodInvoker)delegate
+            {
+                toReturn = func();
+            });
+
+            return toReturn;
+        }
+
+        public Task Invoke(Func<Task> func)
+        {
+            Task toReturn = Task.CompletedTask;
+
+            var asyncResult = base.BeginInvoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    toReturn = func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            asyncResult.AsyncWaitHandle.WaitOne();
+
+            return toReturn;
+        }
+
+        public Task<T> Invoke<T>(Func<Task<T>> func)
+        {
+            Task<T> toReturn = Task.FromResult(default(T));
+
+            base.Invoke((MethodInvoker)delegate
+            {
+                try
+                {
+                    toReturn = func();
+                }
+                catch (Exception e)
+                {
+                    if (!IsDisposed)
+                    {
+                        throw e;
+                    }
+                    // otherwise, we don't care, they're exiting
+                }
+            });
+
+            return toReturn;
         }
     }
 }

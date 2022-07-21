@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
@@ -59,6 +60,14 @@ namespace FlatRedBall.Content.Math.Geometry
         {
             FlatRedBall.Math.Geometry.Circle circle = new FlatRedBall.Math.Geometry.Circle();
 
+            SetValuesOn(circle);
+
+            return circle;
+
+        }
+
+        public void SetValuesOn(Circle circle)
+        {
             circle.X = this.X;
             circle.Y = this.Y;
             circle.Z = this.Z;
@@ -73,10 +82,6 @@ namespace FlatRedBall.Content.Math.Geometry
                     (byte)(Green * 255),
                     (byte)(Blue * 255),
                     (byte)(Alpha * 255));
-
-            return circle;
-
         }
-
     }
 }

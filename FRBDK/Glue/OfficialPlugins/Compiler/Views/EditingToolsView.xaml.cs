@@ -102,17 +102,17 @@ namespace OfficialPlugins.Compiler.Views
                     }
                 }
 
-                var currentScreen = GlueState.Self.CurrentScreenSave;
+                var currentElement = GlueState.Self.CurrentElement;
 
                 NamedObjectSave nosForButton = null;
 
-                if(currentScreen == null)
+                if(currentElement == null)
                 {
-                    currentScreen = await CommandSender.GetCurrentInGameScreen();
+                    currentElement = await CommandSender.GetCurrentInGameScreen();
                 }
-                if (currentScreen != null)
+                if (currentElement != null)
                 {
-                    nosForButton = GetNosForButton(button, currentScreen);
+                    nosForButton = GetNosForButton(button, currentElement);
                 }
 
                 if (nosForButton != null)
@@ -133,9 +133,9 @@ namespace OfficialPlugins.Compiler.Views
             }
         }
 
-        private static NamedObjectSave GetNosForButton(ToggleButton button, ScreenSave currentScreen)
+        private static NamedObjectSave GetNosForButton(ToggleButton button, GlueElement currentElement)
         {
-            return currentScreen.NamedObjects.FirstOrDefault(item =>
+            return currentElement.NamedObjects.FirstOrDefault(item =>
                 {
                     if (IsTileShapeCollection(item))
                     {
@@ -160,13 +160,13 @@ namespace OfficialPlugins.Compiler.Views
             var existingCheckedButton = tileToggleButtons.FirstOrDefault(item => item.IsChecked == true);
             
             NamedObjectSave tileShapeCollectionNos = null;
-            var currentScreen = GlueState.Self.CurrentScreenSave;
+            var currentElement = GlueState.Self.CurrentElement;
             if (existingCheckedButton != null)
             {
                 existingCheckedButton.IsChecked = false;
-                if(currentScreen != null)
+                if(currentElement != null)
                 {
-                    tileShapeCollectionNos = GetNosForButton(existingCheckedButton, currentScreen);
+                    tileShapeCollectionNos = GetNosForButton(existingCheckedButton, currentElement);
                 }
             }
 
@@ -177,7 +177,7 @@ namespace OfficialPlugins.Compiler.Views
             
             if(tileShapeCollectionNos != null)
             {
-                GlueState.Self.CurrentScreenSave = currentScreen;
+                GlueState.Self.CurrentElement = currentElement;
             }
 
 
@@ -185,7 +185,7 @@ namespace OfficialPlugins.Compiler.Views
 
         public void UpdateToItemSelected()
         {
-            var currentScreen = GlueState.Self.CurrentScreenSave;
+            var currentElement = GlueState.Self.CurrentElement;
             var currentNos = GlueState.Self.CurrentNamedObjectSave;
 
 
@@ -206,9 +206,9 @@ namespace OfficialPlugins.Compiler.Views
             foreach (var button in tileToggleButtons)
             {
                 NamedObjectSave matchingNos = null;
-                if(currentScreen != null)
+                if(currentElement != null)
                 {
-                    matchingNos = GetNosForButton(button, currentScreen);
+                    matchingNos = GetNosForButton(button, currentElement);
                 }
 
                 button.Visibility = (matchingNos != null).ToVisibility();

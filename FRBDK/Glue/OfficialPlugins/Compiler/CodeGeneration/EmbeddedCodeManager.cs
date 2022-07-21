@@ -17,84 +17,84 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             GlueControlCodeGenerator.GenerateFull = fullyGenerate;
 
-            SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs",
-                "Editing/Markers/SelectionMarker.Generated.cs");
+            SaveEmbeddedFile("CommandReceiver.cs");
 
-            SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs",
-                "Editing/Markers/TileShapeCollectionMarker.Generated.cs");
+            SaveEmbeddedFile("Dtos.cs");
+            SaveEmbeddedFile("GlueCallsClassGenerationManager.cs");
 
-            SaveEmbeddedFile("Editing.Visuals.Arrow.cs",
-                "Editing/Visuals/Arrow.Generated.cs");
+            SaveEmbeddedFile("Editing.CameraLogic.cs");
+            SaveEmbeddedFile("Editing.CopyPasteManager.cs");
+            SaveEmbeddedFile("Editing.EditingManager.cs");
+            SaveEmbeddedFile("Editing.EditorVisuals.cs");
+            SaveEmbeddedFile("Editing.Guides.cs");
 
-            SaveEmbeddedFile("Editing.CameraLogic.cs",
-                "Editing/CameraLogic.Generated.cs");
-
-            SaveEmbeddedFile("Editing.CopyPasteManager.cs",
-                "Editing/CopyPasteManager.Generated.cs");
-
-            SaveEmbeddedFile("Editing.EditingManager.cs",
-                "Editing/EditingManager.Generated.cs");
-
-            SaveEmbeddedFile("Editing.EditorVisuals.cs",
-                "Editing/EditorVisuals.Generated.cs");
+            SaveEmbeddedFile("Editing.Managers.GenerateCodeCommands.cs");
+            SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
+            SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
+            //SaveEmbeddedFile("Editing.Managers.GlueState.cs");
+            //SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
+            SaveEmbeddedFile("Editing.Managers.ObjectFinder.cs");
+            SaveEmbeddedFile("Editing.Managers.RefreshCommands.cs");
 
 
-            SaveEmbeddedFile("GlueControlManager.cs", 
-                "GlueControlManager.Generated.cs");
+            SaveEmbeddedFile("Editing.Markers.MeasurementMarker.cs");
+            SaveEmbeddedFile("Editing.Markers.PolygonPointHandles.cs");
+            SaveEmbeddedFile("Editing.Markers.SelectionMarker.cs");
+            SaveEmbeddedFile("Editing.Markers.TileShapeCollectionMarker.cs");
 
-            SaveEmbeddedFile("CommandReceiver.cs",
-                "CommandReceiver.Generated.cs");
+            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs");
 
-            SaveEmbeddedFile("Dtos.cs",
-                "Dtos.Generated.cs");
+            SaveEmbeddedFile("Editing.SelectionLogic.cs");
+
+            SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs");
+
+            SaveEmbeddedFile("Editing.Visuals.Arrow.cs");
+
+            SaveEmbeddedFile("Forms.ObjectCreationWindow.cs");
+
+            SaveEmbeddedFile("GlueControlManager.cs");
+
+            SaveEmbeddedFile("InstanceLogic.cs");
 
 
-            SaveEmbeddedFile("Editing.SelectionLogic.cs",
-                "Editing/SelectionLogic.Generated.cs");
+            SaveEmbeddedFile("Models.CustomVariable.cs");
+            SaveEmbeddedFile("Models.GlueElement.cs");
+            SaveEmbeddedFile("Models.GlueElementFileReference.cs");
+            SaveEmbeddedFile("Models.GlueProjectSave.cs");
+            SaveEmbeddedFile("Models.GlueProjectSaveExtensions.cs");
+            SaveEmbeddedFile("Models.IElementExtensionMethods.cs");
+            SaveEmbeddedFile("Models.INamedObjectContainer.cs");
+            SaveEmbeddedFile("Models.NamedObjectSave.cs");
+            SaveEmbeddedFile("Models.NamedObjectSaveExtensionMethods.cs");
+            SaveEmbeddedFile("Models.StateSave.cs");
+            SaveEmbeddedFile("Models.StateSaveCategory.cs");
 
-            SaveEmbeddedFile("Editing.VariableAssignmentLogic.cs",
-                "Editing/VariableAssignmentLogic.Generated.cs");
+            SaveEmbeddedFile("Runtime.DynamicEntity.cs");
+            // This was a typo in old projects:
+            RemoveEmbeddedFile("Runtime/DynamicEntitys.Generated.cs");
 
-            SaveEmbeddedFile("Editing.Guides.cs",
-                "Editing/Guides.Generated.cs");
-
-            SaveEmbeddedFile("Editing.MoveObjectToContainerLogic.cs",
-                "Editing/MoveObjectToContainerLogic.Generated.cs");
-
-            SaveEmbeddedFile("InstanceLogic.cs",
-                "InstanceLogic.Generated.cs");
-
-            SaveEmbeddedFile("Forms.ObjectCreationWindow.cs",
-                "Forms/ObjectCreationWindow.Generated.cs");
-
-            SaveEmbeddedFile("Models.CustomVariable.cs",
-                "Models/CustomVariable.Generated.cs");
-
-            SaveEmbeddedFile("Models.NamedObjectSave.cs",
-                "Models/NamedObjectSave.Generated.cs");
-
-            SaveEmbeddedFile("Models.StateSave.cs",
-                "Models/StateSave.Generated.cs");
-
-            SaveEmbeddedFile("Models.StateSaveCategory.cs",
-                "Models/StateSaveCategory.Generated.cs");
-
-            SaveEmbeddedFile("Models.CustomVariable.cs",
-                "Models/CustomVariable.Generated.cs");
-
-            SaveEmbeddedFile("Models.GlueElement.cs",
-                "Models/GlueElement.Generated.cs");
-
-            SaveEmbeddedFile("Runtime.DynamicEntity.cs",
-                "Runtime/DynamicEntitys.Generated.cs");
-
-            SaveEmbeddedFile("Screens.EntityViewingScreen.cs",
-                "Screens/EntityViewingScreen.Generated.cs");
+            SaveEmbeddedFile("Screens.EntityViewingScreen.cs");
 
         }
 
-        private static void SaveEmbeddedFile(string resourcePath, string relativeDestinationFilePath)
+        
+
+        
+
+        private static void RemoveEmbeddedFile(string relativePath)
         {
+            FilePath absoluteFile = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/" + relativePath;
+
+            GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile);
+        }
+
+        private static void SaveEmbeddedFile(string resourcePath)
+        {
+            var split = resourcePath.Split(".").ToArray();
+            split = split.Take(split.Length - 1).ToArray(); // take off the .cs
+            var combined = string.Join('/', split) + ".Generated.cs";
+            var relativeDestinationFilePath = combined;
+
             var prefix = "OfficialPlugins.Compiler.Embedded.";
             string glueControlManagerCode = GlueControlCodeGenerator.GetEmbeddedStringContents(prefix + resourcePath);
             FilePath destinationFilePath = glueControlFolder + relativeDestinationFilePath;

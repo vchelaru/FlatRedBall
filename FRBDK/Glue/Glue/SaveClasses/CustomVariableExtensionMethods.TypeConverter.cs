@@ -22,8 +22,9 @@ namespace FlatRedBall.Glue.SaveClasses
             return customVariable.GetTypeConverter(containingElement, null, null);
         }
 
-        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, IElement containingElement, StateSave stateSave, FlatRedBall.Glue.Plugins.ExportedInterfaces.IGlueState glueState)
+        public static TypeConverter GetTypeConverter(this CustomVariable customVariable, IElement containingElementAsIElement, StateSave stateSave, FlatRedBall.Glue.Plugins.ExportedInterfaces.IGlueState glueState)
         {
+            var containingElement = containingElementAsIElement as GlueElement;
             TypeConverter typeConverter = null;
 
             if (customVariable.GetIsVariableState())
@@ -61,7 +62,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     else if (customVariable.GetIsFile())
                     {
                         AvailableFileStringConverter converter = new AvailableFileStringConverter(containingElement);
-                        converter.QualifiedRuntimeTypeName = runtimeType.FullName;
+                        converter.QualifiedRuntimeTypeNameFilter = runtimeType.FullName;
                         converter.ShowNewFileOption = false;
                         converter.RemovePathAndExtension = true;
                         typeConverter = converter;
@@ -139,7 +140,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
                     }
-                    converter.UnqualifiedRuntimeTypeName = typeName;
+                    converter.UnqualifiedRuntimeTypeNameFilter = typeName;
                     converter.ShowNewFileOption = false;
                     converter.RemovePathAndExtension = true;
                     typeConverter = converter;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
@@ -111,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 
                     if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(extension))
                     {
-                        HandleFileTreeNodeDoubleClick(text);
+                        HandleFileTreeNodeDoubleClick(GlueState.Self.CurrentReferencedFileSave);
                         handled = true;
                     }
 
@@ -125,18 +126,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (treeNode.IsCodeNode())
                     {
-                        var fileName = treeNode.Text;
-
-                        var absolute = GlueState.Self.CurrentGlueProjectDirectory + fileName;
-
-                        if (System.IO.File.Exists(absolute))
+                        var element = treeNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                        if(element != null)
                         {
-                            var startInfo = new ProcessStartInfo();
-                            startInfo.FileName = absolute;
-                            startInfo.UseShellExecute = true;
-                            System.Diagnostics.Process.Start(startInfo);
+                            var elementDirectory = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(element).GetDirectoryContainingThis();
+                            FilePath absolute = elementDirectory + treeNode.Text;
+
+                            if (absolute.Exists())
+                            {
+                                var startInfo = new ProcessStartInfo();
+                                startInfo.FileName = absolute.FullPath;
+                                startInfo.UseShellExecute = true;
+                                System.Diagnostics.Process.Start(startInfo);
+                            }
+                            handled = true;
+
                         }
-                        handled = true;
+
                     }
 
                     #endregion
@@ -144,9 +150,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        private static void HandleFileTreeNodeDoubleClick(string text)
+        private static void HandleFileTreeNodeDoubleClick(ReferencedFileSave currentReferencedFileSave)
         {
-            string textExtension = FileManager.GetExtension(text);
+            string textExtension = FileManager.GetExtension(currentReferencedFileSave.Name);
             string sourceExtension = null;
 
             if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
@@ -155,13 +161,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             var effectiveExtension = sourceExtension ?? textExtension;
-
+            string fileName = GetFileName(currentReferencedFileSave);
 
             string applicationSetInGlue = "";
-
-            ReferencedFileSave currentReferencedFileSave = GlueState.Self.CurrentReferencedFileSave;
-            string fileName;
-
             if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
             {
                 applicationSetInGlue = currentReferencedFileSave.OpensWith;
@@ -170,31 +172,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
             }
-
-            if (currentReferencedFileSave != null)
-            {
-                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
-                {
-                    fileName =
-                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
-                }
-                else
-                {
-                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
-                }
-            }
-            else
-            {
-                fileName = ProjectManager.MakeAbsolute(text);
-            }
-
             if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
             {
                 try
                 {
                     var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension(effectiveExtension);
 
-                    if (string.IsNullOrEmpty(executable))
+                    if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
                             $"program to associate with this extension to open the file. Set the assocaition now?";
@@ -248,6 +232,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        private static string GetFileName(ReferencedFileSave currentReferencedFileSave)
+        {
+            string fileName = null;
+            if (currentReferencedFileSave != null)
+            {
+                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
+                {
+                    fileName =
+                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
+                }
+                else
+                {
+                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
+                }
+            }
 
+            return fileName;
+        }
     }
 }

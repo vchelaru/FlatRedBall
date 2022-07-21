@@ -113,7 +113,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                     GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
                 }
             }
-            else if(HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
+            else if(await HotkeyManager.Self.TryHandleKeys(e, isTextBoxFocused:false))
             {
                 e.Handled = true;
             }

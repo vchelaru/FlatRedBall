@@ -79,6 +79,14 @@ namespace FlatRedBall.Glue.Elements
         public double? MinValue { get; set; }
         public double? MaxValue { get; set; }
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public Func<GlueElement, NamedObjectSave, string, object> CustomVariableGet;
+        
+        [XmlIgnore]
+        [JsonIgnore] 
+        public Action<GlueElement, NamedObjectSave, string, object> CustomVariableSet;
+
         // Vic says - maybe we'll need this? Not sure...
         //public CsvInclusion PrimaryCsvInclusion { get; set; } = CsvInclusion.InThisElement;
         //public CsvInclusion FallbackCsvInclusion { get; set; } = CsvInclusion.AllInProject;
@@ -93,6 +101,11 @@ namespace FlatRedBall.Glue.Elements
         [XmlIgnore]
         [JsonIgnore]
         public Type PreferredDisplayer { get; set; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public Dictionary<string, object> PropertiesToSetOnDisplayer { get; private set; } = new Dictionary<string, object>();
+
 
         public override string ToString()
         {

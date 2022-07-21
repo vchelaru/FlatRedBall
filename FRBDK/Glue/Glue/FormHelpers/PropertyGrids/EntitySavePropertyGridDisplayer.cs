@@ -6,6 +6,7 @@ using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
@@ -47,41 +48,35 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     converter:null, attributes: base.ReadOnlyAttribute());
             }
 
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.RemoveIsScrollableEntityList)
+            {
+                ExcludeMember(nameof(EntitySave.IsScrollableEntityList));
+            }
+
             if (!string.IsNullOrEmpty(instance.BaseEntity) && !instance.GetHasImplementsCollidableProperty())
             {
-                ExcludeMember("ImplementsICollidable");
+                ExcludeMember(nameof(EntitySave.ImplementsICollidable));
             }
 
 
             if (!instance.CreatedByOtherEntities)
             {
-                ExcludeMember("PooledByFactory");
+                ExcludeMember(nameof(EntitySave.PooledByFactory));
 
             }
 
             if (!instance.IsScrollableEntityList)
             {
                 shouldIncludeItemType = false;
-                ExcludeMember("VerticalOrHorizontal");
-                ExcludeMember("ListTopBound");
-                ExcludeMember("ListBottomBound");
+                ExcludeMember(nameof(EntitySave.VerticalOrHorizontal));
+                ExcludeMember(nameof(EntitySave.ListTopBound));
+                ExcludeMember(nameof(EntitySave.ListBottomBound));
+                // These don't have properties so....do we show them? Not sure, but
+                // scrollable entities are gone for GLUX/J v16
                 ExcludeMember("ListLeftBound");
                 ExcludeMember("ListRightBound");
 
-                ExcludeMember("SpacingBetweenItems");
-            }
-            else
-            {
-                //if (this.VerticalOrHorizontal == SaveClasses.VerticalOrHorizontal.Horizontal)
-                //{
-                //    pdc = PropertyDescriptorHelper.RemoveProperty(pdc, "ListTopBound");
-                //    pdc = PropertyDescriptorHelper.RemoveProperty(pdc, "ListBottomBound");
-                //}
-                //else
-                //{
-                //    pdc = PropertyDescriptorHelper.RemoveProperty(pdc, "ListLeftBound");
-                //    pdc = PropertyDescriptorHelper.RemoveProperty(pdc, "ListRightBound");
-                //}
+                ExcludeMember(nameof(EntitySave.SpacingBetweenItems));
             }
 
             // We used to only support inheriting from Entities, but now we support
@@ -90,7 +85,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             var converter = new AvailableClassGenericTypeConverter();
             // Don't let it inherit from itself:
             converter.EntitiesToExclude.Add(instance);
-            IncludeMember("BaseEntity", typeof(EntitySave), converter);
+            IncludeMember(nameof(EntitySave.BaseEntity), typeof(EntitySave), converter);
 
             if (shouldIncludeItemType)
             {

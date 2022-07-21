@@ -1,7 +1,4 @@
-﻿{CompilerDirectives}
-
-using {ProjectNamespace};
-using GlueControl.Dtos;
+﻿using GlueControl.Dtos;
 
 using FlatRedBall;
 using FlatRedBall.Graphics;
@@ -22,6 +19,7 @@ using GlueControl.Editing;
 using FlatRedBall.Utilities;
 
 #if SupportsEditMode
+using GlueControl.Managers;
 using Newtonsoft.Json;
 #endif
 
@@ -36,6 +34,12 @@ namespace GlueControl
             public string Command { get; set; }
         }
 
+        public class AwaitedResponse
+        {
+            public SemaphoreSlim Semaphore { get; set; }
+            public object Response { get; set; }
+        }
+
         #endregion
 
         #region Fields/Properties
@@ -46,6 +50,7 @@ namespace GlueControl
             = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager;
 
+        ConcurrentDictionary<int, AwaitedResponse> AwaitedResponses = new ConcurrentDictionary<int, AwaitedResponse>();
 
         public static GlueControlManager Self { get; private set; }
 
@@ -324,68 +329,27 @@ namespace GlueControl
 
         #region Game -> Glue
 
-        private void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
+        private async void HandlePropertyChanged(List<PropertyChangeArgs> propertyChangeArgs)
         {
 #if SupportsEditMode
-
-            var screen = ScreenManager.CurrentScreen;
-            var isEditingEntity =
-                screen.GetType() == typeof(Screens.EntityViewingScreen);
-            string ownerType;
-            if(isEditingEntity)
+            var currentElement = GlueState.Self.CurrentElement;
+            List<NosVariableAssignment> nosVariableAssignments = new List<NosVariableAssignment>();
+            foreach (var change in propertyChangeArgs)
             {
-                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
-                if(entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
+                var nos = currentElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
+                if (nos != null)
                 {
-                    ownerType = dynamicEntity.EditModeType;
-                }
-                else
-                {
-                    // todo - handle inheritance
-                    ownerType = entityInstance.GetType().FullName;
+                    nosVariableAssignments.Add(new NosVariableAssignment
+                    {
+                        NamedObjectSave = nos,
+                        VariableName = change.PropertyName,
+                        Value = change.PropertyValue
+                    });
+
                 }
             }
-            else
-            {
-                ownerType = screen.GetType().FullName;
 
-            }
-
-            var dtoList = new SetVariableDtoList();
-
-            foreach(var change in propertyChangeArgs)
-            {
-                var dto = new SetVariableDto();
-                dto.InstanceOwner = ownerType;
-                dto.ObjectName = change.Nameable.Name;
-                dto.VariableName = change.PropertyName;
-                dto.VariableValue = change.PropertyValue;
-                dto.Type = change.PropertyValue?.GetType().Name;
-
-                dtoList.SetVariableList.Add(dto);
-            }
-
-
-            SendToGlue(dtoList);
-
-            // the game used to set this itself, but the game doesn't know which screen defines an object
-            // so let Glue hande that
-            //var fromGlueDto = new GlueVariableSetData();
-            //fromGlueDto.InstanceOwner = ownerType;
-            //fromGlueDto.VariableName = $"this.{item.Name}.{propertyName}";
-            //fromGlueDto.VariableValue = value.ToString();
-            //fromGlueDto.Type = "float";
-            //var simulatedGlueToGameCommand = $"SetVariable:{Newtonsoft.Json.JsonConvert.SerializeObject(fromGlueDto)}";
-
-            //if(isEditingEntity)
-            //{
-            //    GlobalGlueToGameCommands.Enqueue(simulatedGlueToGameCommand);
-            //}
-            //else
-            //{
-                
-            //    EnqueueMessage(screen.GetType().FullName, simulatedGlueToGameCommand);
-            //}
+            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, echoToGame: false);
 #endif
         }
 
@@ -399,7 +363,8 @@ namespace GlueControl
 
             if (ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen")
             {
-                var entityInstance = SpriteManager.ManagedPositionedObjects[0];
+                var entityInstance = (ScreenManager.CurrentScreen as Screens.EntityViewingScreen)?.CurrentEntity;
+
                 if (entityInstance is GlueControl.Runtime.DynamicEntity dynamicEntity)
                 {
                     elementGameType = dynamicEntity.EditModeType;
@@ -412,41 +377,52 @@ namespace GlueControl
             }
             else
             {
-                elementGameType = ScreenManager.CurrentScreen.GetType().Name;
+                elementGameType = ScreenManager.CurrentScreen?.GetType().Name;
             }
 
+            if(!string.IsNullOrEmpty(elementGameType))
+            {
+                var split = elementGameType.Split('.').ToList().Skip(1);
+                dto.ElementNameGlue = string.Join("\\", split);
 
-            var split = elementGameType.Split('.').ToList().Skip(1);
-            dto.ElementNameGlue = string.Join("\\", split);
-
-            SendToGlue(dto);
+                SendToGlue(dto);
+            }
         }
 
-        public void SendToGlue(List<Dtos.AddObjectDto> dtos)
+        int nextRespondableId = 1;
+        public async Task<object> SendToGlue(RespondableDto respondableDto)
         {
-            foreach (var item in dtos)
+            var semaphoreSlim = new SemaphoreSlim(0, 1);
+
+            var idToUse = nextRespondableId;
+            nextRespondableId++;
+
+            var awaitedResponse = new AwaitedResponse
             {
-                var currentScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen;
-                if (currentScreen is Screens.EntityViewingScreen entityViewingScreen)
-                {
-                    item.ElementNameGame = entityViewingScreen.CurrentEntity.GetType().FullName;
-                }
-                else
-                {
-                    item.ElementNameGame = currentScreen.GetType().FullName;
-                }
+                Semaphore = semaphoreSlim
+            };
 
-            }
+            AwaitedResponses[idToUse] = awaitedResponse;
 
-            Dtos.AddObjectDtoList dtoList = new AddObjectDtoList();
-            dtoList.Data.AddRange(dtos);
+            respondableDto.Id = idToUse;
 
-            GlueControlManager.Self.SendToGlue((object)dtoList);
+            SendToGlue((object)respondableDto);
 
-            foreach (var item in dtos)
+            await semaphoreSlim.WaitAsync();
+            AwaitedResponses.TryRemove(idToUse, out AwaitedResponse _);
+            semaphoreSlim.Dispose();
+
+            return awaitedResponse.Response;
+            // return response?
+        }
+
+        public void NotifyResponse(int id, object response)
+        {
+            if (AwaitedResponses.ContainsKey(id))
             {
-                // We don't (yet) handle batch here, so just add the individuals
-                CommandReceiver.GlobalGlueToGameCommands.Add(item);
+                var awaitedResponse = AwaitedResponses[id];
+                awaitedResponse.Response = response;
+                awaitedResponse.Semaphore.Release();
             }
         }
 

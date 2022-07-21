@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -21,10 +23,19 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
         public override void StartUp()
         {
-            AddErrorReporter(new MainErrorReporter());
+            AddErrorReporter(new NamedObjectSaveErrorReporter());
+            AddErrorReporter(new ReferencedFileSaveErrorReporter());
 
             this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
         }
+
+        private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        {
+            await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
+            this.RefreshErrors();
+        }
+
 
         private void HandleFileChanged(string fileName)
         {

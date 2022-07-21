@@ -76,11 +76,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             get;
         }
 
+        string cachedDirectory;
         public string Directory
         {
             get
             {
-                return FullFileName.GetDirectoryContainingThis().FullPath;
+                if (cachedDirectory == null)
+                {
+                    cachedDirectory = FullFileName.GetDirectoryContainingThis().FullPath;
+                }
+                return cachedDirectory;
             }
         }
 

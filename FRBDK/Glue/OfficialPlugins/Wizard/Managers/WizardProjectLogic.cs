@@ -5,6 +5,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Math.Geometry;
 using GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin;
 using GlueFormsCore.ViewModels;
 using Newtonsoft.Json;
@@ -32,7 +33,7 @@ namespace OfficialPluginsCore.Wizard.Managers
         }
         #endregion
 
-        public async Task Apply(WizardData vm)
+        public async Task Apply(WizardViewModel vm)
         {
             #region Initialization and utility methods
 
@@ -67,7 +68,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             // Add Gum before adding a GameScreen, so the GameScreen gets its Gum screen
             if (vm.AddGum)
             {
-                Add("Add Gum", () => HandleAddGum(vm));
+                AddTask("Add Gum", () => HandleAddGum(vm));
             }
 
             #endregion
@@ -83,7 +84,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     solidCollisionNos = response.solidCollision;
                     cloudCollisionNos = response.cloudCollisionNos;
 
-                    if(vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
+                    if (vm.IsAddGumScreenToLayerVisible && vm.AddGameScreenGumToHudLayer)
                     {
                         await HandleAddGumScreenToLayer(gameScreen);
                     }
@@ -100,7 +101,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
 
-                    TaskManager.Self.AddOrRunIfTasked(() => HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity), "Adding player instance");
+                    HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
                 });
             }
 
@@ -121,35 +122,43 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             if (vm.AddCameraController && vm.AddGameScreen)
             {
-                Add("Create Camera", () =>
-                    ApplyCameraController(vm, gameScreen));
+                AddTask("Create Camera", async () =>
+                    await ApplyCameraValues(vm, gameScreen));
             }
 
             #endregion
 
-            if(vm.AdditionalNonGameScreens?.Count > 0)
+            #region Adding Additional Screens
+            if (vm.AdditionalNonGameScreens?.Count > 0)
             {
-                Add("Adding Additional Screens", () =>
+                AddTask("Adding Additional Screens", () =>
                     AddAdditionalScreens(vm));
             }
+            #endregion
 
-            if(vm.ElementImportUrls.Count > 0)
+            #region Importing Screens/Entities
+            if (vm.ElementImportUrls.Count > 0)
             {
                 Add("Importing Screens/Entities", () =>
                     ImportElements(vm));
             }
+            #endregion
 
-            if(!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
+            #region Additional serialized Objects (from json)
+            if (!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
             {
                 Add("Adding additional Objects", () =>
                     ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
             }
+            #endregion
 
+            #region Generate all code
             Add("Regenerating All Code", () =>
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
 
             });
+            #endregion
 
             AddTask("Flushing Files", async () =>
             {
@@ -170,6 +179,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                 } while (didWait);
             });
 
+            AddTask("Saving Project", () =>
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                return Task.CompletedTask;
+            });
 
             vm.Tasks = tasks;
 
@@ -204,7 +218,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 currentTask = task;
                 maxTaskCount = 0;
 
-                if(task.Task != null) await task.Task();
+                if (task.Task != null) await task.Task();
                 if (task.Action != null) task.Action();
 
                 await TaskManager.Self.WaitForAllTasksFinished();
@@ -246,7 +260,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 deserialized = JsonConvert.DeserializeObject<Dictionary<string, List<NamedObjectSave>>>(namedObjectSavesSerialized);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // we currently don't have error handling, we need it
                 deserializeException = e;
@@ -254,10 +268,10 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             List<ElementAndNosList> imports = new List<ElementAndNosList>();
 
-            foreach(var kvp in deserialized)
+            foreach (var kvp in deserialized)
             {
                 var elementName = kvp.Key;
-                if(elementName.StartsWith("Screens\\"))
+                if (elementName.StartsWith("Screens\\"))
                 {
                     var screen = ObjectFinder.Self.GetScreenSave(elementName);
 
@@ -268,7 +282,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     });
 
                 }
-                else if(elementName.StartsWith("Entities\\"))
+                else if (elementName.StartsWith("Entities\\"))
                 {
                     var entity = ObjectFinder.Self.GetEntitySave(elementName);
 
@@ -305,17 +319,17 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                         GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement, listToAddTo);
 
-                        if(nos.ExposedInDerived)
+                        if (nos.ExposedInDerived)
                         {
                             EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                nameof(nos.ExposedInDerived), 
+                                nameof(nos.ExposedInDerived),
                                 // pretend the value changed from false -> true
                                 false,
-                                namedObjectSave:nos);
+                                namedObjectSave: nos);
                         }
 
                         // remove all children, and then re-add them through the GlueCommands so that all plugins are notified:
-                        if(nos.ContainedObjects.Count > 0)
+                        if (nos.ContainedObjects.Count > 0)
                         {
                             var children = nos.ContainedObjects.ToArray();
 
@@ -333,7 +347,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void ImportElements(WizardData vm)
+        private static void ImportElements(WizardViewModel vm)
         {
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
@@ -358,21 +372,21 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void HandleAddGum(WizardData vm)
+        private static async Task HandleAddGum(WizardViewModel vm)
         {
             if (vm.AddFlatRedBallForms)
             {
-                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectWithForms");
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms");
             }
             else
             {
-                PluginManager.CallPluginMethod("Gum Plugin", "CreateGumProjectNoForms");
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms");
             }
         }
 
-        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardData vm)
+        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
         {
-            ScreenSave gameScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+            ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
             NamedObjectSave solidCollisionNos = null;
             NamedObjectSave cloudCollisionNos = null;
 
@@ -392,7 +406,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     setFromMapObject: vm.AddTiledMap);
             }
 
-            if(vm.AddHudLayer)
+            if (vm.AddHudLayer)
             {
                 await AddHudLayer(gameScreen);
             }
@@ -421,7 +435,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return nos;
         }
 
-        private static async Task<EntitySave> HandleAddPlayerEntity(WizardData vm)
+        private static async Task<EntitySave> HandleAddPlayerEntity(WizardViewModel vm)
         {
             EntitySave playerEntity;
 
@@ -437,7 +451,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
 
 
-            if(playerEntity != null)
+            if (playerEntity != null)
             {
                 // If this is null, the download failed.
                 // If the download fails, what do we do?
@@ -445,12 +459,22 @@ namespace OfficialPluginsCore.Wizard.Managers
                 // requires the current entity be set:
                 GlueState.Self.CurrentElement = playerEntity;
 
-                if(vm.PlayerCreationType == PlayerCreationType.SelectOptions)
+                if (vm.PlayerCreationType == PlayerCreationType.SelectOptions)
                 {
                     if (vm.PlayerControlType == GameType.Platformer)
                     {
                         // mark as platformer
                         PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
+
+                        if(vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
+                        {
+                            await AddPlayerPlatformerAnimations(playerEntity);
+                        }
+
+                        if(vm.ShowAddPlatformAnimatorController && vm.AddPlatformerAnimationController)
+                        {
+                            await AddPlayerPlatformerAnimationController(playerEntity);
+                        }
 
                     }
                     else if (vm.PlayerControlType == GameType.Topdown)
@@ -465,35 +489,89 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static async Task<EntitySave> ImportPlayerEntity(WizardData vm)
+        private static async Task AddPlayerPlatformerAnimations(EntitySave playerEntity)
+        {
+            var playerContentFolder = GlueCommands.Self.FileCommands.GetContentFolder(playerEntity);
+            System.IO.Directory.CreateDirectory(playerContentFolder);
+
+            // 1 - save the PNG to the right location
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.FRBeefcakeSpritesheet.png",
+                playerContentFolder + "FRBeefcakeSpriteSheet.png");
+
+            // 2 - save the .achx to the right locatoin
+            FlatRedBall.IO.FilePath achxDestinationPath = playerContentFolder + "PlatformerAnimations.achx";
+            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly,
+                "OfficialPlugins.Wizard.EmbeddedContent.Platformer.PlatformerAnimations.achx",
+                achxDestinationPath.FullPath);
+
+            // 3 - add the .achx to the Player entity
+            await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(playerEntity, achxDestinationPath);
+
+            // 4 - Set the animations on the sprite
+            var sprite = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
+            if(sprite != null)
+            {
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.AnimationChains),
+                    "PlatformerAnimations",
+                    false, false
+                    );
+
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    sprite,
+                    nameof(FlatRedBall.Sprite.CurrentChainName),
+                    "CharacterWalkRight",
+                    false, false
+                    );
+
+            }
+        }
+
+        private static Task AddPlayerPlatformerAnimationController(EntitySave playerEntity)
+        {
+            var whereToSave = GlueCommands.Self.GetAbsoluteFilePath(playerEntity).GetDirectoryContainingThis() +
+                "Player.PlatformerAnimations.json";
+            var resourceName = "OfficialPlugins.Wizard.EmbeddedContent.Platformer.Player.PlatformerAnimations.json";
+
+            GlueCommands.Self.TryMultipleTimes(() =>
+                FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, whereToSave));
+
+            return Task.CompletedTask;
+        }
+
+        private static async Task<EntitySave> ImportPlayerEntity(WizardViewModel vm)
         {
             EntitySave playerEntity = null;
             var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
 
-            if(FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
+            if (FileManager.IsUrl(vm.PlayerEntityImportUrlOrFile) == false)
             {
-                playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile);
+                playerEntity = (EntitySave)
+                    (await GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(vm.PlayerEntityImportUrlOrFile));
             }
             else
             {
                 var playerUrl = vm.PlayerEntityImportUrlOrFile;
 
                 var destinationFileName = downloadFolder + FileManager.RemovePath(playerUrl);
-                
+
                 using var httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5), };
                 var result = await NetworkManager.Self.DownloadWithProgress(
                     httpClient, playerUrl, destinationFileName, null);
 
                 if (result.Succeeded)
                 {
-                    playerEntity = (EntitySave)GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                    playerEntity = (EntitySave)
+                        (await GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName));
                 }
             }
 
             return playerEntity;
         }
 
-        private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardData vm)
+        private static async Task<EntitySave> CreatePlayerEntityFromOptions(WizardViewModel vm)
         {
 
             EntitySave playerEntity = null;
@@ -521,7 +599,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
             },
-                "Adding Player Entity");
+            "Adding Player Entity");
 
 
 
@@ -530,10 +608,39 @@ namespace OfficialPluginsCore.Wizard.Managers
                 int m = 3;
             }
 
+            if (vm.PlayerControlType == GameType.Platformer && vm.PlayerCollisionType == CollisionType.Rectangle)
+            {
+                // this should have an AARect, so let's adjust it to match the right size/position as explained here:
+                // https://github.com/vchelaru/FlatRedBall/issues/651
+                var aaRectNos = playerEntity.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle);
+
+                if (aaRectNos != null)
+                {
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Y),
+                        8.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Width),
+                        10.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                    await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                        aaRectNos,
+                        nameof(AxisAlignedRectangle.Height),
+                        16.0f,
+                        performSaveAndGenerateCode: false,
+                        updateUi: false);
+                }
+            }
+
             return playerEntity;
         }
 
-        private static void HandleAddPlayerInstance(WizardData vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos, 
+        private static void HandleAddPlayerInstance(WizardViewModel vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
             NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
             NamedObjectSave playerList = null;
@@ -578,7 +685,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (vm.CollideAgainstCloudCollision && vm.AddCloudCollision)
                 {
-                    if(cloudCollisionNos == null)
+                    if (cloudCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(cloudCollisionNos));
                     }
@@ -596,7 +703,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                 if (vm.CollideAgainstSolidCollision && vm.AddSolidCollision)
                 {
-                    if(solidCollisionNos == null)
+                    if (solidCollisionNos == null)
                     {
                         throw new NullReferenceException(nameof(solidCollisionNos));
                     }
@@ -627,80 +734,166 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleCreateLevels(WizardData vm, ScreenSave gameScreen)
+        private static async Task HandleCreateLevels(WizardViewModel vm, ScreenSave gameScreen)
         {
             for (int i = 0; i < vm.NumberOfLevels; i++)
             {
                 var levelName = "Level" + (i + 1);
-
-                var levelScreen = GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
-                levelScreen.BaseScreen = gameScreen.Name;
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
-                GlueState.Self.CurrentScreenSave = levelScreen;
-
-
-                if (i == 0)
-                {
-                    GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
-                }
-
-                if (vm.AddGameScreen && vm.AddTiledMap)
-                {
-                    // add a regular TMX
-                    var addNewFileVm = new AddNewFileViewModel();
-
-                    var tmxAti =
-                        AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                    addNewFileVm.SelectedAssetTypeInfo = tmxAti;
-
-                    addNewFileVm.ForcedType = tmxAti;
-                    addNewFileVm.FileName = levelName + "Map";
-                    await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm);
-
-                    var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                    if (mapObject != null)
-                    {
-                        mapObject.SourceType = SourceType.File;
-                        mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
-                        mapObject.SourceName = "Entire File (LayeredTileMap)";
-                    }
-
-                    void SelectTmxRfs()
-                    {
-                        GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                            .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
-                    }
-
-                    if (vm.IncludStandardTilesetInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
-                    }
-                    if (vm.IncludeGameplayLayerInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
-                    }
-
-                    if (vm.IncludeCollisionBorderInLevels)
-                    {
-                        SelectTmxRfs();
-                        PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
-                    }
-
-                }
+                await CreateLevel(vm, gameScreen, i, levelName);
             }
         }
 
-        private static void AddAdditionalScreens(WizardData vm)
+        private static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int i, string levelName)
+        {
+            var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
+            levelScreen.BaseScreen = gameScreen.Name;
+            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
+            GlueState.Self.CurrentScreenSave = levelScreen;
+
+
+            if (i == 0)
+            {
+                GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
+            }
+
+            if (vm.AddGameScreen && vm.AddTiledMap)
+            {
+                // add a regular TMX
+                var addNewFileVm = new AddNewFileViewModel();
+
+                var tmxAti =
+                    AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                addNewFileVm.SelectedAssetTypeInfo = tmxAti;
+
+                addNewFileVm.ForcedType = tmxAti;
+                addNewFileVm.FileName = levelName + "Map";
+                await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm, levelScreen);
+
+                var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                if (mapObject != null)
+                {
+                    mapObject.SourceType = SourceType.File;
+                    mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
+                    mapObject.SourceName = "Entire File (LayeredTileMap)";
+                }
+
+                void SelectTmxRfs()
+                {
+                    GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                        .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                }
+
+                if (vm.IncludStandardTilesetInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                }
+                if (vm.IncludeGameplayLayerInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                }
+
+                if (vm.IncludeCollisionBorderInLevels)
+                {
+                    SelectTmxRfs();
+                    PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                }
+
+            }
+        }
+
+        private static async Task AddAdditionalScreens(WizardViewModel vm)
         {
             foreach (var screenName in vm.AdditionalNonGameScreens)
             {
-                TaskManager.Self.Add(() => GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
+                await TaskManager.Self.AddAsync(async () => await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
             }
         }
 
-        private static void ApplyCameraController(WizardData vm, ScreenSave gameScreen)
+        private static async Task ApplyCameraValues(WizardViewModel vm, ScreenSave gameScreen)
+        {
+            await ApplyCameraController(vm, gameScreen);
+
+            await ApplyMainCameraSettings(vm);
+        }
+
+        private static async Task ApplyMainCameraSettings(WizardViewModel vm)
+        {
+            int width = 800;
+            int height = 600;
+            decimal aspectRatioWidth = 4;
+            decimal aspectRatioHeight = 3;
+
+            int scalePercent = vm.ScalePercent;
+            if(scalePercent <= 0)
+            {
+                scalePercent = 100;
+            }
+
+            switch(vm.SelectedCameraResolution)
+            {
+                case CameraResolution._256x224:
+                    width = 256;
+                    height = 224;
+                    aspectRatioWidth = 8;
+                    aspectRatioHeight = 7;
+                    break;
+                case CameraResolution._360x240:
+                    width = 360;
+                    height = 240;
+                    aspectRatioWidth = 3;
+                    aspectRatioHeight = 2;
+                    break;
+                case CameraResolution._480x360:
+                    width = 480;
+                    height = 360;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3;
+                    break;
+                case CameraResolution._640x480:
+                    width = 640;
+                    height = 480;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._800x600:
+                    width = 800;
+                    height = 600;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._1024x768:
+                    width = 1024;
+                    height = 768;
+                    aspectRatioWidth = 4;
+                    aspectRatioHeight = 3; 
+                    break;
+                case CameraResolution._1920x1080:
+                    width = 1920;
+                    height = 1080;
+                    aspectRatioWidth = 16;
+                    aspectRatioHeight = 9; 
+                    break;
+
+            }
+
+            await TaskManager.Self.AddAsync(() =>
+            {
+                var displaySettings = GlueState.Self.CurrentGlueProject.DisplaySettings;
+                displaySettings.ResolutionWidth = width;
+                displaySettings.ResolutionHeight = height;
+
+                displaySettings.AspectRatioWidth = aspectRatioWidth;
+                displaySettings.AspectRatioHeight = aspectRatioHeight;
+                displaySettings.FixedAspectRatio = true;
+
+                displaySettings.Scale = scalePercent;
+
+            }, "Setting display settings");
+        }
+
+        private static async Task ApplyCameraController(WizardViewModel vm, ScreenSave gameScreen)
         {
             var addCameraControllerVm = new AddObjectViewModel();
             addCameraControllerVm.ForcedElementToAddTo = gameScreen;
@@ -708,17 +901,27 @@ namespace OfficialPluginsCore.Wizard.Managers
             addCameraControllerVm.SourceClassType = "FlatRedBall.Entities.CameraControllingEntity";
             addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
 
-            var cameraNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addCameraControllerVm, gameScreen, null);
+            var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos: false);
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {
-                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Targets), "PlayerList");
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    cameraNos,
+                    nameof(FlatRedBall.Entities.CameraControllingEntity.Targets),
+                    value: "PlayerList",
+                    performSaveAndGenerateCode: false,
+                    updateUi: false);
             }
             if (vm.KeepCameraInMap && vm.AddTiledMap)
             {
-                cameraNos.SetVariable(nameof(FlatRedBall.Entities.CameraControllingEntity.Map), "Map");
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(
+                    cameraNos,
+                    nameof(FlatRedBall.Entities.CameraControllingEntity.Map),
+                    value: "Map",
+                    performSaveAndGenerateCode: false,
+                    updateUi: false
+                    );
             }
         }
-
     }
 }

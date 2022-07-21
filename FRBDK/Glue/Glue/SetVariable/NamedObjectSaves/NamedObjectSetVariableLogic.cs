@@ -19,6 +19,8 @@ using Glue.IO;
 using Microsoft.Xna.Framework.Graphics;
 using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.NamedObjectSaves;
+using FlatRedBall.Glue.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -40,9 +42,9 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="changedMember">The name of the variable that has changed.</param>
         /// <param name="oldValue">The old value for the changed property.</param>
         /// <param name="parentPropertyName">The parent property containing this property, only relevant for embedded properties like X in a Rectangle. This will usually be null.</param>
-        public void ReactToNamedObjectChangedValue(string changedMember, object oldValue, string parentPropertyName = null, NamedObjectSave namedObjectSave = null)
+        public async Task ReactToNamedObjectChangedValue(string changedMember, object oldValue, string parentPropertyName = null, NamedObjectSave namedObjectSave = null)
         {
-            GlueElement element = null;
+            GlueElement element;
             if(namedObjectSave == null)
             {
                 namedObjectSave = GlueState.Self.CurrentNamedObjectSave;
@@ -52,6 +54,9 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 element = ObjectFinder.Self.GetElementContaining(namedObjectSave);
             }
+
+            // See discussion in NamedObjectVariableShowingLogic on why we don't do variable setting async
+            //TaskManager.Self.WarnIfNotInTask();
 
             if (PropertiesToMethods.ContainsKey(changedMember))
             {
@@ -140,7 +145,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember ==nameof(NamedObjectSave.SetByDerived))
             {
-                SetByDerivedSetLogic.ReactToChangedSetByDerived(namedObjectSave, element);
+                await SetByDerivedSetLogic.ReactToChangedSetByDerived(namedObjectSave, element);
             }
 
             #endregion

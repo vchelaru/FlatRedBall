@@ -28,11 +28,11 @@ namespace OfficialPlugins.Compiler.Managers
             "xnb"
         };
 
-        MainControl control;
+        BuildTabView control;
         Compiler compiler;
         CompilerViewModel viewModel;
 
-        public FileChangeManager(MainControl control, Compiler compiler, CompilerViewModel viewModel)
+        public FileChangeManager(BuildTabView control, Compiler compiler, CompilerViewModel viewModel)
         {
             this.control = control;
             this.compiler = compiler;

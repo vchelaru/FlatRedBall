@@ -57,13 +57,15 @@ namespace OfficialPlugins.SongPlugin
             AssignEvents();
         }
 
+        AssetTypeInfo[] SongAtis => AvailableAssetTypes.Self.AllAssetTypes
+                .Where(item => item.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song")
+                .ToArray();
+
         private void AdjustAssetTypeInfo()
         {
-            var atis = AvailableAssetTypes.Self.AllAssetTypes
-                .Where(item => item.QualifiedRuntimeTypeName.QualifiedType ==
-                    "Microsoft.Xna.Framework.Media.Song");
+            var atis = SongAtis;
 
-            foreach(var ati in atis)
+            foreach (var ati in atis)
             {
                 ati.CustomLoadFunc = (element, nos, rfs, contentManager) =>
                 {
@@ -81,7 +83,7 @@ namespace OfficialPlugins.SongPlugin
                     }
 
                     var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati); // FlatRedBall.IO.FileManager.RemoveExtension(rfs.Name).ToLowerInvariant().Replace("\\", "/");
-                    if(rfs.DestroyOnUnload == false)
+                    if (rfs.DestroyOnUnload == false)
                     {
                         contentManager = "FlatRedBall.FlatRedBallServices.GlobalContentManager";
 
@@ -91,7 +93,7 @@ namespace OfficialPlugins.SongPlugin
                 };
 
             }
-                
+
         }
 
         private void CreateCodeGenerator()
@@ -103,6 +105,41 @@ namespace OfficialPlugins.SongPlugin
         private void AssignEvents()
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
+        }
+
+        private void HandleGluxLoadEarly()
+        {
+            var atis = SongAtis;
+
+            foreach (var ati in atis)
+            {
+                // The default add to managers method is:
+                // FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == "Global")
+                // but it should only be the case *if* we are in edit mode. Otherwise, we should always play the song (don't have the if check)
+                var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+                string addToManagersMethod = null;
+                if (supportsEditMode)
+                {
+                    addToManagersMethod =
+                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
+                        "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
+                }
+                else
+                {
+                    addToManagersMethod =
+
+                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
+                        //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
+                }
+                if (ati.AddToManagersMethod.Count == 1)
+                {
+                    // fall back to the old load call:
+                    ati.AddToManagersMethod[0] = addToManagersMethod;
+                }
+            }
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
@@ -119,7 +156,7 @@ namespace OfficialPlugins.SongPlugin
                 shouldShowControl = true;
             }
 
-            if(shouldShowControl)
+            if (shouldShowControl)
             {
                 if (control == null)
                 {

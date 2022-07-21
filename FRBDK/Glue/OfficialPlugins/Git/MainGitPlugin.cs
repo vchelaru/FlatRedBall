@@ -67,18 +67,21 @@ namespace OfficialPlugins.Git
             if(GlueState.Self.CurrentGlueProject != null)
             {
                 var contents =
-@"git fetch
-git pull
-cd..
-cd Gum
+@":: Get the latest code for your project
 git fetch
 git pull
-cd..
-cd FlatRedBall
+:: Get the latest Gum
+cd ..\Gum
 git fetch
 git pull
+:: Get the latest FlatRedBall
+cd ..\FlatRedBall
+git fetch
+git pull
+:: Build Glue with All solution
 cd FRBDK\Glue
 dotnet build ""Glue with All.sln""
+:: Run the newly built Glue
 cd Glue\bin\x86\Debug\netcoreapp3.0\
 start GlueFormsCore.exe";
                 var locationToSave = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
@@ -88,6 +91,7 @@ start GlueFormsCore.exe";
                 try
                 {
                     System.IO.File.WriteAllText(destinationFileName, contents);
+                    GlueCommands.Self.PrintOutput($"Added batch file to:\n{destinationFileName}");
                 }
                 catch (Exception ex)
                 {

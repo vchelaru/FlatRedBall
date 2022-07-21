@@ -95,7 +95,22 @@ namespace FlatRedBall.Math.Collision
         // reference as what the CollisionMangaer holds on to.
         // I want the relationship to know what is partitioned so
         // the user can call DoCollision and have it partition automatically.
-        public IEnumerable<PartitionedValuesBase> Partitions { get; set; }
+        // Update 4/27/2022 - we proably should replace the setter with a function that
+        // takes a List<PartitionedValuesBase>. Furthermore, the setter is needed, but once
+        // assigned, Partitions is only used internally in CollisionRelationship, so the public
+        // property should be removed too. But...we don't want to break projects so we'll leave it
+        // here for now, and have it store the internal value as a list so a for loop can be done without
+        // allocating in a foreach.
+        public IEnumerable<PartitionedValuesBase> Partitions
+        {
+            get => partitions;
+            set
+            {
+                partitions = value as List<PartitionedValuesBase>;
+            }
+        }
+
+        protected List<PartitionedValuesBase> partitions;
 
         public string Name { get; set; }
 
@@ -883,8 +898,9 @@ namespace FlatRedBall.Math.Collision
             PartitionedValuesBase firstPartition = null;
             PartitionedValuesBase secondPartition = null;
 
-            foreach (var partition in Partitions)
+            for(int i = 0; i < partitions.Count; i++)
             {
+                var partition = partitions[i];
                 if (partition.PartitionedObject == singleObject)
                 {
                     firstPartition = partition;
@@ -1044,8 +1060,9 @@ namespace FlatRedBall.Math.Collision
             PartitionedValuesBase firstPartition = null;
             PartitionedValuesBase secondPartition = null;
 
-            foreach (var partition in Partitions)
+            for (int i = 0; i < partitions.Count; i++)
             {
+                var partition = partitions[i];
                 if (partition.PartitionedObject == list)
                 {
                     firstPartition = partition;
@@ -1600,8 +1617,10 @@ namespace FlatRedBall.Math.Collision
         {
             firstPartition = null;
             secondPartition = null;
-            foreach (var partition in Partitions)
+
+            for (int i = 0; i < partitions.Count; i++)
             {
+                var partition = partitions[i];
                 if (partition.PartitionedObject == firstList)
                 {
                     firstPartition = partition;

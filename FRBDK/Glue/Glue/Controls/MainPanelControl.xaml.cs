@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -16,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -33,6 +35,7 @@ namespace GlueFormsCore.Controls
     {
         #region Fields/Properties
 
+        //public static string AppTheme = "Dark";
         public static string AppTheme = "Light";
         public static ResourceDictionary ResourceDictionary { get; private set; }
         public static bool IsExiting { get; private set; }
@@ -264,9 +267,11 @@ namespace GlueFormsCore.Controls
             // If this is coming from a text box, don't try to apply hotkeys
             // Maybe in the future we want to be selective, like only apply certain
             // hotkeys (ctrl+f) but not others (delete)?
-            var isTextBox = e.OriginalSource is TextBox;
+            var isTextBox = e.OriginalSource is TextBoxBase;
 
-            if (HotkeyManager.Self.TryHandleKeys(e, isTextBox))
+            var isHandled = HotkeyManager.Self.TryHandleKeys(e, isTextBox).Result;
+
+            if (isHandled)
             {
                 e.Handled = true;
             }
@@ -278,7 +283,18 @@ namespace GlueFormsCore.Controls
                 FileWatchManager.Flush();
         }
 
-
-
+        private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(e.XButton1 == MouseButtonState.Pressed)
+            {
+                // navigate back
+                TreeNodeStackManager.Self.GoBack();
+            }
+            if(e.XButton2 == MouseButtonState.Pressed)
+            {
+                // navigate forward
+                TreeNodeStackManager.Self.GoForward();
+            }
+        }
     }
 }

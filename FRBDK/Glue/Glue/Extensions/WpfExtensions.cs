@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO.Packaging;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace GlueFormsCore.Extensions
 {
@@ -21,7 +25,7 @@ namespace GlueFormsCore.Extensions
         public static void ShiftWindowOntoScreen(this Window window)
         {
             var heightToUse = window.Height;
-            if(double.IsNaN(heightToUse))
+            if (double.IsNaN(heightToUse))
             {
                 heightToUse = 50; // just assume it has *some* height...
             }
@@ -172,6 +176,29 @@ namespace GlueFormsCore.Extensions
             }
 
             return dockedRects;
+        }
+
+    }
+    public static class UserControlExtension
+    {
+        public static void LoadViewFromUri(this UserControl userControl, string baseUri)
+        {
+            try
+            {
+                var resourceLocater = new Uri(baseUri, UriKind.Relative);
+                var exprCa = (PackagePart)typeof(System.Windows.Application).GetMethod("GetResourceOrContentPart", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { resourceLocater });
+                var stream = exprCa.GetStream();
+                var uri = new Uri((Uri)typeof(BaseUriHelper).GetProperty("PackAppBaseUri", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null, null), resourceLocater);
+                var parserContext = new ParserContext
+                {
+                    BaseUri = uri
+                };
+                typeof(XamlReader).GetMethod("LoadBaml", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { stream, parserContext, userControl, true });
+            }
+            catch (Exception)
+            {
+                //log
+            }
         }
     }
 }

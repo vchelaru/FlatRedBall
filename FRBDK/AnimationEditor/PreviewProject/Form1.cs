@@ -37,7 +37,7 @@ namespace PreviewProject
             InitializeComponent();
 
             mMainControl = new FlatRedBall.AnimationEditorForms.MainControl();
-            mMainControl.AnimationChainChange += HandleAnimationChainChange;
+            ApplicationEvents.Self.AnimationChainsChanged += HandleAnimationChainChange;
             // We want to make sure to always have a good animation chain:
             this.Controls.Add(mMainControl);
             mMainControl.Dock = DockStyle.Fill;
@@ -55,7 +55,7 @@ namespace PreviewProject
 
         private void HandleAchxLoaded(string fileName)
         {
-            mMainControl.LoadAnimationChain(fileName);
+            AppCommands.Self.LoadAnimationChain(fileName);
 
             appSettings.AddFile(fileName);
 
@@ -103,7 +103,7 @@ namespace PreviewProject
             wasAnimationLoaded = false;
             if (commandLineArgs.Length == 2)
             {
-                mMainControl.LoadAnimationChain(commandLineArgs[1]);
+                AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
                 SetFormTextToLoadedFile();
 
                 wasAnimationLoaded = true;
@@ -200,7 +200,7 @@ namespace PreviewProject
             }
             else
             {
-                mMainControl.SaveCurrentAnimationChain();
+                AppCommands.Self.SaveCurrentAnimationChainList();
 
                 this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
             }
@@ -212,13 +212,13 @@ namespace PreviewProject
             this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
         }
 
-        private void HandleAnimationChainChange(object sender, EventArgs e)
+        private void HandleAnimationChainChange()
         {
             bool autosave = true;
 
             if(autosave && !string.IsNullOrEmpty(ProjectManager.Self.FileName))
             {
-                mMainControl.SaveCurrentAnimationChain();
+                AppCommands.Self.SaveCurrentAnimationChainList();
 
                 this.Text = "AnimationEditor - " + ProjectManager.Self.FileName;
 

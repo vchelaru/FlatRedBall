@@ -53,22 +53,31 @@ namespace GlueControl.Editing.Visuals
 
         #endregion
 
-        public Arrow(bool firstArrow = false, bool secondArrow = true)
+        public Arrow(FlatRedBall.Graphics.Layer layer, bool firstArrow = false, bool secondArrow = true)
         {
-            MainLine = ShapeManager.AddLine();
+            MainLine = new Line();
+            ShapeManager.AddToLayer(MainLine, layer);
 
             if (firstArrow)
             {
-                FirstArrow.Add(ShapeManager.AddLine());
-                FirstArrow.Add(ShapeManager.AddLine());
-                FirstArrow.Add(ShapeManager.AddLine());
+                for (int i = 0; i < 3; i++)
+                {
+                    var arrowLine = new Line();
+                    ShapeManager.AddToLayer(arrowLine, layer);
+                    FirstArrow.Add(arrowLine);
+
+                }
 
             }
             if (secondArrow)
             {
-                SecondArrow.Add(ShapeManager.AddLine());
-                SecondArrow.Add(ShapeManager.AddLine());
-                SecondArrow.Add(ShapeManager.AddLine());
+                for (int i = 0; i < 3; i++)
+                {
+                    var arrowLine = new Line();
+                    ShapeManager.AddToLayer(arrowLine, layer);
+                    SecondArrow.Add(arrowLine);
+
+                }
             }
         }
 
@@ -79,7 +88,11 @@ namespace GlueControl.Editing.Visuals
 
             var angle = (second - first).Angle() ?? 0;
 
-            const float ArrowSizeX = 5;
+
+            var pixelsPerUnit = FlatRedBall.Camera.Main.PixelsPerUnitAt((first.Z + second.Z) / 2.0f);
+
+            float ArrowSizeX = 5 / pixelsPerUnit;
+            float ArrowSizeY = ArrowSizeX;
 
             if (FirstArrow.Count > 0)
             {
@@ -97,10 +110,10 @@ namespace GlueControl.Editing.Visuals
             {
                 mainSecond += (Vector3.Left * ArrowSizeX).RotatedBy(angle);
 
-                var firstLineOffset = new Vector3(-ArrowSizeX, 5, 0).RotatedBy(angle);
+                var firstLineOffset = new Vector3(-ArrowSizeX, ArrowSizeY, 0).RotatedBy(angle);
                 SecondArrow[0].SetFromAbsoluteEndpoints(second, second + firstLineOffset);
 
-                var secondLineOffset = new Vector3(-ArrowSizeX, -5, 0).RotatedBy(angle);
+                var secondLineOffset = new Vector3(-ArrowSizeX, -ArrowSizeY, 0).RotatedBy(angle);
                 SecondArrow[1].SetFromAbsoluteEndpoints(second, second + secondLineOffset);
 
                 SecondArrow[2].SetFromAbsoluteEndpoints(
@@ -110,6 +123,7 @@ namespace GlueControl.Editing.Visuals
 
             MainLine.SetFromAbsoluteEndpoints(mainFirst, mainSecond);
         }
+
 
         public void Destroy()
         {

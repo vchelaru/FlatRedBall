@@ -36,6 +36,7 @@ using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.FormHelpers;
 using System.Windows.Media.Imaging;
 using FlatRedBall.Glue.ViewModels;
+using OfficialPlugins.Compiler.CodeGeneration.GlueCalls;
 
 namespace OfficialPlugins.Compiler
 {
@@ -50,7 +51,7 @@ namespace OfficialPlugins.Compiler
 
         public CompilerViewModel CompilerViewModel { get; private set; }
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; private set; }
-        public MainControl MainControl { get; private set; } 
+        public BuildTabView MainControl { get; private set; } 
 
         public static CompilerViewModel MainViewModel { get; private set; }
 
@@ -58,6 +59,7 @@ namespace OfficialPlugins.Compiler
         PluginTab buildTab;
         PluginTab glueViewSettingsTab;
         GlueViewSettings glueViewSettingsView;
+        BuildSettingsUser BuildSettingsUser;
 
         Game1GlueControlGenerator game1GlueControlGenerator;
 
@@ -84,6 +86,7 @@ namespace OfficialPlugins.Compiler
         }
 
         FilePath JsonSettingsFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "CompilerSettings.json";
+        FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
         bool ignoreViewModelChanges = false;
 
@@ -119,7 +122,6 @@ namespace OfficialPlugins.Compiler
                     MoveGameToHost();
                 }
                 
-                await SendGlueViewSettingsToGame();
 
                 if(CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit)
                 {
@@ -180,7 +182,7 @@ namespace OfficialPlugins.Compiler
 
             var busyTimerFrequency = 250; // ms
             busyUpdateTimer = new Timer(busyTimerFrequency);
-            busyUpdateTimer.Elapsed += async (not, used) => await UpdateIsBusyStatus();
+            busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
             busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
             busyUpdateTimer.Start();
 
@@ -197,30 +199,36 @@ namespace OfficialPlugins.Compiler
         private void AssignEvents()
         {
             var manager = new FileChangeManager(MainControl, compiler, CompilerViewModel);
-            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            
             this.ReactToLoadedGlux += HandleGluxLoaded;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
+            
             this.ReactToNewFileHandler += RefreshManager.Self.HandleNewFile;
+            this.ReactToFileChangeHandler += manager.HandleFileChanged;
+            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
+
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
-            this.ReactToCodeFileChange += RefreshManager.Self.HandleFileChanged;
             this.NewEntityCreated += RefreshManager.Self.HandleNewEntityCreated;
-
-
-            this.NewScreenCreated += (newScreen) =>
+            this.NewScreenCreated += async (newScreen) =>
             {
                 ToolbarController.Self.HandleNewScreenCreated(newScreen);
-                RefreshManager.Self.HandleNewScreenCreated();
+                await RefreshManager.Self.HandleNewScreenCreated();
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
+
             this.ReactToNewObjectHandler += RefreshManager.Self.HandleNewObjectCreated;
+            this.ReactToNewObjectListAsync += RefreshManager.Self.HandleNewObjectList;
+
             this.ReactToObjectRemoved += async (owner, nos) =>
                 await RefreshManager.Self.HandleObjectRemoved(owner, nos);
             this.ReactToObjectListRemoved += async (ownerList, list) =>
                 await RefreshManager.Self.HandleObjectListRemoved(ownerList, list);
 
+
             this.ReactToElementVariableChange += HandleElementVariableChanged;
+            this.ReactToNamedObjectChangedValueList += (changeList) => RefreshManager.Self.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
             this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
             this.ReactToItemSelectHandler += HandleItemSelected;
@@ -313,21 +321,21 @@ namespace OfficialPlugins.Compiler
                         return;
                     }
 
-                    var screen = GlueState.Self.CurrentScreenSave;
+                    var element = GlueState.Self.CurrentElement;
 
                     NamedObjectSave newNos = null;
 
-                    if (screen != null)
+                    if (element != null)
                     {
                         var addObjectViewModel = new AddObjectViewModel();
                         addObjectViewModel.SourceType = SourceType.Entity;
                         addObjectViewModel.SelectedEntitySave = entitySave;
 
-                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, screen);
+                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
 
                         newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
                             addObjectViewModel,
-                            GlueState.Self.CurrentScreenSave,
+                            element,
                             listToAddTo);
                     }
 
@@ -392,7 +400,7 @@ namespace OfficialPlugins.Compiler
 
         private void HandleNamedObjectVariableOrPropertyChanged(string changedMember, object oldValue, NamedObjectSave namedObject)
         {
-            RefreshManager.Self.HandleNamedObjectValueChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
+            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
@@ -458,7 +466,7 @@ namespace OfficialPlugins.Compiler
 
         #endregion
 
-        private async Task UpdateIsBusyStatus()
+        private async Task DoGetCommandsTimedLogic()
         {
             this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
             var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
@@ -483,7 +491,7 @@ namespace OfficialPlugins.Compiler
 
                         if (response?.Commands.Count > 0)
                         {
-                            CommandReceiver.HandleCommandsFromGame(response.Commands,
+                            await CommandReceiver.HandleCommandsFromGame(response.Commands,
                                 GlueViewSettingsViewModel.PortNumber);
                         }
                         else
@@ -496,15 +504,19 @@ namespace OfficialPlugins.Compiler
 
                         this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
 
-                        if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
-                        {
+                        // Vic says - this causes problems when a game crashes. It continues to print this out
+                        // which makes it harder to see the callstack. I don't know if this is needed anymore now
+                        // that we have a more reliable communication system from glue<->game, so I'm going to comment
+                        // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
+                        //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
+                        //{
 
-                            MainControl.PrintOutput(
-                                $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
-                                $"{response?.Commands.Count}" +
-                                $"\n\tGet: {getDuration}" +
-                                $"\n\tHandle: {handleDuration}");
-                        }
+                        //    MainControl.PrintOutput(
+                        //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
+                        //        $"{response?.Commands.Count}" +
+                        //        $"\n\tGet: {getDuration}" +
+                        //        $"\n\tHandle: {handleDuration}");
+                        //}
                     }
                 }
                 catch
@@ -567,6 +579,28 @@ namespace OfficialPlugins.Compiler
             return compilerSettings;
         }
 
+        private void LoadOrCreateBuildSettings()
+        {
+            BuildSettingsUser = null;
+            if (BuildSettingsUserFilePath.Exists())
+            {
+                try
+                {
+                    var text = System.IO.File.ReadAllText(BuildSettingsUserFilePath.FullPath);
+                    BuildSettingsUser = JsonConvert.DeserializeObject<BuildSettingsUser>(text);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+
+            if(BuildSettingsUser == null)
+            {
+                BuildSettingsUser = new BuildSettingsUser();
+            }
+        }
+
         private bool IsFrbNewEnough()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
@@ -583,6 +617,8 @@ namespace OfficialPlugins.Compiler
         private void HandleGluxLoaded()
         {
             var model = LoadOrCreateCompilerSettings();
+            LoadOrCreateBuildSettings();
+            Compiler.Self.BuildSettingsUser = BuildSettingsUser;
             ignoreViewModelChanges = true;
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
@@ -620,6 +656,7 @@ namespace OfficialPlugins.Compiler
             if(IsFrbNewEnough())
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
@@ -641,6 +678,8 @@ namespace OfficialPlugins.Compiler
 
         private async void HandleToolbarRunClicked(object sender, EventArgs e)
         {
+            // force the view model to not be in edit mode if this was clicked
+            CompilerViewModel.PlayOrEdit = PlayOrEdit.Play;
             await BuildAndRun();
         }
 
@@ -655,13 +694,14 @@ namespace OfficialPlugins.Compiler
 
             MainViewModel = CompilerViewModel;
 
-            MainControl = new MainControl();
+            MainControl = new BuildTabView();
             MainControl.DataContext = CompilerViewModel;
 
             Runner.Self.ViewModel = CompilerViewModel;
             RefreshManager.Self.ViewModel = CompilerViewModel;
             DragDropManagerGameWindow.CompilerViewModel = CompilerViewModel;
             CommandReceiver.CompilerViewModel = CompilerViewModel;
+            CommandReceiver.PrintOutput = MainControl.PrintOutput;
             RefreshManager.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
             VariableSendingManager.Self.ViewModel = CompilerViewModel;
@@ -700,11 +740,15 @@ namespace OfficialPlugins.Compiler
                     CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
+                case nameof(ViewModels.GlueViewSettingsViewModel.ShowGrid):
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.SetBackgroundColor):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundGreen):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundBlue):
+                case nameof(ViewModels.GlueViewSettingsViewModel.SnapSize):
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableSnapping):
+                case nameof(ViewModels.GlueViewSettingsViewModel.PolygonPointSnapSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities):
                     await SendGlueViewSettingsToGame();
                     break;
@@ -719,12 +763,16 @@ namespace OfficialPlugins.Compiler
         {
             var dto = new Dtos.GlueViewSettingsDto
             {
+                ShowGrid = GlueViewSettingsViewModel.ShowGrid,
                 GridSize = GlueViewSettingsViewModel.GridSize,
                 ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,
                 BackgroundRed = GlueViewSettingsViewModel.BackgroundRed,
                 BackgroundGreen = GlueViewSettingsViewModel.BackgroundGreen,
                 BackgroundBlue = GlueViewSettingsViewModel.BackgroundBlue,
+                EnableSnapping = GlueViewSettingsViewModel.EnableSnapping,
+                SnapSize = GlueViewSettingsViewModel.SnapSize,
+                PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
             };
 
             await CommandSender.Send(dto);
@@ -780,7 +828,11 @@ namespace OfficialPlugins.Compiler
         private async Task ReactToPlayOrEditSet()
         {
             var inEditMode = CompilerViewModel.PlayOrEdit == PlayOrEdit.Edit;
-            var dto = new Dtos.SetEditMode { IsInEditMode = inEditMode };
+            var dto = new Dtos.SetEditMode 
+            { 
+                IsInEditMode = inEditMode ,
+                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName.FullPath
+            };
             var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
             if (response?.Succeeded != true)
@@ -835,6 +887,7 @@ namespace OfficialPlugins.Compiler
                     }
                 }
 
+                await SendGlueViewSettingsToGame();
             }
             else
             {
@@ -907,6 +960,7 @@ namespace OfficialPlugins.Compiler
             if (IsFrbNewEnough())
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEditMode), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
@@ -979,8 +1033,27 @@ namespace OfficialPlugins.Compiler
                 }
             };
 
+            MainControl.MSBuildSettingsClicked += () =>
+            {
+                var viewModel = new BuildSettingsWindowViewModel();
+                var view = new BuildSettingsWindow();
+                view.DataContext = viewModel;
+                viewModel.SetFrom(BuildSettingsUser);
 
+                var results = view.ShowDialog();
 
+                if(results == true)
+                {
+                    // apply VM:
+                    viewModel.ApplyTo(BuildSettingsUser);
+
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        var textToSave = JsonConvert.SerializeObject(BuildSettingsUser);
+                        System.IO.File.WriteAllText(BuildSettingsUserFilePath.FullPath, textToSave);
+                    });
+                }
+            };
         }
 
 
@@ -1065,6 +1138,18 @@ namespace OfficialPlugins.Compiler
             if (handle != null)
             {
                 await gameHostView.EmbedHwnd(handle.Value);
+            }
+            else
+            {
+                if(gameProcess == null)
+                {
+                    GlueCommands.Self.PrintOutput("Failed to find game handle.");
+                }
+                else
+                {
+                    GlueCommands.Self.PrintOutput("Failed to find window handle.");
+                }
+                
             }
         }
 

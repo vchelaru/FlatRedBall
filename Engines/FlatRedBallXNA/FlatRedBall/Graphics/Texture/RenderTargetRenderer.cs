@@ -97,13 +97,13 @@ namespace FlatRedBall.Graphics.Texture
             //device.BlendState = BlendState.AlphaBlend;
             FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
 
-
+            var oldViewport = device.Viewport;
             device.Viewport = Camera.GetViewport();
             device.SetRenderTarget(mRenderTarget);
             device.Clear(Microsoft.Xna.Framework.Color.Transparent);
             FlatRedBall.Graphics.Renderer.DrawCamera(Camera, null);
             device.SetRenderTarget(null);
-
+            device.Viewport = oldViewport;
         }
 
         public void PerformRender(string contentManagerName, string textureName)

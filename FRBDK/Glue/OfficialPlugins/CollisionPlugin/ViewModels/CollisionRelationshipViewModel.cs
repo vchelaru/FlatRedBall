@@ -34,6 +34,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         public const string EntireObject = "<Entire Object>";
         public const string AlwaysColliding = "<Always Colliding>";
+        public const string SelfCollisionSuffix = "(self collision)";
 
         [SyncedProperty]
         public string FirstCollisionName

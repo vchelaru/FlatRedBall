@@ -94,7 +94,7 @@ namespace FlatRedBall.Math
         }
 
         /// <summary>
-        /// Determines the shortest absolute difference between two angles. For example, AngleToAngle(PI/4, -PI/4) will return -PI/2
+        /// Determines the shortest absolute difference between two angles. For example, AngleToAngle(PI/4, -PI/4) will return -PI/2.
         /// </summary>
         /// <remarks>
         /// This method will never return a value with absolute value greater than PI.  It will return 
@@ -183,6 +183,68 @@ namespace FlatRedBall.Math
             float desiredAngle = (float)System.Math.Atan2(desiredYAt600, xAt600);
 
             return 2 * desiredAngle; 
+        }
+
+        public static List<Microsoft.Xna.Framework.Point> GetGridLine(int x0, int y0, int x1, int y1)
+        {
+            var toReturn = new List<Microsoft.Xna.Framework.Point>();
+            int dy = y1 - y0;
+            int dx = x1 - x0;
+            int stepx, stepy;
+
+            if (dy < 0) { dy = -dy; stepy = -1; } else { stepy = 1; }
+            if (dx < 0) { dx = -dx; stepx = -1; } else { stepx = 1; }
+            dy <<= 1;                                                  // dy is now 2*dy
+            dx <<= 1;                                                  // dx is now 2*dx
+
+            toReturn.Add(new Microsoft.Xna.Framework.Point
+            {
+                X = x0,
+                Y = y0,
+            });
+
+            if (dx > dy)
+            {
+                int fraction = dy - (dx >> 1);                         // same as 2*dy - dx
+                while (x0 != x1)
+                {
+                    if (fraction >= 0)
+                    {
+                        y0 += stepy;
+                        fraction -= dx;                                // same as fraction -= 2*dx
+                    }
+                    x0 += stepx;
+                    fraction += dy;                                    // same as fraction -= 2*dy
+
+                    //if (x0 > -1 && y0 > -1 &&
+                    //    x0 < mNumberOfXTiles && y0 < mNumberOfYTiles)
+                    {
+                        toReturn.Add(new Microsoft.Xna.Framework.Point { X = x0, Y = y0 });
+                    }
+                }
+            }
+            else
+            {
+                int fraction = dx - (dy >> 1);
+                while (y0 != y1)
+                {
+                    if (fraction >= 0)
+                    {
+                        x0 += stepx;
+                        fraction -= dy;
+                    }
+                    y0 += stepy;
+                    fraction += dx;
+
+                    //if (x0 > -1 && y0 > -1 &&
+                    //    x0 < mNumberOfXTiles && y0 < mNumberOfYTiles)
+                    {
+                        toReturn.Add(new Microsoft.Xna.Framework.Point { X = x0, Y = y0 });
+                    }
+                }
+            }
+
+            return toReturn;
         }
 
         public static Point GetPointInCircle(float radius)

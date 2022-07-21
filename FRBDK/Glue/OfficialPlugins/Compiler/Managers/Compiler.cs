@@ -3,6 +3,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
+using OfficialPlugins.Compiler.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -90,7 +91,9 @@ namespace OfficialPlugins.Compiler
             @"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe",
 
         };
-        
+
+        public BuildSettingsUser BuildSettingsUser { get; set; }
+
         FilePath msBuildLocation;
         FilePath MsBuildLocation
         {
@@ -98,12 +101,20 @@ namespace OfficialPlugins.Compiler
             {
                 if(msBuildLocation == null)
                 {
-                    foreach(var item in AvailableLocations)
+                    FilePath filePath = BuildSettingsUser.CustomMsBuildLocation;
+                    if(filePath?.Exists() == true)
                     {
-                        if(item.Exists())
+                        msBuildLocation = filePath;
+                    }
+                    else
+                    {
+                        foreach(var item in AvailableLocations)
                         {
-                            msBuildLocation = item;
-                            break;
+                            if(item.Exists())
+                            {
+                                msBuildLocation = item;
+                                break;
+                            }
                         }
                     }
                 }

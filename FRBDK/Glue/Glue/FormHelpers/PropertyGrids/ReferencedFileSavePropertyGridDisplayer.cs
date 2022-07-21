@@ -168,7 +168,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
                 ProjectSpecificFile projectSpecificFile = this.collection[index];
                 StringBuilder sb = new StringBuilder();
-                sb.Append(projectSpecificFile.FilePath);
+                sb.Append(projectSpecificFile.File.FullPath);
 
                 return sb.ToString();
             }
@@ -276,6 +276,8 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 }
                 member.TypeConverter = availableTools;
             }
+
+
         }
 
         ProjectSpecificFileDisplayer GetProjectSpecificFileMember()
@@ -323,6 +325,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         private void UpdateIncludedAndExcluded(ReferencedFileSave instance)
         {
+            ForcedReadOnlyProperties.Clear();
             ResetToDefault();
 
             AssetTypeInfo ati = instance.GetAssetTypeInfo();
@@ -333,6 +336,8 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             ExcludeMember(nameof(ReferencedFileSave.Properties));
 
             ContainerType containerType = instance.GetContainerType();
+
+
 
             if (containerType == ContainerType.Entity)
             {
@@ -445,6 +450,34 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             {
 
             }
+
+            if(instance.IsCreatedByWildcard)
+            {
+                ApplyWildcardProperties(instance);
+            }
+            else
+            {
+                ExcludeMember(nameof(ReferencedFileSave.IsCreatedByWildcard));
+                //SetReadOnly(nameof(ReferencedFileSave.IsLoadedThroughWildcard), true);
+            }
+        }
+
+        private void ApplyWildcardProperties(ReferencedFileSave instance)
+        {
+            var propertyInfos = instance.GetType().GetProperties();
+            // We have to use reflection here, it's not yet populated in mNativePropertyGridMembers
+            foreach (var property in propertyInfos)
+            {
+                if(property.Name != nameof(ReferencedFileSave.IsCreatedByWildcard))
+                {
+                    ForcedReadOnlyProperties.Add(property.Name);
+                }
+            }
+            foreach (var property in this.CustomPropertyGridMembers)
+            {
+                ForcedReadOnlyProperties.Add(property.Name);
+            }
+
         }
 
         private void AddProjectSpecificFileMember()

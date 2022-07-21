@@ -193,8 +193,6 @@ namespace Glue
                 initializationWindow.Message = "Loading Custom Type Info";
                 Application.DoEvents();
 
-
-                Application.DoEvents();
                 // Gotta do this too before Loading Glue Settings
                 ProjectManager.Initialize();
 
@@ -378,7 +376,7 @@ namespace Glue
             var wasInTask = TaskManager.Self.IsInTask();
             Task toReturn = Task.CompletedTask;
 
-            base.Invoke((MethodInvoker)delegate
+            var asyncResult = base.BeginInvoke((MethodInvoker)delegate
             {
                 try
                 {
@@ -400,6 +398,8 @@ namespace Glue
                     // otherwise, we don't care, they're exiting
                 }
             });
+
+            asyncResult.AsyncWaitHandle.WaitOne();
 
             return toReturn;
         }
@@ -589,8 +589,11 @@ namespace Glue
 
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            PluginManager.ReactToGlueClose();
+            // ReactToCloseProject should be called before ReactToGlueClose so that plugins 
+            // can react to the glux unloaded before the plugins get disabled.
             MainWpfControl.ReactToCloseProject(true, true);
+
+            PluginManager.ReactToGlueClose();
 
             GlueCommands.Self.CloseGlue();            
         }

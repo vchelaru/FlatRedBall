@@ -11,6 +11,8 @@ using FlatRedBall.Glue.Controls;
 using EntityInputMovementPlugin.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.FormHelpers;
+using System.Threading.Tasks;
+using PlatformerPluginCore.Views;
 
 namespace EntityInputMovementPlugin
 {
@@ -40,6 +42,7 @@ namespace EntityInputMovementPlugin
         {
             base.RegisterCodeGenerator(new TopDownPlugin.CodeGenerators.EntityCodeGenerator());
             base.RegisterCodeGenerator(new FlatRedBall.PlatformerPlugin.Generators.EntityCodeGenerator());
+            base.RegisterCodeGenerator(new PlatformerPluginCore.CodeGenerators.EntityPlatformerAnimationCodeGenerator());
             base.RegisterCodeGenerator(new CodeGenerators.EntityCodeGenerator());
             AssignEvents();
         }
@@ -67,7 +70,7 @@ namespace EntityInputMovementPlugin
 
         private async void HandleGluxLoaded()
         {
-            bool didChangeGlux = UpdateTopDownCodePresenceInProject();
+            bool didChangeGlux = await UpdateTopDownCodePresenceInProject();
 
             UpdatePlatformerCodePresenceInProject();
 
@@ -89,9 +92,9 @@ namespace EntityInputMovementPlugin
             }
         }
 
-        private void HandleEntityImported(GlueElement newElement)
+        private async void HandleEntityImported(GlueElement newElement)
         {
-            UpdateTopDownCodePresenceInProject();
+            await UpdateTopDownCodePresenceInProject();
             UpdatePlatformerCodePresenceInProject();
         }
 
@@ -108,21 +111,24 @@ namespace EntityInputMovementPlugin
             if (anyPlatformer)
             {
                 // just in case it's not there:
-                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSaveEnumFile();
+                FlatRedBall.PlatformerPlugin.Generators.EnumFileGenerator.Self.GenerateAndSave();
+                FlatRedBall.PlatformerPlugin.Generators.IPlatformerCodeGenerator.Self.GenerateAndSave();
+                FlatRedBall.PlatformerPlugin.Generators.PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
+                
             }
         }
 
-        private static bool UpdateTopDownCodePresenceInProject()
+        private static async Task<bool> UpdateTopDownCodePresenceInProject()
         {
             var entities = GlueState.Self.CurrentGlueProject.Entities;
 
-            var anyTopDownEntities = entities.Any(item =>
+            var firstTopDownEntity = entities.FirstOrDefault(item =>
             {
                 var properties = item.Properties;
                 return properties.GetValue<bool>(nameof(TopDownPlugin.ViewModels.TopDownEntityViewModel.IsTopDown));
             });
 
-            if (anyTopDownEntities)
+            if (firstTopDownEntity != null)
             {
                 // just in case it's not there:
                 TopDownPlugin.CodeGenerators.EnumFileGenerator.Self.GenerateAndSave();
@@ -131,6 +137,17 @@ namespace EntityInputMovementPlugin
                 TopDownPluginCore.CodeGenerators.AiTargetLogicCodeGenerator.Self.GenerateAndSave();
                 TopDownPlugin.CodeGenerators.AnimationCodeGenerator.Self.GenerateAndSave();
 
+                var topDownController = TopDownPlugin.Controllers.MainController.Self;
+
+                // This guarantees a instance exists in the controller and returns it...
+                var viewModel =
+                    TopDownPlugin.Controllers.MainController.Self.GetViewModel();
+                // ...updating to the argument entity will update the view model that was returned in the last call.
+                TopDownPlugin.Controllers.MainController.Self.UpdateTo(firstTopDownEntity);
+                
+                await topDownController.GenerateAndAddCsv(
+                    firstTopDownEntity,
+                    viewModel);
             }
 
             // remove requirement for the old top-down plugin otherwise projects will get a message forever about it:
@@ -189,7 +206,7 @@ namespace EntityInputMovementPlugin
             var platformerViewModel = FlatRedBall.PlatformerPlugin.Controllers.MainController.Self.GetViewModel();
             mainViewModel.PlatformerViewModel = platformerViewModel;
             mainView.PlatformerView.DataContext = platformerViewModel;
-
+            PlatformerPluginCore.Controllers.AnimationController.PlatformerViewModel = platformerViewModel;
             #endregion
 
 

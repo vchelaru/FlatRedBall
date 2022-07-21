@@ -242,16 +242,28 @@ namespace FlatRedBall.Math.Geometry
         {
             mCircles.Add(circle);
         }
+        public bool Contains(Circle circle) => mCircles.Contains(circle);
 
         public void Add(AxisAlignedRectangle rectangle)
         {
             mAxisAlignedRectangles.Add(rectangle);
         }
 
+        public bool Contains(AxisAlignedRectangle rectangle) => mAxisAlignedRectangles.Contains(rectangle);
+
         public void Add(Polygon polygon)
         {
             mPolygons.Add(polygon);
         }
+
+        public bool Contains(Polygon polygon) => mPolygons.Contains(polygon);
+
+        public void Add(AxisAlignedCube cube) => mAxisAlignedCubes.Add(cube);
+        public bool Contains(AxisAlignedCube cube) => mAxisAlignedCubes.Contains(cube);
+
+        public void Add(Sphere sphere) => mSpheres.Add(sphere);
+        public bool Contains(Sphere sphere) => mSpheres.Contains(sphere);
+
 
         public void AddToManagers()
         {
@@ -690,7 +702,7 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// Moves all contained objects by the argument shiftVector;
+        /// Changes the absolute Position value of all contained objects by the argument shiftVector.
         /// </summary>
         /// <param name="shiftVector">The amount to shift by.</param>
         public void Shift(Vector3 shiftVector)
@@ -1665,6 +1677,194 @@ namespace FlatRedBall.Math.Geometry
         }
 
 		#endregion
+
+        public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
+        {
+            line.LastCollisionPoint = new Point(double.NaN, double.NaN);
+
+            Segment a = line.AsSegment();
+
+            List<Segment> currentShapeSegments = new List<Segment>();
+            List<Point> currentShapeIntersectionPoints = new List<Point>();
+
+            if(InputManager.Keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Space))
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+
+            object collidedObject = null;
+
+            var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
+            var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
+
+            // todo - need to handle Y and top/bottom most
+
+            float clampedPosition = line.Position.X;
+
+            bool isPositionOnEnd = false;
+            if (clampedPosition <= leftmost)
+            {
+                clampedPosition = leftmost;
+                isPositionOnEnd = true;
+            }
+            else if (clampedPosition >= rightmost)
+            {
+                clampedPosition = rightmost;
+                isPositionOnEnd = true;
+            }
+
+            if(!isPositionOnEnd)
+            {
+                throw new ArgumentException("The argument Line must have its Position be on either one or the other endpoint, so that this function knows how to decide " +
+                    "the closest point.");
+            }
+
+            Point? intersectionPoint = null;
+
+            if (sortAxis == Axis.X)
+            {
+                var rectangles = this.AxisAlignedRectangles;
+
+                var firstIndex = 0;
+                var lastIndex = 0;
+                if(gridSize != null)
+                {
+                    firstIndex= rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
+                    lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
+                }
+
+                if (clampedPosition < rightmost)
+                {
+                    // start at the beginning of the list, go up
+                    for (int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var rectangle = rectangles[i];
+                        if(intersectionPoint?.X < rectangle.Left)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var rectangle = rectangles[i];
+                        if (intersectionPoint?.X > rectangle.Right)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    }
+                }
+
+            }
+            // April 29, 2022
+            // At the time of this writing, tile shape collections created the standard way (like solid collision) use the X axis for sorting. This is
+            // less efficient than using Y if the map is taller rather than wider, so once that is fixed, this needs to be fixed too. But...we'll handle that later.
+            else if (sortAxis == Axis.Y)
+            {
+                var rectangles = this.AxisAlignedRectangles;
+
+                var firstIndex = 0;
+                var lastIndex = 0;
+                if (gridSize != null)
+                {
+                    firstIndex = rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
+                    lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
+                }
+
+                throw new NotImplementedException("Bug Vic to do Y. Currently just X is done");
+            }
+            else
+            {
+                for(int i = 0; i < AxisAlignedRectangles.Count; i++)
+                {
+                    var rectangle = AxisAlignedRectangles[i];
+
+                    FillSegments(currentShapeSegments, rectangle);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                }
+                for(int i = 0; i < Polygons.Count; i++)
+                {
+                    var polygon = Polygons[i];
+
+                    FillSegments(currentShapeSegments, polygon);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                }
+            }
+
+            line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);
+
+            return collidedObject != null;
+        }
+
+        private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, object currentShape)
+        {
+            for (int segmentIndex = 0; segmentIndex < currentShapeSegments.Count; segmentIndex++)
+            {
+                var segment = currentShapeSegments[segmentIndex];
+                if (a.Intersects(segment, out Point tempPoint))
+                {
+                    if (intersectionPoint == null)
+                    {
+                        intersectionPoint = tempPoint;
+                        collidedShape = currentShape;
+                    }
+                    else
+                    {
+                        // which is closer?
+                        var distanceToOldIntersectionSquared = (line.Position - intersectionPoint.Value).LengthSquared();
+                        var distanceToNewIntersectionSquared = (line.Position - tempPoint).LengthSquared();
+
+                        if (distanceToNewIntersectionSquared < distanceToOldIntersectionSquared)
+                        {
+                            intersectionPoint = tempPoint;
+                            collidedShape = currentShape;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void FillSegments(List<Segment> currentShapeSegments, AxisAlignedRectangle rectangle)
+        {
+            currentShapeSegments.Clear();
+            Point tl = new Point(
+                                            rectangle.Position.X - rectangle.ScaleX,
+                                            rectangle.Position.Y + rectangle.ScaleY);
+            Point tr = new Point(
+                rectangle.Position.X + rectangle.ScaleX,
+                rectangle.Position.Y + rectangle.ScaleY);
+            Point bl = new Point(
+                rectangle.Position.X - rectangle.ScaleX,
+                rectangle.Position.Y - rectangle.ScaleY);
+            Point br = new Point(
+                rectangle.Position.X + rectangle.ScaleX,
+                rectangle.Position.Y - rectangle.ScaleY);
+
+            currentShapeSegments.Add(new Segment(tl, bl));
+            currentShapeSegments.Add(new Segment(bl, br));
+            currentShapeSegments.Add(new Segment(tl, tr));
+            currentShapeSegments.Add(new Segment(tr, br));
+        }
+
+        private static void FillSegments(List<Segment> currentShapeSegments, Polygon polygon)
+        {
+            currentShapeSegments.Clear();
+
+            for (int i = 0; i < polygon.Vertices.Length - 1; i++)
+            {
+                var segment = new Segment(polygon.Vertices[i].Position, polygon.Vertices[i + 1].Position);
+                currentShapeSegments.Add(segment);
+            }
+        }
 
         public bool IsMouseOver(Gui.Cursor cursor)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using FlatRedBall.Math;
+using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.Entities
@@ -14,7 +15,7 @@ namespace FlatRedBall.Entities
     }
     #endregion
 
-    // Influenced by https://www.gamasutra.com/blogs/ItayKeren/20150511/243083/Scroll_Back_The_Theory_and_Practice_of_Cameras_in_SideScrollers.php
+    // Influenced by https://www.gamedeveloper.com/design/scroll-back-the-theory-and-practice-of-cameras-in-side-scrollers
     public class CameraControllingEntity : PositionedObject
     {
         #region Fields/Properties
@@ -65,6 +66,11 @@ namespace FlatRedBall.Entities
         /// </summary>
         public IPositionedSizedObject Map { get; set; }
 
+        /// <summary>
+        /// Extra padding which can be used to add a buffer between the edge of the actual map and the
+        /// desired visible edge. A positive value adds padding, effective shrinking the available area
+        /// that the camera can view. A negative value allows the camera to move outside of the map.
+        /// </summary>
         public float ExtraMapPadding { get; set; }
 
         /// <summary>
@@ -96,9 +102,46 @@ namespace FlatRedBall.Entities
 
         /// <summary>
         /// Whether to perform logic in the Activity call. This exists to allow control over whether Activity
-        /// should apply if Activity is called in generated code.
+        /// should apply if Activity is called in generated code. This can be set to false to manually override
+        /// the camera following behavior.
         /// </summary>
         public bool IsActive { get; set; } = true;
+
+        public float ScrollingWindowWidth { get; set; }
+        public float ScrollingWindowHeight { get; set; }
+
+        bool visible;
+        AxisAlignedRectangle windowVisualization;
+        public bool Visible
+        {
+            get
+            {
+                return visible;
+            }
+            set
+            {
+                if(value != visible)
+                {
+                    visible = value;
+
+                    if(visible)
+                    {
+                        windowVisualization = new AxisAlignedRectangle();
+                        windowVisualization.Name = "CameraControllingEntity WindowVisualization Rectangle";
+                        windowVisualization.AttachTo(this);
+                        ShapeManager.AddAxisAlignedRectangle(windowVisualization);
+                    }
+                    else
+                    {
+                        if(windowVisualization != null)
+                        {
+                            ShapeManager.Remove(windowVisualization);
+                            windowVisualization = null;
+                        }
+                    }
+                }
+            }
+        }
 
         #endregion
 
@@ -120,7 +163,17 @@ namespace FlatRedBall.Entities
             }
             //////////////////End Early Out//////////////////
 
+            if(windowVisualization != null)
+            {
+                windowVisualization.Width = ScrollingWindowWidth;
+                windowVisualization.Height = ScrollingWindowHeight;
+            }
+
+
             var target = GetTarget();
+
+
+
             ApplyTarget(target, hasActivityBeenCalled ? LerpSmooth : false);
 
             if(isAutoZoomEnabled)
@@ -162,28 +215,75 @@ namespace FlatRedBall.Entities
 
             #endregion
 
-            #region Convert the average positions to a target given the BehaviorType
-
             Vector2 target = Vector2.Zero;
-            switch (BehaviorType)
+            //#region Convert the average positions to a target given the BehaviorType
+
+            //switch (BehaviorType)
+            //{
+            //    case CameraBehaviorType.PositionLocking:
+            //        target.X = averagePosition.X;
+            //        target.Y = averagePosition.Y;
+            //        break;
+            //}
+
+            //#endregion
+
+
+
+            // Compare the target with the window
+            var windowWidthHalf = ScrollingWindowWidth / 2.0f;
+            var windowHeightHalf = ScrollingWindowHeight / 2.0f;
+
+            var effectiveThis = this.Parent ?? this;
+
+            var windowLeft = effectiveThis.X - windowWidthHalf;
+            var windowRight = effectiveThis.X + windowWidthHalf;
+
+            var windowBottom = effectiveThis.Y - windowHeightHalf;
+            var windowTop = effectiveThis.Y + windowHeightHalf;
+
+            if(averagePosition.X < windowLeft)
             {
-                case CameraBehaviorType.PositionLocking:
-                    target.X = averagePosition.X;
-                    target.Y = averagePosition.Y;
-                    break;
+                target.X = averagePosition.X + windowWidthHalf;
+            }
+            else if(averagePosition.X > windowRight)
+            {
+                target.X = averagePosition.X - windowWidthHalf;
+            }
+            else
+            {
+                target.X = effectiveThis.X;
             }
 
-            #endregion
+            if(averagePosition.Y < windowBottom)
+            {
+                target.Y = averagePosition.Y + windowHeightHalf;
+            }
+            else if(averagePosition.Y > windowTop)
+            {
+                target.Y = averagePosition.Y - windowHeightHalf;
+            }
+            else
+            {
+                target.Y = effectiveThis.Y;
+            }
 
             #region Limit the target position based on the map
 
             if (Map != null)
             {
-                var mapLeft = Map.Left + ExtraMapPadding;
-                var mapRight = Map.Left + Map.Width - ExtraMapPadding;
+                // window sizes allow the target to be closer to the edge. For example, if the
+                // window were the size of the actual screen, then the target could go all the way
+                // to the edge and still be in the window
+                var effectivePaddingX = ExtraMapPadding;
+                var effectivePaddingY = ExtraMapPadding;
 
-                var mapBottom = Map.Top - Map.Height + ExtraMapPadding;
-                var mapTop = Map.Top - ExtraMapPadding;
+
+                var mapLeft = Map.Left + effectivePaddingX;
+                var mapRight = Map.Left + Map.Width - effectivePaddingX;
+
+                var mapBottom = Map.Top - Map.Height + effectivePaddingY;
+                var mapTop = Map.Top - effectivePaddingY;
 
                 if (Camera.Main.OrthogonalWidth > Map.Width)
                 {
@@ -247,22 +347,25 @@ namespace FlatRedBall.Entities
 
         public void ApplyTarget(Vector2 target, bool lerpSmooth = true)
         {
-            #region Set this position or velocity depending on whether we lerp position
-
-            var objectToMove = this.Parent ?? this;
+            var effectiveThis = this.Parent ?? this;
 
             if (lerpSmooth == false)
             {
-                objectToMove.Position.X = target.X;
-                objectToMove.Position.Y = target.Y;
+                effectiveThis.Position.X = target.X;
+                effectiveThis.Position.Y = target.Y;
             }
             else
             {
-                objectToMove.Velocity.X = (target.X - objectToMove.Position.X) * LerpCoefficient;
-                objectToMove.Velocity.Y = (target.Y - objectToMove.Position.Y) * LerpCoefficient;
+                float xDifference = 0;
+                float yDifference = 0;
+
+                xDifference = target.X - effectiveThis.Position.X;
+                yDifference = target.Y - effectiveThis.Position.Y;
+
+                effectiveThis.Velocity.X = xDifference * LerpCoefficient;
+                effectiveThis.Velocity.Y = yDifference * LerpCoefficient;
             }
 
-            #endregion
 
             if (SnapToPixel)
             {
@@ -270,14 +373,14 @@ namespace FlatRedBall.Entities
 
                 var invertZoom = 1 / zoom;
 
-                Camera.Main.X = MathFunctions.RoundFloat(objectToMove.X, invertZoom) + SnapToPixelOffset * invertZoom;
-                Camera.Main.Y = MathFunctions.RoundFloat(objectToMove.Y, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Main.X = MathFunctions.RoundFloat(effectiveThis.X, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Main.Y = MathFunctions.RoundFloat(effectiveThis.Y, invertZoom) + SnapToPixelOffset * invertZoom;
 
             }
             else
             {
-                Camera.Main.X = objectToMove.X;
-                Camera.Main.Y = objectToMove.Y;
+                Camera.Main.X = effectiveThis.X;
+                Camera.Main.Y = effectiveThis.Y;
             }
         }
 

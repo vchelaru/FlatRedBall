@@ -10,6 +10,7 @@ using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -211,8 +212,10 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         public static NamedObjectSave Clone(this NamedObjectSave instance)
         {
-            NamedObjectSave newNamedObjectSave = FileManager.CloneObject(instance);
-
+            // This doesn't work as well in XML due to enum values, so let's use Json instead
+            //NamedObjectSave newNamedObjectSave = FileManager.CloneObject(instance);
+            var serialized = JsonConvert.SerializeObject(instance);
+            var newNamedObjectSave = JsonConvert.DeserializeObject<NamedObjectSave>(serialized);
             newNamedObjectSave.TypedMembers.Clear();
 
             newNamedObjectSave.UpdateCustomProperties();
@@ -233,17 +236,18 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for (int i = 0; i < instance.InstructionSaves.Count; i++)
             {
-                //var duplicateInstruction =
-                //    instance.InstructionSaves[i].Clone<CustomVariableInNamedObject>();
+                // See above on why we use json 
+                var instructionSerialized = JsonConvert.SerializeObject(instance.InstructionSaves[i]);
 
-                var duplicateInstruction =
-                    FileManager.CloneObject(instance.InstructionSaves[i]);
+                var duplicateInstruction = JsonConvert.DeserializeObject<CustomVariableInNamedObject>(instructionSerialized);
+                    //FileManager.CloneObject(instance.InstructionSaves[i]);
 
                 // Events are instance-specific so we prob don't want to copy those
                 duplicateInstruction.EventOnSet = null;
 
                 newNamedObjectSave.InstructionSaves.Add(duplicateInstruction);
             }
+            newNamedObjectSave.FixAllTypes();
 
             foreach (NamedObjectSave containedNamedObject in instance.ContainedObjects)
             {
@@ -929,6 +933,87 @@ namespace FlatRedBall.Glue.SaveClasses
                 namedObjectSave.Instantiate &&
                 !namedObjectSave.InstantiatedByBase;
         }
+
+        public static NamedObjectSave GetNamedObject(this INamedObjectContainer namedObjectContainer, string namedObjectName)
+        {
+            return GetNamedObjectInList(namedObjectContainer.NamedObjects, namedObjectName);
+        }
+
+        public static NamedObjectSave GetNamedObjectInList(List<NamedObjectSave> namedObjectList, string namedObjectName)
+        {
+            for (int i = 0; i < namedObjectList.Count; i++)
+            {
+                NamedObjectSave nos = namedObjectList[i];
+
+                if (nos.InstanceName == namedObjectName)
+                {
+                    return nos;
+                }
+
+                if (nos.ContainedObjects != null && nos.ContainedObjects.Count != 0)
+                {
+                    NamedObjectSave foundNos = GetNamedObjectInList(nos.ContainedObjects, namedObjectName);
+
+                    if (foundNos != null)
+                    {
+                        return foundNos;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Searches the argument container for any named object, and searches recursively through inheritance.
+        /// </summary>
+        /// <param name="namedObjectContainer"></param>
+        /// <param name="namedObjectName"></param>
+        /// <returns></returns>
+        public static NamedObjectSave GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
+        {
+            List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;
+
+            NamedObjectSave foundNos = GetNamedObjectInList(namedObjectList, namedObjectName);
+
+            if (foundNos != null)
+            {
+                return foundNos;
+            }
+
+            // These methods need to check if the baseScreen/baseEntity is not null.
+            // They can be null if the user deletes a base Screen/Entity and the tool
+            // managing the Glux doesn't handle the changes.
+
+            if (!string.IsNullOrEmpty(namedObjectContainer.BaseObject))
+            {
+                if (namedObjectContainer is EntitySave)
+                {
+                    EntitySave baseEntity = ObjectFinder.Self.GetEntitySave(namedObjectContainer.BaseObject);
+                    if (baseEntity != null)
+                    {
+                        return GetNamedObjectRecursively(baseEntity, namedObjectName);
+                    }
+                }
+
+                else if (namedObjectContainer is ScreenSave)
+                {
+                    ScreenSave baseScreen = ObjectFinder.Self.GetScreenSave(namedObjectContainer.BaseObject);
+
+                    if (baseScreen != null)
+                    {
+                        return GetNamedObjectRecursively(baseScreen, namedObjectName);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+
+
+
     }
 
 

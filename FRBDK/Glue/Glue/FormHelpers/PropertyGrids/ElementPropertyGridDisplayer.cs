@@ -14,9 +14,10 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
     public class ElementPropertyGridDisplayer : PropertyGridDisplayer
     {
-        protected void SetClassName(object sender, MemberChangeArgs args)
+        protected async void SetClassName(object sender, MemberChangeArgs args)
         {
-            ((GlueElement)Instance).RenameElement((string)args.Value);
+            var element = (GlueElement)Instance;
+            await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, (string)args.Value);
         }
 
         protected void HandleMemberSet(object sender, MemberChangeArgs args)

@@ -78,6 +78,14 @@ namespace FlatRedBall.Glue.Parsing
             // will initialize the list, and this could
             // cause the list to become the one that the
             // factory fills.
+            // Update May 30, 2022 - Now that we are supporting
+            // the concept of "rooms", these rooms may instantiate
+            // entities which should end up in the lists of the rooms.
+            // Therefore, we need to have lists be able to add themselves
+            // to the factories.
+            // This addition will be temporary, only when the TileEntityInstantiator
+            // creates the entities. Therefore, the TileEntityInstantor code generator
+            // will also be modifying the factory lists.
             /////////////////////EARLY OUT///////////////////////
             if (!(element is ScreenSave))
             {
@@ -165,19 +173,30 @@ namespace FlatRedBall.Glue.Parsing
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
                     (nos.SourceClassGenericType.StartsWith("Entities\\") || nos.SourceClassGenericType.StartsWith("Entities/")))
                 .ToList();
-            entitiesToInitializeFactoriesFor = new List<EntitySave>();
+            HashSet<EntitySave> entitiesToInitializeFactoriesForHash = new HashSet<EntitySave>();
+
             foreach (var listNos in entityLists)
             {
                 EntitySave sourceEntitySave = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
 
                 if (sourceEntitySave != null)
                 {
-                    if (sourceEntitySave.CreatedByOtherEntities && !entitiesToInitializeFactoriesFor.Contains(sourceEntitySave) && !IsAbstract(sourceEntitySave))
+                    if (sourceEntitySave.CreatedByOtherEntities && !IsAbstract(sourceEntitySave))
                     {
-                        entitiesToInitializeFactoriesFor.Add(sourceEntitySave);
+                        entitiesToInitializeFactoriesForHash.Add(sourceEntitySave);
+                    }
+                    var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(sourceEntitySave);
+                    foreach(EntitySave derived in allDerived)
+                    {
+                        if(derived.CreatedByOtherEntities && !IsAbstract(derived))
+                        {
+                            entitiesToInitializeFactoriesForHash.Add(derived);
+                        }
                     }
                 }
             }
+
+            entitiesToInitializeFactoriesFor = entitiesToInitializeFactoriesForHash.ToList();
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
@@ -309,7 +328,7 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static void UpdateFactoryClass(EntitySave entitySave)
+        public static void GenerateAndAddFactoryToProjectClass(EntitySave entitySave)
         {
             mEntireClassGenerator.EntitySave = entitySave;
 
@@ -318,8 +337,8 @@ namespace FlatRedBall.Glue.Parsing
 
         public static void AddGeneratedPerformanceTypes()
         {
-            string poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
-            string iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
+            FilePath poolListFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\PoolList.Generated.cs";
+            FilePath iEntityFactoryFileName = GlueState.Self.CurrentGlueProjectDirectory + @"Performance\IEntityFactory.Generated.cs";
 
 
             string embeddedResourcePrefix = "FlatRedBall.Glue.Resources.";
@@ -328,12 +347,12 @@ namespace FlatRedBall.Glue.Parsing
             var byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "PoolList.cs");
             var contents = System.Text.Encoding.Default.GetString(byteArray);
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, poolListFileName);
+            FileManager.SaveText(contents, poolListFileName.FullPath);
 
             byteArray = FileManager.GetByteArrayFromEmbeddedResource(thisAssembly, embeddedResourcePrefix + "IEntityFactory.cs");
             contents = System.Text.Encoding.Default.GetString(byteArray);
             contents = CodeWriter.ReplaceNamespace(contents, ProjectManager.ProjectNamespace + ".Performance");
-            FileManager.SaveText(contents, iEntityFactoryFileName);
+            FileManager.SaveText(contents, iEntityFactoryFileName.FullPath);
 
 
 
@@ -574,16 +593,27 @@ namespace FlatRedBall.Glue.Parsing
             if (poolObjects)
             {
 
-                // only throw exception if pooled. This requires the user to pool the factory.
+                // only throw exception if pooled. This requires the user to Init the factory.
                 // But do we want to have an explicit "IsInitialized" value? Maybe if this causes problems in the future...
-                codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
-                            .Line("throw new System.Exception(\"You must first initialize the factory for this type because it is pooled. You can either add PositionedObjectList of type " +
-                                className + " (the most common solution) or call Initialize in custom code\");")
-                        .End();
+                // Update June 5, 2022
+                // This code was modified 
+                // in December 2017 to only 
+                // throw exceptions if pooled.
+                // But why? Pooled entities should
+                // be destroyed when a screen unloads,
+                // and the factory will be using the same
+                // content manager as the screen in most cases.
+                // So why not just tolerate it?
+                // I think we should:
+                //codeBlock.If("string.IsNullOrEmpty(mContentManagerName)")
+                //            .Line("throw new System.Exception(\"You must first initialize the factory for this type because it is pooled. " +
+                //            "You can either add PositionedObjectList of type " +
+                //                className + " (the most common solution) or call Initialize in custom code\");")
+                //        .End();
                 codeBlock
                     .Line("instance = mPool.GetNextAvailable();")
                     .If("instance == null")
-                        .Line("mPool.AddToPool(new " + className + "(mContentManagerName, false));")
+                        .Line("mPool.AddToPool(new " + className + "(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false));")
                         .Line("instance =  mPool.GetNextAvailable();")
                     .End()
                     .Line("instance.AddToManagers(layer);");
@@ -648,6 +678,8 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("EntitySpawned = null;")
                 .End();
 
+            codeBlock.Line("void IEntityFactory.Destroy() => Destroy();");
+
             return codeBlock;
         }
 
@@ -655,9 +687,22 @@ namespace FlatRedBall.Glue.Parsing
         {
             string entityClassName = factoryClassName.Substring(0, factoryClassName.Length - "Factory".Length);
 
+            var functionBlock =
             codeBlock
-                .Function("private static void", "FactoryInitialize", "")
-                    .Line("const int numberToPreAllocate = " + numberToPreAllocate + ";")
+                .Function("private static void", "FactoryInitialize", "");
+
+            functionBlock.Line("int numberToPreAllocate = " + numberToPreAllocate + ";");
+
+            var glueProject = GlueState.Self.CurrentGlueProject;
+            var hasEditMode = glueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            if(hasEditMode)
+            {
+                functionBlock.Line("// If in edit mode and viewing a screen, don't pre-allocate because the content manager may not be set which would cause a crash");
+                functionBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode && FlatRedBall.Screens.ScreenManager.CurrentScreen?.GetType().Name == \"EntityViewingScreen\"")
+                    .Line("numberToPreAllocate = 0;");
+            }
+
+            functionBlock
                     .For("int i = 0; i < numberToPreAllocate; i++")
                         .Line(string.Format("{0} instance = new {0}(mContentManagerName, false);", entityClassName))
                         .Line("mPool.AddToPool(instance);")

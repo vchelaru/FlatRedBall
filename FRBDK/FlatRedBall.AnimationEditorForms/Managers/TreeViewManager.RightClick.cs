@@ -9,6 +9,9 @@ using System.Diagnostics;
 using FlatRedBall.AnimationEditorForms.Controls;
 using FlatRedBall.AnimationEditorForms.Preview;
 using FlatRedBall.IO;
+using FlatRedBall.Content.Math.Geometry;
+using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.Utilities;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -38,12 +41,16 @@ namespace FlatRedBall.AnimationEditorForms
 
             // If a frame is not null, then the chain will always be not null, 
             // so check the frame first
+            #region Animation Frame
             if (state.SelectedFrame != null)
             {
                 AddReorderOptions();
 
                 mMenu.Items.Add("-");
 
+                mMenu.Items.Add("Add AxisAlignedRectangle", null, HandleAddAxisAlignedRectangle);
+
+                mMenu.Items.Add("-");
 
                 mMenu.Items.Add("Copy", null, CopyClick);
                 mMenu.Items.Add("Paste", null, PasteClick);
@@ -52,6 +59,10 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("Delete AnimationFrame", null, DeleteAnimationFrameClick);
 
             }
+            #endregion
+
+            #region AnimationChain
+
             else if (state.SelectedChain != null)
             {
                 AddReorderOptions();
@@ -76,6 +87,9 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("-");
                 mMenu.Items.Add("Delete AnimationChain", null, DeleteAnimationChainClick);
             }
+
+            #endregion
+
             else
             {
                 mMenu.Items.Add("Add AnimationChain", null, AddChainClick);
@@ -91,6 +105,32 @@ namespace FlatRedBall.AnimationEditorForms
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
             
+        }
+
+        private void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
+        {
+            var selectedFrames = SelectedState.Self.SelectedFrames;
+
+            foreach(var frame in selectedFrames)
+            {
+                var rectangleSave = new AxisAlignedRectangleSave();
+                rectangleSave.ScaleX = 8;
+                rectangleSave.ScaleY = 8;
+                rectangleSave.Name = "AxisAlignedRectangleInstance";
+
+                // do this before adding it to the list
+                rectangleSave.Name = StringFunctions.MakeStringUnique(rectangleSave.Name,
+                    SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                        .Select(item => item.Name).ToList()
+                    );
+
+                frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleSave);
+
+                AppCommands.Self.RefreshAnimationFrameDisplay();
+                AppCommands.Self.RefreshTreeNode(frame);
+                SelectedState.Self.SelectedRectangle = rectangleSave;
+                AppCommands.Self.SaveCurrentAnimationChainList();
+            }
         }
 
         internal void HandleExpandAllTreeView(object sender, EventArgs e)
@@ -584,7 +624,7 @@ namespace FlatRedBall.AnimationEditorForms
             else
             {
                 AnimationFrameSave afs = new AnimationFrameSave();
-
+                afs.ShapeCollectionSave = new ShapeCollectionSave(); // animation editor always assumes frames have shape collections
                 if (chain.Frames.Count != 0)
                 {
                     AnimationFrameSave copyFrom = chain.Frames[0];
@@ -661,34 +701,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (SelectedState.Self.SelectedChains.Count > 0)
             {
-                string message = "Delete the following animation(s)?\n\n";
-
-                foreach(var chain in SelectedState.Self.SelectedChains)
-                {
-                    message += chain.Name + "\n";
-                }
-
-                DialogResult result = 
-                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    var chainsCopy = SelectedState.Self.SelectedChains.ToArray();
-                    foreach(var chain in chainsCopy)
-                    {
-                        ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
-                    }
-
-                    // refresh the tree view before refreshing the PreviewManager, since refreshing the tree view deselects the animation
-                    TreeViewManager.Self.RefreshTreeView();
-
-                    PreviewManager.Self.RefreshAll();
-
-
-                    CallAnimationChainsChange();
-
-                    WireframeManager.Self.RefreshAll();
-                }
+                AppCommands.Self.AskToDelete(SelectedState.Self.SelectedChains);
             }
         }
 
@@ -696,29 +709,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             if (SelectedState.Self.SelectedFrames.Count > 0)
             {
-                string message = $"Delete the following {SelectedState.Self.SelectedFrames.Count} frame(s)?\n\n";
-                foreach(var frame in SelectedState.Self.SelectedFrames)
-                {
-                    message += $"Frame {frame.TextureName}\n";
-                }
-                DialogResult result = 
-                    MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    var framesToDelete = SelectedState.Self.SelectedFrames.ToArray();
-                    foreach(var frame in framesToDelete)
-                    {
-                        SelectedState.Self.SelectedChain.Frames.Remove(frame);
-                    }
-
-                    TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
-
-                    WireframeManager.Self.RefreshAll();
-
-                    CallAnimationChainsChange();
-                }
-
+                AppCommands.Self.AskToDelete(SelectedState.Self.SelectedFrames);
             }
         }
 

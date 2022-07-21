@@ -1,7 +1,10 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math;
@@ -9,6 +12,7 @@ using Glue;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficialPlugins.Compiler.CommandSending;
 using OfficialPlugins.Compiler.Dtos;
 using OfficialPlugins.Compiler.Managers;
@@ -17,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +36,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         static int gamePortNumber;
 
         static System.Reflection.MethodInfo[] AllMethods;
+        public static Action<string> PrintOutput { get; set; }
 
         public static CompilerViewModel CompilerViewModel { get; set; }
 
@@ -45,15 +51,15 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region General Functions
 
-        public static void HandleCommandsFromGame(List<string> commands, int gamePortNumber)
+        public static async Task HandleCommandsFromGame(List<string> commands, int gamePortNumber)
         {
             foreach (var command in commands)
             {
-                Receive(command, gamePortNumber);
+                await Receive(command, gamePortNumber);
             }
         }
 
-        private static void Receive(string message, int gamePortNumber)
+        private static async Task Receive(string message, int gamePortNumber)
         {
             string dtoTypeName = null;
             string dtoSerialized = null;
@@ -78,51 +84,39 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                 });
 
-            TaskManager.Self.AddAsync(() =>
+            object dto = null;
+            if (matchingMethod != null)
             {
-                if(matchingMethod != null)
+                var dtoType = matchingMethod.GetParameters()[0].ParameterType;
+                dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
+
+            }
+
+            string outputText = dto is FacadeCommandBase facadeCommandBase
+                ? $"Processing command of type {dtoTypeName}.{facadeCommandBase.Method}"
+                : $"Processing command of type {dtoTypeName}";
+
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                if(dto != null)
                 {
-                    var dtoType = matchingMethod.GetParameters()[0].ParameterType;
-
-                    var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
-
                     var response = ReceiveDto(dto);
-
                 }
                 else
                 {
                     switch(dtoTypeName)
                     {
-                        case nameof(AddObjectDto):
-                            {
-                                var addObjectDto = JsonConvert.DeserializeObject<AddObjectDto>(dtoSerialized);
-                                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(dtoSerialized);
-
-                                ScreenSave screen = CommandSender.GetCurrentInGameScreen().Result;
-                                screen = screen ?? GlueState.Self.CurrentScreenSave;
-
-                                HandleAddObject(addObjectDto, nos, saveRegenAndUpdateUi:true, screen:screen);
-                            }
-
-                            break;
                         case nameof(SetVariableDto):
-                            HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
+                            await HandleSetVariable(JsonConvert.DeserializeObject<SetVariableDto>(dtoSerialized));
                             break;
                         case nameof(SetVariableDtoList):
-                            HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
+                            await HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
                             break;
                         case nameof(SelectObjectDto):
                             HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));
                             break;
-                        case nameof(RemoveObjectDto):
-                            HandleRemoveObject(JsonConvert.DeserializeObject<RemoveObjectDto>(dtoSerialized));
-                            break;
                         case nameof(ModifyCollisionDto):
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
-                            break;
-                        case nameof(AddObjectDtoList):
-                            var deserializedList = JsonConvert.DeserializeObject<AddObjectDtoList>(dtoSerialized);
-                            HandleAddObjectDtoList(deserializedList);
                             break;
                         default:
                             int m = 3;
@@ -130,12 +124,29 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                 }
             },
-            $"Processing command of type {dtoTypeName}");
+            outputText);
         }
 
-        public static object ReceiveDto(object dto)
+        private static object ReceiveDto(object dto)
         {
             var type = dto.GetType();
+
+            if (CompilerViewModel.IsPrintGameToEditorCheckboxChecked)
+            {
+
+                if (CompilerViewModel.IsShowParametersChecked && CompilerViewModel.CommandParameterCheckboxVisibility == System.Windows.Visibility.Visible)
+                {
+                    PrintOutput(JsonConvert.SerializeObject(dto));
+                    PrintOutput("------------------------------------------");
+                }
+                else
+                {
+                    PrintOutput(dto.ToString());
+                }
+            }
+
+
+
 
             var method = AllMethods
                 .FirstOrDefault(item =>
@@ -155,63 +166,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             return toReturn;
         }
 
-        private static async void HandleAddObjectDtoList(AddObjectDtoList deserializedList)
-        {
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            screen = screen ?? GlueState.Self.CurrentScreenSave;
-
-            List<NamedObjectSave> newNamedObjects = new List<NamedObjectSave>();
-
-            foreach (var item in deserializedList.Data)
-            {
-                var cloneString = JsonConvert.SerializeObject(item);
-                var nos = JsonConvert.DeserializeObject<NamedObjectSave>(cloneString);
-                newNamedObjects.Add(nos);
-                await HandleAddObject(item, nos, saveRegenAndUpdateUi:false, screen:screen);
-            }
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
-
-            GlueCommands.Self.DoOnUiThread(() =>
-            {
-                MainGlueWindow.Self.PropertyGrid.Refresh();
-                PropertyGridHelper.UpdateNamedObjectDisplay();
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
-
-                if(newNamedObjects.Count > 0)
-                {
-                    foreach(var item in deserializedList.Data)
-                    {
-                        if(item.SelectNewObject)
-                        {
-                            var objectToSelect = newNamedObjects.FirstOrDefault(item => item.InstanceName == item.InstanceName);
-                            if(objectToSelect != null)
-                            {
-                                GlueState.Self.CurrentNamedObjectSave = objectToSelect;
-                                break;
-                            }
-                        }
-                    }
-                }
-            });
-
-            GlueCommands.Self.GluxCommands.SaveGlux();
-        }
-
-
         #endregion
 
         #region Remove Object
 
-        private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        //private static async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
+        private static async void HandleDto(RemoveObjectDto removeObjectDto)
         {
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            if(screen != null)
+            GlueElement elementToRemoveFrom = await CommandSender.GetCurrentInGameScreen();
+            elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
+            if(elementToRemoveFrom != null)
             {
                 await TaskManager.Self.AddAsync(() =>
                 {
                     var objectsToRemove = removeObjectDto.ObjectNames
-                        .Select(objectName => screen.GetNamedObjectRecursively(objectName))
+                        .Select(objectName => elementToRemoveFrom.GetNamedObjectRecursively(objectName))
                         .Where(item => item != null)
                         .ToList();
 
@@ -219,119 +188,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 }, "Handling removing object from screen");
             }
-        }
-
-        #endregion
-
-        #region Add Object (including copy/paste
-
-        private static Task HandleAddObject(AddObjectDto addObjectDto, NamedObjectSave nos, bool saveRegenAndUpdateUi, ScreenSave screen)
-        {
-            return TaskManager.Self.AddAsync(() =>
-            {
-                screen = screen ?? GlueState.Self.CurrentScreenSave;
-                GlueElement element = screen;
-                
-
-                var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(addObjectDto, screen);
-
-                string newName = GetNewName(element, addObjectDto);
-                var oldName = addObjectDto.InstanceName;
-
-
-                nos.InstanceName = newName;
-
-                foreach (var variable in nos.InstructionSaves)
-                {
-                    object value = variable.Value;
-                    var typeName = variable.Type;
-                    value = ConvertVariable(value, ref typeName, variable.Member, nos, element);
-                    variable.Type = typeName;
-                    variable.Value = value;
-                }
-
-                #region Send the new name back to the game so the game uses the actual Glue name rather than the AutoName
-                // do this before adding the NOS to Glue since adding the NOS to Glue results in an AddToList command
-                // sent to the game, and we want the right name before the AddToList command
-                var data = new GlueVariableSetData();
-                data.Type = "string";
-                data.VariableValue = newName;
-                data.VariableName = "this." + oldName + ".Name";
-                data.InstanceOwnerGameType = addObjectDto.ElementNameGame;
-
-                // At this point the element does not contain the new nos
-                // We want it to, but we have to send the DTO to the game before
-                // calling GluxCommands.AddNamedObjectTo
-                // We can make a copy:
-                var serialized = JsonConvert.SerializeObject(element);
-
-                if(element is ScreenSave)
-                {
-                    data.ScreenSave = JsonConvert.DeserializeObject<ScreenSave>(serialized);
-                }
-                else
-                {
-                    data.EntitySave = JsonConvert.DeserializeObject<EntitySave>(serialized);
-                }
-
-                data.GlueElement.NamedObjects.Add(nos);
-
-
-                var renameResponseTask = CommandSender.Send<GlueVariableSetDataResponse>(data);
-                renameResponseTask.Wait();
-                var result = renameResponseTask.Result?.Data;
-
-                if(result == null || !string.IsNullOrEmpty(result.Exception) || result.WasVariableAssigned == false)
-                {
-                    int m = 3;
-                }
-
-
-                #endregion
-
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    RefreshManager.Self.IgnoreNextObjectAdd = true;
-                    RefreshManager.Self.IgnoreNextObjectSelect = true;
-
-                    // This will result in Glue selecting the new object. When GView copy/pastes, it keeps the
-                    // old object selected. Glue shouldn't assume this is the case, because in the future new instances
-                    // may be added without copy/paste, and those would be selected. Therefore, we'll rely on the game to 
-                    // tell us to select something different...
-                    GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, element, listToAddTo, 
-                        selectNewNos: false, // The caller of this is responsible for selection, so that selection goes faster
-                        performSaveAndGenerateCode:saveRegenAndUpdateUi, 
-                        updateUi: saveRegenAndUpdateUi);
-                });
-
-                //RefreshManager.Self.HandleNamedObjectValueChanged(nameof(deserializedNos.InstanceName), oldName, deserializedNos);
-
-            }, "Adding NOS");
-        }
-
-        private static string GetNewName(GlueElement glueElement, AddObjectDto addObjectDto)
-        {
-            string newName = addObjectDto.CopyOriginalName;
-
-            if(string.IsNullOrEmpty(newName))
-            {
-                if(addObjectDto.SourceClassType.Contains('.'))
-                {
-                    var suffix = addObjectDto.SourceClassType.Substring(addObjectDto.SourceClassType.LastIndexOf('.') + 1);
-                    newName = suffix + "1";
-                }
-                else
-                {
-                    var lastSlash = addObjectDto.SourceClassType.LastIndexOf("\\");
-                    newName = addObjectDto.SourceClassType.Substring(lastSlash + 1) + "1";
-                }
-            }
-            while (glueElement.GetNamedObjectRecursively(newName) != null)
-            {
-                newName = StringFunctions.IncrementNumberAtEnd(newName);
-            }
-
-            return newName;
         }
 
         #endregion
@@ -347,7 +203,11 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                 var element = ObjectFinder.Self.GetElement(type);
 
-                var nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+                NamedObjectSave nos = null;
+                if(element != null)
+                {
+                    nos = element.GetNamedObjectRecursively(setVariableDto.ObjectName);
+                }
 
                 if (nos != null)
                 {
@@ -370,7 +230,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         // Send this back to the game so the game. When the game receives this, it will store it in
                         // a list and will re-run the commands as necessary (such as whenever a screen is reloaded).
                         GlueCommands.Self.DoOnUiThread(() =>
-                            RefreshManager.Self.HandleNamedObjectValueChanged(setVariableDto.VariableName, null, nos, 
+                            RefreshManager.Self.HandleNamedObjectVariableOrPropertyChanged(setVariableDto.VariableName, null, nos, 
                             // record only - this variable change came from the game, we don't want to re-assign it and wipe other active edits
                             AssignOrRecordOnly.RecordOnly)
                         );
@@ -428,7 +288,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables);
+            await VariableSendingManager.Self.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
 
             await TaskManager.Self.AddAsync(() =>
             {
@@ -594,7 +454,20 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                             GlueState.Self.CurrentNamedObjectSave = nos;
                         }
-                        GlueCommands.Self.DialogCommands.FocusTab("Variables");
+
+                        var showVariables = true;
+                        var canShowPoints = nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon;
+                        var alreadyShownTabs = GlueState.Self.CurrentFocusedTabs;
+
+                        if(canShowPoints && alreadyShownTabs.Contains("Points"))
+                        {
+                            showVariables = false;
+                        }
+
+                        if(showVariables && !alreadyShownTabs.Contains("Variables"))
+                        {
+                            GlueCommands.Self.DialogCommands.FocusTab("Variables");
+                        }
                     });
                 }
             }, "Selecting object from game command");
@@ -602,10 +475,18 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
-        #region Modify Collision
+        #region Modify Collision (Tile)
 
         private static void HandleDto(ModifyCollisionDto dto)
         {
+
+            ///////////////Early Out///////////////////////////
+            var hasAnything = dto.AddedPositions?.Count > 0 || dto.RemovedPositions?.Count > 0;
+            if(!hasAnything)
+            {
+                return;
+            }
+            /////////////End Early Out/////////////////////////
             string collisionTileTypeName;
             FlatRedBall.IO.FilePath tmxFilePath;
             TiledMapSave tiledMapSave;
@@ -659,7 +540,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     {
                         int absoluteIndex = GetTileIndexFromWorldPosition(oldTile, mapLayer);
 
-                        if (ids[absoluteIndex] != 0)
+                        if (absoluteIndex < ids.Length && absoluteIndex > -1 && ids[absoluteIndex] != 0)
                         {
                             ids[absoluteIndex] = 0;
                             didChange = true;
@@ -721,9 +602,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         private static void GetMapLayer(ModifyCollisionDto dto, out string collisionTileTypeName, out FlatRedBall.IO.FilePath tmxFilePath, out TiledMapSave tiledMapSave, out MapLayer mapLayer)
         {
-            var currentScreen = GlueState.Self.CurrentScreenSave;
+            // Maps can be in entities too for "rooms" so support both entities and screens
+            var currentElement = GlueState.Self.CurrentElement;
+            tmxFilePath = null;
+            tiledMapSave = null;
+            mapLayer = null;
+            collisionTileTypeName = null;
 
-            var collisionNos = currentScreen.GetNamedObject(dto.TileShapeCollection);
+            ////////////////////////////////////Early Out//////////////////////////////////////////////
+            if (currentElement == null)
+            {
+                return;
+            }
+            /////////////////////////////////End Early Out/////////////////////////////////////////////
+
+            var collisionNos = currentElement?.GetNamedObject(dto.TileShapeCollection);
 
             // this should use a file as a source, need to find that
             var sourceTmxObjectName = collisionNos.Properties.GetValue<string>("SourceTmxName");
@@ -735,16 +628,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             collisionTileTypeName = collisionNos.Properties.GetValue<string>("CollisionTileTypeName");
             var isUsingTmx = !string.IsNullOrEmpty(sourceTmxObjectName) && isFromType && !string.IsNullOrEmpty(collisionTileTypeName);
 
-            tmxFilePath = null;
-            tiledMapSave = null;
-            mapLayer = null;
             if (isUsingTmx)
             {
-                var tmxObjectNos = currentScreen.GetNamedObjectRecursively(sourceTmxObjectName);
+                var tmxObjectNos = currentElement.GetNamedObjectRecursively(sourceTmxObjectName);
                 ReferencedFileSave rfs = null;
                 if (tmxObjectNos.SourceType == SourceType.File)
                 {
-                    rfs = currentScreen.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
+                    rfs = currentElement.GetReferencedFileSaveRecursively(tmxObjectNos.SourceFile);
                 }
 
                 if (rfs != null)
@@ -773,6 +663,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #endregion
 
+        #region SelectPrevious/Next
+
+        private static void HandleDto(SelectPreviousDto dto) => TreeNodeStackManager.Self.GoBack();
+        private static void HandleDto(SelectNextDto dto) => TreeNodeStackManager.Self.GoForward();
+
+        #endregion
+
         #region CurrentDisplayInfoDto
 
         private static async void HandleDto(CurrentDisplayInfoDto dto)
@@ -793,6 +690,300 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 CompilerViewModel.ResolutionDisplayText = $"{dto.DestinationRectangleWidth}x{dto.DestinationRectangleHeight}";
             });
 
+        }
+
+        #endregion
+
+        #region Glue/XXXX/CommandDto
+
+        private static async void HandleDto(GlueCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self, dto);
+
+        private static async void HandleDto(GluxCommandDto dto)
+        {
+            if(dto.Method == nameof(GluxCommands.SetVariableOn) && !dto.EchoToGame)
+            {
+                // suppress this 
+                var nos = (NamedObjectSave) Convert(dto.Parameters[0], typeof(NamedObjectSave));
+                var memberName = (string)dto.Parameters[1];
+
+                VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
+            }
+            if(dto.Method == nameof(GluxCommands.SetVariableOnList))
+            {
+                var list = (List<NosVariableAssignment>) Convert(dto.Parameters[0], typeof(List<NosVariableAssignment>));
+
+                foreach(var item in list)
+                {
+                    var nos = item.NamedObjectSave;
+                    var memberName = item.VariableName;
+                    VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
+                }
+            }
+            await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
+        }
+
+        private static async void HandleDto(GlueStateDto dto) => await HandleFacadeCommand(GlueState.Self, dto);
+        private static async void HandleDto(GenerateCodeCommandDto dto) => await HandleFacadeCommand(GlueCommands.Self.GenerateCodeCommands, dto);
+
+        private static async Task HandleFacadeCommand(object target, FacadeCommandBase dto)
+        {
+            var targetType = target.GetType();
+            if(!string.IsNullOrEmpty( dto.Method ))
+            {
+                MethodInfo method = targetType.GetMethod(dto.Method);
+                var dtoParameters = dto.Parameters;
+                List<object> parameters = new List<object>();
+                var methodParameters = method.GetParameters();
+
+                for (int i = 0; i < dtoParameters.Count; i++)
+                {
+                    var parameter = dtoParameters[i];
+                    var parameterInfo = methodParameters[i];
+                    var parameterType = parameterInfo.ParameterType;
+                    if (dto.CorrectTypeForParameters?.ContainsKey(parameterInfo.Name) == true)
+                        parameterType = Type.GetType(dto.CorrectTypeForParameters[parameterInfo.Name]);
+                    var converted = Convert(parameter, parameterType);
+
+                    parameters.Add(converted);
+                }
+
+                var methodResponse = method.Invoke(target, parameters.ToArray());
+
+                if(methodResponse is Task asTask)
+                {
+                    var taskType = asTask.GetType();
+                    await asTask;
+                    if(taskType.IsGenericType())
+                    {
+                        var resultProperty = taskType.GetProperty("Result");
+                        var taskResult = resultProperty.GetValue(asTask);
+                        await SendResponseBackToGame(dto, taskResult);
+
+                    }
+                    else
+                    {
+                        // do we send anything back?
+                        await SendResponseBackToGame(dto, null);
+                    }
+
+
+                }
+                else
+                {
+                    var contentToGame = methodResponse;
+                    await SendResponseBackToGame(dto, contentToGame);
+                }
+            }
+            else if(!string.IsNullOrEmpty(dto.SetPropertyName))
+            {
+                PropertyInfo property = targetType.GetProperty(dto.SetPropertyName);
+                var parameter = dto.Parameters[0];
+                var converted = Convert(parameter, property.PropertyType);
+
+                property.SetValue(target, converted);
+
+                await SendResponseBackToGame(dto, null);
+            }
+        }
+
+        private static async Task<ResponseWithContentDto> SendResponseBackToGame(FacadeCommandBase dto, object contentToGame)
+        {
+            var response = new ResponseWithContentDto();
+            response.Id = -1;
+            response.OriginalDtoId = dto.Id;
+            if (contentToGame != null)
+            {
+                response.Content = JsonConvert.SerializeObject(contentToGame);
+            }
+            await CommandSender.Send(response);
+            return response;
+        }
+
+        private static object Convert(object parameter, Type reflectedParameterType)
+        {
+
+            return Convert(parameter, GetFriendlyName(reflectedParameterType));
+        }
+
+        static string GetFriendlyName(Type type)
+        {
+            string friendlyName = type.Name;
+            if (type.IsGenericType)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
+        }
+
+        public class NosReferenceVariableAssignment
+        {
+            public NamedObjectSaveReference NamedObjectSave;
+            public string VariableName;
+            public TypedParameter Value;
+        }
+
+        private static object Convert(object parameter, string typeName)
+        { 
+            var converted = parameter;
+
+            if(parameter is JObject asJObject)
+            {
+                if(typeName == typeof(NamedObjectSave).Name)
+                {
+                    var reference = asJObject.ToObject<NamedObjectSaveReference>();
+
+                    var parentElement = ObjectFinder.Self.GetElement(reference.GlueElementReference.ElementNameGlue);
+                    var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == reference.NamedObjectName);
+
+                    converted = nos;
+                }
+                else if(typeName == typeof(GlueElement).Name)
+                {
+                    var reference = asJObject.ToObject<GlueElementReference>();
+
+                    var element = ObjectFinder.Self.GetElement(reference.ElementNameGlue);
+                    converted = element;
+                }
+                else if(typeName == typeof(TypedParameter).Name)
+                {
+                    var typedParameter = asJObject.ToObject<TypedParameter>();
+
+                    converted = Convert(typedParameter.Value, typedParameter.Type);
+                }
+                // I don't think this is possible:
+                //else if(typeName == typeof(List<NosVariableAssignment>).Name)
+                //{
+                //    var assignmentList = asJObject.ToObject<List<NosReferenceVariableAssignment>>();
+                //    List<NosVariableAssignment> convertedList = new List<NosVariableAssignment>();
+                //    foreach(var assignment in assignmentList)
+                //    {
+                //        NosVariableAssignment individual = new NosVariableAssignment();
+
+                //        var parentElement = ObjectFinder.Self.GetElement(assignment.NamedObjectSave.GlueElementReference.ElementNameGlue);
+                //        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == assignment.NamedObjectSave.NamedObjectName);
+
+                //        individual.NamedObjectSave = nos;
+                //        individual.VariableName = assignment.VariableName;
+                //        individual.Value = Convert(assignment.Value, nameof(TypedParameter));
+
+                //        convertedList.Add(individual);
+                //    }
+                //    converted = convertedList;
+                //}
+                else if(typeName == typeof(object).Name)
+                {
+                    try
+                    {
+                        // Maybe we could parse this to see if it's a typed parameter?
+                        var typedParameter = asJObject.ToObject<TypedParameter>();
+
+                        converted = Convert(typedParameter.Value, typedParameter.Type);
+                    }
+                    catch { }
+
+                }
+            }
+            else if(parameter is JArray asJArray)
+            {
+                int m = 3;
+                if(typeName == GetFriendlyName(typeof(List<NosVariableAssignment>)))
+                {
+                    var list = new List<NosVariableAssignment>();
+                    foreach(JObject item in asJArray)
+                    {
+                        var itemReference = item.ToObject<NosReferenceVariableAssignment>();
+
+                        var convertedItem = new NosVariableAssignment();
+
+                        var parentElement = ObjectFinder.Self.GetElement(itemReference.NamedObjectSave.GlueElementReference.ElementNameGlue);
+                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == itemReference.NamedObjectSave.NamedObjectName);
+
+                        convertedItem.NamedObjectSave = nos;
+                        convertedItem.VariableName = itemReference.VariableName;
+
+                        var typedParameter = (TypedParameter)Convert(itemReference.Value, typeof(TypedParameter));
+
+                        convertedItem.Value = Convert(typedParameter.Value, typedParameter.Type);
+
+                        list.Add(convertedItem);
+
+                    }
+                    converted = list;
+                }
+                else if(typeName == GetFriendlyName(typeof(List<NamedObjectSave>)))
+                {
+                    var list = new List<NamedObjectSave>();
+                    foreach (JObject item in asJArray)
+                    {
+                        var itemReference = item.ToObject<NamedObjectSaveReference>();
+
+                        var parentElement = ObjectFinder.Self.GetElement(itemReference.GlueElementReference.ElementNameGlue);
+                        var nos = parentElement.GetAllNamedObjectsRecurisvely().FirstOrDefault(item => item.InstanceName == itemReference.NamedObjectName);
+                        list.Add(nos);
+                    }
+                    converted = list;
+                }
+                else if(typeName == GetFriendlyName(typeof(List<Vector2>)))
+                {
+                    var list = new List<Vector2>();
+                    foreach (JToken item in asJArray)
+                    {
+                        var vector2 = item.ToObject<Vector2>();
+                        list.Add(vector2);
+                    }
+                    converted = list;
+                }
+                else if (typeName == GetFriendlyName(typeof(List<Vector3>)))
+                {
+                    var list = new List<Vector3>();
+                    foreach (JObject item in asJArray)
+                    {
+                        var vector3 = item.ToObject<Vector3>();
+                        list.Add(vector3);
+                    }
+                    converted = list;
+                }
+            }
+            else if(parameter is double asDouble)
+            {
+                if(typeName == typeof(float).Name)
+                {
+                    converted = (float)asDouble;
+                }
+            }
+            else if(parameter is long asLong)
+            {
+                if(typeName == typeof(int).Name)
+                {
+                    converted = (int)asLong;
+                }
+                else if(typeName == nameof(TaskExecutionPreference))
+                {
+                    converted = (TaskExecutionPreference)asLong;
+                }
+            }
+            else if(parameter is object)
+            {
+                // the method does not take a casted value, but we may have sent a casted value through a TypedParameter
+                if(parameter is JObject)
+                {
+
+                }
+            }
+            return converted;
         }
 
         #endregion

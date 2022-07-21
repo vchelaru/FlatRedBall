@@ -13,6 +13,11 @@ using FlatRedBall.Math.Paths;
 
 namespace GlueControl.Editing
 {
+    /// <summary>
+    /// Object used to create immediate-mode graphics (fire and forget). This can be used to display debug information
+    /// when the game is running or markers and other indicators in edit mode. All calls must be made every frame for the objects
+    /// to appear.
+    /// </summary>
     public class EditorVisuals : FlatRedBall.Managers.IManager
     {
         #region Fields/Properties
@@ -40,11 +45,14 @@ namespace GlueControl.Editing
 
         static double lastFrameReset;
 
+        public static Layer DefaultLayer { get; set; }
+
         #endregion
 
         static EditorVisuals()
         {
             FlatRedBallServices.AddManager(new EditorVisuals());
+            DefaultLayer = SpriteManager.TopLayer;
         }
 
         public static Text Text(string text, Vector3 position, Color? color = null)
@@ -56,7 +64,7 @@ namespace GlueControl.Editing
             Color textColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Graphics.Text();
             }
@@ -64,7 +72,7 @@ namespace GlueControl.Editing
 
             if (nextText == Texts.Count)
             {
-                Texts.Add(TextManager.AddText(String.Empty));
+                Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
             }
 
             var textInstance = Texts[nextText];
@@ -95,7 +103,7 @@ namespace GlueControl.Editing
             Color lineColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 var tempLine = new Line();
                 tempLine.Name = "Temp line returned when screen is transitioning";
@@ -105,7 +113,9 @@ namespace GlueControl.Editing
 
             if (nextLine == Lines.Count)
             {
-                Lines.Add(ShapeManager.AddLine());
+                var line = new Line();
+                ShapeManager.AddToLayer(line, DefaultLayer);
+                Lines.Add(line);
             }
 
             var lineInstance = Lines[nextLine];
@@ -130,15 +140,15 @@ namespace GlueControl.Editing
             }
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
-                return new Arrow();
+                return new Arrow(DefaultLayer);
             }
             TryResetEveryFrameValues();
 
             if (nextArrow == Arrows.Count)
             {
-                Arrows.Add(new Visuals.Arrow());
+                Arrows.Add(new Visuals.Arrow(DefaultLayer));
             }
 
 
@@ -159,7 +169,7 @@ namespace GlueControl.Editing
             }
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Sprite();
             }
@@ -168,7 +178,9 @@ namespace GlueControl.Editing
 
             if (nextSprite == Sprites.Count)
             {
-                Sprites.Add(SpriteManager.AddSprite(animationChain));
+                var newSprite = SpriteManager.AddSprite(animationChain);
+                SpriteManager.AddToLayer(newSprite, DefaultLayer);
+                Sprites.Add(newSprite);
             }
 
             var sprite = Sprites[nextSprite];
@@ -183,6 +195,23 @@ namespace GlueControl.Editing
             return sprite;
         }
 
+        public static Sprite ColoredRectangle(float width, float height, Vector3 centerPosition, Color? color = null)
+        {
+            var sprite = Sprite(null, centerPosition, textureScale: -1);
+            sprite.Width = width;
+            sprite.Height = height;
+            sprite.ColorOperation = ColorOperation.Color;
+
+            var effectiveColor = color ?? new Color(255, 0, 0, 100);
+
+            sprite.Red = effectiveColor.R / 255.0f;
+            sprite.Green = effectiveColor.G / 255.0f;
+            sprite.Blue = effectiveColor.B / 255.0f;
+            sprite.Alpha = effectiveColor.A / 255.0f;
+
+            return sprite;
+        }
+
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
             if (centerPosition.Z == Camera.Main.Z)
@@ -193,7 +222,7 @@ namespace GlueControl.Editing
             Color rectColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new AxisAlignedRectangle();
             }
@@ -202,7 +231,9 @@ namespace GlueControl.Editing
 
             if (nextRectangle == Rectangles.Count)
             {
-                Rectangles.Add(ShapeManager.AddAxisAlignedRectangle());
+                var newRectangle = new AxisAlignedRectangle();
+                ShapeManager.AddToLayer(newRectangle, DefaultLayer);
+                Rectangles.Add(newRectangle);
             }
 
             var rectangle = Rectangles[nextRectangle];
@@ -227,7 +258,7 @@ namespace GlueControl.Editing
             Color color = Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new FlatRedBall.Math.Geometry.Circle();
             }
@@ -236,7 +267,9 @@ namespace GlueControl.Editing
 
             if (nextCircle == Circles.Count)
             {
-                Circles.Add(ShapeManager.AddCircle());
+                var newCircle = new Circle();
+                ShapeManager.AddToLayer(newCircle, DefaultLayer);
+                Circles.Add(newCircle);
             }
 
             var circle = Circles[nextCircle];
@@ -260,7 +293,7 @@ namespace GlueControl.Editing
             Color polygonColor = color ?? Color.White;
 
             // This screen is cleaning up, so don't make anymore objects:
-            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true || FlatRedBall.Screens.ScreenManager.IsInEditMode == false)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
             {
                 return new Polygon();
             }
@@ -269,7 +302,9 @@ namespace GlueControl.Editing
 
             if (nextPolygon == Polygons.Count)
             {
-                Polygons.Add(ShapeManager.AddPolygon());
+                var newPolygon = new Polygon();
+                ShapeManager.AddToLayer(newPolygon, DefaultLayer);
+                Polygons.Add(newPolygon);
             }
 
             var polygon = Polygons[nextPolygon];

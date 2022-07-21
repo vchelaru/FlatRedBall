@@ -577,36 +577,29 @@ namespace FlatRedBall
 
             mZBufferedSprites = new SpriteList();
             mZBufferedSprites.Name = "Sprites drawn using the ZBuffer";
-            //mZBufferedSpriteBuffer = new ListBuffer<Sprite>(mZBufferedSprites);
             mZBufferedSpritesReadOnly = new ReadOnlyCollection<Sprite>(mZBufferedSprites);
 
             mAutomaticallyUpdatedSprites = new SpriteList();
             mAutomaticallyUpdatedSprites.Name = "Sprites automatically updated by the SpriteManager";
-            //mAutomaticallyUpdatedSpriteBuffer = new ListBuffer<Sprite>(mAutomaticallyUpdatedSprites);
             mAutomaticallyUpdatedSpritesReadOnly = new ReadOnlyCollection<Sprite>(mAutomaticallyUpdatedSprites);
 
             mManuallyUpdatedSprites = new SpriteList();
             mManuallyUpdatedSprites.Name = "Sprites which must be manually updated.";
-            //mManuallyUpdatedSpriteBuffer = new ListBuffer<Sprite>(mManuallyUpdatedSprites);
             mManuallyUpdatedSpritesReadOnly = new ReadOnlyCollection<Sprite>(mManuallyUpdatedSprites);
 
             mSpriteFrames = new PositionedObjectList<SpriteFrame>();
             mSpriteFrames.Name = "Internal SpriteManager SpriteFrame List";
             mSpriteFramesReadOnly = new ReadOnlyCollection<SpriteFrame>(mSpriteFrames);
-            //mSpriteFrameBuffer = new ListBuffer<SpriteFrame>(mSpriteFrames);
 
             mDrawableBatches = new List<IDrawableBatch>();
             mDrawableBatchesReadOnlyCollection = new System.Collections.ObjectModel.ReadOnlyCollection<IDrawableBatch>(mDrawableBatches);
-            //mDrawableBatchBuffer = new ListBuffer<IDrawableBatch>(mDrawableBatches);
 
             mManagedPositionedObjects = new PositionedObjectList<PositionedObject>();
             mManagedPositionedObjects.Name = "PositionedObjects managed by the SpriteManager";
             mManagedPositionedObjectsReadOnly = new ReadOnlyCollection<PositionedObject>(mManagedPositionedObjects);
-            //mManagedPositionedObjectBuffer = new ListBuffer<PositionedObject>(mManagedPositionedObjects);
 
             mEmitters = new EmitterList();
             mEmitters.Name = "Internal SpriteManager EmitterList";
-            //mEmitterBuffer = new ListBuffer<Emitter>(mEmitters);
 
             mParticleCount = 0;
             mParticleSprites = new SpriteList();
@@ -617,9 +610,18 @@ namespace FlatRedBall
 
             mLayers = new List<Layer>();
             mLayersReadOnly = new ReadOnlyCollection<Layer>(mLayers);
-            //mLayerBuffer = new ListBuffer<Layer>(mLayers);
 
-            #endregion
+#if DEBUG
+            // These are high-traffic lists, so let's make them backed by a hash set to go faster
+            mOrderedByDistanceFromCameraSprites.AddInternalHashSet();
+            mZBufferedSprites.AddInternalHashSet();
+            mAutomaticallyUpdatedSprites.AddInternalHashSet();
+            mManuallyUpdatedSprites.AddInternalHashSet();
+            mManagedPositionedObjects.AddInternalHashSet();
+#endif
+
+
+#endregion
 
             int numberOfUpdaters = 1;
 
@@ -2285,8 +2287,10 @@ namespace FlatRedBall
 
         public static void RemoveSprite(Sprite spriteToRemove)
         {
+#if DEBUG
             if (spriteToRemove == null)
-                return;
+                throw new ArgumentNullException(nameof(spriteToRemove));
+#endif
 
             spriteToRemove.OnRemove();
 
@@ -2307,7 +2311,11 @@ namespace FlatRedBall
 
             if (indexOfParticleArray != -1)
             {
-                lock(typeof(SpriteManager))
+                // July 10, 2022 - why lock here?
+                // This has a cost, and could be expensive
+                // for a large number of sprites. This should
+                // never be on a secondary thread.
+                //lock(typeof(SpriteManager))
                 {
                     // this needs to be in the if statement or else it would always evaluate to false
                     for (int i = spriteToRemove.ListsBelongingTo.Count - 1; i > -1; i--)
@@ -3228,7 +3236,7 @@ namespace FlatRedBall
             {
                 if (mFirstEmpty != null)
                 {
-                    lock (mFirstEmpty)
+                    //lock (mFirstEmpty)
                     {
                         Sprite spriteToReturn = mFirstEmpty;
                         spriteToReturn.Texture = texture;

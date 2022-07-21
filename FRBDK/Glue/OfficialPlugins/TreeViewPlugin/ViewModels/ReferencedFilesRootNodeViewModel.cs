@@ -57,7 +57,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         nodeToAddTo = this;
                     }
                     nodeForFile = new NodeViewModel(nodeToAddTo);
-                    nodeForFile.ImageSource = FileIcon;
+                    nodeForFile.ImageSource = file.IsCreatedByWildcard
+                        ? NodeViewModel.FileIconWildcard
+                        : NodeViewModel.FileIcon; ;
                     nodeForFile.Tag = file;
                     nodeForFile.Text = FileManager.RemovePath(file.Name);
 
@@ -281,7 +283,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                string elementNameWithTypePrefix = container.Name;
+                string relativeFolder = container.Name + "\\";
                 if (container is ScreenSave)
                 {
                     // I think the elementNameWithPrefix will always have "Screens\\" at the beginning:
@@ -297,7 +299,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 else
                 {
-                    elementNameWithTypePrefix = "GlobalContentFiles\\" + elementNameWithTypePrefix;
+                    relativeFolder = "GlobalContentFiles\\" + relativeFolder + "\\";
                 }
 
                 string treeNodeRelativePath = ((ITreeNode)treeNodeCollection[i]).GetRelativeFilePath().Replace("/", "\\");
@@ -305,9 +307,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 bool isInSameCategory = false;
 
-                isInSameCategory = treeNodeRelativePath.StartsWith("Entities\\") && elementNameWithTypePrefix.StartsWith("Entities\\") ||
-                    treeNodeRelativePath.StartsWith("Screens\\") && elementNameWithTypePrefix.StartsWith("Screens\\") ||
-                    treeNodeRelativePath.StartsWith("GlobalContentFiles\\") && elementNameWithTypePrefix.StartsWith("GlobalContentFiles\\");
+                isInSameCategory = treeNodeRelativePath.StartsWith("Entities\\") && relativeFolder.StartsWith("Entities\\") ||
+                    treeNodeRelativePath.StartsWith("Screens\\") && relativeFolder.StartsWith("Screens\\") ||
+                    treeNodeRelativePath.StartsWith("GlobalContentFiles\\") && relativeFolder.StartsWith("GlobalContentFiles\\");
 
                 if (isInSameCategory)
                 {
@@ -317,16 +319,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (rfsName.StartsWith("Entities\\"))
                     {
                         rfsName = rfsName.Substring("Entities\\".Length);
-                        elementNameWithTypePrefix = elementNameWithTypePrefix.Substring("Entities\\".Length);
+                        relativeFolder = relativeFolder.Substring("Entities\\".Length) + "\\";
                     }
                     else if (rfsName.StartsWith("Screens\\"))
                     {
 
                         rfsName = rfsName.Substring("Screens\\".Length);
-                        elementNameWithTypePrefix = elementNameWithTypePrefix.Substring("Screens\\".Length);
+                        relativeFolder = relativeFolder.Substring("Screens\\".Length) + "\\";
                     }
 
-                    if (FileManager.IsRelativeTo(rfsName, elementNameWithTypePrefix))
+                    if (FileManager.IsRelativeTo(rfsName, relativeFolder))
                     {
                         rfsName = referencedFileSave.Name.Replace("/", "\\");
                         bool shouldRemove = rfsName != treeNodeRelativePath;

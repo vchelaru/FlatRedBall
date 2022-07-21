@@ -9,6 +9,13 @@ using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    public class NosVariableAssignment
+    {
+        public NamedObjectSave NamedObjectSave;
+        public string VariableName;
+        public object Value;
+    }
+
     public interface IGluxCommands
     {
         #region Fields/Properties
@@ -49,7 +56,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region ReferencedFileSave
 
-        Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, object creationOptions = null);
+        Task<ReferencedFileSave> CreateNewFileAndReferencedFileSaveAsync(AddNewFileViewModel viewModel, GlueElement element, object creationOptions = null);
 
 
         /// <summary>
@@ -66,8 +73,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
-        ReferencedFileSave CreateReferencedFileSaveForExistingFile(IElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
 
+        [Obsolete("Use CreateReferencedFileSaveForExistingFileAsync")]
+        ReferencedFileSave CreateReferencedFileSaveForExistingFile(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
+        Task<ReferencedFileSave> CreateReferencedFileSaveForExistingFileAsync(GlueElement containerForFile, FilePath filePath, AssetTypeInfo ati = null);
         [Obsolete("Use GetReferencedFileSaveFromFile which takes a FilePath")]
         ReferencedFileSave GetReferencedFileSaveFromFile(string filePath);
         ReferencedFileSave GetReferencedFileSaveFromFile(FilePath filePath);
@@ -79,7 +88,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
         Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null);
-
+        
 
         #endregion
 
@@ -93,6 +102,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region GlueElements
 
+        Task CopyGlueElement(GlueElement original);
+
         FilePath GetElementJsonLocation(GlueElement element);
 
         FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave);
@@ -103,7 +114,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
 
-        void RemoveEntity(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
+        Task RemoveEntityAsync(EntitySave entityToRemove, List<string> filesThatCouldBeRemoved = null);
 
         #endregion
 
@@ -138,8 +149,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="nos">The NamedObjectSave which will have its variable assigned.</param>
         /// <param name="memberName">The name of the variable to assign.</param>
         /// <param name="value">The value of the variable.</param>
-        void SetVariableOn(NamedObjectSave nos, string memberName, object value);
-        ToolsUtilities.GeneralResponse CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool save = true);
+        [Obsolete("Use SetVariableOnAsync")]
+        void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
+            bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        Task ReactToPropertyChanged(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+
+        Task<List<ToolsUtilities.GeneralResponse<NamedObjectSave>>> CopyNamedObjectListIntoElement(List<NamedObjectSave> nosList, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
+
+        Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
             List<string> additionalFilesToRemove = null);
@@ -162,7 +192,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Import
 
-        GlueElement ImportScreenOrEntityFromFile(FilePath filePath);
+        Task<GlueElement> ImportScreenOrEntityFromFile(FilePath filePath);
 
         #endregion
     }

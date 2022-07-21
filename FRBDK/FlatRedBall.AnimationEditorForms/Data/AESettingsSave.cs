@@ -23,6 +23,10 @@ namespace FlatRedBall.AnimationEditorForms.Data
 
         public List<AnimationChainSettingSave> AnimationChainSettings = new List<AnimationChainSettingSave>();
 
+
         public UnitType UnitType { get; set; }
+
+        public bool SnapToGrid { get; set; }
+        public int GridSize { get; set; } = 16;
     }
 }

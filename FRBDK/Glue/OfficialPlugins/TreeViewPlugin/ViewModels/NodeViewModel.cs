@@ -51,6 +51,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static ImageSource EntityInstanceListIcon;
         public static ImageSource EventIcon;
         public static ImageSource FileIcon;
+        public static ImageSource FileIconWildcard;
         public static ImageSource FolderClosedIcon;
         public static ImageSource FolderOpenIcon;
         public static ImageSource LayersIcon;
@@ -165,6 +166,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");
+            FileIconWildcard = LoadIcon("icon_file_wildcard");
             FolderClosedIcon = LoadIcon("icon_folder");
             FolderOpenIcon = LoadIcon("icon_folder_open");
             LayersIcon = LoadIcon("icon_layers");

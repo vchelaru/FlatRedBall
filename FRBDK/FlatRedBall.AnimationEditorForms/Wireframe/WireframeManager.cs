@@ -117,9 +117,9 @@ namespace FlatRedBall.AnimationEditorForms
             get { return mManagers; }
         }
 
-        private WireframeEditControlsViewModel WireframeEditControlsViewModel
+        public WireframeEditControlsViewModel WireframeEditControlsViewModel
         {
-            get; set;
+            get; private set;
         }
 
         #endregion
@@ -283,7 +283,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                 chain.Frames.Add(afs);
 
-                TreeViewManager.Self.RefreshTreeNode(chain);
+                AppCommands.Self.RefreshTreeNode(chain);
 
                 SelectedState.Self.SelectedFrame = afs;
 

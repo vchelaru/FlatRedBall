@@ -34,6 +34,11 @@ namespace FlatRedBall.Forms.Controls
 
         protected GraphicalUiElement textComponent;
         protected RenderingLibrary.Graphics.Text coreTextObject;
+        
+        
+        protected GraphicalUiElement placeholderComponent;
+        protected RenderingLibrary.Graphics.Text placeholderTextObject;
+
 
         protected GraphicalUiElement selectionInstance;
 
@@ -151,6 +156,18 @@ namespace FlatRedBall.Forms.Controls
             }
         } 
 
+        public string Placeholder
+        {
+            get => placeholderTextObject?.RawText;
+            set
+            {
+                if(placeholderTextObject!= null)
+                {
+                    placeholderTextObject.RawText = value;
+                }
+            }
+        }
+
         #endregion
 
         #region Events
@@ -170,10 +187,13 @@ namespace FlatRedBall.Forms.Controls
         {
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
             caretComponent = base.Visual.GetGraphicalUiElementByName("CaretInstance");
+            
             // optional:
             selectionInstance = base.Visual.GetGraphicalUiElementByName("SelectionInstance");
+            placeholderComponent = base.Visual.GetGraphicalUiElementByName("PlaceholderTextInstance");
 
             coreTextObject = textComponent.RenderableComponent as RenderingLibrary.Graphics.Text;
+            placeholderTextObject = placeholderComponent?.RenderableComponent as RenderingLibrary.Graphics.Text;
 #if DEBUG
             if (textComponent == null) throw new Exception("Gum object must have an object called \"Text\"");
             if (coreTextObject == null) throw new Exception("The Text instance must be of type Text");
@@ -451,7 +471,7 @@ namespace FlatRedBall.Forms.Controls
                         MoveCursorDownOneLine();
                         break;
                     case Microsoft.Xna.Framework.Input.Keys.Delete:
-                        if (caretIndex < (DisplayedText?.Length ?? 0))
+                        if (caretIndex < (DisplayedText?.Length ?? 0) || selectionLength > 0)
                         {
                             HandleDelete();
                         }
@@ -784,7 +804,16 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected void UpdatePlaceholderVisibility()
+        {
+            if(placeholderTextObject != null)
+            {
+                placeholderComponent.Visible = string.IsNullOrEmpty(coreTextObject.RawText);
+            }
+        }
 
         #endregion
+
+        public abstract void SelectAll();
     }
 }

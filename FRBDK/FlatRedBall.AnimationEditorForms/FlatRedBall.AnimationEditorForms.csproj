@@ -131,8 +131,9 @@
     <Compile Include="..\Glue\Glue\Extensions\WindowsForm.cs">
       <Link>Controls\WindowsForm.cs</Link>
     </Compile>
+    <Compile Include="CommandsAndState\AppCommands.cs" />
     <Compile Include="CommandsAndState\ApplicationEvents.cs" />
-    <Compile Include="CommandsAndState\ApplicationState.cs" />
+    <Compile Include="CommandsAndState\AppState.cs" />
     <Compile Include="Content\DateCheckingContentLoader.cs" />
     <Compile Include="Controls\AdjustOffsetControlWpf.xaml.cs">
       <DependentUpon>AdjustOffsetControlWpf.xaml</DependentUpon>
@@ -205,6 +206,7 @@
     </Compile>
     <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyGrids\AxisAlignedRectangleDisplayer.cs" />
     <Compile Include="PropertyGrids\PropertyGridManager.cs" />
     <Compile Include="SelectedState.cs" />
     <Compile Include="Singleton.cs" />

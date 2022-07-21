@@ -47,6 +47,7 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7,
+            SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated = 7,
             // this was added late summer 2021
             // There should have been another version
             // inbetween 7 and 8, but there wasn't, and 
@@ -65,7 +66,13 @@ namespace FlatRedBall.Glue.SaveClasses
             GumSupportsAchxAnimation = 12,
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
-            RemoveAutoLocalizationOfVariables = 14
+            RemoveAutoLocalizationOfVariables = 14,
+            SpriteHasUseAnimationTextureFlip = 15,
+            RemoveIsScrollableEntityList = 16,
+            ScreenManagerHasPersistentPolygons = 17,
+            SpriteHasTolerateMissingAnimations = 18,
+            AnimationLayerHasName = 19,
+            IPlatformer = 19
         }
 
         #endregion
@@ -74,7 +81,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.StartupInGeneratedGame;
+        public const int LatestVersion = (int)GluxVersions.SpriteHasTolerateMissingAnimations;
 
         public int FileVersion { get; set; }
 
@@ -107,6 +114,10 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
+        // Even though these never appear in the saved json on disk, they need to be serialized
+        // so that the clone can be properly created, so it an't be ignored.
+        // [JsonIgnore]
+        public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
 
         public GluxPluginData PluginData

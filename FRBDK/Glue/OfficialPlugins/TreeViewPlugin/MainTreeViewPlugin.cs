@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.TreeViewPlugin.Logic;
+using OfficialPlugins.TreeViewPlugin.Models;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
 using PropertyTools.Wpf;
@@ -59,7 +60,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void AssignEvents()
         {
-            ReactToLoadedGluxEarly += HandleGluxLoaded;
+            ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
+            ReactToLoadedGlux += HandleGluxLoadLate;
             ReactToUnloadedGlux += HandleUnloadedGlux;
             RefreshTreeNodeFor += HandleRefreshTreeNodeFor;
             RefreshGlobalContentTreeNode += HandleRefreshGlobalContentTreeNode;
@@ -67,8 +69,48 @@ namespace OfficialPlugins.TreeViewPlugin
             FocusOnTreeView += HandleFocusOnTreeView;
             ReactToCtrlF += HandleCtrlF;
             ReactToItemSelectHandler += HandleItemSelected;
+            TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
         }
 
+        private bool TryHandleTreeNodeDoubleClick(ITreeNode arg)
+        {
+            var node = arg as NodeViewModel;
+
+            if(node?.Children.Count > 0)
+            {
+                node.IsExpanded = !node.IsExpanded;
+                return true;
+            }
+            return false;
+        }
+
+        private void HandleGluxLoadLate()
+        {
+            GlueCommands.Self.DoOnUiThread(() =>
+            {
+                var project = GlueState.Self.CurrentGlueProject;
+                var entities = project.Entities.ToArray();
+                var screens = project.Screens.ToArray();
+
+                foreach (var entity in entities)
+                {
+                    HandleRefreshTreeNodeFor(entity, TreeNodeRefreshType.All);
+                }
+
+                foreach (var screen in screens)
+                {
+                    HandleRefreshTreeNodeFor(screen, TreeNodeRefreshType.All);
+                }
+
+                HandleRefreshGlobalContentTreeNode();
+
+                var settings = TreeViewPluginSettingsManager.LoadSettings();
+                if(settings != null)
+                {
+                    TreeViewPluginSettingsManager.ApplySettingsToViewModel(settings, MainViewModel);
+                }
+            });
+        }
 
         private async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
@@ -101,22 +143,74 @@ namespace OfficialPlugins.TreeViewPlugin
             MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
         }
 
-        private void HandleRefreshGlobalContentTreeNode()
+        private async void HandleRefreshGlobalContentTreeNode()
         {
+            ITreeNode parentTreeNode = SelectionLogic.CurrentNode?.Parent;
+            var parentNodeViewModel = parentTreeNode as NodeViewModel;
+            var oldRfs = SelectionLogic.CurrentNode?.Tag as ReferencedFileSave;
+            var isGlobalContentRfs =
+                SelectionLogic.CurrentNode != null &&
+                oldRfs != null &&
+                parentTreeNode != null &&
+                (parentTreeNode.IsGlobalContentContainerNode() || parentTreeNode.IsChildOfGlobalContent());
+
+            int? indexInParent = null;
+
+            var glueProject = GlueState.Self.CurrentGlueProject;
+
+            if (parentTreeNode != null)
+            {
+                indexInParent = SelectionLogic.CurrentNode?.Parent.Children.IndexOf(SelectionLogic.CurrentNode);
+            }
+
+            var oldSelection = SelectionLogic.CurrentNode;
+
             MainViewModel.RefreshGlobalContentTreeNodes();
+
+
+            if (oldRfs != null && !MainViewModel.IsInTreeView(oldSelection) && indexInParent > -1 &&
+                glueProject.GlobalFiles.Count > 0)
+            {
+                var index = indexInParent.Value;
+                if(index >= parentNodeViewModel.Children.Count)
+                {
+                    index = parentNodeViewModel.Children.Count - 1;
+                }
+
+                if(index > -1 && MainViewModel.IsInTreeView(parentNodeViewModel))
+                {
+                    var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                    // If the tag changed, push it back out:
+                    SelectionLogic.IsPushingSelectionOutToGlue = true;
+                    var newSelection = parentNodeViewModel.Children[index];
+                    await SelectionLogic.SelectByTreeNode(newSelection);
+                    SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+                }
+            }
         }
 
-        private void HandleGluxLoaded()
+        private void HandleGluxLoadedEarly()
         {
             pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
+
         }
 
         private void HandleUnloadedGlux()
         {
+            FillAndSaveTreeViewPluginSettings();
+
+
             pluginTab.Hide();
             MainViewModel.Clear();
+        }
+
+        private void FillAndSaveTreeViewPluginSettings()
+        {
+            var settings = TreeViewPluginSettingsManager.CreateSettingsFrom(MainViewModel);
+
+            TreeViewPluginSettingsManager.SaveSettings(settings);
         }
 
         private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
@@ -130,11 +224,12 @@ namespace OfficialPlugins.TreeViewPlugin
             {
                 if(element is ScreenSave)
                 {
-                    MainViewModel.ScreenRootNode.SortByTextConsideringDirectories();
+                    MainViewModel.ScreenRootNode.SortByTextConsideringDirectories(recursive:true);
                 }
                 else // entity save
                 {
-                    MainViewModel.EntityRootNode.SortByTextConsideringDirectories();
+
+                    MainViewModel.EntityRootNode.SortByTextConsideringDirectories(recursive:true);
                 }
             }
             if(currentNode?.Tag != null)
@@ -170,8 +265,18 @@ namespace OfficialPlugins.TreeViewPlugin
 
         private void HandleRefreshDirectoryTreeNodes()
         {
+            var oldTag = SelectionLogic.CurrentNode?.Tag;
+
             MainViewModel.RefreshDirectoryNodes();
             
+            if(oldTag != null && SelectionLogic.CurrentNode?.Tag != oldTag)
+            {
+                var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                // If the tag changed, push it back out:
+                SelectionLogic.IsPushingSelectionOutToGlue = false;
+                SelectionLogic.SelectByTag(oldTag);
+                SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+            }
         }
 
         private void HandleFocusOnTreeView()

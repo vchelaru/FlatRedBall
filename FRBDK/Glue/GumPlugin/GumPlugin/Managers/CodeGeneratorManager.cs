@@ -69,7 +69,7 @@ namespace GumPlugin.Managers
             string extension = file.Extension;
             if(extension == "gumx")
             {
-                foreach(var screen in ObjectFinder.Self.GumProjectSave.Screens)
+                foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
                 {
                     GenerateDueToFileChangeTask(screen);
                 }
@@ -207,9 +207,10 @@ namespace GumPlugin.Managers
             return null;
         }
 
-        public void GenerateDerivedGueRuntimes()
+        public void GenerateDerivedGueRuntimes(bool forceReload = false)
         {
-            if (AppState.Self.GumProjectSave == null &&
+            TaskManager.Self.WarnIfNotInTask();
+            if ((forceReload || AppState.Self.GumProjectSave == null) &&
                 FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
             {
                 var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
@@ -217,11 +218,11 @@ namespace GumPlugin.Managers
 
                 if (rfs != null)
                 {
-                    string fullFileName = FlatRedBall.Glue.ProjectManager.ContentDirectory + rfs.Name;
+                    string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
 
                     string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
 
-                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory);
+                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
                 }
             }
 

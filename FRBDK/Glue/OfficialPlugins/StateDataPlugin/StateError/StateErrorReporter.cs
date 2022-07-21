@@ -10,9 +10,9 @@ using System.Text;
 
 namespace OfficialPlugins.StateDataPlugin.StateError
 {
-    class StateErrorReporter : IErrorReporter
+    class StateErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             var project = GlueState.Self.CurrentGlueProject;
 

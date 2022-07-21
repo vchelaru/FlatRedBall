@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
+using FlatRedBall.IO;
 
 namespace GlueControl.Models
 {
-    public abstract class GlueElement
+    public abstract class GlueElement : INamedObjectContainer
     {
         public bool IsOnOwnLayer
         {
@@ -12,6 +15,15 @@ namespace GlueControl.Models
             set;
         }
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public string ClassName
+        {
+            get
+            {
+                return FileManager.RemovePath(Name);
+            }
+        }
 
         public string Name
         {
@@ -20,6 +32,21 @@ namespace GlueControl.Models
         }
 
         public abstract string BaseElement { get; }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public abstract string BaseObject
+        {
+            get; set;
+        }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public int VerificationIndex
+        {
+            get;
+            set;
+        }
 
         public IEnumerable<NamedObjectSave> AllNamedObjects
         {
@@ -47,7 +74,7 @@ namespace GlueControl.Models
 
     public class EntitySave : GlueElement
     {
-        public override string BaseElement => BaseEntity; 
+        public override string BaseElement => BaseEntity;
 
         string mBaseEntity;
         public string BaseEntity
@@ -65,6 +92,14 @@ namespace GlueControl.Models
                 }
 
             }
+        }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public override string BaseObject
+        {
+            get { return mBaseEntity; }
+            set { mBaseEntity = value; }
         }
     }
 
@@ -89,6 +124,12 @@ namespace GlueControl.Models
         }
 
         public override string BaseElement => BaseScreen;
+
+        public override string BaseObject
+        {
+            get { return mBaseScreen; }
+            set { mBaseScreen = value; }
+        }
 
     }
 }

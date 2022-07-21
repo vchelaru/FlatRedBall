@@ -158,12 +158,18 @@ namespace OfficialPlugins.Compiler
 
         internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
         {
+            int numberOfTimesToTryGettingProcess = 140;
+            int numberOfTimesToTryGettingHandle = 60;
+            int millisecondsToWaitBeforeRetry = 100;
+            bool didTimeoutOnProcess = false;
+
             ViewModel.IsWaitingForGameToStart = true;
 
             GeneralResponse toReturn = GeneralResponse.UnsuccessfulResponse;
 
             foundAlreadyRunningProcess = false;
             string exeLocation = GetGameExeLocation();
+            
             ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
 
             if (System.IO.File.Exists(exeLocation))
@@ -173,13 +179,13 @@ namespace OfficialPlugins.Compiler
                 if(startResponse.Succeeded)
                 {
                     runningGameProcess = TryFindGameProcess();
-                    int numberOfTimesToTryGettingProcess = 50;
+                    
                     int timesTried = 0;
                     while (runningGameProcess == null)
                     {
                         // didn't find it, so let's wait a little and try again:
 
-                        await Task.Delay(50);
+                        await Task.Delay(millisecondsToWaitBeforeRetry);
 
                         runningGameProcess = TryFindGameProcess();
 
@@ -187,6 +193,7 @@ namespace OfficialPlugins.Compiler
 
                         if (timesTried >= numberOfTimesToTryGettingProcess)
                         {
+                            didTimeoutOnProcess = true;
                             break;
                         }
                     }
@@ -200,20 +207,19 @@ namespace OfficialPlugins.Compiler
                         toReturn = GeneralResponse.SuccessfulResponse;
 
                         // wait for a handle
-                        int numberOfTimesToTry = 60;
-                        for (int i = 0; i < numberOfTimesToTry; i++)
+                        for (int i = 0; i < numberOfTimesToTryGettingHandle; i++)
                         {
                             var id = runningGameProcess?.MainWindowHandle;
 
                             if (id == null || id == IntPtr.Zero)
                             {
 
-                                await Task.Delay(100);
+                                await Task.Delay(millisecondsToWaitBeforeRetry);
                                 continue;
                             }
                         }
 
-                        global::Glue.MainGlueWindow.Self.Invoke(() =>
+                        TaskManager.Self.OnUiThread(() =>
                         {
                             ViewModel.IsRunning = runningGameProcess != null;
                             ViewModel.DidRunnerStartProcess = DidRunnerStartProcess;
@@ -224,7 +230,15 @@ namespace OfficialPlugins.Compiler
                     else
                     {
                         toReturn.Succeeded = false;
-                        toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+                        if(didTimeoutOnProcess)
+                        {
+                            toReturn.Message = $"Launching game .exe timed out after {numberOfTimesToTryGettingProcess * millisecondsToWaitBeforeRetry / 1000} seconds.";
+                        }
+                        else
+                        {
+                            toReturn.Message = $"Found the game .exe, but couldn't get it to launch. PreventFocus: {preventFocus}";
+                        }
+                        
 
                         if(startResponse.Data != null)
                         {

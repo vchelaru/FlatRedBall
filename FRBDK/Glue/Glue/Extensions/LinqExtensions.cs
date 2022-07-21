@@ -66,6 +66,17 @@ namespace System.Linq
             }
         }
 
+        public static void RemoveAll<T>(this ObservableCollection<T> collection, Func<T, bool> predicate)
+        {
+            for(int i = collection.Count-1; i > -1; i--)
+            {
+                if(predicate(collection[i]))
+                {
+                    collection.RemoveAt(i);
+                }
+            }
+        }
+
     }
 
 }

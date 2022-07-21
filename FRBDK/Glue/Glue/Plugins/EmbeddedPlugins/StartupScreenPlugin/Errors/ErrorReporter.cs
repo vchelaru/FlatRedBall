@@ -9,9 +9,9 @@ using System.Text;
 
 namespace GlueFormsCore.Plugins.EmbeddedPlugins.StartupScreenPlugin.Errors
 {
-    class ErrorReporter : IErrorReporter
+    class ErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> listToReturn = new List<ErrorViewModel>();
 

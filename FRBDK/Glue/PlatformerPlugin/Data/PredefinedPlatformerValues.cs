@@ -31,13 +31,13 @@ namespace FlatRedBall.PlatformerPlugin.Data
                 {
                     Name = "Ground",
 
-                    MaxSpeedX = 250,
-                    AccelerationTimeX = .25f,
+                    MaxSpeedX = 160,
+                    AccelerationTimeX = .20f,
                     DecelerationTimeX = .15f,
                     IsImmediate = false,
-                    JumpVelocity = 450,
+                    JumpVelocity = 260,
                     JumpApplyByButtonHold = true,
-                    JumpApplyLength = .2f,
+                    JumpApplyLength = .17f,
                     Gravity = 900,
                     MaxFallSpeed = 500,
                     CanFallThroughCloudPlatforms = true,
@@ -58,13 +58,13 @@ namespace FlatRedBall.PlatformerPlugin.Data
                 {
                     Name = "Air",
 
-                    MaxSpeedX = 250,
+                    MaxSpeedX = 160,
                     AccelerationTimeX = 1,
                     DecelerationTimeX = 1,
                     IsImmediate = false,
                     JumpVelocity = 0,
-                    Gravity = 900,
-                    MaxFallSpeed = 500,
+                    Gravity = 1000,
+                    MaxFallSpeed = 400,
                     CanFallThroughCloudPlatforms = false,
 
                     MoveSameSpeedOnSlopes = true

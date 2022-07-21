@@ -136,6 +136,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Wraps Children");
 
             mVariableNamesToSkipForProperties.Add("IsXamarinFormsControl");
+            mVariableNamesToSkipForProperties.Add("IsOverrideInCodeGen");
 
 
             // properties to skip because they're handled in the GUE

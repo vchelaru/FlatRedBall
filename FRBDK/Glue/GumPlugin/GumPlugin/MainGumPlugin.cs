@@ -534,7 +534,7 @@ namespace GumPlugin
             EventCodeGenerator.Self.HandleGetEventSignatureArgs(namedObject, eventResponseSave, out type, out args);
         }
 
-        private async void HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newFrbScreen)
+        private async Task HandleNewScreen(FlatRedBall.Glue.SaveClasses.ScreenSave newFrbScreen)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -705,12 +705,12 @@ namespace GumPlugin
             AskToCreateGumProject();
         }
 
-        public async void CreateGumProjectWithForms()
+        public async Task CreateGumProjectWithForms()
         {
             await CreateGumProjectInternal(shouldAlsoAddForms: true);
         }
 
-        public async void CreateGumProjectNoForms()
+        public async Task CreateGumProjectNoForms()
         {
             await CreateGumProjectInternal(shouldAlsoAddForms: false);
         }
@@ -782,9 +782,11 @@ namespace GumPlugin
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
                         await FormsAddManager.GenerateBehaviors();
-                        FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
+
+                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(forceReload:true);
                 }
                 propertiesManager.IsReactingToProperyChanges = true;
 
@@ -874,17 +876,8 @@ namespace GumPlugin
                 // This uses the content directory as the root. Should it use the entire game folder? Or just the 
                 // content folder? I'm not sure.
                 var expectedGumProjectParentRoot = new FilePath(GlueState.Self.ContentDirectory).RelativeTo(AppState.Self.GumProjectFolder);
-                if (!needsToSetRoot)
-                {
-                    var currentGumProjectParentRoot =
-                        new FilePath(GlueState.Self.ContentDirectory + gumProject.ParentProjectRoot);
-
-                    if (currentGumProjectParentRoot != expectedGumProjectParentRoot)
-                    {
-                        needsToSetRoot = true;
-                    }
-                }
-                if (needsToSetRoot)
+                
+                if (gumProject.ParentProjectRoot != expectedGumProjectParentRoot)
                 {
                     gumProject.ParentProjectRoot = expectedGumProjectParentRoot;
 

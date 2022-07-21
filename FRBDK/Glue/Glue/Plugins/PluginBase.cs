@@ -29,6 +29,8 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.FormHelpers;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using static FlatRedBall.Glue.Plugins.PluginManager;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -180,6 +182,11 @@ namespace FlatRedBall.Glue.Plugins
         public string ChangedMember { get; set; }
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
+
+        public override string ToString()
+        {
+            return $"{NamedObject}.{ChangedMember}";
+        }
     }
 
     #endregion
@@ -199,7 +206,9 @@ namespace FlatRedBall.Glue.Plugins
 
         public abstract string FriendlyName { get; }
         public abstract Version Version { get; }
-
+        public virtual string GithubRepoOwner => null;
+        public virtual string GithubRepoName => null;
+        public virtual bool CheckGithubForNewRelease => false;
 
         protected PluginTabPage PluginTab { get; private set; } // This is the tab that will hold our control
 
@@ -217,7 +226,7 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Action raised when a new Glue screen is created.
         /// </summary>
-        public Action<ScreenSave> NewScreenCreated { get; protected set; }
+        public Func<ScreenSave, Task> NewScreenCreated { get; protected set; }
         public Action<EntitySave> NewEntityCreated { get; protected set; }
 
         public Action<ScreenSave, AddScreenWindow> NewScreenCreatedWithUi { get; protected set; }
@@ -237,8 +246,14 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
+        public Action<List<NamedObjectSaveVariableChange>> ReactToChangedNamedObjectVariableList { get; protected set; }
+        [Obsolete("Use ReactToFileChange")]
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
+        public Action<FilePath, FileChangeType> ReactToFileChange { get; protected set; }
+
         public ReactToFileChangeDelegate ReactToBuiltFileChangeHandler { get; protected set; }
+
+
         public Action ReactToChangedStartupScreen { get; protected set; }
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
@@ -257,6 +272,14 @@ namespace FlatRedBall.Glue.Plugins
         /// Delegate called whenever a new NamedObjectSave is added.
         /// </summary>
         public ReactToNewObjectDelegate ReactToNewObjectHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate called whenever a group of new NamedObjectSaves is added. If this is null, then the PluginManager
+        /// falls back to calling ReactToNewObjectHandler.
+        /// </summary>
+        public Action<List<NamedObjectSave>> ReactToNewObjectList { get; protected set; }
+        public Func<List<NamedObjectSave>, Task> ReactToNewObjectListAsync { get; protected set; }
+
         public Action<IElement, NamedObjectSave> ReactToObjectRemoved { get; protected set; }
         public Action<List<GlueElement>, List<NamedObjectSave>> ReactToObjectListRemoved { get; protected set; }
         
@@ -317,7 +340,7 @@ namespace FlatRedBall.Glue.Plugins
         public Action<AddScreenWindow> ModifyAddScreenWindow { get; protected set; }
 
         /// <summary>
-        /// Raised whenever a project is unloaded. Glue will still report the project as loaded, so that plugins can
+        /// Raised right before a project is unloaded. Glue will still report the project as loaded, so that plugins can
         /// react to a specific project unloading (such as by saving content).
         /// </summary>
         public Action ReactToUnloadedGlux { get; protected set; }
@@ -580,9 +603,9 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Errors
 
-        List<IErrorReporter> ErrorReporters = new List<IErrorReporter>();
+        List<ErrorReporterBase> ErrorReporters = new List<ErrorReporterBase>();
 
-        protected void AddErrorReporter(IErrorReporter errorReporter)
+        protected void AddErrorReporter(ErrorReporterBase errorReporter)
         {
             ErrorReporters.Add(errorReporter);
             EditorObjects.IoC.Container.Get<GlueErrorManager>().Add(errorReporter);

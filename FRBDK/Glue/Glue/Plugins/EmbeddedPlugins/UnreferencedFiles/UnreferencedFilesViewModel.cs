@@ -114,11 +114,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
         {
             get
             {
-                if(SelectedFileName != null && !string.IsNullOrEmpty(SelectedFileName.FilePath) && FileManager.IsRelative(SelectedFileName.FilePath))
-                {
-                    return GlueState.Self.ContentDirectory + SelectedFileName;
-                }
-                return SelectedFileName.FilePath;
+                return SelectedFileName?.File.FullPath;
             }
         }
 
@@ -126,7 +122,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
         {
             get
             {
-                if(SelectedFileName == null || string.IsNullOrEmpty(SelectedFileName.FilePath))
+                if(SelectedFileName == null || SelectedFileName.File == null)
                 {
                     return Visibility.Hidden;
 
@@ -155,12 +151,12 @@ namespace FlatRedBall.Glue.UnreferencedFiles
 
             if (ScanProject)
             {
-                if (SelectedFileName != null && !string.IsNullOrEmpty(SelectedFileName.FilePath))
+                if (SelectedFileName != null && SelectedFileName.File != null)
                 {
                     // We want to make sure only the specific file is removed from the specific project, because this list shows all files for all projects:
 
                     var projectToRemoveFrom = ProjectManager.GetProjectByName(SelectedFileName.ProjectName);
-                    anyRemoved |= RemoveReferenceFromProject(SelectedFileName.FilePath, projectToRemoveFrom);
+                    anyRemoved |= RemoveReferenceFromProject(SelectedFileName.File.FullPath, projectToRemoveFrom);
 
                     UnreferencedFiles.Remove(SelectedFileName);
                     NotifyPropertyChanged(nameof(TopMessage));
@@ -208,11 +204,11 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                 bool anyRemoved = false;
                 foreach (var file in UnreferencedFiles)
                 {
-                    anyRemoved |= RemoveReferenceFromProject(file.FilePath, GlueState.Self.CurrentMainProject.ContentProject);
+                    anyRemoved |= RemoveReferenceFromProject(file.File.FullPath, GlueState.Self.CurrentMainProject.ContentProject);
 
                     foreach (var project in GlueState.Self.SyncedProjects)
                     {
-                        anyRemoved |= RemoveReferenceFromProject(file.FilePath, project.ContentProject);
+                        anyRemoved |= RemoveReferenceFromProject(file.File.FullPath, project.ContentProject);
                     }
                 }
 
@@ -234,13 +230,8 @@ namespace FlatRedBall.Glue.UnreferencedFiles
 
                     foreach (var unprocessedFile in UnreferencedFiles)
                     {
-                        var file = unprocessedFile.FilePath;
+                        var file = unprocessedFile.File.FullPath;
                         
-                        if(FileManager.IsRelative(file))
-                        {
-                            file = contentFolder + file;
-                        }
-
                         if (System.IO.File.Exists(file))
                         {
                             FileHelper.DeleteFile(file);
@@ -305,7 +296,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                        {
                            processedFile = FileManager.MakeRelative(file, contentDirectory);
                        }
-                       UnreferencedFiles.Add(new ProjectSpecificFile { FilePath = processedFile });
+                       UnreferencedFiles.Add(new ProjectSpecificFile { File = processedFile });
                    }
                    IsStillScanning = false;
                });
@@ -370,14 +361,14 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                 var projectSpecificFileList = UnreferencedFilesManager.Self.UnreferencedFiles
                     .Select(item =>
                     {
-                        string processedFile = item.FilePath;
+                        string processedFile = item.File.FullPath;
                         if (FileManager.IsRelativeTo(processedFile, contentDirectory))
                         {
                             processedFile = FileManager.MakeRelative(processedFile, contentDirectory);
                         }
-                        return new ProjectSpecificFile { FilePath = processedFile, ProjectName = item.ProjectName };
+                        return new ProjectSpecificFile { File = processedFile, ProjectName = item.ProjectName };
                     })
-                    .OrderBy(item =>item.FilePath)
+                    .OrderBy(item =>item.File.Standardized)
                     .ToList();
 
                 TaskManager.Self.OnUiThread(() =>
@@ -401,9 +392,9 @@ namespace FlatRedBall.Glue.UnreferencedFiles
         internal void ViewInExplorer()
         {
             string file = null;
-            if(SelectedFileName != null && !string.IsNullOrEmpty(SelectedFileName.FilePath))
+            if(SelectedFileName != null && !string.IsNullOrEmpty(SelectedFileName.File?.FullPath))
             {
-                file = SelectedFileName.FilePath;
+                file = SelectedFileName.File.FullPath;
                 if(FileManager.IsRelative(file))
                 {
                     file = GlueState.Self.ContentDirectory + file;

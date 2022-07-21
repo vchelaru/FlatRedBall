@@ -7,6 +7,8 @@ using FlatRedBall.AnimationEditorForms.Controls;
 using FlatRedBall.AnimationEditorForms.Data;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.AnimationEditorForms.PropertyGrids;
+using FlatRedBall.AnimationEditorForms.Preview;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -16,6 +18,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         AnimationFrameDisplayer mAnimationFrameDisplayer;
         AnimationChainDisplayer mAnimationChainDisplayer;
+        AxisAlignedRectangleDisplayer rectangleDisplayer;
 
         static PropertyGridManager mSelf;
 
@@ -56,13 +59,13 @@ namespace FlatRedBall.AnimationEditorForms
 
         public event EventHandler AnimationChainChange;
         public event EventHandler AnimationFrameChange;
-
         #endregion
 
         public PropertyGridManager()
         {
             mAnimationFrameDisplayer = new AnimationFrameDisplayer();
             mAnimationChainDisplayer = new AnimationChainDisplayer();
+            rectangleDisplayer = new AxisAlignedRectangleDisplayer();
         }
 
         public void Initialize(System.Windows.Forms.PropertyGrid propertyGrid, TileMapInfoWindow tileMapInfoWindow)
@@ -82,13 +85,16 @@ namespace FlatRedBall.AnimationEditorForms
             // item is an AnimationChain:
             if (SelectedState.Self.SelectedFrame == null)
             {
-                TreeViewManager.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
+                AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
             }
-            
-            if (AnimationChainChange != null)
+            // actually even in this case the name of a shape could have changed
+            else if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
             {
-                AnimationChainChange(this, null);
+                AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedFrame);
             }
+
+            AnimationChainChange?.Invoke(this, null);
+
             if (AnimationFrameChange != null)
             {
                 AnimationFrameChange(this, null);
@@ -100,6 +106,13 @@ namespace FlatRedBall.AnimationEditorForms
                         SelectedState.Self.SelectedTexture);
                 }
             }
+
+            if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
+            {
+                PreviewManager.Self.RefreshAll();
+                ApplicationEvents.Self.RaiseAfterAxisAlignedRectangleChanged(SelectedState.Self.SelectedAxisAlignedRectangle);
+            }
+
         }
 
         void HandleChangedPropertyEventHandler(object s, EventArgs args)
@@ -109,21 +122,29 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void Refresh()
         {
-            if (SelectedState.Self.SelectedFrame != null)
+            if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
             {
                 mAnimationChainDisplayer.PropertyGrid = null;
+                mAnimationFrameDisplayer.PropertyGrid = null;
+                rectangleDisplayer.PropertyGrid = mPropertyGrid;
+                rectangleDisplayer.RefreshOnTimer = true;
+                rectangleDisplayer.Instance = SelectedState.Self.SelectedAxisAlignedRectangle;
+                mPropertyGrid.Refresh();
+            }
+            else if (SelectedState.Self.SelectedFrame != null)
+            {
+                mAnimationChainDisplayer.PropertyGrid = null;
+                rectangleDisplayer.PropertyGrid = null;
                 mAnimationFrameDisplayer.PropertyGrid = mPropertyGrid;
                 mAnimationFrameDisplayer.SetFrame(SelectedState.Self.SelectedFrame,
                     SelectedState.Self.SelectedTexture);
                 mAnimationFrameDisplayer.RefreshOnTimer = true;
                 mPropertyGrid.Refresh();
-
-                string fileName = SelectedState.Self.SelectedFrame.TextureName;
-
             }
             else if (SelectedState.Self.SelectedChain != null)
             {
                 mAnimationFrameDisplayer.PropertyGrid = null;
+                rectangleDisplayer.PropertyGrid = null;
                 mAnimationChainDisplayer.PropertyGrid = mPropertyGrid;
 
                 mAnimationChainDisplayer.Instance = SelectedState.Self.SelectedChain;
@@ -145,7 +166,7 @@ namespace FlatRedBall.AnimationEditorForms
                 tileMapInfo.Name = fileName;
                 ProjectManager.Self.TileMapInformationList.TileMapInfos.Add(tileMapInfo);
             }
-            if (SelectedState.Self.SelectedFrame == null || ApplicationState.Self.UnitType != AnimationEditorForms.UnitType.SpriteSheet)
+            if (SelectedState.Self.SelectedFrame == null || AppState.Self.UnitType != AnimationEditorForms.UnitType.SpriteSheet)
             {
                 this.mTileMapInfoWindow.Visible = false;
             }

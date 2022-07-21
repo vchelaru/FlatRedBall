@@ -58,9 +58,9 @@ namespace GlueControl.Editing
 
         public static Dictionary<string, CameraStateForScreen> CameraStates = new Dictionary<string, CameraStateForScreen>();
 
-        public static float? BackgroundRed = .5f;
-        public static float? BackgroundGreen = .5f;
-        public static float? BackgroundBlue = .5f;
+        public static float? BackgroundRed = null;
+        public static float? BackgroundGreen = null;
+        public static float? BackgroundBlue = null;
 
         #endregion
 
@@ -86,8 +86,19 @@ namespace GlueControl.Editing
                 sprite.Green = BackgroundGreen.Value;
                 sprite.Blue = BackgroundBlue.Value;
                 sprite.TextureScale = 0;
-                sprite.Width = 10000;
-                sprite.Height = 10000;
+                sprite.Z = Camera.Main.Z - (Camera.Main.FarClipPlane * 0.99f);
+                sprite.Width = Camera.Main.RelativeXEdgeAt(sprite.Z) * 2.01f;
+                sprite.Height = Camera.Main.RelativeYEdgeAt(sprite.Z) * 2.01f;
+                sprite.X = Camera.Main.X;
+                sprite.Y = Camera.Main.Y;
+
+                // EditorVisuals places things on the top layer by default, so move this to the bottom layer:
+                SpriteManager.RemoveSprite(sprite);
+                if (ScreenManager.CurrentScreen?.IsActivityFinished == false)
+                {
+                    // only add it if not in edit mode. This code could actually run even if not in edit mode:
+                    SpriteManager.AddToLayer(sprite, SpriteManager.UnderAllDrawnLayer);
+                }
             }
         }
 
@@ -119,7 +130,8 @@ namespace GlueControl.Editing
 
         internal static void DoHotkeyLogic()
         {
-            const int movePerPush = 16;
+            float movePerPush = 32 / CurrentZoomRatio;
+
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
             if (keyboard.IsCtrlDown)
             {
@@ -139,16 +151,33 @@ namespace GlueControl.Editing
                 {
                     Camera.Main.X += movePerPush;
                 }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemPlus))
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.OemPlus))
                 {
                     DoZoomMinus();
                 }
-                if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.OemMinus))
+                if (keyboard.KeyTyped(Microsoft.Xna.Framework.Input.Keys.OemMinus))
                 {
                     DoZoomPlus();
                 }
             }
         }
+
+        static string GetShownTypeFrom(Screen screen)
+        {
+            if (screen is Screens.EntityViewingScreen entityViewingScreen)
+            {
+                var currentEntity = entityViewingScreen.CurrentEntity;
+                return currentEntity?.GetType().FullName
+                    ?? "No Entity";
+            }
+            else
+            {
+                return screen?.GetType().FullName ?? "No Screen";
+            }
+
+        }
+
+        #region Camera Values when switching screens
 
         public static void RecordCameraForCurrentScreen()
         {
@@ -159,17 +188,20 @@ namespace GlueControl.Editing
                 state.Position = Camera.Main.Position;
                 state.OrthogonalHeight = Camera.Main.OrthogonalHeight;
 
-                CameraStates[currentScreen.GetType().FullName] = state;
+                var shownType = GetShownTypeFrom(currentScreen);
+
+                CameraStates[shownType] = state;
 
             }
         }
 
         public static void UpdateCameraValuesToScreenSavedValues(Screen screen, bool setZoom = true)
         {
-            if (CameraStates.ContainsKey(screen.GetType().FullName))
+            var shownType = GetShownTypeFrom(screen);
+            if (CameraStates.ContainsKey(shownType))
             {
                 var camera = Camera.Main;
-                var value = CameraStates[screen.GetType().FullName];
+                var value = CameraStates[shownType];
                 camera.Position = value.Position;
                 if (setZoom)
                 {
@@ -181,6 +213,8 @@ namespace GlueControl.Editing
                 }
             }
         }
+
+        #endregion
 
         #region Zooming
 

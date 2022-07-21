@@ -43,6 +43,8 @@ using GlueFormsCore.ViewModels;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using Gum.Wireframe;
+using Gum.Converters;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -69,8 +71,6 @@ namespace FlatRedBall.Glue.Plugins
         [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICodeGeneratorPlugin> CodeGeneratorPlugins { get; set; } = new List<ICodeGeneratorPlugin>();
 
-        [ImportMany(AllowRecomposition = true)]
-        public IEnumerable<IContentFileChange> ContentFileChangePlugins { get; set; } = new List<IContentFileChange>();
 
         #endregion
 
@@ -139,6 +139,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             // Forces this class to be accesed. Vic is not sure if this is needed as of Sept 13, 2021
             var throwaway8 = typeof(Microsoft.Build.Utilities.AssemblyFoldersFromConfigInfo);
+            var throwaway2 = typeof(GraphicalUiElement);
+            var gue = new GraphicalUiElement();
+            gue.XUnits = GeneralUnitType.PixelsFromMiddle;
+            var throwaway3 = typeof(GeneralUnitType);
+            
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
@@ -151,7 +156,7 @@ namespace FlatRedBall.Glue.Plugins
             {
                 MenuStripPlugins,
                 CodeGeneratorPlugins,
-                ContentFileChangePlugins, CurrentElementPlugins
+                CurrentElementPlugins
             };
 
             foreach (var pluginList in allPlugins)
@@ -209,7 +214,6 @@ namespace FlatRedBall.Glue.Plugins
             MenuStripPlugins = new List<IMenuStripPlugin>();
             CurrentElementPlugins = new List<ICurrentElement>();
             CodeGeneratorPlugins = new List<ICodeGeneratorPlugin>();
-            ContentFileChangePlugins = new List<IContentFileChange>();
         }
 
         internal static void Initialize(bool isStartup, List<string> pluginsToIgnore = null)
@@ -641,12 +645,30 @@ namespace FlatRedBall.Glue.Plugins
                 var method = plugin.GetType().GetMethod(methodName);
                 if (method != null)
                 {
+                    if(toReturn is Task)
+                    {
+                        throw new InvalidOperationException("Need to call CallPluginMethodAsync");
+                    }
                     toReturn = method.Invoke(plugin, parameters: parameters);
                 }
             }, (plugin) => plugin.FriendlyName == pluginFriendlyName,
             $"CallPluginMethod {methodName}");
 
             return toReturn;
+        }
+
+        public static async Task CallPluginMethodAsync(string pluginFriendlyName, string methodName, params object[] parameters)
+        {
+            await CallMethodOnPluginAsync(async (plugin) =>
+            {
+                var method = plugin.GetType().GetMethod(methodName);
+                if (method != null)
+                {
+                    var task = method.Invoke(plugin, parameters: parameters) as Task;
+                    await task;
+                }
+            }, (plugin) => plugin.FriendlyName == pluginFriendlyName,
+            $"CallPluginMethod {methodName}");
         }
 
         internal static void PrintPreInitializeOutput()
@@ -982,29 +1004,51 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToElementRenamed(elementToRename, oldName);
-            },
-            plugin => plugin.ReactToElementRenamed != null,
-            nameof(ReactToElementRenamed));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToElementRenamed(elementToRename, oldName),
+                plugin => plugin.ReactToElementRenamed != null);
         }
 
         public static void ReactToNewObject(NamedObjectSave newObject)
         {
-            CallMethodOnPlugin((plugin) =>
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToNewObjectHandler(newObject),
+                plugin => plugin.ReactToNewObjectHandler != null);
+        }
+
+        public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
+        {
+            return CallMethodOnPluginAsync(async (plugin) =>
             {
-                plugin.ReactToNewObjectHandler(newObject);
+                var handledByList = false;
+                if (plugin.ReactToNewObjectList != null)
+                {
+                    plugin.ReactToNewObjectList(newObjectList);
+                    handledByList = true;
+                }
+
+                if (plugin.ReactToNewObjectListAsync != null)
+                {
+                    await plugin.ReactToNewObjectListAsync(newObjectList);
+                    handledByList = true;
+                }
+
+                if(!handledByList)
+                {
+                    foreach(var nos in newObjectList)
+                    {
+                        plugin.ReactToNewObjectHandler(nos);
+                    }
+                }
             },
-            plugin => plugin.ReactToNewObjectHandler != null,
-            nameof(ReactToNewObject));
+            plugin => plugin.ReactToNewObjectHandler != null || plugin.ReactToNewObjectList != null || plugin.ReactToNewObjectListAsync != null);
         }
 
         internal static void ReactToObjectRemoved(IElement element, NamedObjectSave removedObject)
         {
-            CallMethodOnPlugin(plugin => plugin.ReactToObjectRemoved(element, removedObject),
-            plugin => plugin.ReactToObjectRemoved != null);
-            
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToObjectRemoved(element, removedObject),
+                plugin => plugin.ReactToObjectRemoved != null);
         }
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
@@ -1030,13 +1074,11 @@ namespace FlatRedBall.Glue.Plugins
             plugin => plugin.ReactToObjectRemoved != null || plugin.ReactToObjectListRemoved != null);
         }
 
-        internal static void ReactToNewScreenCreated(ScreenSave screen)
+        internal static async Task ReactToNewScreenCreated(ScreenSave screen)
         {
-            CallMethodOnPlugin(plugin =>
-            {
-                plugin.NewScreenCreated(screen);
-            },
-            plugin => plugin.NewScreenCreated != null);
+            await CallMethodOnPluginAsync(
+                plugin => plugin.NewScreenCreated(screen),
+                plugin => plugin.NewScreenCreated != null);
         }
 
         /// <summary>
@@ -1045,22 +1087,16 @@ namespace FlatRedBall.Glue.Plugins
         /// <param name="entitySave"></param>
         internal static void ReactToNewEntityCreated(EntitySave entitySave)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewEntityCreated(entitySave);
-            },
-            plugin => plugin.NewEntityCreated != null,
-            nameof(ReactToNewEntityCreated));
+            CallMethodOnPlugin(
+                plugin => plugin.NewEntityCreated(entitySave),
+                plugin => plugin.NewEntityCreated != null);
         }
 
         internal static void ReactToNewEntityCreatedWithUi(EntitySave entitySave, AddEntityWindow window)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.NewEntityCreatedWithUi(entitySave, window);
-            },
-            plugin => plugin.NewEntityCreatedWithUi != null,
-            nameof(ReactToNewEntityCreatedWithUi));
+            CallMethodOnPlugin(
+                plugin => plugin.NewEntityCreatedWithUi(entitySave, window),
+                plugin => plugin.NewEntityCreatedWithUi != null);
         }
 
         internal static Task ReactToNewScreenCreatedWithUiAsync(ScreenSave screen, AddScreenWindow addScreenWindow)
@@ -1164,22 +1200,9 @@ namespace FlatRedBall.Glue.Plugins
         /// <param name="newRfs">The newly-created ReferencedFileSave/param>
         internal static void ReactToNewFile(ReferencedFileSave newRfs)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToNewFileHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginCommand(() =>
-                            {
-                                plugin.ReactToNewFileHandler(newRfs);
-                            },container, "Failed in ReactToNewFile");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToNewFileHandler(newRfs),
+                plugin => plugin.ReactToNewFileHandler != null);
         }
 
         internal static void ReactToItemSelect(ITreeNode selectedTreeNode)
@@ -1199,96 +1222,63 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-
-
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToRightClickHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToRightClickHandler(rightClickedPropertyGrid, menuToModify);
-                            },container, "Failed in ReactToRightClick");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToRightClickHandler(rightClickedPropertyGrid, menuToModify),
+                plugin => plugin.ReactToRightClickHandler != null);
         }
 
         internal static void ReactToChangedCodeFile(FilePath filePath)
         {
-            CallMethodOnPlugin(plugin =>
-            {
-                plugin.ReactToCodeFileChange(filePath);
-            },
-            plugin => plugin.ReactToCodeFileChange != null,
-            nameof(ReactToChangedCodeFile));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToCodeFileChange(filePath),
+                plugin => plugin.ReactToCodeFileChange != null);
         }
 
-        internal static void ReactToChangedFile(string fileName)
+        internal static void ReactToChangedFile(FilePath fileName, FileChangeType changeType)
         {
-
             SaveRelativeDirectory();
 
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                foreach (IContentFileChange plugin in pluginManager.ContentFileChangePlugins)
+            CallMethodOnPlugin(
+                plugin =>
                 {
-                    PluginContainer container = pluginManager.mPluginContainers[plugin];
-
-                    if (container.IsEnabled)
+                    if(changeType == FileChangeType.Created)
                     {
-                        IContentFileChange plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToFileChange(fileName);
-                            },container, "Failed in ReactToChangedFile");
+                        // The "Create" type is new. If it is reported to all plugins, then
+                        // files may get re-loaded unnecessarily, and we don't want that, so only 
+                        // push Add to the new 
+                        plugin.ReactToFileChange?.Invoke(fileName, changeType);
                     }
-                }
-
-                // Execute the new style plugins
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToFileChangeHandler != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
+                    else
                     {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                            {
-                                plugin1.ReactToFileChangeHandler(fileName);
-                            },container,"Failed in ReactToChangedFile");
+                        if (plugin.ReactToFileChange != null)
+                        {
+                            plugin.ReactToFileChange(fileName, changeType);
+                        }
+                        else
+                        {
+                            plugin.ReactToFileChangeHandler(fileName.FullPath);
+                        }
+
                     }
-                }
-            }
+                },
+                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null);
 
 
-            ResumeRelativeDirectory("ReactToFileChangeHandler");
+            ResumeRelativeDirectory(nameof(ReactToChangedFile));
         }
 
         internal static void ReactToChangedBuiltFile(string fileName)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToBuiltFileChangeHandler(fileName);
-            },
-                (plugin) => plugin.ReactToBuiltFileChangeHandler != null,
-                nameof(PluginBase.ReactToBuiltFileChangeHandler));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToBuiltFileChangeHandler(fileName),
+                plugin => plugin.ReactToBuiltFileChangeHandler != null);
         }
 
         internal static void ReactToChangedStartupScreen()
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToChangedStartupScreen();
-            },
-            plugin => plugin.ReactToChangedStartupScreen != null,
-            nameof(ReactToChangedStartupScreen));
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToChangedStartupScreen(),
+                plugin => plugin.ReactToChangedStartupScreen != null);
         }
 
         #region XML Docs
@@ -1471,23 +1461,9 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ReactToVariableAdded(CustomVariable newVariable)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToVariableAdded != null);
-
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToVariableAdded(newVariable);
-                        }, container, "Failed in ReactToVariableAdded");
-                    }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToVariableAdded(newVariable),
+                plugin => plugin.ReactToVariableAdded != null);
         }
 
         internal static void ReactToVariableRemoved(CustomVariable removedVariable)
@@ -1567,6 +1543,14 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
                 plugin => plugin.ReactToChangedPropertyHandler != null);
         }
+
+        public class NamedObjectSaveVariableChange
+        {
+            public NamedObjectSave NamedObjectSave { get; set; }
+            public string ChangedMember { get; set; }
+            // unsure if we need the old value, but it's more work to support so...dropping it for now.
+        }
+
 
         internal static void ReactToGluxUnload(bool isExiting)
         {
@@ -1706,13 +1690,8 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)
         {
-            CallMethodOnPlugin(
-                delegate (PluginBase plugin)
-                {
-                    plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer);
-                },
-                plugin => plugin.AdjustDisplayedEntity != null,
-                nameof(AdjustDisplayedEntity));
+            CallMethodOnPlugin(plugin => plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer),
+                plugin => plugin.AdjustDisplayedEntity != null);
         }
 
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)
@@ -1774,8 +1753,9 @@ namespace FlatRedBall.Glue.Plugins
 
                 PluginBase[] pluginArray = plugins.ToArray();
 
-                foreach (var plugin in pluginArray)
+                for (int i = 0; i < pluginArray.Length; i++)
                 {
+                    PluginBase plugin = pluginArray[i];
                     PluginContainer container = manager.PluginContainers[plugin];
 
                     if (container.IsEnabled)
@@ -1789,6 +1769,13 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        /// <summary>
+        /// Calls the plugin method in a Task.AddAsync, which will run in a task if not already in a task.
+        /// </summary>
+        /// <param name="methodToCall">The method to call</param>
+        /// <param name="predicate">A predicate determining if the plugin should try to run - usually a null check</param>
+        /// <param name="methodName">The name of the method making this call, optional, usually left empty and filled by CallerMemberName</param>
+        /// <returns>A task which can be awaited for the task to finish.</returns>
         static Task CallMethodOnPluginAsync(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
         {
             var task = TaskManager.Self.AddAsync(() =>
@@ -1813,6 +1800,39 @@ namespace FlatRedBall.Glue.Plugins
                             PluginCommand(() =>
                             {
                                 methodToCall(plugin);
+                            }, container, "Failed in " + methodName);
+                        }
+                    }
+                }
+            }, methodName);
+
+            return task;
+        }
+
+        static Task CallMethodOnPluginAsync(Func<PluginBase, Task> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
+        {
+            var task = TaskManager.Self.AddAsync(async () =>
+            {
+                foreach (PluginManager manager in mInstances)
+                {
+                    var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
+                        .Select(item => item as PluginBase);
+                    if (predicate != null)
+                    {
+                        plugins = plugins.Where(item => predicate(item));
+                    }
+
+                    PluginBase[] pluginArray = plugins.ToArray();
+
+                    foreach (var plugin in pluginArray)
+                    {
+                        PluginContainer container = manager.PluginContainers[plugin];
+
+                        if (container.IsEnabled)
+                        {
+                            await PluginCommand(() =>
+                            {
+                                return methodToCall(plugin);
                             }, container, "Failed in " + methodName);
                         }
                     }
@@ -1896,6 +1916,34 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        private static async Task PluginCommand(Func<Task> func, PluginContainer container, string message)
+        {
+            if (HandleExceptions)
+            {
+
+                try
+                {
+                    await func();
+                }
+                catch (Exception e)
+                {
+                    var version = container.Plugin.Version;
+
+                    message = $"{container.Name} Version {version} {message}";
+
+                    container.Fail(e, message);
+
+                    ReceiveError(message + "\n" + e.ToString());
+
+
+                }
+            }
+            else
+            {
+                await func();
+            }
+        }
+
         private static void PluginCommandWithThrow(Action action, PluginContainer container, string message)
         {
             if (HandleExceptions)
@@ -1920,26 +1968,9 @@ namespace FlatRedBall.Glue.Plugins
         {
             bool? toReturn = null;
 
-            var plugins = mInstances
-                .Select(item => (PluginManager)item)
-                .Where(item =>item?.ImportedPlugins != null)
-                .SelectMany(item => item.ImportedPlugins.Where(x => x.GetIfUsesContentPipeline != null))
-                .ToArray();
-
-            foreach (var plugin in plugins)
-            {
-                var container = GetContainerFor(plugin);
-
-                
-                if (container.IsEnabled)
-                {
-                    PluginBase plugin1 = plugin;
-                    PluginCommand(() =>
-                    {
-                        toReturn = plugin1.GetIfUsesContentPipeline(fileAbsolute);
-                    }, container, "Failed in GetIfUsesContentPipeline");
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => toReturn = plugin.GetIfUsesContentPipeline(fileAbsolute),
+                plugin => plugin.GetIfUsesContentPipeline != null);
 
             return toReturn;
         }
@@ -1961,12 +1992,11 @@ namespace FlatRedBall.Glue.Plugins
         {
             List<VariableDefinition> toReturn = new List<VariableDefinition>();
             CallMethodOnPlugin(
-                (plugin) =>
+                plugin =>
                 {
                     toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element));
                 },
-                plugin => plugin.GetVariableDefinitionsForElement != null,
-                nameof(GetVariableDefinitionsFor));
+                plugin => plugin.GetVariableDefinitionsForElement != null);
             return toReturn;
         }
 
@@ -1975,7 +2005,7 @@ namespace FlatRedBall.Glue.Plugins
             bool handled = false;
 
             CallMethodOnPlugin(
-                (plugin) =>
+                plugin =>
                 {
                     if (plugin.TryHandleTreeNodeDoubleClicked(treeNode))
                     {
@@ -1991,57 +2021,57 @@ namespace FlatRedBall.Glue.Plugins
         public static void ReactToFileBuildCommand(ReferencedFileSave rfs)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToFileBuildCommand(rfs),
-                (plugin) => plugin.ReactToFileBuildCommand != null);
+                plugin => plugin.ReactToFileBuildCommand(rfs),
+                plugin => plugin.ReactToFileBuildCommand != null);
         }
 
         public static void ReactToImportedElement(GlueElement newElement)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToImportedElement(newElement),
-                (plugin) => plugin.ReactToImportedElement != null);
+                plugin => plugin.ReactToImportedElement(newElement),
+                plugin => plugin.ReactToImportedElement != null);
         }
 
         public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
-                (plugin) => plugin.ReactToObjectContainerChanged != null);
+                plugin => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
+                plugin => plugin.ReactToObjectContainerChanged != null);
         }
 
         public static void ReactToMainWindowMoved()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToMainWindowMoved(),
-                (plugin) => plugin.ReactToMainWindowMoved != null);
+                plugin => plugin.ReactToMainWindowMoved(),
+                plugin => plugin.ReactToMainWindowMoved != null);
         }
 
         public static void ReactToMainWindowResizeEnd()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToMainWindowResizeEnd(),
-                (plugin) => plugin.ReactToMainWindowResizeEnd != null);
+                plugin => plugin.ReactToMainWindowResizeEnd(),
+                plugin => plugin.ReactToMainWindowResizeEnd != null);
         }
 
         public static void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
-                (plugin) => plugin.RefreshTreeNodeFor != null);
+                plugin => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
+                plugin => plugin.RefreshTreeNodeFor != null);
         }
 
         public static void RefreshGlobalContentTreeNode()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshGlobalContentTreeNode(),
-                (plugin) => plugin.RefreshGlobalContentTreeNode != null);
+                plugin => plugin.RefreshGlobalContentTreeNode(),
+                plugin => plugin.RefreshGlobalContentTreeNode != null);
         }
 
         public static void RefreshDirectoryTreeNodes()
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.RefreshDirectoryTreeNodes(),
-                (plugin) => plugin.RefreshDirectoryTreeNodes != null);
+                plugin => plugin.RefreshDirectoryTreeNodes(),
+                plugin => plugin.RefreshDirectoryTreeNodes != null);
         }
 
         public static void ReactToFocusOnTreeView()

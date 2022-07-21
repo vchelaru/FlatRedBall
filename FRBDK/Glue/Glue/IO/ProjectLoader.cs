@@ -206,8 +206,6 @@ namespace FlatRedBall.Glue.IO
             }
 
 
-            Section.EndContextAndTime();
-
             TaskManager.Self.IsTaskProcessingEnabled = true;
 
             // If we ever want to make things go faster, turn this back on and let's see what's going on.
@@ -370,9 +368,7 @@ namespace FlatRedBall.Glue.IO
                 ProjectManager.GlueProjectSave.UpdateIfTranslationIsUsed();
 
                 Section.GetAndStartContextAndTime("Add items");
-
-                SetInitWindowText("Creating project view...", initializationWindow);
-                
+                               
 
                 //AddEmptyTreeItems();
 
@@ -391,48 +387,23 @@ namespace FlatRedBall.Glue.IO
                 // popup count.
                 SetInitWindowText("Refreshing Source File Cache...", initializationWindow);
                 RefreshSourceFileCache();
-
-                SetInitWindowText("Refreshing TiledCache", initializationWindow);
                 GlueState.Self.TiledCache.RefreshCache();
 
-
-                SetInitWindowText("Checking for additional missing files...", initializationWindow);
-
-                SetInitWindowText("Building out of date external files...", initializationWindow);
+                SetInitWindowText("Building out-of-date external files...", initializationWindow);
                 BuildAllOutOfDateFiles();
                 Section.EndContextAndTime();
-                Section.GetAndStartContextAndTime("RefreshGlobalContentDirectory");
-
-
-                // February 8, 2022
-                // Why do we have this
-                // code here? It's already
-                // in the CodeWriter.GenerateCode
-                // Answer: Because we want to refresh
-                // it only once and then re-use that dictionary
-                // for the entire codegeneration for the sake of
-                // speed.
-
-
-
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Screens");
-                SetInitWindowText("Creating tree nodes...", initializationWindow);
-                //CreateScreenTreeNodes();
-                Section.EndContextAndTime();
-
-                Section.GetAndStartContextAndTime("Entities");
-                //CreateEntityTreeNodes();
-                Section.EndContextAndTime();
-
+                
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
-                foreach (var rfs in allReferencedFileSaves)
+                Managers.TaskManager.Self.Add(() =>
                 {
-                    Managers.TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs), 
-                        $"Refreshing file {rfs.ToString()}",
-                        TaskExecutionPreference.AddOrMoveToEnd);
-                }
+                    foreach (var rfs in allReferencedFileSaves)
+                    {
+                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                    }
+                },
+                $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",
+                TaskExecutionPreference.AddOrMoveToEnd);
+                
 
                 foreach(var element in ObjectFinder.Self.GlueProject.Screens)
                 {
@@ -447,10 +418,7 @@ namespace FlatRedBall.Glue.IO
                     CheckForMissingCustomFile(entity);
                 }
 
-                Section.GetAndStartContextAndTime("SortEntities");
-
-
-                GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                // this was moved to be handled by the plugin on the "late" call:
 
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("PrepareSyncedProjects");
@@ -462,7 +430,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("MakeGeneratedItemsNested");
 
                 // This should happen after loading synced projects
-                SetInitWindowText("Nesting generated items", initializationWindow);
+                SetInitWindowText("Nesting generated code files in .csproj", initializationWindow);
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 Section.EndContextAndTime();
                 Section.GetAndStartContextAndTime("GlobalContent");
@@ -470,7 +438,7 @@ namespace FlatRedBall.Glue.IO
 
                 #region Update GlobalContent UI and code
 
-                SetInitWindowText("Updating global content", initializationWindow);
+                SetInitWindowText("Updating global content tree nodes", initializationWindow);
 
                 GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
 
@@ -653,7 +621,6 @@ namespace FlatRedBall.Glue.IO
             if (initializationWindow != null)
             {
                 initializationWindow.SubMessage = subtext;
-                Application.DoEvents();
             }
         }
 

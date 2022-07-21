@@ -9,9 +9,9 @@ using System.Text;
 
 namespace GumPluginCore.ErrorReporting
 {
-    class ErrorReporter : IErrorReporter
+    class ErrorReporter : ErrorReporterBase
     {
-        public ErrorViewModel[] GetAllErrors()
+        public override ErrorViewModel[] GetAllErrors()
         {
             List<ErrorViewModel> errors = new List<ErrorViewModel>();
 

@@ -3,11 +3,14 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
+using GlueControl.Managers;
 using GlueControl.Models;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +19,8 @@ namespace GlueControl.Editing
 {
     class CopyPasteManager
     {
+        #region Fields/Properties
+
         List<INameable> CopiedObjects
         {
             get; set;
@@ -26,7 +31,11 @@ namespace GlueControl.Editing
             get; set;
         } = new List<NamedObjectSave>();
 
-        public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, PositionedObject itemGrabbed)
+        static GlueElement CopiedObjectsOwner;
+
+        #endregion
+
+        public void DoHotkeyLogic(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects, IStaticPositionable itemGrabbed)
         {
             var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
@@ -34,125 +43,159 @@ namespace GlueControl.Editing
             {
                 if (keyboard.KeyPushed(Keys.C))
                 {
-                    CopiedObjects.Clear();
-                    CopiedNamedObjects.Clear();
-
-                    CopiedObjects.AddRange(selectedObjects);
-                    CopiedNamedObjects.AddRange(selectedNamedObjects);
+                    HandleCopy(selectedObjects, selectedNamedObjects);
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
-                    HandlePaste(itemGrabbed);
+                    HandlePaste(itemGrabbed, selectedNamedObjects);
                 }
             }
         }
 
-        private void HandlePaste(PositionedObject itemGrabbed)
+        #region Copy
+
+        private void HandleCopy(List<INameable> selectedObjects, List<NamedObjectSave> selectedNamedObjects)
         {
-            List<PositionedObject> newObjects = new List<PositionedObject>();
-            List<Dtos.AddObjectDto> addedItems = new List<Dtos.AddObjectDto>();
+            CopiedObjects.Clear();
+            CopiedNamedObjects.Clear();
 
-            foreach (var copiedObject in CopiedObjects)
+            CopiedObjects.AddRange(selectedObjects);
+            CopiedNamedObjects.AddRange(selectedNamedObjects);
+
+#if HasGum && SupportsEditMode
+            string message = "";
+            if(selectedNamedObjects.Count == 1)
             {
-                PositionedObject instance = null;
-
-                var copiedObjectName = copiedObject.Name;
-
-                if (copiedObject is Circle originalCircle)
-                {
-                    instance = InstanceLogic.Self.HandleCreateCircleByGame(originalCircle, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is AxisAlignedRectangle originalRectangle)
-                {
-                    instance = InstanceLogic.Self.HandleCreateAxisAlignedRectangleByGame(originalRectangle, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Polygon originalPolygon)
-                {
-                    instance = InstanceLogic.Self.HandleCreatePolygonByGame(originalPolygon, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Sprite originalSprite)
-                {
-                    instance = InstanceLogic.Self.HandleCreateSpriteByName(originalSprite, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is Text originalText)
-                {
-                    instance = InstanceLogic.Self.HandleCreateTextByName(originalText, copiedObjectName, addedItems);
-                }
-                else if (copiedObject is PositionedObject asPositionedObject) // positioned object, so entity?
-                {
-                    var type = copiedObject.GetType().FullName;
-                    if (copiedObject is Runtime.DynamicEntity dynamicEntity)
-                    {
-                        type = dynamicEntity.EditModeType;
-                    }
-                    // for now assume names are unique, not qualified
-                    instance = InstanceLogic.Self.CreateInstanceByGame(
-                        type,
-                        asPositionedObject, addedItems);
-                    instance.CreationSource = "Glue";
-                    instance.Velocity = Vector3.Zero;
-                    instance.Acceleration = Vector3.Zero;
-
-                    // apply any changes that have been made to the entity:
-                    int currentAddObjectIndex = CommandReceiver.GlobalGlueToGameCommands.Count;
-
-                    for (int i = 0; i < currentAddObjectIndex; i++)
-                    {
-                        var dto = CommandReceiver.GlobalGlueToGameCommands[i];
-                        if (dto is Dtos.AddObjectDto addObjectDtoRerun)
-                        {
-                            InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(addObjectDtoRerun, currentAddObjectIndex, instance);
-                        }
-                        else if (dto is Dtos.GlueVariableSetData glueVariableSetDataRerun)
-                        {
-                            GlueControl.Editing.VariableAssignmentLogic.SetVariable(glueVariableSetDataRerun, instance);
-                        }
-                    }
-                }
-
-                if (instance != null)
-                {
-                    newObjects.Add(instance);
-                }
-            }
-
-            // If we have something grabbed, then don't select the new items in Glue
-            foreach (var item in addedItems)
-            {
-                item.SelectNewObject = itemGrabbed == null;
-            }
-
-            GlueControlManager.Self.SendToGlue(addedItems);
-
-            // If the user is dragging objects around and pasting them, then we won't select
-            // pasted objects. If the user does a simple copy/paste without dragging, then select
-            // the new object.
-            var shouldSelectNewObjectsInGame = itemGrabbed == null;
-
-            if (shouldSelectNewObjectsInGame)
-            {
-                var allNamedObjects = EditingManager.Self.CurrentGlueElement.AllNamedObjects.ToArray();
-
-                var isFirst = true;
-                foreach (var newObject in newObjects)
-                {
-                    var matchingNos = allNamedObjects.FirstOrDefault(item => item.InstanceName == newObject.Name);
-                    EditingManager.Self.Select(matchingNos, addToExistingSelection: !isFirst);
-                    isFirst = false;
-                }
+                message = $"Copied {selectedNamedObjects[0]} to clipboard";
             }
             else
             {
-                if (CopiedObjects.Count > 0)
+                message = $"Copied {selectedNamedObjects.Count} objects to clipboard";
+            }
+            FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
+#endif
+
+            CopiedObjectsOwner = GlueState.Self.CurrentElement;
+        }
+
+        #endregion
+
+        #region Paste
+
+        (float x, float y) GetXY(NamedObjectSave nos)
+        {
+            var xAsObject = nos.InstructionSaves.FirstOrDefault(item => item.Member == "X")?.Value;
+            var yAsObject = nos.InstructionSaves.FirstOrDefault(item => item.Member == "Y")?.Value;
+            float x = 0;
+            float y = 0;
+            if (xAsObject is float asFloatX)
+            {
+                x = asFloatX;
+            }
+            if (yAsObject is float asFloatY)
+            {
+                y = asFloatY;
+            }
+            return (x, y);
+        }
+
+        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
+        {
+            var currentElement = GlueState.Self.CurrentElement;
+            NamedObjectSave newObjectToSelect = null;
+
+            GetOffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
+
+            List<Task> tasksToWait = new List<Task>();
+
+            Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
+
+            var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
+                CopiedNamedObjects,
+                CopiedObjectsOwner,
+                currentElement);
+
+            var newNamedObjects = copyResponse
+                .Select(item => item.Data)
+                .Where(item => item != null)
+                .ToList();
+
+            Debug.WriteLine($"Moving newNameObjects count {newNamedObjects.Count}" +
+                $" with offset {offsetX}, {offsetY}");
+
+            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
+            foreach (var newNos in newNamedObjects)
+            {
+                if (offsetX != null)
                 {
-                    // If at least one object was copied, then we sent that one object over to Glue. Glue will
-                    // automatically select newly-created objects, but we don't want that to happen when we copy/paste,
-                    // so we re-send the select command on the first selected item. If only one item is selected, this will
-                    // work perfectly. If not, then the first item is sent over, which is as good as we can do since Glue doesn't
-                    // support multi-selection.
-                    EditingManager.Self.RaiseObjectSelected();
+                    (float oldX, float oldY) = GetXY(newNos);
+                    var newX = oldX + offsetX;
+                    var newY = oldY + offsetY;
+
+                    Debug.WriteLine($"Old X,Y:{oldX},{oldY}");
+                    Debug.WriteLine($"New X,Y:{newX},{newY}");
+
+
+                    if (newX != oldX)
+                    {
+                        variableAssignments.Add(new NosVariableAssignment
+                        {
+                            NamedObjectSave = newNos,
+                            VariableName = "X",
+                            Value = newX
+                        });
+                    }
+                    if (newY != oldY)
+                    {
+                        variableAssignments.Add(new NosVariableAssignment
+                        {
+                            NamedObjectSave = newNos,
+                            VariableName = "Y",
+                            Value = newY
+                        });
+                    }
+                }
+            }
+            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
+                variableAssignments,
+                currentElement,
+                performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
+
+            if (newObjectToSelect != null)
+            {
+                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, currentElement);
+            }
+        }
+
+        private void GetOffsetForPasting(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
+        {
+            offsetX = null;
+            offsetY = null;
+            NamedObjectSave matchingNos = null;
+            if (itemGrabbed != null)
+            {
+                var itemGrabbedName = (itemGrabbed as INameable)?.Name;
+                matchingNos = selectedNamedObjects.FirstOrDefault(item => item.InstanceName == itemGrabbedName);
+            }
+            if (matchingNos != null)
+            {
+                (float originalX, float originalY) = GetXY(matchingNos);
+
+                var asPositionedObject = itemGrabbed as PositionedObject;
+
+                if (asPositionedObject?.Parent == null)
+                {
+                    offsetX = itemGrabbed.X - originalX;
+                    offsetY = itemGrabbed.Y - originalY;
+                }
+                else
+                {
+                    offsetX = asPositionedObject.RelativeX - originalX;
+                    offsetY = asPositionedObject.RelativeY - originalY;
                 }
             }
         }
+
+        #endregion
     }
 }

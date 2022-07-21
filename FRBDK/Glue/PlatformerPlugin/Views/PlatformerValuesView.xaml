@@ -200,7 +200,7 @@
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding CloudFallThroughDistance}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                     <TextBox.ToolTip>
-                        The amount of distance to fall when pressing down and jump on cloud before re-enabling cloud collision. This should be the height of the entity collision.
+                        The amount of distance to fall when pressing down and jump on cloud before re-enabling cloud collision. This should be the height of one tile (typically 16).
                     </TextBox.ToolTip>
                 </TextBox>
             </StackPanel>

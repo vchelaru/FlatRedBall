@@ -11,6 +11,7 @@ using FlatRedBall.Glue.Events;
 
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Content.Instructions;
 
 namespace FlatRedBall.Glue.Elements
 {
@@ -19,29 +20,9 @@ namespace FlatRedBall.Glue.Elements
         #region Fields/Properties
 
         static ObjectFinder mSelf = new ObjectFinder();
+        public static ObjectFinder Self = mSelf;
 
-        public static ObjectFinder Self
-        {
-            get
-            {
-                return mSelf;
-            }
-        }
-
-
-        GlueProjectSave mGlueProjectSave;
-
-        public GlueProjectSave GlueProject
-        {
-            get
-            {
-                return mGlueProjectSave;
-            }
-            set
-            {
-                mGlueProjectSave = value;
-            }
-        }
+        public GlueProjectSave GlueProject { get; set; }
 
         #endregion
 
@@ -171,7 +152,23 @@ namespace FlatRedBall.Glue.Elements
             // is valid.
             if (GlueProject != null)
             {
-                return GlueProject.GetEntitySave(entityName);
+                if (!string.IsNullOrEmpty(entityName))
+                {
+                    // We don't know what project is using the Glue classes, and it may prefer
+                    // forward slashes or back slashes.  Therefore we should tolerate either when
+                    // making comparisons
+                    entityName = entityName.Replace('/', '\\');
+
+                    for (int i = 0; i < GlueProject.Entities.Count; i++)
+                    {
+                        EntitySave entitySave = GlueProject.Entities[i];
+
+                        if (entitySave.Name.Replace('/', '\\') == entityName)
+                        {
+                            return entitySave;
+                        }
+                    }
+                }
             }
 
             return null;
@@ -577,7 +574,7 @@ namespace FlatRedBall.Glue.Elements
 
         public CustomClassSave GetCustomClassFor(ReferencedFileSave rfs)
         {
-            foreach(var customClass in mGlueProjectSave.CustomClasses)
+            foreach(var customClass in GlueProject.CustomClasses)
             {
                 if(customClass.CsvFilesUsingThis.Contains(rfs.Name))
                 {
@@ -694,11 +691,29 @@ namespace FlatRedBall.Glue.Elements
         {
             if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
             {
-                return GetIElement(derivedElement.BaseElement);
+                return GetElement(derivedElement.BaseElement);
             }
             else
             {
                 return null;
+            }
+        }
+
+        public GlueElement GetBaseElementRecursively(GlueElement derivedElement)
+        {
+            GlueElement baseElement = null;
+            if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
+            {
+                baseElement = GetElement(derivedElement.BaseElement);
+            }
+            
+            if(baseElement == null)
+            {
+                return derivedElement;
+            }
+            else
+            {
+                return GetBaseElementRecursively(baseElement);
             }
         }
 
@@ -987,8 +1002,10 @@ namespace FlatRedBall.Glue.Elements
                 {
                     var baseElement = GetBaseElement(elementContaining);
                     var nosInBase = baseElement.GetNamedObject(nos.InstanceName);
-
-                    return GetPropertyValueRecursively<T>(nosInBase, propertyName);
+                    if(nosInBase != null)
+                    {
+                        return GetPropertyValueRecursively<T>(nosInBase, propertyName);
+                    }
                 }
             }
             return default(T);
@@ -1138,6 +1155,139 @@ namespace FlatRedBall.Glue.Elements
 
             return customVariable;
         }
+
+        public object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+
+            var typeName = variableDefinition?.Type;
+            Type type = null;
+            if (!string.IsNullOrEmpty(typeName))
+            {
+                type = TypeManager.GetTypeFromString(typeName);
+            }
+
+            return GetValueRecursively(instance, container, memberName, type, variableDefinition);
+        }
+
+        private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
+        {
+            var instruction = instance.GetCustomVariable(memberName);
+
+            if (instruction == null)
+            {
+                // Get the value for this variable from the base element. 
+
+                var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
+
+                if (getVariableResponse.customVariable != null)
+                {
+                    return getVariableResponse.customVariable.DefaultValue;
+                }
+                else if (getVariableResponse.instructionOnState != null)
+                {
+                    return getVariableResponse.instructionOnState.Value;
+                }
+
+                return variableDefinition?.GetCastedDefaultValue();
+            }
+            else
+            {
+                if (instruction.Value is int && memberType.IsEnum)
+                {
+                    return Enum.ToObject(memberType, instruction.Value);
+                }
+                else
+                {
+                    return instruction.Value;
+                }
+            }
+        }
+
+        private static (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)
+        {
+            CustomVariable foundVariable = null;
+            FlatRedBall.Content.Instructions.InstructionSave valueOnState = null;
+
+            var instanceElementType = ObjectFinder.Self.GetElement(instance);
+            if (instanceElementType != null)
+            {
+
+
+                foreach (var instructionOnObject in instance.InstructionSaves)
+                {
+                    var variableOnInstanceName = instructionOnObject.Member;
+                    var variableOnInstanceValue = instructionOnObject.Value;
+
+                    // is it a state?
+                    CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                    StateSaveCategory matchingStateCategory = null;
+                    if (possibleStateCustomVariable != null)
+                    {
+                        matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                    }
+                    if (matchingStateCategory != null)
+                    {
+                        var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                        if (matchingState != null)
+                        {
+                            // does the state set the member?
+                            valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                        }
+                    }
+                    if (valueOnState != null)
+                    {
+                        break;
+                    }
+                }
+
+                if (valueOnState == null)
+                {
+                    // See if this variable is set by any states on the instance first
+                    var variablesOnThisInstance = container.CustomVariables.Where(item => item.SourceObject == instance.InstanceName);
+
+                    foreach (var variableOnInstance in variablesOnThisInstance)
+                    {
+                        var variableOnInstanceName = variableOnInstance.Name;
+                        var variableOnInstanceValue = variableOnInstance.DefaultValue;
+                        // is it a state?
+                        CustomVariable possibleStateCustomVariable = instanceElementType.GetCustomVariable(variableOnInstanceName);
+
+                        StateSaveCategory matchingStateCategory = null;
+
+                        if (possibleStateCustomVariable?.Type != null)
+                        {
+                            matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
+                        }
+
+                        if (matchingStateCategory != null)
+                        {
+                            var matchingState = matchingStateCategory.GetState(variableOnInstanceValue as string);
+                            if (matchingState != null)
+                            {
+                                // does the state set the member?
+                                valueOnState = matchingState.InstructionSaves.Find(item => item.Member == memberName && item.Value != null);
+
+                            }
+                        }
+                        if (valueOnState != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if (valueOnState == null)
+                {
+                    foundVariable = instanceElementType.GetCustomVariableRecursively(memberName);
+                }
+            }
+
+            return (foundVariable, valueOnState);
+        }
+
 
         #endregion
 

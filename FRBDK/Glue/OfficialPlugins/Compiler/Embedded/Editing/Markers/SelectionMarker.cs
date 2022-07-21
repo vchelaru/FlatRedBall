@@ -59,27 +59,47 @@ namespace GlueControl.Editing
 
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
-        void Update(ResizeSide sideGrabbed);
+        void Update();
+        bool ShouldSuppress(string memberName);
 
         bool IsCursorOverThis();
-        void HandleCursorRelease();
-        void HandleCursorPushed();
         void Destroy();
     }
 
     #endregion
 
     #region Handles Class
-    public class Handles
+    public class ResizeHandles
     {
-        AxisAlignedRectangle[] rectangles = new AxisAlignedRectangle[8];
-        const int DefaultHandleDimension = 10;
-        const int HighlightedHandleDimension = 14;
+        #region Fields/Properties
 
+        AxisAlignedRectangle[] rectangles = new AxisAlignedRectangle[8];
+        public const int DefaultHandleDimension = 10;
+
+        // 14 wasn't noticeable for opposite handles when resizing from center
+        //const int HighlightedHandleDimension = 14;
+        public const int HighlightedHandleDimension = 16;
+
+
+        public bool ShouldResizeXFromCenter { get; private set; }
+        public bool ShouldResizeYFromCenter { get; private set; }
+
+        public ResizeSide SideGrabbed
+        {
+            get;
+            private set;
+        } = ResizeSide.None;
+
+        HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
+
+        public bool Visible { get; set; }
 
         public ResizeMode ResizeMode { get; set; }
 
-        public Handles()
+        #endregion
+
+        #region Constructor/Destroy
+        public ResizeHandles()
         {
             for (int i = 0; i < rectangles.Length; i++)
             {
@@ -101,22 +121,121 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void UpdateVisibilityConsideringResizeMode(bool isVisible)
+        internal void Destroy()
         {
-            if (ResizeMode == ResizeMode.EightWay)
+            for (int i = 0; i < rectangles.Length; i++)
+            {
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
+                rectangles[i].Visible = false;
+            }
+        }
+
+        #endregion
+
+        #region Update
+
+        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
+        {
+            Visible = selectionMarker.Visible;
+
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+
+            UpdateVisibilityConsideringResizeMode();
+
+            if (Visible)
+            {
+                // Update the "should resize" values if the cursor isn't down so that
+                // highlights reflect whether opposite sides will be resized. 
+                // Do not do this if the cursor is down because we want to take a snapshot
+                // of these values when the cursor is pressed and continue to use those values
+                // during the duration of the drag.
+                if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
+                {
+                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(item);
+                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+                    // values to 0 and double the dimension values
+                    if (shouldAttemptResizeFromCenter)
+                    {
+                        if (item.RelativeX == 0)
+                        {
+                            ShouldResizeXFromCenter = true;
+                        }
+                        if (item.RelativeY == 0)
+                        {
+                            ShouldResizeYFromCenter = true;
+                        }
+                    }
+
+                }
+
+
+                FillSidesToHighlight(item);
+
+                // UpdateDimension before UpdateHandlePositions because
+                // UpdateHandlePositions depends on the size of the handles
+                // to position them correctly. If the order is inverted then
+                // handles will "pop" for 1 frame. Not a huge deal but looks unprofessional.
+                UpdateDimension();
+
+                if (item is IReadOnlyScalable scalable)
+                {
+                    UpdateHandlePositions(scalable, selectionMarker.Position);
+                }
+                else if (item is Circle asCircle)
+                {
+                    UpdateHandlePositions(asCircle, selectionMarker.Position);
+                }
+
+                if (selectionMarker.CanMoveItem)
+                {
+                    if (item is Sprite asSprite && asSprite.TextureScale > 0)
+                    {
+                        ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (item is FlatRedBall.Math.Geometry.Circle)
+                    {
+                        ResizeMode = ResizeMode.Cardinal;
+                    }
+                    else if (item is FlatRedBall.Math.Geometry.IScalable)
+                    {
+                        ResizeMode = ResizeMode.EightWay;
+                    }
+                    else
+                    {
+                        ResizeMode = ResizeMode.None;
+                    }
+                }
+
+                if (cursor.PrimaryPush)
+                {
+                    HandleCursorPushed(item);
+                }
+
+                if (cursor.PrimaryClick)
+                {
+                    HandleCursorRelease();
+                }
+
+            }
+        }
+
+        internal void UpdateVisibilityConsideringResizeMode()
+        {
+            if (Visible && ResizeMode == ResizeMode.EightWay)
             {
                 foreach (var handle in rectangles)
                 {
-                    handle.Visible = isVisible;
+                    handle.Visible = true;
                 }
             }
-            else if (ResizeMode == ResizeMode.Cardinal)
+            else if (Visible && ResizeMode == ResizeMode.Cardinal)
             {
                 for (int i = 0; i < rectangles.Length; i++)
                 {
                     var handle = rectangles[i];
                     // every other one, starting with index 1
-                    handle.Visible = isVisible && (i % 2) == 1;
+                    handle.Visible = (i % 2) == 1;
                 }
             }
             else
@@ -128,7 +247,7 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void UpdateDimension(HashSet<ResizeSide> sidesToHighlight)
+        internal void UpdateDimension()
         {
 
             for (int i = 0; i < rectangles.Count(); i++)
@@ -144,46 +263,206 @@ namespace GlueControl.Editing
             }
         }
 
-        public void UpdateHandlePositions(IScalable owner, Vector3 objectCenter)
+        public void UpdateHandlePositions(IReadOnlyScalable owner, Vector3 objectCenter)
         {
             var handle = rectangles[0];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[1];
             handle.X = 0;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[2];
             handle.X = owner.ScaleX + handle.Width / 2;
             handle.Y = owner.ScaleY + handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[3];
             handle.X = owner.ScaleX + handle.Width / 2;
             handle.Y = 0;
+            handle.Z = 0;
 
             handle = rectangles[4];
             handle.X = +owner.ScaleX + handle.Width / 2;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[5];
             handle.X = 0;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[6];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = -owner.ScaleY - handle.Height / 2;
+            handle.Z = 0;
 
             handle = rectangles[7];
             handle.X = -owner.ScaleX - handle.Width / 2;
             handle.Y = 0;
+            handle.Z = 0;
+
+            var rotationMatrix = Matrix.Identity;
+            if (owner is IRotatable asRotatable)
+            {
+                rotationMatrix = asRotatable.RotationMatrix;
+            }
+            foreach (var rect in rectangles)
+            {
+                rect.Position = objectCenter + Vector3.Transform(rect.Position, rotationMatrix);
+            }
+
+        }
+
+        void UpdateHandlePositions(Circle circle, Vector3 objectCenter)
+        {
+            var handle = rectangles[0];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[1];
+            handle.X = 0;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[2];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = circle.Radius + handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[3];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = 0;
+            handle.Z = 0;
+
+            handle = rectangles[4];
+            handle.X = circle.Radius + handle.Width / 2;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[5];
+            handle.X = 0;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[6];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = -circle.Radius - handle.Height / 2;
+            handle.Z = 0;
+
+            handle = rectangles[7];
+            handle.X = -circle.Radius - handle.Width / 2;
+            handle.Y = 0;
+            handle.Z = 0;
 
             foreach (var rect in rectangles)
             {
                 rect.Position += objectCenter;
             }
-
         }
+
+        private void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            ShouldResizeXFromCenter = false;
+            ShouldResizeYFromCenter = false;
+
+            if (ownerAsPositionedObject != null)
+            {
+                if (ownerAsPositionedObject is IScalable scalable)
+                {
+                    bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(ownerAsPositionedObject);
+                    // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
+                    // values to 0 and double the dimension values
+                    if (shouldAttemptResizeFromCenter)
+                    {
+                        if (ownerAsPositionedObject.RelativeX == 0)
+                        {
+                            ShouldResizeXFromCenter = true;
+                        }
+                        if (ownerAsPositionedObject.RelativeY == 0)
+                        {
+                            ShouldResizeYFromCenter = true;
+                        }
+                    }
+                }
+                SideGrabbed = GetSideOver();
+            }
+            else
+            {
+                SideGrabbed = ResizeSide.None;
+            }
+        }
+
+        private void FillSidesToHighlight(PositionedObject item)
+        {
+
+            var sidesForHighlighting = SideGrabbed;
+            if (sidesForHighlighting == ResizeSide.None)
+            {
+                sidesForHighlighting = GetSideOver();
+            }
+
+            sidesToHighlight.Clear();
+
+            sidesToHighlight.Add(sidesForHighlighting);
+
+            if (GetIfShouldResizeFromCenter(item))
+            {
+                if (sidesForHighlighting == ResizeSide.Left && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
+                if (sidesForHighlighting == ResizeSide.Top && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
+                if (sidesForHighlighting == ResizeSide.Right && ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
+                if (sidesForHighlighting == ResizeSide.Bottom && ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
+
+                // if we grab a diagonal, all can be resized:
+                if (sidesForHighlighting == ResizeSide.TopLeft ||
+                    sidesForHighlighting == ResizeSide.TopRight ||
+                    sidesForHighlighting == ResizeSide.BottomRight ||
+                    sidesForHighlighting == ResizeSide.BottomLeft)
+                {
+                    if (ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Right);
+                    if (ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Bottom);
+                    if (ShouldResizeXFromCenter) sidesToHighlight.Add(ResizeSide.Left);
+                    if (ShouldResizeYFromCenter) sidesToHighlight.Add(ResizeSide.Top);
+                }
+            }
+
+            if (item is Circle || GetIfSetsTextureScale(item))
+            {
+                if (sidesForHighlighting == ResizeSide.Left)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (sidesForHighlighting == ResizeSide.Top)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+                else if (sidesForHighlighting == ResizeSide.Right)
+                {
+                    sidesToHighlight.Add(ResizeSide.Top);
+                    sidesToHighlight.Add(ResizeSide.Bottom);
+                }
+                else if (sidesForHighlighting == ResizeSide.Bottom)
+                {
+                    sidesToHighlight.Add(ResizeSide.Left);
+                    sidesToHighlight.Add(ResizeSide.Right);
+                }
+            }
+        }
+
+        private void HandleCursorRelease()
+        {
+            SideGrabbed = ResizeSide.None;
+        }
+
+        #endregion
 
         public ResizeSide GetSideOver()
         {
@@ -200,53 +479,78 @@ namespace GlueControl.Editing
             return ResizeSide.None;
         }
 
-        internal void Destroy()
+        public bool GetIfSetsTextureScale(PositionedObject item)
         {
-            for (int i = 0; i < rectangles.Length; i++)
-            {
-                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
-                rectangles[i].Visible = false;
-            }
+            return item is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null;
         }
+
+        public bool GetIfShouldResizeFromCenter(PositionedObject item)
+        {
+            return item.Parent != null;
+        }
+
     }
 
     #endregion
 
-    public class SelectionMarker : ISelectionMarker
+    public class SelectionMarker : ISelectionMarker, IReadOnlyScalable
     {
         #region Fields/Properties
 
-        AxisAlignedRectangle rectangle;
+        bool IsGrabbed = false;
 
-        Handles Handles;
+        Polygon mainPolygon;
+
+        ResizeHandles ResizeHandles;
+        PolygonPointHandles PolygonPointHandles;
 
         public float ExtraPaddingInPixels { get; set; } = 2;
 
-        float ScaleX
+        float scaleX;
+        public float ScaleX
         {
-            get => rectangle.ScaleX;
-            set => rectangle.ScaleX = value;
-        }
-        float ScaleY
-        {
-            get => rectangle.ScaleY;
-            set => rectangle.ScaleY = value;
+            get => scaleX;
+            set
+            {
+                scaleX = value;
+                UpdatePolygonPoints();
+            }
         }
 
-        Vector3 Position
+        float scaleY;
+        public float ScaleY
         {
-            get => rectangle.Position;
-            set => rectangle.Position = value;
+            get => scaleY;
+            set
+            {
+                scaleY = value;
+                UpdatePolygonPoints();
+            }
+        }
+
+        private void UpdatePolygonPoints()
+        {
+            mainPolygon.SetPoint(0, -scaleX, scaleY);
+            mainPolygon.SetPoint(1, scaleX, scaleY);
+            mainPolygon.SetPoint(2, scaleX, -scaleY);
+            mainPolygon.SetPoint(3, -scaleX, -scaleY);
+            mainPolygon.SetPoint(4, -scaleX, scaleY);
+        }
+
+        public Vector3 Position
+        {
+            get => mainPolygon.Position;
+            set => mainPolygon.Position = value;
         }
 
         public bool Visible
         {
-            get => rectangle.Visible;
+            get => mainPolygon.Visible;
             set
             {
-                if (value != rectangle.Visible)
+                if (value != mainPolygon.Visible)
                 {
-                    rectangle.Visible = value;
+                    mainPolygon.Visible = value;
                 }
             }
         }
@@ -265,7 +569,7 @@ namespace GlueControl.Editing
             set
             {
                 name = value;
-                rectangle.Name = $"{name}Rectangle";
+                mainPolygon.Name = $"{name}Rectangle";
             }
         }
 
@@ -275,8 +579,43 @@ namespace GlueControl.Editing
         Vector3 unsnappedItemPosition;
         Vector2 unsnappedItemSize;
 
-        const float positionSnappingSize = 8;
-        const float sizeSnappingSize = 8;
+
+        public float PositionSnappingSize = 8;
+        float polygonPointSnapSize;
+        public float PolygonPointSnapSize
+        {
+            get => polygonPointSnapSize;
+
+            set
+            {
+                polygonPointSnapSize = value;
+                RefreshPolygonPointSnapSize();
+            }
+        }
+
+        private void RefreshPolygonPointSnapSize()
+        {
+            PolygonPointHandles.PointSnapSize =
+                IsSnappingEnabled
+                    ? polygonPointSnapSize
+                    : (float?)null;
+        }
+
+        // Size snapping has to be 2x as big as position snapping, otherwise resizing through a handle can result in half-snap positions which is confusing
+        public float SizeSnappingSize => PositionSnappingSize * 2;
+
+        bool isSnappingEnabled = true;
+        public bool IsSnappingEnabled
+        {
+            get => isSnappingEnabled;
+            set
+            {
+                isSnappingEnabled = value;
+                RefreshPolygonPointSnapSize();
+            }
+        }
+
+
 
         public Vector3 LastUpdateMovement { get; private set; }
 
@@ -286,10 +625,21 @@ namespace GlueControl.Editing
         float GrabbedTextureScale;
 
         PositionedObject ownerAsPositionedObject;
+        IStaticPositionable ownerAsPositionable;
+        IStaticPositionable EffectiveOwner => Owner is NameableWrapper nameableWrapper
+            ? nameableWrapper.ContainedObject as IStaticPositionable
+            : Owner as IStaticPositionable;
+
+        INameable ownerAsNameable;
         public INameable Owner
         {
-            get => ownerAsPositionedObject;
-            set => ownerAsPositionedObject = value as PositionedObject;
+            get => ownerAsNameable;
+            set
+            {
+                ownerAsPositionedObject = value as PositionedObject;
+                ownerAsPositionable = value as IStaticPositionable;
+                ownerAsNameable = value;
+            }
         }
 
         #endregion
@@ -302,22 +652,29 @@ namespace GlueControl.Editing
         public SelectionMarker(INameable owner)
         {
             this.Owner = owner;
-            rectangle = new AxisAlignedRectangle();
+            mainPolygon = Polygon.CreateRectangle(scaleX, scaleY);
+            mainPolygon.Name = "Main Polygon for SelectionMarker";
 
-            rectangle.Visible = false;
-            ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+            mainPolygon.Visible = false;
+            // Due to a bug in FRB, the polygon will be added to the automatically
+            // updated list. We don't want this! This is fixed in the version that supports
+            // PersistenPolygons so let's put that if:
+#if ScreenManagerHasPersistentPolygons
+            ShapeManager.AddToLayer(mainPolygon, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
+#endif
 
-            Handles = new Handles();
-
+            ResizeHandles = new ResizeHandles();
+            PolygonPointHandles = new PolygonPointHandles();
         }
 
         public void MakePersistent()
         {
 #if SupportsEditMode
 
-            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
-
-            Handles.MakePersistent();
+#if ScreenManagerHasPersistentPolygons
+            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Add(mainPolygon);
+#endif
+            ResizeHandles.MakePersistent();
 #endif
         }
 
@@ -328,21 +685,21 @@ namespace GlueControl.Editing
         public void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized)
         {
             var endingExtraPadding = endingExtraPaddingBeforeZoom;
-            TweenerManager.Self.StopAllTweenersOwnedBy(rectangle);
+            TweenerManager.Self.StopAllTweenersOwnedBy(mainPolygon);
 
             IsFadingInAndOut = false;
             ExtraPaddingInPixels = 0;
             const float growTime = 0.25f;
             float extraPaddingFromBump = 10;
 
-            var tweener = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, extraPaddingFromBump, growTime,
+            var tweener = mainPolygon.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, extraPaddingFromBump, growTime,
                 FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                 FlatRedBall.Glue.StateInterpolation.Easing.Out);
 
             tweener.Ended += () =>
             {
                 var shrinkTime = growTime;
-                var tweener2 = rectangle.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, endingExtraPadding, shrinkTime,
+                var tweener2 = mainPolygon.Tween((newValue) => this.ExtraPaddingInPixels = newValue, this.ExtraPaddingInPixels, endingExtraPadding, shrinkTime,
                     FlatRedBall.Glue.StateInterpolation.InterpolationType.Quadratic,
                     FlatRedBall.Glue.StateInterpolation.Easing.InOut);
 
@@ -358,68 +715,140 @@ namespace GlueControl.Editing
             };
         }
 
-        public void Update(ResizeSide sideGrabbed)
+        public void Update()
         {
             LastUpdateMovement = Vector3.Zero;
 
-            Visible = Owner != null;
+            Visible = ownerAsPositionable != null;
 
-            UpdateScreenPointPushed(ownerAsPositionedObject);
-
-            UpdateMainRectangleSizeToItem(ownerAsPositionedObject);
+            DoUpdatePushedLogic();
 
             UpdateColor();
 
-            ApplyPrimaryDownDragEditing(ownerAsPositionedObject, sideGrabbed);
+            ApplyPrimaryDownDragEditing(EffectiveOwner);
 
-            UpdateHandles(ownerAsPositionedObject, sideGrabbed);
+            UpdateMainPolygonToItem(EffectiveOwner);
 
-
-            if (CanMoveItem)
+            if (ownerAsPositionedObject != null)
             {
-                if (ownerAsPositionedObject is Sprite asSprite && asSprite.TextureScale > 0)
-                {
-                    Handles.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.Circle)
-                {
-                    Handles.ResizeMode = ResizeMode.Cardinal;
-                }
-                else if (ownerAsPositionedObject is FlatRedBall.Math.Geometry.IScalable)
-                {
-                    Handles.ResizeMode = ResizeMode.EightWay;
-                }
-                else
-                {
-                    Handles.ResizeMode = ResizeMode.None;
-                }
+                ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
             }
+            PolygonPointHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
+
+
+            mainPolygon.ForceUpdateDependencies();
+
+
+
+            DoUpdateReleasedLogic();
         }
 
-        private void UpdateScreenPointPushed(PositionedObject item)
+        private void DoUpdateReleasedLogic()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
-            if (cursor.PrimaryPush)
+            if (!cursor.PrimaryClick || ownerAsPositionedObject == null)
             {
-                ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
-                if (item != null)
+                return;
+            }
+
+            if (IsGrabbed)
+            {
+                if (ownerAsPositionable.X != GrabbedPosition.X)
                 {
-                    if (item.Parent == null)
+                    var value = ownerAsPositionedObject?.Parent == null
+                        ? ownerAsPositionable.X
+                        : ownerAsPositionedObject.RelativeX;
+                    PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.X), value);
+                }
+                if (ownerAsPositionable.Y != GrabbedPosition.Y)
+                {
+                    var value = ownerAsPositionedObject?.Parent == null
+                        ? ownerAsPositionable.Y
+                        : ownerAsPositionedObject.RelativeY;
+                    PropertyChanged?.Invoke(Owner, nameof(ownerAsPositionable.Y), value);
+                }
+
+                if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
+                {
+                    var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
+                    var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
+                    if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
+                        GrabbedTextureScale != asSprite.TextureScale)
                     {
-                        unsnappedItemPosition = item.Position;
+                        PropertyChanged?.Invoke(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
                     }
                     else
                     {
-                        unsnappedItemPosition = item.RelativePosition;
+                        if (didChangeWidth)
+                        {
+                            PropertyChanged?.Invoke(Owner, "Width", asScalable.ScaleX * 2);
+                        }
+                        if (didChangeHeight)
+                        {
+                            PropertyChanged?.Invoke(Owner, "Height", asScalable.ScaleY * 2);
+                        }
                     }
-
-                    if (item is IScalable scalable)
+                }
+                else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
+                {
+                    if (GrabbedRadius != circle.Radius)
                     {
-                        unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
+                        PropertyChanged?.Invoke(Owner, nameof(circle.Radius), circle.Radius);
                     }
                 }
             }
+
+            IsGrabbed = false;
+
+        }
+
+        private void DoUpdatePushedLogic()
+        {
+            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+
+            ///////////Early Out////////////////
+            if (!cursor.PrimaryPush)
+            {
+                return;
+            }
+            /////////End Early Out///////////////
+
+
+            IsGrabbed = ownerAsPositionable != null;
+
+            ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
+            if (ownerAsPositionable != null)
+            {
+                if (ownerAsPositionedObject?.Parent == null)
+                {
+                    unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+                }
+                else
+                {
+                    unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
+                }
+
+                if (ownerAsPositionable is IScalable scalable)
+                {
+                    unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
+                }
+
+                GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+
+                if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
+                {
+                    GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
+                    if (Owner is Sprite asSprite)
+                    {
+                        GrabbedTextureScale = asSprite.TextureScale;
+                    }
+                }
+                else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
+                {
+                    GrabbedRadius = circle.Radius;
+                }
+            }
+
         }
 
         private void UpdateColor()
@@ -430,99 +859,52 @@ namespace GlueControl.Editing
                 value = (float)(1 + System.Math.Sin((TimeManager.CurrentTime - FadingSeed) * 5)) / 2;
             }
 
-            rectangle.Red = value * BrightColor.R / 255.0f;
-            rectangle.Green = value * BrightColor.G / 255.0f;
-            rectangle.Blue = value * BrightColor.B / 255.0f;
+            mainPolygon.Color = new Color(
+                value * BrightColor.R / 255.0f,
+                value * BrightColor.G / 255.0f,
+                value * BrightColor.B / 255.0f);
         }
 
-        private void UpdateMainRectangleSizeToItem(PositionedObject item)
+        private void UpdateMainPolygonToItem(IStaticPositionable item)
         {
             if (item != null)
             {
-                SelectionLogic.GetDimensionsFor(item,
-                    out float minX, out float maxX,
-                    out float minY, out float maxY);
-
-                var newPosition = new Vector3();
-                newPosition.X = (maxX + minX) / 2.0f;
-                newPosition.Y = (maxY + minY) / 2.0f;
-                newPosition.Z = item.Z;
-
-                Position = newPosition;
-
-                ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
-                ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
-            }
-        }
-
-        static HashSet<ResizeSide> sidesToHighlight = new HashSet<ResizeSide>();
-        private void UpdateHandles(PositionedObject item, ResizeSide sideGrabbed)
-        {
-            Handles.UpdateVisibilityConsideringResizeMode(Visible);
-
-            if (Visible)
-            {
-                ResizeSide sideOver = sideGrabbed;
-                if (sideOver == ResizeSide.None)
+                float minX, minY, maxX, maxY;
+                var handledByPolygon = false;
+                if (item is PositionedObject asPositionedObject && asPositionedObject.RotationZ != 0)
                 {
-                    sideOver = GetSideOver();
+                    // it's rotated, so we want to get the acutal shape and try to match that:
+                    SelectionLogic.GetShapeFor(item, out SelectionLogic.PolygonFast polygon, out Circle circle);
+                    if (polygon != null && polygon.Points.Count == 5)
+                    {
+                        Position = polygon.Position;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            mainPolygon.SetPoint(i, polygon.Points[i]);
+                        }
+                        mainPolygon.RotationMatrix = polygon.RotationMatrix;
+                        handledByPolygon = true;
+                    }
                 }
-                Handles.UpdateHandlePositions(rectangle, this.Position);
 
-                FillSidesToHighlight(item, sideOver);
-
-                Handles.UpdateDimension(sidesToHighlight);
-
-            }
-        }
-
-        private static void FillSidesToHighlight(PositionedObject item, ResizeSide sideGrabbed)
-        {
-            sidesToHighlight.Clear();
-
-            sidesToHighlight.Add(sideGrabbed);
-
-            if (GetIfShouldResizeFromCenter(item))
-            {
-                if (sideGrabbed == ResizeSide.Left && item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Right);
-                if (sideGrabbed == ResizeSide.Top && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Bottom);
-                if (sideGrabbed == ResizeSide.Right && item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Left);
-                if (sideGrabbed == ResizeSide.Bottom && item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Top);
-
-                // if we grab a diagonal, all can be resized:
-                if (sideGrabbed == ResizeSide.TopLeft ||
-                    sideGrabbed == ResizeSide.TopRight ||
-                    sideGrabbed == ResizeSide.BottomRight ||
-                    sideGrabbed == ResizeSide.BottomLeft)
+                if (!handledByPolygon)
                 {
-                    if (item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Right);
-                    if (item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Bottom);
-                    if (item.RelativeX == 0) sidesToHighlight.Add(ResizeSide.Left);
-                    if (item.RelativeY == 0) sidesToHighlight.Add(ResizeSide.Top);
-                }
-            }
+                    SelectionLogic.GetDimensionsFor(item,
+                        out minX, out maxX,
+                        out minY, out maxY);
 
-            if (item is Circle || GetIfSetsTextureScale(item))
-            {
-                if (sideGrabbed == ResizeSide.Left)
-                {
-                    sidesToHighlight.Add(ResizeSide.Top);
-                    sidesToHighlight.Add(ResizeSide.Bottom);
-                }
-                else if (sideGrabbed == ResizeSide.Top)
-                {
-                    sidesToHighlight.Add(ResizeSide.Left);
-                    sidesToHighlight.Add(ResizeSide.Right);
-                }
-                else if (sideGrabbed == ResizeSide.Right)
-                {
-                    sidesToHighlight.Add(ResizeSide.Top);
-                    sidesToHighlight.Add(ResizeSide.Bottom);
-                }
-                else if (sideGrabbed == ResizeSide.Bottom)
-                {
-                    sidesToHighlight.Add(ResizeSide.Left);
-                    sidesToHighlight.Add(ResizeSide.Right);
+
+                    var newPosition = new Vector3();
+                    newPosition.X = (maxX + minX) / 2.0f;
+                    newPosition.Y = (maxY + minY) / 2.0f;
+                    newPosition.Z = item.Z;
+
+                    Position = newPosition;
+
+                    ScaleX = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxX - minX) / 2.0f;
+                    ScaleY = ExtraPaddingInPixels / CameraLogic.CurrentZoomRatio + (maxY - minY) / 2.0f;
+
+                    mainPolygon.RotationMatrix = Matrix.Identity;
                 }
             }
         }
@@ -534,7 +916,7 @@ namespace GlueControl.Editing
         float lastWorldX = 0;
         float lastWorldY = 0;
 
-        private void ApplyPrimaryDownDragEditing(PositionedObject item, ResizeSide sideGrabbed)
+        private void ApplyPrimaryDownDragEditing(IStaticPositionable item)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
@@ -546,28 +928,37 @@ namespace GlueControl.Editing
                 lastWorldY = cursor.WorldYAt(itemZ);
             }
 
-            var xChange = cursor.WorldXAt(itemZ) - lastWorldX;
-            var yChange = cursor.WorldYAt(itemZ) - lastWorldY;
+            var xChangeScreenSpace = cursor.WorldXAt(itemZ) - lastWorldX;
+            var yChangeScreenSpace = cursor.WorldYAt(itemZ) - lastWorldY;
 
-            var didCursorMove = xChange != 0 || yChange != 0;
+            var didCursorMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
 
-            if (CanMoveItem && cursor.PrimaryDown && didCursorMove)
+            var handledByPolygonHandles = PolygonPointHandles.PointIndexHighlighted != null;
+
+            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
+                Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+
+            if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
+                !handledByPolygonHandles &&
+                // Currently only PositionedObjects can be moved. If an object is
+                // IStaticPositionalbe, techincally we could move it by changing its X
+                // and Y values (and that has been tested), but the objet's Glue representation
+                // may not have X and Y values, which would lead to confusing behavior. Ultimately
+                // we need to have plugins that can map one value (such as X) to another value (such
+                // as XOffset) so that changes in the game can make their way back into Glue. Until then
+                // we'll only allow moving PositionedObjects.
+                item is PositionedObject)
             {
-                var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
-                    Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
-
-                if (item != null && hasMovedEnough)
+                var sideGrabbed = ResizeHandles.SideGrabbed;
+                if (sideGrabbed != ResizeSide.None)
                 {
-                    if (sideGrabbed == ResizeSide.None)
-                    {
-                        var keyboard = FlatRedBall.Input.InputManager.Keyboard;
+                    ChangeSizeBy(item as PositionedObject, sideGrabbed);
+                }
+                else
+                {
+                    var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
-                        LastUpdateMovement = ChangePositionBy(item, xChange, yChange, keyboard.IsShiftDown);
-                    }
-                    else
-                    {
-                        ChangeSizeBy(item, sideGrabbed, xChange, yChange);
-                    }
+                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace, yChangeScreenSpace, keyboard.IsShiftDown);
                 }
             }
 
@@ -576,8 +967,22 @@ namespace GlueControl.Editing
         }
 
 
-        private Vector3 ChangePositionBy(PositionedObject item, float xChange, float yChange, bool isShiftDown)
+        private Vector3 ChangePositionBy(IStaticPositionable item, float xChange, float yChange, bool isShiftDown,
+            // Snapping is controlled potentially by 2 things:
+            // 1. If the user is dragging an object to move it, then snapping is controlled by the global scale in the editor
+            // 2. If the user is resizing, then we want to disable snapping because a resize may result in the positioin being moved a "half snap". Explanation:
+            //    Consider an object at X = 32, width = 16. If the user shrinks it with the handles, the size may snap to width 16, which should set the X to 8. 8
+            //    is not a valid X position if snapping is considered. Therefore, when resizing handles, X snapping should be force disabled
+            // 
+            bool forceDisableSnapping = false)
         {
+            float Snap(float value) =>
+                IsSnappingEnabled && !forceDisableSnapping
+                ? MathFunctions.RoundFloat(value, PositionSnappingSize)
+                : value;
+
+
+
             unsnappedItemPosition.X += xChange;
             unsnappedItemPosition.Y += yChange;
 
@@ -600,127 +1005,127 @@ namespace GlueControl.Editing
 
             Vector3 changeAfterSnapping = Vector3.Zero;
 
-            if (item.Parent == null)
+            var itemAsPositionedObject = item as PositionedObject;
+            if (itemAsPositionedObject?.Parent == null)
             {
-                var before = item.Position;
-                item.X = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                item.Y = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
-                changeAfterSnapping = item.Position - before;
+                var before = itemAsPositionedObject?.Position ?? new Vector3(item.X, item.Y, item.Z);
+
+                var newX = Snap(positionConsideringShift.X);
+                var newY = Snap(positionConsideringShift.Y);
+                item.X = newX;
+                item.Y = newY;
+                changeAfterSnapping = (itemAsPositionedObject?.Position ?? new Vector3(newX, newY, item.Z)) - before;
             }
             else
             {
-                var before = item.RelativePosition;
-                item.RelativeX = MathFunctions.RoundFloat(positionConsideringShift.X, positionSnappingSize);
-                item.RelativeY = MathFunctions.RoundFloat(positionConsideringShift.Y, positionSnappingSize);
-                changeAfterSnapping = item.RelativePosition - before;
+                var before = itemAsPositionedObject.RelativePosition;
+                itemAsPositionedObject.RelativeX = Snap(positionConsideringShift.X);
+                itemAsPositionedObject.RelativeY = Snap(positionConsideringShift.Y);
+                changeAfterSnapping = itemAsPositionedObject.RelativePosition - before;
             }
             return changeAfterSnapping;
         }
 
-        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver, float v1, float v2)
+        float SnapSize(float value) =>
+            IsSnappingEnabled
+            ? MathFunctions.RoundFloat(value, SizeSnappingSize)
+            : value;
+
+        private void ChangeSizeBy(PositionedObject item, ResizeSide sideOver)
         {
-            float xPositionMultiple = 0;
-            float yPositionMultiple = 0;
+            Vector3 rotatedPositionMultiple = new Vector3();
+            Vector3 unrotatedPositionMultiple = new Vector3();
+
             float widthMultiple = 0;
             float heightMultiple = 0;
 
             switch (sideOver)
             {
                 case ResizeSide.TopLeft:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
                     widthMultiple = -1;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.Top:
-                    xPositionMultiple = 0;
-                    widthMultiple = 0;
+                    rotatedPositionMultiple = item.RotationMatrix.Up / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Up / 2.0f;
 
-                    yPositionMultiple = 1 / 2.0f;
+                    widthMultiple = 0;
                     heightMultiple = 1;
                     break;
                 case ResizeSide.TopRight:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
+
                     widthMultiple = 1;
-
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = 1;
-
                     break;
                 case ResizeSide.Right:
-                    xPositionMultiple = 1 / 2.0f;
-                    widthMultiple = 1;
+                    rotatedPositionMultiple = item.RotationMatrix.Right / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Right / 2.0f;
 
-                    yPositionMultiple = 0;
+                    widthMultiple = 1;
                     heightMultiple = 0;
                     break;
 
                 case ResizeSide.BottomRight:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
+
                     widthMultiple = 1;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
-
                     break;
 
                 case ResizeSide.Bottom:
-                    xPositionMultiple = 0;
+                    rotatedPositionMultiple = item.RotationMatrix.Up / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Up / 2.0f;
+
                     widthMultiple = 0;
-
-                    yPositionMultiple = 1 / 2.0f;
                     heightMultiple = -1;
-
                     break;
                 case ResizeSide.BottomLeft:
-                    xPositionMultiple = 1 / 2.0f;
-                    widthMultiple = -1;
+                    rotatedPositionMultiple = (item.RotationMatrix.Right + item.RotationMatrix.Up) / 2;
+                    unrotatedPositionMultiple = (Vector3.Right + Vector3.Up) / 2;
 
-                    yPositionMultiple = 1 / 2.0f;
+                    widthMultiple = -1;
                     heightMultiple = -1;
                     break;
                 case ResizeSide.Left:
-                    xPositionMultiple = 1 / 2.0f;
+                    rotatedPositionMultiple = item.RotationMatrix.Right / 2.0f;
+                    unrotatedPositionMultiple = Vector3.Right / 2.0f;
+
                     widthMultiple = -1;
-
-                    yPositionMultiple = 0;
                     heightMultiple = 0;
-
                     break;
             }
 
-            bool shouldResizeFromCenter = GetIfShouldResizeFromCenter(item);
-            // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
-            // values to 0 and double the dimension values
-            if (shouldResizeFromCenter)
+
+            if (ResizeHandles.ShouldResizeXFromCenter)
             {
-                if (item.RelativeX == 0)
-                {
-                    xPositionMultiple = 0;
-                    widthMultiple *= 2;
-                }
-                if (item.RelativeY == 0)
-                {
-                    yPositionMultiple = 0;
-                    heightMultiple *= 2;
-                }
+                // Should this be adjusted based on rotation?
+                rotatedPositionMultiple.X = 0;
+                unrotatedPositionMultiple.X = 0;
+
+                widthMultiple *= 2;
+            }
+            if (ResizeHandles.ShouldResizeYFromCenter)
+            {
+                // Should this be adjusted based on rotation?
+                rotatedPositionMultiple.Y = 0;
+                unrotatedPositionMultiple.Y = 0;
+                heightMultiple *= 2;
             }
 
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
-
-
             var scalable = item as IScalable;
+            var cursorChange = new Vector3(cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(item.Z), 0);
+            cursorChange = cursorChange.RotatedBy(-item.RotationZ);
 
-            var cursorXChange = cursor.WorldXChangeAt(item.Z);
-            var cursorYChange = cursor.WorldYChangeAt(item.Z);
+            float xChangeForPosition = rotatedPositionMultiple.X * cursorChange.X;
+            float yChangeForPosition = rotatedPositionMultiple.Y * cursorChange.Y;
 
-            float xChangeForPosition = xPositionMultiple * cursor.WorldXChangeAt(item.Z);
-            float yChangeForPosition = yPositionMultiple * cursor.WorldYChangeAt(item.Z);
-
-            bool setsTextureScale = GetIfSetsTextureScale(item);
+            bool setsTextureScale = ResizeHandles.GetIfSetsTextureScale(item);
 
             if (setsTextureScale)
             {
@@ -728,15 +1133,15 @@ namespace GlueControl.Editing
                 var currentScaleX = asSprite.ScaleX;
                 var currentScaleY = asSprite.ScaleY;
 
-                if (cursorXChange != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                if (cursorChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
                 {
-                    var newRatio = (currentScaleX + 0.5f * cursorXChange * widthMultiple) / currentScaleX;
+                    var newRatio = (currentScaleX + 0.5f * cursorChange.X * widthMultiple) / currentScaleX;
 
                     asSprite.TextureScale *= newRatio;
                 }
-                else if (cursorYChange != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                else if (cursorChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
                 {
-                    var newRatio = (currentScaleY + 0.5f * cursorYChange * heightMultiple) / currentScaleY;
+                    var newRatio = (currentScaleY + 0.5f * cursorChange.Y * heightMultiple) / currentScaleY;
 
                     asSprite.TextureScale *= newRatio;
                 }
@@ -744,13 +1149,13 @@ namespace GlueControl.Editing
             else if (item is Circle asCircle)
             {
                 float? newRadius = null;
-                if (cursorXChange != 0 && widthMultiple != 0)
+                if (cursorChange.X != 0 && widthMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorXChange * widthMultiple / 2.0f;
+                    newRadius = asCircle.Radius + cursorChange.X * widthMultiple / 2.0f;
                 }
-                else if (cursorYChange != 0 && heightMultiple != 0)
+                else if (cursorChange.Y != 0 && heightMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorYChange * heightMultiple / 2.0f;
+                    newRadius = asCircle.Radius + cursorChange.Y * heightMultiple / 2.0f;
                 }
                 if (newRadius != null)
                 {
@@ -767,149 +1172,115 @@ namespace GlueControl.Editing
             }
             else
             {
-                //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
-                //newScaleX = Math.Max(0, newScaleX);
-                //scalable.ScaleX = newScaleX;
 
-                // Vic says - this needs more work. Didn't work lik ethis and I don't want to dive in yet
-                unsnappedItemSize.X = unsnappedItemSize.X + cursorXChange * widthMultiple;
-                unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
-                //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                var newScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
-                var scaleXChange = newScaleX - scalable.ScaleX;
-
-                xChangeForPosition = 0;
-                if (scaleXChange != 0)
+                float scaleXChange = 0;
+                float scaleYChange = 0;
+                if (cursorChange.X != 0 && widthMultiple != 0)
                 {
-                    scalable.ScaleX = MathFunctions.RoundFloat(unsnappedItemSize.X / 2.0f, sizeSnappingSize);
-                    xChangeForPosition = scaleXChange * 2 * widthMultiple * xPositionMultiple;
+                    //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
+                    //newScaleX = Math.Max(0, newScaleX);
+                    //scalable.ScaleX = newScaleX;
+                    // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
+                    unsnappedItemSize.X = unsnappedItemSize.X + cursorChange.X * widthMultiple;
+                    unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
+                    //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
+                    var newScaleX = SnapSize(unsnappedItemSize.X) / 2.0f;
+                    scaleXChange = newScaleX - scalable.ScaleX;
+
+                    if (scaleXChange != 0)
+                    {
+                        var scaleBefore = scalable.ScaleX;
+                        scalable.ScaleX = newScaleX;
+                        // Normally the object that is being resized will accept this scale. However, if it's a custom game object, it may
+                        // have its own internal snapping. Therefore, we should figure out the change by looking at the ScaleX again:
+                        scaleXChange = scalable.ScaleX - scaleBefore;
+                    }
                 }
 
-                //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
-                //newScaleY = Math.Max(0, newScaleY);
-                //scalable.ScaleY = newScaleY;
-                unsnappedItemSize.Y = unsnappedItemSize.Y + cursorYChange * heightMultiple;
-                unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
 
-                var newScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
-                var scaleYChange = newScaleY - scalable.ScaleY;
-
-                yChangeForPosition = 0;
-                if (scaleYChange != 0)
+                if (cursorChange.Y != 0 && heightMultiple != 0)
                 {
-                    scalable.ScaleY = MathFunctions.RoundFloat(unsnappedItemSize.Y / 2.0f, sizeSnappingSize);
-                    yChangeForPosition = scaleYChange * 2 * heightMultiple * yPositionMultiple;
+                    //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
+                    //newScaleY = Math.Max(0, newScaleY);
+                    //scalable.ScaleY = newScaleY;
+                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorChange.Y * heightMultiple;
+                    unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
+
+                    var newScaleY = SnapSize(unsnappedItemSize.Y) / 2.0f;
+                    scaleYChange = newScaleY - scalable.ScaleY;
+
+                    if (scaleYChange != 0)
+                    {
+                        var scaleBefore = scalable.ScaleY;
+                        scalable.ScaleY = newScaleY;
+                        // see the scaleXAssignment above for info on why we use the object:
+                        scaleYChange = scalable.ScaleY - scaleBefore;
+                    }
                 }
+
+                var scaleChange = new Vector3(scaleXChange, scaleYChange, 0);
+                var widthHeightMultiple = new Vector3(widthMultiple, heightMultiple, 0);
+
+                var xComponent = (scaleChange.X * 2 * widthHeightMultiple.X * unrotatedPositionMultiple.X) * item.RotationMatrix.Right;
+                var yComponent = (scaleChange.Y * 2 * widthHeightMultiple.Y * unrotatedPositionMultiple.Y) * item.RotationMatrix.Up;
+
+                xChangeForPosition = (xComponent + yComponent).X;
+                yChangeForPosition = (xComponent + yComponent).Y;
             }
-            ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown);
+            ChangePositionBy(item, xChangeForPosition, yChangeForPosition, FlatRedBall.Input.InputManager.Keyboard.IsShiftDown, forceDisableSnapping: true);
+            item.ForceUpdateDependencies();
         }
 
-        private static bool GetIfSetsTextureScale(PositionedObject item)
-        {
-            return item is Sprite asSprite && asSprite.TextureScale > 0 && asSprite.Texture != null;
-        }
-
-        private static bool GetIfShouldResizeFromCenter(PositionedObject item)
-        {
-            return item.Parent != null;
-        }
 
         #endregion
 
         public bool IsCursorOverThis()
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (cursor.IsOn3D(rectangle))
+            if (cursor.IsOn3D(mainPolygon))
             {
                 return true;
             }
 
-            if (GetSideOver() != ResizeSide.None)
+            if (ResizeHandles.GetSideOver() != ResizeSide.None)
             {
                 return true;
             }
-
+            if (PolygonPointHandles.PointIndexHighlighted != null)
+            {
+                return true;
+            }
             return false;
         }
 
-        public ResizeSide GetSideOver() => Handles.GetSideOver();
+        public bool ShouldSuppress(string variableName) =>
+            variableName == "X" ||
+            variableName == "Y" ||
+            variableName == "Z" ||
+            variableName == "RelativeX" ||
+            variableName == "RelativeY" ||
+            variableName == "RelativeZ" ||
 
+            variableName == "Width" ||
+            variableName == "Height" ||
 
-        public void HandleCursorRelease()
-        {
-
-            if (ownerAsPositionedObject.X != GrabbedPosition.X)
-            {
-                var value = ownerAsPositionedObject.Parent == null
-                    ? ownerAsPositionedObject.X
-                    : ownerAsPositionedObject.RelativeX;
-                PropertyChanged(Owner, nameof(ownerAsPositionedObject.X), value);
-            }
-            if (ownerAsPositionedObject.Y != GrabbedPosition.Y)
-            {
-                var value = ownerAsPositionedObject.Parent == null
-                    ? ownerAsPositionedObject.Y
-                    : ownerAsPositionedObject.RelativeY;
-                PropertyChanged(Owner, nameof(ownerAsPositionedObject.Y), value);
-            }
-
-            if (Owner is FlatRedBall.Math.Geometry.IScalable asScalable)
-            {
-                var didChangeWidth = GrabbedWidthAndHeight.X != asScalable.ScaleX * 2;
-                var didChangeHeight = GrabbedWidthAndHeight.Y != asScalable.ScaleY * 2;
-                if (Owner is Sprite asSprite && asSprite.TextureScale > 0 &&
-                    GrabbedTextureScale != asSprite.TextureScale)
-                {
-                    PropertyChanged(Owner, nameof(asSprite.TextureScale), asSprite.TextureScale);
-                }
-                else
-                {
-                    if (didChangeWidth)
-                    {
-                        PropertyChanged(Owner, "Width", asScalable.ScaleX * 2);
-                    }
-                    if (didChangeWidth)
-                    {
-                        PropertyChanged(Owner, "Height", asScalable.ScaleY * 2);
-                    }
-                }
-            }
-            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
-            {
-                if (GrabbedRadius != circle.Radius)
-                {
-                    PropertyChanged(Owner, nameof(circle.Radius), circle.Radius);
-                }
-            }
-        }
-
-        public void HandleCursorPushed()
-        {
-            GrabbedPosition = ownerAsPositionedObject.Position;
-
-            if (Owner is FlatRedBall.Math.Geometry.IScalable itemGrabbedAsScalable)
-            {
-                GrabbedWidthAndHeight = new Vector2(itemGrabbedAsScalable.ScaleX * 2, itemGrabbedAsScalable.ScaleY * 2);
-                if (Owner is Sprite asSprite)
-                {
-                    GrabbedTextureScale = asSprite.TextureScale;
-                }
-            }
-            else if (Owner is FlatRedBall.Math.Geometry.Circle circle)
-            {
-                GrabbedRadius = circle.Radius;
-            }
-        }
+            variableName == "Radius"
+            ;
 
         public void Destroy()
         {
 #if SupportsEditMode
 
-            rectangle.Visible = false;
-            FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
+            mainPolygon.Visible = false;
+#if ScreenManagerHasPersistentPolygons
 
-            Handles.Destroy();
+            FlatRedBall.Screens.ScreenManager.PersistentPolygons.Remove(mainPolygon);
+#endif
+            ResizeHandles.Destroy();
+            PolygonPointHandles.Destroy();
+
 #endif
         }
     }
+
 }

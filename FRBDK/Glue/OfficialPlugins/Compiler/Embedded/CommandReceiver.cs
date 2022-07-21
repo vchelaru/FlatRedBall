@@ -1,6 +1,4 @@
-﻿#define SupportsEditMode
-#define IncludeSetVariable
-using GlueControl.Dtos;
+﻿using GlueControl.Dtos;
 using GlueControl.Editing;
 using Microsoft.Xna.Framework;
 
@@ -15,8 +13,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using {ProjectNamespace};
 using GlueControl.Models;
+using GlueControl.Managers;
 
 
 namespace GlueControl
@@ -66,14 +64,23 @@ namespace GlueControl
                         return parameters.Length == 1 && parameters[0].ParameterType.Name == dtoTypeName;
                     });
 
-                if (matchingMethod == null)
+
+                // This could be a response, so don't throw an exception anymore
+                //if (matchingMethod == null)
+                //{
+                //    throw new InvalidOperationException(
+                //        $"Could not find a HandleDto method for type {dtoTypeName}");
+                //}
+
+                var dtoType = matchingMethod?.GetParameters()[0].ParameterType;
+                if (dtoType == null)
                 {
-                    throw new InvalidOperationException(
-                        $"Could not find a HandleDto method for type {dtoTypeName}");
+                    // there may not be a matching method for this. That's okay, it may
+                    // be a method that is only expected as a response
+                    var possibleQualifiedType = $"GlueControl.Dtos.{dtoTypeName}";
+
+                    dtoType = typeof(Game1).Assembly.GetType(possibleQualifiedType);
                 }
-
-                var dtoType = matchingMethod.GetParameters()[0].ParameterType;
-
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
                 if (runPredicate == null || runPredicate(dto))
@@ -111,6 +118,17 @@ namespace GlueControl
             if (method != null)
             {
                 toReturn = method.Invoke(null, new object[] { dto });
+            }
+
+            if (dto is RespondableDto respondableDto && respondableDto.OriginalDtoId > 0)
+            {
+                object content = null;
+
+                if (respondableDto is ResponseWithContentDto dtoWithContent && !string.IsNullOrEmpty(dtoWithContent.Content))
+                {
+                    content = JsonConvert.DeserializeObject(dtoWithContent.Content);
+                }
+                GlueControlManager.Self.NotifyResponse(respondableDto.OriginalDtoId, content);
             }
 
             return toReturn;
@@ -167,6 +185,9 @@ namespace GlueControl
         {
             GlueVariableSetDataResponseList toReturn = new GlueVariableSetDataResponseList();
 
+            // Vic says - haven't figured out if NOS's should get set before applying runtimes or after...
+            ApplyNewNamedObjects(dto);
+
             foreach (var setVariableDto in dto.Data)
             {
                 var setResponse = HandleDto(setVariableDto);
@@ -178,6 +199,10 @@ namespace GlueControl
 
         private static GlueVariableSetDataResponse HandleDto(GlueVariableSetData dto)
         {
+            if (dto.GlueElement != null)
+            {
+                dto.GlueElement.FixAllTypes();
+            }
             GlueVariableSetDataResponse response = null;
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
@@ -205,6 +230,10 @@ namespace GlueControl
 
                 if (dto.GlueElement != null)
                 {
+                    if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                    {
+                        ObjectFinder.Self.Replace(dto.GlueElement);
+                    }
                     Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
                     if (oldName != null && newName != null)
                     {
@@ -225,6 +254,8 @@ namespace GlueControl
                         }
                     }
                 }
+
+                ApplyNewNamedObjects(dto);
             }
             else
             {
@@ -260,6 +291,8 @@ namespace GlueControl
 
         #endregion
 
+        #region Get Camera Position
+
         private static object HandleDto(GetCameraPosition dto)
         {
             var toReturn = string.Empty;
@@ -270,6 +303,8 @@ namespace GlueControl
             getCameraPositionResponse.Z = Camera.Main.Z;
             return getCameraPositionResponse;
         }
+
+        #endregion
 
         #region Set Camera Position
 
@@ -296,7 +331,7 @@ namespace GlueControl
         private static void HandleDto(SetCameraAspectRatioDto dto)
         {
             CameraSetup.Data.AspectRatio = dto.AspectRatio;
-            
+
             CameraSetup.ResetCamera();
 
             if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
@@ -311,7 +346,10 @@ namespace GlueControl
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
-
+            if (selectObjectDto.GlueElement != null)
+            {
+                selectObjectDto.GlueElement.FixAllTypes();
+            }
             // if it matches, don't fall back to the backup element
             bool matchesCurrentScreen =
                 GetIfMatchesCurrentScreen(selectObjectDto.ElementNameGlue, out System.Type ownerType, out Screen currentScreen);
@@ -329,6 +367,10 @@ namespace GlueControl
 
             try
             {
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                {
+                    ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
+                }
                 Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
             }
             catch (ArgumentException e)
@@ -339,6 +381,8 @@ namespace GlueControl
 
                 throw new ArgumentException(message);
             }
+
+            ApplyNewNamedObjects(selectObjectDto);
 
             if (matchesCurrentScreen)
             {
@@ -400,9 +444,13 @@ namespace GlueControl
 
                 if (isEntity)
                 {
-                    var isAlreadyViewingThisEntity = ScreenManager.CurrentScreen.GetType().Name == "EntityViewingScreen" &&
-                        SpriteManager.ManagedPositionedObjects.Count > 0 &&
-                        DoTypesMatch(SpriteManager.ManagedPositionedObjects[0], ownerTypeName, ownerType);
+                    var entityScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen as Screens.EntityViewingScreen;
+                    var entity = (entityScreen?.CurrentEntity as PositionedObject);
+
+                    var isAlreadyViewingThisEntity =
+                        entityScreen != null &&
+                        entity != null &&
+                        DoTypesMatch(entity, ownerTypeName, ownerType);
 
                     if (!isAlreadyViewingThisEntity)
                     {
@@ -414,6 +462,8 @@ namespace GlueControl
                             newScreen.ScreenDestroy += HandleScreenDestroy;
 
                             FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
+
+                            CameraLogic.UpdateCameraValuesToScreenSavedValues(newScreen );
 
                             if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                             {
@@ -487,7 +537,6 @@ namespace GlueControl
 
         #endregion
 
-
         #region ChangeZoomDto
 
         private static void HandleDto(ChangeZoomDto changeZoomDto)
@@ -539,11 +588,22 @@ namespace GlueControl
 
         private static RemoveObjectDtoResponse HandleDto(RemoveObjectDto removeObjectDto)
         {
+            if (removeObjectDto.GlueElement != null)
+            {
+                removeObjectDto.GlueElement.FixAllTypes();
+            }
             var response = InstanceLogic.Self.HandleDeleteInstanceCommandFromGlue(removeObjectDto);
+
+            if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                ObjectFinder.Self.Replace(removeObjectDto.GlueElement);
+            }
 
             Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
 
             CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
+
+            ApplyNewNamedObjects(removeObjectDto);
 
             return response;
         }
@@ -571,6 +631,8 @@ namespace GlueControl
         {
             AddObjectDtoResponse valueToReturn = new AddObjectDtoResponse();
 
+            ApplyNewNamedObjects(dto);
+
             var createdObject =
                 GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedItem: null);
             valueToReturn.WasObjectCreated = createdObject != null;
@@ -580,6 +642,17 @@ namespace GlueControl
             GlobalGlueToGameCommands.Add(dto);
 
             return valueToReturn;
+        }
+
+        private static AddObjectDtoListResponse HandleDto(AddObjectDtoList dto)
+        {
+            AddObjectDtoListResponse dtoResponse = new AddObjectDtoListResponse();
+            foreach (var dtoItem in dto.Data)
+            {
+                var response = HandleDto(dtoItem);
+                dtoResponse.Data.Add(response);
+            }
+            return dtoResponse;
         }
 
         #endregion
@@ -697,11 +770,11 @@ namespace GlueControl
         {
             var value = setEditMode.IsInEditMode;
 #if SupportsEditMode
-
             var response = new Dtos.GeneralCommandResponse
             {
                 Succeeded = true,
             };
+
 
             if (ScreenManager.CurrentScreen == null)
             {
@@ -719,6 +792,12 @@ namespace GlueControl
                 if (value)
                 {
                     FlatRedBallServices.Game.IsMouseVisible = true;
+
+                    if(ObjectFinder.Self.GlueProject == null)
+                    {
+                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
+                    }
+
                     // If in edit mode, polygons can get sent over from Glue
                     // without points. We don't want to crash the game when this
                     // happens.
@@ -728,6 +807,9 @@ namespace GlueControl
                     // added without restarting the app, which would then reset this value back
                     // to false. Let's keep it simple.
                     Polygon.TolerateEmptyPolygons = true;
+#if SpriteHasTolerateMissingAnimations
+                    Sprite.TolerateMissingAnimations = true;
+#endif
                 }
 
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
@@ -737,6 +819,8 @@ namespace GlueControl
             }
 
             return response;
+#else
+            return null;
 #endif
         }
 
@@ -790,7 +874,7 @@ namespace GlueControl
                 shouldReloadGlobalContent: dto.ReloadGlobalContent);
         }
 
-        private static void RestartScreenRerunCommands(bool applyRestartVariables, 
+        private static void RestartScreenRerunCommands(bool applyRestartVariables,
             bool isInEditMode,
             bool shouldRecordCameraPosition = true,
             bool forceCameraToPreviousState = false,
@@ -801,7 +885,7 @@ namespace GlueControl
 
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
-            
+
             void AfterInitializeLogic(Screen newScreen)
             {
                 newScreen.ScreenDestroy += HandleScreenDestroy;
@@ -841,7 +925,7 @@ namespace GlueControl
             }
 
 
-            screen?.RestartScreen(reloadScreenContent: true, applyRestartVariables: applyRestartVariables);
+            screen?.RestartScreen(true, applyRestartVariables);
             EditorVisuals.DestroyContainedObjects();
 
             if (shouldReloadGlobalContent)
@@ -891,6 +975,21 @@ namespace GlueControl
 
             }
 
+            var file = GlobalContent.GetFile(dto.StrippedFileName);
+
+            if (file != null)
+            {
+                GlobalContent.Reload(dto);
+            }
+
+
+
+            if (dto.IsLocalizationDatabase)
+            {
+                FlatRedBall.Localization.LocalizationManager.ClearDatabase();
+                // assume this uses commas, not tabs. 
+                FlatRedBall.Localization.LocalizationManager.AddDatabase(dto.FileRelativeToProject, ',');
+            }
         }
 
         #endregion
@@ -963,6 +1062,7 @@ namespace GlueControl
 
         private static void HandleDto(GlueViewSettingsDto dto)
         {
+            EditingManager.Self.ShowGrid = dto.ShowGrid;
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
             Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
 
@@ -978,6 +1078,21 @@ namespace GlueControl
                 CameraLogic.BackgroundGreen = null;
                 CameraLogic.BackgroundBlue = null;
             }
+
+            EditingManager.Self.SnapSize = (float)dto.SnapSize;
+            EditingManager.Self.PolygonPointSnapSize = (float)dto.PolygonPointSnapSize;
+            EditingManager.Self.IsSnappingEnabled = dto.EnableSnapping;
+
+        }
+
+        private static void ApplyNewNamedObjects(UpdateCurrentElementDto dto)
+        {
+            foreach (var update in dto.NamedObjectsToUpdate)
+            {
+                EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName);
+            }
         }
     }
+
+
 }

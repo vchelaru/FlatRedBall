@@ -88,7 +88,7 @@ namespace GumPlugin.Managers
 
         DateTime? LastTimeChangesHandledUtc;
 
-        public void HandleEventExportFileChanged(string fileName)
+        public async Task HandleEventExportFileChanged(string fileName)
         {
             string contents = null;
             try
@@ -146,7 +146,7 @@ namespace GumPlugin.Managers
 
                         foreach (var eventInstance in eventsToReactTo)
                         {
-                            ReactToExportedEvent(eventInstance);
+                            await ReactToExportedEvent(eventInstance);
                         }
 
                         try
@@ -166,7 +166,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        private void ReactToExportedEvent(ExportedEvent deserialized)
+        private async Task ReactToExportedEvent(ExportedEvent deserialized)
         {
             switch (deserialized.EventType)
             {
@@ -174,12 +174,12 @@ namespace GumPlugin.Managers
                     HandleElementDeleted(deserialized);
                     break;
                 case GumEventTypes.ElementRenamed:
-                    HandleElementRenamed(deserialized);
+                    await HandleElementRenamed(deserialized);
                     break;
             }
         }
 
-        private void HandleElementRenamed(ExportedEvent exportedEvent)
+        private async Task HandleElementRenamed(ExportedEvent exportedEvent)
         {
             var elementType = exportedEvent.ElementType;
             
@@ -209,7 +209,7 @@ namespace GumPlugin.Managers
                     // make sure it's updated:
                     CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element);
 
-                    TaskManager.Self.Add(() =>
+                    TaskManager.Self.AddAsync(async () =>
                     {
                         try
                         {
@@ -236,7 +236,7 @@ namespace GumPlugin.Managers
 
                                 System.IO.File.WriteAllText(newCodeFileName.FullPath, contents);
 
-                                GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(newCodeFileName, saveOnAdd:true);
+                                await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(newCodeFileName, saveOnAdd:true);
                             }
 
                             var allNoses = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetAllNamedObjects().ToArray();

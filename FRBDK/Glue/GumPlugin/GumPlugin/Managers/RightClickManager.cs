@@ -191,10 +191,10 @@ namespace GumPlugin.Managers
 
                         menuToModify.Add(menuToAddScreensTo);
 
-                        foreach (var screen in gps.ScreenReferences)
+                        foreach (var gumScreen in gps.ScreenReferences)
                         {
-                            var screenMenuItem = new GeneralToolStripMenuItem(screen.Name);
-                            screenMenuItem.Click += HandleScreenToAddClick;
+                            var screenMenuItem = new GeneralToolStripMenuItem(gumScreen.Name);
+                            screenMenuItem.Click += HandleAddGumScreenToFrbScreen;
                             menuToAddScreensTo.DropDownItems.Add(screenMenuItem);
                         }
                     }
@@ -204,21 +204,21 @@ namespace GumPlugin.Managers
             return shouldContinue;
         }
 
-        private void HandleScreenToAddClick(object sender, EventArgs e)
+        private void HandleAddGumScreenToFrbScreen(object sender, EventArgs e)
         {
             string screenName = ((System.Windows.Controls.MenuItem)sender).Header as string;
 
             if(!string.IsNullOrEmpty(screenName))
             {
-                AddScreenByName(screenName, GlueState.Self.CurrentScreenSave);
+                AddGumScreenScreenByName(screenName, GlueState.Self.CurrentScreenSave);
             }
 
         }
 
-        public void AddScreenByName(string screenName, FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
+        public void AddGumScreenScreenByName(string gumScreenName, FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen)
         {
             string fullFileName = AppState.Self.GumProjectFolder + "Screens/" +
-                screenName + "." + GumProjectSave.ScreenExtension;
+                gumScreenName + "." + GumProjectSave.ScreenExtension;
 
             if (System.IO.File.Exists(fullFileName))
             {
@@ -231,21 +231,22 @@ namespace GumPlugin.Managers
                 AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
 
 
-                var element = CodeGeneratorManager.GetElementFrom(newRfs);
+                var gumElement = CodeGeneratorManager.GetElementFrom(newRfs);
 
-                if(element != null)
+                if(gumElement != null)
                 {
                     newRfs.RuntimeType =
-                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element);
+                        GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(gumElement);
 
                     GlueCommands.Self.GluxCommands.SaveGlux();
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(glueScreen);
+                    CodeGeneratorManager.Self.GenerateCodeFor(gumElement);
 
                 }
             }
             else
             {
-                var message = "Could not find the file for the Gum screen " + screenName + $"\nSearched in:\n{fullFileName}";
+                var message = "Could not find the file for the Gum screen " + gumScreenName + $"\nSearched in:\n{fullFileName}";
 
                 if (AppState.Self.GumProjectSave == null)
                 {

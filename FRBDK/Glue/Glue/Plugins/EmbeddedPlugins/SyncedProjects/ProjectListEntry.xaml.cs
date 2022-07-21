@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 try
                 {
                     var startedProcess = Process.Start(startInfo);
-                    var openedWithGlue = startedProcess.ProcessName == "Glue";
+                    var openedWithGlue = startedProcess?.ProcessName == "Glue";
 
                     if(openedWithGlue)
                     {

@@ -27,7 +27,7 @@ namespace GlueFormsCore.SetVariable.EntitySaves
                 else
                 {
                     FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                    FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                    FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }

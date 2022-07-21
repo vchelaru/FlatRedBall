@@ -123,24 +123,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return allFiles.Distinct().ToList();
         }
 
-        private void AddFilesReferenced(string fileName, List<FilePath> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
+        private void AddFilesReferenced(FilePath filePath, List<FilePath> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             // The project may have been unloaded:
             if (GlueState.CurrentMainContentProject != null)
             {
-                string absoluteFileName = GlueCommands.GetAbsoluteFileName(fileName, isContent:true);
 
-                if (File.Exists(absoluteFileName))
+                if (File.Exists(filePath.FullPath))
                 {
                     List<FilePath> referencedFiles = null;
 
                     if (projectOrFile == ProjectOrDisk.Project)
                     {
-                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesReferencedBy(absoluteFileName, topLevelOrRecursive);
+                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesReferencedBy(filePath.FullPath, topLevelOrRecursive);
                     }
                     else
                     {
-                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(absoluteFileName, topLevelOrRecursive);
+                        referencedFiles = FlatRedBall.Glue.Managers.FileReferenceManager.Self.GetFilesNeededOnDiskBy(filePath.FullPath, topLevelOrRecursive);
 
                     }
 
@@ -173,18 +172,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             foreach(var rfs in referencedFileList)
             {
-                
-                allFiles.Add(GlueCommands.GetAbsoluteFileName(rfs));
+                var rfsFilePath = GlueCommands.GetAbsoluteFileName(rfs);
+                allFiles.Add(rfsFilePath);
 
-                AddFilesReferenced(rfs.Name, allFiles, topLevelOrRecursive, projectOrFile);
+                AddFilesReferenced(rfsFilePath, allFiles, topLevelOrRecursive, projectOrFile);
 
                 for (int i = 0; i < rfs.ProjectSpecificFiles.Count; i++)
                 {
                     ProjectSpecificFile psf = rfs.ProjectSpecificFiles[i];
 
-                    allFiles.Add(psf.FilePath);
+                    allFiles.Add(psf.File);
 
-                    AddFilesReferenced(psf.FilePath, allFiles, topLevelOrRecursive, projectOrFile);
+                    AddFilesReferenced(psf.File, allFiles, topLevelOrRecursive, projectOrFile);
                 }
             }
         }
@@ -441,6 +440,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 Process.Start("explorer.exe", "/root," + locationToShow);
             }
+        }
+
+        public void Open(FilePath filePath)
+        {
+            var startInfo = new ProcessStartInfo();
+            startInfo.FileName = "\"" + filePath.FullPath + "\"";
+            startInfo.UseShellExecute = true;
+
+            System.Diagnostics.Process.Start(startInfo);
         }
     }
 

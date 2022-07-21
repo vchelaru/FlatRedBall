@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             foreach (var bi in contentItemsToSync)
             {
-                string absoluteFileName = from.ContentProject.MakeAbsolute(bi.UnevaluatedInclude);
+                FilePath absoluteFileName = from.ContentProject.MakeAbsolute(bi.UnevaluatedInclude);
 
                 bool forceToContent = false;
                 if (from.ContentCopiedToOutput)

@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (destType == typeof(string) && value is ProjectSpecificFile)
             {
                 var emp = (ProjectSpecificFile)value;
-                return emp.FilePath;
+                return emp.File.FullPath;
             }
             return base.ConvertTo(context, culture, value, destType);
         }
@@ -78,19 +78,32 @@ namespace FlatRedBall.Glue.SaveClasses
             get; set;
         }
 
-        public string FilePath { get; set; }
+        [Obsolete("Use File to handle equality consistently")]
+        public string FilePath 
+        {
+            get => File.FullPath;
+            set => File = value;
+        }
+
+        // Need to do this since it doesn't have a no-arg constructor and...should it?
+        [XmlIgnore]
+        [JsonIgnore]
+        public FilePath File
+        {
+            get; set;
+        }
 
         public string Display
         {
             get
             {
-                return FilePath + " (" + ProjectName + ")";
+                return File + " (" + ProjectName + ")";
             }
         }
 
         public override string ToString()
         {
-            return FilePath + " (" + ProjectName + ")";
+            return File + " (" + ProjectName + ")";
         }
     }
     #endregion
@@ -477,6 +490,8 @@ namespace FlatRedBall.Glue.SaveClasses
             get;
             set;
         }
+
+        public bool IsCreatedByWildcard { get; set; }
 
         #endregion
 

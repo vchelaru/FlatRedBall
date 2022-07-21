@@ -106,21 +106,21 @@ namespace FlatRedBall.Glue.IO
         #region Methods
 
 
-        private static async Task<bool> ReactToChangedFile(string file)
+        private static async Task<bool> ReactToChangedFile(FileChange file)
         {
             bool wasAnythingChanged = false;
 
             IgnoreReason reason;
-            bool isIgnored = IsFileIgnored(file, out reason);
+            bool isIgnored = IsFileIgnored(file.FilePath, out reason);
 
             if (!isIgnored)
             {
-                bool handled = await UpdateReactor.UpdateFile(file);
+                bool handled = await UpdateReactor.UpdateFile(file.FilePath.FullPath, file.ChangeType);
                 wasAnythingChanged |= handled;
             }
             else if (reason == IgnoreReason.BuiltFile)
             {
-                Plugins.PluginManager.ReactToChangedBuiltFile(file);
+                Plugins.PluginManager.ReactToChangedBuiltFile(file.FilePath.FullPath);
                 wasAnythingChanged = true;
             }
 
@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.IO
             {
                 IsFlushing = true;
 
-                List<string> filesToFlush = new List<string>();
+                var filesToFlush = new List<FileChange>();
 
 
                 if(mChangedProjectFiles.CanFlush)
@@ -163,9 +163,8 @@ namespace FlatRedBall.Glue.IO
                 var distinctFiles =
                     filesToFlush.Distinct().ToArray();
 
-                foreach (string file in distinctFiles)
+                foreach (var file in distinctFiles)
                 {
-                    anyFlushed = true;
 
                     var fileCopy = file;
 
@@ -173,7 +172,7 @@ namespace FlatRedBall.Glue.IO
                     // *so many* generated files, that putting a check here on generated can eliminate hundreds
                     // of tasks from being created, improving startup performance
                     IgnoreReason reason;
-                    bool isIgnored = IsFileIgnored(file, out reason);
+                    bool isIgnored = IsFileIgnored(fileCopy.FilePath, out reason);
 
                     // November 12, 2019
                     // Vic asks - why do we only ignore files that are generated here?
@@ -182,15 +181,16 @@ namespace FlatRedBall.Glue.IO
 
                     if(!skip)
                     {
+                        anyFlushed = true;
                         TaskManager.Self.Add(async () =>
                             {
-                                var didReact = await ReactToChangedFile(file);
+                                var didReact = await ReactToChangedFile(fileCopy);
                                 if (didReact)
                                 {
                                     UnreferencedFilesManager.Self.IsRefreshRequested = true;
                                 }
                             },
-                            "Reacting to changed file " + file);
+                            "Reacting to changed file " + fileCopy.FilePath);
                     }
                 }
 
@@ -367,10 +367,10 @@ namespace FlatRedBall.Glue.IO
             return fileName.StartsWith("bin/") || fileName.StartsWith("bin\\");
         }
 
-        private static int CompareFiles(string first, string second)
+        private static int CompareFiles(FileChange first, FileChange second)
         {
-            int firstValue = GetFileValue(first);
-            int secondValue = GetFileValue(second);
+            int firstValue = GetFileValue(first.FilePath.FullPath);
+            int secondValue = GetFileValue(second.FilePath.FullPath);
             // I think I had this backwards, if the second has a greater value, then it should be positive
 //            return firstValue - secondValue;
             return secondValue - firstValue;

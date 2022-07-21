@@ -28,7 +28,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region StateSaveCategory
+
         Task AddStateSaveCategoryAsync(string categoryName, GlueElement element);
+
+        #endregion
+
+        #region GlueElement
+
+        Task RenameElement(GlueElement elementToRename, string value);
+
+        #endregion
+
         void AddEntity(EntitySave entitySave);
         void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
 

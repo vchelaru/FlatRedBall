@@ -77,6 +77,13 @@ namespace GlueControl.Editing
 
         public void UpdateGridLines()
         {
+            ////////Early Out////////////
+            if (!visible)
+            {
+                return;
+            }
+            /////End Early Out//////////////
+
             var camera = Camera.Main;
             var leftmost = MathFunctions.RoundFloat(camera.AbsoluteLeftXEdge, GridSpacing);
             var rightMost = MathFunctions.RoundFloat(camera.AbsoluteRightXEdge, GridSpacing);

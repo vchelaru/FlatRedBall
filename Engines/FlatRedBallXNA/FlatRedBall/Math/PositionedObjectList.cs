@@ -65,6 +65,9 @@ namespace FlatRedBall.Math
 			}
 		}
 
+        /// <summary>
+        /// Detaches all contained PositionedObjects from their parents.
+        /// </summary>
 		public void Detach() 
 		{
 			for ( int i = 0; i < Count; i++ )

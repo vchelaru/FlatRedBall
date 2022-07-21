@@ -92,6 +92,7 @@ namespace GlueControl
             {
                 ownerElement = CustomGlueElements[elementGameType];
             }
+            object newRuntimeObject = null;
 
             var addedToEntity =
                 (ownerType != null && typeof(PositionedObject).IsAssignableFrom(ownerType))
@@ -104,7 +105,7 @@ namespace GlueControl
                 {
                     if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
                     {
-                        HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, forcedItem);
+                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedItem);
                     }
                 }
                 else
@@ -115,7 +116,7 @@ namespace GlueControl
                         var item = SpriteManager.ManagedPositionedObjects[i];
                         if (CommandReceiver.DoTypesMatch(item, elementGameType))
                         {
-                            HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, item);
+                            newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, item);
                         }
                     }
                 }
@@ -124,9 +125,10 @@ namespace GlueControl
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
                 // it's added to the base screen, so just add it to null
-                HandleCreateInstanceCommandFromGlueInner(dto, currentAddObjectIndex, null);
+                newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
             }
-            return dto;
+
+            return newRuntimeObject;
         }
 
         private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
@@ -204,6 +206,23 @@ namespace GlueControl
                                 asCollidable.Collision.Add(polygon);
                             }
                             newPositionedObject = polygon;
+                        }
+                        break;
+                    case "FlatRedBall.Math.Geometry.Line":
+                    case "Line":
+                        {
+                            var line = new FlatRedBall.Math.Geometry.Line();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddLine(line);
+                                ShapesAddedAtRuntime.Lines.Add(line);
+                            }
+                            // eventually lines may be part of ICollidable:
+                            //if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            //{
+                            //    asCollidable.Collision.Add(polygon);
+                            //}
+                            newPositionedObject = line;
                         }
                         break;
                     case "FlatRedBall.Sprite":
@@ -402,7 +421,7 @@ namespace GlueControl
             }
         }
 
-        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1)
+        public PositionedObject CreateEntity(string entityNameGameType, int currentAddObjectIndex = -1, bool isMainEntityInScreen = false)
         {
             var containsKey =
                 CustomGlueElements.ContainsKey(entityNameGameType);
@@ -438,7 +457,11 @@ namespace GlueControl
 
                 newEntity = dynamicEntityInstance;
 
-                ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
+                if (!isMainEntityInScreen)
+                {
+                    // If it is, then the game screen will run all the commands. No need to do it here and have 2x the commands run.
+                    ApplyEditorCommandsToNewEntity(newEntity, currentAddObjectIndex);
+                }
             }
             else
             {
@@ -545,17 +568,21 @@ namespace GlueControl
                         }
                     }
                 }
-                foreach (var item in SpriteManager.ManagedPositionedObjects)
+                else // Vic says - but what if we have entities inside of entities? Skipping this logic may result in those subentities not being set up correctly?
                 {
-                    if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
-                    {
-                        // try to remove this object from here...
-                        //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
-                        var objectToDelete = item.Children.FindByName(objectName);
 
-                        if (objectToDelete != null)
+                    foreach (var item in SpriteManager.ManagedPositionedObjects)
+                    {
+                        if (CommandReceiver.DoTypesMatch(item, elementGameType, ownerType))
                         {
-                            TryDeleteObject(response, objectToDelete);
+                            // try to remove this object from here...
+                            //screen.ApplyVariable(variableNameOnObjectInInstance, variableValue, item);
+                            var objectToDelete = item.Children.FindByName(objectName);
+
+                            if (objectToDelete != null)
+                            {
+                                TryDeleteObject(response, objectToDelete);
+                            }
                         }
                     }
                 }
@@ -617,6 +644,11 @@ namespace GlueControl
                 ShapeManager.Remove(polygon);
                 removeResponse.WasObjectRemoved = true;
             }
+            else if (objectToDelete is Line line)
+            {
+                ShapeManager.Remove(line);
+                removeResponse.WasObjectRemoved = true;
+            }
             else if (objectToDelete is Sprite sprite)
             {
                 SpriteManager.RemoveSprite(sprite);
@@ -655,550 +687,6 @@ namespace GlueControl
 
         //    CommandReceiver.GlobalGlueToGameCommands.Add(addObjectDto);
         //}
-
-        #region Create Instance from Game
-
-        private string GetNameFor(string itemType)
-        {
-            if (itemType.Contains('.'))
-            {
-                var lastDot = itemType.LastIndexOf('.');
-                itemType = itemType.Substring(lastDot + 1);
-            }
-            var newName = $"{itemType}Auto{TimeManager.CurrentTime.ToString().Replace(".", "_")}_{NewIndex}";
-            NewIndex++;
-
-            return newName;
-        }
-
-        private void AddFloatValue(Dtos.AddObjectDto addObjectDto, string name, float value)
-        {
-            AddValueToDto(addObjectDto, name, "float", value);
-        }
-
-        private void AddStringValue(Dtos.AddObjectDto addObjectDto, string name, string value)
-        {
-            AddValueToDto(addObjectDto, name, "string", value);
-        }
-
-        private void AddValueToDto(Dtos.AddObjectDto addObjectDto, string name, string type, object value)
-        {
-            addObjectDto.InstructionSaves.Add(new FlatRedBall.Content.Instructions.InstructionSave
-            {
-                Member = name,
-                Type = type,
-                Value = value
-            });
-        }
-
-        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, PositionedObject original, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newName = GetNameFor(entityGameType);
-
-            var newInstance = CreateEntity(entityGameType);
-            newInstance.X = original.X;
-            newInstance.Y = original.Y;
-            newInstance.Name = newName;
-
-
-            // The NamedObjectSave could contain additional properties that are assigned
-            // on the instance. We want to assign those:
-            var glueElement = EditingManager.Self.CurrentGlueElement;
-            // find the nos:
-            var nosForCopiedObject = EditingManager.Self.CurrentGlueElement
-                ?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == original.Name);
-
-            if (nosForCopiedObject != null)
-            {
-                // loop through all the variables on the nos and apply them to the
-                // copied runtime object *and* send those back to Glue so Glue can apply
-                // them to the copied NOS
-                // Note that if these values are on the NamedObject.InstructionSaves, then 
-                // they have been explicitly set. Therefore, we don't have to do equality comparison
-                // between the old and new value. If they're in the copied InstructionSaves, they should
-                // be explicitly set on the new!
-                foreach (var instructionInOriginal in nosForCopiedObject.InstructionSaves)
-                {
-                    var shouldSend =
-                        instructionInOriginal.Member != "X" &&
-                        instructionInOriginal.Member != "Y";
-
-                    if (shouldSend)
-                    {
-                        object valueToSet = null;
-
-                        try
-                        {
-
-                            // When applying values to the runtime, don't use the
-                            // NamedObject, because that contains serialized values
-                            // which may need to be converted back. Just use the value
-                            // directly from the copy:
-                            var originalRuntimeValue = LateBinder.GetValueStatic(
-                                original, instructionInOriginal.Member);
-                            valueToSet = originalRuntimeValue;
-                        }
-                        catch
-                        {
-                            // There are some properties (like paths on PathInstance) which
-                            // can only be set, not gotten. Therefore, we should try/catch here
-                            // and tolerate values that can't be obtained through a get call.
-                            // If there is a failure, fall back to the instruction:
-
-                            valueToSet = instructionInOriginal.Value;
-                        }
-
-                        // apply it on the copy
-                        // Note - Glue keeps old
-                        // variables around whenever
-                        // a type changes or even when
-                        // the type stays the same but a
-                        // variable is removed from the defining
-                        // type. Therefore, there could be orphan
-                        // variables on the NamedObjectSave which don't
-                        // exist on the class itself. Therefore, we need
-                        // to tolerate MemberAccessExceptions:
-                        try
-                        {
-                            LateBinder.SetValueStatic(
-                                newInstance, instructionInOriginal.Member,
-                                valueToSet);
-
-                        }
-                        catch (MemberAccessException)
-                        {
-                            // See above for an explanation on why this is okay
-                        }
-
-                    }
-                }
-            }
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.CopyOriginalName = original.Name;
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.Entity;
-            // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
-
-            AddFloatValue(addObjectDto, "X", original.X);
-            AddFloatValue(addObjectDto, "Y", original.Y);
-
-            var properties = newInstance.GetType().GetProperties();
-
-            foreach (var newInstanceProperty in properties)
-            {
-                var didFailToGetProperty = false;
-
-                object oldPropertyValue = null;
-                object newPropertyValue = null;
-
-                try
-                {
-                    oldPropertyValue = newInstanceProperty.GetValue(original);
-                    newPropertyValue = newInstanceProperty.GetValue(newInstance);
-                }
-                catch
-                {
-                    didFailToGetProperty = true;
-                }
-                if (oldPropertyValue != newPropertyValue && !didFailToGetProperty)
-                {
-                    // they differ, so we should set and DTO it
-                    // But how do we know what to set and what not to set? I think we should whitelist...
-
-                    var shouldSet = oldPropertyValue != null;
-                    var isState = false;
-                    if (shouldSet)
-                    {
-                        // for now we'll only handle states, which have a + in the name. 
-                        var fullName = newInstanceProperty.PropertyType.FullName;
-                        isState = fullName.Contains("+");
-                        shouldSet = isState;
-                    }
-
-                    if (shouldSet)
-                    {
-                        newInstanceProperty.SetValue(newInstance, oldPropertyValue);
-                        var type = newInstanceProperty.PropertyType.Name;
-                        var value = oldPropertyValue;
-
-                        if (isState)
-                        {
-                            type = newInstanceProperty.PropertyType.FullName.Replace("+", ".");
-                            var nameField = newInstanceProperty.PropertyType.GetField("Name");
-                            if (nameField != null)
-                            {
-                                value = nameField.GetValue(value);
-                            }
-                        }
-
-                        AddValueToDto(addObjectDto, newInstanceProperty.Name, type, value);
-                    }
-                }
-            }
-
-            if (nosForCopiedObject != null)
-            {
-                foreach (var instruction in nosForCopiedObject.InstructionSaves)
-                {
-                    if (instruction.Member != "X" && instruction.Member != "Y")
-                    {
-                        addObjectDto.InstructionSaves.Add(instruction);
-                    }
-                }
-            }
-
-            #endregion
-
-
-            // do we need to add the new NOS to the current element? Or do we rely on the game to tell us that? Need to test/decide this....
-            // Update - The game will eventually refresh this whenever the selection changes, but we do want to 
-            var currentElement = EditingManager.Self.CurrentGlueElement;
-            if (currentElement != null)
-            {
-                if (currentElement.NamedObjects.Contains(nosForCopiedObject))
-                {
-                    currentElement.NamedObjects.Add(addObjectDto);
-                }
-                else
-                {
-                    var container = currentElement.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nosForCopiedObject));
-                    if (container != null)
-                    {
-                        container.ContainedObjects.Add(addObjectDto);
-                    }
-                }
-            }
-
-            addDtoList.Add(addObjectDto);
-
-            return newInstance;
-        }
-
-        public FlatRedBall.PositionedObject CreateInstanceByGame(string entityGameType, float x, float y, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newName = GetNameFor(entityGameType);
-
-            var toReturn = CreateEntity(entityGameType);
-            toReturn.X = x;
-            toReturn.Y = y;
-            toReturn.Name = newName;
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.Entity;
-            // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = CommandReceiver.GameElementTypeToGlueElement(entityGameType);
-
-            AddFloatValue(addObjectDto, "X", x);
-            AddFloatValue(addObjectDto, "Y", y);
-
-            //var fields = toReturn.GetType().GetFields();
-
-
-
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return toReturn;
-        }
-
-        public Circle HandleCreateCircleByGame(Circle originalCircle, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newCircle = originalCircle.Clone();
-            var newName = GetNameFor("Circle");
-
-            newCircle.Visible = originalCircle.Visible;
-            newCircle.Name = newName;
-
-            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(newCircle))
-            {
-                ShapeManager.AddCircle(newCircle);
-            }
-            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newCircle);
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.InstanceName = newName;
-            addObjectDto.CopyOriginalName = copiedObjectName;
-            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Circle";
-
-            AddFloatValue(addObjectDto, "X", newCircle.X);
-            AddFloatValue(addObjectDto, "Y", newCircle.Y);
-            AddFloatValue(addObjectDto, "Radius", newCircle.Radius);
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return newCircle;
-        }
-
-        public AxisAlignedRectangle HandleCreateAxisAlignedRectangleByGame(AxisAlignedRectangle originalRectangle, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newRectangle = originalRectangle.Clone();
-            var newName = GetNameFor("Rectangle");
-
-            newRectangle.Visible = originalRectangle.Visible;
-            newRectangle.Name = newName;
-
-
-            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(originalRectangle))
-            {
-                ShapeManager.AddAxisAlignedRectangle(newRectangle);
-            }
-            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newRectangle);
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.CopyOriginalName = copiedObjectName;
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.AxisAlignedRectangle";
-
-            AddFloatValue(addObjectDto, "X", newRectangle.X);
-            AddFloatValue(addObjectDto, "Y", newRectangle.Y);
-            AddFloatValue(addObjectDto, "Width", newRectangle.Width);
-            AddFloatValue(addObjectDto, "Height", newRectangle.Height);
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return newRectangle;
-        }
-
-        public Polygon HandleCreatePolygonByGame(Polygon originalPolygon, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newPolygon = originalPolygon.Clone();
-            var newName = GetNameFor("Polygon");
-
-            newPolygon.Visible = originalPolygon.Visible;
-            newPolygon.Name = newName;
-
-            if (ShapeManager.AutomaticallyUpdatedShapes.Contains(originalPolygon))
-            {
-                ShapeManager.AddPolygon(newPolygon);
-            }
-            InstanceLogic.Self.ShapesAddedAtRuntime.Add(newPolygon);
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.CopyOriginalName = copiedObjectName;
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            // todo - need to eventually include sub namespaces for entities in folders
-            addObjectDto.SourceClassType = "FlatRedBall.Math.Geometry.Polygon";
-
-            AddFloatValue(addObjectDto, "X", newPolygon.X);
-            AddFloatValue(addObjectDto, "Y", newPolygon.Y);
-
-            AddValueToDto(addObjectDto, "Points", typeof(List<Point>).ToString(),
-                Newtonsoft.Json.JsonConvert.SerializeObject(newPolygon.Points.ToList()));
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return newPolygon;
-        }
-
-        public Sprite HandleCreateSpriteByName(Sprite originalSprite, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newSprite = originalSprite.Clone();
-            var newName = GetNameFor("Sprite");
-
-            newSprite.Name = newName;
-
-            if (SpriteManager.AutomaticallyUpdatedSprites.Contains(originalSprite))
-            {
-                SpriteManager.AddSprite(newSprite);
-            }
-            InstanceLogic.Self.SpritesAddedAtRuntime.Add(newSprite);
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.CopyOriginalName = copiedObjectName;
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            addObjectDto.SourceClassType = "FlatRedBall.Sprite";
-
-            AddFloatValue(addObjectDto, "X", newSprite.X);
-            AddFloatValue(addObjectDto, "Y", newSprite.Y);
-            if (newSprite.TextureScale > 0)
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.TextureScale), newSprite.TextureScale);
-            }
-            else
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.Width), newSprite.Width);
-                AddFloatValue(addObjectDto, nameof(newSprite.Height), newSprite.Height);
-            }
-
-
-            if (newSprite.Texture != null)
-            {
-                // Texture must be assigned before pixel values.
-                AddValueToDto(addObjectDto, "Texture", typeof(Microsoft.Xna.Framework.Graphics.Texture2D).FullName,
-                    newSprite.Texture.Name);
-
-                // Glue uses the pixel coords, but we can check the coordinates more easily
-                if (newSprite.LeftTextureCoordinate != 0)
-                {
-                    AddFloatValue(addObjectDto, nameof(newSprite.LeftTexturePixel), newSprite.LeftTexturePixel);
-                }
-                if (newSprite.TopTextureCoordinate != 0)
-                {
-                    AddFloatValue(addObjectDto, nameof(newSprite.TopTexturePixel), newSprite.TopTexturePixel);
-                }
-                if (newSprite.RightTextureCoordinate != 1)
-                {
-                    AddFloatValue(addObjectDto, nameof(newSprite.RightTexturePixel), newSprite.RightTexturePixel);
-                }
-                if (newSprite.BottomTextureCoordinate != 1)
-                {
-                    AddFloatValue(addObjectDto, nameof(newSprite.BottomTexturePixel), newSprite.BottomTexturePixel);
-                }
-            }
-            if (newSprite.AnimationChains?.Name != null)
-            {
-                AddValueToDto(addObjectDto, "AnimationChains", typeof(FlatRedBall.Graphics.Animation.AnimationChainList).FullName,
-                    newSprite.AnimationChains.Name);
-            }
-            if (!string.IsNullOrEmpty(newSprite.CurrentChainName))
-            {
-                AddStringValue(addObjectDto, "CurrentChainName", newSprite.CurrentChainName);
-            }
-            if (newSprite.TextureAddressMode != Microsoft.Xna.Framework.Graphics.TextureAddressMode.Clamp)
-            {
-                AddValueToDto(addObjectDto, nameof(newSprite.TextureAddressMode),
-                    nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode), (int)newSprite.TextureAddressMode);
-            }
-            if (newSprite.Red != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.Red), newSprite.Red);
-            }
-            if (newSprite.Green != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.Green), newSprite.Green);
-            }
-            if (newSprite.Blue != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.Blue), newSprite.Blue);
-            }
-            if (newSprite.Alpha != 1.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newSprite.Alpha), newSprite.Alpha);
-            }
-            if (newSprite.ColorOperation != ColorOperation.Texture)
-            {
-                AddValueToDto(addObjectDto, nameof(newSprite.ColorOperation),
-                    nameof(ColorOperation), (int)newSprite.ColorOperation);
-            }
-            if (newSprite.BlendOperation != BlendOperation.Regular)
-            {
-                AddValueToDto(addObjectDto, nameof(newSprite.BlendOperation),
-                    nameof(BlendOperation), (int)newSprite.BlendOperation);
-            }
-
-            // do we want to consider animated sprites? Does it matter?
-            // An animation could flip this and that would incorrectly set
-            // that value on Glue but if it's animated that would get overwritten anyway, so maybe it's no biggie?
-            if (newSprite.FlipHorizontal != false)
-            {
-                AddValueToDto(addObjectDto, nameof(newSprite.FlipHorizontal),
-                    "bool", newSprite.FlipHorizontal);
-            }
-            if (newSprite.FlipVertical != false)
-            {
-                AddValueToDto(addObjectDto, nameof(newSprite.FlipVertical),
-                    "bool", newSprite.FlipVertical);
-            }
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return newSprite;
-        }
-
-        public Text HandleCreateTextByName(Text originalText, string copiedObjectName, List<Dtos.AddObjectDto> addDtoList)
-        {
-            var newText = originalText.Clone();
-            var newName = GetNameFor("Text");
-
-            newText.Name = newName;
-            if (TextManager.AutomaticallyUpdatedTexts.Contains(originalText))
-            {
-                TextManager.AddText(newText);
-            }
-            InstanceLogic.Self.TextsAddedAtRuntime.Add(newText);
-
-            #region Create the AddObjectDto for the new object
-
-            var addObjectDto = new Dtos.AddObjectDto();
-            addObjectDto.CopyOriginalName = copiedObjectName;
-            addObjectDto.InstanceName = newName;
-            addObjectDto.SourceType = Models.SourceType.FlatRedBallType;
-            addObjectDto.SourceClassType = typeof(FlatRedBall.Graphics.Text).FullName;
-
-            AddFloatValue(addObjectDto, "X", newText.X);
-            AddFloatValue(addObjectDto, "Y", newText.Y);
-
-            AddValueToDto(addObjectDto, nameof(Text.DisplayText), "string", newText.DisplayText);
-
-            AddValueToDto(addObjectDto, nameof(Text.HorizontalAlignment), nameof(HorizontalAlignment), (int)newText.HorizontalAlignment);
-            AddValueToDto(addObjectDto, nameof(Text.VerticalAlignment), nameof(VerticalAlignment), (int)newText.VerticalAlignment);
-
-            if (newText.Red != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newText.Red), newText.Red);
-            }
-            if (newText.Green != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newText.Green), newText.Green);
-            }
-            if (newText.Blue != 0.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newText.Blue), newText.Blue);
-            }
-            if (newText.Alpha != 1.0f)
-            {
-                AddFloatValue(addObjectDto, nameof(newText.Alpha), newText.Alpha);
-            }
-            if (newText.ColorOperation != ColorOperation.Texture)
-            {
-                AddValueToDto(addObjectDto, nameof(newText.ColorOperation),
-                    nameof(ColorOperation), (int)newText.ColorOperation);
-            }
-            if (newText.BlendOperation != BlendOperation.Regular)
-            {
-                AddValueToDto(addObjectDto, nameof(newText.BlendOperation),
-                    nameof(BlendOperation), (int)newText.BlendOperation);
-            }
-
-            #endregion
-
-            addDtoList.Add(addObjectDto);
-
-            return newText;
-        }
-
-        #endregion
 
         #region Delete Instance from Game
 
@@ -1304,10 +792,44 @@ namespace GlueControl
                     variableValue = (Microsoft.Xna.Framework.Graphics.TextureAddressMode)asLong;
                 }
             }
+            else if (
+                instruction.Type == typeof(FlatRedBall.Graphics.ColorOperation).Name ||
+                instruction.Type == typeof(FlatRedBall.Graphics.ColorOperation).FullName
+                )
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (FlatRedBall.Graphics.ColorOperation)asInt;
+                }
+                if (variableValue is long asLong)
+                {
+                    variableValue = (FlatRedBall.Graphics.ColorOperation)asLong;
+                }
+            }
 
             try
             {
-                FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                // special case X and Y if attached
+                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && instance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
+                {
+                    if (variableName == "X")
+                    {
+                        asPositionedObject.RelativeX = (float)variableValue;
+                    }
+                    else if (variableName == "Y")
+                    {
+                        asPositionedObject.RelativeY = (float)variableValue;
+                    }
+                    else if (variableName == "RotationZ")
+                    {
+                        asPositionedObject.RelativeRotationZ = (float)variableValue;
+                    }
+
+                }
+                else
+                {
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                }
             }
             catch (MemberAccessException)
             {

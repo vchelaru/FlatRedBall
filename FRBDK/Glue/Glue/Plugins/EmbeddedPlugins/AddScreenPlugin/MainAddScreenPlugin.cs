@@ -210,7 +210,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             if (shouldSave)
             {
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newScreen);
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newScreen);
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
@@ -243,7 +243,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         {
                             // todo - copy this to the new object
                             GlueCommands.Self.GluxCommands
-                                .CopyNamedObjectIntoElement(original, newScreen, save: false);
+                                .CopyNamedObjectIntoElement(original, newScreen, performSaveAndGenerateCode: false);
                         }
                     }
                 }

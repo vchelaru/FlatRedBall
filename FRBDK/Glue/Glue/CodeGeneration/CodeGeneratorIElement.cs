@@ -3,12 +3,13 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Parsing;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
     public class CodeGeneratorIElement
     {
-        private static void GenerateElement(GlueElement element)
+        private static async Task GenerateElement(GlueElement element)
         {
 #if DEBUG
             if(element == null)
@@ -17,18 +18,18 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 #endif
 
-            CodeWriter.GenerateCode(element);
+            await CodeWriter.GenerateCode(element);
         }
 
-        public static void GenerateElementAndDerivedCode(GlueElement baseElement)
+        public static async Task GenerateElementAndDerivedCode(GlueElement baseElement)
         {
-            GenerateElement(baseElement);
+            await GenerateElement(baseElement);
 
             var derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(baseElement);
 
             foreach (var element in derivedElements)
             {
-                GenerateElement(element);
+                await GenerateElement(element);
             }
         }
 

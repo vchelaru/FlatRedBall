@@ -19,6 +19,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         public Type Type;
         public MemberChangeEventHandler MemberChange;
         public Func<object> CustomGetMember;
+
         bool mIsReadOnly;
         public bool IsReadOnly
         {
@@ -156,6 +157,8 @@ namespace FlatRedBall.Glue.GuiDisplay
         List<PropertyGridMember> mNativePropertyGridMembers = new List<PropertyGridMember>();
         List<PropertyGridMember> mCustomPropertyGridMembers = new List<PropertyGridMember>();
 
+        public HashSet<string> ForcedReadOnlyProperties { get; private set; } = new HashSet<string>();
+
         List<string> mExcludedMembers = new List<string>();
 
 
@@ -249,13 +252,10 @@ namespace FlatRedBall.Glue.GuiDisplay
         }
 
 
-        protected List<PropertyGridMember> NativePropertyGridMembers
-        {
-            get
-            {
-                return mNativePropertyGridMembers;
-            }
-        }
+        protected List<PropertyGridMember> NativePropertyGridMembers => mNativePropertyGridMembers;
+        protected List<PropertyGridMember> CustomPropertyGridMembers => mCustomPropertyGridMembers;
+
+
 
         #endregion
 
@@ -540,7 +540,7 @@ namespace FlatRedBall.Glue.GuiDisplay
                         pgm.Type = propertyInfo.PropertyType;
 
                         pgm.SetAttributes(propertyInfo.GetCustomAttributes(true));
-                        pgm.IsReadOnly = propertyInfo.CanWrite == false;
+                        pgm.IsReadOnly = propertyInfo.CanWrite == false || ForcedReadOnlyProperties.Contains(propertyInfo.Name);
                         // Does this thing have a type converter set on the property?
                         TypeConverterAttribute attrib =
                             (TypeConverterAttribute)Attribute.GetCustomAttribute(propertyInfo,

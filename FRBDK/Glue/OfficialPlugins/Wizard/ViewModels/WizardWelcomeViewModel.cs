@@ -16,7 +16,7 @@ namespace OfficialPluginsCore.Wizard.ViewModels
             {
                 if(Set(value))
                 {
-                    if(TryParseJson<WizardData>(value, out WizardData deserialized))
+                    if(TryParseJson<WizardViewModel>(value, out WizardViewModel deserialized))
                     {
                         DeserializedObject = deserialized;
                     }
@@ -29,9 +29,9 @@ namespace OfficialPluginsCore.Wizard.ViewModels
             }
         }
 
-        public WizardData DeserializedObject
+        public WizardViewModel DeserializedObject
         {
-            get => Get<WizardData>();
+            get => Get<WizardViewModel>();
             private set => Set(value);
         }
 

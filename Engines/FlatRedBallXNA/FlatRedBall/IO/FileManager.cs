@@ -137,7 +137,16 @@ namespace FlatRedBall.IO
 #endif
                 if (mRelativeDirectoryDictionary.ContainsKey(threadID))
                 {
-                    return mRelativeDirectoryDictionary[threadID];
+                    // VERY rare, but possible:
+                    try
+                    {
+                        // the thread ID could go away inbetween the if.
+                        return mRelativeDirectoryDictionary[threadID];
+                    }
+                    catch
+                    {
+                        return DefaultRelativeDirectory;
+                    }
                 }
                 else
                 {
@@ -685,7 +694,7 @@ namespace FlatRedBall.IO
             if (i != -1)
             {
                 bool hasDotSlash = false;
-                if (i < fileName.Length + 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
+                if (i < fileName.Length - 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
                 {
                     hasDotSlash = true;
                 }
@@ -2218,7 +2227,11 @@ namespace FlatRedBall.IO
 
 		private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
 		{
-			destDirectory = FileManager.Standardize(destDirectory);
+            if(!System.IO.Directory.Exists(sourceDirectory))
+            {
+                throw new ArgumentException($"Could not find source directory {sourceDirectory}");
+            }
+            destDirectory = FileManager.Standardize(destDirectory);
 
 			if (!destDirectory.EndsWith(@"\") && !destDirectory.EndsWith(@"/"))
 			{

@@ -44,7 +44,10 @@ namespace GumPlugin.Managers
                     if (!string.IsNullOrEmpty(instanceName) && instanceName != "this")
                     {
                         var instance = element.Instances.FirstOrDefault(item => item.Name == instanceName);
-                        element = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
+                        if(instance != null)
+                        {
+                            element = Gum.Managers.ObjectFinder.Self.GetElementSave(instance);
+                        }
                     }
 
                     if(element != null)

@@ -28,15 +28,16 @@ namespace BuildServerUploaderConsole.Processes
 
         string GlueRegularBuildDestinationFolder =
             @"Glue\Glue\bin\x86\Debug\";
+
         // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
         string GluePublishDestinationFolder
         {
             get
             {
                 return DirectoryHelper.FrbdkDirectory + @"Glue\Glue\bin\DEBUG\win-x86\publish\";
-
             }
         }
+
 
         // I'd like to have all the tools sit in their own directories, but
         // this is a big change so I'm going to do it incrementally by moving
@@ -106,8 +107,11 @@ namespace BuildServerUploaderConsole.Processes
                 CopyDirectory(DirectoryHelper.FrbdkDirectory + xna4_0tool, "Copied " + xna4_0tool, subdirectory);
             }
 
-
-            CopyDirectory(GluePublishDestinationFolder, "Copied " + GluePublishDestinationFolder);
+            if(!System.IO.Directory.Exists(DirectoryHelper.GluePublishDestinationFolder))
+            {
+                throw new System.Exception($"The {nameof(DirectoryHelper.GluePublishDestinationFolder)} {DirectoryHelper.GluePublishDestinationFolder} doesn't exist but it should");
+            }
+            CopyDirectory(DirectoryHelper.GluePublishDestinationFolder, "Copied " + DirectoryHelper.GluePublishDestinationFolder);
             CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 
             FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);

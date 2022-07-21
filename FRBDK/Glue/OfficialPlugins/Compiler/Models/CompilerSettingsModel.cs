@@ -20,8 +20,14 @@ namespace OfficialPlugins.Compiler.Models
 
         public bool RestartScreenOnLevelContentChange { get; set; }
         public int PortNumber { get; set; } = 8021;
-        public bool ShowScreenBoundsWhenViewingEntities { get; set; } 
+        public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+
+        public bool ShowGrid { get; set; } = true;
         public decimal GridSize { get; set; } = 32;
+
+        public bool EnableSnapping { get; set; }
+        public decimal SnapSize { get; set; }
+        public decimal PolygonPointSnapSize { get; set; }
 
         public bool SetBackgroundColor { get; set; } = false;
         public int BackgroundRed { get; set; }
@@ -34,6 +40,10 @@ namespace OfficialPlugins.Compiler.Models
             EmbedGameInGameTab = true;
             ShowScreenBoundsWhenViewingEntities = true;
             RestartScreenOnLevelContentChange = true;
+
+            EnableSnapping = true;
+            SnapSize = 8;
+            PolygonPointSnapSize = 1;
         }
     }
 }

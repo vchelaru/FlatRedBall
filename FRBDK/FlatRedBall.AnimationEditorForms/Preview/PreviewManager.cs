@@ -15,6 +15,8 @@ using InputLibrary;
 using FlatRedBall.SpecializedXnaControls.Input;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.SpecializedXnaControls;
+using FlatRedBall.Math.Geometry;
+using FlatRedBall.Content.Math.Geometry;
 
 namespace FlatRedBall.AnimationEditorForms.Preview
 {
@@ -35,7 +37,9 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         RenderingLibrary.Graphics.Sprite mSprite;
         List<RenderingLibrary.Graphics.Sprite> mOnionSkinSprites = new List<RenderingLibrary.Graphics.Sprite>();
 
-        LineRectangle mRectangle;
+        List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
+
+        LineRectangle outlineRectangle;
 
         int mMaxWidth;
         int mMaxHeight;
@@ -66,24 +70,15 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         {
             get
             {
-                if (mSelf == null)
-                {
-                    mSelf = new PreviewManager();
-                }
+                if (mSelf == null) mSelf = new PreviewManager();
                 return mSelf;
             }
         }
 
         public int ZoomValue
         {
-            get
-            {
-                return cameraController.ZoomValue;
-            }
-            set
-            {
-                cameraController.ZoomValue = value;
-            }
+            get => cameraController.ZoomValue;
+            set => cameraController.ZoomValue = value;
         }
 
         public float OffsetMultiplier
@@ -175,24 +170,55 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         {
             mManagers.SpriteManager.Activity(TimeManager.Self.CurrentTime);
             MoveSpriteAccordingToAlignmentAndOffset(mSprite, SelectedState.Self.SelectedFrame);
-            UpdateRectangleToSprite();
-
+            UpdateOutlineRectangleToSprite();
+            DoShapeUpdateActivity();
             mManagers.Renderer.Draw(mManagers);
 
 
         }
 
-        private void UpdateRectangleToSprite()
+        private void DoShapeUpdateActivity()
+        {
+            // Event though we may not be rendering the main Sprite, we want to use the main Sprite's animation:
+            var animation = mSprite.Animation;
+
+            if (animation != null && mSprite.Animate)
+            {
+                int index = mSprite.Animation.CurrentFrameIndex;
+
+                float animationXOffset = 0;
+                float animationYOffset = 0;
+
+                AnimationChainSave chain = SelectedState.Self.SelectedChain;
+
+                AnimationFrameSave frame = null;
+
+                if (chain != null && chain.Frames.Count > index)
+                {
+                    if (frame == null)
+                    {
+                        frame = chain.Frames[index];
+                    }
+
+                    animationXOffset = frame.RelativeX * OffsetMultiplier;
+                    animationYOffset = frame.RelativeY * OffsetMultiplier;
+                }
+
+                UpdateShapesToFrame(frame);
+            }
+        }
+
+        private void UpdateOutlineRectangleToSprite()
         {
             
-            mRectangle.Width = mSprite.EffectiveWidth;
-            mRectangle.Height = mSprite.EffectiveHeight;
-            mRectangle.Color = WireframeManager.Self.OutlineColor;
-            mRectangle.Visible = mSprite.Visible;
+            outlineRectangle.Width = mSprite.EffectiveWidth;
+            outlineRectangle.Height = mSprite.EffectiveHeight;
+            outlineRectangle.Color = WireframeManager.Self.OutlineColor;
+            outlineRectangle.Visible = mSprite.Visible;
 
-            mRectangle.X = mSprite.X;
+            outlineRectangle.X = mSprite.X;
 
-            mRectangle.Y = mSprite.Y;
+            outlineRectangle.Y = mSprite.Y;
         }
 
         void HandleXnaInitialize()
@@ -203,15 +229,15 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mManagers.Renderer.SamplerState = SamplerState.PointClamp;
 
             mManagers.Name = "Preview Window Managers";
-            ShapeManager shapeManager = mManagers.ShapeManager;
+            var shapeManager = mManagers.ShapeManager;
 
             mSprite = new RenderingLibrary.Graphics.Sprite(null);
             mSprite.Name = "Animation PreviewManager Main Sprite";
 
-            mRectangle = new LineRectangle(mManagers);
-            mManagers.ShapeManager.Add(mRectangle);
+            outlineRectangle = new LineRectangle(mManagers);
+            mManagers.ShapeManager.Add(outlineRectangle);
             // Move it in front of the Sprite
-            mRectangle.Z = 1;
+            outlineRectangle.Z = 1;
 
             mManagers.SpriteManager.Add(mSprite);
 
@@ -309,6 +335,73 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         {
             ReactToAnimationChainSelected();
             UpdateSpriteToAnimationFrame();
+
+            UpdateShapes();
+        }
+
+        private void UpdateShapes()
+        {
+            var frame = AppState.Self.CurrentFrame;
+            UpdateShapesToFrame(frame);
+        }
+
+        private void UpdateShapesToFrame(AnimationFrameSave frame)
+        {
+            if (frame != null)
+            {
+                foreach (var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    LineRectangle rectangle = null;
+
+                    rectangle = frameRectangles.FirstOrDefault(possibleRectangle => possibleRectangle.Tag == frameAarectSave);
+
+                    if (rectangle == null)
+                    {
+                        rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(mManagers);
+                        rectangle.IsDotted = false;
+                        rectangle.Tag = frameAarectSave;
+                        mManagers.ShapeManager.Add(rectangle);
+                        frameRectangles.Add(rectangle);
+                    }
+
+                    rectangle.Width = frameAarectSave.ScaleX * 2;
+                    rectangle.Height = frameAarectSave.ScaleY * 2;
+                    rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX;
+                    rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
+                }
+
+                // todo - remove any rectangles not part of the frame
+                for (int i = frameRectangles.Count - 1; i > -1; i--)
+                {
+                    var frameRectangle = frameRectangles[i];
+
+                    var tag = frameRectangle.Tag;
+
+                    var isReferencedByCurrentFrame = false;
+
+                    if (tag is AxisAlignedRectangleSave tagAsRectangle)
+                    {
+                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                            .Contains(tagAsRectangle);
+                    }
+
+                    if (!isReferencedByCurrentFrame)
+                    {
+                        mManagers.ShapeManager.Remove(frameRectangle);
+                        frameRectangles.RemoveAt(i);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < frameRectangles.Count; i++)
+                {
+                    var rectangle = frameRectangles[i];
+                    mManagers.ShapeManager.Remove(rectangle);
+                }
+
+                frameRectangles.Clear();
+            }
         }
 
         public void ReactToAnimationChainSelected()
@@ -398,6 +491,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             if (SelectedState.Self.SelectedFrame != null)
             {
                 UpdateSpriteToAnimationFrame();
+                UpdateShapes();
             }
             else
             {

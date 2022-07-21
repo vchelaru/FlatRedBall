@@ -156,8 +156,8 @@ namespace FlatRedBall.Glue.SaveClasses
                 errorMessage = "There is already a file named\n\n" + directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension;
             }
             // TODO:  This currently checks for an exact match, but we should prevent different files (like a .emix and .scnx) from having the same name
-            else if (GlueState.Self.CurrentElement != null &&
-                GlueState.Self.CurrentElement.GetReferencedFileSaveRecursively(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
+            else if (element != null &&
+                element.GetReferencedFileSaveRecursively(directoryRelativeToContent + fileName + "." + resultAssetTypeInfo.Extension) != null)
             {
                 errorMessage = "There is already a file named " + fileName;
             }
@@ -180,7 +180,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // to the code that adds existing
                 // files now that we have a file and
                 // that's exactly what we're doing.
-                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option);
+                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element);
 
                 if (rfs == null && !userCancelled)
                 {
@@ -412,6 +412,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
                     otherGlueProjectSave.FixAllTypes();
+
                     ObjectFinder.Self.GlueProject = savedOld;
 
 

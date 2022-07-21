@@ -77,8 +77,12 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 return;
             }
-            ScreenSave screen = await CommandSender.GetCurrentInGameScreen();
-            if (screen == null)
+            GlueElement element = await CommandSender.GetCurrentInGameScreen();
+            if(element == null)
+            {
+                element = GlueState.Self.CurrentElement;
+            }
+            if (element == null)
             {
                 return;
             }
@@ -127,7 +131,7 @@ namespace OfficialPlugins.Compiler.Managers
                         FlatRedBall.Camera.CoordinateRelativity.RelativeToWorld);
 
                     RefreshManager.Self.ForcedNextObjectPosition = new System.Numerics.Vector2(worldX, worldY);
-                    var newTreeNode = await DragDropManager.Self.DropEntityOntoElement(entityToDrop, screen);
+                    var newTreeNode = await DragDropManager.Self.DropEntityOntoElement(entityToDrop, element);
                     newNamedObject = newTreeNode?.Tag as NamedObjectSave;
                 }
             }

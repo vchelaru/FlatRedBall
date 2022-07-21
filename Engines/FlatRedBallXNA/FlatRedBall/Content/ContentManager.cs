@@ -314,7 +314,10 @@ namespace FlatRedBall.Content
 				assetName = FileManager.MakeAbsolute(assetName);
 			}
 
+
 			assetName = FileManager.Standardize(assetName);
+
+			var assetNameNoExtension = FileManager.RemoveExtension(assetName);
 
 			string combinedName = assetName + typeof(T).Name;
 
@@ -327,7 +330,7 @@ namespace FlatRedBall.Content
 				return true;
 			}
 
-			else if (mAssets.ContainsKey(combinedName))
+			else if (mAssets.ContainsKey(assetNameNoExtension))
 			{
 				return true;
 			}
@@ -441,6 +444,11 @@ namespace FlatRedBall.Content
 
 			if (shouldCheckForXnb && !FileManager.FileExists(fileToCheckFor))
 			{
+				// Restore the old RelativeDirectory just in case the user intentionally 
+				// catches the exception and RelativeDirectory is left with an invalid path.
+				// This invalid path could make the next content load fail.
+				FileManager.RelativeDirectory = oldRelativePath;
+
 				string errorString = "Could not find the file " + fileToCheckFor + "\n";
 
 				throw new FileNotFoundException(errorString);
@@ -494,12 +502,12 @@ namespace FlatRedBall.Content
 
 
 			string fullNameWithType = assetName + typeof(T).Name;
-
+			string fullNameStandardizeWithType = FileManager.Standardize(assetName) + typeof(T).Name;
 
 			// get the dictionary by the contentManagerName.  If it doesn't exist, GetDisposableDictionaryByName
 			// will create it.
 
-			if (mDisposableDictionary.ContainsKey(fullNameWithType))
+			if (mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
 
 #if PROFILE
@@ -507,11 +515,11 @@ namespace FlatRedBall.Content
 					TimeManager.CurrentTime, typeof(T).Name, fullNameWithType, ContentLoadDetail.Cached));
 #endif
 
-				return ((T)mDisposableDictionary[fullNameWithType]);
+				return ((T)mDisposableDictionary[fullNameStandardizeWithType]);
 			}
-			else if (mNonDisposableDictionary.ContainsKey(fullNameWithType))
+			else if (mNonDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 			{
-				return ((T)mNonDisposableDictionary[fullNameWithType]);
+				return ((T)mNonDisposableDictionary[fullNameStandardizeWithType]);
 			}
 			else
 			{
@@ -796,9 +804,9 @@ namespace FlatRedBall.Content
 					lock (mDisposableDictionary)
 					{
 						// Multiple threads could try to load this content simultaneously
-						if (!mDisposableDictionary.ContainsKey(fullNameWithType))
+						if (!mDisposableDictionary.ContainsKey(fullNameStandardizeWithType))
 						{
-							mDisposableDictionary.Add(fullNameWithType, loadedAsset);
+							mDisposableDictionary.Add(fullNameStandardizeWithType, loadedAsset);
 						}
 					}
 				}
@@ -829,10 +837,13 @@ namespace FlatRedBall.Content
             }
         }
 
+        public override string ToString()
+        {
+			return $"{Name} with {mDisposableDictionary.Count} disposables, {mNonDisposableDictionary.Count} non disposables, {mAssets.Count} assets";
+        }
 
 
-
-		public void UnloadAsset<T>(T assetToUnload)
+        public void UnloadAsset<T>(T assetToUnload)
 		{
             #region Remove from non-disposables if the non-disposables containes the assetToUnload
 			if (this.mNonDisposableDictionary.ContainsValue(assetToUnload))
@@ -952,7 +963,7 @@ namespace FlatRedBall.Content
 
 #endregion
 
-#region Internal Methods
+		#region Internal Methods
 
 		// Vic says: I don't think we need this anymore
 		internal void RefreshTextureOnDeviceLost()
@@ -974,7 +985,7 @@ namespace FlatRedBall.Content
 			//kvp.Value.Clear();
 		}
 
-#endregion
+		#endregion
 
 #region Private Methods
 

@@ -11,6 +11,13 @@ using GlueControl.Models;
 namespace GlueControl.Dtos
 {
     #region UpdateCurrentElementDto (base class for updating element to game)
+    public class NamedObjectWithElementName
+    {
+        public string GlueElementName { get; set; }
+        public string ContainerName { get; set; }
+        public NamedObjectSave NamedObjectSave { get; set; }
+    }
+
     public class UpdateCurrentElementDto
     {
         public ScreenSave ScreenSave { get; set; }
@@ -19,6 +26,7 @@ namespace GlueControl.Dtos
         [JsonIgnore]
         public GlueElement GlueElement => (GlueElement)ScreenSave ?? EntitySave;
 
+        public List<NamedObjectWithElementName> NamedObjectsToUpdate { get; set; } = new List<NamedObjectWithElementName>();
     }
     #endregion
 
@@ -27,6 +35,17 @@ namespace GlueControl.Dtos
     {
         public string ElementNameGlue { get; set; }
         public List<string> ObjectNames { get; set; } = new List<string>();
+
+        public override string ToString()
+        {
+            string toReturn = $"Remove {ElementNameGlue}.";
+
+            foreach (var name in ObjectNames)
+            {
+                toReturn += name + ",";
+            }
+            return toReturn;
+        }
     }
     #endregion
 
@@ -52,6 +71,7 @@ namespace GlueControl.Dtos
     class SetEditMode
     {
         public bool IsInEditMode { get; set; }
+        public string AbsoluteGlueProjectFilePath { get; set; }
     }
     #endregion
 
@@ -72,6 +92,12 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region SelectPrevious/Next 
+
+    class SelectPreviousDto { }
+    class SelectNextDto { }
+
+    #endregion
 
     #region GoToDefinitionDto
 
@@ -86,7 +112,7 @@ namespace GlueControl.Dtos
         RecordOnly
     }
 
-    public class GlueVariableSetDataList
+    public class GlueVariableSetDataList : UpdateCurrentElementDto
     {
         public List<GlueVariableSetData> Data { get; set; } = new List<GlueVariableSetData>();
     }
@@ -176,16 +202,23 @@ namespace GlueControl.Dtos
 
     #region AddObjectDto
 
-    public class AddObjectDtoList
+    public class AddObjectDtoList : UpdateCurrentElementDto
     {
         public List<AddObjectDto> Data { get; set; } = new List<AddObjectDto>();
     }
 
-    public class AddObjectDto : NamedObjectSave
+    public class AddObjectDto : UpdateCurrentElementDto
     {
+        public NamedObjectSave NamedObjectSave { get; set; }
+
         public string CopyOriginalName { get; set; }
         public string ElementNameGame { get; set; }
         public bool SelectNewObject { get; set; }
+
+        public override string ToString()
+        {
+            return $"Add NOS {NamedObjectSave.InstanceName} ({NamedObjectSave.SourceClassType})";
+        }
     }
     #endregion
 
@@ -193,6 +226,11 @@ namespace GlueControl.Dtos
     public class AddObjectDtoResponse
     {
         public bool WasObjectCreated { get; set; }
+    }
+
+    public class AddObjectDtoListResponse
+    {
+        public List<AddObjectDtoResponse> Data { get; set; } = new List<AddObjectDtoResponse>();
     }
     #endregion
 
@@ -210,6 +248,10 @@ namespace GlueControl.Dtos
         public string ElementName { get; set; }
         public string ObjectName { get; set; }
         public string ContainerName { get; set; }
+        public override string ToString()
+        {
+            return $"Move {ElementName}.{ObjectName} to container {ContainerName}";
+        }
     }
     #endregion
 
@@ -321,7 +363,9 @@ namespace GlueControl.Dtos
     {
         public bool LoadInGlobalContent { get; set; }
         public List<string> ElementsContainingFile { get; set; }
+        public bool IsLocalizationDatabase { get; set; }
         public string StrippedFileName { get; set; }
+        public string FileRelativeToProject { get; set; }
     }
     #endregion
 
@@ -336,12 +380,18 @@ namespace GlueControl.Dtos
     public class GlueViewSettingsDto
     {
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
+
+        public bool ShowGrid { get; set; }
         public decimal GridSize { get; set; }
 
         public bool SetBackgroundColor { get; set; }
         public int BackgroundRed { get; set; }
         public int BackgroundGreen { get; set; }
         public int BackgroundBlue { get; set; }
+
+        public bool EnableSnapping { get; set; }
+        public decimal SnapSize { get; set; }
+        public decimal PolygonPointSnapSize { get; set; }
     }
     #endregion
 
@@ -363,5 +413,212 @@ namespace GlueControl.Dtos
     {
         public List<string> Commands { get; set; } = new List<string>();
     }
+    #endregion
+
+    #region Glue/XXXX/CommandsDto
+
+    public class GeneralResponse
+    {
+        public static GeneralResponse SuccessfulResponse => new GeneralResponse { Succeeded = true };
+        public static GeneralResponse UnsuccessfulResponse => new GeneralResponse { Succeeded = false };
+
+        public static GeneralResponse UnsuccessfulWith(string message) =>
+            new GeneralResponse { Succeeded = false, Message = message };
+
+        public bool Succeeded { get; set; }
+        public string Message { get; set; }
+
+        public void Fail(string failureMessage)
+        {
+            Succeeded = false;
+            Message = failureMessage;
+        }
+
+        public virtual void SetFrom(GeneralResponse generalResponse)
+        {
+            this.Succeeded = generalResponse.Succeeded;
+            this.Message = generalResponse.Message;
+        }
+
+    }
+
+    public class GeneralResponse<T> : GeneralResponse
+    {
+        public static new GeneralResponse<T> SuccessfulResponse => new GeneralResponse<T> { Succeeded = true };
+        public static new GeneralResponse<T> UnsuccessfulResponse => new GeneralResponse<T> { Succeeded = false };
+
+        public static new GeneralResponse<T> UnsuccessfulWith(string message) =>
+            new GeneralResponse<T> { Succeeded = false, Message = message };
+
+        public T Data { get; set; }
+
+        public GeneralResponse()
+        {
+            Data = default(T);
+        }
+
+        public override void SetFrom(GeneralResponse nonGenericResponse)
+        {
+            Data = default(T);
+
+            this.Succeeded = nonGenericResponse.Succeeded;
+            this.Message = nonGenericResponse.Message;
+        }
+
+        public GeneralResponse(GeneralResponse nonGenericResponse)
+        {
+            SetFrom(nonGenericResponse);
+        }
+
+    }
+
+    public class TypedParameter
+    {
+        public string Type { get; set; }
+        public object Value { get; set; }
+
+        public static TypedParameter FromValue(object value)
+        {
+            var toReturn = new TypedParameter();
+            toReturn.Type = GetFriendlyName(value?.GetType());
+            toReturn.Value = value;
+            return toReturn;
+        }
+
+        static string GetFriendlyName(Type type)
+        {
+            string friendlyName = type?.Name;
+            if (type?.IsGenericType == true)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
+        }
+    }
+
+    public class GlueElementReference
+    {
+        public string ElementNameGlue { get; set; }
+
+        public static GlueElementReference From(GlueElement element)
+        {
+            var toReturn = new GlueElementReference();
+
+            toReturn.ElementNameGlue = element.Name;
+
+            return toReturn;
+        }
+    }
+
+    public class NamedObjectSaveReference
+    {
+        public GlueElementReference GlueElementReference { get; set; }
+        public string NamedObjectName { get; set; }
+
+        public static NamedObjectSaveReference From(NamedObjectSave nos, GlueElement owner)
+        {
+            var nosReference = new NamedObjectSaveReference();
+            nosReference.NamedObjectName = nos.InstanceName;
+            nosReference.GlueElementReference = new GlueElementReference();
+            nosReference.GlueElementReference.ElementNameGlue = owner.Name;
+
+            return nosReference;
+        }
+    }
+
+    public class NosReferenceVariableAssignment
+    {
+        public NamedObjectSaveReference NamedObjectSave;
+        public string VariableName;
+        public TypedParameter Value;
+    }
+
+    public class FacadeCommandBase : RespondableDto
+    {
+        public string Method { get; set; }
+        public string GetPropertyName { get; set; }
+        public string SetPropertyName { get; set; }
+        public List<object> Parameters { get; set; } = new List<object>();
+        public Dictionary<string, string> CorrectTypeForParameters = new Dictionary<string, string>();
+
+        public override string ToString()
+        {
+            string toReturn = GetType().Name + " " + (Method ?? GetPropertyName ?? SetPropertyName);
+
+            foreach (var param in Parameters)
+            {
+                toReturn += " " + SummaryFor(param);
+            }
+
+            return toReturn;
+        }
+
+        string SummaryFor(object type)
+        {
+            if (type is Newtonsoft.Json.Linq.JObject jobject)
+            {
+                var elementReference = jobject.ToObject<GlueElementReference>();
+                if (elementReference.ElementNameGlue != null)
+                {
+                    return $"{elementReference.ElementNameGlue}";
+                }
+
+                var nosReference = jobject.ToObject<NamedObjectSaveReference>();
+                if (nosReference.GlueElementReference?.ElementNameGlue != null)
+                {
+                    return $"{nosReference.GlueElementReference.ElementNameGlue}.{nosReference.NamedObjectName}";
+                }
+
+                var typedParameter = jobject.ToObject<TypedParameter>();
+                if (typedParameter.Type != null)
+                {
+                    return $"{typedParameter.Type} {typedParameter.Value}";
+                }
+            }
+
+            return type?.ToString();
+        }
+    }
+
+    public class GlueCommandDto : FacadeCommandBase { }
+    public class GluxCommandDto : FacadeCommandBase 
+    {
+        public bool EchoToGame { get; set; } = false;
+    }
+    public class GlueStateDto : FacadeCommandBase { }
+    public class GenerateCodeCommandDto : FacadeCommandBase { }
+    public class RefreshCommandDto : FacadeCommandBase { }
+
+
+    #endregion
+
+
+    #region Base DTOs/Utilities
+
+    public class ResponseWithContentDto : RespondableDto
+    {
+        public string Content { get; set; }
+    }
+
+    public class RespondableDto
+    {
+        public int Id { get; set; }
+        public int OriginalDtoId { get; set; }
+    }
+
+
     #endregion
 }

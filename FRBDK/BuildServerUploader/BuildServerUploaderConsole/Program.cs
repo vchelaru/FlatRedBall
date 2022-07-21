@@ -23,9 +23,6 @@ namespace BuildServerUploaderConsole
 
         static void Main(string[] args)
         {
-            // We used to send emails on an error
-            // but now the build server does this automatically
-            // so we don't have to.
             FileManager.PreserveCase = true;
 
             _defaultDirectory = Directory.GetCurrentDirectory();
@@ -50,6 +47,7 @@ namespace BuildServerUploaderConsole
                         CreateCopyToTemplatesSteps();
                         break;
                     case CommandLineCommands.Upload:
+                        // The build type will be "Monthly", "Weekly" or the default of daily build (null)
                         CreateUploadProcessSteps(args[1]);
                         break;
                     case "":
@@ -68,6 +66,7 @@ namespace BuildServerUploaderConsole
                 //ProcessSteps.Add(new CreateChangeVersionProcessSteps());
                 CreateChangeVersionProcessSteps();
 
+                CreateUploadProcessSteps(null);
 
                 //CreateCopyToInstallerSteps(true);
             }

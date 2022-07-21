@@ -278,7 +278,7 @@ namespace TiledPluginCore.Controllers
 
         #region Glue Project
 
-        private void GenerateScreensForAllTmxFiles()
+        private async void GenerateScreensForAllTmxFiles()
         {
             var tmxFiles = GetAllLevelTmxFiles();
 
@@ -298,7 +298,7 @@ namespace TiledPluginCore.Controllers
                     newScreen.IsHiddenInTreeView = viewModel.ShowLevelScreensInTreeView == false;
                     newScreen.BaseScreen = "Screens\\GameScreen";
 
-                    GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
+                    await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
                     newScreen.UpdateFromBaseType();
 
 
@@ -339,7 +339,7 @@ namespace TiledPluginCore.Controllers
             }
         }
 
-        internal void HandleRenameScreenClicked()
+        internal async void HandleRenameScreenClicked()
         {
             TextInputWindow tiw = new TextInputWindow();
             tiw.Message = "Enter new TMX name";
@@ -388,8 +388,9 @@ namespace TiledPluginCore.Controllers
                         whyScreenNameIsntValid);
                 }
                 else
+
                 {
-                    currentScreen.RenameElement(desiredScreenNameWithoutScreenPrefix);
+                    await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(currentScreen, desiredScreenNameWithoutScreenPrefix);
 
 
                     GlueCommands.Self.FileCommands.RenameReferencedFileSave(rfs, tiw.Result);

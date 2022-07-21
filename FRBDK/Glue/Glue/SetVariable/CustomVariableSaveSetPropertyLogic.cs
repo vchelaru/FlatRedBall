@@ -118,22 +118,51 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (nos != null)
                     {
-                        CustomVariableInNamedObject cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
+                        var cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
 
-                        // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
-                        // need to do anything.
-                        if (cvino != null)
+                        var variableDefinition = nos.GetAssetTypeInfo()
+                            .VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+
+                        if (variableDefinition?.CustomVariableSet != null)
                         {
-                            if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                            variableDefinition.CustomVariableSet(
+                                element, nos, customVariable.Name, customVariable.DefaultValue);
+                        }
+                        else
+                        {
+                            // If the cvino is null, that means that the NOS doesn't have this exposed, so we don't
+                            // need to do anything.
+                            // Update June 12, 2022
+                            // Actually, if we don't
+                            // set this, then changing
+                            // the tunneled value will not
+                            // change the SourceObject value
+                            // which can cause confusion.
+
+
+
+                            if (cvino != null)
                             {
-                                cvino.Value = customVariable.DefaultValue;
+                                if (string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                                {
+                                    cvino.Value = customVariable.DefaultValue;
+                                }
+                                else
+                                {
+                                    cvino.Value = null;
+                                }
                             }
                             else
                             {
-                                cvino.Value = null;
+                                // This is a new add June 12, 2022. Not sure if we should globally
+                                // add this value, or if it should only be for NOS's which have an ATI
+                                // with a variable definition. Let's be safe and require ATIs for now:
+                                if (variableDefinition != null)
+                                {
+                                    GlueCommands.Self.GluxCommands.SetVariableOn(nos, customVariable.SourceObjectProperty, customVariable.DefaultValue, false, false);
+                                }
                             }
                         }
-
                     }
                 }
 
@@ -274,7 +303,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 // If the type changed, the Property Grid needs to be re-made so that the new
                 // grid will have the right type for the DefaultValue cell:
-                PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
             }
             #endregion

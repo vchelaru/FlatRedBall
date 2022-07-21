@@ -29,6 +29,16 @@
     <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
     <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
+    <Compile Remove="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueState.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
+    <Compile Remove="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <Compile Remove="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
@@ -41,7 +51,13 @@
     <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
     <Compile Remove="Compiler\Embedded\Models\CustomVariable.cs" />
     <Compile Remove="Compiler\Embedded\Models\GlueElement.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueElementFileReference.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueProjectSave.cs" />
+    <Compile Remove="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
+    <Compile Remove="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
+    <Compile Remove="Compiler\Embedded\Models\INamedObjectContainer.cs" />
     <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
+    <Compile Remove="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
     <Compile Remove="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <Compile Remove="Compiler\Embedded\Runtime\DynamicEntity.cs" />
@@ -81,6 +97,9 @@
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
     <None Remove="ErrorPlugin\Icons\Refresh.png" />
+    <None Remove="PointEditingPlugin\Content\AddRectanglePoints.png" />
+    <None Remove="PointEditingPlugin\Content\MoveDown.png" />
+    <None Remove="PointEditingPlugin\Content\MoveUp.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Gum Project.png" />
@@ -115,6 +134,7 @@
     <None Remove="TreeViewPlugin\Content\icon_entity_list.png" />
     <None Remove="TreeViewPlugin\Content\icon_event.png" />
     <None Remove="TreeViewPlugin\Content\icon_file_standard.png" />
+    <None Remove="TreeViewPlugin\Content\icon_file_wildcard.png" />
     <None Remove="TreeViewPlugin\Content\icon_folder.png" />
     <None Remove="TreeViewPlugin\Content\icon_folder_open.png" />
     <None Remove="TreeViewPlugin\Content\icon_forward.png" />
@@ -124,6 +144,9 @@
     <None Remove="TreeViewPlugin\Content\icon_screen_startup.png" />
     <None Remove="TreeViewPlugin\Content\icon_state.png" />
     <None Remove="TreeViewPlugin\Content\icon_variable.png" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
+    <None Remove="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <None Remove="Wizard\Icons\action_forms.png" />
     <None Remove="Wizard\Icons\action_platformer.png" />
     <None Remove="Wizard\Icons\action_project.png" />
@@ -141,6 +164,15 @@
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\EditorVisuals.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueState.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
@@ -152,11 +184,21 @@
     <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\CustomVariable.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\GlueElement.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueElementFileReference.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSave.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\INamedObjectContainer.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
+    <EmbeddedResource Include="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <Resource Include="Compiler\Icons\Edit.png" />
     <Resource Include="Compiler\Icons\EditDeselected.png" />
     <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />
@@ -181,6 +223,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.NetCore3_0.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
     <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
     <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
@@ -205,6 +249,9 @@
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
+    <Resource Include="PointEditingPlugin\Content\AddRectanglePoints.png" />
+    <Resource Include="PointEditingPlugin\Content\MoveDown.png" />
+    <Resource Include="PointEditingPlugin\Content\MoveUp.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Gum Project.png" />
@@ -239,6 +286,7 @@
     <Resource Include="TreeViewPlugin\Content\icon_entity_list.png" />
     <Resource Include="TreeViewPlugin\Content\icon_event.png" />
     <Resource Include="TreeViewPlugin\Content\icon_file_standard.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_file_wildcard.png" />
     <Resource Include="TreeViewPlugin\Content\icon_folder.png" />
     <Resource Include="TreeViewPlugin\Content\icon_folder_open.png" />
     <Resource Include="TreeViewPlugin\Content\icon_forward.png" />

@@ -22,6 +22,7 @@ using FlatRedBall.Glue.FormHelpers;
 using System.Windows.Forms;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -203,7 +204,7 @@ namespace FlatRedBallAddOns.Entities
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
         }
 
-        public static void GenerateCode(GlueElement element)
+        public static async Task GenerateCode(GlueElement element)
         {
 
             #region Prepare for generation
@@ -282,7 +283,7 @@ namespace FlatRedBallAddOns.Entities
             var codeBlock = GenerateClassHeader(element, namespaceBlock);
 
 
-            GenerateFields(element, codeBlock);
+            GenerateFieldsAndProperties(element, codeBlock);
 
             GenerateConstructors(element, codeBlock);
 
@@ -339,7 +340,7 @@ namespace FlatRedBallAddOns.Entities
                     var isAbstract = entitySave.AllNamedObjects.Any(item => item.SetByDerived);
                     if(!isAbstract)
                     {
-                        FactoryCodeGenerator.UpdateFactoryClass(entitySave);
+                        FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
                     }
                 }
 
@@ -371,7 +372,7 @@ namespace FlatRedBallAddOns.Entities
 
             // This code will create and add above, but if the file already exists, the code above won't re-add it to the 
             // project. This is a last chance to add it if necessary:
-            GlueCommands.Self.ProjectCommands.TryAddCodeFileToProject(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
+            await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
         }
 
         public static void GenerateDefines(ICodeBlock rootBlock)
@@ -653,7 +654,7 @@ namespace FlatRedBallAddOns.Entities
             NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
         }
 
-        internal static ICodeBlock GenerateFields(IElement glueElement, ICodeBlock codeBlock)
+        internal static ICodeBlock GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
         {
             if(glueElement is EntitySave)
             {
@@ -911,6 +912,13 @@ namespace FlatRedBallAddOns.Entities
 
             #region Call PostInitialize *again* if this is a pooled, base Entity
 
+            // May 24, 2022
+            // This code is quite
+            // old, but I believe this
+            // is necessary because it re-initializes
+            // the entity after being destroyed. "old" recycled
+            // entities may have their internal objects shifted around,
+            // so a post-init will reset them. 
             FactoryCodeGenerator.CallPostInitializeIfNecessary(saveObject, currentBlock);
 
 
@@ -1911,6 +1919,9 @@ namespace FlatRedBallAddOns.Entities
 
         public static void GeneratePostInitialize(ICodeBlock codeBlock, IElement saveObject)
         {
+            // PostInitialize is a method which can be called multiple times if an entity is pooled. Therefore, any "add" calls here must
+            // be protected with if-checks.
+
             var currentBlock = codeBlock;
             bool inheritsFromElement = saveObject.InheritsFromElement();
             currentBlock = currentBlock

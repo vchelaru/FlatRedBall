@@ -443,25 +443,34 @@ namespace FlatRedBall.Glue
             }
         }
         
+        /// <summary>
+        /// Removes the argument item from all projects (main and synced) if the item is present in the project.
+        /// If so, and if performSaved is true, projects are saved after removal.
+        /// </summary>
+        /// <param name="itemName">The item name, either realtive to the project or absolute.</param>
+        /// <param name="performSave">Whether to save after removal.</param>
         internal static void RemoveItemFromAllProjects(string itemName, bool performSave)
         {
-            mProjectBase.RemoveItem(itemName);
+            var wasRemoved = mProjectBase.RemoveItem(itemName);
             if (mProjectBase.ContentProject != null)
             {
-                mProjectBase.ContentProject.RemoveItem(itemName);
+                var wasRemovedContent = mProjectBase.ContentProject.RemoveItem(itemName);
+                wasRemoved |= wasRemovedContent;
             }
             // We want to make this absolute so that we can pass the same arugment to the projects and each will standardize appropriately
             string absoluteName = mProjectBase.MakeAbsolute(itemName);
             foreach (ProjectBase project in SyncedProjects)
             {
-                project.RemoveItem(absoluteName);
+                var wasRemovedSynced = project.RemoveItem(absoluteName);
+                wasRemoved |= wasRemovedSynced;
                 if (project.ContentProject != null)
                 {
-                    project.ContentProject.RemoveItem(itemName);
+                    var wasRemovedSyncedContent = project.ContentProject.RemoveItem(itemName);
+                    wasRemoved |= wasRemovedSyncedContent;
                 }
             }
 
-            if (performSave)
+            if (performSave && wasRemoved)
             {
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
@@ -584,21 +593,6 @@ namespace FlatRedBall.Glue
         public static bool UpdateFileMembershipInProject(ReferencedFileSave referencedFileSave)
         {
             return GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
-        }
-
-        /// <summary>
-        /// Adds the argument fileRelativeToProject to the argument project if it's not already part of the project.
-        /// </summary>
-        /// <param name="project"></param>
-        /// <param name="fileRelativeToProject"></param>
-        /// <param name="useContentPipeline">Whether this file must be part of the content pipeline. See internal notes on this variable.</param>
-        /// <param name="shouldLink"></param>
-        /// <param name="parentFile"></param>
-        /// <returns>Whether the file was added.</returns>
-        [Obsolete("Use GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject")]
-        public static bool UpdateFileMembershipInProject(VisualStudioProject project, string fileRelativeToProject, bool useContentPipeline, bool shouldLink, string parentFile = null)
-        {
-            return GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(project, fileRelativeToProject, useContentPipeline, shouldLink, parentFile);
         }
         
         #endregion

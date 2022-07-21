@@ -19,9 +19,9 @@ namespace OfficialPlugins.Compiler.Managers
         PluginTab glueViewSettingsTab;
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
-        MainControl mainControl;
+        BuildTabView mainControl;
         GameHostView gameHostView;
-        public void Initialize(GameHostView gameHostView, MainControl mainControl, 
+        public void Initialize(GameHostView gameHostView, BuildTabView mainControl, 
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
             PluginTab glueViewSettingsTab)
         {
@@ -212,6 +212,10 @@ namespace OfficialPlugins.Compiler.Managers
                     if (runResponse.Succeeded)
                     {
                         compilerViewModel.IsEditChecked = true;
+                    }
+                    else
+                    {
+                        GlueCommands.Self.PrintError(runResponse.Message);
                     }
                     succeeded = runResponse.Succeeded;
                 }

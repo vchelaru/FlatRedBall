@@ -11,8 +11,9 @@ namespace OfficialPlugins.VariableDisplay
     {
         static int RefreshesToSkip = 0;
 
-        internal static void RefreshGrid(DataUiGrid grid)
+        internal static void RefreshGrid(DataUiGrid grid = null)
         {
+            grid = grid ?? MainPropertyGridPlugin.VariableGrid.DataUiGrid;
             if (RefreshesToSkip > 0)
             {
                 RefreshesToSkip--;

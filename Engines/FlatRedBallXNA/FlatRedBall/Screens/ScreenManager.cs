@@ -11,6 +11,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using System.Linq;
+using Microsoft.Xna.Framework.Content;
 #if !SILVERLIGHT
 #endif
 
@@ -113,6 +114,11 @@ namespace FlatRedBall.Screens
             get; private set;
         } = new PositionedObjectList<AxisAlignedRectangle>();
 
+        public static PositionedObjectList<Polygon> PersistentPolygons
+        {
+            get; private set;
+        } = new PositionedObjectList<Polygon>();
+
         public static PositionedObjectList<Line> PersistentLines
         {
             get; private set;
@@ -140,11 +146,19 @@ namespace FlatRedBall.Screens
 		}
 		
         /// <summary>
-        /// Event to run before a screen's CustomInitialize is run, allowing systems (like the level editor) to
+        /// Event raised before a screen's CustomInitialize is called, allowing systems (like the level editor) to
         /// run code before the user's custom code.
         /// </summary>
         public static event Action<Screen> BeforeScreenCustomInitialize;
         public static event Action<Screen> ScreenLoaded;
+
+        /// <summary>
+        /// Event raised after a screen's Destroy is called.
+        /// </summary>
+        /// <remarks>
+        /// This is called before checking for leftover objects (such as Entities which haven't been destroyed).
+        /// </remarks>
+        public static event Action<Screen> AfterScreenDestroyed;
 
         #region Methods
 
@@ -215,6 +229,8 @@ namespace FlatRedBall.Screens
                 // destroy. Now we want to call Destroy on the screen first
                 // in case Destroy happens to change the time factor:
                 mCurrentScreen.Destroy();
+
+                AfterScreenDestroyed?.Invoke(mCurrentScreen);
 
                 mWasFixedTimeStep = FlatRedBallServices.Game.IsFixedTimeStep;
                 mLastTimeFactor = TimeManager.TimeFactor;
@@ -559,31 +575,25 @@ namespace FlatRedBall.Screens
                 #region Automatically updated Sprites
                 if (SpriteManager.AutomaticallyUpdatedSprites.Count != 0)
                 {
-                    int spriteCount = SpriteManager.AutomaticallyUpdatedSprites.Count;
+                    var remainingSprites = SpriteManager.AutomaticallyUpdatedSprites.ToList();
+                    remainingSprites.RemoveAll(item => mPersistentSpriteFrames.Any(frame => frame.IsSpriteComponentOfThis(item)));
+                    remainingSprites.RemoveAll(item => PersistentSprites.Contains(item));
 
-                    foreach (var spriteFrame in mPersistentSpriteFrames)
-                    {
-                        foreach (Sprite sprite in SpriteManager.AutomaticallyUpdatedSprites)
-                        {
-                            if (spriteFrame.IsSpriteComponentOfThis(sprite))
-                            {
-                                spriteCount--;
-                            }
-                        }
-                    }
-
-                    foreach(var sprite in PersistentSprites)
-                    {
-                        if(sprite.ListsBelongingTo.Contains(SpriteManager.mAutomaticallyUpdatedSprites))
-                        {
-                            spriteCount--;
-                        }
-                    }
+                    int spriteCount = remainingSprites.Count;
 
                     if (spriteCount != 0)
                     {
-                        messages.Add("There are " + spriteCount +
-                            " AutomaticallyUpdatedSprites in the SpriteManager. See \"FlatRedBall.SpriteManager.AutomaticallyUpdatedSprites\"");
+                        var message = "There are " + spriteCount +
+                            " AutomaticallyUpdatedSprites in the SpriteManager. See \"FlatRedBall.SpriteManager.AutomaticallyUpdatedSprites\"";
+
+                        var first = remainingSprites.FirstOrDefault();
+
+                        if(first != null)
+                        {
+                            message += $"\nFirst sprite Name:{first.Name ?? "<null>"}, Position:{first.Position}, Parent:{first.Parent?.Name ?? "<null>"}, Texture:{first.Texture?.Name ?? "<null>"}";
+                        }
+
+                        messages.Add(message);
                     }
 
                 }
@@ -629,19 +639,27 @@ namespace FlatRedBall.Screens
                 if (SpriteManager.DrawableBatches.Count != 0)
                 {
                     int drawableBatchCount = 0;
+                    IDrawableBatch firstDrawableBatch = null;
                     foreach(var item in SpriteManager.DrawableBatches)
                     {
                         if(!PersistentDrawableBatches.Contains(item))
                         {
                             drawableBatchCount++;
+                            firstDrawableBatch = item;
                         }
                     }
 
                     if (drawableBatchCount > 0)
                     {
-                        messages.Add("There are " + drawableBatchCount +
+                        var message = "There are " + drawableBatchCount +
                             " DrawableBatches in the SpriteManager.  " +
-                            "See  \"FlatRedBall.SpriteManager.DrawableBatches\"");
+                            "See  \"FlatRedBall.SpriteManager.DrawableBatches\"";
+
+                        message += $"\nFirst IDB type: {firstDrawableBatch.GetType()}";
+
+                        messages.Add(message);
+
+
                     }
                 }
 
@@ -775,8 +793,13 @@ namespace FlatRedBall.Screens
                 #region Managed Shapes
                 if (ShapeManager.AutomaticallyUpdatedShapes.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.AutomaticallyUpdatedShapes.Count +
-                        " Automatically Updated Shapes in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.AutomaticallyUpdatedShapes\"");
+                    var message = "There are " + ShapeManager.AutomaticallyUpdatedShapes.Count +
+                        " Automatically Updated Shapes in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.AutomaticallyUpdatedShapes\"";
+
+                    var first = ShapeManager.AutomaticallyUpdatedShapes[0];
+                    message += $"\nFirst shape: {first}";
+                    
+                    messages.Add(message);
                 }
                 #endregion
 
@@ -813,8 +836,20 @@ namespace FlatRedBall.Screens
 
                 if (ShapeManager.VisiblePolygons.Count != 0)
                 {
-                    messages.Add("There are " + ShapeManager.VisiblePolygons.Count +
-                        " visible Polygons in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisiblePolygons\"");
+                    var polygonCount = ShapeManager.VisiblePolygons.Count;
+                    foreach(var polygon in PersistentPolygons)
+                    {
+                        if(ShapeManager.VisiblePolygons.Contains(polygon))
+                        {
+                            polygonCount--;
+                        }
+                    }
+                    if(polygonCount != 0)
+                    {
+                        messages.Add("There are " + polygonCount +
+                            " visible Polygons in the ShapeManager.  See \"FlatRedBall.Math.Geometry.ShapeManager.VisiblePolygons\"");
+
+                    }
                 }
                 #endregion
 
