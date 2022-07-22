@@ -9,6 +9,7 @@ using System.Windows;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using PlatformerPluginCore.ViewModels;
+using PlatformerPluginCore.SaveClasses;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
@@ -127,6 +128,18 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
             viewModel.Remove += () =>
             {
                 this.AnimationRows.Remove(viewModel);
+            };
+
+            viewModel.Duplicate += () =>
+            {
+                IndividualPlatformerAnimationValues values = new IndividualPlatformerAnimationValues();
+                viewModel.ApplyTo(values);
+
+                var newVm = new AnimationRowViewModel();
+                newVm.SetFrom(values);
+                AssignAnimationRowEvents(newVm);
+                var newIndex = this.AnimationRows.IndexOf(viewModel) + 1;
+                this.AnimationRows.Insert(newIndex, newVm);
             };
         }
     }

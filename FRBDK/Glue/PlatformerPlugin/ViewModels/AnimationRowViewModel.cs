@@ -111,9 +111,15 @@ namespace PlatformerPluginCore.ViewModels
             set;
         }
 
+        public ICommand DuplicateCommand
+        {
+            get; set;
+        }
+
         public event Action MoveUp;
         public event Action MoveDown;
         public event Action Remove;
+        public event Action Duplicate;
 
         public string Notes
         {
@@ -128,6 +134,7 @@ namespace PlatformerPluginCore.ViewModels
             MoveUpCommand = new Command(() => MoveUp?.Invoke());
             MoveDownCommand = new Command(() => MoveDown?.Invoke());
             RemoveCommand = new Command(() => Remove?.Invoke());
+            DuplicateCommand = new Command(() => Duplicate?.Invoke());
         }
 
         public void ApplyTo(IndividualPlatformerAnimationValues model)

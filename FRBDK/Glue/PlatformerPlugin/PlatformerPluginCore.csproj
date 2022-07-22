@@ -16,6 +16,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Content\Icons\icon_duplicate.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Content\Icons\icon_duplicate.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
 
