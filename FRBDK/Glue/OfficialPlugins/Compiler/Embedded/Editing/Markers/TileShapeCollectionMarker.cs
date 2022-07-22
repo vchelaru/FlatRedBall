@@ -36,6 +36,8 @@ namespace GlueControl.Editing
     {
         #region Fields/Properties
 
+        public bool UsesRightMouseButton => true;
+
         public float ExtraPaddingInPixels { get => 0; set { } }
         public bool Visible
         {

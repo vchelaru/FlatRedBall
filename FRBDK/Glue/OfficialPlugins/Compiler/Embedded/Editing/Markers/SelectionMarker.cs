@@ -54,6 +54,7 @@ namespace GlueControl.Editing
         string Name { get; set; }
         bool CanMoveItem { get; set; }
         Vector3 LastUpdateMovement { get; }
+        bool UsesRightMouseButton { get; }
 
         INameable Owner { get; }
 
@@ -498,6 +499,8 @@ namespace GlueControl.Editing
         #region Fields/Properties
 
         bool IsGrabbed = false;
+
+        public bool UsesRightMouseButton => false;
 
         Polygon mainPolygon;
 
