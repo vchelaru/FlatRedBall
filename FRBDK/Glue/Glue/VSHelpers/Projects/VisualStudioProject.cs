@@ -905,14 +905,30 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return item;
             }
         }
-
+        
         public bool HasPackage(string packageName)
         {
-            var packageNameToLower = packageName.ToLowerInvariant();
-            return mBuildItemDictionaries.ContainsKey(packageNameToLower) &&
-                mBuildItemDictionaries[packageNameToLower].ItemType == "PackageReference" &&
-                mBuildItemDictionaries[packageNameToLower].HasMetadata("Version");
+            return GetNugetPackageReference(packageName) != null;
+        }
+        
+        public string GetNugetPackageVersion(string packageName)
+        {
+            var item = GetNugetPackageReference(packageName);
 
+            var metadata = item?.Metadata.FirstOrDefault(x => x.Name == "Version");
+            return metadata?.EvaluatedValue;
+        }
+
+        public void RemoveNugetPackage(string packageName)
+        {
+            lock (this)
+            {
+                var item = GetNugetPackageReference(packageName);
+                if (item != null)
+                {
+                    RemoveItem(item);
+                }
+            }
         }
 
         public void AddNugetPackage(string packageName, string versionNumber)
@@ -991,6 +1007,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                 }
             }
+        }
+
+        private ProjectItem GetNugetPackageReference(string packageName)
+        {
+            var packageNameToLower = packageName.ToLowerInvariant();
+            if (!mBuildItemDictionaries.TryGetValue(packageNameToLower, out var item))
+            {
+                return null;
+            }
+
+            if (item.ItemType == "PackageReference" && item.HasMetadata("Version"))
+            {
+                return item;
+            }
+
+            return null;
         }
 
         #endregion
