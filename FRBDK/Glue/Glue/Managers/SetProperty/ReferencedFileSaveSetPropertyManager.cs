@@ -18,6 +18,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -353,7 +354,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                     UpdateObjectsUsingFile(container, oldName, rfs);
 
-                    RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
+                    TaskManager.Self.AddAsync(() => RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs), "Generating code due to renamed file");
 
                     UpdateBuildItemsForRenamedRfs(oldName, newName);
 
@@ -529,7 +530,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private static void RegenerateCodeAndUpdateUiAccordingToRfsRename(string oldName, string newName, ReferencedFileSave fileSave)
+        private static async Task RegenerateCodeAndUpdateUiAccordingToRfsRename(string oldName, string newName, ReferencedFileSave fileSave)
         {
             foreach (var element in ProjectManager.GlueProjectSave.AllElements())
             {
@@ -537,7 +538,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (wasAnythingChanged)
                 {
-                    CodeWriter.GenerateCode(element);
+                    await CodeWriter.GenerateCode(element);
                 }
 
                 if (element.ReferencedFiles.Contains(fileSave))

@@ -156,10 +156,18 @@ namespace FlatRedBall.Content.Math.Geometry
             return listToReturn;
         }
 
+        /// <summary>
+        /// Updates the argument shapeCollection to include the shapes in this and updates the properties (position and sizes) on the shapes
+        /// to match the corresponding shapes in this. This method will not remove any additional shapes in shapeCollect, only add and update.
+        /// </summary>
+        /// <param name="shapeCollection">The ShapeCollection to update.</param>
+        /// <param name="newShapeParent">The PositionedObject to which newly-created shapes are attached.</param>
+        /// <param name="createMissingShapes">Whether to create new shapes if shapes with matching names are missing in shapeCollection.</param>
         public void SetValuesOn(ShapeCollection shapeCollection, PositionedObject newShapeParent, bool createMissingShapes)
         {
-            foreach (var rectangle in this.AxisAlignedRectangleSaves)
+            for (int i = 0; i < AxisAlignedRectangleSaves.Count; i++)
             {
+                AxisAlignedRectangleSave rectangle = this.AxisAlignedRectangleSaves[i];
                 AxisAlignedRectangle match = null;
 
                 for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
@@ -187,8 +195,9 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeZ = rectangle.Z;
             }
 
-            foreach (var circle in this.CircleSaves)
+            for (int i = 0; i < CircleSaves.Count; i++)
             {
+                CircleSave circle = this.CircleSaves[i];
                 Circle match = null;
 
                 for (int j = 0; j < shapeCollection.Circles.Count; j++)
@@ -217,8 +226,9 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeZ = circle.Z;
             }
 
-            foreach (var cube in this.AxisAlignedCubeSaves)
+            for (int i = 0; i < AxisAlignedCubeSaves.Count; i++)
             {
+                AxisAlignedCubeSave cube = this.AxisAlignedCubeSaves[i];
                 AxisAlignedCube match = null;
 
                 for (int j = 0; j < shapeCollection.AxisAlignedCubes.Count; j++)
@@ -247,8 +257,9 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeZ = cube.Z;
             }
 
-            foreach (var sphere in this.SphereSaves)
+            for (int i = 0; i < SphereSaves.Count; i++)
             {
+                SphereSave sphere = this.SphereSaves[i];
                 Sphere match = null;
 
                 for (int j = 0; j < shapeCollection.Spheres.Count; j++)
@@ -277,8 +288,9 @@ namespace FlatRedBall.Content.Math.Geometry
                 match.RelativeZ = sphere.Z;
             }
 
-            foreach (var polygon in this.PolygonSaves)
+            for (int i = 0; i < PolygonSaves.Count; i++)
             {
+                PolygonSave polygon = this.PolygonSaves[i];
                 FlatRedBall.Math.Geometry.Polygon match = null;
 
                 for (int j = 0; j < shapeCollection.Polygons.Count; j++)
