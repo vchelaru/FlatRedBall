@@ -39,10 +39,18 @@ namespace FlatRedBall.AnimationEditorForms
 
             SelectedState state = SelectedState.Self;
 
+            #region AxisAlignedRectangle
+
+            if (state.SelectedAxisAlignedRectangle != null)
+            {
+                mMenu.Items.Add("Match Frame Size", null, HandleRectangleMatchFrameSize);
+            }
+
+            #endregion
             // If a frame is not null, then the chain will always be not null, 
             // so check the frame first
             #region Animation Frame
-            if (state.SelectedFrame != null)
+            else if (state.SelectedFrame != null)
             {
                 AddReorderOptions();
 
@@ -124,6 +132,9 @@ namespace FlatRedBall.AnimationEditorForms
                         .Select(item => item.Name).ToList()
                     );
 
+                // this loops through all frames. This could result in the wrong texture being used but....that's a pain to address so oh well...
+                MatchRectangleToFrame(rectangleSave, frame);
+
                 frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleSave);
 
                 AppCommands.Self.RefreshAnimationFrameDisplay();
@@ -131,6 +142,32 @@ namespace FlatRedBall.AnimationEditorForms
                 SelectedState.Self.SelectedRectangle = rectangleSave;
                 AppCommands.Self.SaveCurrentAnimationChainList();
             }
+        }
+
+        private void HandleRectangleMatchFrameSize(object sender, EventArgs e)
+        {
+            var rectangle = SelectedState.Self.SelectedRectangle;
+
+            var animationFrame = SelectedState.Self.SelectedFrame;
+
+            MatchRectangleToFrame(rectangle, animationFrame);
+
+            AppCommands.Self.RefreshAnimationFrameDisplay();
+
+            AppCommands.Self.SaveCurrentAnimationChainList();
+        }
+
+        private static void MatchRectangleToFrame(AxisAlignedRectangleSave rectangle, AnimationFrameSave animationFrame)
+        {
+            if (SelectedState.Self.SelectedTexture != null)
+            {
+                rectangle.ScaleX = SelectedState.Self.SelectedTexture.Width *
+                    (animationFrame.RightCoordinate - animationFrame.LeftCoordinate) / 2.0f;
+                rectangle.ScaleY = SelectedState.Self.SelectedTexture.Height *
+                    (animationFrame.BottomCoordinate - animationFrame.TopCoordinate) / 2.0f;
+            }
+            rectangle.X = animationFrame.RelativeX;
+            rectangle.Y = animationFrame.RelativeY;
         }
 
         internal void HandleExpandAllTreeView(object sender, EventArgs e)
