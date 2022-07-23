@@ -443,7 +443,7 @@ namespace GlueControl.Editing
             var doesMarkerUseRightClick = false;
             foreach (var item in this.SelectedMarkers)
             {
-                if (item.UsesRightClick)
+                if (item.UsesRightMouseButton)
                 {
                     doesMarkerUseRightClick = true;
                 }

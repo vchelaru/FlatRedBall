@@ -686,6 +686,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.TypeConverter = typeConverter;
                     }
 
+                    object defaultValue = null;
+
                     if(!string.IsNullOrEmpty( sourceObject ))
                     {
                         var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
@@ -696,8 +698,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
 
                             newVariable.Category = variableDefinition?.Category;
+
+                            defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
                         }
                     }
+
+                    newVariable.DefaultValue = defaultValue;
 
                     GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
                 }
