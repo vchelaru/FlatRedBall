@@ -33,23 +33,23 @@ namespace GameCommunicationPlugin
 
         public override void StartUp()
         {
-            _gameCommunicationManager = new GameConnectionManager();
+            _gameCommunicationManager = new GameConnectionManager(ReactToPluginEvent);
             _gameCommunicationManager.Port = 8888;
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             ReactToLoadedGlux += HandleGluxLoaded;
 
-            Task.Run(() =>
-            {
-                while (true)
-                {
-                    Thread.Sleep(500);
-                    _gameCommunicationManager?.SendItem(new GameConnectionManager.Packet
-                    {
-                        PacketType = "Test",
-                        Payload = DateTime.Now.ToLongTimeString(),
-                    });
-                }
-            });
+            //Task.Run(() =>
+            //{
+            //    while (true)
+            //    {
+            //        Thread.Sleep(500);
+            //        _gameCommunicationManager?.SendItem(new GameConnectionManager.Packet
+            //        {
+            //            PacketType = "Test",
+            //            Payload = DateTime.Now.ToLongTimeString(),
+            //        });
+            //    }
+            //});
         }
 
         public override void HandleEvent(string eventName, string payload)
@@ -62,7 +62,40 @@ namespace GameCommunicationPlugin
                     _gameCommunicationManager.SendItem(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
 
                     break;
+
+                case "GameCommunication_Send_OldDTO":
+                    _gameCommunicationManager.SendItem(new GameConnectionManager.Packet
+                    {
+                        PacketType = "OldDTO",
+                        Payload = payload
+                    });
+
+                    break;
             }
+        }
+
+        protected override async Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
+        {
+            switch (eventName)
+            {
+                case "GameCommunication_Send_OldDTO":
+                    var returnPacket = await _gameCommunicationManager.SendItemWithResponse(new GameConnectionManager.Packet
+                    {
+                        PacketType = "OldDTO",
+                        Payload = payload
+                    });
+
+                    if(returnPacket?.PacketType == "OldDTO" && returnPacket?.Payload != "{\"Commands\":[]}")
+                        Debug.WriteLine($"{returnPacket.PacketType}, {returnPacket.Payload}");
+
+                    return JsonConvert.SerializeObject(new
+                    {
+                        Succeeded = returnPacket != null,
+                        Data = returnPacket?.Payload
+                    });
+            }
+
+            return null;
         }
 
         private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)

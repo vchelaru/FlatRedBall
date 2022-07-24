@@ -34,6 +34,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
     class CommandReceiver
     {
         int _gamePortNumber;
+        private CommandSender _commandSender;
         private RefreshManager _refreshManager;
         private VariableSendingManager _variableSendingManager;
         System.Reflection.MethodInfo[] AllMethods;
@@ -41,13 +42,13 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         public CompilerViewModel CompilerViewModel { get; set; }
 
-        public CommandReceiver(RefreshManager refreshManager, VariableSendingManager variableSendingManager)
+        public CommandReceiver(RefreshManager refreshManager, VariableSendingManager variableSendingManager, CommandSender commandSender)
         {
+            _commandSender = commandSender;
             _refreshManager = refreshManager;
             _variableSendingManager = variableSendingManager;
             AllMethods = typeof(CommandReceiver).GetMethods(
-                System.Reflection.BindingFlags.Static |
-                System.Reflection.BindingFlags.NonPublic)
+                BindingFlags.NonPublic|BindingFlags.Instance)
                 .Where(item => item.Name == nameof(HandleDto))
                 .ToArray();
         }
@@ -163,7 +164,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             if (method != null)
             {
-                toReturn = method.Invoke(null, new object[] { dto });
+                toReturn = method.Invoke(this, new object[] { dto });
             }
 
             return toReturn;
@@ -176,7 +177,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         //private async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         private async void HandleDto(RemoveObjectDto removeObjectDto)
         {
-            GlueElement elementToRemoveFrom = await CommandSender.GetCurrentInGameScreen();
+            GlueElement elementToRemoveFrom = await _commandSender.GetCurrentInGameScreen();
             elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
             if(elementToRemoveFrom != null)
             {
@@ -262,7 +263,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
 
-            var gameScreenName = await CommandSender.GetScreenName();
+            var gameScreenName = await _commandSender.GetScreenName();
 
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
             foreach (var setVariableDto in setVariableDtoList.SetVariableList)
@@ -422,7 +423,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
-            var screen = await CommandSender.GetCurrentInGameScreen();
+            var screen = await _commandSender.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
                 NamedObjectSave nos = null;
@@ -570,7 +571,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             var playBump = true;
                             // tell the game that it should restart the screen quietly
     #pragma warning disable CS4014 // Do not await in add calls this can cause problems
-                            CommandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump });
+                            _commandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump });
     #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         },
                         "Copy TMX and restart screen",
@@ -791,7 +792,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 response.Content = JsonConvert.SerializeObject(contentToGame);
             }
-            await CommandSender.Send(response);
+            await _commandSender.Send(response);
             return response;
         }
 

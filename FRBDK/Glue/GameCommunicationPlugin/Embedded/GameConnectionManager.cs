@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,7 +17,8 @@ namespace GlueCommunication
     {
         private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
         {
-            Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+            if(packetReceivedArgs?.Packet?.Payload != "GetCommandsDto:{}")
+                Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
         }
 
         #region private
@@ -30,7 +31,7 @@ namespace GlueCommunication
         #endregion
 
         #region properties
-        private bool _doConnections = false;
+        private bool _doConnections = true;
         public bool DoConnections
         {
             get
@@ -228,6 +229,8 @@ namespace GlueCommunication
         #region classes
         public class Packet
         {
+            public Guid Id { get; set; } = Guid.NewGuid();
+            public Guid? InResponseTo { get; set; }
             public string PacketType { get; set; }
             public string Payload { get; set; }
         }

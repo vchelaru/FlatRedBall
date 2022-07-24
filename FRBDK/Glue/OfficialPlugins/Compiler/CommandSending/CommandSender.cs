@@ -14,23 +14,22 @@ using System.Threading.Tasks;
 
 namespace OfficialPlugins.Compiler.CommandSending
 {
-    public static class CommandSender
+    public class CommandSender
     {
         #region Fields/Properties
 
-        static Stream TcpClientStream;
-        public static bool IsConnected => TcpClientStream != null;
+        public Action<string> PrintOutput { get; set; }
+        public Func<string, Task<string>> SendPacket { get; set; }
+        SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
 
-        public static Action<string> PrintOutput { get; set; }
-        static SemaphoreSlim sendCommandSemaphore = new SemaphoreSlim(1, 1);
-
-        public static GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
-        public static CompilerViewModel CompilerViewModel { get; set; }
+        public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
+        public CompilerViewModel CompilerViewModel { get; set; }
+        public bool IsConnected { get; internal set; }
 
         #endregion
 
         #region General Send
-        public static async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
+        public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
         {
             var dtoTypeName = dto.GetType().Name;
 
@@ -39,7 +38,7 @@ namespace OfficialPlugins.Compiler.CommandSending
             return await SendCommand($"{dtoTypeName}:{serialized}", isImportant);
         }
 
-        public static async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, bool isImportant = true)
+        public async Task<ToolsUtilities.GeneralResponse<T>> Send<T>(object dto, bool isImportant = true)
         {
 
             var sendResponse = await Send(dto, isImportant);
@@ -70,7 +69,7 @@ namespace OfficialPlugins.Compiler.CommandSending
             return toReturn;
         }
 
-        private static async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, bool isImportant = true)
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, bool isImportant = true)
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
 
@@ -116,189 +115,30 @@ namespace OfficialPlugins.Compiler.CommandSending
 
         }
 
-        private static async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint, bool shouldRetry )
+        private async Task<ToolsUtilities.GeneralResponse<string>> SendCommandNoSemaphore(string text, bool isImportant, bool shouldPrint, bool shouldRetry )
         {
-            ToolsUtilities.GeneralResponse<string> toReturn = new ToolsUtilities.GeneralResponse<string>();
-            toReturn.Succeeded = true;
+            var returnValue = await SendPacket(text);
 
-            var connectResponse = await ConnectIfNecessary(GlueViewSettingsViewModel.PortNumber, shouldPrint);
-
-            if (!connectResponse.Succeeded)
+            if (returnValue == null)
             {
-                toReturn.SetFrom(connectResponse);
+                return new ToolsUtilities.GeneralResponse<string>
+                {
+                    Succeeded = false,
+                    Message = "No Handler Found",
+                    Data = null
+                };
             }
 
-            if (toReturn.Succeeded && TcpClientStream != null)
+            var response = JsonConvert.DeserializeObject<ToolsUtilities.GeneralResponse<string>>(returnValue);
+
+            if(!response.Succeeded && shouldRetry)
             {
-                string stringFromClient = null;
-                try
-                {
-                    await WriteMessageToStream(TcpClientStream, text);
-
-                    stringFromClient = await ReadFromClient(TcpClientStream);
-                    toReturn.Data = stringFromClient;
-                }
-                catch (IOException ioexception)
-                {
-                    // this is expected, happens if the game is closed
-                    TcpClientStream = null;
-                    toReturn.Succeeded = false;
-                    toReturn.Message = $"IOException trying to write to client:\n{ioexception}";
-
-                    if (shouldRetry)
-                    {
-                        // retry, but only once
-                        toReturn = await SendCommandNoSemaphore(text, isImportant, shouldPrint, shouldRetry: false);
-                    }
-                }
-                catch (Exception e)
-                {
-                    var message = $"Exception on get stream/write/read:\n{e}";
-                    if (shouldPrint) PrintOutput(message);
-                    // do nothing...
-                    TcpClientStream = null;
-                    toReturn.Succeeded = false;
-                    toReturn.Message = message;
-                }
+                return await SendCommandNoSemaphore(text, isImportant, shouldPrint, false);
             }
 
-            return toReturn;
+            return response;
         }
 
-        private static async Task<ToolsUtilities.GeneralResponse> ConnectIfNecessary(int port, bool shouldPrintTimeout)
-        {
-            if(TcpClientStream == null)
-            {
-
-                TcpClient client = new TcpClient();
-
-                // this takes ~2 seconds, according to this:
-                // https://github.com/dotnet/runtime/issues/31085
-
-                var connectTask = client.ConnectAsync("127.0.0.1", port);
-                // 1000 seemed to timeout - not super frequently but sometimes
-                // Increasing to 2000 
-                const int timeoutDuration = 2000;
-                var timeoutTask = Task.Delay(timeoutDuration);
-
-                var completedTask = await Task.WhenAny(timeoutTask, connectTask);
-                if (completedTask == timeoutTask)
-                {
-                    if (shouldPrintTimeout) PrintOutput("Timed out waiting for connection");
-                    client.Dispose();
-                    TcpClientStream = null;
-                    var response = ToolsUtilities.GeneralResponse.UnsuccessfulResponse;
-                    response.Message = "Timed out waiting for connection";
-                    return response;
-                }
-                else
-                {
-                    Exception exception = null;
-                    try
-                    {
-                        TcpClientStream = client.GetStream();
-                    }
-                    catch(Exception e)
-                    {
-                        exception = e;
-                        TcpClientStream = null;
-                    }
-
-                    if (TcpClientStream != null)
-                    {
-                        return ToolsUtilities.GeneralResponse.SuccessfulResponse;
-                    }
-                    else
-                    {
-                        var response = ToolsUtilities.GeneralResponse.UnsuccessfulWith("Tried to connect, did not time out, but still was unable to get a TcpClientStream");
-                        if(exception != null)
-                        {
-                            response.Message += $"\n{exception}";
-                        }
-                        return response;
-                    }
-                }
-            }
-            else
-            {
-                return ToolsUtilities.GeneralResponse.SuccessfulResponse;
-            }
-        }
-
-        private static async Task WriteMessageToStream(Stream clientStream, string message)
-        {
-            byte[] messageAsBytes = System.Text.ASCIIEncoding.UTF8.GetBytes(message);
-
-            if (messageAsBytes.Length > 0)
-            {
-                var lengthAsBytes =
-                    BitConverter.GetBytes(messageAsBytes.Length);
-                await clientStream.WriteAsync(lengthAsBytes, 0, lengthAsBytes.Length);
-                await clientStream.WriteAsync(messageAsBytes, 0, messageAsBytes.Length);
-
-            }
-        }
-
-        private static async Task<string> ReadFromClient(Stream stm)
-        {
-            //// Read response from server.
-            //var readTask = stm.ReadAsync(buffer, 0, buffer.Length);
-
-            byte[] intBytes = await GetByteArrayFromStream(stm, 4, new byte[4]);
-            var length = BitConverter.ToInt32(intBytes, 0);
-
-            if(length > 1_000_000)
-            {
-                var firstThousand = await GetByteArrayFromStream(stm, 1000);
-                var response = Encoding.UTF8.GetString(firstThousand, 0, firstThousand.Length);
-
-                int m = 3;
-            }
-            if(length > 0)
-            {
-                byte[] byteArray = await GetByteArrayFromStream(stm, length);
-                var response = Encoding.UTF8.GetString(byteArray, 0, length);
-                return response;
-            }
-            else
-            {
-                return string.Empty;
-            }
-            //Console.ReadLine();
-        }
-
-        static byte[] defaultBuffer = new byte[8192];
-
-        private static async Task<byte[]> GetByteArrayFromStream(Stream stm, int totalLength, byte[] buffer = null)
-        {
-            byte[] toReturn = null;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                buffer = buffer ?? defaultBuffer;
-                int bytesRead;
-                int bytesLeft = totalLength;
-                while (bytesLeft > 0 && (bytesRead = await stm.ReadAsync(buffer, 0, Math.Min(buffer.Length, bytesLeft))) > 0)
-                {
-                    memoryStream.Write(buffer, 0, bytesRead);
-                    bytesLeft -= bytesRead;
-                }
-                toReturn = memoryStream.ToArray();
-            }
-            return toReturn;
-
-            //if (buffer == null && totalLength > defaultBuffer.Length)
-            //{
-            //    defaultBuffer = new byte[totalLength];
-            //}
-            //buffer = buffer ?? defaultBuffer;
-            //var amountRead = await stm.ReadAsync(buffer, 0, totalLength);
-            //if(amountRead != totalLength)
-            //{
-            //    int m = 3;
-            //}
-            //return buffer;
-        }
 
         #endregion
 
@@ -307,13 +147,13 @@ namespace OfficialPlugins.Compiler.CommandSending
         /// </summary>
         /// <param name="portNumber">Game's port number</param>
         /// <returns>The screen name using screen name</returns>
-        internal static async Task<string> GetScreenName()
+        internal async Task<string> GetScreenName()
         {
             string screenName = null;
 
             try
             {
-                var response = await CommandSending.CommandSender.SendCommand("GetCurrentScreen");
+                var response = await SendCommand("GetCurrentScreen");
                 if(response.Succeeded)
                 {
                     screenName = response.Data;
@@ -326,9 +166,9 @@ namespace OfficialPlugins.Compiler.CommandSending
             return screenName;
         }
 
-        public static async Task<FlatRedBall.Glue.SaveClasses.ScreenSave> GetCurrentInGameScreen()
+        public async Task<FlatRedBall.Glue.SaveClasses.ScreenSave> GetCurrentInGameScreen()
         {
-            var screenName = await CommandSender.GetScreenName();
+            var screenName = await GetScreenName();
 
             if (!string.IsNullOrEmpty(screenName) && screenName.Contains(".Screens."))
             {
@@ -344,9 +184,9 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        internal static async Task<Vector3> GetCameraPosition()
+        internal async Task<Vector3> GetCameraPosition()
         {
-            var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraPosition());
+            var sendResponse = await Send(new Dtos.GetCameraPosition());
             var cameraPositionAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
 
             if(string.IsNullOrEmpty(cameraPositionAsString))
@@ -360,9 +200,9 @@ namespace OfficialPlugins.Compiler.CommandSending
             }
         }
 
-        internal static async Task<CameraSave> GetCameraSave()
+        internal async Task<CameraSave> GetCameraSave()
         {
-            var sendResponse = await CommandSending.CommandSender.Send(new Dtos.GetCameraSave());
+            var sendResponse = await Send(new Dtos.GetCameraSave());
             var cameraSaveAsString = sendResponse.Succeeded ? sendResponse.Data : String.Empty;
 
             if (string.IsNullOrEmpty(cameraSaveAsString))

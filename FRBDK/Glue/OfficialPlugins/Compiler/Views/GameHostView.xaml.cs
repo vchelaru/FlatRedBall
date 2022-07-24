@@ -50,6 +50,7 @@ namespace OfficialPlugins.GameHost.Views
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
+        private CommandSender _commandSender;
         private Func<string, string, Task<string>> _eventCallerWithResult;
         private Action<string, string> _eventCaller;
 
@@ -87,11 +88,12 @@ namespace OfficialPlugins.GameHost.Views
         public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
 
-        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller)
+        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller, CommandSender commandSender)
         {
             InitializeComponent();
 
 
+            _commandSender = commandSender;
             _eventCallerWithResult = eventCallerWithResult;
             _eventCaller = eventCaller;
             winformsPanel = new System.Windows.Forms.Panel();
@@ -175,7 +177,7 @@ namespace OfficialPlugins.GameHost.Views
             }
         }
 
-        private static async Task<bool> MakeGameBorderless()
+        private async Task<bool> MakeGameBorderless()
         {
             var attemptsToConnect = 0;
             int maxAttempts = 6;
@@ -184,7 +186,7 @@ namespace OfficialPlugins.GameHost.Views
 
             do
             {
-                var sendResponse = await CommandSender.Send(dto);
+                var sendResponse = await _commandSender.Send(dto);
                 var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                 succeeded = !string.IsNullOrWhiteSpace(response);
@@ -331,14 +333,14 @@ namespace OfficialPlugins.GameHost.Views
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Minus;
-            await CommandSender.Send(dto);
+            await _commandSender.Send(dto);
         }
 
         private async void BottomStatusBar_ZoomPlusClick()
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Plus;
-            await CommandSender.Send(dto);
+            await _commandSender.Send(dto);
         }
 
         private void ToolsSidePanel_Drop(object sender, DragEventArgs e)

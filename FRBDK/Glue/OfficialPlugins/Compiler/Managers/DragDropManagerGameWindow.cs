@@ -19,12 +19,14 @@ namespace OfficialPlugins.Compiler.Managers
     public class DragDropManagerGameWindow
     {
         private RefreshManager _refreshManager;
+        private CommandSender _commandSender;
 
         public CompilerViewModel CompilerViewModel { get; set; }
 
-        public DragDropManagerGameWindow(RefreshManager refreshManager)
+        public DragDropManagerGameWindow(RefreshManager refreshManager, CommandSender commandSender)
         {
             _refreshManager = refreshManager;
+            _commandSender = commandSender;
         }
 
 
@@ -84,7 +86,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 return;
             }
-            GlueElement element = await CommandSender.GetCurrentInGameScreen();
+            GlueElement element = await _commandSender.GetCurrentInGameScreen();
             if(element == null)
             {
                 element = GlueState.Self.CurrentElement;
@@ -117,7 +119,7 @@ namespace OfficialPlugins.Compiler.Managers
             if(entityToDrop != null)
             { 
                 FlatRedBall.Content.Scene.CameraSave cameraSave = null;
-                cameraSave = await CommandSender.GetCameraSave();
+                cameraSave = await _commandSender.GetCameraSave();
 
 
                 if(cameraSave != null)

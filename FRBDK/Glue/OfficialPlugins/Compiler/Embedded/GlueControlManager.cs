@@ -44,8 +44,8 @@ namespace GlueControl
 
         #region Fields/Properties
 
-        bool isRunning;
-        private TcpListener listener;
+        //bool isRunning;
+        //private TcpListener listener;
         public static ConcurrentQueue<GameToGlueCommand> GameToGlueCommands { get; private set; }
             = new ConcurrentQueue<GameToGlueCommand>();
         private GlueControl.Editing.EditingManager EditingManager;
@@ -64,98 +64,98 @@ namespace GlueControl
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
             EditingManager.ObjectSelected += HandleObjectSelected;
-            listener = new TcpListener(IPAddress.Any, port);
+            //listener = new TcpListener(IPAddress.Any, port);
         }
 
-        public void Start()
-        {
-            Thread serverThread = new Thread(new ThreadStart(Run));
+        //public void Start()
+        //{
+        //    Thread serverThread = new Thread(new ThreadStart(Run));
 
-            serverThread.Start();
-        }
+        //    serverThread.Start();
+        //}
 
-        private async void Run()
-        {
-            var isGameAlreadyRunning = false;
-            try
-            {
-                listener.Start();
-                isRunning = true;
-            }
-            catch (System.Net.Sockets.SocketException e)
-            {
-                isGameAlreadyRunning = true;
-            }
+        //private async void Run()
+        //{
+        //    var isGameAlreadyRunning = false;
+        //    try
+        //    {
+        //        listener.Start();
+        //        isRunning = true;
+        //    }
+        //    catch (System.Net.Sockets.SocketException e)
+        //    {
+        //        isGameAlreadyRunning = true;
+        //    }
 
-            if (!isGameAlreadyRunning)
-            {
-                TcpClient client = null;
+        //    if (!isGameAlreadyRunning)
+        //    {
+        //        TcpClient client = null;
 
-                // This can throw an exception when the game is exiting:
+        //        // This can throw an exception when the game is exiting:
 
-                while (isRunning)
-                {
-                    if (client == null)
-                    {
-                        try
-                        {
-                            client = listener.AcceptTcpClient();
-                        }
-                        catch
-                        {
-                            // so it doesn't spam:
-                            await Task.Delay(100);
-                        }
-                    }
+        //        while (isRunning)
+        //        {
+        //            if (client == null)
+        //            {
+        //                try
+        //                {
+        //                    client = listener.AcceptTcpClient();
+        //                }
+        //                catch
+        //                {
+        //                    // so it doesn't spam:
+        //                    await Task.Delay(100);
+        //                }
+        //            }
 
-                    if (client != null)
-                    {
-                        var stream = client.GetStream();
-                        try
-                        {
-                            await HandleStream(stream);
-                        }
-                        catch (IOException)
-                        {
-                            client = null;
-                        }
-                        catch (System.Exception e)
-                        {
-                            if (isRunning)
-                            {
-                                throw e;
-                            }
-                        }
-                    }
-                }
+        //            if (client != null)
+        //            {
+        //                var stream = client.GetStream();
+        //                try
+        //                {
+        //                    await HandleStream(stream);
+        //                }
+        //                catch (IOException)
+        //                {
+        //                    client = null;
+        //                }
+        //                catch (System.Exception e)
+        //                {
+        //                    if (isRunning)
+        //                    {
+        //                        throw e;
+        //                    }
+        //                }
+        //            }
+        //        }
 
-                isRunning = false;
+        //        isRunning = false;
 
-                listener.Stop();
-            }
-        }
+        //        listener.Stop();
+        //    }
+        //}
 
-        public void Kill()
-        {
-            isRunning = false;
-            listener.Stop();
+        //public void Kill()
+        //{
+        //    isRunning = false;
+        //    listener.Stop();
 
-        }
+        //}
 
-        private async Task HandleStream(Stream clientStream)
-        {
-            var messageFromClient = await ReadFromClient(clientStream);
+        //private async Task HandleStream(Stream clientStream)
+        //{
+        //    var messageFromClient = await ReadFromClient(clientStream);
 
-            var response = await ProcessMessage(messageFromClient?.Trim());
+        //    var response = await ProcessMessage(messageFromClient?.Trim());
 
-            if (response == null)
-            {
-                response = "true";
-            }
+        //    if (response == null)
+        //    {
+        //        response = "true";
+        //    }
 
-            WriteMessageToStream(clientStream, response);
+        //    WriteMessageToStream(clientStream, response);
 
-        }
+        //}
 
         private static async Task<string> ReadFromClient(Stream stm)
         {
@@ -244,7 +244,7 @@ namespace GlueControl
 
         #region Glue -> Game
 
-        private async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
+        public async Task<string> ProcessMessage(string message, bool runSetImmediately = false)
         {
             var screen =
                 FlatRedBall.Screens.ScreenManager.CurrentScreen;
@@ -381,7 +381,7 @@ namespace GlueControl
                 elementGameType = ScreenManager.CurrentScreen?.GetType().Name;
             }
 
-            if(!string.IsNullOrEmpty(elementGameType))
+            if (!string.IsNullOrEmpty(elementGameType))
             {
                 var split = elementGameType.Split('.').ToList().Skip(1);
                 dto.ElementNameGlue = string.Join("\\", split);

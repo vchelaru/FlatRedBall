@@ -22,13 +22,15 @@ namespace OfficialPlugins.Compiler.Managers
         CompilerViewModel compilerViewModel;
         GlueViewSettingsViewModel glueViewSettingsViewModel;
         GameHostView gameHostView;
+        private CommandSender _commandSender;
         private Func<string, string, Task<string>> _eventCallerWithAction;
         private RefreshManager _refreshManager;
 
         public void Initialize(GameHostView gameHostView, Action<string> output,
             CompilerViewModel compilerViewModel, GlueViewSettingsViewModel glueViewSettingsViewModel,
-            PluginTab glueViewSettingsTab, Func<string, string, Task<string>> eventCallerWithAction, RefreshManager refreshManager)
+            PluginTab glueViewSettingsTab, Func<string, string, Task<string>> eventCallerWithAction, RefreshManager refreshManager, CommandSender commandSender)
         {
+            _commandSender = commandSender;
             _eventCallerWithAction = eventCallerWithAction;
             _refreshManager = refreshManager;
             this.gameHostView = gameHostView;
@@ -65,7 +67,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 var wasEditChecked = compilerViewModel.IsEditChecked;
                 // This is the screen that the game is currently on...
-                var screenName = await CommandSending.CommandSender.GetScreenName();
+                var screenName = await _commandSender.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
                 string commandLineArgs = await GetCommandLineArgs(isRunning:true);
@@ -112,25 +114,25 @@ namespace OfficialPlugins.Compiler.Managers
             gameHostView.RestartScreenClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await CommandSender.Send(new RestartScreenDto());
+                await _commandSender.Send(new RestartScreenDto());
             };
 
             gameHostView.AdvanceOneFrameClicked += async (not, used) =>
             {
-                await CommandSender.Send(new AdvanceOneFrameDto());
+                await _commandSender.Send(new AdvanceOneFrameDto());
             };
 
 
             gameHostView.PauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = true;
-                await CommandSender.Send(new TogglePauseDto());
+                await _commandSender.Send(new TogglePauseDto());
             };
 
             gameHostView.UnpauseClicked += async (not, used) =>
             {
                 compilerViewModel.IsPaused = false;
-                await CommandSender.Send(new TogglePauseDto());
+                await _commandSender.Send(new TogglePauseDto());
             };
 
             gameHostView.SettingsClicked += (not, used) =>
@@ -173,7 +175,7 @@ namespace OfficialPlugins.Compiler.Managers
             if (isRunning)
             {
 
-                var screenName = await CommandSending.CommandSender.GetScreenName();
+                var screenName = await _commandSender.GetScreenName();
                 // ...but we may not want to restart on this screen if it's the edit entity screen:
                 var isEntityViewingScreen = screenName == "GlueControl.Screens.EntityViewingScreen";
                 args = isEntityViewingScreen ? null : screenName;

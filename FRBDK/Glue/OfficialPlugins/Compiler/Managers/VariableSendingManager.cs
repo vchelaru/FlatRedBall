@@ -30,16 +30,18 @@ namespace OfficialPlugins.Compiler.Managers
 
     class VariableSendingManager
     {
-        public VariableSendingManager(RefreshManager refreshManager)
+        public VariableSendingManager(RefreshManager refreshManager, CommandSender commandSender)
         {
             _refreshManager = refreshManager;
             _refreshManager.VariableSendingManager = this;
+            _commandSender = commandSender;
         }
 
         #region Fields/Properties
 
         List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
         private RefreshManager _refreshManager;
+        private CommandSender _commandSender;
 
         public CompilerViewModel ViewModel
         {
@@ -75,7 +77,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            var gameScreenName = await CommandSender.GetScreenName();
+            var gameScreenName = await _commandSender.GetScreenName();
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
             List<NamedObjectSave> nosList = new List<NamedObjectSave>();
             foreach (var variable in variableList)
@@ -90,7 +92,7 @@ namespace OfficialPlugins.Compiler.Managers
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
-            var gameScreenName = await CommandSender.GetScreenName();
+            var gameScreenName = await _commandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
             await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
@@ -117,7 +119,7 @@ namespace OfficialPlugins.Compiler.Managers
                         dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
                     }
 
-                    var sendGeneralResponse = await CommandSender.Send(dto);
+                    var sendGeneralResponse = await _commandSender.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)
@@ -329,7 +331,7 @@ namespace OfficialPlugins.Compiler.Managers
             // to properly convert value we may need to squash multiple inheritance levels of 
             // NamedObjectSaves. But to know which to squash, we need to know the current game
             // screen
-            //var gameScreenName = await CommandSender.GetScreenName(ViewModel.PortNumber);
+            //var gameScreenName = await _commandSender.GetScreenName(ViewModel.PortNumber);
             //var glueScreenName = gameScreenName
 
             #region X, Y, Z
@@ -571,7 +573,7 @@ namespace OfficialPlugins.Compiler.Managers
                 // why do we care if the GlueElement is null or not?
                 // && data.GlueElement != null)
             {
-                var sendGeneralResponse = await CommandSender.Send(data);
+                var sendGeneralResponse = await _commandSender.Send(data);
                 var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
 
                 if (!string.IsNullOrEmpty(responseAsString))

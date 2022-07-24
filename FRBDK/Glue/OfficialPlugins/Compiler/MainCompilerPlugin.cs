@@ -98,12 +98,13 @@ namespace OfficialPlugins.Compiler
 
         public override void StartUp()
         {
-            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn);
+            _commandSender = new CommandSender();
+            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, _commandSender);
             _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
-            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
-            _variableSendingManager = new VariableSendingManager(_refreshManager);
-            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager);
+            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager, _commandSender);
+            _variableSendingManager = new VariableSendingManager(_refreshManager, _commandSender);
+            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager, _commandSender);
 
             CreateBuildControl();
 
@@ -122,7 +123,7 @@ namespace OfficialPlugins.Compiler
 
             // winforms stuff is here:
             // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
-            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
+            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent, _commandSender);
             gameHostView.DataContext = CompilerViewModel;
             gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
             {
@@ -155,7 +156,8 @@ namespace OfficialPlugins.Compiler
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab,
                 ReactToPluginEventWithReturn,
-                _refreshManager);
+                _refreshManager,
+                _commandSender);
 
             #region Start the timer, do it after the gameHostView is created
 
@@ -445,7 +447,7 @@ namespace OfficialPlugins.Compiler
                 IsBorderless = isBorderless
             };
 
-            var sendResponse = await CommandSending.CommandSender.Send(dto);
+            var sendResponse = await _commandSender.Send(dto);
             return sendResponse.Succeeded ? sendResponse.Data : String.Empty;
         }
 
@@ -466,7 +468,7 @@ namespace OfficialPlugins.Compiler
 
 
                         var sendResponse =
-                            await CommandSending.CommandSender
+                            await _commandSender
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
                         var response = sendResponse?.Data;
 
@@ -669,9 +671,10 @@ namespace OfficialPlugins.Compiler
             _variableSendingManager.ViewModel = CompilerViewModel;
             _variableSendingManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
-            CommandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
-            CommandSender.CompilerViewModel = CompilerViewModel;
-            CommandSender.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            _commandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            _commandSender.CompilerViewModel = CompilerViewModel;
+            _commandSender.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            _commandSender.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
 
             //buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
             //buildTab.Show();
@@ -737,7 +740,7 @@ namespace OfficialPlugins.Compiler
                 PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
             };
 
-            await CommandSender.Send(dto);
+            await _commandSender.Send(dto);
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -756,7 +759,7 @@ namespace OfficialPlugins.Compiler
 
                 case nameof(ViewModels.CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
-                    await CommandSender.Send(new SetSpeedDto
+                    await _commandSender.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
                     });
@@ -795,7 +798,7 @@ namespace OfficialPlugins.Compiler
                 IsInEditMode = inEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName.FullPath
             };
-            var response = await CommandSending.CommandSender.Send<Dtos.GeneralCommandResponse>(dto);
+            var response = await _commandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
             if (response?.Succeeded != true)
             {
@@ -810,7 +813,7 @@ namespace OfficialPlugins.Compiler
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
             }
-            else if (CommandSender.IsConnected == false)
+            else if (_commandSender.IsConnected == false)
             {
 
             }
@@ -823,7 +826,7 @@ namespace OfficialPlugins.Compiler
                 }
                 else
                 {
-                    var screenName = await CommandSending.CommandSender.GetScreenName();
+                    var screenName = await _commandSender.GetScreenName();
 
                     if (!string.IsNullOrEmpty(screenName))
                     {
@@ -881,7 +884,7 @@ namespace OfficialPlugins.Compiler
                 }
             }
                     
-            await CommandSender.Send(setCameraAspectRatioDto);
+            await _commandSender.Send(setCameraAspectRatioDto);
         }
 
         private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
@@ -1090,6 +1093,7 @@ namespace OfficialPlugins.Compiler
 
         Process gameProcess;
         private GameHostController _gameHostController;
+        private CommandSender _commandSender;
         private RefreshManager _refreshManager;
         private DragDropManagerGameWindow _dragDropManagerGameWindow;
         private VariableSendingManager _variableSendingManager;
@@ -1177,18 +1181,28 @@ namespace OfficialPlugins.Compiler
                     break;
 
                 case "Compiler_Prop_IsRunning":
-                    Task.Run(async () =>
-                    {
+                    Task.Run(() => {
                         CompilerViewModel.IsRunning = JObject.Parse(payload).Value<bool>("value");
+                        return Task.CompletedTask;
                     });
 
                     break;
 
                 case "Compiler_Prop_IsCompiling":
-                    Task.Run(async () =>
-                    {
+                    Task.Run(() => {
                         CompilerViewModel.IsCompiling = JObject.Parse(payload).Value<bool>("value");
+                        return Task.CompletedTask;
                     });
+
+                    break;
+
+                case "GameCommunication_Connected":
+                    _commandSender.IsConnected = true;
+
+                    break;
+
+                case "GameCommunication_Disconnected":
+                    _commandSender.IsConnected = false;
 
                     break;
             }

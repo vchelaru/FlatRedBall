@@ -39,9 +39,10 @@ namespace OfficialPlugins.Compiler.Managers
 
     public class RefreshManager
     {
-        public RefreshManager(Func<string, string, Task<string>> eventCaller)
+        public RefreshManager(Func<string, string, Task<string>> eventCaller, CommandSender commandSender)
         {
             _eventCaller = eventCaller;
+            _commandSender = commandSender;
         }
 
         internal VariableSendingManager VariableSendingManager { get; set; }
@@ -219,7 +220,7 @@ namespace OfficialPlugins.Compiler.Managers
                                     dto.FileRelativeToProject =
                                         ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
-                                    await CommandSender.Send(dto);
+                                    await _commandSender.Send(dto);
 
                                     // Typically localization is applied in custom code, so we can't
                                     // apply these changes without reloading the screen
@@ -235,7 +236,7 @@ namespace OfficialPlugins.Compiler.Managers
                                 { 
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
-                                    await CommandSender.Send(dto);
+                                    await _commandSender.Send(dto);
                                 }
                             }
 
@@ -265,7 +266,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                         // it's part of global content and can be reloaded, so let's just tell
                         // it to reload:
-                        await CommandSender.Send(new ReloadGlobalContentDto
+                        await _commandSender.Send(new ReloadGlobalContentDto
                         {
                             StrippedGlobalContentFileName = strippedName
                         });
@@ -336,7 +337,7 @@ namespace OfficialPlugins.Compiler.Managers
                 var dto = new CreateNewEntityDto();
                 dto.EntitySave = newEntity;
 
-                await CommandSender.Send(dto);
+                await _commandSender.Send(dto);
 
                 // selection happens before the entity is created, so let's force push the selection to the game
                 await PushGlueSelectionToGame();
@@ -403,7 +404,7 @@ namespace OfficialPlugins.Compiler.Managers
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
-                await CommandSender.Send(dto);
+                await _commandSender.Send(dto);
             }
         }
 
@@ -425,7 +426,7 @@ namespace OfficialPlugins.Compiler.Managers
                     list.Data.Add(individualDto);
                 }
 
-                var response = await CommandSender.Send<AddObjectDtoListResponse>(list);
+                var response = await _commandSender.Send<AddObjectDtoListResponse>(list);
 
                 if(response.Succeeded == false || 
                     response.Data.Data == null ||
@@ -443,7 +444,7 @@ namespace OfficialPlugins.Compiler.Managers
             {
                 AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
 
-                var sendResponse = await CommandSender.Send(addObjectDto);
+                var sendResponse = await _commandSender.Send(addObjectDto);
                 string addResponseAsString = null;
                 if (sendResponse.Succeeded)
                 {
@@ -559,7 +560,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
 
-            cameraPosition = await CommandSender.GetCameraPosition();
+            cameraPosition = await _commandSender.GetCameraPosition();
 
             var gluxCommands = GlueCommands.Self.GluxCommands;
 
@@ -644,7 +645,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                 dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
 
-                await CommandSender.Send(dto);
+                await _commandSender.Send(dto);
             }
             else
             {
@@ -697,6 +698,7 @@ namespace OfficialPlugins.Compiler.Managers
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
         private Func<string, string, Task<string>> _eventCaller;
+        private CommandSender _commandSender;
 
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
@@ -720,7 +722,7 @@ namespace OfficialPlugins.Compiler.Managers
 
             if(needsScreenReload)
             {
-                await CommandSender.Send(new Dtos.RestartScreenDto());
+                await _commandSender.Send(new Dtos.RestartScreenDto());
             }
             else if (element != null)
             {
@@ -755,7 +757,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                     LastDtoPushedToGame = dto;
 
-                    await CommandSender.Send(dto);
+                    await _commandSender.Send(dto);
 
                 }
             }
@@ -825,7 +827,7 @@ namespace OfficialPlugins.Compiler.Managers
             }
             if(dto != null)
             {
-                await CommandSender.Send(dto);
+                await _commandSender.Send(dto);
 
                 // This forces the game to refresh the view according to the current state.
                 if (ViewModel.IsEditChecked && 
@@ -875,7 +877,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                     };
 
-                    var sendResponse = await CommandSender.Send(dto);
+                    var sendResponse = await _commandSender.Send(dto);
                     responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                     if(string.IsNullOrEmpty(responseAsString))
@@ -932,7 +934,7 @@ namespace OfficialPlugins.Compiler.Managers
 
                 dto.ObjectNames.AddRange(namedObjectNames);
                 var timeBeforeSend = DateTime.Now;
-                var sendResponse = await CommandSender.Send(dto);
+                var sendResponse = await _commandSender.Send(dto);
                 var responseAsstring = sendResponse.Succeeded ? sendResponse.Data : null;
                 var timeAfterSend = DateTime.Now;
                 printOutput($"Delete send took {timeAfterSend - timeBeforeSend}\n \n ");
@@ -1003,7 +1005,7 @@ namespace OfficialPlugins.Compiler.Managers
                 {
                     try
                     {
-                        screenToRestartOn = await CommandSending.CommandSender.GetScreenName();
+                        screenToRestartOn = await _commandSender.GetScreenName();
                     }
                     catch (AggregateException)
                     {

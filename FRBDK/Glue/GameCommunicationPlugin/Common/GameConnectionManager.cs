@@ -14,12 +14,33 @@ namespace GameJsonCommunicationPlugin.Common
     internal class GameConnectionManager : IDisposable
     {
         #region private
+        private Object _lock = new Object();
         private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
+        private ConcurrentDictionary<Guid, WaitingPacket> _waitingPackets = new ConcurrentDictionary<Guid, WaitingPacket>();
+        private Action<string, string> _eventCaller;
         private IPAddress _addr;
         private Socket _listener = null;
         private Socket _client = null;
         private bool _isListening = false;
+
         private bool _isConnected = false;
+        private bool IsConnected
+        {
+            get
+            {
+                return _isConnected;
+            }
+
+            set
+            {
+                _isConnected = value;
+
+                if(_isConnected)
+                    _eventCaller("GameCommunication_Connected", "");
+                else
+                    _eventCaller("GameCommunication_Disconnected", "");
+            }
+        }
         private CancellationTokenSource _periodicCheckTaskCancellationToken;
 
         #endregion
@@ -63,10 +84,13 @@ namespace GameJsonCommunicationPlugin.Common
                 return new IPEndPoint(_addr, Port);
             }
         }
+
+        public double TimeoutInSeconds { get; set; } = 10;
         #endregion
 
-        public GameConnectionManager()
+        public GameConnectionManager(Action<string, string> eventCaller)
         {
+            _eventCaller = eventCaller;
             _addr = IPAddress.Loopback;
             StartListening();
             _periodicCheckTaskCancellationToken = new CancellationTokenSource();
@@ -77,43 +101,54 @@ namespace GameJsonCommunicationPlugin.Common
 
         private void StartListening()
         {
-            if (_listener != null)
-                _listener.Dispose();
-
-            if (_client != null)
+            if (!_isListening)
             {
-                _client.Dispose();
-                _client = null;
-            }
-
-            if (_doConnections)
-            {
-                _isListening = true;
-
-                Task.Run(() =>
+                lock (_lock)
                 {
-                    try
-                    {
-                        _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    Debug.WriteLine("Entering StartListening()");
 
-                        _listener.Bind(EndPoint);
-                        _listener.Listen(1);
-
-                        Debug.WriteLine($"Listening on port {Port}");
-
-                        EstablishConnection(_listener.Accept());
+                    if (_listener != null)
                         _listener.Dispose();
-                        _listener = null;
-                    }
-                    catch (Exception ex)
+
+                    if (_client != null)
                     {
-                        Debug.WriteLine($"Listening Error: {ex}");
+                        _client.Dispose();
+                        _client = null;
                     }
-                    finally
+
+                    if (_doConnections)
                     {
-                        _isListening = false;
+                        _isListening = true;
+
+                        Task.Run(() =>
+                        {
+                            try
+                            {
+                                _listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                                _listener.Bind(EndPoint);
+                                _listener.Listen(1);
+
+                                Debug.WriteLine($"Listening on port {Port}");
+
+                                EstablishConnection(_listener.Accept());
+                                _listener.Dispose();
+                                _listener = null;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"Listening Error: {ex}");
+                            }
+                            finally
+                            {
+                                lock (_lock)
+                                {
+                                    _isListening = false;
+                                }
+                            }
+                        });
                     }
-                });
+                }
             }
         }
 
@@ -123,14 +158,15 @@ namespace GameJsonCommunicationPlugin.Common
 
             _client = socket;
             _sendItems.Clear();
+            _waitingPackets.Clear();
 
-            _isConnected = true;
+            IsConnected = true;
 
             Task.Run(() =>
             {
                 try
                 {
-                    while (_isConnected)
+                    while (IsConnected)
                     {
                         byte[] bufferSize = new byte[sizeof(long)];
                         _client.Receive(bufferSize);
@@ -155,10 +191,19 @@ namespace GameJsonCommunicationPlugin.Common
                                 var packet = JsonConvert.DeserializeObject<Packet>(payload);
 
                                 if (packet != null)
-                                    OnPacketReceived(new PacketReceivedArgs
+                                {
+                                    if(packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
                                     {
-                                        Packet = packet
-                                    });
+                                        waitingPacket.ReceivedPacket = packet;
+                                    }
+                                    else
+                                    {
+                                        OnPacketReceived(new PacketReceivedArgs
+                                        {
+                                            Packet = packet
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
@@ -167,26 +212,35 @@ namespace GameJsonCommunicationPlugin.Common
                 {
                     Debug.WriteLine($"Client Connection Failed: {ex}");
                 }
-                finally { _isConnected = false; }
+                finally { IsConnected = false; }
             });
 
             Task.Run(() =>
             {
                 try
                 {
-                    while (_isConnected)
+                    while (IsConnected)
                     {
                         if (_sendItems.TryDequeue(out var item))
                         {
-                            var packet = JsonConvert.SerializeObject(item);
-                            var sendBytes = Encoding.ASCII.GetBytes(packet);
-                            long size = sendBytes.LongLength;
+                            try
+                            {
+                                var packet = JsonConvert.SerializeObject(item);
+                                var sendBytes = Encoding.ASCII.GetBytes(packet);
+                                long size = sendBytes.LongLength;
 
-                        //Send size
-                            _client.Send(BitConverter.GetBytes(size));
+                                //Send size
+                                _client.Send(BitConverter.GetBytes(size));
 
-                        //Send payload
-                            _client.Send(sendBytes);
+                                //Send payload
+                                _client.Send(sendBytes);
+                            }
+                            catch
+                            {
+                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to error");
+                                _waitingPackets.TryRemove(item.Id, out var tempValue);
+                                throw;
+                            }
                         }
                         else
                         {
@@ -198,7 +252,7 @@ namespace GameJsonCommunicationPlugin.Common
                 {
                     Debug.Write($"Client Connection Failed: {ex}");
                 }
-                finally { _isConnected = false; }
+                finally { IsConnected = false; }
             });
         }
 
@@ -213,9 +267,12 @@ namespace GameJsonCommunicationPlugin.Common
 
         private void StatusCheck()
         {
-            if (!_isListening && !_isConnected && _doConnections)
+            lock (_lock)
             {
-                StartListening();
+                if (!_isListening && !IsConnected && _doConnections)
+                {
+                    StartListening();
+                }
             }
         }
         #endregion
@@ -224,8 +281,53 @@ namespace GameJsonCommunicationPlugin.Common
 
         public void SendItem(Packet item)
         {
-            if (_isConnected)
+            if (IsConnected)
                 _sendItems.Enqueue(item);
+        }
+
+        public async Task<Packet> SendItemWithResponse(Packet item)
+        {
+            if (IsConnected)
+            {
+                _sendItems.Enqueue(item);
+                _waitingPackets.TryAdd(item.Id, new WaitingPacket
+                {
+                    StartedWaitingAt = DateTime.Now,
+                    WaitingFor = item.Id
+                });
+
+                return await Task.Run(async () =>
+                {
+                    do
+                    {
+                        await Task.Delay(100);
+
+                        if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
+                        {
+                            if (waitingPacket.ReceivedPacket != null)
+                            {
+                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                                return waitingPacket.ReceivedPacket;
+                            }
+                            else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
+                            {
+                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
+                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                                return (Packet)null;
+                            }
+                        }
+                        else
+                        {
+                            return (Packet)null;
+                        }
+                    }
+                    while (true);
+                });
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public void Dispose()
@@ -240,8 +342,17 @@ namespace GameJsonCommunicationPlugin.Common
         #region classes
         public class Packet
         {
+            public Guid Id { get; private set; } = Guid.NewGuid();
+            public Guid? InResponseTo { get; set; }
             public string PacketType { get; set; }
             public string Payload { get; set; }
+        }
+
+        public class WaitingPacket
+        {
+            public Guid WaitingFor { get; set; }
+            public DateTime StartedWaitingAt { get; set; }
+            public Packet? ReceivedPacket { get; set; }
         }
 
         public class PacketReceivedArgs : EventArgs

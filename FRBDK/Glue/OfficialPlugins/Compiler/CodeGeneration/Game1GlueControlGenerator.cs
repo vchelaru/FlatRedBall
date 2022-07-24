@@ -122,8 +122,8 @@ namespace OfficialPlugins.Compiler.CodeGeneration
             if (IsGlueControlManagerGenerationEnabled)
             {
                 codeBlock.Line($"glueControlManager = new GlueControl.GlueControlManager({PortNumber});");
-                codeBlock.Line("glueControlManager.Start();");
-                codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
+                //codeBlock.Line("glueControlManager.Start();");
+                //codeBlock.Line("this.Exiting += (not, used) => glueControlManager.Kill();");
                 codeBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += (not, used) =>");
                 var sizeChangedInnerBlock = codeBlock.Block();
                 var sizeChangedInnerBlockIf = sizeChangedInnerBlock.If("FlatRedBall.Screens.ScreenManager.IsInEditMode");

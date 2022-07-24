@@ -33,12 +33,18 @@ namespace OfficialPlugins.Compiler.Views
         Dictionary<int, CroppedBitmap> CroppedBitmaps = new Dictionary<int, CroppedBitmap>();
 
         List<ToggleButton> tileToggleButtons = new List<ToggleButton>();
+        private CommandSender _commandSender;
 
         #endregion
 
         public EditingToolsView()
         {
             InitializeComponent();
+        }
+
+        public EditingToolsView(CommandSender commandSender) : this()
+        {
+            _commandSender = commandSender;
         }
 
         public void HandleGluxUnloaded()
@@ -108,7 +114,7 @@ namespace OfficialPlugins.Compiler.Views
 
                 if(currentElement == null)
                 {
-                    currentElement = await CommandSender.GetCurrentInGameScreen();
+                    currentElement = await _commandSender.GetCurrentInGameScreen();
                 }
                 if (currentElement != null)
                 {
