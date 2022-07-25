@@ -21,6 +21,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void AddNugetIfNotAdded(string packageName, string versionNumber);
+        Task<string> AddNugetIfNotAddedWithReturn(string packageName, string versionNumber);
 
         /// <summary>
         /// 
@@ -72,6 +73,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         [Obsolete("Use RemoveFromProjects which takes a FilePath")]
         void RemoveFromProjects(string absoluteFileName);
         void RemoveFromProjectsTask(FilePath absoluteFileName, bool saveAfterRemoving = true);
+        void AddAssemblyBinding(string name, string publicKeyToken, string oldVersion, string newVersion);
 
         /// <summary>
         /// Verifies that the passed ReferencedFileSave is part of the project, and if not, adds it.

@@ -906,13 +906,21 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        public bool HasPackage(string packageName)
+        public bool HasPackage(string packageName, out string existingVersionNumber)
         {
             var packageNameToLower = packageName.ToLowerInvariant();
-            return mBuildItemDictionaries.ContainsKey(packageNameToLower) &&
-                mBuildItemDictionaries[packageNameToLower].ItemType == "PackageReference" &&
-                mBuildItemDictionaries[packageNameToLower].HasMetadata("Version");
 
+            if(mBuildItemDictionaries.TryGetValue(packageNameToLower, out var buildItem))
+            {
+                if(buildItem.ItemType == "PackageReference" && buildItem.HasMetadata("Version"))
+                {
+                    existingVersionNumber = buildItem.Metadata.Where(item => item.Name == "Version").Select(item => item.EvaluatedValue).FirstOrDefault();
+                    return true;
+                }
+            }
+
+            existingVersionNumber=null;
+            return false;
         }
 
         public void AddNugetPackage(string packageName, string versionNumber)

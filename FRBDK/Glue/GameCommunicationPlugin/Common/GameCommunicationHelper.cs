@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using System;
 
 namespace GameCommunicationPlugin.Common
 {
@@ -16,6 +17,11 @@ namespace GameCommunicationPlugin.Common
             {
                 return GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
             }
+        }
+
+        internal static bool IsFrbUsesJson()
+        {
+            return GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements;
         }
     }
 }

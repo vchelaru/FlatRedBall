@@ -30,6 +30,23 @@ namespace OfficialPlugins.Compiler.CodeGeneration
         {
             if (IsGameCommunicationEnabled)
             {
+                codeBlock.Line("System.AppDomain currentDomain = System.AppDomain.CurrentDomain;");
+                codeBlock.Line("currentDomain.AssemblyResolve += (s, e) =>");
+                codeBlock.Line("{");
+                codeBlock.Line("    // Get just the name of assmebly");
+                codeBlock.Line("    // Aseembly name excluding version and other metadata");
+                codeBlock.Line("    string name = e.Name.Contains(\", \") ? e.Name.Substring(0, e.Name.IndexOf(\", \")) : e.Name;");
+                codeBlock.Line("");
+                codeBlock.Line("    if (name == \"Newtonsoft.Json\")");
+                codeBlock.Line("    {");
+                codeBlock.Line("        // Load whatever version available");
+                codeBlock.Line("        return System.Reflection.Assembly.Load(name);");
+                codeBlock.Line("    }");
+                codeBlock.Line("");
+                codeBlock.Line("    return null;");
+                codeBlock.Line("};");
+                codeBlock.Line();
+
                 codeBlock.Line($"gameConnectionManager = new GlueCommunication.GameConnectionManager({PortNumber});");
                 codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
                 codeBlock.Line("{");
