@@ -1,7 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 
-namespace OfficialPlugins.Compiler.CodeGeneration
+namespace GameCommunicationPlugin.CodeGeneration
 {
     public class Game1GlueCommunicationGenerator : Game1CodeGenerator
     {

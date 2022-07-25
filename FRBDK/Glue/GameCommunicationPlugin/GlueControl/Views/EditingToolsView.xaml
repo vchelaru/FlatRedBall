@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="GameCommunicationPlugin.GlueControl.Views.EditingToolsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             mc:Ignorable="d" 
+             d:DesignWidth="28">
+    <StackPanel>
+        <ToggleButton x:Name="SelectToggleButton" Height="24" Width="24" Click="SelectObjectsToggleClicked">
+            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SelectObjectsIcon.png" ></Image>
+        </ToggleButton>
+        <StackPanel x:Name="TileButtonsStack">
+        </StackPanel>
+        <ItemsControl ItemsSource="{Binding ToolbarEntitiesAndStates}" Margin="0,2,0,0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Width="24" Height="24" Command="{Binding ClickedCommand}">
+                        <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
+                        <Button.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="View Preview in Explorer" Command="{Binding ViewInExplorerCommand}" />
+                                <Separator></Separator>
+                                <MenuItem Header="Refresh Preview" Command="{Binding ForceRefreshPreviewCommand}" />
+                                <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock TextAlignment="Center" HorizontalAlignment="Center" Text="{Binding TooltipText}"></TextBlock>
+                                    <Image Source="{Binding ImageSource}" Height="64" RenderOptions.BitmapScalingMode="NearestNeighbor"></Image>
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

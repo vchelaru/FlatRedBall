@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using GameCommunicationPlugin.Common;
 using GameJsonCommunicationPlugin.Common;
 using Newtonsoft.Json;
-using OfficialPlugins.Compiler.CodeGeneration;
+using GameCommunicationPlugin.GlueControl.CodeGeneration;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;

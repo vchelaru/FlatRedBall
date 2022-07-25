@@ -22,76 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Compiler\Embedded\CommandReceiver.cs" />
-    <Compile Remove="Compiler\Embedded\Dtos.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\CameraLogic.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\CopyPasteManager.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\EditingManager.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\EditorVisuals.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Guides.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
-    <Compile Remove="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\GlueState.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\SelectionLogic.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\SelectionMarker.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
-    <Compile Remove="Compiler\Embedded\Editing\Visuals\Arrow.cs" />
-    <Compile Remove="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
-    <Compile Remove="Compiler\Embedded\GlueControlManager.cs" />
-    <Compile Remove="Compiler\Embedded\InstanceLogic.cs" />
-    <Compile Remove="Compiler\Embedded\Models\CustomVariable.cs" />
-    <Compile Remove="Compiler\Embedded\Models\GlueElement.cs" />
-    <Compile Remove="Compiler\Embedded\Models\GlueElementFileReference.cs" />
-    <Compile Remove="Compiler\Embedded\Models\GlueProjectSave.cs" />
-    <Compile Remove="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
-    <Compile Remove="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
-    <Compile Remove="Compiler\Embedded\Models\INamedObjectContainer.cs" />
-    <Compile Remove="Compiler\Embedded\Models\NamedObjectSave.cs" />
-    <Compile Remove="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
-    <Compile Remove="Compiler\Embedded\Models\StateSave.cs" />
-    <Compile Remove="Compiler\Embedded\Models\StateSaveCategory.cs" />
-    <Compile Remove="Compiler\Embedded\Runtime\DynamicEntity.cs" />
-    <Compile Remove="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
     <Compile Remove="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="CollisionPlugin\Icons\NoPartitioning.png" />
     <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
-    <None Remove="Compiler\Icons\AdvanceOneFrame.png" />
-    <None Remove="Compiler\Icons\build.png" />
-    <None Remove="Compiler\Icons\Edit.png" />
-    <None Remove="Compiler\Icons\EditDeselected.png" />
-    <None Remove="Compiler\Icons\FirewallEnablePopup.png" />
-    <None Remove="Compiler\Icons\FocusOnSelection.png" />
-    <None Remove="Compiler\Icons\HotReload.pdn" />
-    <None Remove="Compiler\Icons\HotReload.png" />
-    <None Remove="Compiler\Icons\icon_magnify.png" />
-    <None Remove="Compiler\Icons\icon_minus.png" />
-    <None Remove="Compiler\Icons\icon_plus.png" />
-    <None Remove="Compiler\Icons\Pause.png" />
-    <None Remove="Compiler\Icons\play.png" />
-    <None Remove="Compiler\Icons\RestartGame.png" />
-    <None Remove="Compiler\Icons\RestartGameOnCurrentScreen.png" />
-    <None Remove="Compiler\Icons\RestartScreen.png" />
-    <None Remove="Compiler\Icons\Run.png" />
-    <None Remove="Compiler\Icons\RunDeselected.png" />
-    <None Remove="Compiler\Icons\SelectObjectsIcon.png" />
-    <None Remove="Compiler\Icons\SelectStartupScreen.png" />
-    <None Remove="Compiler\Icons\Settings.png" />
-    <None Remove="Compiler\Icons\SlowMotion.png" />
-    <None Remove="Compiler\Icons\stop.png" />
-    <None Remove="Compiler\Icons\Unpause.png" />
     <None Remove="Content\Icons\CopyIcon.png" />
     <None Remove="ErrorPlugin\Icons\CopyAll.png" />
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
@@ -154,56 +90,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Compiler\Embedded\CommandReceiver.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Dtos.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\CameraLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\CopyPasteManager.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\EditingManager.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\EditorVisuals.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Guides.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommands.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GlueState.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\GluxCommands.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\ObjectFinder.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Managers\RefreshCommands.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\MeasurementMarker.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\PolygonPointHandles.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\SelectionMarker.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\MoveObjectToContainerLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\SelectionLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\VariableAssignmentLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Editing\Visuals\Arrow.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Forms\ObjectCreationWindow.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\GlueControlManager.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\InstanceLogic.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\CustomVariable.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\GlueElement.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\GlueElementFileReference.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSave.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\GlueProjectSaveExtensions.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\IElementExtensionMethods.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\INamedObjectContainer.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSave.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\StateSave.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Models\StateSaveCategory.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Runtime\DynamicEntity.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\Screens\EntityViewingScreen.cs" />
-    <EmbeddedResource Include="Compiler\Embedded\GlueCallsClassGenerationManager.cs" />
-    <Resource Include="Compiler\Icons\Edit.png" />
-    <Resource Include="Compiler\Icons\EditDeselected.png" />
-    <Resource Include="Compiler\Icons\FirewallEnablePopup.png" />
-    <Resource Include="Compiler\Icons\FocusOnSelection.png" />
-    <Resource Include="Compiler\Icons\icon_magnify.png" />
-    <Resource Include="Compiler\Icons\icon_minus.png" />
-    <Resource Include="Compiler\Icons\icon_plus.png" />
-    <Resource Include="Compiler\Icons\Run.png" />
-    <Resource Include="Compiler\Icons\SelectObjectsIcon.png" />
-    <Resource Include="Compiler\Icons\SelectStartupScreen.png" />
-    <Resource Include="Compiler\Icons\Settings.png" />
     <Resource Include="Content\Icons\CopyIcon.png" />
     <EmbeddedResource Include="ProfilePlugin\EmbeddedCodeFiles\ProfileManagerBase.cs" />
   </ItemGroup>
@@ -230,15 +116,6 @@
   <ItemGroup>
     <Resource Include="CollisionPlugin\Icons\NoPartitioning.png" />
     <Resource Include="CollisionPlugin\Icons\PartitionEnabled.png" />
-    <Resource Include="Compiler\Icons\AdvanceOneFrame.png" />
-    <Resource Include="Compiler\Icons\build.png" />
-    <Resource Include="Compiler\Icons\Pause.png" />
-    <Resource Include="Compiler\Icons\play.png" />
-    <Resource Include="Compiler\Icons\RestartGameOnCurrentScreen.png" />
-    <Resource Include="Compiler\Icons\RestartScreen.png" />
-    <Resource Include="Compiler\Icons\SlowMotion.png" />
-    <Resource Include="Compiler\Icons\stop.png" />
-    <Resource Include="Compiler\Icons\Unpause.png" />
     <Resource Include="ErrorPlugin\Icons\CopyAll.png" />
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
@@ -300,10 +177,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Compiler\Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -328,13 +201,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Compiler\Views\WhileRunningView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

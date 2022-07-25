@@ -1,0 +1,169 @@
+﻿<UserControl x:Class="GameCommunicationPlugin.GlueControl.Views.WhileRunningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             mc:Ignorable="d" 
+             d:Height="28"
+             Width="Auto">
+    <StackPanel Orientation="Horizontal">
+
+        <Grid Visibility="{Binding GlueViewCommandUiVisibility}" >
+            <Button IsHitTestVisible="False">
+            
+            </Button>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Margin="3,2,3,2">
+
+            <ToggleButton IsChecked="{Binding IsEditChecked}" Margin="0,0,0,0" Width="24" 
+                        Background="Transparent" BorderBrush="Transparent"
+                        VerticalContentAlignment="Stretch">
+                <ToggleButton.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Edit Mode</TextBlock>
+                            <TextBlock>The game will run in edit mode enabling live editing of screens and entities.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </ToggleButton.ToolTip>
+                <Grid VerticalAlignment="Stretch">
+                    <Image Source="/OfficialPluginsCore;component/compiler/Icons/Edit.png" Margin="0,0,0,0"/>
+                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Visibility="{Binding EditIconVisibility}"></Rectangle>
+                </Grid>
+            </ToggleButton>
+            <ToggleButton IsChecked="{Binding IsPlayChecked}" Width="24" 
+                        Background="Transparent" BorderBrush="Transparent"
+                        VerticalContentAlignment="Stretch">
+                <ToggleButton.ToolTip>
+                    <ToolTip>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold">Running Mode</TextBlock>
+                            <TextBlock>The game will run regularly with no editor interaction.</TextBlock>
+                        </StackPanel>
+                    </ToolTip>
+                </ToggleButton.ToolTip>
+                <Grid>
+                        <Image Source="/OfficialPluginsCore;component/compiler/Icons/Run.png" Margin="0,0,0,0"/>
+                    <Rectangle Height="1" Fill="#3978A8" HorizontalAlignment="Stretch"  VerticalAlignment="Bottom" Visibility="{Binding RunIconVisibility}"></Rectangle>
+                </Grid>
+            </ToggleButton>
+        </StackPanel>
+            
+        </Grid>
+
+        <Button Width="24" VerticalAlignment="Stretch" Margin="2,0,0,0" MinWidth="24" 
+                Visibility="{Binding PauseButtonVisibility}"
+                Click="HandlePauseClicked"
+            >
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/Pause.png" Margin="0"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Pause Game</TextBlock>
+                        <TextBlock>Calls the built-in FlatRedball Pause function</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+
+        </Button>
+
+        <Grid  Visibility="{Binding PauseButtonVisibility}" Margin="2,0,0,0">
+            <Button IsHitTestVisible="False"></Button>
+            <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal" Margin="3,0,3,0" >
+                <Button Height="18" Width="18" Click="SpeedDecreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
+                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/OfficialPluginsCore;component/compiler/Icons/icon_minus.png"></Image>
+                </Button>
+                <Image  Source="/OfficialPluginsCore;component/compiler/Icons/SlowMotion.png" Height="16" Margin="0,0,-3,0"></Image>
+                <TextBlock VerticalAlignment="Center" Text="{Binding CurrentGameSpeed, FallbackValue=100%}" Margin="0,0,2,0"></TextBlock>
+                <Button Height="18" Width="18" Click="SpeedIncreaseClicked" Background="Transparent" BorderBrush="Transparent">
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
+                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                    <Image  Source="/OfficialPluginsCore;component/compiler/Icons/icon_plus.png"></Image>
+                </Button>
+            </StackPanel>
+            
+        </Grid>
+        <Button VerticalAlignment="Center" Style="{DynamicResource ButtonStyleDark}" Margin="2,0,0,0" MinWidth="22"
+                Visibility="{Binding UnpauseButtonVisibility}"
+                
+                Click="HandleUnpauseClicked"
+            >
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/Unpause.png" Margin="3"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Unpause Game</TextBlock>
+                        <TextBlock>Unpauses the game</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" MinWidth="22"
+                Visibility="{Binding UnpauseButtonVisibility}"
+                Click="HandleAdvanceOneFrameClicked"
+        >
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/AdvanceOneFrame.png" Margin="0"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Advance One Frame</TextBlock>
+                        <TextBlock>Unpauses the game for one frame, then pauses it again</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleStopClicked">
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/stop.png" Margin="1"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Stop Game</TextBlock>
+                        <TextBlock>Kills the currently-running game process</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+        <Button VerticalAlignment="Center" Margin="2,0,0,0" Click="HandleRestartGameCurrentScreenClicked"
+                Visibility="{Binding WhileRunningViewVisibility}">
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/RestartGameOnCurrentScreen.png" Margin="0"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Restart Game on Current Screen</TextBlock>
+                        <TextBlock>Kills, builds, and runs the game. Game restarts on the current screen if Glue is connected to the game.</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+
+        <Button VerticalAlignment="Center"  Margin="2,0,0,0" Click="HandleRestartScreenClicked"
+                Visibility="{Binding GlueViewCommandUiVisibility}">
+            <Image Source="/OfficialPluginsCore;component/compiler/Icons/RestartScreen.png" Margin="1"></Image>
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold">Restart Screen</TextBlock>
+                        <TextBlock>Restarts the current screen, reloading all non-global content</TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+    </StackPanel>
+</UserControl>

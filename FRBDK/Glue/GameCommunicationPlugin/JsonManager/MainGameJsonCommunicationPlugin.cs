@@ -1,10 +1,10 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using GameCommunicationPlugin.CodeGeneration;
 using GameCommunicationPlugin.Common;
 using GameJsonCommunicationPlugin.Common;
 using Newtonsoft.Json;
-using OfficialPlugins.Compiler.CodeGeneration;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficialPlugins.Compiler.CodeGeneration
+namespace GameCommunicationPlugin.CodeGeneration
 {
     public static class EmbeddedCodeManager
     {

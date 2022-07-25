@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <Platforms>x86</Platforms>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RootNamespace>GameCommunicationPlugin</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,11 +17,68 @@
     <Compile Remove="Embedded\Json\Operations\GluxCommands.cs" />
     <Compile Remove="Embedded\Json\Operations\JsonOperations.cs" />
     <Compile Remove="Embedded\Json\ScreenJsonContainer.cs" />
+    <Compile Remove="GlueControl\Embedded\CommandReceiver.cs" />
+    <Compile Remove="GlueControl\Embedded\Dtos.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\CameraLogic.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\CopyPasteManager.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\EditingManager.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\EditorVisuals.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Guides.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\GlueState.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\GluxCommands.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\ObjectFinder.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Managers\RefreshCommands.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Markers\MeasurementMarker.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Markers\PolygonPointHandles.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Markers\SelectionMarker.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\MoveObjectToContainerLogic.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\SelectionLogic.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\VariableAssignmentLogic.cs" />
+    <Compile Remove="GlueControl\Embedded\Editing\Visuals\Arrow.cs" />
+    <Compile Remove="GlueControl\Embedded\Forms\ObjectCreationWindow.cs" />
+    <Compile Remove="GlueControl\Embedded\GlueCallsClassGenerationManager.cs" />
+    <Compile Remove="GlueControl\Embedded\GlueControlManager.cs" />
+    <Compile Remove="GlueControl\Embedded\InstanceLogic.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\CustomVariable.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\GlueElement.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\GlueElementFileReference.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\GlueProjectSave.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\GlueProjectSaveExtensions.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\IElementExtensionMethods.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\INamedObjectContainer.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\NamedObjectSave.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\StateSave.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\StateSaveCategory.cs" />
+    <Compile Remove="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
+    <Compile Remove="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Views\BuildSettingsWindow.xaml" />
-    <None Remove="Views\BuildTabView.xaml" />
+    <None Remove="GlueControl\Icons\AdvanceOneFrame.png" />
+    <None Remove="GlueControl\Icons\build.png" />
+    <None Remove="GlueControl\Icons\Edit.png" />
+    <None Remove="GlueControl\Icons\EditDeselected.png" />
+    <None Remove="GlueControl\Icons\FirewallEnablePopup.png" />
+    <None Remove="GlueControl\Icons\FocusOnSelection.png" />
+    <None Remove="GlueControl\Icons\icon_magnify.png" />
+    <None Remove="GlueControl\Icons\icon_minus.png" />
+    <None Remove="GlueControl\Icons\icon_plus.png" />
+    <None Remove="GlueControl\Icons\Pause.png" />
+    <None Remove="GlueControl\Icons\play.png" />
+    <None Remove="GlueControl\Icons\RestartGameOnCurrentScreen.png" />
+    <None Remove="GlueControl\Icons\RestartScreen.png" />
+    <None Remove="GlueControl\Icons\Run.png" />
+    <None Remove="GlueControl\Icons\SelectObjectsIcon.png" />
+    <None Remove="GlueControl\Icons\SelectStartupScreen.png" />
+    <None Remove="GlueControl\Icons\Settings.png" />
+    <None Remove="GlueControl\Icons\SlowMotion.png" />
+    <None Remove="GlueControl\Icons\stop.png" />
+    <None Remove="GlueControl\Icons\Unpause.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +89,45 @@
     <EmbeddedResource Include="Embedded\Json\Operations\GluxCommands.cs" />
     <EmbeddedResource Include="Embedded\Json\Operations\JsonOperations.cs" />
     <EmbeddedResource Include="Embedded\Json\ScreenJsonContainer.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\CommandReceiver.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Dtos.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\CameraLogic.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\CopyPasteManager.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\EditingManager.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\EditorVisuals.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Guides.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GenerateCodeCommands.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueCommands.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueCommandsStateBase.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GlueState.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\GluxCommands.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\ObjectFinder.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Managers\RefreshCommands.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Markers\MeasurementMarker.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Markers\PolygonPointHandles.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Markers\SelectionMarker.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Markers\TileShapeCollectionMarker.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\MoveObjectToContainerLogic.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\SelectionLogic.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\VariableAssignmentLogic.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Editing\Visuals\Arrow.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Forms\ObjectCreationWindow.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\GlueCallsClassGenerationManager.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\GlueControlManager.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\InstanceLogic.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\CustomVariable.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\GlueElement.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\GlueElementFileReference.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\GlueProjectSave.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\GlueProjectSaveExtensions.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\IElementExtensionMethods.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\INamedObjectContainer.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\NamedObjectSave.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\StateSave.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\StateSaveCategory.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,18 +140,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Include="Views\BuildSettingsWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\BuildTabView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Embedded\GlueCommunication\GameConnectionManager.cs" />
+    <Resource Include="GlueControl\Icons\AdvanceOneFrame.png" />
+    <Resource Include="GlueControl\Icons\build.png" />
+    <Resource Include="GlueControl\Icons\Edit.png" />
+    <Resource Include="GlueControl\Icons\EditDeselected.png" />
+    <Resource Include="GlueControl\Icons\FirewallEnablePopup.png" />
+    <Resource Include="GlueControl\Icons\FocusOnSelection.png" />
+    <Resource Include="GlueControl\Icons\icon_magnify.png" />
+    <Resource Include="GlueControl\Icons\icon_minus.png" />
+    <Resource Include="GlueControl\Icons\icon_plus.png" />
+    <Resource Include="GlueControl\Icons\Pause.png" />
+    <Resource Include="GlueControl\Icons\play.png" />
+    <Resource Include="GlueControl\Icons\RestartGameOnCurrentScreen.png" />
+    <Resource Include="GlueControl\Icons\RestartScreen.png" />
+    <Resource Include="GlueControl\Icons\Run.png" />
+    <Resource Include="GlueControl\Icons\SelectObjectsIcon.png" />
+    <Resource Include="GlueControl\Icons\SelectStartupScreen.png" />
+    <Resource Include="GlueControl\Icons\Settings.png" />
+    <Resource Include="GlueControl\Icons\SlowMotion.png" />
+    <Resource Include="GlueControl\Icons\stop.png" />
+    <Resource Include="GlueControl\Icons\Unpause.png" />
   </ItemGroup>
 
   <ItemGroup>
