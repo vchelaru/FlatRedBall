@@ -147,7 +147,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             #region Additional serialized Objects (from json)
             if (!string.IsNullOrEmpty(vm.NamedObjectSavesSerialized))
             {
-                Add("Adding additional Objects", () =>
+                AddTask("Adding additional Objects", () =>
                     ImportAdditionalObjects(vm.NamedObjectSavesSerialized));
             }
             #endregion
@@ -250,7 +250,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return namedObjectSave;
         }
 
-        private void ImportAdditionalObjects(string namedObjectSavesSerialized)
+        private async Task ImportAdditionalObjects(string namedObjectSavesSerialized)
         {
             Dictionary<string, List<NamedObjectSave>> deserialized = null;
 
@@ -302,10 +302,10 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             foreach (var elementAndNosList in sortedImports)
             {
-                AddNamedsObjectToElement(elementAndNosList.NosList, elementAndNosList.Element);
+                await AddNamedsObjectToElement(elementAndNosList.NosList, elementAndNosList.Element);
             }
 
-            static void AddNamedsObjectToElement(List<NamedObjectSave> nosList, GlueElement glueElement)
+            static async Task AddNamedsObjectToElement(List<NamedObjectSave> nosList, GlueElement glueElement)
             {
                 if (glueElement != null)
                 {
@@ -321,7 +321,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                         if (nos.ExposedInDerived)
                         {
-                            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                            await EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                                 nameof(nos.ExposedInDerived),
                                 // pretend the value changed from false -> true
                                 false,

@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteHasTolerateMissingAnimations;
+        public const int LatestVersion = (int)GluxVersions.IPlatformer;
 
         public int FileVersion { get; set; }
 
