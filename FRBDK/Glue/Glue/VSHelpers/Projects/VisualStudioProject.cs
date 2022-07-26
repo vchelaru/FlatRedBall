@@ -931,6 +931,30 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
+        /// <summary>
+        /// Determines if the the project has a project reference with the specified csproj name.  Project reference
+        /// nodes have an `Include` value that contains a relative path to the csproj.  The search will do a
+        /// string contains to find a `ProjectReference` node that contains the csproj name, regardless of the pathing
+        /// in the node.
+        /// </summary>
+        public bool HasProjectReference(string csprojName)
+        {
+            if (string.IsNullOrWhiteSpace(csprojName))
+            {
+                return false;
+            }
+            
+            if (!csprojName.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                csprojName += ".csproj";
+            }
+
+            return mProject.AllEvaluatedItems
+                .Where(x => x.ItemType == "ProjectReference")
+                .Where(x => x.EvaluatedInclude.Contains(csprojName, StringComparison.OrdinalIgnoreCase))
+                .Any();
+        }
+
         public void AddNugetPackage(string packageName, string versionNumber)
         {
             lock(this)
