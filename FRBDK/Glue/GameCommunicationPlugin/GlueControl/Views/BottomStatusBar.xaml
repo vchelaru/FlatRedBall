@@ -20,9 +20,9 @@
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
-                    <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/icon_minus.png"></Image>
+                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_minus.png"></Image>
                 </Button>
-                <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/icon_magnify.png" Height="16" Margin="0,0,-3,0"></Image>
+                <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_magnify.png" Height="16" Margin="0,0,-3,0"></Image>
                 <TextBlock VerticalAlignment="Center" Text="{Binding CurrentZoomLevelDisplay, FallbackValue=100%}" Margin="2,0,2,0"></TextBlock>
                 <Button Height="18" Width="18" Background="Transparent" Click="ZoomPlusClicked"
                         BorderBrush="Transparent" Visibility="{Binding EditingToolsVisibility}">
@@ -34,7 +34,7 @@
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
-                    <Image  Source="/OfficialPluginsCore;component/Compiler/Icons/icon_plus.png"></Image>
+                    <Image  Source="/GameCommunicationPlugin;component/GlueControl/Icons/icon_plus.png"></Image>
                 </Button>
             </StackPanel>
 

@@ -18,7 +18,6 @@ namespace GameJsonCommunicationPlugin.JsonManager
     {
         private const string PacketType_JsonUpdate = "JsonUpdate";
         private GlueJsonManager _glueJsonManager;
-        private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
 
         public override string FriendlyName => "Game JSON Communication Plugin";
 
@@ -53,9 +52,6 @@ namespace GameJsonCommunicationPlugin.JsonManager
             ReactToEntityJsonSave += HandleReactToEntityJsonSave;
 
             ReactToLoadedGlux += HandleGluxLoaded;
-
-            game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
-            RegisterCodeGenerator(game1GlueCommunicationGenerator);
         }
 
         private void HandleGluxLoaded()

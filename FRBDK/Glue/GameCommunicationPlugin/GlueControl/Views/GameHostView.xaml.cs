@@ -182,7 +182,7 @@ namespace OfficialPlugins.GameHost.Views
             var attemptsToConnect = 0;
             int maxAttempts = 6;
             bool succeeded = false;
-            var dto = new Compiler.Dtos.SetBorderlessDto { IsBorderless = true };
+            var dto = new GameCommunicationPlugin.GlueControl.Dtos.SetBorderlessDto { IsBorderless = true };
 
             do
             {

@@ -9,6 +9,9 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using GameCommunicationPlugin.CodeGeneration;
+using EmbeddedCodeManager = GameCommunicationPlugin.CodeGeneration.EmbeddedCodeManager;
 
 namespace GameCommunicationPlugin
 {
@@ -16,6 +19,7 @@ namespace GameCommunicationPlugin
     public class MainGameCommunicationPlugin : PluginBase
     {
         private GameConnectionManager _gameCommunicationManager;
+        private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
 
         public override string FriendlyName => "Game Communication Plugin";
 
@@ -37,6 +41,9 @@ namespace GameCommunicationPlugin
             _gameCommunicationManager.Port = 8888;
             _gameCommunicationManager.OnPacketReceived += HandleOnPacketReceived;
             ReactToLoadedGlux += HandleGluxLoaded;
+
+            game1GlueCommunicationGenerator = new Game1GlueCommunicationGenerator(true, 8888);
+            RegisterCodeGenerator(game1GlueCommunicationGenerator);
 
             //Task.Run(() =>
             //{
@@ -93,6 +100,17 @@ namespace GameCommunicationPlugin
                         Succeeded = returnPacket != null,
                         Data = returnPacket?.Payload
                     });
+
+                case "GameCommunication_SetPrimarySettings":
+                    var sPayload = JObject.Parse(payload);
+
+                    _gameCommunicationManager.Port = sPayload.ContainsKey("PortNumber") ? sPayload.Value<int>("PortNumber") : 8888;
+                    _gameCommunicationManager.DoConnections = sPayload.ContainsKey("IsGlueControlManagerGenerationEnabled") ? sPayload.Value<bool>("IsGlueControlManagerGenerationEnabled") : false;
+                    game1GlueCommunicationGenerator.PortNumber = _gameCommunicationManager.Port;
+                    game1GlueCommunicationGenerator.IsGameCommunicationEnabled = _gameCommunicationManager.DoConnections;
+
+                    return "";
+
             }
 
             return null;

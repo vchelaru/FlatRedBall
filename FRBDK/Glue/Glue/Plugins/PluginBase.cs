@@ -197,7 +197,7 @@ namespace FlatRedBall.Glue.Plugins
     public abstract class PluginBase : IPlugin
     {
         Dictionary<ToolStripMenuItem, ToolStripMenuItem> toolStripItemsAndParents = new Dictionary<ToolStripMenuItem, ToolStripMenuItem>();
-
+        protected static ConcurrentDictionary<Guid, object> PluginStorage = new ConcurrentDictionary<Guid, object>();
 
         #region Fields/Properties
 

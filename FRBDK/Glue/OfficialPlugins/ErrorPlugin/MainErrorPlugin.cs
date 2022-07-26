@@ -130,5 +130,16 @@ namespace OfficialPlugins.ErrorPlugin
                 errorListViewModel.Errors.Clear();
             }
         }
+
+        protected override Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
+        {
+            switch(eventName)
+            {
+                case "ErrorPlugin_GetHasErrors":
+                    return Task.FromResult(HasErrors ? "true" : "false");
+            }
+
+            return Task.FromResult((string)null);
+        }
     }
 }

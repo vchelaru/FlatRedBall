@@ -35,7 +35,7 @@
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
-                    <Image Source="/OfficialPluginsCore;component/Compiler/Icons/Edit.png" IsHitTestVisible="False" />
+                    <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/Edit.png" IsHitTestVisible="False" />
                 </Button>
 
                 <views:WhileRunningView Margin="0,2,6,0" Height="28"
@@ -66,7 +66,7 @@
                     <TextBlock Margin="3" VerticalAlignment="Center">Enable Game Embed and Edit in Settings</TextBlock>
                 </Grid>
                 <Button VerticalAlignment="Top" Width="24" Click="GlueViewSettingsButtonClicked">
-                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/Settings.png"></Image>
+                    <Image IsHitTestVisible="False" Source="/GameCommunicationPlugin;component/GlueControl/Icons/Settings.png"></Image>
                 </Button>
             </StackPanel>
         </Grid>
@@ -107,7 +107,7 @@
                                     </StackPanel>
                                 </ToolTip>
                             </Button.ToolTip>
-                            <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/SelectStartupScreen.png"></Image>
+                            <Image  IsHitTestVisible="False" Source="/GameCommunicationPlugin;component/GlueControl/Icons/SelectStartupScreen.png"></Image>
                         </Button>
 
                         <Button Click="FocusButtonClicked" 
@@ -122,7 +122,7 @@
                                     </StackPanel>
                                 </ToolTip>
                             </Button.ToolTip>
-                            <Image  IsHitTestVisible="False" Source="/OfficialPluginsCore;component/Compiler/Icons/FocusOnSelection.png"></Image>
+                            <Image  IsHitTestVisible="False" Source="/GameCommunicationPlugin;component/GlueControl/Icons/FocusOnSelection.png"></Image>
                         </Button>
 
                     </StackPanel>

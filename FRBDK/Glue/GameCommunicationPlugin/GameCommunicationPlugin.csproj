@@ -10,7 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Embedded\GlueCommunication\GameConnectionManager.cs" />
+    <Compile Remove="Embedded\GlueCommunication\**" />
+    <EmbeddedResource Remove="Embedded\GlueCommunication\**" />
+    <None Remove="Embedded\GlueCommunication\**" />
+    <Page Remove="Embedded\GlueCommunication\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Embedded\Json\GlueJsonManager.cs" />
     <Compile Remove="Embedded\Json\JsonContainer.cs" />
     <Compile Remove="Embedded\Json\JsonManager.cs" />
@@ -140,7 +146,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Embedded\GlueCommunication\GameConnectionManager.cs" />
     <Resource Include="GlueControl\Icons\AdvanceOneFrame.png" />
     <Resource Include="GlueControl\Icons\build.png" />
     <Resource Include="GlueControl\Icons\Edit.png" />

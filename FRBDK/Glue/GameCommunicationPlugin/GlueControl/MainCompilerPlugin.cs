@@ -291,7 +291,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
 
 
-                var newViewModel = new ToolbarEntityAndStateViewModel();
+                var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
                 newViewModel.GlueElement = entitySave;
                 newViewModel.StateSave = state;
                 newViewModel.Clicked += () =>
@@ -404,7 +404,8 @@ namespace GameCommunicationPlugin.GlueControl
 
                 if (succeeded)
                 {
-                    bool hasErrors = GetIfHasErrors();
+                    var result = await ReactToPluginEventWithReturn("ErrorPlugin_GetHasErrors", "");
+                    bool hasErrors = result == "true" ? true : false;
                     if (hasErrors)
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
@@ -613,6 +614,12 @@ namespace GameCommunicationPlugin.GlueControl
 
             game1GlueControlGenerator.PortNumber = model.PortNumber;
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = model.GenerateGlueControlManagerCode && IsFrbNewEnough();
+
+            ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
+            {
+                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
+                PortNumber = game1GlueControlGenerator.PortNumber
+            }));
 
             _refreshManager.PortNumber = model.PortNumber;
 
@@ -921,6 +928,13 @@ namespace GameCommunicationPlugin.GlueControl
             game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEditMode && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
+
+            var returnValue = await ReactToPluginEventWithReturn("GameCommunication_SetPrimarySettings", JsonConvert.SerializeObject(new
+            {
+                IsGlueControlManagerGenerationEnabled = game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled,
+                PortNumber = game1GlueControlGenerator.PortNumber
+            }));
+
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
@@ -1019,16 +1033,6 @@ namespace GameCommunicationPlugin.GlueControl
             //        });
             //    }
             //};
-        }
-
-
-        private static bool GetIfHasErrors()
-        {
-            var errorPlugin = PluginManager.AllPluginContainers
-                                .FirstOrDefault(item => item.Plugin is ErrorPlugin.MainErrorPlugin)?.Plugin as ErrorPlugin.MainErrorPlugin;
-
-            var hasErrors = errorPlugin?.HasErrors == true;
-            return hasErrors;
         }
 
         private void OutputSuccessOrFailure(bool succeeded)

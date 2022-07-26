@@ -73,8 +73,13 @@ namespace GameJsonCommunicationPlugin.Common
             }
             set
             {
-                _port = value;
-                StartListening();
+                if(_port != value)
+                {
+                    _port = value;
+                    _listener?.Dispose();
+                    _client?.Dispose();
+                }
+                
             }
         }
         private IPEndPoint EndPoint

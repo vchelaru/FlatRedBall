@@ -4,10 +4,13 @@ using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using GameCommunicationPlugin.GlueControl.Models;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +24,10 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
 
         public ICommand ForceRefreshPreviewCommand { get; private set; }
         public ICommand ViewInExplorerCommand { get;private set; }
+
+        private Func<string, string, Task<string>> _pluginAction;
+        private ConcurrentDictionary<Guid, object> _pluginStorge;
+
         void RaiseClicked() => Clicked?.Invoke();
         void RaiseRemoveFromToolbar() => RemovedFromToolbar?.Invoke();
         void RaiseForceRefreshPreview() => ForceRefreshPreview?.Invoke();
@@ -32,12 +39,14 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         public event Action DragLeave;
         public event Action ViewInExplorer;
 
-        public ToolbarEntityAndStateViewModel()
+        public ToolbarEntityAndStateViewModel(Func<string, string, Task<string>> pluginAction, ConcurrentDictionary<Guid, object> pluginStorage)
         {
             ClickedCommand = new Command(RaiseClicked);
             RemoveFromToolbarCommand = new Command(RaiseRemoveFromToolbar);
             ForceRefreshPreviewCommand = new Command(RaiseForceRefreshPreview);
             ViewInExplorerCommand = new Command(RaiseViewInExplorerCommand);
+            _pluginAction = pluginAction;
+            _pluginStorge = pluginStorage;
         }
 
         public GlueElement GlueElement { get; set; }
@@ -111,18 +120,19 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
 
             if (!imageFilePath.Exists() || force)
             {
-                var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(null, GlueElement, StateSave);
-                if(image != null)
+                var geId = Guid.NewGuid();
+                var ssId = Guid.NewGuid();
+
+                _pluginStorge.TryAdd(geId, GlueElement);
+                _pluginStorge.TryAdd(ssId, StateSave);
+
+                var result = _pluginAction("PreviewGenerator_SaveImageSourceForSelection", JsonConvert.SerializeObject(new
                 {
-                    try
-                    {
-                        PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, GlueElement, StateSave);
-                    }
-                    catch (Exception ex)
-                    {
-                        GlueCommands.Self.PrintError(ex.ToString());
-                    }
-                }
+                    ImageFilePath = imageFilePath,
+                    NamedObjectSave = (Guid?)null,
+                    Element = geId,
+                    State = ssId
+                })).Result;
             }
 
             if (imageFilePath.Exists())
@@ -157,14 +167,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
                     bitmap.Freeze();
                     ImageSource = bitmap;
                 }
-
-
-
-
-
             }
-
-
         }
 
         public void HandleDragLeave() => DragLeave?.Invoke();

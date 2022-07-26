@@ -11,7 +11,7 @@
         <StackPanel>
             <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
             <StackPanel Visibility="{Binding ShowWindowDefenderUi}" Margin="6">
-                <Image MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/OfficialPluginsCore;component/Compiler/Icons/FirewallEnablePopup.png" ></Image>
+                <Image MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/GameCommunicationPlugin;component/GlueControl/Icons/FirewallEnablePopup.png" ></Image>
                 <TextBlock TextWrapping="Wrap">*Running your game with edit mode enabled requires a live connection to the FlatRedBall Editor. Click Allow Access to enable the connection.</TextBlock>
             </StackPanel>
         

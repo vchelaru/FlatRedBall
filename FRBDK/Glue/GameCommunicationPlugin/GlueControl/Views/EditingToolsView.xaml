@@ -8,7 +8,7 @@
              d:DesignWidth="28">
     <StackPanel>
         <ToggleButton x:Name="SelectToggleButton" Height="24" Width="24" Click="SelectObjectsToggleClicked">
-            <Image Source="/OfficialPluginsCore;component/Compiler/Icons/SelectObjectsIcon.png" ></Image>
+            <Image Source="/GameCommunicationPlugin;component/GlueControl/Icons/SelectObjectsIcon.png" ></Image>
         </ToggleButton>
         <StackPanel x:Name="TileButtonsStack">
         </StackPanel>

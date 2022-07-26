@@ -7,7 +7,7 @@
              mc:Ignorable="d" >
     <Grid>
         <!--<Button Width="22" Height="22" Click="HandleButtonClick" IsEnabled="{Binding IsToolbarPlayButtonEnabled}">
-            <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
+            <Image ToolTip="Run Game" Source="/GameCommunicationPlugin;component/GlueControl/Icons/play.png"></Image>
         </Button>-->
 
         <xctk:SplitButton x:Name="SplitButton" Width="148" Height="22" 
@@ -17,7 +17,7 @@
                           Opened="SplitButton_Opened"
                           Closed="SplitButton_Closed">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                <Image ToolTip="Run Game" Source="/OfficialPluginsCore;component/Compiler/Icons/play.png"></Image>
+                <Image ToolTip="Run Game" Source="/GameCommunicationPlugin;component/GlueControl/Icons/play.png"></Image>
                 <TextBlock Margin="5,0,0,0" Text="{Binding StartupScreenName}"></TextBlock>
             </StackPanel>
             <xctk:SplitButton.DropDownContent>
