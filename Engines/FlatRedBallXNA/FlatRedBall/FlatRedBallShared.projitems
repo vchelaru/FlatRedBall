@@ -128,9 +128,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\BehaviorBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ButtonBehavior.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ToggleBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\ISelectable.cs" />
@@ -299,5 +296,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Gui\Behaviors\" />
   </ItemGroup>
 </Project>

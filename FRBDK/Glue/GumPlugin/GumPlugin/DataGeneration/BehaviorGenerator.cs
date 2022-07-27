@@ -45,7 +45,8 @@ namespace GumPlugin.DataGeneration
                             "Highlighted",
                             "Pushed",
                             "HighlightedFocused",
-                            "Focused"
+                            "Focused",
+                            "DisabledFocused",
                         }
                     }
                 }
@@ -72,6 +73,11 @@ namespace GumPlugin.DataGeneration
                             "HighlightedOff",
                             "PushedOn",
                             "PushedOff",
+
+                            "FocusedOn",
+                            "FocusedOff",
+                            "HighlightedFocusedOn",
+                            "HighlightedFocusedOff",
                         }
                     }
                 }
@@ -105,7 +111,11 @@ namespace GumPlugin.DataGeneration
                             "Enabled",
                             "Disabled",
                             "Highlighted",
-                            "Pushed"
+                            "Pushed",
+                            "HighlightedFocused",
+                            "Focused",
+                            "DisabledFocused"
+
                         }
                     }
                 },
@@ -212,6 +222,7 @@ namespace GumPlugin.DataGeneration
                             "Enabled",
                             "Highlighted",
                             "Selected",
+                            "Focused"
                         }
                     }
                 }
@@ -266,7 +277,13 @@ namespace GumPlugin.DataGeneration
                             "HighlightedOn",
                             "HighlightedOff",
                             "PushedOn",
-                            "PushedOff"
+                            "PushedOff",
+
+                            "FocusedOn",
+                            "FocusedOff",
+
+                            "HighlightedFocusedOn",
+                            "HighlightedFocusedOff",
                         }
                     }
                 },
@@ -343,6 +360,19 @@ namespace GumPlugin.DataGeneration
                 ControlName = "ScrollViewer",
                 // no categories needed (yet?)
                 //GumStateCategoryName = null,
+                GumStateCategory = new List<GumStateCategory>
+                {
+                    new GumStateCategory
+                    {
+                        Name = "ScrollBarVisibility",
+                        States = new[]
+                        {
+                            "NoScrollBar",
+                            "VerticalScrollVisible"
+                        }
+                    }
+                },
+
 
                 RequiredInstances = new List<BehaviorInstanceSave>
                 {
@@ -378,6 +408,11 @@ namespace GumPlugin.DataGeneration
                     new GumStateCategory
                     {
                         Name = "SliderCategory",
+                        States = new[]
+                        {
+                            "Enabled",
+                            "Focused"
+                        }
                     }
                 },
 
@@ -536,7 +571,27 @@ namespace GumPlugin.DataGeneration
 
             TreeViewToggleButton = new FormsControlInfo
             {
-                ComponentFile = "TreeViewToggleButton"
+                ComponentFile = "TreeViewToggleButton",
+
+                GumStateCategory = new List<GumStateCategory>
+                {
+                    new GumStateCategory
+                    {
+                        Name = "ToggleCategory",
+                        States = new[]
+                        {
+                            "EnabledOn",
+                            "EnabledOff",
+                            "DisabledOn",
+                            "DisabledOff",
+
+                            "HighlightedOn",
+                            "HighlightedOff",
+                            "PushedOn",
+                            "PushedOff",
+                        }
+                    }
+                }
             };
 
             UserControl = new FormsControlInfo
