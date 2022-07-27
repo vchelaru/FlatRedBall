@@ -5,6 +5,7 @@ using GameCommunicationPlugin.CodeGeneration;
 using GameCommunicationPlugin.Common;
 using GameJsonCommunicationPlugin.Common;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -190,6 +191,41 @@ namespace GameJsonCommunicationPlugin.JsonManager
                         })
                     });
                 }
+            }
+        }
+
+        public override void HandleEvent(string eventName, string payload)
+        {
+            base.HandleEvent(eventName, payload);
+
+            switch(eventName)
+            {
+                case "GameJson_SetSelection":
+                    //var pObj = JObject.Parse(payload);
+                    var editJsonMgr = _glueJsonManager.GetEditState();
+                    var json = (JObject)editJsonMgr.GetCurrentUIJson();
+
+                    json["SelectionDTO"] = JObject.Parse(payload);
+
+                    var patch = editJsonMgr.ApplyUIUpdate(json);
+
+                    if (patch != null)
+                    {
+                        Debug.Print($"Changes for Edit State");
+                        Debug.Print(patch.ToString());
+
+                        ReactToPluginEvent("GameCommunication_SendPacket", new GameConnectionManager.Packet
+                        {
+                            PacketType = PacketType_JsonUpdate,
+                            Payload = JsonConvert.SerializeObject(new JsonPayload
+                            {
+                                Type = "EditState",
+                                Patch = patch.ToString()
+                            })
+                        });
+                    }
+
+                    break;
             }
         }
     }

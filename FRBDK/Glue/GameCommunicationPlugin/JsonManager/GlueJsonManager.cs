@@ -9,6 +9,8 @@ namespace GameJsonCommunicationPlugin.JsonManager
     {
         private Dictionary<string, JsonManager> _jsonScreenManagers = new Dictionary<string, JsonManager>();
         private Dictionary<string, JsonManager> _jsonEntityManagers = new Dictionary<string, JsonManager>();
+        private JsonManager _jsonManagerGlueProjectSave = null;
+        private JsonManager _jsonManagerEditState = new JsonManager(JObject.Parse("{}"));
 
         internal JsonManager GetScreen(string name)
         {
@@ -17,7 +19,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
             return manager;
         }
 
-        private JsonManager _jsonManagerGlueProjectSave = null;
+        
 
         public void AddScreen(string key, string json)
         {
@@ -44,6 +46,11 @@ namespace GameJsonCommunicationPlugin.JsonManager
         internal void SetGlueProjectSave(string json)
         {
             _jsonManagerGlueProjectSave = new JsonManager(JToken.Parse(json));
+        }
+
+        public JsonManager GetEditState()
+        {
+            return _jsonManagerEditState;
         }
 
         internal bool ContainsEntity(string entityName)

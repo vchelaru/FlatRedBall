@@ -99,7 +99,7 @@ namespace GameCommunicationPlugin.GlueControl
         public override void StartUp()
         {
             _commandSender = new CommandSender();
-            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, _commandSender);
+            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, _commandSender, ReactToPluginEvent);
             _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
             _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager, _commandSender);

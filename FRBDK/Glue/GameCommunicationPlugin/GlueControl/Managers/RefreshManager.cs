@@ -24,6 +24,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.CodeGeneration;
 using Newtonsoft.Json.Linq;
+using GameCommunicationPlugin.Common;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -39,10 +40,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     public class RefreshManager
     {
-        public RefreshManager(Func<string, string, Task<string>> eventCaller, CommandSender commandSender)
+        public RefreshManager(Func<string, string, Task<string>> eventCallerWithReturn, CommandSender commandSender, Action<string, string> eventCaller)
         {
-            _eventCaller = eventCaller;
+            _eventCallerWithReturn = eventCallerWithReturn;
             _commandSender = commandSender;
+            _eventCaller = eventCaller;
         }
 
         internal VariableSendingManager VariableSendingManager { get; set; }
@@ -697,8 +699,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         // no longer viewing a state now. The LastDtoPushedToGame is
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
-        private Func<string, string, Task<string>> _eventCaller;
+        private Func<string, string, Task<string>> _eventCallerWithReturn;
         private CommandSender _commandSender;
+        private Action<string, string> _eventCaller;
 
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
         {
@@ -757,8 +760,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     LastDtoPushedToGame = dto;
 
-                    await _commandSender.Send(dto);
-
+                    if (GameCommunicationHelper.IsFrbUsesJson())
+                    {
+                        _eventCaller("GameJson_SetSelection", JsonConvert.SerializeObject(dto));
+                    }
+                    else
+                    {
+                        await _commandSender.Send(dto);
+                    }
                 }
             }
         }
@@ -1018,13 +1027,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         printOutput("Could not get the game's screen, restarting game from startup screen");
                     }
 
-                    var response = await _eventCaller("Runner_Kill", "");
+                    var response = await _eventCallerWithReturn("Runner_Kill", "");
                 }
 
                 bool compileSucceeded = false;
                 if(!DoesTaskManagerHaveAnotherRestartTask())
                 {
-                    var compileResult = JObject.Parse(await _eventCaller("Compiler_DoCompile", JsonConvert.SerializeObject(new
+                    var compileResult = JObject.Parse(await _eventCallerWithReturn("Compiler_DoCompile", JsonConvert.SerializeObject(new
                     {
                         Configuration = "Debug",
                         PrintMsBuildCommand = false
@@ -1039,7 +1048,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     {
                         // If we aren't generating Glue, then the game will not be embedded, so prevent focus
                         var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
-                        var response = JObject.Parse(await _eventCaller("Runner_DoRun", JsonConvert.SerializeObject(new
+                        var response = JObject.Parse(await _eventCallerWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
                         {
                             PreventFocus = preventFocus,
                             RunArguments = screenToRestartOn

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
+using GameCommunicationPlugin.Common;
 
 namespace GameCommunicationPlugin.CodeGeneration
 {
@@ -63,6 +64,19 @@ namespace GameCommunicationPlugin.CodeGeneration
                 codeBlock.Line("    }");
                 codeBlock.Line("};");
                 codeBlock.Line("this.Exiting += (not, used) => gameConnectionManager.Dispose();");
+
+                if(GameCommunicationHelper.IsFrbUsesJson())
+                {
+                    codeBlock.Line("var gjmInstance = GlueCommunication.Json.GlueJsonManager.Instance;");
+                    codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
+                    codeBlock.Line("{");
+                    codeBlock.Line("    if (packet.Packet.PacketType == \"JsonUpdate\")");
+                    codeBlock.Line("    {");
+                    codeBlock.Line("        await gjmInstance.ProcessUpdatePacket(packet.Packet.Payload);");
+                    codeBlock.Line("    }");
+                    codeBlock.Line("};");
+                    codeBlock.Line("gjmInstance.HandleUpdatedSelection += async (dto) => await glueControlManager.ProcessMessage(dto);");
+                }
 
                 //Test Block
                 //codeBlock.Line("System.Threading.Tasks.Task.Run(() =>");
