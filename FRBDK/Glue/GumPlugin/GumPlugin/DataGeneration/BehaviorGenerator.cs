@@ -76,8 +76,11 @@ namespace GumPlugin.DataGeneration
 
                             "FocusedOn",
                             "FocusedOff",
+
                             "HighlightedFocusedOn",
                             "HighlightedFocusedOff",
+                            "DisabledFocusedOn",
+                            "DisabledFocusedOff"
                         }
                     }
                 }
@@ -284,6 +287,8 @@ namespace GumPlugin.DataGeneration
 
                             "HighlightedFocusedOn",
                             "HighlightedFocusedOff",
+                            "DisabledFocusedOn",
+                            "DisabledFocusedOff"
                         }
                     }
                 },
