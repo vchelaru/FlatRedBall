@@ -480,12 +480,18 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock = currentBlock.Function("public override void", "SetInitialState", "");
             {
+                // If we don't do this:
+                // This could be slow...
+                // This could cause UI to update when it shouldn't (such as a Forms object responding to size changes before it is completely built)
+                currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
+                currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
                 bool shouldCallBase = elementSave is StandardElementSave == false;
                 if(shouldCallBase)
                 {
                     currentBlock.Line("base.SetInitialState();");
                 }
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
+                currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
 
                 currentBlock.Line("CallCustomInitialize();");
             }

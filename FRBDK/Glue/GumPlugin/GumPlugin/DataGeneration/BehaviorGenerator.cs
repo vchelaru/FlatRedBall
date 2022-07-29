@@ -146,7 +146,17 @@ namespace GumPlugin.DataGeneration
             {
                 BehaviorName = "DialogBoxBehavior",
                 ComponentFile = "DialogBox",
-                ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox"
+                ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox",
+
+                RequiredInstances = new List<BehaviorInstanceSave>
+                {
+                    new BehaviorInstanceSave
+                    {
+                        Name = "TextInstance",
+                        BaseType = "Text"
+
+                    }
+                }
             };
 
             Label = new FormsControlInfo
@@ -180,7 +190,8 @@ namespace GumPlugin.DataGeneration
                         {
                             "Enabled",
                             "Disabled",
-                            "Focused"
+                            "Focused",
+                            "DisabledFocused"
                         }
                     }
                 },
@@ -235,7 +246,15 @@ namespace GumPlugin.DataGeneration
             {
                 BehaviorName = "OnScreenKeyboardBehavior",
                 ComponentFile = "Keyboard",
-                ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard"
+                ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard",
+
+                RequiredInstances = new List<BehaviorInstanceSave>
+                {
+                    new BehaviorInstanceSave
+                    {
+                        Name = "FocusIndicator",
+                    }
+                }
             };
 
             PasswordBox = new FormsControlInfo

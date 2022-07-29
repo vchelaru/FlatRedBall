@@ -246,7 +246,11 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock = currentBlock.Function("public override void", "SetInitialState", "");
             {
+                currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
+                currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
+                currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
+
             }
         }
 

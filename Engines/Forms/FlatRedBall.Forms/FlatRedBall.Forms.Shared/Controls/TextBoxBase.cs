@@ -209,10 +209,11 @@ namespace FlatRedBall.Forms.Controls
             Visual.SizeChanged += HandleVisualSizeChanged;
 
             this.textComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
-
+            caretComponent.X = 0;
             base.ReactToVisualChanged();
 
-            OffsetTextToKeepCaretInView();
+            // don't do this, the layout may not have yet been performed yet:
+            //OffsetTextToKeepCaretInView();
 
             HasFocus = false;
         }

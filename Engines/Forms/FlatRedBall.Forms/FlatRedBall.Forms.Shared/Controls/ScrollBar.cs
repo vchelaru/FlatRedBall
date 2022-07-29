@@ -188,7 +188,7 @@ namespace FlatRedBall.Forms.Controls
             thumb.Visual.YUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
             thumb.Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.Absolute;
 
-
+            thumb.Visual.YOrigin = RenderingLibrary.Graphics.VerticalAlignment.Top;
             thumb.Y = Microsoft.Xna.Framework.MathHelper.Lerp(MinThumbPosition, MaxThumbPosition, 
                 (float)ratioDown);
 
