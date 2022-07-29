@@ -188,10 +188,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void HandleLetterSelect()
         {
-            var selected = FocusIndicator.Parent;
+            var selected = FocusIndicator?.Parent;
 
             var wordAfterKey = String.Empty;
-            if(selected.Name.Length > 2)
+            if(selected?.Name.Length > 2)
             {
                 wordAfterKey = selected.Name.Substring(3);
             }
@@ -272,7 +272,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void HandleMove(RepositionDirections direction)
         {
-            var selected = FocusIndicator.Parent as IRenderableIpso;
+            var selected = FocusIndicator?.Parent as IRenderableIpso;
 
             float x = 0;
             float y = 0;
@@ -302,7 +302,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
 
             var newItem = GetKeyOrButtonAt(x, y);
-            if (newItem != null)
+            if (newItem != null && FocusIndicator != null)
             {
                 FocusIndicator.Parent = newItem;
             }
