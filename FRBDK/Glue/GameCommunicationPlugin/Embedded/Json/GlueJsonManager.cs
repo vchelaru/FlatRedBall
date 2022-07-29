@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JsonDiffPatchDotNet.Formatters.JsonPatch;
+using GlueControl.Dtos;
 
 namespace GlueCommunication.Json
 {
-    internal class GlueJsonManager
+    internal partial class GlueJsonManager
     {
         public static GlueJsonManager Instance { get; private set; }
 
@@ -17,10 +18,16 @@ namespace GlueCommunication.Json
             Instance = new GlueJsonManager();
         }
 
+        private const string PacketType_JsonUpdate = "JsonUpdate";
+
         private Dictionary<string, JsonManager> _jsonScreenManagers = new Dictionary<string, JsonManager>();
         private Dictionary<string, JsonManager> _jsonEntityManagers = new Dictionary<string, JsonManager>();
         private JsonManager _jsonManagerGlueProjectSave = null;
         private JsonManager _jsonManagerEditState = new JsonManager(JObject.Parse("{}"));
+
+        public event Action<string> HandleUpdatedSelection;
+        public event Action<GameConnectionManager.Packet> SendPacket;
+        public event Func<GameConnectionManager.Packet, Task<GameConnectionManager.Packet>> SendPacketWithResponse;
 
         internal JsonManager GetScreen(string name)
         {
@@ -61,11 +68,11 @@ namespace GlueCommunication.Json
             return _jsonManagerEditState;
         }
 
-        public Task ProcessUpdatePacket(string packet)
+        public Task ProcessUpdatePacket(GameConnectionManager.Packet packet)
         {
             return Task.Run(() =>
             {
-                var jObj = JObject.Parse(packet);
+                var jObj = JObject.Parse(packet.Payload);
 
                 switch (jObj["Type"].Value<string>())
                 {
@@ -80,6 +87,13 @@ namespace GlueCommunication.Json
                     default:
                         throw new NotImplementedException();
                 }
+
+                SendPacket(new GameConnectionManager.Packet
+                {
+                    InResponseTo = packet.Id,
+                    PacketType = "Response",
+                    Payload = ""
+                });
             });
         }
 
@@ -102,7 +116,5 @@ namespace GlueCommunication.Json
                     HandleUpdatedSelection("SelectObjectDto:" + (editStateJson["SelectionDTO"]?.ToString() ?? ""));
             }
         }
-
-        public event Action<string> HandleUpdatedSelection;
     }
 }

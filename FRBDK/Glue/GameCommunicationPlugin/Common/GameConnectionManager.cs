@@ -305,7 +305,7 @@ namespace GameJsonCommunicationPlugin.Common
                 {
                     do
                     {
-                        await Task.Delay(100);
+                        await Task.Delay(10);
 
                         if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
                         {

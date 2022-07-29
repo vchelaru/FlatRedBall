@@ -85,6 +85,10 @@ namespace GameCommunicationPlugin
         {
             switch (eventName)
             {
+                case "GameCommunication_SendPacket":
+                    var returnValue = await _gameCommunicationManager.SendItemWithResponse(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
+
+                    return returnValue?.Payload;
                 case "GameCommunication_Send_OldDTO":
                     var returnPacket = await _gameCommunicationManager.SendItemWithResponse(new GameConnectionManager.Packet
                     {

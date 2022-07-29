@@ -4,9 +4,11 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using GameCommunicationPlugin.CodeGeneration;
 using GameCommunicationPlugin.Common;
 using GameJsonCommunicationPlugin.Common;
+using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Reflection;
@@ -62,6 +64,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
                 EmbeddedCodeManager.Embed(new System.Collections.Generic.List<string>
                 {
                     "Json.GlueJsonManager.cs",
+                    "Json.GlueJsonManager.EditState.cs",
                     "Json.JsonContainer.cs",
                     "Json.JsonManager.cs",
                     "Json.ScreenJsonContainer.cs",
@@ -207,6 +210,7 @@ namespace GameJsonCommunicationPlugin.JsonManager
 
                     json["SelectionDTO"] = JObject.Parse(payload);
 
+                    //Apply to UI layer
                     var patch = editJsonMgr.ApplyUIUpdate(json);
 
                     if (patch != null)
@@ -214,18 +218,68 @@ namespace GameJsonCommunicationPlugin.JsonManager
                         Debug.Print($"Changes for Edit State");
                         Debug.Print(patch.ToString());
 
-                        ReactToPluginEvent("GameCommunication_SendPacket", new GameConnectionManager.Packet
+                        Task.Run(async () =>
                         {
-                            PacketType = PacketType_JsonUpdate,
-                            Payload = JsonConvert.SerializeObject(new JsonPayload
+                            //Send to Game
+                            try
                             {
-                                Type = "EditState",
-                                Patch = patch.ToString()
-                            })
+                                var returnValue = await ReactToPluginEventWithReturn("GameCommunication_SendPacket", JsonConvert.SerializeObject(new GameConnectionManager.Packet
+                                {
+                                    PacketType = PacketType_JsonUpdate,
+                                    Payload = JsonConvert.SerializeObject(new JsonPayload
+                                    {
+                                        Type = "EditState",
+                                        Patch = patch.ToString()
+                                    })
+                                }));
+                            }
+                            finally
+                            {
+                                //Update core layer
+                                editJsonMgr.UpdateJson(patch);
+                            }
                         });
                     }
 
                     break;
+
+                case "GameCommunicationPlugin_PacketReceived_JsonUpdate":
+                    var jObj = JObject.Parse(payload);
+
+                    switch (jObj["Type"].Value<string>())
+                    {
+                        case "EditState":
+                            var editStateMgr = _glueJsonManager.GetEditState();
+
+                            var operations = editStateMgr.UpdateJson(JToken.Parse(jObj["Patch"].Value<string>()));
+
+                            processOperations(operations);
+
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+
+                    break;
+            }
+        }
+
+        private void processOperations(IList<Operation> operations)
+        {
+            bool doSelection = false;
+
+            foreach (var operation in operations)
+            {
+                if (operation.Path.StartsWith("/SelectionDTO"))
+                    doSelection = true;
+            }
+
+            if (doSelection)
+            {
+                var editStateMgr = _glueJsonManager.GetEditState();
+                var editStateJson = editStateMgr.GetCurrentUIJson();
+
+                ReactToPluginEvent("GlueControl_SelectObject", editStateJson["SelectionDTO"]?.ToString() ?? "");
             }
         }
     }

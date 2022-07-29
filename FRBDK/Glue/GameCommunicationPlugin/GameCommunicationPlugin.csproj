@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Compile Remove="Embedded\Json\GlueJsonManager.cs" />
+    <Compile Remove="Embedded\Json\GlueJsonManager.EditState.cs" />
     <Compile Remove="Embedded\Json\JsonContainer.cs" />
     <Compile Remove="Embedded\Json\JsonManager.cs" />
     <Compile Remove="Embedded\Json\Operations\GluxCommands.cs" />
@@ -134,6 +135,10 @@
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Embedded\Json\GlueJsonManager.EditState.cs" />
   </ItemGroup>
 
   <ItemGroup>

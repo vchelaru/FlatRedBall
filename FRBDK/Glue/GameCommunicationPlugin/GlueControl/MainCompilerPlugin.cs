@@ -1209,6 +1209,12 @@ namespace GameCommunicationPlugin.GlueControl
                     _commandSender.IsConnected = false;
 
                     break;
+
+                case "GlueControl_SelectObject":
+
+                    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
+
+                    break;
             }
         }
         #endregion

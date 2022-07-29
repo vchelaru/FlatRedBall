@@ -67,15 +67,18 @@ namespace GameCommunicationPlugin.CodeGeneration
 
                 if(GameCommunicationHelper.IsFrbUsesJson())
                 {
+                    codeBlock.Line("GlueCommunication.GameConnectionManager.CanUseJsonManager = true;");
                     codeBlock.Line("var gjmInstance = GlueCommunication.Json.GlueJsonManager.Instance;");
                     codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
                     codeBlock.Line("{");
                     codeBlock.Line("    if (packet.Packet.PacketType == \"JsonUpdate\")");
                     codeBlock.Line("    {");
-                    codeBlock.Line("        await gjmInstance.ProcessUpdatePacket(packet.Packet.Payload);");
+                    codeBlock.Line("        await gjmInstance.ProcessUpdatePacket(packet.Packet);");
                     codeBlock.Line("    }");
                     codeBlock.Line("};");
                     codeBlock.Line("gjmInstance.HandleUpdatedSelection += async (dto) => await glueControlManager.ProcessMessage(dto);");
+                    codeBlock.Line("gjmInstance.SendPacket += (packet) => gameConnectionManager.SendItem(packet);");
+                    codeBlock.Line("gjmInstance.SendPacketWithResponse += (packet) => { return gameConnectionManager.SendItemWithResponse(packet); };");
                 }
 
                 //Test Block

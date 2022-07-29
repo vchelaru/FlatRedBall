@@ -386,7 +386,10 @@ namespace GlueControl
                 var split = elementGameType.Split('.').ToList().Skip(1);
                 dto.ElementNameGlue = string.Join("\\", split);
 
-                SendToGlue(dto);
+                if (GlueCommunication.GameConnectionManager.CanUseJsonManager)
+                    GlueCommunication.Json.GlueJsonManager.Instance.UpdateEditState(dto);
+                else
+                    SendToGlue(dto);
             }
         }
 

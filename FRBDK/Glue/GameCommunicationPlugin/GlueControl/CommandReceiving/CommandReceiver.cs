@@ -420,7 +420,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Select Object
 
-        private async void HandleSelectObject(SelectObjectDto selectObjectDto)
+        public async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
             var screen = await _commandSender.GetCurrentInGameScreen();

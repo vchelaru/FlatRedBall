@@ -1,4 +1,4 @@
-﻿﻿using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,14 +15,18 @@ namespace GlueCommunication
 {
     internal class GameConnectionManager : IDisposable
     {
+        public static bool CanUseJsonManager = false;
+
         private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
         {
-            if(packetReceivedArgs?.Packet?.Payload != "GetCommandsDto:{}")
+            if (packetReceivedArgs?.Packet?.Payload != "GetCommandsDto:{}")
                 Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
         }
 
         #region private
+        private Object _lock = new Object();
         private ConcurrentQueue<Packet> _sendItems = new ConcurrentQueue<Packet>();
+        private ConcurrentDictionary<Guid, WaitingPacket> _waitingPackets = new ConcurrentDictionary<Guid, WaitingPacket>();
         private IPAddress _addr;
         private Socket _server = null;
         private bool _isConnected = false;
@@ -63,6 +67,8 @@ namespace GlueCommunication
                 return new IPEndPoint(_addr, Port);
             }
         }
+
+        public double TimeoutInSeconds { get; set; } = 10;
         #endregion
 
         public GameConnectionManager(int port)
@@ -72,7 +78,7 @@ namespace GlueCommunication
             _addr = IPAddress.Loopback;
             StartConnecting();
             _periodicCheckTaskCancellationToken = new CancellationTokenSource();
-            StatusCheckTask(_periodicCheckTaskCancellationToken.Token);
+            var task = StatusCheckTask(_periodicCheckTaskCancellationToken.Token);
         }
 
         #region privateMethods
@@ -143,10 +149,19 @@ namespace GlueCommunication
                                 var packet = JsonConvert.DeserializeObject<Packet>(payload);
 
                                 if (packet != null)
-                                    OnPacketReceived(new PacketReceivedArgs
+                                {
+                                    if (packet.InResponseTo.HasValue && _waitingPackets.TryGetValue(packet.InResponseTo.Value, out var waitingPacket))
                                     {
-                                        Packet = packet
-                                    });
+                                        waitingPacket.ReceivedPacket = packet;
+                                    }
+                                    else
+                                    {
+                                        OnPacketReceived(new PacketReceivedArgs
+                                        {
+                                            Packet = packet
+                                        });
+                                    }
+                                }
                             }
 
                         }
@@ -167,15 +182,24 @@ namespace GlueCommunication
                     {
                         if (_sendItems.TryDequeue(out var item))
                         {
-                            var packet = JsonConvert.SerializeObject(item);
-                            var sendBytes = Encoding.ASCII.GetBytes(packet);
-                            long size = sendBytes.LongLength;
+                            try
+                            {
+                                var packet = JsonConvert.SerializeObject(item);
+                                var sendBytes = Encoding.ASCII.GetBytes(packet);
+                                long size = sendBytes.LongLength;
 
-                            //Send size
-                            _server.Send(BitConverter.GetBytes(size));
+                                //Send size
+                                _server.Send(BitConverter.GetBytes(size));
 
-                            //Send payload
-                            _server.Send(sendBytes);
+                                //Send payload
+                                _server.Send(sendBytes);
+                            }
+                            catch
+                            {
+                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to error");
+                                _waitingPackets.TryRemove(item.Id, out var tempValue);
+                                throw;
+                            }
                         }
                         else
                         {
@@ -217,6 +241,51 @@ namespace GlueCommunication
                 _sendItems.Enqueue(item);
         }
 
+        public async Task<Packet> SendItemWithResponse(Packet item)
+        {
+            if (_isConnected)
+            {
+                _sendItems.Enqueue(item);
+                _waitingPackets.TryAdd(item.Id, new WaitingPacket
+                {
+                    StartedWaitingAt = DateTime.Now,
+                    WaitingFor = item.Id
+                });
+
+                return await Task.Run(async () =>
+                {
+                    do
+                    {
+                        await Task.Delay(10);
+
+                        if (_waitingPackets.TryGetValue(item.Id, out var waitingPacket))
+                        {
+                            if (waitingPacket.ReceivedPacket != null)
+                            {
+                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                                return waitingPacket.ReceivedPacket;
+                            }
+                            else if ((DateTime.Now - waitingPacket.StartedWaitingAt).TotalSeconds > TimeoutInSeconds)
+                            {
+                                Debug.WriteLine($"Removing Wait Id: {item.Id} due to timeout");
+                                _waitingPackets.TryRemove(item.Id, out var tempPacket);
+                                return (Packet)null;
+                            }
+                        }
+                        else
+                        {
+                            return (Packet)null;
+                        }
+                    }
+                    while (true);
+                });
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public void Dispose()
         {
             try { _periodicCheckTaskCancellationToken.Cancel(); } catch { }
@@ -238,6 +307,13 @@ namespace GlueCommunication
         public class PacketReceivedArgs : EventArgs
         {
             public Packet Packet { get; set; }
+        }
+
+        public class WaitingPacket
+        {
+            public Guid WaitingFor { get; set; }
+            public DateTime StartedWaitingAt { get; set; }
+            public Packet ReceivedPacket { get; set; }
         }
         #endregion
 
