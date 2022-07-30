@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.AnimationEditorForms.IO;
+using FlatRedBall.AnimationEditorForms.Managers;
 using FlatRedBall.AnimationEditorForms.Preview;
 using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
@@ -35,6 +36,10 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
                 WireframeManager.Self.RefreshAll();
                 PreviewManager.Self.RefreshAll();
             }
+
+
+
+
         }
 
         public void RefreshTreeNode(AnimationChainSave animationChain) => TreeViewManager.Self.RefreshTreeNode(animationChain);
@@ -83,11 +88,11 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             }
         }
 
-        public void AskToDelete(AxisAlignedRectangleSave rectangle, AnimationFrameSave rectangleOwner)
+        public void AskToDelete(List<AxisAlignedRectangleSave> rectangles)
         {
             string message = "Delete the following rectangle(s)?\n\n";
 
-            //foreach (var chain in SelectedState.Self.SelectedChains)
+            foreach(var rectangle in rectangles)
             {
                 message += rectangle.Name + "\n";
             }
@@ -96,7 +101,15 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
 
             if (result == DialogResult.Yes)
             {
-                AppCommands.Self.DeleteAxisAlignedRectangle(rectangle, rectangleOwner);
+                // create a copy in case the list passed is the current rectangles
+                foreach(var rectangle in rectangles.ToArray())
+                {
+                    var frame = ObjectFinder.Self.GetAnimationFrameContaining(rectangle);
+                    if(frame != null)
+                    {
+                        AppCommands.Self.DeleteAxisAlignedRectangle(rectangle, frame);
+                    }
+                }
             }
         }
 

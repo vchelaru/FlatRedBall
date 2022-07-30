@@ -255,7 +255,7 @@
             this.PreviewSplitContainer.Panel2.Controls.Add(this.PreviewGraphicsControl);
             this.PreviewSplitContainer.Panel2.Controls.Add(this.previewControls1);
             this.PreviewSplitContainer.Size = new System.Drawing.Size(686, 357);
-            this.PreviewSplitContainer.SplitterDistance = 314;
+            this.PreviewSplitContainer.SplitterDistance = 175;
             this.PreviewSplitContainer.TabIndex = 1;
             // 
             // WireframeTopUiControl

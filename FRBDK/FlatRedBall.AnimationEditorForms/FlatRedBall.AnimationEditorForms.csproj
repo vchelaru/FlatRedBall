@@ -184,6 +184,7 @@
     <Compile Include="IO\ImageHeader.cs" />
     <Compile Include="IO\IoManager.cs" />
     <Compile Include="Managers\HotkeyManager.cs" />
+    <Compile Include="Managers\ObjectFinder.cs" />
     <Compile Include="Managers\WinformsCursorManager.cs" />
     <Compile Include="Preview\CameraController.cs" />
     <Compile Include="Preview\PreviewManager.cs" />

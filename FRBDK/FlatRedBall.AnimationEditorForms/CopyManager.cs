@@ -114,18 +114,24 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 if(pastedRectangle != null && SelectedState.Self.SelectedFrame != null)
                 {
-                    // do this before adding it to the list:
-                    pastedRectangle.Name = StringFunctions.MakeStringUnique(pastedRectangle.Name,
-                        SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
-                            .Select(item => item.Name).ToList()
-                        );
+                    var originalName = pastedRectangle.Name;
+                    var newRectangles = new List<AxisAlignedRectangleSave>();
+                    foreach(var frame in SelectedState.Self.SelectedFrames)
+                    {
+                        var rectangleToPaste = FileManager.CloneObject(pastedRectangle);
 
-                    SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(pastedRectangle);
+                        // do this before adding it to the list:
+                        rectangleToPaste.Name = StringFunctions.MakeStringUnique(originalName,
+                            frame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                                .Select(item => item.Name).ToList()
+                            );
 
-
+                        frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleToPaste);
+                        newRectangles.Add(rectangleToPaste);
+                        AppCommands.Self.RefreshTreeNode(frame);
+                    }
                     AppCommands.Self.RefreshAnimationFrameDisplay();
-                    AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedFrame);
-                    SelectedState.Self.SelectedRectangle = pastedRectangle;
+                    SelectedState.Self.SelectedRectangles = newRectangles;
                     AppCommands.Self.SaveCurrentAnimationChainList();
                 }
                 else if (pastedFrame != null && SelectedState.Self.SelectedChain != null)

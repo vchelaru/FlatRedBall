@@ -38,7 +38,7 @@ namespace FlatRedBall.AnimationEditorForms.Managers
                 case Keys.Delete:
                     if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
                     {
-                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedAxisAlignedRectangle, SelectedState.Self.SelectedFrame);
+                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedRectangles);
                     }
                     else if(SelectedState.Self.SelectedFrames.Count > 0)
                     {

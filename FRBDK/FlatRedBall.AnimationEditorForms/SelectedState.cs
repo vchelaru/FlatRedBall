@@ -262,7 +262,41 @@ namespace FlatRedBall.AnimationEditorForms
                 }
 
             }
+        }
 
+        public List<AxisAlignedRectangleSave> SelectedRectangles
+        {
+            get
+            {
+                var toReturn = new List<AxisAlignedRectangleSave>();
+                var treeNodes = SelectedNodes;
+
+                foreach (var treeNode in treeNodes)
+                {
+                    if (treeNode.Tag is AxisAlignedRectangleSave rectangle)
+                    {
+                        toReturn.Add(rectangle);
+                    }
+                }
+
+                return toReturn;
+            }
+            set
+            {
+                if(value?.Count > 0)
+                {
+                    List<TreeNode> treeNodesToSelect = new List<TreeNode>();
+                    foreach(var item in value)
+                    {
+                        var treeNode = TreeViewManager.Self.GetTreeNodeByTag(item);
+                        if(treeNode != null)
+                        {
+                            treeNodesToSelect.Add(treeNode);
+                        }
+                    }
+                    SelectedNodes = treeNodesToSelect;
+                }
+            }
         }
 
         public Texture2D SelectedTexture

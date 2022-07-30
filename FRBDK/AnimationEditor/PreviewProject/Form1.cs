@@ -103,9 +103,9 @@ namespace PreviewProject
             wasAnimationLoaded = false;
             if (commandLineArgs.Length == 2)
             {
-                AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
-                SetFormTextToLoadedFile();
-
+                //AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
+                //SetFormTextToLoadedFile();
+                HandleAchxLoaded(commandLineArgs[1]);
                 wasAnimationLoaded = true;
             }
 
