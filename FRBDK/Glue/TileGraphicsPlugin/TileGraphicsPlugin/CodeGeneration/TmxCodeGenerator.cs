@@ -110,7 +110,8 @@ namespace TileGraphicsPlugin.CodeGeneration
                     // cache off in local varaible and clear
                     foreach (var factoryType in factoryTypesToClear)
                     {
-                            codeBlock.Line($"((Performance.IEntityFactory){factoryType}.Self).ListsToAddTo.AddRange({factoryType.Replace(".", "_")}_tempList);");
+                        codeBlock.Line($"{factoryType}.ClearListsToAddTo();");
+                        codeBlock.Line($"((Performance.IEntityFactory){factoryType}.Self).ListsToAddTo.AddRange({factoryType.Replace(".", "_")}_tempList);");
                     }
                 }
 
