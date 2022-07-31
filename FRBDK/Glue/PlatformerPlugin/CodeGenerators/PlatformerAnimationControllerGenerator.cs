@@ -96,6 +96,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
     {
         IPlatformer PlatformerEntity;
 
+        public bool IsActive { get; set; } = true;
+
         System.Collections.Generic.List<PlatformerAnimationConfiguration> platformerAnimationConfigurations;
         public System.Collections.ObjectModel.ReadOnlyCollection<PlatformerAnimationConfiguration> Configurations { get; private set; }
 
@@ -130,6 +132,10 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
                 @"
             layer.EveryFrameAction = () =>
             {
+                if(!IsActive)
+                {
+                    return null;
+                }
                 bool shouldSet = true;
                 var absoluteXVelocity = System.Math.Abs(PlatformerEntity.XVelocity);
                 var yVelocity = PlatformerEntity.YVelocity;

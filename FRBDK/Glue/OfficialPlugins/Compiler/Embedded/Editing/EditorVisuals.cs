@@ -317,7 +317,7 @@ namespace GlueControl.Editing
             return polygon;
         }
 
-        public static Polygon DrawPath(Path path)
+        public static Polygon DrawPath(Path path, bool includeOffsetArrow = false)
         {
 
             var pathPolygon = Polygon(Vector3.Zero);
@@ -327,6 +327,11 @@ namespace GlueControl.Editing
             {
                 var points = GetPoints(path, flipHorizontally: false);
                 pathPolygon.Points = points;
+            }
+
+            if (includeOffsetArrow && pathPolygon.Points.Count > 0 && (pathPolygon.Points[0].X != 0 || pathPolygon.Points[0].Y != 0))
+            {
+                Arrow(new Vector3(), pathPolygon.Points[0].ToVector3()).Color = Color.Yellow;
             }
 
             return pathPolygon;

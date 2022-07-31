@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Paths;
 using Newtonsoft.Json;
@@ -51,7 +52,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             return $"{customVariable.SourceObject}.FromJson(value);";
         }
 
-        static string FloatToString(float value) => value.ToString(CultureInfo.InvariantCulture);
+        static string FloatToString(float value) => CodeParser.ConvertValueToCodeString(value);
 
         private static string GeneratePaths(IElement element, NamedObjectSave nos, ReferencedFileSave rfs, string memberName)
         {
