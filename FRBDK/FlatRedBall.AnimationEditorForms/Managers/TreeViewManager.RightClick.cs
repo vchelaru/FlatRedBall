@@ -85,7 +85,14 @@ namespace FlatRedBall.AnimationEditorForms
 
                 mMenu.Items.Add("-");
                 mMenu.Items.Add("Add AnimationChain", null, AddChainClick);
-                mMenu.Items.Add("Add Frame", null, AddFrameClick);
+
+                var addframe = new ToolStripMenuItem("Add Frame");
+                addframe.ShortcutKeyDisplayString = "Ctrl+plus";
+                addframe.Click += new System.EventHandler(AddFrameClick);
+                mMenu.Items.Add(addframe);
+
+                mMenu.Items.Add("Add Multiple Frames", null, AddFramesClick);
+
                 mMenu.Items.Add("-");
 
                 CreateDuplicateToolStripItems();
@@ -112,7 +119,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
 
             mMenu.Items.Add("Sort Animations Alphabetically", null, SortAnimationsAlphabetically );
-            
+
         }
 
         private void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
@@ -338,7 +345,7 @@ namespace FlatRedBall.AnimationEditorForms
 
                     ProjectManager.Self.AnimationChainListSave.AnimationChains.Remove(chain);
                     ProjectManager.Self.AnimationChainListSave.AnimationChains.Insert(0, chain);
-                
+
                     TreeViewManager.Self.RefreshTreeView();
                     CallAnimationChainsChange();
 
@@ -436,7 +443,6 @@ namespace FlatRedBall.AnimationEditorForms
                     TreeViewManager.Self.RefreshTreeView();
                     CallAnimationChainsChange();
                 }
-
                 else if (frame != null && chain != null && frame != chain.Frames.Last())
                 {
                     var oldIndex = chain.Frames.IndexOf(frame);
@@ -480,7 +486,7 @@ namespace FlatRedBall.AnimationEditorForms
                     var allChains = ProjectManager.Self.AnimationChainListSave.AnimationChains;
 
                     for (int i = 0; i < chainsByIndex.Count; i++)
-                    { 
+                    {
                         var chainToMove = chainsByIndex[i];
                         allChains.Remove(chainToMove);
                         allChains.Insert(allChains.Count-i, chainToMove);
@@ -533,7 +539,7 @@ namespace FlatRedBall.AnimationEditorForms
 
         private void AdjustOffsetsClick(object sender, EventArgs e)
         {
-            
+
             var wpfForms = new AdjustOffsetWindow();
             var result = wpfForms.ShowDialog();
 
@@ -686,6 +692,94 @@ namespace FlatRedBall.AnimationEditorForms
 
                 WireframeManager.Self.UpdateSelectedFrameToSelectedTexture();
 
+                CallAnimationChainsChange();
+            }
+        }
+
+        public void AddFramesClick(object sender, EventArgs args)
+        {
+            if (string.IsNullOrEmpty(ProjectManager.Self.FileName))
+            {
+                MessageBox.Show("You must first save this file before adding frames");
+                return;
+            }
+
+            AnimationChainSave chain = SelectedState.Self.SelectedChain;
+            if (chain == null)
+            {
+                MessageBox.Show("First select an Animation to add a frame to");
+                return;
+            }
+
+            //Calc frame size & how many more before off the texture
+            AnimationFrameSave frame = chain.Frames.Count() == 0 ? null : chain.Frames.Last();
+            int NumberFramesCanMake = -1;
+            float frameWidth = 0;
+            float frameHeight = 0;
+            if (frame != null)
+            {
+                frameWidth = (frame.RightCoordinate - frame.LeftCoordinate);
+                var framesPerRow = 1 / frameWidth;
+                var framesLeftOnRow = framesPerRow - (frame.RightCoordinate / frameWidth);
+                frameHeight = (frame.BottomCoordinate - frame.TopCoordinate);
+                var rows = 1 / frameHeight;
+                var rowsLeft = rows - (frame.BottomCoordinate / frameHeight);
+                NumberFramesCanMake = (int)(framesLeftOnRow + (framesPerRow * rowsLeft));
+            }
+
+            //get # to make
+            var IncrementFrames = false;
+            var AddFramesCount = 0;
+            using (var aaf = new AnimationAddFrames(chain.Frames.Count() > 0, NumberFramesCanMake)) {
+                var dr = aaf.ShowDialog();
+                if (dr != DialogResult.OK) return;
+                IncrementFrames = aaf.IncrementFrames;
+                AddFramesCount = aaf.AddCount;
+            }
+
+            //Make em all
+            for (int i = 0; i < AddFramesCount; i++)
+            {
+                AnimationFrameSave afs = new AnimationFrameSave();
+                afs.ShapeCollectionSave = new ShapeCollectionSave(); // animation editor always assumes frames have shape collections
+                if (chain.Frames.Count != 0)
+                {
+                    AnimationFrameSave copyFrom = chain.Frames.Last();// IncrementFrames ? chain.Frames.Last() : chain.Frames[0];
+                    afs.TextureName = copyFrom.TextureName;
+                    afs.FrameLength = copyFrom.FrameLength;
+                    afs.LeftCoordinate = copyFrom.LeftCoordinate;
+                    afs.RightCoordinate = copyFrom.RightCoordinate;
+                    afs.TopCoordinate = copyFrom.TopCoordinate;
+                    afs.BottomCoordinate = copyFrom.BottomCoordinate;
+                    
+                    if (IncrementFrames)
+                    {
+                        if (afs.RightCoordinate < 1)
+                        {
+                            afs.LeftCoordinate += frameWidth;
+                            afs.RightCoordinate += frameWidth;
+                        }
+                        else
+                        {
+                            afs.LeftCoordinate = 0;
+                            afs.RightCoordinate = frameWidth;
+                            afs.TopCoordinate += frameHeight;
+                            afs.BottomCoordinate += frameHeight;
+                        }
+                    }
+                }
+                else
+                {
+                    afs.FrameLength = .1f; // default to .1 seconds.  
+                }
+
+                chain.Frames.Add(afs);
+
+                //At least some of these need to be called between frame adds or it breaks (attempted to skip and call after frames were all added)
+                //but it seems fine refreshing ui every add, not slow or too flashy.
+                TreeViewManager.Self.RefreshTreeNode(chain);
+                SelectedState.Self.SelectedFrame = chain.Frames.Last();
+                WireframeManager.Self.UpdateSelectedFrameToSelectedTexture();
                 CallAnimationChainsChange();
             }
         }

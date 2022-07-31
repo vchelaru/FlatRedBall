@@ -141,6 +141,12 @@
     <Compile Include="Controls\AdjustOffsetWindow.xaml.cs">
       <DependentUpon>AdjustOffsetWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AnimationAddFrames.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\AnimationAddFrames.Designer.cs">
+      <DependentUpon>AnimationAddFrames.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\AnimationChainTimeScaleWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -239,6 +245,9 @@
       <Link>Controls\TextInputWindow.resx</Link>
       <DependentUpon>TextInputWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\AnimationAddFrames.resx">
+      <DependentUpon>AnimationAddFrames.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\AnimationChainTimeScaleWindow.resx">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -253,6 +262,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainControl.resx">
       <DependentUpon>MainControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TextureCoordinateSelectionWindow.resx">
       <DependentUpon>TextureCoordinateSelectionWindow.cs</DependentUpon>
