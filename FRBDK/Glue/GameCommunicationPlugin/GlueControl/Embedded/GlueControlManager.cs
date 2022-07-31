@@ -350,7 +350,6 @@ namespace GlueControl
             }
 
             await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement, performSaveAndGenerateCode: true, updateUi: true, echoToGame: false);
-            await GlueCommunication.Json.Operations.JsonOperations.Self.GluxCommands.SetVariableOnList(nosVariableAssignments, currentElement);
 #endif
         }
 
@@ -386,10 +385,7 @@ namespace GlueControl
                 var split = elementGameType.Split('.').ToList().Skip(1);
                 dto.ElementNameGlue = string.Join("\\", split);
 
-                if (GlueCommunication.GameConnectionManager.CanUseJsonManager)
-                    GlueCommunication.Json.GlueJsonManager.Instance.UpdateEditState(dto);
-                else
-                    SendToGlue(dto);
+                SendToGlue(dto);
             }
         }
 

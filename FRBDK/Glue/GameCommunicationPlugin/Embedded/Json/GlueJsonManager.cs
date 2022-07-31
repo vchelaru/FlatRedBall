@@ -6,115 +6,77 @@ using System.Text;
 using System.Threading.Tasks;
 using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using GlueControl.Dtos;
+using Newtonsoft.Json;
 
 namespace GlueCommunication.Json
 {
     internal partial class GlueJsonManager
     {
-        public static GlueJsonManager Instance { get; private set; }
+        public static readonly GlueJsonManager Instance = new GlueJsonManager();
 
-        static GlueJsonManager()
+        internal const string TYPE_SCREEN = "Screen";
+        internal const string TYPE_ENTITY = "Entity";
+        internal const string TYPE_GLUE = "Glue";
+
+        private object _lock = new object();
+        private Dictionary<string, Dictionary<string, JsonManager>> _managers = new Dictionary<string, Dictionary<string, JsonManager>>();
+
+        public GlueJsonManager()
         {
-            Instance = new GlueJsonManager();
+            _managers.Add(TYPE_GLUE, new Dictionary<string, JsonManager>());
+            _managers.Add(TYPE_SCREEN, new Dictionary<string, JsonManager>());
+            _managers.Add(TYPE_ENTITY, new Dictionary<string, JsonManager>());
         }
 
-        private const string PacketType_JsonUpdate = "JsonUpdate";
-
-        private Dictionary<string, JsonManager> _jsonScreenManagers = new Dictionary<string, JsonManager>();
-        private Dictionary<string, JsonManager> _jsonEntityManagers = new Dictionary<string, JsonManager>();
-        private JsonManager _jsonManagerGlueProjectSave = null;
-        private JsonManager _jsonManagerEditState = new JsonManager(JObject.Parse("{}"));
-
-        public event Action<string> HandleUpdatedSelection;
-        public event Action<GameConnectionManager.Packet> SendPacket;
-        public event Func<GameConnectionManager.Packet, Task<GameConnectionManager.Packet>> SendPacketWithResponse;
-
-        internal JsonManager GetScreen(string name)
+        internal JsonManager Get(string type, string name)
         {
-            _jsonScreenManagers.TryGetValue(name, out JsonManager manager);
-
-            return manager;
-        }
-
-        public void AddScreen(string key, string json)
-        {
-            _jsonScreenManagers.Add(key, new JsonManager(JToken.Parse(json)));
-        }
-
-        internal JsonManager GetEntity(string name)
-        {
-            _jsonEntityManagers.TryGetValue(name, out JsonManager manager);
-
-            return manager;
-        }
-
-        public void AddEntity(string key, string json)
-        {
-            _jsonEntityManagers.Add(key, new JsonManager(JToken.Parse(json)));
-        }
-
-        public JsonManager GetGlueProjectSave()
-        {
-            return _jsonManagerGlueProjectSave;
-        }
-
-        internal void SetGlueProjectSave(string json)
-        {
-            _jsonManagerGlueProjectSave = new JsonManager(JToken.Parse(json));
-        }
-
-        public JsonManager GetEditState()
-        {
-            return _jsonManagerEditState;
-        }
-
-        public Task ProcessUpdatePacket(GameConnectionManager.Packet packet)
-        {
-            return Task.Run(() =>
+            lock (_lock)
             {
-                var jObj = JObject.Parse(packet.Payload);
+                if (!_managers.ContainsKey(type) || !_managers[type].ContainsKey(name))
+                    return null;
 
-                switch (jObj["Type"].Value<string>())
+                return _managers[type][name];
+            }
+        }
+
+        public void Add(string type, string key)
+        {
+            lock (_lock)
+            {
+                if (!_managers.ContainsKey(type))
+                    throw new Exception($"Type {type} is invalid");
+
+                _managers[type].Add(key, new JsonManager());
+            }
+        }
+
+        internal async Task ProcessUpdatePacket(GameConnectionManager.Packet packet)
+        {
+            await Task.Run(() =>
+            {
+                var data = JToken.Parse(packet.Payload);
+
+                var type = data["Type"].Value<string>();
+                var name = data["Name"].Value<string>();
+                var patch = data["Patch"].Value<string>();
+                if (type != null && name != null && patch != null)
                 {
-                    case "EditState":
-                        var editStateMgr = GetEditState();
+                    var container = JsonConvert.DeserializeObject<JsonManager.PatchContainer>(patch);
+                    JsonManager mgr;
+                    lock (_lock)
+                    {
+                        mgr = Get(type, name);
 
-                        var operations = editStateMgr.UpdateJson(JToken.Parse(jObj["Patch"].Value<string>()));
+                        if (mgr == null)
+                        {
+                            Add(type, name);
+                            mgr = Get(type, name);
+                        }
+                    }
 
-                        processOperations(operations);
-
-                        break;
-                    default:
-                        throw new NotImplementedException();
+                    mgr.UpdateJson(container).Wait();
                 }
-
-                SendPacket(new GameConnectionManager.Packet
-                {
-                    InResponseTo = packet.Id,
-                    PacketType = "Response",
-                    Payload = ""
-                });
             });
-        }
-
-        private void processOperations(IList<Operation> operations)
-        {
-            bool doSelection = false;
-
-            foreach (var operation in operations)
-            {
-                if (operation.Path.StartsWith("/SelectionDTO"))
-                    doSelection = true;
-            }
-
-            if (doSelection)
-            {
-                var editStateMgr = GetEditState();
-                var editStateJson = editStateMgr.GetCurrentUIJson();
-
-                if (HandleUpdatedSelection != null)
-                    HandleUpdatedSelection("SelectObjectDto:" + (editStateJson["SelectionDTO"]?.ToString() ?? ""));
-            }
         }
     }
 }

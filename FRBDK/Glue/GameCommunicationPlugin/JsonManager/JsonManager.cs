@@ -1,21 +1,27 @@
 ﻿using JsonDiffPatchDotNet;
-using JsonDiffPatchDotNet.Formatters.JsonPatch;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GameJsonCommunicationPlugin.JsonManager
 {
     internal class JsonManager
     {
-        private JToken _currentJson;
+        public class PatchContainer
+        {
+            public Guid InstanceId { get; set; }
+            public long Version { get; set; }
+            public string Type { get; set; }
+            public JToken Data { get; set; }
+        }
+
+        private JToken _currentJson = null;
         public JToken CurrentJson
         {
             get
             {
+                var copy = _currentJson;
                 //Clone Json so it can't be modified
-                return _currentJson?.DeepClone() ?? JToken.Parse("{}");
+                return copy?.DeepClone() ?? JToken.Parse("{}");
             }
             private set
             {
@@ -23,76 +29,82 @@ namespace GameJsonCommunicationPlugin.JsonManager
             }
         }
 
+        private object _lock = new object();
         private JsonDiffPatch _jdp;
-        private JToken _currentUIJson = null;
-        private bool _currentUIJsonExpired = true;
-        private JsonDeltaFormatter _jdf;
-        private List<JToken> _uiPatches = new List<JToken>();
+        private long _currentUIVersion = 0;
+        private Guid _instanceId = Guid.NewGuid();
 
-        public JsonManager(JToken json)
+        public JsonManager()
         {
-            CurrentJson = json.DeepClone();
             _jdp = new JsonDiffPatch();
-            _jdf = new JsonDeltaFormatter();
         }
 
-        public JToken ApplyUIUpdate(string json)
+        public PatchContainer UpdateJson(JToken newJson)
         {
-            return ApplyUIUpdate(JToken.Parse(json));
-        }
-
-        public JToken ApplyUIUpdate(JToken json)
-        {
-            var patch = _jdp.Diff(GetCurrentUIJson(), json);
-            //Add patch to list
-            _uiPatches.Add(patch);
-            //Set flag to regenerate UI json
-            _currentUIJsonExpired = true;
-
-            return patch;
-        }
-
-        public JToken GetCurrentUIJson()
-        {
-            //Check if we need to regenerate current UI json
-            if (_currentUIJsonExpired || _currentUIJson == null)
+            lock (_lock)
             {
-                //Get base json
-                var currentJson = CurrentJson;
-
-                //Apply ui patches to base json
-                foreach (var patch in _uiPatches)
+                if(_currentJson == null)
                 {
-                    currentJson = _jdp.Patch(currentJson, patch);
-                }
+                    CurrentJson = newJson;
+                    _currentUIVersion = 0;
 
-                return currentJson;
-            }
-            else
-            {
-                return _currentUIJson;
+                    return new PatchContainer
+                    {
+                        InstanceId = _instanceId,
+                        Version = ++_currentUIVersion,
+                        Type = "Full",
+                        Data = newJson.ToString()
+                    };
+                }
+                else
+                {
+                    var beforeJson = CurrentJson;
+                    var patch = _jdp.Diff(beforeJson, newJson);
+                    if (patch != null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Before JSON");
+                        System.Diagnostics.Debug.WriteLine(beforeJson.ToString());
+                        CurrentJson = _jdp.Patch(beforeJson, patch);
+                        System.Diagnostics.Debug.WriteLine("Patch");
+                        System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(patch));
+
+                        if (newJson.ToString() != _currentJson.ToString())
+                        {
+                            System.Diagnostics.Debug.WriteLine("Match");
+                        }
+
+                        return new PatchContainer
+                        {
+                            InstanceId = _instanceId,
+                            Version = ++_currentUIVersion,
+                            Type = "Patch",
+                            Data = Newtonsoft.Json.JsonConvert.SerializeObject(patch)
+                        };
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
             }
         }
 
-        public IList<Operation> UpdateJson(JToken patch)
+        internal PatchContainer Reset(JToken newJson)
         {
-            //Save UI Json from before
-            var _beforeUIJson = GetCurrentUIJson();
+            lock(_lock)
+            {
+                _instanceId = Guid.NewGuid();
+                _currentUIVersion = 0;
+                _currentJson = newJson.DeepClone();
 
-            //Expire UI Json so it will recreate
-            _currentUIJsonExpired = true;
-            //Update base level json with the update
-            CurrentJson = _jdp.Patch(CurrentJson, patch);
-
-            //Get the current UI json
-            _currentUIJson = GetCurrentUIJson();
-            //Clear out the UI patches
-            _uiPatches.Clear();
-            //Add a single UI patch that has the current differences
-            ApplyUIUpdate(_currentUIJson);
-
-            //Get operations needed
-            return _jdf.Format(_jdp.Diff(_beforeUIJson, GetCurrentUIJson()));
+                return new PatchContainer
+                {
+                    InstanceId = _instanceId,
+                    Version = ++_currentUIVersion,
+                    Type = "Full",
+                    Data = _currentJson.ToString()
+                };
+            }
         }
     }
 }

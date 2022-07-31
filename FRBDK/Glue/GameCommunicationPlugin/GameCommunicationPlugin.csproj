@@ -18,10 +18,8 @@
 
   <ItemGroup>
     <Compile Remove="Embedded\Json\GlueJsonManager.cs" />
-    <Compile Remove="Embedded\Json\GlueJsonManager.EditState.cs" />
     <Compile Remove="Embedded\Json\JsonContainer.cs" />
     <Compile Remove="Embedded\Json\JsonManager.cs" />
-    <Compile Remove="Embedded\Json\Operations\GluxCommands.cs" />
     <Compile Remove="Embedded\Json\Operations\JsonOperations.cs" />
     <Compile Remove="Embedded\Json\ScreenJsonContainer.cs" />
     <Compile Remove="GlueControl\Embedded\CommandReceiver.cs" />
@@ -93,7 +91,6 @@
     <EmbeddedResource Include="Embedded\Json\GlueJsonManager.cs" />
     <EmbeddedResource Include="Embedded\Json\JsonContainer.cs" />
     <EmbeddedResource Include="Embedded\Json\JsonManager.cs" />
-    <EmbeddedResource Include="Embedded\Json\Operations\GluxCommands.cs" />
     <EmbeddedResource Include="Embedded\Json\Operations\JsonOperations.cs" />
     <EmbeddedResource Include="Embedded\Json\ScreenJsonContainer.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\CommandReceiver.cs" />
@@ -135,10 +132,6 @@
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Screens\EntityViewingScreen.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Embedded\Json\GlueJsonManager.EditState.cs" />
   </ItemGroup>
 
   <ItemGroup>

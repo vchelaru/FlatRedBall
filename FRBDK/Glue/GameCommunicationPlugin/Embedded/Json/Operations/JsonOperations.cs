@@ -13,9 +13,6 @@
 
         public JsonOperations()
         {
-            GluxCommands = new GluxCommands();
         }
-
-        public GluxCommands GluxCommands { get; set; }
     }
 }

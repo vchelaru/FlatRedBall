@@ -167,6 +167,8 @@ namespace GameJsonCommunicationPlugin.Common
 
             IsConnected = true;
 
+            _eventCaller("GameCommunication_Connected", "");
+
             Task.Run(() =>
             {
                 try

@@ -1,66 +1,61 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace GameJsonCommunicationPlugin.JsonManager
 {
     internal class GlueJsonManager
     {
-        private Dictionary<string, JsonManager> _jsonScreenManagers = new Dictionary<string, JsonManager>();
-        private Dictionary<string, JsonManager> _jsonEntityManagers = new Dictionary<string, JsonManager>();
-        private JsonManager _jsonManagerGlueProjectSave = null;
-        private JsonManager _jsonManagerEditState = new JsonManager(JObject.Parse("{}"));
+        internal const string TYPE_SCREEN = "Screen";
+        internal const string TYPE_ENTITY = "Entity";
+        internal const string TYPE_GLUE = "Glue";
 
-        internal JsonManager GetScreen(string name)
+        private Dictionary<string, Dictionary<string, JsonManager>> _managers = new Dictionary<string, Dictionary<string, JsonManager>>();
+
+        public GlueJsonManager()
         {
-            _jsonScreenManagers.TryGetValue(name, out JsonManager manager);
-
-            return manager;
+            _managers.Add(TYPE_GLUE, new Dictionary<string, JsonManager>());
+            _managers.Add(TYPE_SCREEN, new Dictionary<string, JsonManager>());
+            _managers.Add(TYPE_ENTITY, new Dictionary<string, JsonManager>());
         }
 
-        
-
-        public void AddScreen(string key, string json)
+        internal JsonManager Get(string type, string name)
         {
-            _jsonScreenManagers.Add(key, new JsonManager(JToken.Parse(json)));
+            if (!_managers.ContainsKey(type) || !_managers[type].ContainsKey(name))
+                return null;
+
+            return _managers[type][name];
         }
 
-        internal JsonManager GetEntity(string name)
+        public void Add(string type, string key)
         {
-            _jsonEntityManagers.TryGetValue(name, out JsonManager manager);
+            if (!_managers.ContainsKey(type))
+                throw new Exception($"Type {type} is invalid");
 
-            return manager;
+            _managers[type].Add(key, new JsonManager());
         }
 
-        public void AddEntity(string key, string json)
+        internal IList<ItemKey> GetAll()
         {
-            _jsonEntityManagers.Add(key, new JsonManager(JToken.Parse(json)));
+            var items = new List<ItemKey>();
+            foreach(var type in _managers.Keys)
+            {
+                foreach(var name in _managers[type].Keys)
+                {
+                    items.Add(new ItemKey
+                    {
+                        Type = type,
+                        Name = name
+                    });
+                }
+            }
+            return items;
         }
 
-        public JsonManager GetGlueProjectSave()
+        internal class ItemKey
         {
-            return _jsonManagerGlueProjectSave;
-        }
-
-        internal void SetGlueProjectSave(string json)
-        {
-            _jsonManagerGlueProjectSave = new JsonManager(JToken.Parse(json));
-        }
-
-        public JsonManager GetEditState()
-        {
-            return _jsonManagerEditState;
-        }
-
-        internal bool ContainsEntity(string entityName)
-        {
-            return _jsonEntityManagers.ContainsKey(entityName);
-        }
-
-        internal bool ContainsScreen(string screenName)
-        {
-            return _jsonScreenManagers.ContainsKey(screenName);
+            public string Type { get; internal set; }
+            public string Name { get; internal set; }
         }
     }
 }

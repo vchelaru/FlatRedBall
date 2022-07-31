@@ -76,9 +76,9 @@ namespace GameCommunicationPlugin.CodeGeneration
                     codeBlock.Line("        await gjmInstance.ProcessUpdatePacket(packet.Packet);");
                     codeBlock.Line("    }");
                     codeBlock.Line("};");
-                    codeBlock.Line("gjmInstance.HandleUpdatedSelection += async (dto) => await glueControlManager.ProcessMessage(dto);");
-                    codeBlock.Line("gjmInstance.SendPacket += (packet) => gameConnectionManager.SendItem(packet);");
-                    codeBlock.Line("gjmInstance.SendPacketWithResponse += (packet) => { return gameConnectionManager.SendItemWithResponse(packet); };");
+                    //codeBlock.Line("gjmInstance.HandleUpdatedSelection += async (dto) => await glueControlManager.ProcessMessage(dto);");
+                    //codeBlock.Line("gjmInstance.SendPacket += (packet) => gameConnectionManager.SendItem(packet);");
+                    //codeBlock.Line("gjmInstance.SendPacketWithResponse += (packet) => { return gameConnectionManager.SendItemWithResponse(packet); };");
                 }
 
                 //Test Block
