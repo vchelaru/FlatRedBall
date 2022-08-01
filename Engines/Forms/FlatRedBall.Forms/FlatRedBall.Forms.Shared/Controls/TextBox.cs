@@ -188,6 +188,7 @@ namespace FlatRedBall.Forms.Controls
                 }
                 UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
+                // Okay this is some stuff
             }
         }
 
@@ -209,45 +210,5 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        #region Utilities
-
-        int? GetSpaceIndexBefore(int index)
-        {
-            if (DisplayedText != null)
-            {
-                for (int i = index - 1; i > 0; i--)
-                {
-                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
-
-                    if (isSpace)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        int? GetSpaceIndexAfter(int index)
-        {
-            if (DisplayedText != null)
-            {
-                for (int i = index; i < DisplayedText.Length; i++)
-                {
-                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
-
-                    if (isSpace)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-
-        #endregion
     }
 }

@@ -436,6 +436,7 @@ namespace FlatRedBall.Forms.Controls
                 switch (key)
                 {
                     case Microsoft.Xna.Framework.Input.Keys.Left:
+                        // todo - extract this so that we can also use CTRL for shift and delete/backspace...
                         if(selectionLength != 0 && isShiftDown == false)
                         {
                             caretIndex = selectionStart;
@@ -443,7 +444,31 @@ namespace FlatRedBall.Forms.Controls
                         }
                         else if (caretIndex > 0)
                         {
-                            caretIndex--;
+                            int? letterToMoveToFromCtrl = null;
+                            if(isCtrlDown)
+                            {
+                                letterToMoveToFromCtrl = GetSpaceIndexBefore(caretIndex - 1);
+                                if(letterToMoveToFromCtrl != null)
+                                {
+
+                                    // match Visual Studio behavior, and go after the last space
+                                    if(letterToMoveToFromCtrl != caretIndex - 1)
+                                    {
+                                        // we found a space, now select one to the right...
+                                        letterToMoveToFromCtrl++;
+                                    }
+                                    else
+                                    {
+                                        letterToMoveToFromCtrl = null;
+                                    }
+                                }
+                                else
+                                {
+                                    letterToMoveToFromCtrl = 0;
+                                }
+                            }
+
+                            caretIndex = letterToMoveToFromCtrl ?? (caretIndex-1);
                         }
                         break;
                     case Keys.Home:
@@ -463,7 +488,32 @@ namespace FlatRedBall.Forms.Controls
                         }
                         else if (caretIndex < (DisplayedText?.Length ?? 0))
                         {
-                            caretIndex++;
+                            int? letterToMoveToFromCtrl = null;
+
+                            if (isCtrlDown)
+                            {
+                                letterToMoveToFromCtrl = GetSpaceIndexAfter(caretIndex + 1);
+                                if (letterToMoveToFromCtrl != null)
+                                {
+
+                                    // match Visual Studio behavior, and go after the last space
+                                    if (letterToMoveToFromCtrl != caretIndex + 1)
+                                    {
+                                        letterToMoveToFromCtrl++;
+                                    }
+                                    else
+                                    {
+                                        letterToMoveToFromCtrl = null;
+                                    }
+                                }
+                                else
+                                {
+                                    letterToMoveToFromCtrl = DisplayedText?.Length ?? 0;
+                                }
+                            }
+
+                            caretIndex = letterToMoveToFromCtrl ?? (caretIndex + 1);
+
                         }
                         break;
                     case Keys.Up:
@@ -851,5 +901,46 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         public abstract void SelectAll();
+
+        #region Utilities
+
+        protected int? GetSpaceIndexBefore(int index)
+        {
+            if (DisplayedText != null)
+            {
+                for (int i = index - 1; i > 0; i--)
+                {
+                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        protected int? GetSpaceIndexAfter(int index)
+        {
+            if (DisplayedText != null)
+            {
+                for (int i = index; i < DisplayedText.Length; i++)
+                {
+                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+        #endregion
     }
 }
