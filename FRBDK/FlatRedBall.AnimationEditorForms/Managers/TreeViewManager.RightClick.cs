@@ -12,6 +12,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.Utilities;
+using FlatRedBall.Math;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -716,13 +717,14 @@ namespace FlatRedBall.AnimationEditorForms
             int NumberFramesCanMake = -1;
             float frameWidth = 0;
             float frameHeight = 0;
+            int framesPerRow = 0;
             if (frame != null)
             {
                 frameWidth = (frame.RightCoordinate - frame.LeftCoordinate);
-                var framesPerRow = 1 / frameWidth;
+                framesPerRow = MathFunctions.RoundToInt(1 / frameWidth);
                 var framesLeftOnRow = framesPerRow - (frame.RightCoordinate / frameWidth);
                 frameHeight = (frame.BottomCoordinate - frame.TopCoordinate);
-                var rows = 1 / frameHeight;
+                var rows = MathFunctions.RoundToInt(1 / frameHeight);
                 var rowsLeft = rows - (frame.BottomCoordinate / frameHeight);
                 NumberFramesCanMake = (int)(framesLeftOnRow + (framesPerRow * rowsLeft));
             }
@@ -755,10 +757,11 @@ namespace FlatRedBall.AnimationEditorForms
                     
                     if (IncrementFrames)
                     {
-                        if (afs.RightCoordinate < 1)
+                        var thisFrame = MathFunctions.RoundToInt(afs.LeftCoordinate / frameWidth) + 1;
+                        if (thisFrame < framesPerRow)
                         {
-                            afs.LeftCoordinate += frameWidth;
-                            afs.RightCoordinate += frameWidth;
+                            afs.LeftCoordinate = thisFrame * frameWidth;// += frameWidth;
+                            afs.RightCoordinate = (thisFrame + 1) * frameWidth;//+= frameWidth;
                         }
                         else
                         {
