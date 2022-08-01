@@ -97,7 +97,7 @@ namespace FlatRedBall.Forms.Controls
             if (textComponent == null)
             {
                 throw new Exception(
-                    "This button was created with a Gum component that does not have an instance called 'text'. A 'text' instance must be added to modify the radio button's Text property.");
+                    "This button was created with a Gum component that does not have an instance called 'TextInstance'. A 'TextInstance' instance must be added to modify the radio button's Text property.");
             }
         }
 #endif
