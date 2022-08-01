@@ -347,7 +347,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         private void UpdateShapesToFrame(AnimationFrameSave frame)
         {
-            if (frame != null)
+            if (frame?.ShapeCollectionSave != null)
             {
                 foreach (var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
                 {

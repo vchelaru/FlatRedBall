@@ -141,11 +141,8 @@
     <Compile Include="Controls\AdjustOffsetWindow.xaml.cs">
       <DependentUpon>AdjustOffsetWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\AnimationAddFrames.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\AnimationAddFrames.Designer.cs">
-      <DependentUpon>AnimationAddFrames.cs</DependentUpon>
+    <Compile Include="Controls\AnimationAddFramesWPF.xaml.cs">
+      <DependentUpon>AnimationAddFramesWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\AnimationChainTimeScaleWindow.cs">
       <SubType>Form</SubType>
@@ -245,9 +242,6 @@
       <Link>Controls\TextInputWindow.resx</Link>
       <DependentUpon>TextInputWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\AnimationAddFrames.resx">
-      <DependentUpon>AnimationAddFrames.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\AnimationChainTimeScaleWindow.resx">
       <DependentUpon>AnimationChainTimeScaleWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -317,6 +311,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\AdjustOffsetWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AnimationAddFramesWPF.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

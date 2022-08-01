@@ -730,12 +730,13 @@ namespace FlatRedBall.AnimationEditorForms
             //get # to make
             var IncrementFrames = false;
             var AddFramesCount = 0;
-            using (var aaf = new AnimationAddFrames(chain.Frames.Count() > 0, NumberFramesCanMake)) {
-                var dr = aaf.ShowDialog();
-                if (dr != DialogResult.OK) return;
-                IncrementFrames = aaf.IncrementFrames;
-                AddFramesCount = aaf.AddCount;
-            }
+
+            var aafwpf = new AnimationAddFramesWPF(chain.Frames.Count() > 0, NumberFramesCanMake);
+            aafwpf.Left = System.Windows.Forms.Cursor.Position.X;
+            aafwpf.Top = System.Windows.Forms.Cursor.Position.Y;
+            if (!(bool)aafwpf.ShowDialog()) return;
+            IncrementFrames = aafwpf.IncrementFrames;
+            AddFramesCount = aafwpf.AddCount;
 
             //Make em all
             for (int i = 0; i < AddFramesCount; i++)
