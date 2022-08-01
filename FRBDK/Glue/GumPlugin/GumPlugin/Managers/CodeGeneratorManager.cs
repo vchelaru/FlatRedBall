@@ -152,6 +152,8 @@ namespace GumPlugin.Managers
                     }
                 }
             }
+
+            GenerateAndSaveRuntimeAssociations();
         }
 
         public static ElementSave GetElementFrom(ReferencedFileSave rfs)

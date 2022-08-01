@@ -35,10 +35,7 @@ namespace FlatRedBall.Forms.Controls
                         SecurePassword.AppendChar(character);
                     }
                 }
-
-                UpdateDisplayedCharacters();
-
-                PasswordChanged?.Invoke(this, null);
+                CallMethodsInResponseToPasswordChanged();
             }
         }
 
@@ -69,9 +66,7 @@ namespace FlatRedBall.Forms.Controls
                 {
                     password = value;
 
-                    UpdateDisplayedCharacters();
-
-                    PasswordChanged?.Invoke(this, null);
+                    CallMethodsInResponseToPasswordChanged();
                 }
             }
         }
@@ -96,6 +91,9 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected override string CategoryName => "PasswordBoxCategoryState";
+
+
         #endregion
 
         #region Initialize Methods
@@ -108,7 +106,10 @@ namespace FlatRedBall.Forms.Controls
         {
             base.ReactToVisualChanged();
 
-
+            if(selectionInstance != null)
+            {
+                selectionInstance.Visible = false;
+            }
 
             UpdateDisplayedCharacters();
         }
@@ -118,8 +119,13 @@ namespace FlatRedBall.Forms.Controls
 
         public override void HandleCharEntered(char character)
         {
-            if (HasFocus)
+            // See TextBox on why we don't check IsFocused
+            //if (HasFocus)
             {
+                if(selectionLength != 0)
+                {
+                    DeleteSelection();
+                }
                 // If text is null force it to be an empty string so we can add characters
 
                 if (character == '\b'
@@ -137,30 +143,42 @@ namespace FlatRedBall.Forms.Controls
                 }
                 else
                 {
-#if UWP
-                    if(password == null)
-                    {
-                        password = "";
-                    }
-                    password = this.password.Insert(CaretIndex, character.ToString());
-#else
-                    this.SecurePassword.InsertAt(CaretIndex, character);
-
-#endif
+                    InsertCharacterAtIndex(character, caretIndex);
                     caretIndex++;
 
-                    UpdateCaretPositionToCaretIndex();
-                    OffsetTextToKeepCaretInView();
-                    UpdateDisplayedCharacters();
-                    PasswordChanged?.Invoke(this, null);
+                    CallMethodsInResponseToPasswordChanged();
                 }
 
             }
         }
 
+        private void CallMethodsInResponseToPasswordChanged()
+        {
+            UpdateCaretPositionToCaretIndex();
+            OffsetTextToKeepCaretInView();
+            UpdateDisplayedCharacters();
+            UpdatePlaceholderVisibility();
+            PasswordChanged?.Invoke(this, null);
+            PushValueToViewModel();
+        }
+
+        private void InsertCharacterAtIndex(char character, int caretIndex)
+        {
+#if UWP
+            if(password == null)
+            {
+                password = "";
+            }
+            password = this.password.Insert(caretIndex, character.ToString());
+#else
+            this.SecurePassword.InsertAt(caretIndex, character);
+
+#endif
+        }
+
         public override void HandleBackspace(bool isCtrlDown = false)
         {
-            if (IsFocused && (caretIndex > 0 || SelectionLength > 0))
+            if (caretIndex > 0 || SelectionLength > 0)
             {
                 if (selectionLength > 0)
                 {
@@ -192,8 +210,7 @@ namespace FlatRedBall.Forms.Controls
                     SecurePassword.RemoveAt(whereToRemoveFrom);
 #endif
                 }
-                UpdateDisplayedCharacters();
-                PasswordChanged?.Invoke(this, null);
+                CallMethodsInResponseToPasswordChanged();
             }
         }
 
@@ -206,7 +223,10 @@ namespace FlatRedBall.Forms.Controls
 #else
                 SecurePassword.RemoveAt(selectionStart);
 #endif
+
             }
+            CallMethodsInResponseToPasswordChanged();
+
             CaretIndex = selectionStart;
             SelectionLength = 0;
         }
@@ -218,16 +238,14 @@ namespace FlatRedBall.Forms.Controls
             {
                 password = password.Remove(caretIndex);
 
-                UpdateDisplayedCharacters();
-                PasswordChanged?.Invoke(this, null);
+                CallMethodsInResponseToPasswordChanged();
             }
 #else
             if (caretIndex < (SecurePassword?.Length ?? 0))
             {
                 SecurePassword.RemoveAt(caretIndex);
 
-                UpdateDisplayedCharacters();
-                PasswordChanged?.Invoke(this, null);
+                CallMethodsInResponseToPasswordChanged();
             }
 #endif
         }
@@ -239,10 +257,27 @@ namespace FlatRedBall.Forms.Controls
 #else
             SecurePassword.Clear();
 #endif
-            UpdateDisplayedCharacters();
-            PasswordChanged?.Invoke(this, null);
+            CallMethodsInResponseToPasswordChanged();
         }
 
+        protected override void HandlePaste()
+        {
+            var whatToPaste = Clipboard.ClipboardImplementation.GetText();
+
+            if (!string.IsNullOrEmpty(whatToPaste))
+            {
+                if (selectionLength != 0)
+                {
+                    DeleteSelection();
+                }
+                foreach (var character in whatToPaste)
+                {
+                    InsertCharacterAtIndex(character, caretIndex);
+                    caretIndex++;
+                }
+                CallMethodsInResponseToPasswordChanged();
+            }
+        }
 
         private void UpdateDisplayedCharacters()
         {
