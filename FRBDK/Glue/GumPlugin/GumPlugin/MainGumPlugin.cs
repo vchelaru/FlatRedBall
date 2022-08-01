@@ -343,7 +343,7 @@ namespace GumPlugin
 
             this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
-            this.ReactToFileChangeHandler += FileChangeManager.Self.HandleFileChange;
+            this.ReactToFileChange += FileChangeManager.Self.HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
 
@@ -838,6 +838,7 @@ namespace GumPlugin
 
             if (gumRfs != null)
             {
+                FileChangeManager.Self.RegisterAdditionalContentTypes();
 
                 var behavior = GetBehavior(gumRfs);
 
