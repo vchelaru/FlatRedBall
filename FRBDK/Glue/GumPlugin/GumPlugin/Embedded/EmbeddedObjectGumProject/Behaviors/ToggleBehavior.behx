@@ -30,4 +30,5 @@
     </State>
   </Category>
   <RequiredInstances />
+  <RequiredAnimations />
 </BehaviorSave>

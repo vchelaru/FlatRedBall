@@ -2,5 +2,26 @@
 <BehaviorSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>TreeViewBehavior</Name>
   <RequiredVariables />
-  <RequiredInstances />
+  <RequiredInstances>
+    <InstanceSave>
+      <Name>VerticalScrollBarInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors>
+        <BehaviorReference>
+          <Name>ScrollBarBehavior</Name>
+        </BehaviorReference>
+      </Behaviors>
+    </InstanceSave>
+    <InstanceSave>
+      <Name>InnerPanelInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors />
+    </InstanceSave>
+    <InstanceSave>
+      <Name>ClipContainerInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors />
+    </InstanceSave>
+  </RequiredInstances>
+  <RequiredAnimations />
 </BehaviorSave>

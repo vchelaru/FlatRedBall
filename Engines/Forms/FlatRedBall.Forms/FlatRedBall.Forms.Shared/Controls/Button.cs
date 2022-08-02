@@ -92,7 +92,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 throw new Exception(
                     $"This button was created with a Gum component ({Visual?.ElementSave}) " +
-                    "that does not have an instance called 'text'. A 'text' instance must be added to modify the button's Text property.");
+                    "that does not have an instance called 'TextInstance'. A 'TextInstance' instance must be added to modify the button's Text property.");
             }
         }
 #endif

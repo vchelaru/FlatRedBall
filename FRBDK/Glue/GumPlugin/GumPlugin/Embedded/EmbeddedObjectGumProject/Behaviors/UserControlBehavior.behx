@@ -3,4 +3,5 @@
   <Name>UserControlBehavior</Name>
   <RequiredVariables />
   <RequiredInstances />
+  <RequiredAnimations />
 </BehaviorSave>

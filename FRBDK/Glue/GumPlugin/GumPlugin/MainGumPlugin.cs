@@ -343,7 +343,7 @@ namespace GumPlugin
 
             this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
-            this.ReactToFileChangeHandler += FileChangeManager.Self.HandleFileChange;
+            this.ReactToFileChange += FileChangeManager.Self.HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
 
@@ -781,8 +781,9 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        await FormsAddManager.GenerateBehaviors();
-                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+                        await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
@@ -838,6 +839,7 @@ namespace GumPlugin
 
             if (gumRfs != null)
             {
+                FileChangeManager.Self.RegisterAdditionalContentTypes();
 
                 var behavior = GetBehavior(gumRfs);
 

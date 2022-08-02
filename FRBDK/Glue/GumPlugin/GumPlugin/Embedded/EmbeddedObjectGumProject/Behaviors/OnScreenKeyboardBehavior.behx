@@ -2,6 +2,12 @@
 <BehaviorSave xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>OnScreenKeyboardBehavior</Name>
   <RequiredVariables />
-  <RequiredInstances />
+  <RequiredInstances>
+    <InstanceSave>
+      <Name>FocusIndicator</Name>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors />
+    </InstanceSave>
+  </RequiredInstances>
   <RequiredAnimations />
 </BehaviorSave>

@@ -16,10 +16,20 @@
     <State>
       <Name>Pushed</Name>
     </State>
+    <State>
+      <Name>HighlightedFocused</Name>
+    </State>
+    <State>
+      <Name>Focused</Name>
+    </State>
+    <State>
+      <Name>DisabledFocused</Name>
+    </State>
   </Category>
   <RequiredInstances>
     <InstanceSave>
       <Name>ListBoxInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors>
         <BehaviorReference>
           <Name>ListBoxBehavior</Name>
@@ -29,7 +39,9 @@
     <InstanceSave>
       <Name>TextInstance</Name>
       <BaseType>Text</BaseType>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors />
     </InstanceSave>
   </RequiredInstances>
+  <RequiredAnimations />
 </BehaviorSave>

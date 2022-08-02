@@ -168,6 +168,7 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected abstract string CategoryName { get;  }
         #endregion
 
         #region Events
@@ -435,6 +436,7 @@ namespace FlatRedBall.Forms.Controls
                 switch (key)
                 {
                     case Microsoft.Xna.Framework.Input.Keys.Left:
+                        // todo - extract this so that we can also use CTRL for shift and delete/backspace...
                         if(selectionLength != 0 && isShiftDown == false)
                         {
                             caretIndex = selectionStart;
@@ -442,7 +444,31 @@ namespace FlatRedBall.Forms.Controls
                         }
                         else if (caretIndex > 0)
                         {
-                            caretIndex--;
+                            int? letterToMoveToFromCtrl = null;
+                            if(isCtrlDown)
+                            {
+                                letterToMoveToFromCtrl = GetSpaceIndexBefore(caretIndex - 1);
+                                if(letterToMoveToFromCtrl != null)
+                                {
+
+                                    // match Visual Studio behavior, and go after the last space
+                                    if(letterToMoveToFromCtrl != caretIndex - 1)
+                                    {
+                                        // we found a space, now select one to the right...
+                                        letterToMoveToFromCtrl++;
+                                    }
+                                    else
+                                    {
+                                        letterToMoveToFromCtrl = null;
+                                    }
+                                }
+                                else
+                                {
+                                    letterToMoveToFromCtrl = 0;
+                                }
+                            }
+
+                            caretIndex = letterToMoveToFromCtrl ?? (caretIndex-1);
                         }
                         break;
                     case Keys.Home:
@@ -462,7 +488,32 @@ namespace FlatRedBall.Forms.Controls
                         }
                         else if (caretIndex < (DisplayedText?.Length ?? 0))
                         {
-                            caretIndex++;
+                            int? letterToMoveToFromCtrl = null;
+
+                            if (isCtrlDown)
+                            {
+                                letterToMoveToFromCtrl = GetSpaceIndexAfter(caretIndex + 1);
+                                if (letterToMoveToFromCtrl != null)
+                                {
+
+                                    // match Visual Studio behavior, and go after the last space
+                                    if (letterToMoveToFromCtrl != caretIndex + 1)
+                                    {
+                                        letterToMoveToFromCtrl++;
+                                    }
+                                    else
+                                    {
+                                        letterToMoveToFromCtrl = null;
+                                    }
+                                }
+                                else
+                                {
+                                    letterToMoveToFromCtrl = DisplayedText?.Length ?? 0;
+                                }
+                            }
+
+                            caretIndex = letterToMoveToFromCtrl ?? (caretIndex + 1);
+
                         }
                         break;
                     case Keys.Up:
@@ -558,7 +609,40 @@ namespace FlatRedBall.Forms.Controls
 
         protected virtual void UpdateToCaretChanged(int oldIndex, int newIndex, bool isShiftDown)
         {
+            if (isShiftDown)
+            {
+                var change = oldIndex - newIndex;
 
+                if (SelectionLength == 0)
+                {
+                    // set the field (doesn't update the selection visuals)...
+                    selectionStart = System.Math.Min(oldIndex, newIndex);
+                    // ...now set the property to update the visuals.
+                    SelectionLength = System.Math.Abs(oldIndex - newIndex);
+                }
+                else
+                {
+                    int leftMost = 0;
+                    int rightMost = 0;
+                    if (oldIndex == selectionStart)
+                    {
+                        leftMost = System.Math.Min(selectionStart + selectionLength, newIndex);
+                        rightMost = System.Math.Max(selectionStart + selectionLength, newIndex);
+                    }
+                    else
+                    {
+                        leftMost = System.Math.Min(selectionStart, newIndex);
+                        rightMost = System.Math.Max(selectionStart, newIndex);
+                    }
+
+                    selectionStart = leftMost;
+                    SelectionLength = rightMost - leftMost;
+                }
+            }
+            else
+            {
+                SelectionLength = 0;
+            }
         }
 
         public abstract void HandleBackspace(bool isCtrlDown = false);
@@ -624,19 +708,19 @@ namespace FlatRedBall.Forms.Controls
 
             if (IsEnabled == false)
             {
-                Visual.SetProperty("TextBoxCategoryState", "Disabled");
+                Visual.SetProperty(CategoryName, "Disabled");
             }
-            else if (HasFocus)
+            else if (IsFocused)
             {
-                Visual.SetProperty("TextBoxCategoryState", "Selected");
+                Visual.SetProperty(CategoryName, "Selected");
             }
             else if (cursor.LastInputDevice != InputDevice.TouchScreen && Visual.HasCursorOver(cursor))
             {
-                Visual.SetProperty("TextBoxCategoryState", "Highlighted");
+                Visual.SetProperty(CategoryName, "Highlighted");
             }
             else
             {
-                Visual.SetProperty("TextBoxCategoryState", "Enabled");
+                Visual.SetProperty(CategoryName, "Enabled");
             }
         }
 
@@ -681,6 +765,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void SetCaretPositionForLine(string stringToMeasure, int indexIntoLine)
         {
+            indexIntoLine = System.Math.Min(indexIntoLine, stringToMeasure.Length);
             var substring = stringToMeasure.Substring(0, indexIntoLine);
             var measure = this.coreTextObject.BitmapFont.MeasureString(substring);
             caretComponent.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
@@ -816,5 +901,46 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         public abstract void SelectAll();
+
+        #region Utilities
+
+        protected int? GetSpaceIndexBefore(int index)
+        {
+            if (DisplayedText != null)
+            {
+                for (int i = index - 1; i > 0; i--)
+                {
+                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        protected int? GetSpaceIndexAfter(int index)
+        {
+            if (DisplayedText != null)
+            {
+                for (int i = index; i < DisplayedText.Length; i++)
+                {
+                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
+
+                    if (isSpace)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+        #endregion
     }
 }

@@ -64,18 +64,44 @@ namespace GumPlugin.CodeGeneration
 
         private void AddFormsAssociations(ICodeBlock currentBlock)
         {
+            // This is the list of fulfillments that we will fill below
             List<AssociationFulfillment> associationFulfillments = new List<AssociationFulfillment>();
 
             var loadedElements = AppState.Self.AllLoadedElements.ToList();
 
+            // First let's loop through the behaviors and see if any behavior has a default implementation
+            foreach(var behavior in AppState.Self.GumProjectSave.Behaviors)
+            {
+                if(!string.IsNullOrEmpty( behavior.DefaultImplementation))
+                {
+                    var foundElement = loadedElements.FirstOrDefault(item => item.Name == behavior.DefaultImplementation);
+                    var formsControlInfo = FormsControlInfo.AllControls
+                        .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.Name);
+                    if(foundElement != null && formsControlInfo != null)
+                    {
+                        var newFulfillment = new AssociationFulfillment();
+                        newFulfillment.Element = foundElement;
+                        // Technically this may not be completely fulfilled, but if it's a default implementation we don't care, we give it highest priority
+                        newFulfillment.IsCompletelyFulfilled = true;
+                        newFulfillment.ControlType = formsControlInfo.ControlName;
+
+                        associationFulfillments.Add(newFulfillment);
+                    }
+                }
+            }
+
+
+            // Loop through all elements to see if they...
             foreach (var element in loadedElements)
             {
                 var elementAsComponent = element as ComponentSave;
 
                 if(elementAsComponent != null)
                 {
+                    // ...have behaviors...
                     foreach(var behavior in elementAsComponent.Behaviors)
                     {
+                        // ...which implement control.
                         var formsControlInfo = FormsControlInfo.AllControls
                             .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.BehaviorName);
 
@@ -87,6 +113,7 @@ namespace GumPlugin.CodeGeneration
 
                             if (controlType != null)
                             {
+                                // Is there already a matching control? We need to know so we can compare if this element fulfills the control better
                                 matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
                             }
 

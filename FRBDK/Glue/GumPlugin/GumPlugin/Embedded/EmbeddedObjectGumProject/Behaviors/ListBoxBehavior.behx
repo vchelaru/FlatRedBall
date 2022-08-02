@@ -8,10 +8,13 @@
       <Name>Enabled</Name>
     </State>
     <State>
+      <Name>Disabled</Name>
+    </State>
+    <State>
       <Name>Focused</Name>
     </State>
     <State>
-      <Name>Disabled</Name>
+      <Name>DisabledFocused</Name>
     </State>
   </Category>
   <RequiredInstances>

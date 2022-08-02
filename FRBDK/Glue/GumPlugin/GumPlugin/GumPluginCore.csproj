@@ -294,6 +294,29 @@
 
 
   <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\CheckBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ComboBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\DialogBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\LabelBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ListBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ListBoxItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\OnScreenKeyboardBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\PasswordBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\RadioButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ScrollBarBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ScrollViewerBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\SliderBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TextBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ToastBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ToggleBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TreeViewBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TreeViewItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\UserControlBehavior.behx" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <Resource Include="Icons\AddGumProject.png" />
     <Resource Include="Icons\GumIcon.png" />
   </ItemGroup>
