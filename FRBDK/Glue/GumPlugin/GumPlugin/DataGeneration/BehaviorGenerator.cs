@@ -22,48 +22,19 @@ namespace GumPlugin.DataGeneration
 
         static FormsControlInfo()
         {
-            Button = new FormsControlInfo
-            {
-                BehaviorName = "ButtonBehavior",
-                ControlName = "Button",
-            };
+            List<FormsControlInfo> tempList = new List<FormsControlInfo>();
+            Add("ButtonBehavior", "Button");
 
-            CheckBox = new FormsControlInfo
-            {
-                BehaviorName = "CheckBoxBehavior",
-                ControlName = "CheckBox",
-            };
+            Add("CheckBoxBehavior", "CheckBox");
+            Add("ComboBoxBehavior", "ComboBox");
 
-            ColoredFrame = new FormsControlInfo
-            {
-                BehaviorName = null,
-                ControlName = null,
-            };
+            Add("DialogBoxBehavior", "FlatRedBall.Forms.Controls.Games.DialogBox");
 
-            ComboBox = new FormsControlInfo
-            {
-                BehaviorName = "ComboBoxBehavior",
-                ControlName = "ComboBox",
-            };
+            Add("LabelBehavior", "Label");
 
-            DialogBox = new FormsControlInfo
-            {
-                BehaviorName = "DialogBoxBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox",
-            };
+            Add("ListBoxBehavior", "ListBox");
 
-            Label = new FormsControlInfo
-            {
-                BehaviorName = "LabelBehavior",
-                ControlName = "Label",
-            };
-
-            ListBox = new FormsControlInfo
-            {
-                BehaviorName = "ListBoxBehavior",
-                ControlName = "ListBox",
-            };
-
+            Add("")
             ListBoxItem = new FormsControlInfo
             {
                 BehaviorName = "ListBoxItemBehavior",
@@ -92,11 +63,6 @@ namespace GumPlugin.DataGeneration
             {
                 BehaviorName = "ScrollBarBehavior",
                 ControlName = "ScrollBar",
-            };
-
-            ScrollBarThumb = new FormsControlInfo
-            {
-                // only a gum component, no backing control:
             };
 
             ScrollViewer = new FormsControlInfo
@@ -141,16 +107,18 @@ namespace GumPlugin.DataGeneration
                 ControlName = "TreeViewItem",
             };
 
-            TreeViewToggleButton = new FormsControlInfo
-            {
-            };
 
-            UserControl = new FormsControlInfo
+            Add("UserControlBehavior", "UserControl");
+
+            void Add(string behaviorName, string controlName)
             {
-                BehaviorName = "UserControlBehavior",
-                ControlName = "UserControl",
-                //GumStateCategoryName = null,
-            };
+                var formsControlInfo = new FormsControlInfo
+                {
+                    BehaviorName = behaviorName,
+                    ControlName = controlName
+                };
+                tempList.Add(formsControlInfo);
+            }
 
             AllControls = new FormsControlInfo[]
             {
