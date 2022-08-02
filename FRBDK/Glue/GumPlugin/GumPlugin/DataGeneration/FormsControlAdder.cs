@@ -27,47 +27,29 @@ namespace GumPlugin.DataGeneration
         {
             var gumDirectory = FileManager.GetDirectory(
                 GumProjectManager.Self.GetGumProjectFileName());
-            var componentDestination = gumDirectory + @"Components\DefaultForms\";
+            var componentDestination = gumDirectory + @"Components\";
 
-            var addedFileDestinations = new List<FilePath>();
+
+            Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
 
             var resourcesInAssembly = assembly.GetManifestResourceNames();
 
-            string defaultFormsPrefix = EmbeddedProjectRoot + ".Components.DefaultForms.";
-            foreach(var resource in resourcesInAssembly)
+            string defaultFormsPrefix = EmbeddedProjectRoot + ".Components.";
+            foreach(var resourceSource in resourcesInAssembly)
             {
-                var isFormsComponent = resource.StartsWith(defaultFormsPrefix) && resource.EndsWith(".gucx");
+                var isFormsComponent = resourceSource.StartsWith(defaultFormsPrefix) && resourceSource.EndsWith(".gucx");
 
                 if(isFormsComponent)
                 {
-                    var noPrefixName = resource.Substring(defaultFormsPrefix.Length);
+                    var noPrefixName = resourceSource.Substring(defaultFormsPrefix.Length);
 
-                    var destination = componentDestination + noPrefixName;
+                    var withoutExtension = noPrefixName.Substring(0, noPrefixName.Length - ".gucx".Length);
 
-                    addedFileDestinations.Add(destination);
+                    var split = withoutExtension.Split('.');
 
-                    var shouldSave = true;
+                    var destination = componentDestination + String.Join('/', split) + ".gucx";
 
-                    if (System.IO.File.Exists(destination))
-                    {
-                        var result = System.Windows.Forms.MessageBox.Show($"The file {destination} already exists. Save anyway?",
-                            "Overwrite?",
-                            System.Windows.Forms.MessageBoxButtons.YesNo);
-
-                        shouldSave = result == System.Windows.Forms.DialogResult.Yes;
-                    }
-
-                    if (shouldSave)
-                    {
-                        try
-                        {
-                            FileManager.SaveEmbeddedResource(assembly, resource, destination);
-                        }
-                        catch (Exception e)
-                        {
-                            GlueCommands.Self.PrintError($"Could not add component {resource}:\n{e}");
-                        }
-                    }
+                    resourceToFileDestinations[resourceSource] = destination;
                 }
             }
 
@@ -76,14 +58,41 @@ namespace GumPlugin.DataGeneration
             foreach(var file in ContentItems)
             {
                 var resourceName = EmbeddedProjectRoot + "/" + file;
+                resourceToFileDestinations[resourceName.Replace("/", ".")] = contentDestination + file;
+            }
 
-                try
+            var existingFiles = resourceToFileDestinations.Values.Where(item => item.Exists()).ToArray();
+
+            if(existingFiles.Length > 0)
+            {
+                var message = "The following files will be overwritten:";
+
+                foreach(var item in existingFiles)
                 {
-                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), contentDestination + file);
+                    message += "\n" + item.RelativeTo(GlueState.Self.CurrentGlueProjectDirectory);
                 }
-                catch(Exception e)
+
+                message += "\n\nSave Anyway?";
+
+                var result = System.Windows.Forms.MessageBox.Show(message,
+                    "Overwrite?",
+                    System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                var shouldSave = result == System.Windows.Forms.DialogResult.Yes;
+
+                if(shouldSave)
                 {
-                    GlueCommands.Self.PrintOutput($"Skipping adding file {file}:\n{e.ToString()}");
+                    foreach(var kvp in resourceToFileDestinations)
+                    {
+                        try
+                        {
+                            FileManager.SaveEmbeddedResource(assembly, kvp.Key, kvp.Value.FullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError($"Could not add component {kvp.Key}:\n{e}");
+                        }
+                    }
                 }
             }
 
@@ -91,7 +100,7 @@ namespace GumPlugin.DataGeneration
             // Now that everything is on disk, add the files to the Gum project if necessary
             await TaskManager.Self.AddAsync(() =>
             {
-                foreach(var file in addedFileDestinations)
+                foreach(var file in resourceToFileDestinations.Values)
                 {
                     if(file.Extension == "gucx")
                     {
