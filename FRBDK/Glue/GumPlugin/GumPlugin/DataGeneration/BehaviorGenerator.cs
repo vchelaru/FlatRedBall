@@ -22,10 +22,6 @@ namespace GumPlugin.DataGeneration
         public string ControlName;
         public string ComponentFile;
 
-        public List<GumStateCategory> GumStateCategory = new List<GumStateCategory>();
-
-        public List<BehaviorInstanceSave> RequiredInstances = new List<BehaviorInstanceSave>();
-
         static FormsControlInfo()
         {
             Button = new FormsControlInfo
@@ -33,23 +29,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ButtonBehavior",
                 ComponentFile = "Button",
                 ControlName = "Button",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ButtonCategory",
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Disabled",
-                            "Highlighted",
-                            "Pushed",
-                            "HighlightedFocused",
-                            "Focused",
-                            "DisabledFocused",
-                        }
-                    }
-                }
             };
 
             CheckBox = new FormsControlInfo
@@ -57,33 +36,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "CheckBoxBehavior",
                 ComponentFile = "CheckBox",
                 ControlName = "CheckBox",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "CheckBoxCategory",
-                        States = new[]
-                        {
-                            "EnabledOn",
-                            "EnabledOff",
-                            "DisabledOn",
-                            "DisabledOff",
-
-                            "HighlightedOn",
-                            "HighlightedOff",
-                            "PushedOn",
-                            "PushedOff",
-
-                            "FocusedOn",
-                            "FocusedOff",
-
-                            "HighlightedFocusedOn",
-                            "HighlightedFocusedOff",
-                            "DisabledFocusedOn",
-                            "DisabledFocusedOff"
-                        }
-                    }
-                }
             };
 
             ColoredFrame = new FormsControlInfo
@@ -104,42 +56,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ComboBoxBehavior",
                 ComponentFile = "ComboBox",
                 ControlName = "ComboBox",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ComboBoxCategory",
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Disabled",
-                            "Highlighted",
-                            "Pushed",
-                            "HighlightedFocused",
-                            "Focused",
-                            "DisabledFocused"
-
-                        }
-                    }
-                },
-
-                RequiredInstances = new List<BehaviorInstanceSave>()
-                {
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "ListBoxInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = "ListBoxBehavior" }
-                        }
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-                    }
-                }
             };
 
             DialogBox = new FormsControlInfo
@@ -147,16 +63,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "DialogBoxBehavior",
                 ComponentFile = "DialogBox",
                 ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox",
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-
-                    }
-                }
             };
 
             Label = new FormsControlInfo
@@ -164,16 +70,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "LabelBehavior",
                 ComponentFile = "Label",
                 ControlName = "Label",
-                // no GumStateCategory
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-
-                    }
-                }
             };
 
             ListBox = new FormsControlInfo
@@ -181,44 +77,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ListBoxBehavior",
                 ComponentFile = "ListBox",
                 ControlName = "ListBox",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ListBoxCategory",
-                        States = new []
-                        {
-                            "Enabled",
-                            "Disabled",
-                            "Focused",
-                            "DisabledFocused"
-                        }
-                    }
-                },
-                // no category (yet?)
-                //GumStateCategoryName = null,
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "VerticalScrollBarInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = "ScrollBarBehavior"}
-                        }
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "InnerPanelInstance"
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "ClipContainerInstance"
-                    }
-                }
             };
 
             ListBoxItem = new FormsControlInfo
@@ -226,20 +84,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ListBoxItemBehavior",
                 ComponentFile = "ListBoxItem",
                 ControlName = "ListBoxItem",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ListBoxItemCategory",
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Highlighted",
-                            "Selected",
-                            "Focused"
-                        }
-                    }
-                }
             };
 
             OnScreenKeyboard = new FormsControlInfo
@@ -247,14 +91,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "OnScreenKeyboardBehavior",
                 ComponentFile = "Keyboard",
                 ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard",
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "FocusIndicator",
-                    }
-                }
             };
 
             PasswordBox = new FormsControlInfo
@@ -262,21 +98,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "PasswordBoxBehavior",
                 ComponentFile = "PasswordBox",
                 ControlName = "PasswordBox",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "PasswordBoxCategory",
-
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Disabled",
-                            "Highlighted",
-                            "Selected"
-                        }
-                    }
-                }
             };
 
             RadioButton = new FormsControlInfo
@@ -284,47 +105,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "RadioButtonBehavior",
                 ControlName = "RadioButton",
                 ComponentFile = "RadioButton",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "RadioButtonCategory",
-                        States = new[]
-                        {
-                            "EnabledOn",
-                            "EnabledOff",
-                            "DisabledOn",
-                            "DisabledOff",
-
-                            "HighlightedOn",
-                            "HighlightedOff",
-                            "PushedOn",
-                            "PushedOff",
-
-                            "FocusedOn",
-                            "FocusedOff",
-
-                            "HighlightedFocusedOn",
-                            "HighlightedFocusedOff",
-                            "DisabledFocusedOn",
-                            "DisabledFocusedOff"
-                        }
-                    }
-                },
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-
-                    },
-                    // Vic asks - why do we have this? Was this a copy/paste issue from TextBox?
-                    new BehaviorInstanceSave
-                    {
-                        Name = "CaretInstance"
-                    }
-                }
             };
 
             ScrollBar = new FormsControlInfo
@@ -332,43 +112,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ScrollBarBehavior",
                 ComponentFile = "ScrollBar",
                 ControlName = "ScrollBar",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ScrollBarCategory",
-                    }
-                },
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "UpButtonInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName }
-                        }
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "DownButtonInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName }
-                        }
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "ThumbInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName }
-                        }
-                    },
-                }
             };
 
             ScrollBarThumb = new FormsControlInfo
@@ -384,42 +127,6 @@ namespace GumPlugin.DataGeneration
                 ControlName = "ScrollViewer",
                 // no categories needed (yet?)
                 //GumStateCategoryName = null,
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ScrollBarVisibility",
-                        States = new[]
-                        {
-                            "NoScrollBar",
-                            "VerticalScrollVisible"
-                        }
-                    }
-                },
-
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "VerticalScrollBarInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.ScrollBar.BehaviorName }
-                        }
-
-                    },
-
-                    new BehaviorInstanceSave
-                    {
-                        Name = "InnerPanelInstance"
-                    },
-
-                    new BehaviorInstanceSave
-                    {
-                        Name = "ClipContainerInstance"
-                    }
-                }
             };
 
             Slider = new FormsControlInfo
@@ -427,30 +134,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "SliderBehavior",
                 ComponentFile = "Slider",
                 ControlName = "Slider",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "SliderCategory",
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Focused"
-                        }
-                    }
-                },
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "ThumbInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.Button.BehaviorName }
-                        }
-                    }
-                }
             };
 
             TextBox = new FormsControlInfo
@@ -458,47 +141,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "TextBoxBehavior",
                 ComponentFile = "TextBox",
                 ControlName = "TextBox",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "TextBoxCategory",
-
-                        States = new[]
-                        {
-                            "Enabled",
-                            "Disabled",
-                            "Highlighted",
-                            "Selected"
-                        }
-                    },
-                    new GumStateCategory
-                    {
-                        Name = "LineModeCategory",
-
-                        States = new []
-                        {
-                            "Single",
-                            "Multi"
-                        }
-
-                    }
-                },
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-                    },
-
-                    new BehaviorInstanceSave()
-                    {
-                        Name = "CaretInstance"
-                    }
-                }
-
             };
 
             Toast = new FormsControlInfo
@@ -506,16 +148,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "ToastBehavior",
                 ComponentFile = "Toast",
                 ControlName = "FlatRedBall.Forms.Controls.Popups.Toast",
-                // no GumStateCategory
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "TextInstance",
-                        BaseType = "Text"
-
-                    }
-                }
             };
 
             ToggleButton = new FormsControlInfo
@@ -524,25 +156,6 @@ namespace GumPlugin.DataGeneration
                 InterfaceName = "FlatRedBall.Gui.Controls.IToggle",
                 ComponentFile = "ToggleButton",
                 ControlName = "ToggleButton",
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ToggleCategory",
-                        States = new[]
-                        {
-                            "EnabledOn",
-                            "EnabledOff",
-                            "DisabledOn",
-                            "DisabledOff",
-
-                            "HighlightedOn",
-                            "HighlightedOff",
-                            "PushedOn",
-                            "PushedOff",
-                        }
-                    }
-                }
             };
 
             TreeView = new FormsControlInfo
@@ -550,30 +163,6 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "TreeViewBehavior",
                 ControlName = "TreeView",
                 ComponentFile = "TreeView",
-                // no categories
-                //GumStateCategoryName = null,
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "VerticalScrollBarInstance",
-                        Behaviors = new List<BehaviorReference>
-                        {
-                            new BehaviorReference { Name = FormsControlInfo.ScrollBar.BehaviorName }
-                        }
-                    },
-
-                    new BehaviorInstanceSave
-                    {
-                        Name = "InnerPanelInstance"
-                    },
-
-                    new BehaviorInstanceSave
-                    {
-                        Name = "ClipContainerInstance"
-                    }
-                }
             };
 
             TreeViewItem = new FormsControlInfo
@@ -581,41 +170,11 @@ namespace GumPlugin.DataGeneration
                 BehaviorName = "TreeViewItemBehavior",
                 ComponentFile = "TreeViewItem",
                 ControlName = "TreeViewItem",
-                // no categories, contained objects have categories
-                //GumStateCategoryName = null,
-
-                RequiredInstances = new List<BehaviorInstanceSave>
-                {
-                    new BehaviorInstanceSave
-                    {
-                        Name = "InnerPanelInstance"
-                    }
-                }
             };
 
             TreeViewToggleButton = new FormsControlInfo
             {
                 ComponentFile = "TreeViewToggleButton",
-
-                GumStateCategory = new List<GumStateCategory>
-                {
-                    new GumStateCategory
-                    {
-                        Name = "ToggleCategory",
-                        States = new[]
-                        {
-                            "EnabledOn",
-                            "EnabledOff",
-                            "DisabledOn",
-                            "DisabledOff",
-
-                            "HighlightedOn",
-                            "HighlightedOff",
-                            "PushedOn",
-                            "PushedOff",
-                        }
-                    }
-                }
             };
 
             UserControl = new FormsControlInfo

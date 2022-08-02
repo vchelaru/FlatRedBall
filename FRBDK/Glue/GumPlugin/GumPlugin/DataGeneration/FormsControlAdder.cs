@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
+using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
 using GumPlugin.Managers;
 using System;
@@ -23,7 +24,6 @@ namespace GumPlugin.DataGeneration
         public static async Task SaveComponents(Assembly assembly)
         {
             var names = assembly.GetManifestResourceNames();
-
 
             var gumDirectory = FileManager.GetDirectory(
                 GumProjectManager.Self.GetGumProjectFileName());
@@ -122,6 +122,40 @@ namespace GumPlugin.DataGeneration
                 await GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
             }
 
+        }
+
+        public static async Task SaveBehaviors(Assembly assembly)
+        {
+            var names = assembly.GetManifestResourceNames();
+
+            var gumDirectory = FileManager.GetDirectory(
+                GumProjectManager.Self.GetGumProjectFileName());
+
+            var behaviorDestination = gumDirectory + "Behaviors\\";
+
+            var prefix = "GumPluginCore.Embedded.EmbeddedObjectGumProject.Behaviors.";
+
+            foreach(var resource in names)
+            {
+                var isBehavior = resource.StartsWith(prefix) && resource.EndsWith(".behx");
+
+                if(isBehavior)
+                {
+                    var noPath = resource.Substring(prefix.Length);
+
+                    var destination = behaviorDestination + noPath;
+
+                    FileManager.SaveEmbeddedResource(assembly, resource, destination);
+
+                    var behaviorSave = FileManager.XmlDeserialize<BehaviorSave>(destination);
+
+                    var project = AppState.Self.GumProjectSave;
+
+                    project.Behaviors.RemoveAll(item => item.Name == behaviorSave.Name);
+                    GumPluginCommands.Self.AddBehavior(behaviorSave);
+                }
+            }
+            await GumPluginCommands.Self.SaveGumxAsync();
         }
 
         private static void UpdateTextStateCategory()
