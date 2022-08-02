@@ -8,6 +8,7 @@
   <RequiredInstances>
     <InstanceSave>
       <Name>UpButtonInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors>
         <BehaviorReference>
           <Name>ButtonBehavior</Name>
@@ -16,6 +17,7 @@
     </InstanceSave>
     <InstanceSave>
       <Name>DownButtonInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors>
         <BehaviorReference>
           <Name>ButtonBehavior</Name>
@@ -24,6 +26,7 @@
     </InstanceSave>
     <InstanceSave>
       <Name>ThumbInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
       <Behaviors>
         <BehaviorReference>
           <Name>ButtonBehavior</Name>
@@ -31,4 +34,5 @@
       </Behaviors>
     </InstanceSave>
   </RequiredInstances>
+  <RequiredAnimations />
 </BehaviorSave>

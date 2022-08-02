@@ -17,16 +17,15 @@
       <Name>Pushed</Name>
     </State>
     <State>
-      <Name>Focused</Name>
+      <Name>HighlightedFocused</Name>
     </State>
     <State>
-      <Name>HighlightedFocused</Name>
+      <Name>Focused</Name>
     </State>
     <State>
       <Name>DisabledFocused</Name>
     </State>
-	
-	
   </Category>
   <RequiredInstances />
+  <RequiredAnimations />
 </BehaviorSave>

@@ -28,6 +28,37 @@
     <State>
       <Name>PushedOff</Name>
     </State>
+    <State>
+      <Name>FocusedOn</Name>
+    </State>
+    <State>
+      <Name>FocusedOff</Name>
+    </State>
+    <State>
+      <Name>HighlightedFocusedOn</Name>
+    </State>
+    <State>
+      <Name>HighlightedFocusedOff</Name>
+    </State>
+    <State>
+      <Name>DisabledFocusedOn</Name>
+    </State>
+    <State>
+      <Name>DisabledFocusedOff</Name>
+    </State>
   </Category>
-  <RequiredInstances />
+  <RequiredInstances>
+    <InstanceSave>
+      <Name>TextInstance</Name>
+      <BaseType>Text</BaseType>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors />
+    </InstanceSave>
+    <InstanceSave>
+      <Name>CaretInstance</Name>
+      <DefinedByBase>false</DefinedByBase>
+      <Behaviors />
+    </InstanceSave>
+  </RequiredInstances>
+  <RequiredAnimations />
 </BehaviorSave>
