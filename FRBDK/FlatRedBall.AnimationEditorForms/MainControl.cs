@@ -399,6 +399,10 @@ namespace FlatRedBall.AnimationEditorForms
             TreeViewManager.Self.AddFrameClick(null, null);
         }
 
+        private void multipleframesToolStripMenuItem_Click(object sender, EventArgs e) {
+            TreeViewManager.Self.AddFramesClick(null, null);
+        }
+
         private void previewControls1_ZoomChanged(object sender, EventArgs e)
         {
             int zoomValue = previewControls1.PercentageValue;
