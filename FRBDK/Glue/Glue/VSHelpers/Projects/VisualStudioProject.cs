@@ -296,6 +296,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
+        public void AddProjectReference(string projectPath)
+        {
+            var tempProj = new Project(projectPath, null, null, new ProjectCollection());
+            Project.AddItem("ProjectReference", new FilePath(projectPath).RelativeTo(FullFileName), new Dictionary<string, string> { { "Project", $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}" }, { "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() } });
+        }
+
         public bool IsCodeItem(ProjectItem buildItem)
         {
             if (buildItem.ItemType == "Compile")
