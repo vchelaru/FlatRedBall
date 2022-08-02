@@ -781,8 +781,8 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
-                        await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+                        await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
 
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();

@@ -78,13 +78,13 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
             }
         }
 
         private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) =>
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
 
 
         private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
@@ -112,7 +112,7 @@ namespace GumPlugin.Controls
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
-            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
         }
 
 
