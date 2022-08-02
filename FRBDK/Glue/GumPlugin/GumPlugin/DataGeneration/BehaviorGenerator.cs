@@ -9,12 +9,6 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.DataGeneration
 {
-    public class GumStateCategory
-    {
-        public string Name;
-        public string[] States;
-    }
-
     public class FormsControlInfo
     {
         public string BehaviorName;
@@ -34,79 +28,29 @@ namespace GumPlugin.DataGeneration
 
             Add("ListBoxBehavior", "ListBox");
 
-            Add("")
-            ListBoxItem = new FormsControlInfo
-            {
-                BehaviorName = "ListBoxItemBehavior",
-                ControlName = "ListBoxItem",
-            };
+            Add("ListBoxItemBehavior", "ListBoxItem");
 
-            OnScreenKeyboard = new FormsControlInfo
-            {
-                BehaviorName = "OnScreenKeyboardBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard",
-            };
+            Add("OnScreenKeyboardBehavior", "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard");
 
-            PasswordBox = new FormsControlInfo
-            {
-                BehaviorName = "PasswordBoxBehavior",
-                ControlName = "PasswordBox",
-            };
+            Add("PasswordBoxBehavior", "PasswordBox");
 
-            RadioButton = new FormsControlInfo
-            {
-                BehaviorName = "RadioButtonBehavior",
-                ControlName = "RadioButton",
-            };
+            Add("RadioButtonBehavior", "RadioButton");
 
-            ScrollBar = new FormsControlInfo
-            {
-                BehaviorName = "ScrollBarBehavior",
-                ControlName = "ScrollBar",
-            };
+            Add("ScrollBarBehavior", "ScrollBar");
 
-            ScrollViewer = new FormsControlInfo
-            {
-                BehaviorName = "ScrollViewerBehavior",
-                ControlName = "ScrollViewer",
-            };
+            Add("ScrollViewerBehavior", "ScrollViewer");
 
-            Slider = new FormsControlInfo
-            {
-                BehaviorName = "SliderBehavior",
-                ControlName = "Slider",
-            };
+            Add("SliderBehavior", "Slider");
 
-            TextBox = new FormsControlInfo
-            {
-                BehaviorName = "TextBoxBehavior",
-                ControlName = "TextBox",
-            };
+            Add("TextBoxBehavior", "TextBox");
 
-            Toast = new FormsControlInfo
-            {
-                BehaviorName = "ToastBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Popups.Toast",
-            };
+            Add("ToastBehavior", "FlatRedBall.Forms.Controls.Popups.Toast");
 
-            ToggleButton = new FormsControlInfo
-            {
-                BehaviorName = "ToggleBehavior",
-                ControlName = "ToggleButton",
-            };
+            Add("ToggleBehavior", "ToggleButton");
 
-            TreeView = new FormsControlInfo
-            {
-                BehaviorName = "TreeViewBehavior",
-                ControlName = "TreeView",
-            };
+            Add("TreeViewBehavior", "TreeView");
 
-            TreeViewItem = new FormsControlInfo
-            {
-                BehaviorName = "TreeViewItemBehavior",
-                ControlName = "TreeViewItem",
-            };
-
+            Add("TreeViewItemBehavior", "TreeViewItem");
 
             Add("UserControlBehavior", "UserControl");
 
@@ -120,85 +64,10 @@ namespace GumPlugin.DataGeneration
                 tempList.Add(formsControlInfo);
             }
 
-            AllControls = new FormsControlInfo[]
-            {
-                Button,
-                CheckBox,
-                ColoredFrame,
-                ComboBox,
-                DialogBox,
-                Label,
-                ListBox,
-                ListBoxItem,
-                OnScreenKeyboard,
-                PasswordBox,
-                RadioButton,
-                ScrollBar,
-                ScrollBarThumb,
-                ScrollViewer,
-                Slider,
-                TextBox,
-                Toast,
-                ToggleButton,
-                TreeView,
-                TreeViewItem,
-                TreeViewToggleButton,
-                UserControl
-            };
+            AllControls = tempList.ToArray();
         // Also look in the GueRuntimeTypeAssociationGenerator
         }
-
-        public static FormsControlInfo Button;
-
-        public static FormsControlInfo CheckBox;
-
-        public static FormsControlInfo ColoredFrame;
-
-        public static FormsControlInfo ComboBox;
-
-        public static FormsControlInfo DialogBox;
-
-        public static FormsControlInfo Label;
-
-        public static FormsControlInfo ListBox;
-
-        public static FormsControlInfo ListBoxItem;
-
-        public static FormsControlInfo OnScreenKeyboard;
-
-        public static FormsControlInfo PasswordBox;
-
-        public static FormsControlInfo RadioButton;
-
-        public static FormsControlInfo ScrollBar;
-
-        public static FormsControlInfo ScrollBarThumb;
-
-        public static FormsControlInfo ScrollViewer;
-
-        public static FormsControlInfo Slider;
-
-        public static FormsControlInfo TextBox;
-
-        public static FormsControlInfo Toast;
-
-        public static FormsControlInfo ToggleButton;
-
-        public static FormsControlInfo TreeView;
-
-        public static FormsControlInfo TreeViewItem;
-
-        public static FormsControlInfo TreeViewToggleButton;
-
-        public static FormsControlInfo UserControl;
-
         public static FormsControlInfo[] AllControls;
-
-    }
-
-    public static class BehaviorGenerator
-    {
-
 
     }
 }

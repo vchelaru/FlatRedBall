@@ -21,7 +21,9 @@ namespace GumPlugin.DataGeneration
             "UISpriteSheet.png"
         };
 
-        public static async Task SaveComponents(Assembly assembly, string embeddedProjectLocation)
+        public static string EmbeddedProjectRoot { get; set; } = "GumPluginCore.Embedded.EmbeddedObjectGumProject";
+
+        public static async Task SaveComponents(Assembly assembly)
         {
             var gumDirectory = FileManager.GetDirectory(
                 GumProjectManager.Self.GetGumProjectFileName());
@@ -31,7 +33,7 @@ namespace GumPlugin.DataGeneration
 
             var resourcesInAssembly = assembly.GetManifestResourceNames();
 
-            string defaultFormsPrefix = embeddedProjectLocation + ".Components.DefaultForms.";
+            string defaultFormsPrefix = EmbeddedProjectRoot + ".Components.DefaultForms.";
             foreach(var resource in resourcesInAssembly)
             {
                 var isFormsComponent = resource.StartsWith(defaultFormsPrefix) && resource.EndsWith(".gucx");
@@ -73,7 +75,7 @@ namespace GumPlugin.DataGeneration
 
             foreach(var file in ContentItems)
             {
-                var resourceName = embeddedProjectLocation + "/" + file;
+                var resourceName = EmbeddedProjectRoot + "/" + file;
 
                 try
                 {
@@ -116,7 +118,7 @@ namespace GumPlugin.DataGeneration
 
         }
 
-        public static async Task SaveBehaviors(Assembly assembly, string projectRootFolder)
+        public static async Task SaveBehaviors(Assembly assembly)
         {
             var names = assembly.GetManifestResourceNames();
 
@@ -125,7 +127,7 @@ namespace GumPlugin.DataGeneration
 
             var behaviorDestination = gumDirectory + "Behaviors\\";
 
-            var prefix = projectRootFolder + ".Behaviors.";
+            var prefix = EmbeddedProjectRoot + ".Behaviors.";
 
             foreach(var resource in names)
             {

@@ -23,7 +23,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static GumPlugin.DataGeneration.BehaviorGenerator;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GumPlugin.Controls
@@ -78,13 +77,13 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+                await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
             }
         }
 
         private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) =>
-                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
 
 
         private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
@@ -112,7 +111,7 @@ namespace GumPlugin.Controls
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
-            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly, "GumPluginCore.Embedded.EmbeddedObjectGumProject.");
+            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
         }
 
 
