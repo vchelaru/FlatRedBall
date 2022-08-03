@@ -49,12 +49,7 @@ namespace FlatRedBall.Glue.Controls
 
             this.WindowStartupLocation = WindowStartupLocation.Manual;
 
-            // uses winforms:
-            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
-            this.Left = point.X - this.Width/2;
-            // not sure why this is so high
-            //this.Top = point.Y - this.Height/2;
-            this.Top = point.Y - 50;
+            GlueFormsCore.Extensions.WpfExtensions.MoveToCursor(this);
 
             ValidationLabel.Visibility = Visibility.Hidden;
         }

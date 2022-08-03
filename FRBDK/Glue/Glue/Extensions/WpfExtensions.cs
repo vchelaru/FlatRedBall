@@ -14,8 +14,37 @@ namespace GlueFormsCore.Extensions
 {
     public static class WpfExtensions
     {
-        // from 
-        // 
+        public static void MoveToCursor(System.Windows.Window window, PresentationSource source = null)
+        {
+            window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            double width = window.Width;
+            if (double.IsNaN(width))
+            {
+                width = 64;
+            }
+            double height = window.Height;
+            if (double.IsNaN(height))
+            {
+                // Let's just assume some small height so it doesn't appear down below the cursor:
+                //height = 0;
+                height = 64;
+            }
+
+            double mousePositionX = Control.MousePosition.X;
+            double mousePositionY = Control.MousePosition.Y;
+
+            if (source != null)
+            {
+                mousePositionX /= source.CompositionTarget.TransformToDevice.M11;
+                mousePositionY /= source.CompositionTarget.TransformToDevice.M22;
+            }
+
+            window.Left = System.Math.Max(0, mousePositionX - width / 2);
+            window.Top = mousePositionY - height / 2;
+
+            window.ShiftWindowOntoScreen();
+        }
 
         /// <summary>
         ///     Intent:  
