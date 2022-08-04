@@ -42,18 +42,41 @@ namespace GumPlugin.Managers
             component.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Component"));
         }
 
+        internal void AddStandardElement(FilePath filePath)
+        {
+            var standardElement = FileManager.XmlDeserialize<StandardElementSave>(filePath.FullPath);
+
+            AddStandardElementToGumProject(standardElement);
+
+            standardElement.Initialize(StandardElementsManager.Self.GetDefaultStateFor(standardElement.Name));
+        }
+
         internal void AddComponentToGumProject(ComponentSave gumComponent)
         {
-            AppState.Self.GumProjectSave.Components.Add(gumComponent);
+            var gumProject = AppState.Self.GumProjectSave;
+            gumProject.Components.Add(gumComponent);
             var elementReference = new ElementReference
             {
                 ElementType = ElementType.Component,
                 Name = gumComponent.Name
             };
-            AppState.Self.GumProjectSave.ComponentReferences.Add(elementReference);
-            AppState.Self.GumProjectSave.ComponentReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
+            gumProject.ComponentReferences.Add(elementReference);
+            gumProject.ComponentReferences.Sort((first, second) => first.Name.CompareTo(second.Name));
             FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum component " + gumComponent.Name);
+        }
 
+        internal void AddStandardElementToGumProject(StandardElementSave standardElement)
+        {
+            var gumProject = AppState.Self.GumProjectSave;
+            AppState.Self.GumProjectSave.StandardElements.Add(standardElement);
+            var elementReference = new ElementReference
+            {
+                ElementType = ElementType.Standard,
+                Name = standardElement.Name
+            };
+            gumProject.StandardElementReferences.Add(elementReference);
+            gumProject.StandardElements.Sort((first, second) => first.Name.CompareTo(second.Name));
+            FlatRedBall.Glue.Plugins.PluginManager.ReceiveOutput("Added Gum standard element" + standardElement.Name);
         }
 
         internal void SaveComponent(ComponentSave gumComponent)

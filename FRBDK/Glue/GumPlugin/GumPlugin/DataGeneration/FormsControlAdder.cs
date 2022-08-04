@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using Gum.DataTypes.Behaviors;
 using Gum.DataTypes.Variables;
@@ -21,67 +22,82 @@ namespace GumPlugin.DataGeneration
             "UISpriteSheet.png"
         };
 
-        public static async Task SaveComponents(Assembly assembly, string embeddedProjectLocation)
+        public static string EmbeddedProjectRoot
+        {
+            get
+            {
+                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
+                {
+                    return "GumPluginCore.Embedded.GumDefaults2";
+                }
+                else
+                {
+                    return "GumPluginCore.Embedded.EmbeddedObjectGumProject";
+                }
+            }
+        }
+
+        public static async Task SaveElements(Assembly assembly, bool askToOverwrite = true)
         {
             var gumDirectory = FileManager.GetDirectory(
                 GumProjectManager.Self.GetGumProjectFileName());
-            var componentDestination = gumDirectory + @"Components\DefaultForms\";
 
-            var addedFileDestinations = new List<FilePath>();
+
+            Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
 
             var resourcesInAssembly = assembly.GetManifestResourceNames();
+            
+            
+            AddElementsToResourceFileDestinations(
+                gumDirectory + @"Components\", 
+                resourceToFileDestinations, 
+                resourcesInAssembly,
+                EmbeddedProjectRoot + ".Components.",
+                ".gucx");
 
-            string defaultFormsPrefix = embeddedProjectLocation + ".Components.DefaultForms.";
-            foreach(var resource in resourcesInAssembly)
+            AddElementsToResourceFileDestinations(
+                gumDirectory + @"Standards\",
+                resourceToFileDestinations,
+                resourcesInAssembly,
+                EmbeddedProjectRoot + ".Standards.",
+                ".gutx");
+
+
+            AddContentItemsToResourceFileDestinations(gumDirectory, resourceToFileDestinations);
+
+            var existingFiles = resourceToFileDestinations.Values.Where(item => item.Exists()).ToArray();
+
+            var shouldSave = true;
+            if (existingFiles.Length > 0 && askToOverwrite)
             {
-                var isFormsComponent = resource.StartsWith(defaultFormsPrefix) && resource.EndsWith(".gucx");
+                var message = "The following files will be overwritten:";
 
-                if(isFormsComponent)
+                foreach (var item in existingFiles)
                 {
-                    var noPrefixName = resource.Substring(defaultFormsPrefix.Length);
-
-                    var destination = componentDestination + noPrefixName;
-
-                    addedFileDestinations.Add(destination);
-
-                    var shouldSave = true;
-
-                    if (System.IO.File.Exists(destination))
-                    {
-                        var result = System.Windows.Forms.MessageBox.Show($"The file {destination} already exists. Save anyway?",
-                            "Overwrite?",
-                            System.Windows.Forms.MessageBoxButtons.YesNo);
-
-                        shouldSave = result == System.Windows.Forms.DialogResult.Yes;
-                    }
-
-                    if (shouldSave)
-                    {
-                        try
-                        {
-                            FileManager.SaveEmbeddedResource(assembly, resource, destination);
-                        }
-                        catch (Exception e)
-                        {
-                            GlueCommands.Self.PrintError($"Could not add component {resource}:\n{e}");
-                        }
-                    }
+                    message += "\n" + item.RelativeTo(GlueState.Self.CurrentGlueProjectDirectory);
                 }
+
+                message += "\n\nSave Anyway?";
+
+                var result = System.Windows.Forms.MessageBox.Show(message,
+                    "Overwrite?",
+                    System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                shouldSave = result == System.Windows.Forms.DialogResult.Yes;
             }
 
-            var contentDestination = gumDirectory;
-
-            foreach(var file in ContentItems)
+            if (shouldSave)
             {
-                var resourceName = embeddedProjectLocation + "/" + file;
-
-                try
+                foreach (var kvp in resourceToFileDestinations)
                 {
-                    FileManager.SaveEmbeddedResource(assembly, resourceName.Replace("/", "."), contentDestination + file);
-                }
-                catch(Exception e)
-                {
-                    GlueCommands.Self.PrintOutput($"Skipping adding file {file}:\n{e.ToString()}");
+                    try
+                    {
+                        FileManager.SaveEmbeddedResource(assembly, kvp.Key, kvp.Value.FullPath);
+                    }
+                    catch (Exception e)
+                    {
+                        GlueCommands.Self.PrintError($"Could not add component {kvp.Key}:\n{e}");
+                    }
                 }
             }
 
@@ -89,19 +105,25 @@ namespace GumPlugin.DataGeneration
             // Now that everything is on disk, add the files to the Gum project if necessary
             await TaskManager.Self.AddAsync(() =>
             {
-                foreach(var file in addedFileDestinations)
+                foreach (var file in resourceToFileDestinations.Values)
                 {
-                    if(file.Extension == "gucx")
+                    if (file.Extension == "gucx")
                     {
                         var isComponentAlreadyPartOfProject =
                             GumPluginCommands.Self.IsComponentFileReferenced(file.FullPath);
 
-                        if(!isComponentAlreadyPartOfProject && file.Exists())
+                        if (!isComponentAlreadyPartOfProject && file.Exists())
                         {
                             GumPluginCommands.Self.AddComponent(file.FullPath);
                             wasAnythingAdded = true;
                         }
 
+                    }
+                    else if(file.Extension == "gutx")
+                    {
+                        var name = file.NoPathNoExtension;
+                        AppState.Self.GumProjectSave.StandardElements.RemoveAll(item => item.Name == name);
+                        GumPluginCommands.Self.AddStandardElement(file.FullPath);
                     }
                 }
 
@@ -109,14 +131,41 @@ namespace GumPlugin.DataGeneration
 
             }, "Updating Gum project with Forms Components");
 
-            if(wasAnythingAdded)
+            if (wasAnythingAdded)
             {
                 await GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
             }
 
         }
 
-        public static async Task SaveBehaviors(Assembly assembly, string projectRootFolder)
+        private static void AddContentItemsToResourceFileDestinations(string gumDirectory, Dictionary<string, FilePath> resourceToFileDestinations)
+        {
+            var contentDestination = gumDirectory;
+            foreach (var file in ContentItems)
+            {
+                var resourceName = EmbeddedProjectRoot + "/" + file;
+                resourceToFileDestinations[resourceName.Replace("/", ".")] = contentDestination + file;
+            }
+        }
+
+        private static void AddElementsToResourceFileDestinations(string componentDestination, Dictionary<string, FilePath> resourceToFileDestinations, string[] resourcesInAssembly, string defaultFormsPrefix, string extensionWithDot)
+        {
+            foreach (var resourceSource in resourcesInAssembly)
+            {
+                var shouldElementBeSaved = resourceSource.StartsWith(defaultFormsPrefix) && resourceSource.EndsWith(extensionWithDot);
+
+                if (shouldElementBeSaved)
+                {
+                    var noPrefixName = resourceSource.Substring(defaultFormsPrefix.Length);
+                    var withoutExtension = noPrefixName.Substring(0, noPrefixName.Length - extensionWithDot.Length);
+                    var split = withoutExtension.Split('.');
+                    var destination = componentDestination + String.Join('/', split) + extensionWithDot;
+                    resourceToFileDestinations[resourceSource] = destination;
+                }
+            }
+        }
+
+        public static async Task SaveBehaviors(Assembly assembly)
         {
             var names = assembly.GetManifestResourceNames();
 
@@ -125,7 +174,7 @@ namespace GumPlugin.DataGeneration
 
             var behaviorDestination = gumDirectory + "Behaviors\\";
 
-            var prefix = projectRootFolder + ".Behaviors.";
+            var prefix = EmbeddedProjectRoot + ".Behaviors.";
 
             foreach(var resource in names)
             {

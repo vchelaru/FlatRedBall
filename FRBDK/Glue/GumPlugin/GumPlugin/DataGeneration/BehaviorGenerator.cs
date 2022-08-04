@@ -9,12 +9,6 @@ using System.Threading.Tasks;
 
 namespace GumPlugin.DataGeneration
 {
-    public class GumStateCategory
-    {
-        public string Name;
-        public string[] States;
-    }
-
     public class FormsControlInfo
     {
         public string BehaviorName;
@@ -22,215 +16,58 @@ namespace GumPlugin.DataGeneration
 
         static FormsControlInfo()
         {
-            Button = new FormsControlInfo
-            {
-                BehaviorName = "ButtonBehavior",
-                ControlName = "Button",
-            };
+            List<FormsControlInfo> tempList = new List<FormsControlInfo>();
+            Add("ButtonBehavior", "Button");
 
-            CheckBox = new FormsControlInfo
-            {
-                BehaviorName = "CheckBoxBehavior",
-                ControlName = "CheckBox",
-            };
+            Add("CheckBoxBehavior", "CheckBox");
+            Add("ComboBoxBehavior", "ComboBox");
 
-            ColoredFrame = new FormsControlInfo
-            {
-                BehaviorName = null,
-                ControlName = null,
-            };
+            Add("DialogBoxBehavior", "FlatRedBall.Forms.Controls.Games.DialogBox");
 
-            ComboBox = new FormsControlInfo
-            {
-                BehaviorName = "ComboBoxBehavior",
-                ControlName = "ComboBox",
-            };
+            Add("LabelBehavior", "Label");
 
-            DialogBox = new FormsControlInfo
-            {
-                BehaviorName = "DialogBoxBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Games.DialogBox",
-            };
+            Add("ListBoxBehavior", "ListBox");
 
-            Label = new FormsControlInfo
-            {
-                BehaviorName = "LabelBehavior",
-                ControlName = "Label",
-            };
+            Add("ListBoxItemBehavior", "ListBoxItem");
 
-            ListBox = new FormsControlInfo
-            {
-                BehaviorName = "ListBoxBehavior",
-                ControlName = "ListBox",
-            };
+            Add("OnScreenKeyboardBehavior", "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard");
 
-            ListBoxItem = new FormsControlInfo
-            {
-                BehaviorName = "ListBoxItemBehavior",
-                ControlName = "ListBoxItem",
-            };
+            Add("PasswordBoxBehavior", "PasswordBox");
 
-            OnScreenKeyboard = new FormsControlInfo
-            {
-                BehaviorName = "OnScreenKeyboardBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard",
-            };
+            Add("RadioButtonBehavior", "RadioButton");
 
-            PasswordBox = new FormsControlInfo
-            {
-                BehaviorName = "PasswordBoxBehavior",
-                ControlName = "PasswordBox",
-            };
+            Add("ScrollBarBehavior", "ScrollBar");
 
-            RadioButton = new FormsControlInfo
-            {
-                BehaviorName = "RadioButtonBehavior",
-                ControlName = "RadioButton",
-            };
+            Add("ScrollViewerBehavior", "ScrollViewer");
 
-            ScrollBar = new FormsControlInfo
-            {
-                BehaviorName = "ScrollBarBehavior",
-                ControlName = "ScrollBar",
-            };
+            Add("SliderBehavior", "Slider");
 
-            ScrollBarThumb = new FormsControlInfo
-            {
-                // only a gum component, no backing control:
-            };
+            Add("TextBoxBehavior", "TextBox");
 
-            ScrollViewer = new FormsControlInfo
-            {
-                BehaviorName = "ScrollViewerBehavior",
-                ControlName = "ScrollViewer",
-            };
+            Add("ToastBehavior", "FlatRedBall.Forms.Controls.Popups.Toast");
 
-            Slider = new FormsControlInfo
-            {
-                BehaviorName = "SliderBehavior",
-                ControlName = "Slider",
-            };
+            Add("ToggleBehavior", "ToggleButton");
 
-            TextBox = new FormsControlInfo
-            {
-                BehaviorName = "TextBoxBehavior",
-                ControlName = "TextBox",
-            };
+            Add("TreeViewBehavior", "TreeView");
 
-            Toast = new FormsControlInfo
-            {
-                BehaviorName = "ToastBehavior",
-                ControlName = "FlatRedBall.Forms.Controls.Popups.Toast",
-            };
+            Add("TreeViewItemBehavior", "TreeViewItem");
 
-            ToggleButton = new FormsControlInfo
-            {
-                BehaviorName = "ToggleBehavior",
-                ControlName = "ToggleButton",
-            };
+            Add("UserControlBehavior", "UserControl");
 
-            TreeView = new FormsControlInfo
+            void Add(string behaviorName, string controlName)
             {
-                BehaviorName = "TreeViewBehavior",
-                ControlName = "TreeView",
-            };
+                var formsControlInfo = new FormsControlInfo
+                {
+                    BehaviorName = behaviorName,
+                    ControlName = controlName
+                };
+                tempList.Add(formsControlInfo);
+            }
 
-            TreeViewItem = new FormsControlInfo
-            {
-                BehaviorName = "TreeViewItemBehavior",
-                ControlName = "TreeViewItem",
-            };
-
-            TreeViewToggleButton = new FormsControlInfo
-            {
-            };
-
-            UserControl = new FormsControlInfo
-            {
-                BehaviorName = "UserControlBehavior",
-                ControlName = "UserControl",
-                //GumStateCategoryName = null,
-            };
-
-            AllControls = new FormsControlInfo[]
-            {
-                Button,
-                CheckBox,
-                ColoredFrame,
-                ComboBox,
-                DialogBox,
-                Label,
-                ListBox,
-                ListBoxItem,
-                OnScreenKeyboard,
-                PasswordBox,
-                RadioButton,
-                ScrollBar,
-                ScrollBarThumb,
-                ScrollViewer,
-                Slider,
-                TextBox,
-                Toast,
-                ToggleButton,
-                TreeView,
-                TreeViewItem,
-                TreeViewToggleButton,
-                UserControl
-            };
+            AllControls = tempList.ToArray();
         // Also look in the GueRuntimeTypeAssociationGenerator
         }
-
-        public static FormsControlInfo Button;
-
-        public static FormsControlInfo CheckBox;
-
-        public static FormsControlInfo ColoredFrame;
-
-        public static FormsControlInfo ComboBox;
-
-        public static FormsControlInfo DialogBox;
-
-        public static FormsControlInfo Label;
-
-        public static FormsControlInfo ListBox;
-
-        public static FormsControlInfo ListBoxItem;
-
-        public static FormsControlInfo OnScreenKeyboard;
-
-        public static FormsControlInfo PasswordBox;
-
-        public static FormsControlInfo RadioButton;
-
-        public static FormsControlInfo ScrollBar;
-
-        public static FormsControlInfo ScrollBarThumb;
-
-        public static FormsControlInfo ScrollViewer;
-
-        public static FormsControlInfo Slider;
-
-        public static FormsControlInfo TextBox;
-
-        public static FormsControlInfo Toast;
-
-        public static FormsControlInfo ToggleButton;
-
-        public static FormsControlInfo TreeView;
-
-        public static FormsControlInfo TreeViewItem;
-
-        public static FormsControlInfo TreeViewToggleButton;
-
-        public static FormsControlInfo UserControl;
-
         public static FormsControlInfo[] AllControls;
-
-    }
-
-    public static class BehaviorGenerator
-    {
-
 
     }
 }

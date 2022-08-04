@@ -376,11 +376,12 @@ namespace OfficialPluginsCore.Wizard.Managers
         {
             if (vm.AddFlatRedBallForms)
             {
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms");
+                // false argument is for askToOverwrite parameter
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
             }
             else
             {
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms");
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
             }
         }
 

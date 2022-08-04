@@ -72,7 +72,8 @@ namespace FlatRedBall.Glue.SaveClasses
             ScreenManagerHasPersistentPolygons = 17,
             SpriteHasTolerateMissingAnimations = 18,
             AnimationLayerHasName = 19,
-            IPlatformer = 19
+            IPlatformer = 19,
+            GumDefaults2 = 20
         }
 
         #endregion
@@ -81,7 +82,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.IPlatformer;
+        public const int LatestVersion = (int)GluxVersions.GumDefaults2;
 
         public int FileVersion { get; set; }
 
