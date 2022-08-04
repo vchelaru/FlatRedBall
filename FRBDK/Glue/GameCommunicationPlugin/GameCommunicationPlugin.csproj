@@ -182,7 +182,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;" />
+    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\GameCommunicationPlugin\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameCommunicationPlugin\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA;echo copy $(TargetDir)GameCommunicationPlugin.dll to $(SolutionDir)Glue\bin\x86\Debug\Plugins\OfficialPlugins\GameCommunicationPlugin.dll&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)GameCommunicationPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.pdb&quot;" />
   </Target>
 
 </Project>
