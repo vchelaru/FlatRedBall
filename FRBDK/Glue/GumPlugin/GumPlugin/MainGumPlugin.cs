@@ -705,14 +705,14 @@ namespace GumPlugin
             AskToCreateGumProject();
         }
 
-        public async Task CreateGumProjectWithForms()
+        public async Task CreateGumProjectWithForms(bool askToOverwrite)
         {
-            await CreateGumProjectInternal(shouldAlsoAddForms: true);
+            await CreateGumProjectInternal(shouldAlsoAddForms: true, askToOverwrite: askToOverwrite);
         }
 
-        public async Task CreateGumProjectNoForms()
+        public async Task CreateGumProjectNoForms(bool askToOverwrite)
         {
-            await CreateGumProjectInternal(shouldAlsoAddForms: false);
+            await CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: askToOverwrite);
         }
 
         public async void AskToCreateGumProject()
@@ -729,14 +729,14 @@ namespace GumPlugin
             {
 
                 var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
-                await CreateGumProjectInternal(shouldAlsoAddForms);
+                await CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite:true);
             }
 
 
 
         }
 
-        private async Task CreateGumProjectInternal(bool shouldAlsoAddForms)
+        private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -781,7 +781,7 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly, askToOverwrite);
                         await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
 
                     }

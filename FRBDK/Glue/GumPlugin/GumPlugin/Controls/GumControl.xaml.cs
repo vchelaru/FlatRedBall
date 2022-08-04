@@ -77,7 +77,7 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
                 await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
             }
         }
@@ -111,7 +111,7 @@ namespace GumPlugin.Controls
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
-            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+            FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
         }
 
 
