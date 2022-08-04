@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
 
@@ -55,7 +55,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)GameScriptingPluginCore.dll&quot;  &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameScriptingPlugin\GameScriptingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Copied files" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameScriptingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameScriptingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)GameScriptingPluginCore.dll&quot;  &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GameScriptingPlugin\GameScriptingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo Copied files" />
   </Target>
 
 </Project>

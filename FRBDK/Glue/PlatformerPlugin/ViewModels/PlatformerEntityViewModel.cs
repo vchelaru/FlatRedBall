@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using PlatformerPluginCore.ViewModels;
+using PlatformerPluginCore.SaveClasses;
 
 namespace FlatRedBall.PlatformerPlugin.ViewModels
 {
@@ -37,11 +39,41 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         [DependsOn(nameof(InheritsFromPlatformer))]
         public Visibility InheritanceLabelVisibility => InheritsFromPlatformer.ToVisibility();
 
+        public List<string> LeftSideItems { get; private set; } = new List<string>
+        {
+            "Movement Values",
+            "Animation"
+        };
+
+        public int SelectedLeftSideIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SelectedLeftSideIndex))]
+        public Visibility MovementValueVisibility =>
+            SelectedLeftSideIndex == 0 ?
+                Visibility.Visible :
+                Visibility.Collapsed;
+
+        [DependsOn(nameof(SelectedLeftSideIndex))]
+        public Visibility AnimationVisibility =>
+            SelectedLeftSideIndex == 1 ?
+                Visibility.Visible :
+                Visibility.Collapsed;
+
+        public ObservableCollection<AnimationRowViewModel> AnimationRows
+        {
+            get => Get<ObservableCollection<AnimationRowViewModel>>();
+            set => Set(value);
+        }
 
 
         public PlatformerEntityViewModel()
         {
             PlatformerValues = new ObservableCollection<PlatformerValuesViewModel>();
+            AnimationRows = new ObservableCollection<AnimationRowViewModel>();
 
             PlatformerValues.CollectionChanged += HandlePlatformerValuesChanged;
         }
@@ -71,6 +103,44 @@ namespace FlatRedBall.PlatformerPlugin.ViewModels
         private void HandlePlatformerValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             base.NotifyPropertyChanged(nameof(this.PlatformerValues));
+        }
+
+        public void AssignAnimationRowEvents(AnimationRowViewModel viewModel)
+        {
+            viewModel.MoveUp += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index > 0)
+                {
+                    this.AnimationRows.Move(index, index - 1);
+                }
+            };
+
+            viewModel.MoveDown += () =>
+            {
+                var index = this.AnimationRows.IndexOf(viewModel);
+                if (index < this.AnimationRows.Count - 1)
+                {
+                    this.AnimationRows.Move(index, index + 1);
+                }
+            };
+
+            viewModel.Remove += () =>
+            {
+                this.AnimationRows.Remove(viewModel);
+            };
+
+            viewModel.Duplicate += () =>
+            {
+                IndividualPlatformerAnimationValues values = new IndividualPlatformerAnimationValues();
+                viewModel.ApplyTo(values);
+
+                var newVm = new AnimationRowViewModel();
+                newVm.SetFrom(values);
+                AssignAnimationRowEvents(newVm);
+                var newIndex = this.AnimationRows.IndexOf(viewModel) + 1;
+                this.AnimationRows.Insert(newIndex, newVm);
+            };
         }
     }
 }

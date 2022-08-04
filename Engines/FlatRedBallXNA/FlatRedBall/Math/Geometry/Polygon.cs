@@ -1795,29 +1795,64 @@ namespace FlatRedBall.Math.Geometry
             // Subtract 2.  One because we don't want to run the last point since
             // it's the same as the first, and again because we are going to compare against
             // another inner loop
-            for (int firstPoint = 0; firstPoint < mPoints.Length - 2; firstPoint++)
+
+            // July 30, 202 - this is really really slow for large polygons, so 
+            // this function has been replaced with a faster one:
+            //for (int firstPoint = 0; firstPoint < mPoints.Length - 2; firstPoint++)
+            //{
+            //    for (int secondPoint = 1; secondPoint < mPoints.Length - 1; secondPoint++)
+            //    {
+            //        if (firstPoint != secondPoint && !ArePointsAdjacent(firstPoint, secondPoint))
+            //        {
+            //            // If a segment is drawn between two non-adjacent points, then the midpoint
+            //            // of that segment should always fall inside the Polygon. If it doesn't, then
+            //            // that means that the polygon is concave, so we return true
+
+            //            Point midpoint = (mPoints[firstPoint] + mPoints[secondPoint]) / 2.0f;
+
+            //            FlatRedBall.Math.MathFunctions.TransformPoint(ref midpoint, ref mRotationMatrix);
+
+            //            midpoint += this.Position;
+
+            //            if (!IsPointInside(midpoint.X, midpoint.Y))
+            //            {
+            //                return true;
+            //            }
+            //        }
+            //    }
+            //}
+            //return false;
+
+
+            var pointCount = Points.Count;
+            if (pointCount < 4)
             {
-                for (int secondPoint = 1; secondPoint < mPoints.Length - 1; secondPoint++)
+                return false;
+            }
+
+            var firstAngle = PointExtensionMethods.Angle(mPoints[1] - mPoints[0]) ?? 0;
+            var secondAngle = PointExtensionMethods.Angle(mPoints[2] - mPoints[1]) ?? 0;
+
+            var angle = MathFunctions.AngleToAngle(firstAngle, secondAngle);
+
+            for (int i = 1; i < pointCount - 2; i++)
+            {
+                firstAngle = PointExtensionMethods.Angle(mPoints[i + 1] - mPoints[i]) ?? 0;
+                secondAngle = PointExtensionMethods.Angle(mPoints[i + 2] - mPoints[i + 1]) ?? 0;
+
+                var newAngle = MathFunctions.AngleToAngle(firstAngle, secondAngle);
+
+                if(angle == 0)
                 {
-                    if (firstPoint != secondPoint && !ArePointsAdjacent(firstPoint, secondPoint))
-                    {
-                        // If a segment is drawn between two non-adjacent points, then the midpoint
-                        // of that segment should always fall inside the Polygon. If it doesn't, then
-                        // that means that the polygon is concave, so we return true
+                    continue;
+                }
 
-                        Point midpoint = (mPoints[firstPoint] + mPoints[secondPoint]) / 2.0f;
-
-                        FlatRedBall.Math.MathFunctions.TransformPoint(ref midpoint, ref mRotationMatrix);
-
-                        midpoint += this.Position;
-
-                        if (!IsPointInside(midpoint.X, midpoint.Y))
-                        {
-                            return true;
-                        }
-                    }
+                if (System.Math.Sign(angle) != System.Math.Sign(newAngle))
+                {
+                    return true;
                 }
             }
+
             return false;
 
         }

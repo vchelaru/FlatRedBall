@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,7 +17,7 @@ namespace FlatRedBall.Graphics.Animation
     }
     #endregion
 
-    public class AnimationLayer
+    public class AnimationLayer : INameable
     {
         string cachedChainName;
         string lastPlayCallAnimation = null;
@@ -27,8 +28,23 @@ namespace FlatRedBall.Graphics.Animation
 
         PlayingMode playingMode;
 
+        /// <summary>
+        /// Function which returns which animation should be displayed by this layer. If 
+        /// this layer should not be active, then this should return null.
+        /// </summary>
+        /// <remarks>
+        /// Typically this will have if-statements checking for certain conditions
+        /// such as whether the player is moving a certain speed, is on the ground, or
+        /// is facing left/right.
+        /// </remarks>
         public Func<string> EveryFrameAction;
         public Action OnAnimationFinished;
+
+        /// <summary>
+        /// The name of the layer. This is not the name of the animation returned, but rather
+        /// a way to identify the layer in code an debugging.
+        /// </summary>
+        public string Name { get; set; }
 
         internal AnimationController Container { get; set; }
 

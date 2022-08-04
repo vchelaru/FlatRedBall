@@ -106,12 +106,16 @@ namespace TiledPluginCore.Managers
 
                 if (destinationTsx.Exists() == false)
                 {
-                    // save the tsx
-                    FileManager.SaveEmbeddedResource(
-                        assembly,
-                        "TiledPluginCore.Content.Tilesets.StandardTileset.tsx",
-                        destinationTsx.FullPath
-                        );
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        // save the tsx
+                        FileManager.SaveEmbeddedResource(
+                            assembly,
+                            "TiledPluginCore.Content.Tilesets.StandardTileset.tsx",
+                            destinationTsx.FullPath
+                            );
+
+                    });
                 }
                 else
                 {
@@ -122,11 +126,14 @@ namespace TiledPluginCore.Managers
 
                 if (destinationPng.Exists() == false)
                 {
-                    // save the png
-                    FileManager.SaveEmbeddedResource(
+                    GlueCommands.Self.TryMultipleTimes(() =>
+                    {
+                        // save the png
+                        FileManager.SaveEmbeddedResource(
                         assembly,
                         "TiledPluginCore.Content.Tilesets.StandardTilesetIcons.png",
                         destinationPng.FullPath);
+                    });
                 }
                 else
                 {

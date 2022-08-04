@@ -194,9 +194,8 @@ namespace FlatRedBall.AnimationEditorForms.ViewModels
             switch (this.Justification)
             {
                 case Justification.Bottom:
-                    var chain = SelectedState.Self.SelectedChain;
 
-                    if (chain != null)
+                    foreach(var chain in SelectedState.Self.SelectedChains)
                     {
                         foreach (var frame in chain.Frames)
                         {

@@ -23,7 +23,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using static GumPlugin.DataGeneration.BehaviorGenerator;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace GumPlugin.Controls
@@ -33,6 +32,7 @@ namespace GumPlugin.Controls
     /// </summary>
     public partial class GumControl : UserControl
     {
+        public event Action RebuildFontsClicked;
         public GumControl()
         {
             InitializeComponent();
@@ -78,12 +78,14 @@ namespace GumPlugin.Controls
 
                 viewModel.IncludeFormsInComponents = true;
                 viewModel.IncludeComponentToFormsAssociation = true;
-                await FormsAddManager.GenerateBehaviors();
-                FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
             }
         }
 
-        private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) => await FormsAddManager.GenerateBehaviors();
+        private async void HandleGenerateBehaviors(object sender, RoutedEventArgs args) =>
+                await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+
 
         private GeneralResponse GetWhyAddingFormsIsNotSupported(ProjectBase project)
         {
@@ -110,7 +112,7 @@ namespace GumPlugin.Controls
 
         private void HandleAddFormsComponentsClick(object sender, RoutedEventArgs e)
         {
-            FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+            FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly);
         }
 
 
@@ -129,26 +131,7 @@ namespace GumPlugin.Controls
 
         private void RegenerateFontsClicked(object sender, RoutedEventArgs e)
         {
-            // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
-            var gumFileName = AppState.Self.GumProjectSave.FullFileName;
-
-            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
-
-            if(string.IsNullOrEmpty(executable))
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(
-                    "Could not find file association for Gum files - you need to set this up before performing this operation");
-            }
-            else
-            {
-                var startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
-                startInfo.FileName = executable;
-                startInfo.UseShellExecute = false;
-
-                System.Diagnostics.Process.Start(startInfo);
-
-            }
+            RebuildFontsClicked?.Invoke();
         }
 
         public void RemoveOrphanCustomCodeClicked(object sender, RoutedEventArgs e)

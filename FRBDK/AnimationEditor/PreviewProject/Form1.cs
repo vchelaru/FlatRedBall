@@ -53,6 +53,23 @@ namespace PreviewProject
 
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            //Ctrl+O displays open/load dialog.  Ctrl+L is toolbar shortcutkey
+            if (keyData == (Keys.O | Keys.Control))
+            {
+                HandleLoadClick(null, null);
+                return true;
+            }
+            //Ctrl+ =/+ key to add frame. the numpad + is toolbar shortcutkey
+            if (keyData == (Keys.Add | Keys.Control))
+            {
+                TreeViewManager.Self.AddFrameClick(null, null);
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void HandleAchxLoaded(string fileName)
         {
             AppCommands.Self.LoadAnimationChain(fileName);
@@ -103,9 +120,9 @@ namespace PreviewProject
             wasAnimationLoaded = false;
             if (commandLineArgs.Length == 2)
             {
-                AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
-                SetFormTextToLoadedFile();
-
+                //AppCommands.Self.LoadAnimationChain(commandLineArgs[1]);
+                //SetFormTextToLoadedFile();
+                HandleAchxLoaded(commandLineArgs[1]);
                 wasAnimationLoaded = true;
             }
 
@@ -121,7 +138,9 @@ namespace PreviewProject
             ToolStripMenuItem newToolStripItem = new ToolStripMenuItem("New AnimationChain List", null, HandleNewClick);
 
             ToolStripMenuItem loadToolStripItem = new ToolStripMenuItem("Load...", null, HandleLoadClick);
+            loadToolStripItem.ShortcutKeys = Keys.Control | Keys.L;
             ToolStripMenuItem saveToolStripItem = new ToolStripMenuItem("Save", null, HandleSaveClick);
+            saveToolStripItem.ShortcutKeys = Keys.Control | Keys.S;
             ToolStripMenuItem saveAsToolStripItem = new ToolStripMenuItem("Save As...", null, HandleSaveAsClick);
             loadRecentToolStripItem = new ToolStripMenuItem("Load Recent", null);
 

@@ -84,6 +84,11 @@ namespace FlatRedBall.Math.Paths
 
     #endregion
 
+    /// <summary>
+    /// An object which can define paths using line, arc, and move to commands. Once a path is defined,
+    /// it can return positions and tangents given a length. Paths are often used to define the movement
+    /// of objects along a fixed path, such as moving platforms and flying enemies.
+    /// </summary>
     public class Path : INameable
     {
         #region Fields/Properties

@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -18,24 +18,40 @@
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <Compile Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
     <Compile Remove="Embedded\EmptyProject\Libraries\**" />
+    <Compile Remove="Embedded\GumDefaults2\FontCache\**" />
+    <Compile Remove="Embedded\GumDefaults2\Libraries\**" />
+    <Compile Remove="Embedded\GumDefaults2\Screens\**" />
+    <Compile Remove="Embedded\GumDefaults2\Standards\StandardGraphics\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <EmbeddedResource Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
     <EmbeddedResource Remove="Embedded\EmptyProject\Libraries\**" />
+    <EmbeddedResource Remove="Embedded\GumDefaults2\FontCache\**" />
+    <EmbeddedResource Remove="Embedded\GumDefaults2\Libraries\**" />
+    <EmbeddedResource Remove="Embedded\GumDefaults2\Screens\**" />
+    <EmbeddedResource Remove="Embedded\GumDefaults2\Standards\StandardGraphics\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <None Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
     <None Remove="Embedded\EmptyProject\Libraries\**" />
+    <None Remove="Embedded\GumDefaults2\FontCache\**" />
+    <None Remove="Embedded\GumDefaults2\Libraries\**" />
+    <None Remove="Embedded\GumDefaults2\Screens\**" />
+    <None Remove="Embedded\GumDefaults2\Standards\StandardGraphics\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Behaviors\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\FontCache\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Libraries\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Screens\**" />
     <Page Remove="Embedded\EmbeddedObjectGumProject\Standards\**" />
     <Page Remove="Embedded\EmptyProject\Libraries\**" />
+    <Page Remove="Embedded\GumDefaults2\FontCache\**" />
+    <Page Remove="Embedded\GumDefaults2\Libraries\**" />
+    <Page Remove="Embedded\GumDefaults2\Screens\**" />
+    <Page Remove="Embedded\GumDefaults2\Standards\StandardGraphics\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,6 +114,77 @@
     <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopLeft.png" />
     <None Remove="Embedded\EmptyProject\Standards\StandardGraphics\Red_TopRight.png" />
     <None Remove="Embedded\EmptyProject\Standards\Text.gutx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ButtonBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\CheckBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ComboBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\DialogBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\LabelBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ListBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ListBoxItemBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\OnScreenKeyboardBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\PasswordBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\RadioButtonBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ScrollBarBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ScrollViewerBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\SliderBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\TextBoxBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ToastBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\ToggleBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\TreeViewBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\TreeViewItemBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Behaviors\UserControlBehavior.behx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonClose.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonConfirm.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonDeny.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonIcon.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonStandard.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonStandardIcon.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonTab.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\CheckBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ComboBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\DialogBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\Keyboard.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\KeyboardAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\KeyboardKey.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\KeyboardKeyAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ListBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ListBoxItem.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\PasswordBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\RadioButton.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ScrollBar.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\ScrollViewer.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\Slider.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TextBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TextBoxAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\Toast.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TreeView.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TreeViewItem.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TreeViewToggle.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\TreeViewToggleAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\UserControl.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\CautionLines.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\Divider.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\DividerHorizontal.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\DividerHorizontalAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\DividerVertical.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\DividerVerticalAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\Icon.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\IconAnimations.ganx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\Label.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBar.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBarIcon.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Elements\VerticalLines.gucx" />
+    <None Remove="Embedded\GumDefaults2\GumProject.gumx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Circle.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\ColoredRectangle.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Component.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Container.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\NineSlice.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Polygon.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Rectangle.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Sprite.gutx" />
+    <None Remove="Embedded\GumDefaults2\Standards\Text.gutx" />
+    <None Remove="Embedded\GumDefaults2\UISpriteSheet.png" />
     <None Remove="GumCoreShared.FlatRedBall.projitems" />
     <None Remove="Icons\AddGumProject.png" />
     <None Remove="Icons\GumIcon.png" />
@@ -257,6 +344,76 @@
     <EmbeddedResource Include="Embedded\GraphicalUiElement.IWindow.cs" />
     <EmbeddedResource Include="Embedded\GumAnimation.cs" />
     <EmbeddedResource Include="Embedded\GumCollidableExtensions.cs" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\CheckBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ComboBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\DialogBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\LabelBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ListBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ListBoxItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\OnScreenKeyboardBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\PasswordBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\RadioButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ScrollBarBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ScrollViewerBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\SliderBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TextBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ToastBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ToggleBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TreeViewBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TreeViewItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\UserControlBehavior.behx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonClose.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonConfirm.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonDeny.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonIcon.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonStandard.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonStandardIcon.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonTab.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\CheckBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ComboBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\DialogBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Keyboard.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardKey.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardKeyAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBoxItem.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PasswordBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\RadioButton.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollBar.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollViewer.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Slider.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TextBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TextBoxAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Toast.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeView.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewItem.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewToggle.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewToggleAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\UserControl.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\CautionLines.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Divider.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerHorizontal.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerHorizontalAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerVertical.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerVerticalAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Icon.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\IconAnimations.ganx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Label.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\PercentBar.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\PercentBarIcon.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\VerticalLines.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Circle.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\ColoredRectangle.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Component.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Container.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\NineSlice.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Polygon.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Rectangle.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Sprite.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Text.gutx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\UISpriteSheet.png" />
     <EmbeddedResource Include="Embedded\GumIdb.cs" />
     <EmbeddedResource Include="Embedded\GumToFrbShapeRelationship.cs" />
     <EmbeddedResource Include="Embedded\PlatformCompatability.cs" />
@@ -294,6 +451,29 @@
 
 
   <ItemGroup>
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\CheckBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ComboBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\DialogBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\LabelBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ListBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ListBoxItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\OnScreenKeyboardBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\PasswordBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\RadioButtonBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ScrollBarBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ScrollViewerBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\SliderBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TextBoxBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ToastBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\ToggleBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TreeViewBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\TreeViewItemBehavior.behx" />
+    <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Behaviors\UserControlBehavior.behx" />
+  </ItemGroup>
+
+
+  <ItemGroup>
     <Resource Include="Icons\AddGumProject.png" />
     <Resource Include="Icons\GumIcon.png" />
   </ItemGroup>
@@ -317,7 +497,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&quot; rmdir /Q /S $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&#xD;&#xA;echo PostBuild to $(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\GumPluginCore.pdb&quot;&#xD;&#xA;echo 5&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\FlatRedBall.InterpolationCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\GumPluginCore.pdb&quot;&#xD;&#xA;echo 5&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\FlatRedBall.InterpolationCore.dll &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

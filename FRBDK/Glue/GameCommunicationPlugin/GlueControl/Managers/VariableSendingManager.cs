@@ -20,7 +20,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 {
     class VariableIgnoreData
     {
-        public const int SecondsToKeepIgnoreItem = 10;
+        public const int SecondsToKeepIgnoreItem = 5;
 
         public NamedObjectSave NamedObjectSave { get; set; }
         public string VariableName { get; set; }

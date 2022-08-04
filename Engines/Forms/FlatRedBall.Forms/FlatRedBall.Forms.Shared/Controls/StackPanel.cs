@@ -32,8 +32,11 @@ namespace FlatRedBall.Forms.Controls
         public StackPanel() : 
             base(new global::Gum.Wireframe.GraphicalUiElement(new InvisibleRenderable(), null))
         {
-            Width = 200;
-            Height = 200;
+            Width = 0;
+            Visual.WidthUnits = global::Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            Height = 10;
+            Visual.HeightUnits = global::Gum.DataTypes.DimensionUnitType.RelativeToChildren;
+
             IsVisible = true;
 
         }

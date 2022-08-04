@@ -64,9 +64,6 @@ namespace GlueFormsCore.Controls
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
-
-            GlueCommands.Self.DialogCommands.MoveToCursor(this);
-
         }
     }
 }

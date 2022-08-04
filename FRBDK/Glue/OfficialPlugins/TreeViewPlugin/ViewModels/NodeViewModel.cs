@@ -118,6 +118,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         IEnumerable<ITreeNode> ITreeNode.Children => children;
 
+        /// <summary>
+        /// Used only when displaying filtered search results
+        /// </summary>
+        public double SearchTermMatchWeight { get; set; }
+
         public string Text 
         {
             get => Get<string>();

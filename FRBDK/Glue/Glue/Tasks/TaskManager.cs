@@ -371,6 +371,14 @@ namespace FlatRedBall.Glue.Managers
             return await WaitForTaskToFinish(glueTask);
         }
 
+        /// <summary>
+        /// Adds a function which returns a Task. The returned task will be completed when the internal operation is executed and completes. 
+        /// </summary>
+        /// <param name="func">The function to add to the internal queue.</param>
+        /// <param name="displayInfo">The information to display to the user.</param>
+        /// <param name="executionPreference">The execution preference for the task.</param>
+        /// <param name="doOnUiThread">Whether the task must be done on UI thread. If the task directly accesses UI, then this should be true.</param>
+        /// <returns></returns>
         public async Task AddAsync(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
             var glueTask = await AddOrRunIfTasked(func, displayInfo, executionPreference, doOnUiThread);

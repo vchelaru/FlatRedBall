@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using Gum.DataTypes;
@@ -13,9 +15,15 @@ namespace GumPluginCore.Managers
 {
     public class FileChangeManager : Singleton<FileChangeManager>
     {
-        public async void HandleFileChange(string fileName)
+        public void RegisterAdditionalContentTypes()
         {
-            string extension = FileManager.GetExtension(fileName);
+
+            AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Add("behx");
+        }
+
+        public async void HandleFileChange(FilePath filePath, FileChangeType fileChangeType)
+        {
+            string extension = filePath.Extension;
 
             bool shouldHandleFileChange = false;
 
@@ -24,7 +32,7 @@ namespace GumPluginCore.Managers
                 var gumProjectDirectory =
                     FileManager.GetDirectory(Gum.Managers.ObjectFinder.Self.GumProjectSave.FullFileName);
 
-                shouldHandleFileChange = FileManager.IsRelativeTo(fileName, gumProjectDirectory);
+                shouldHandleFileChange = FileManager.IsRelativeTo(filePath.FullPath, gumProjectDirectory);
             }
 
             if (shouldHandleFileChange)
@@ -61,9 +69,9 @@ namespace GumPluginCore.Managers
                             ScreenSave screen = null;
 
                             // It could have been deleted so check...
-                            if(System.IO.File.Exists(fileName))
+                            if(filePath.Exists())
                             {
-                                GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(fileName));
+                                GlueCommands.Self.TryMultipleTimes(() => screen = FileManager.XmlDeserialize<ScreenSave>(filePath.FullPath));
                             }
                             
                             if(screen != null)
@@ -89,9 +97,9 @@ namespace GumPluginCore.Managers
                         else if(extension == GumProjectSave.ComponentExtension)
                         {
                             ComponentSave component = null;
-                            if(System.IO.File.Exists(fileName))
+                            if(filePath.Exists())
                             {
-                                GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(fileName));
+                                GlueCommands.Self.TryMultipleTimes(() => component = FileManager.XmlDeserialize<ComponentSave>(filePath.FullPath));
                                 component.Initialize(component.DefaultState);
 
                                 // since the gum project didn't change, it should be here
@@ -112,7 +120,7 @@ namespace GumPluginCore.Managers
                         else if(extension == GumProjectSave.StandardExtension)
                         {
                             StandardElementSave standard = null;
-                            GlueCommands.Self.TryMultipleTimes(() => standard = FileManager.XmlDeserialize<StandardElementSave>(fileName));
+                            GlueCommands.Self.TryMultipleTimes(() => standard = FileManager.XmlDeserialize<StandardElementSave>(filePath.FullPath));
                             standard.Initialize(standard.DefaultState);
 
                             var oldStandard = gumProject.StandardElements.FirstOrDefault(item => item.Name == standard.Name);
@@ -138,11 +146,11 @@ namespace GumPluginCore.Managers
 
                     if (extension == GumProjectSave.ProjectExtension)
                     {
-                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                        await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
                     }
                     else
                     {
-                        CodeGeneratorManager.Self.GenerateDueToFileChange(fileName);
+                        CodeGeneratorManager.Self.GenerateDueToFileChange(filePath.FullPath);
                     }
 
                     // Behaviors could have been added, so generate them
@@ -157,19 +165,39 @@ namespace GumPluginCore.Managers
                 }
                 else if (extension == BehaviorReference.Extension)
                 {
+                    // replace this behavior
+                    if(filePath.Exists())
+                    {
+                        try
+                        {
+                            var newBehavior =
+                                FileManager.XmlDeserialize<BehaviorSave>(filePath.FullPath);
+
+                            // remove behavior
+                            AppState.Self.GumProjectSave.Behaviors.RemoveAll(item => item.Name == newBehavior.Name);
+                            AppState.Self.GumProjectSave.Behaviors.Add(newBehavior);
+                        }
+                        catch(Exception ex)
+                        {
+                            GlueCommands.Self.PrintError(ex.ToString());
+                        }
+                    }
+
+
                     // todo: make this take just 1 behavior for speed
                     CodeGeneratorManager.Self.GenerateAllBehaviors();
+                    CodeGeneratorManager.Self.GenerateAndSaveRuntimeAssociations();
                 }
                 else if (extension == "ganx")
                 {
                     // Animations have changed, so we need to regenerate animation code.
                     // For now we'll generate everything, but we may want to make this faster
                     // and more precise by only generating the selected element:
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
                 }
                 else if (extension == "json")
                 {
-                    await GumPlugin.Managers.EventExportManager.Self.HandleEventExportFileChanged(fileName);
+                    await GumPlugin.Managers.EventExportManager.Self.HandleEventExportFileChanged(filePath.FullPath);
                 }
             }
         }

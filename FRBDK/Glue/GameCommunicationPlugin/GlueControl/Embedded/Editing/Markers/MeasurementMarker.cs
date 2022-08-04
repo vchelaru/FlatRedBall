@@ -86,10 +86,33 @@ namespace GlueControl.Editing
                 var angleInRadians = (cursorPosition - StartPointGrabbed).Angle();
                 if (angleInRadians != null)
                 {
-                    var text = EditorVisuals.Text($"{angleInRadians} RAD  {MathHelper.ToDegrees(angleInRadians.Value)} DEG", StartPointGrabbed);
-                    text.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
+
+                    var text = EditorVisuals.Text($"{angleInRadians:N3} RAD  {MathHelper.ToDegrees(angleInRadians.Value):N0} DEG", StartPointGrabbed);
+                    if (differenceY > 0)
+                    {
+                        text.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
+                    }
+                    else
+                    {
+                        text.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Bottom;
+                    }
 
                     EditorVisuals.Arrow(StartPointGrabbed, cursorPosition, Color.Green);
+                }
+
+                if (differenceY > 0)
+                {
+                    var endText = EditorVisuals.Text(cursorPosition.ToString(), cursorPosition);
+
+                    endText.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Bottom;
+                }
+                else
+                {
+                    var position = cursorPosition.AddY(-20 / CameraLogic.CurrentZoomRatio);
+
+                    var endText = EditorVisuals.Text(cursorPosition.ToString(), position);
+
+                    endText.VerticalAlignment = FlatRedBall.Graphics.VerticalAlignment.Top;
                 }
             }
         }

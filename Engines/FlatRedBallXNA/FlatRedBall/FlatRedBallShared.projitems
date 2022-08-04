@@ -90,6 +90,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\PointExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Feedback\VibrateMotor.cs" />
@@ -128,9 +129,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\TextManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graphics\Texture\RenderTargetSprite.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\BehaviorBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ButtonBehavior.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Gui\Behaviors\ToggleBehavior.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\IControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Gui\Controls\ISelectable.cs" />
@@ -299,5 +297,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\SpriteSelectionOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utilities\StringFunctions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Gui\Behaviors\" />
   </ItemGroup>
 </Project>

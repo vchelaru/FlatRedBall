@@ -392,7 +392,7 @@ namespace GlueControl.Editing
                 itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
-                if(itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
+                if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
                 {
                     SelectionLogic.DoDragSelectLogic();
                 }
@@ -416,7 +416,7 @@ namespace GlueControl.Editing
 
                 UpdateMarkers(didChangeItemOver);
 
-                MeasurementMarker.Update();
+                UpdateMeasurementMarker();
 
             }
             else
@@ -436,6 +436,23 @@ namespace GlueControl.Editing
 
             }
 #endif
+        }
+
+        private void UpdateMeasurementMarker()
+        {
+            var doesMarkerUseRightClick = false;
+            foreach (var item in this.SelectedMarkers)
+            {
+                if (item.UsesRightMouseButton)
+                {
+                    doesMarkerUseRightClick = true;
+                }
+            }
+
+            if (!doesMarkerUseRightClick)
+            {
+                MeasurementMarker.Update();
+            }
         }
 
         bool shouldPrintCurrentNamedObjectInformation = false;
@@ -1100,4 +1117,5 @@ namespace GlueControl.Editing
 
         #endregion
     }
+
 }

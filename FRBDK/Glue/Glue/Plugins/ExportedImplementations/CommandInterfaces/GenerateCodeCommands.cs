@@ -35,9 +35,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueElement element = GlueState.CurrentElement;
             if (element != null)
             {
-                TaskManager.Self.AddOrRunIfTasked(()  =>
+                TaskManager.Self.AddAsync(async ()  =>
                 {
-                    CodeWriter.GenerateCode(element);
+                    // This can happen when the user exits the program, so let's check:
+                    if(GlueState.CurrentGlueProject != null)
+                    {
+                        await CodeWriter.GenerateCode(element);
+                    }
                 }, $"Generating element {element}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }

@@ -147,6 +147,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         }
 
+        public FilePath GetAbsoluteFilePath(GlueElement element)
+        {
+            var extension = element is ScreenSave
+                ? GlueProjectSave.ScreenExtension
+                : GlueProjectSave.EntityExtension;
+
+            var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
+
+            return glueDirectory + element.Name + "." + extension;
+        }
+
         public string GetAbsoluteFileName(string relativeFileName, bool isContent)
         {
             return ProjectManager.MakeAbsolute(relativeFileName, isContent);

@@ -34,6 +34,8 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected override string CategoryName => "TextBoxCategoryState";
+
         #endregion
 
         #region Events
@@ -186,6 +188,7 @@ namespace FlatRedBall.Forms.Controls
                 }
                 UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
+                // Okay this is some stuff
             }
         }
 
@@ -194,48 +197,6 @@ namespace FlatRedBall.Forms.Controls
             this.Text = Text.Remove(selectionStart, selectionLength);
             CaretIndex = selectionStart;
             SelectionLength = 0;
-        }
-
-        #endregion
-
-        #region UpdateTo
-
-        protected override void UpdateToCaretChanged(int oldIndex, int newIndex, bool isShiftDown)
-        {
-            if(isShiftDown)
-            {
-                var change = oldIndex - newIndex;
-
-                if(SelectionLength == 0)
-                {
-                    // set the field (doesn't update the selection visuals)...
-                    selectionStart = System.Math.Min(oldIndex, newIndex);
-                    // ...now set the property to update the visuals.
-                    SelectionLength = System.Math.Abs(oldIndex - newIndex);
-                }
-                else
-                {
-                    int leftMost = 0;
-                    int rightMost = 0;
-                    if(oldIndex == selectionStart)
-                    {
-                        leftMost = System.Math.Min(selectionStart + selectionLength, newIndex);
-                        rightMost = System.Math.Max(selectionStart + selectionLength, newIndex);
-                    }
-                    else
-                    {
-                        leftMost = System.Math.Min(selectionStart, newIndex);
-                        rightMost = System.Math.Max(selectionStart, newIndex);
-                    }
-
-                    selectionStart = leftMost;
-                    SelectionLength = rightMost - leftMost;
-                }
-            }
-            else
-            {
-                SelectionLength = 0;
-            }
         }
 
         #endregion
@@ -249,45 +210,5 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        #region Utilities
-
-        int? GetSpaceIndexBefore(int index)
-        {
-            if (DisplayedText != null)
-            {
-                for (int i = index - 1; i > 0; i--)
-                {
-                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
-
-                    if (isSpace)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        int? GetSpaceIndexAfter(int index)
-        {
-            if (DisplayedText != null)
-            {
-                for (int i = index; i < DisplayedText.Length; i++)
-                {
-                    var isSpace = Char.IsWhiteSpace(DisplayedText[i]);
-
-                    if (isSpace)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-
-        #endregion
     }
 }

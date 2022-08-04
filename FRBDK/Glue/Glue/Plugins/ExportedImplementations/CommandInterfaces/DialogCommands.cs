@@ -556,37 +556,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void MoveToCursor(System.Windows.Window window)
         {
-            window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
-
-            double width = window.Width;
-            if (double.IsNaN(width))
-            {
-                width = 64;
-            }
-            double height = window.Height;
-            if (double.IsNaN(height))
-            {
-                // Let's just assume some small height so it doesn't appear down below the cursor:
-                //height = 0;
-                height = 64;
-            }
-
             var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
-
-
-            double mousePositionX = Control.MousePosition.X;
-            double mousePositionY = Control.MousePosition.Y;
-
-            if (source != null)
-            {
-                mousePositionX /= source.CompositionTarget.TransformToDevice.M11;
-                mousePositionY /= source.CompositionTarget.TransformToDevice.M22;
-            }
-
-            window.Left = System.Math.Max(0, mousePositionX - width / 2);
-            window.Top = mousePositionY - height / 2;
-
-            window.ShiftWindowOntoScreen();
+            WpfExtensions.MoveToCursor(window, source);
         }
 
         #endregion
@@ -686,6 +657,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.TypeConverter = typeConverter;
                     }
 
+                    object defaultValue = null;
+
                     if(!string.IsNullOrEmpty( sourceObject ))
                     {
                         var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
@@ -696,8 +669,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
 
                             newVariable.Category = variableDefinition?.Category;
+
+                            defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
                         }
                     }
+
+                    newVariable.DefaultValue = defaultValue;
 
                     GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
                 }
@@ -771,6 +748,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // AddScreen, add screen, addnewscreen, add new screen
             var addScreenWindow = new AddScreenWindow();
 
+            MoveToCursor(addScreenWindow);
 
             addScreenWindow.Message = "Enter a name for the new Screen";
 

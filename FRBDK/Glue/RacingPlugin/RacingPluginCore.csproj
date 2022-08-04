@@ -6,7 +6,7 @@
     <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 </Project>

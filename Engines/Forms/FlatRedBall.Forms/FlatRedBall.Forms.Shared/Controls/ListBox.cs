@@ -220,17 +220,25 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateState()
         {
+            var category = "ListBoxCategoryState";
             if (IsEnabled == false)
             {
-                Visual.SetProperty("ListBoxCategoryState", "Disabled");
+                if (IsFocused)
+                {
+                    Visual.SetProperty(category, "DisabledFocused");
+                }
+                else
+                {
+                    Visual.SetProperty(category, "Disabled");
+                }
             }
             else if (IsFocused)
             {
-                Visual.SetProperty("ListBoxCategoryState", "Focused");
+                Visual.SetProperty(category, "Focused");
             }
             else
             {
-                Visual.SetProperty("ListBoxCategoryState", "Enabled");
+                Visual.SetProperty(category, "Enabled");
             }
         }
 

@@ -16,6 +16,8 @@ namespace TopDownPlugin.ViewModels
     {
         #region IsTopDown-related
 
+        public ObservableCollection<TopDownValuesViewModel> TopDownValues { get; private set; }
+
         public bool IsTopDown
         {
             get => Get<bool>();
@@ -73,8 +75,6 @@ namespace TopDownPlugin.ViewModels
 
 
 
-        public ObservableCollection<TopDownValuesViewModel> TopDownValues { get; private set; }
-
         public TopDownEntityViewModel()
         {
             TopDownValues = new ObservableCollection<TopDownValuesViewModel>();
@@ -107,8 +107,6 @@ namespace TopDownPlugin.ViewModels
 
         private void HandleTopDownValuePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            string propertyChanged = e.PropertyName;
-
             base.NotifyPropertyChanged(nameof(this.TopDownValues));
         }
     }

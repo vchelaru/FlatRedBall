@@ -100,9 +100,9 @@ namespace OfficialPlugins.SpritePlugin.Views
             TextureCoordinateSelectionWindow window, out float left, out float top, out float right, out float bottom)
         {
             var viewModel = new TextureCoordinateSelectionViewModel();
-            left = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+            left = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.LeftTexturePixel)) as float? ?? 0;
-            top = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+            top = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.TopTexturePixel)) as float? ?? 0;
             float defaultWidth = 256;
             float defaultHeight = 256;
@@ -112,14 +112,14 @@ namespace OfficialPlugins.SpritePlugin.Views
                 defaultHeight = window.Texture.Height;
             }
 
-            right = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+            right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;
             if (right == 0)
             {
                 right = defaultWidth;
             }
 
-            bottom = ObjectFinder.GetValueRecursively(currentNos, currentElement,
+            bottom = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.BottomTexturePixel)) as float? ?? defaultHeight;
             if (bottom == 0)
             {
@@ -139,7 +139,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             if (currentNos != null && currentElement != null)
             {
-                var textureValue = ObjectFinder.GetValueRecursively(currentNos, currentElement, "Texture") as string;
+                var textureValue = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement, "Texture") as string;
 
                 if (textureValue != null)
                 {

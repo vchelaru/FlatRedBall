@@ -33,20 +33,16 @@
             this.TreeViewAndEverythingElse = new System.Windows.Forms.SplitContainer();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.AnimationsTab = new System.Windows.Forms.TabPage();
-            this.AnimationTreeView = new FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView();
             this.TreeViewRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
-            this.animationsListToolBar1 = new FlatRedBall.AnimationEditorForms.Controls.AnimationsListToolBar();
             this.TexturesPage = new System.Windows.Forms.TabPage();
             this.TexturesTreeView = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.SelectedItemPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.tileMapInfoWindow1 = new FlatRedBall.AnimationEditorForms.Controls.TileMapInfoWindow();
             this.UnitTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.PreviewSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.WireframeTopUiControl = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControls();
-            this.PreviewGraphicsControl = new XnaAndWinforms.GraphicsDeviceControl();
-            this.previewControls1 = new FlatRedBall.AnimationEditorForms.Controls.PreviewControls();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.MenuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,11 +52,16 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newAnimationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.frameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.multipleframesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.CursorStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.AnimationTreeView = new FlatRedBall.AnimationEditorForms.Controls.CustomNodeColorTreeView();
+            this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
+            this.animationsListToolBar1 = new FlatRedBall.AnimationEditorForms.Controls.AnimationsListToolBar();
+            this.tileMapInfoWindow1 = new FlatRedBall.AnimationEditorForms.Controls.TileMapInfoWindow();
+            this.WireframeTopUiControl = new FlatRedBall.AnimationEditorForms.Controls.WireframeEditControls();
+            this.PreviewGraphicsControl = new XnaAndWinforms.GraphicsDeviceControl();
+            this.previewControls1 = new FlatRedBall.AnimationEditorForms.Controls.PreviewControls();
             ((System.ComponentModel.ISupportInitialize)(this.TreeViewAndEverythingElse)).BeginInit();
             this.TreeViewAndEverythingElse.Panel1.SuspendLayout();
             this.TreeViewAndEverythingElse.Panel2.SuspendLayout();
@@ -72,14 +73,14 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PreviewSplitContainer)).BeginInit();
             this.PreviewSplitContainer.Panel1.SuspendLayout();
             this.PreviewSplitContainer.Panel2.SuspendLayout();
             this.PreviewSplitContainer.SuspendLayout();
             this.MenuStrip.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            this.tabControl2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // TreeViewAndEverythingElse
@@ -125,43 +126,10 @@
             this.AnimationsTab.Text = "Animations";
             this.AnimationsTab.UseVisualStyleBackColor = true;
             // 
-            // AnimationTreeView
-            // 
-            this.AnimationTreeView.AllowDrop = true;
-            this.AnimationTreeView.AlwaysHaveOneNodeSelected = false;
-            this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
-            this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AnimationTreeView.HideSelection = false;
-            this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
-            this.AnimationTreeView.MultiSelectBehavior = CommonFormsAndControls.MultiSelectBehavior.CtrlDown;
-            this.AnimationTreeView.Name = "AnimationTreeView";
-            this.AnimationTreeView.SelectedNodes = ((System.Collections.Generic.List<System.Windows.Forms.TreeNode>)(resources.GetObject("AnimationTreeView.SelectedNodes")));
-            this.AnimationTreeView.Size = new System.Drawing.Size(147, 327);
-            this.AnimationTreeView.TabIndex = 0;
-            this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
-            this.AnimationTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AnimationTreeView_AfterSelect);
-            this.AnimationTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragDrop);
-            this.AnimationTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragEnter);
-            this.AnimationTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragOver);
-            this.AnimationTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AnimationTreeView_KeyDown);
-            this.AnimationTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AnimationTreeView_KeyPress);
-            this.AnimationTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseClick);
-            this.AnimationTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseDown);
-            // 
             // TreeViewRightClickMenu
             // 
             this.TreeViewRightClickMenu.Name = "TreeViewRightClickMenu";
             this.TreeViewRightClickMenu.Size = new System.Drawing.Size(61, 4);
-            // 
-            // elementHost1
-            // 
-            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.elementHost1.Location = new System.Drawing.Point(3, 3);
-            this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(147, 30);
-            this.elementHost1.TabIndex = 1;
-            this.elementHost1.Text = "elementHost1";
-            this.elementHost1.Child = this.animationsListToolBar1;
             // 
             // TexturesPage
             // 
@@ -216,15 +184,6 @@
             this.SelectedItemPropertyGrid.TabIndex = 0;
             this.SelectedItemPropertyGrid.ToolbarVisible = false;
             // 
-            // tileMapInfoWindow1
-            // 
-            this.tileMapInfoWindow1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 278);
-            this.tileMapInfoWindow1.Name = "tileMapInfoWindow1";
-            this.tileMapInfoWindow1.Size = new System.Drawing.Size(147, 111);
-            this.tileMapInfoWindow1.TabIndex = 2;
-            this.tileMapInfoWindow1.TileMapInformation = null;
-            // 
             // UnitTypeComboBox
             // 
             this.UnitTypeComboBox.Dock = System.Windows.Forms.DockStyle.Top;
@@ -235,6 +194,28 @@
             this.UnitTypeComboBox.Size = new System.Drawing.Size(147, 21);
             this.UnitTypeComboBox.TabIndex = 1;
             this.UnitTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.UnitTypeComboBox_SelectedIndexChanged);
+            // 
+            // tabControl2
+            // 
+            this.tabControl2.Controls.Add(this.tabPage1);
+            this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl2.Location = new System.Drawing.Point(0, 0);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(700, 389);
+            this.tabControl2.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.PreviewSplitContainer);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(692, 363);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "EditWindow";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // PreviewSplitContainer
             // 
@@ -255,43 +236,18 @@
             this.PreviewSplitContainer.Panel2.Controls.Add(this.PreviewGraphicsControl);
             this.PreviewSplitContainer.Panel2.Controls.Add(this.previewControls1);
             this.PreviewSplitContainer.Size = new System.Drawing.Size(686, 357);
-            this.PreviewSplitContainer.SplitterDistance = 314;
+            this.PreviewSplitContainer.SplitterDistance = 175;
             this.PreviewSplitContainer.TabIndex = 1;
             // 
-            // WireframeTopUiControl
+            // tabPage2
             // 
-            this.WireframeTopUiControl.DataContext = null;
-            this.WireframeTopUiControl.Dock = System.Windows.Forms.DockStyle.Top;
-            this.WireframeTopUiControl.Location = new System.Drawing.Point(0, 0);
-            this.WireframeTopUiControl.Name = "WireframeTopUiControl";
-            this.WireframeTopUiControl.PercentageValue = 100;
-            this.WireframeTopUiControl.Size = new System.Drawing.Size(682, 23);
-            this.WireframeTopUiControl.TabIndex = 1;
-            this.WireframeTopUiControl.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
-            this.WireframeTopUiControl.Load += new System.EventHandler(this.WireframeTopUiControl_Load);
-            // 
-            // PreviewGraphicsControl
-            // 
-            this.PreviewGraphicsControl.DesiredFramesPerSecond = 30F;
-            this.PreviewGraphicsControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PreviewGraphicsControl.Location = new System.Drawing.Point(0, 22);
-            this.PreviewGraphicsControl.Name = "PreviewGraphicsControl";
-            this.PreviewGraphicsControl.Size = new System.Drawing.Size(682, 13);
-            this.PreviewGraphicsControl.TabIndex = 0;
-            this.PreviewGraphicsControl.Text = "graphicsDeviceControl1";
-            // 
-            // previewControls1
-            // 
-            this.previewControls1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.previewControls1.IsOnionSkinVisible = false;
-            this.previewControls1.Location = new System.Drawing.Point(0, 0);
-            this.previewControls1.Name = "previewControls1";
-            this.previewControls1.OffsetMultiplier = 1F;
-            this.previewControls1.PercentageValue = 100;
-            this.previewControls1.Size = new System.Drawing.Size(682, 22);
-            this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
-            this.previewControls1.TabIndex = 1;
-            this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(692, 363);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Edit Window (new)";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // MenuStrip
             // 
@@ -324,21 +280,21 @@
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // resizeTextureToolStripMenuItem
             // 
             this.resizeTextureToolStripMenuItem.Name = "resizeTextureToolStripMenuItem";
-            this.resizeTextureToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.resizeTextureToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.resizeTextureToolStripMenuItem.Text = "Resize Texture...";
             this.resizeTextureToolStripMenuItem.Click += new System.EventHandler(this.resizeTextureToolStripMenuItem_Click);
             // 
@@ -346,7 +302,8 @@
             // 
             this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newAnimationToolStripMenuItem,
-            this.frameToolStripMenuItem});
+            this.frameToolStripMenuItem,
+            this.multipleframesToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.addToolStripMenuItem.Text = "Add";
@@ -354,16 +311,25 @@
             // newAnimationToolStripMenuItem
             // 
             this.newAnimationToolStripMenuItem.Name = "newAnimationToolStripMenuItem";
-            this.newAnimationToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.newAnimationToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newAnimationToolStripMenuItem.Text = "Animation";
             this.newAnimationToolStripMenuItem.Click += new System.EventHandler(this.AddAnimationToolStripMenuItem_Click);
             // 
             // frameToolStripMenuItem
             // 
             this.frameToolStripMenuItem.Name = "frameToolStripMenuItem";
-            this.frameToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.frameToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+plus";
+            this.frameToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Oemplus)));
+            this.frameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.frameToolStripMenuItem.Text = "Frame";
             this.frameToolStripMenuItem.Click += new System.EventHandler(this.frameToolStripMenuItem_Click);
+            // 
+            // multipleframesToolStripMenuItem
+            // 
+            this.multipleframesToolStripMenuItem.Name = "multipleframesToolStripMenuItem";
+            this.multipleframesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.multipleframesToolStripMenuItem.Text = "Multiple Frames";
+            this.multipleframesToolStripMenuItem.Click += new System.EventHandler(this.multipleframesToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -381,37 +347,82 @@
             this.CursorStatusLabel.Size = new System.Drawing.Size(76, 17);
             this.CursorStatusLabel.Text = "Cursor: (X, Y)";
             // 
-            // tabControl2
+            // AnimationTreeView
             // 
-            this.tabControl2.Controls.Add(this.tabPage1);
-            this.tabControl2.Controls.Add(this.tabPage2);
-            this.tabControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl2.Location = new System.Drawing.Point(0, 0);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(700, 389);
-            this.tabControl2.TabIndex = 2;
+            this.AnimationTreeView.AllowDrop = true;
+            this.AnimationTreeView.AlwaysHaveOneNodeSelected = false;
+            this.AnimationTreeView.ContextMenuStrip = this.TreeViewRightClickMenu;
+            this.AnimationTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AnimationTreeView.HideSelection = false;
+            this.AnimationTreeView.Location = new System.Drawing.Point(3, 33);
+            this.AnimationTreeView.MultiSelectBehavior = CommonFormsAndControls.MultiSelectBehavior.CtrlDown;
+            this.AnimationTreeView.Name = "AnimationTreeView";
+            this.AnimationTreeView.SelectedNodes = ((System.Collections.Generic.List<System.Windows.Forms.TreeNode>)(resources.GetObject("AnimationTreeView.SelectedNodes")));
+            this.AnimationTreeView.Size = new System.Drawing.Size(147, 327);
+            this.AnimationTreeView.TabIndex = 0;
+            this.AnimationTreeView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.AnimationTreeView_ItemDrag);
+            this.AnimationTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.AnimationTreeView_AfterSelect);
+            this.AnimationTreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragDrop);
+            this.AnimationTreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragEnter);
+            this.AnimationTreeView.DragOver += new System.Windows.Forms.DragEventHandler(this.AnimationTreeView_DragOver);
+            this.AnimationTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.AnimationTreeView_KeyDown);
+            this.AnimationTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AnimationTreeView_KeyPress);
+            this.AnimationTreeView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseClick);
+            this.AnimationTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AnimationTreeView_MouseDown);
             // 
-            // tabPage1
+            // elementHost1
             // 
-            this.tabPage1.Controls.Add(this.PreviewSplitContainer);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(692, 363);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "EditWindow";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.elementHost1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.elementHost1.Location = new System.Drawing.Point(3, 3);
+            this.elementHost1.Name = "elementHost1";
+            this.elementHost1.Size = new System.Drawing.Size(147, 30);
+            this.elementHost1.TabIndex = 1;
+            this.elementHost1.Text = "elementHost1";
+            this.elementHost1.Child = this.animationsListToolBar1;
             // 
-            // tabPage2
+            // tileMapInfoWindow1
             // 
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(692, 363);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Edit Window (new)";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tileMapInfoWindow1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tileMapInfoWindow1.Location = new System.Drawing.Point(0, 278);
+            this.tileMapInfoWindow1.Name = "tileMapInfoWindow1";
+            this.tileMapInfoWindow1.Size = new System.Drawing.Size(147, 111);
+            this.tileMapInfoWindow1.TabIndex = 2;
+            this.tileMapInfoWindow1.TileMapInformation = null;
+            // 
+            // WireframeTopUiControl
+            // 
+            this.WireframeTopUiControl.DataContext = null;
+            this.WireframeTopUiControl.Dock = System.Windows.Forms.DockStyle.Top;
+            this.WireframeTopUiControl.Location = new System.Drawing.Point(0, 0);
+            this.WireframeTopUiControl.Name = "WireframeTopUiControl";
+            this.WireframeTopUiControl.PercentageValue = 100;
+            this.WireframeTopUiControl.Size = new System.Drawing.Size(682, 23);
+            this.WireframeTopUiControl.TabIndex = 1;
+            this.WireframeTopUiControl.ZoomChanged += new System.EventHandler(this.zoomControl1_ZoomChanged);
+            this.WireframeTopUiControl.Load += new System.EventHandler(this.WireframeTopUiControl_Load);
+            // 
+            // PreviewGraphicsControl
+            // 
+            this.PreviewGraphicsControl.DesiredFramesPerSecond = 30F;
+            this.PreviewGraphicsControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PreviewGraphicsControl.Location = new System.Drawing.Point(0, 22);
+            this.PreviewGraphicsControl.Name = "PreviewGraphicsControl";
+            this.PreviewGraphicsControl.Size = new System.Drawing.Size(682, 152);
+            this.PreviewGraphicsControl.TabIndex = 0;
+            this.PreviewGraphicsControl.Text = "graphicsDeviceControl1";
+            // 
+            // previewControls1
+            // 
+            this.previewControls1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.previewControls1.IsOnionSkinVisible = false;
+            this.previewControls1.Location = new System.Drawing.Point(0, 0);
+            this.previewControls1.Name = "previewControls1";
+            this.previewControls1.OffsetMultiplier = 1F;
+            this.previewControls1.PercentageValue = 100;
+            this.previewControls1.Size = new System.Drawing.Size(682, 22);
+            this.previewControls1.SpriteAlignment = FlatRedBall.AnimationEditorForms.Data.SpriteAlignment.Center;
+            this.previewControls1.TabIndex = 1;
+            this.previewControls1.ZoomChanged += new System.EventHandler(this.previewControls1_ZoomChanged);
             // 
             // MainControl
             // 
@@ -433,6 +444,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.PreviewSplitContainer.Panel1.ResumeLayout(false);
             this.PreviewSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.PreviewSplitContainer)).EndInit();
@@ -441,8 +454,6 @@
             this.MenuStrip.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.tabControl2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -481,5 +492,6 @@
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.ToolStripMenuItem multipleframesToolStripMenuItem;
     }
 }

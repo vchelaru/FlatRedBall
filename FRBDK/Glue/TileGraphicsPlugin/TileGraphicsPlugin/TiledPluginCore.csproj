@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
@@ -101,7 +101,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; rmdir &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; /s /q&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild&#xD;&#xA;&#xD;&#xA;IF EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\&quot; rmdir &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\&quot; /s /q&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\&quot;&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\TiledPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)\TiledPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\TiledPlugin\TiledPluginCore.pdb&quot;&#xD;&#xA;" />
   </Target>
 
 

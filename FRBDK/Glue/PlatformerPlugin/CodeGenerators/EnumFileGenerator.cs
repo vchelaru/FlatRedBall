@@ -13,14 +13,16 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 {
     public class EnumFileGenerator : Singleton<EnumFileGenerator>
     {
-        public void GenerateAndSaveEnumFile()
+        string RelativeFileLocation => "Platformer/Enums.Generated.cs";
+
+        public void GenerateAndSave()
         {
 
             TaskManager.Self.Add(() =>
             {
                 var contents = GenerateFileContents();
 
-                var relativeDirectory = "Platformer/Enums.Generated.cs";
+                var relativeDirectory = RelativeFileLocation;
 
                 GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(relativeDirectory);
 
@@ -42,7 +44,6 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                     FilePath oldFile = GlueState.Self.CurrentGlueProjectDirectory +
                         "Platformer/Enums.cs";
-
                     GlueCommands.Self.ProjectCommands.RemoveFromProjects(
                         oldFile, saveAfterRemoving: true);
                 }

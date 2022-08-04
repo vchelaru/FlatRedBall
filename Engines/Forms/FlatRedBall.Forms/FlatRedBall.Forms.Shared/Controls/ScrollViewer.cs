@@ -224,6 +224,8 @@ namespace FlatRedBall.Forms.Controls
 
             const string category = "ScrollBarVisibilityState";
 
+
+
             Visual.SetProperty(category, state);
         }
 

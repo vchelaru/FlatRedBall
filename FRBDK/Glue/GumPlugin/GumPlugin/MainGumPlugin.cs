@@ -32,6 +32,7 @@ using GumPluginCore.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
+using HQ.Util.Unmanaged;
 
 namespace GumPlugin
 {
@@ -343,7 +344,7 @@ namespace GumPlugin
 
             this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
-            this.ReactToFileChangeHandler += FileChangeManager.Self.HandleFileChange;
+            this.ReactToFileChange += FileChangeManager.Self.HandleFileChange;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
 
@@ -577,10 +578,7 @@ namespace GumPlugin
             {
                 if (control == null)
                 {
-                    control = new GumControl();
-                    control.DataContext = viewModel;
-
-                    tab = this.CreateTab(control, "Gum Properties");
+                    CreateGumControl();
                 }
                 tab.Show();
                 raiseViewModelEvents = false;
@@ -705,14 +703,14 @@ namespace GumPlugin
             AskToCreateGumProject();
         }
 
-        public async Task CreateGumProjectWithForms()
+        public async Task CreateGumProjectWithForms(bool askToOverwrite)
         {
-            await CreateGumProjectInternal(shouldAlsoAddForms: true);
+            await CreateGumProjectInternal(shouldAlsoAddForms: true, askToOverwrite: askToOverwrite);
         }
 
-        public async Task CreateGumProjectNoForms()
+        public async Task CreateGumProjectNoForms(bool askToOverwrite)
         {
-            await CreateGumProjectInternal(shouldAlsoAddForms: false);
+            await CreateGumProjectInternal(shouldAlsoAddForms: false, askToOverwrite: askToOverwrite);
         }
 
         public async void AskToCreateGumProject()
@@ -729,14 +727,14 @@ namespace GumPlugin
             {
 
                 var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
-                await CreateGumProjectInternal(shouldAlsoAddForms);
+                await CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite:true);
             }
 
 
 
         }
 
-        private async Task CreateGumProjectInternal(bool shouldAlsoAddForms)
+        private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -751,10 +749,7 @@ namespace GumPlugin
 
                     if (control == null)
                     {
-                        control = new GumControl();
-                        control.DataContext = viewModel;
-
-                        tab = this.CreateTab(control, "Gum Properties");
+                        CreateGumControl();
                     }
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
@@ -781,12 +776,15 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        await FormsAddManager.GenerateBehaviors();
-                        await FormsControlAdder.SaveComponents(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly, askToOverwrite);
+                        await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+
+                        await HandleRebuildFonts();
+
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(forceReload:true);
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync(forceReload:true);
                 }
                 propertiesManager.IsReactingToProperyChanges = true;
 
@@ -794,6 +792,47 @@ namespace GumPlugin
             },
             "Creating Gum Project");
 
+        }
+
+        private void CreateGumControl()
+        {
+            control = new GumControl();
+            control.DataContext = viewModel;
+
+            control.RebuildFontsClicked += async () => await HandleRebuildFonts();
+
+            tab = this.CreateTab(control, "Gum Properties");
+        }
+
+        public async Task HandleRebuildFonts()
+        {
+            // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
+            var gumFileName = AppState.Self.GumProjectSave.FullFileName;
+
+            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
+
+            if (string.IsNullOrEmpty(executable))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(
+                    "Could not find file association for Gum files - you need to set this up before performing this operation");
+            }
+            else
+            {
+                await TaskManager.Self.AddAsync(() =>
+                {
+                    var startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
+                    startInfo.FileName = executable;
+                    startInfo.UseShellExecute = false;
+
+                    var process = System.Diagnostics.Process.Start(startInfo);
+
+                    process.WaitForExit();
+                },
+                "Refreshing Font Cache");
+
+
+            }
         }
 
         private void HandleMakePluginRequiredYes()
@@ -838,15 +877,16 @@ namespace GumPlugin
 
             if (gumRfs != null)
             {
+                FileChangeManager.Self.RegisterAdditionalContentTypes();
 
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-                await TaskManager.Self.AddAsync(() =>
+                await TaskManager.Self.AddAsync(async () =>
                 {
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
                     CodeGeneratorManager.Self.GenerateAllBehaviors();
 

@@ -18,23 +18,23 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     {
         #region Fields
 
-        static MenuItem mSetDefaultMenuItem;
-        static MenuItem mExposeVariable;
+        static System.Windows.Forms.ToolStripMenuItem mSetDefaultMenuItem;
+        static System.Windows.Forms.ToolStripMenuItem mExposeVariable;
 
-        static MenuItem mUseCustomRectangle;
-        static MenuItem mUseFullScreen;
+        static System.Windows.Forms.ToolStripMenuItem mUseCustomRectangle;
+        static System.Windows.Forms.ToolStripMenuItem mUseFullScreen;
 
         static CustomVariable mHighlightedCustomVariable;
         #endregion
 
         public static void Initialize()
         {
-            mSetDefaultMenuItem = new MenuItem("Set to Default", SetDefaultClick);
+            mSetDefaultMenuItem = new System.Windows.Forms.ToolStripMenuItem("Set to Default", null, SetDefaultClick);
 
-            mExposeVariable = new MenuItem("Expose Variable", ExposeVariableClick);
+            mExposeVariable = new ToolStripMenuItem("Expose Variable", null, ExposeVariableClick);
 
-            mUseCustomRectangle = new MenuItem("Use Custom Rectangle", UseCustomRectangleClick);
-            mUseFullScreen = new MenuItem("Use Full Screen", UseFullScreenClick);
+            mUseCustomRectangle = new ToolStripMenuItem("Use Custom Rectangle", null, UseCustomRectangleClick);
+            mUseFullScreen = new ToolStripMenuItem("Use Full Screen", null, UseFullScreenClick);
         }
 
         public static void ReactToRightClick()
@@ -43,14 +43,14 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             System.Windows.Forms.PropertyGrid propertyGrid = MainGlueWindow.Self.PropertyGrid;
             mHighlightedCustomVariable = null;
 
-            if (propertyGrid.ContextMenu == null)
+            if (propertyGrid.ContextMenuStrip == null)
             {
-                propertyGrid.ContextMenu = new ContextMenu();
+                propertyGrid.ContextMenuStrip = new ContextMenuStrip();
             }
 
 
-            ContextMenu contextMenu = propertyGrid.ContextMenu;
-            contextMenu.MenuItems.Clear();
+            var contextMenu = propertyGrid.ContextMenuStrip;
+            contextMenu.Items.Clear();
             #endregion
 
 
@@ -62,7 +62,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             if (GlueState.Self.CurrentStateSave != null)
             {
                 // Assume that it's a variable
-                contextMenu.MenuItems.Add(mSetDefaultMenuItem);
+                contextMenu.Items.Add(mSetDefaultMenuItem);
             }
 
             #endregion
@@ -72,7 +72,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             if (GlueState.Self.CurrentCustomVariable != null)
             {
                 // Assume that it's a variable
-                contextMenu.MenuItems.Add(mSetDefaultMenuItem);
+                contextMenu.Items.Add(mSetDefaultMenuItem);
             }
 
             #endregion
@@ -86,7 +86,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                 // Is this a variable
                 if (namedObject.GetCustomVariable(label) != null)
                 {
-                    contextMenu.MenuItems.Add(mSetDefaultMenuItem);
+                    contextMenu.Items.Add(mSetDefaultMenuItem);
                 }
 
                 else if (namedObject.IsLayer && label ==
@@ -95,11 +95,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     if (namedObject.DestinationRectangle == null ||
                         !namedObject.DestinationRectangle.HasValue)
                     {
-                        contextMenu.MenuItems.Add(mUseCustomRectangle);
+                        contextMenu.Items.Add(mUseCustomRectangle);
                     }
                     else
                     {
-                        contextMenu.MenuItems.Add(mUseFullScreen);
+                        contextMenu.Items.Add(mUseFullScreen);
                     }
                 }
 
@@ -119,7 +119,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     if(customVariable != null)
                     {
                         mHighlightedCustomVariable = customVariable;
-                        contextMenu.MenuItems.Add(mSetDefaultMenuItem);
+                        contextMenu.Items.Add(mSetDefaultMenuItem);
                     }
                 }
                 else if (GlueState.Self.CurrentEntitySave != null)
@@ -131,11 +131,11 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                         && sourceEntitySave.GetCustomVariable("Visible") == null
                         )
                     {
-                        contextMenu.MenuItems.Add(mExposeVariable);
+                        contextMenu.Items.Add(mExposeVariable);
                     }
                     else if (label == "BaseEntity" && !string.IsNullOrEmpty(GlueState.Self.CurrentEntitySave.BaseEntity))
                     {
-                        contextMenu.MenuItems.Add("Go to definition", GoToDefinitionClick);
+                        contextMenu.Items.Add("Go to definition", null, GoToDefinitionClick);
 
                     }
                 }

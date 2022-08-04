@@ -19,7 +19,7 @@ namespace OfficialPluginsCore.Wizard.Views
     /// </summary>
     public partial class WizardWindow : Window
     {
-        public WizardData WizardData { get; private set; }
+        public WizardViewModel WizardData { get; private set; }
 
         public event Func<Task> DoneClicked;
 

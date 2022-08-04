@@ -44,10 +44,13 @@ namespace OfficialPluginsCore.Compiler.Managers
                     {
                         GlueCommands.Self.GluxCommands.StartUpScreenName = "Screens\\" + toolbarViewModel.StartupScreenName;
 
-                        if(toolbar.IsOpen)
+                        GlueCommands.Self.DoOnUiThread(() =>
                         {
-                            toolbar.IsOpen = false;
-                        }
+                            if(toolbar.IsOpen)
+                            {
+                                toolbar.IsOpen = false;
+                            }
+                        });
                     }
 
 

@@ -257,6 +257,11 @@ namespace GlueControl.Editing
             {
                 return true;
             }
+            // Do we want to make all INameables supported? I dont' know yet, so for now let's add one-by-one
+            else if(nameable is FlatRedBall.Math.Paths.Path)
+            {
+                return true;
+            }
             else
             {
                 return nameable is FlatRedBall.TileCollisions.TileShapeCollection;
@@ -512,6 +517,8 @@ namespace GlueControl.Editing
 #endif
             else if (collisionObject is Polygon asPolygon)
             {
+                polygon = polygon ?? new PolygonFast();
+
                 polygon.Points = asPolygon.Points.ToList();
                 polygon.Position = asPolygon.Position;
                 polygon.RotationMatrix = asPolygon.RotationMatrix;

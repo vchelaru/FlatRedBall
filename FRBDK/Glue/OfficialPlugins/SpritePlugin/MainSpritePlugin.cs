@@ -201,9 +201,9 @@ namespace OfficialPlugins.SpritePlugin
             if (!string.IsNullOrEmpty(redVariableName) && !string.IsNullOrEmpty(greenVariableName) &&
                 !string.IsNullOrEmpty(blueVariableName))
             {
-                var red = ((ObjectFinder.GetValueRecursively(nos, element, redVariableName) as float?) ?? 0) * 255;
-                var green = ((ObjectFinder.GetValueRecursively(nos, element, greenVariableName) as float?) ?? 0) * 255;
-                var blue = ((ObjectFinder.GetValueRecursively(nos, element, blueVariableName) as float?) ?? 0) * 255;
+                var red = ((ObjectFinder.Self.GetValueRecursively(nos, element, redVariableName) as float?) ?? 0) * 255;
+                var green = ((ObjectFinder.Self.GetValueRecursively(nos, element, greenVariableName) as float?) ?? 0) * 255;
+                var blue = ((ObjectFinder.Self.GetValueRecursively(nos, element, blueVariableName) as float?) ?? 0) * 255;
 
                 var redInt = MathFunctions.RoundToInt(red);
                 var greenInt = MathFunctions.RoundToInt(green);

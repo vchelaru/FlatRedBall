@@ -137,7 +137,17 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
             // read the height values and infer the Value and ViewportSize based on a 0 - 100
 
+            // The attachments may not yet be set up, so set the explicitTrack's RaiseChildrenEventsOutsideOfBounds
+            //var thumbParent = thumb.Visual.Parent as GraphicalUiElement;
+            //if(thumbParent != null)
+            //{
+            //    thumbParent.RaiseChildrenEventsOutsideOfBounds = true;
+            //}
             explicitTrack = this.Visual.GetGraphicalUiElementByName("TrackInstance");
+            if(explicitTrack != null)
+            {
+                explicitTrack.RaiseChildrenEventsOutsideOfBounds = true;
+            }
 
             Minimum = 0;
             Maximum = 100;

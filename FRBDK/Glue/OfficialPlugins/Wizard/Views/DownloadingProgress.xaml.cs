@@ -20,7 +20,7 @@ namespace OfficialPluginsCore.Wizard.Views
     /// </summary>
     public partial class DownloadingProgress : UserControl
     {
-        WizardData ViewModel => DataContext as WizardData;
+        WizardViewModel ViewModel => DataContext as WizardViewModel;
         public DownloadingProgress()
         {
             InitializeComponent();

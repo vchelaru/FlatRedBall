@@ -70,7 +70,10 @@ namespace FlatRedBall.Glue.SaveClasses
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
             ScreenManagerHasPersistentPolygons = 17,
-            SpriteHasTolerateMissingAnimations = 18
+            SpriteHasTolerateMissingAnimations = 18,
+            AnimationLayerHasName = 19,
+            IPlatformer = 19,
+            GumDefaults2 = 20
         }
 
         #endregion
@@ -79,7 +82,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteHasTolerateMissingAnimations;
+        public const int LatestVersion = (int)GluxVersions.GumDefaults2;
 
         public int FileVersion { get; set; }
 

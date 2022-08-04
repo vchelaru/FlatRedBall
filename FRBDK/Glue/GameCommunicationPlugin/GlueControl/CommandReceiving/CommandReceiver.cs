@@ -714,7 +714,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
             if(dto.Method == nameof(GluxCommands.SetVariableOnList))
             {
-                // todo - do ignores here...
+                var list = (List<NosVariableAssignment>) Convert(dto.Parameters[0], typeof(List<NosVariableAssignment>));
+
+                foreach(var item in list)
+                {
+                    var nos = item.NamedObjectSave;
+                    var memberName = item.VariableName;
+                    VariableSendingManager.Self.AddOneTimeIgnore(nos, memberName);
+                }
             }
             await HandleFacadeCommand(GlueCommands.Self.GluxCommands, dto);
         }

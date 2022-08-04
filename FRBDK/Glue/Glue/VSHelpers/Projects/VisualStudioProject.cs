@@ -296,6 +296,12 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         }
 
+        public void AddProjectReference(string projectPath)
+        {
+            var tempProj = new Project(projectPath, null, null, new ProjectCollection());
+            Project.AddItem("ProjectReference", new FilePath(projectPath).RelativeTo(FullFileName), new Dictionary<string, string> { { "Project", $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}" }, { "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() } });
+        }
+
         public bool IsCodeItem(ProjectItem buildItem)
         {
             if (buildItem.ItemType == "Compile")
@@ -905,6 +911,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return item;
             }
         }
+        
+        public bool HasPackage(string packageName)
+        {
+            return GetNugetPackageReference(packageName) != null;
+        }
+        
+        public string GetNugetPackageVersion(string packageName)
+        {
+            HasPackage(packageName, out var existingVersionNumber)
+            
+            return existingVersionNumber;
+        }
 
         public bool HasPackage(string packageName, out string existingVersionNumber)
         {
@@ -921,6 +939,42 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             existingVersionNumber=null;
             return false;
+        }
+
+        public void RemoveNugetPackage(string packageName)
+        {
+            lock (this)
+            {
+                var item = GetNugetPackageReference(packageName);
+                if (item != null)
+                {
+                    RemoveItem(item);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines if the the project has a project reference with the specified csproj name.  Project reference
+        /// nodes have an `Include` value that contains a relative path to the csproj.  The search will do a
+        /// string contains to find a `ProjectReference` node that contains the csproj name, regardless of the pathing
+        /// in the node.
+        /// </summary>
+        public bool HasProjectReference(string csprojName)
+        {
+            if (string.IsNullOrWhiteSpace(csprojName))
+            {
+                return false;
+            }
+            
+            if (!csprojName.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+            {
+                csprojName += ".csproj";
+            }
+
+            return mProject.AllEvaluatedItems
+                .Where(x => x.ItemType == "ProjectReference")
+                .Where(x => x.EvaluatedInclude.Contains(csprojName, StringComparison.OrdinalIgnoreCase))
+                .Any();
         }
 
         public void AddNugetPackage(string packageName, string versionNumber)
@@ -999,6 +1053,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                 }
             }
+        }
+
+        private ProjectItem GetNugetPackageReference(string packageName)
+        {
+            var packageNameToLower = packageName.ToLowerInvariant();
+            if (!mBuildItemDictionaries.TryGetValue(packageNameToLower, out var item))
+            {
+                return null;
+            }
+
+            if (item.ItemType == "PackageReference" && item.HasMetadata("Version"))
+            {
+                return item;
+            }
+
+            return null;
         }
 
         #endregion

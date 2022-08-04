@@ -55,6 +55,15 @@ namespace TMXGlueLib
         [XmlAttribute("type")]
         public string Type { get; set; }
 
+
+
+        [XmlAttribute("class")]
+        public string Class 
+        {
+            get => Type;
+            set => Type = value;
+        }
+
         [XmlElement("animation")]
         public TileAnimation Animation
         {

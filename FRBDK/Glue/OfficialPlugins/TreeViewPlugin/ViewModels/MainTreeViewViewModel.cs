@@ -85,13 +85,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             value.StartsWith("v ")
                             )
                         {
-                            SearchText = value.ToLowerInvariant().Substring(2);
+                            SearchText = value.Substring(2);
                             PrefixText = value.Substring(0, 1).ToLowerInvariant();
 
                         }
                         else
                         {
-                            SearchText = value?.ToLowerInvariant();
+                            SearchText = value;
                         }
 
                     }
@@ -858,11 +858,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
+        List<NodeViewModel> tempListForSortingFilteredResults = new List<NodeViewModel>();
         private void RefreshFlattenedList()
         {
             var searchToLower = SearchText?.ToLowerInvariant();
+            var searchTermCaseSensitive = SearchText;
 
-            FlattenedItems.Clear();
+            tempListForSortingFilteredResults.Clear();
 
             var hasPrefix = !string.IsNullOrEmpty(PrefixText);
 
@@ -882,9 +884,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if(!hasPrefix || PrefixText == "e")
                 {
-                    if (entity.Name.ToLowerInvariant().Contains(searchToLower))
+                    // strip off "entities\\"
+                    var name = entity.Name.Substring("entities\\".Length);
+                    var matchWeight = GetMatchWeight(name);
+                    if (matchWeight > 0)
                     {
-                        FlattenedItems.Add(new GlueElementNodeViewModel(null, entity, false));
+                        var vm = new GlueElementNodeViewModel(null, entity, false);
+                        vm.SearchTermMatchWeight = matchWeight;
+                        tempListForSortingFilteredResults.Add(vm);
                     }
                 }
 
@@ -895,9 +902,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 if(!hasPrefix || PrefixText == "s")
                 {
-                    if (screen.Name.ToLowerInvariant().Contains(searchToLower))
+                    var name = screen.Name.Substring("screens\\".Length);
+                    var matchWeight = GetMatchWeight(name);
+                    if (matchWeight > 0)
                     {
-                        FlattenedItems.Add(new GlueElementNodeViewModel(null, screen, false));
+                        var vm = new GlueElementNodeViewModel(null, screen, false);
+                        vm.SearchTermMatchWeight = matchWeight;
+                        tempListForSortingFilteredResults.Add(vm);
                     }
                 }
 
@@ -908,9 +919,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 foreach (var file in ObjectFinder.Self.GetAllReferencedFiles())
                 {
-                    if(file.Name.ToLowerInvariant().Contains(searchToLower))
+                    var matchWeight = GetMatchWeight(file.Name);
+                    if (matchWeight > 0)
                     {
-                        FlattenedItems.Add(NodeFor(file));
+                        var vm = NodeFor(file);
+                        vm.SearchTermMatchWeight = matchWeight;
+                        tempListForSortingFilteredResults.Add(vm);
                     }
                 }
             }
@@ -938,11 +952,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 //node.Text = nos.ToString();
                 // don't use field name, that has the 'm' prefix in some cases
                 //node.Text = $"{nos.FieldName} ({nos.ClassType}) in {nos.GetContainer()}";
+                node.SearchTermMatchWeight = GetMatchWeight(nos.InstanceName);
                 node.Text = $"{nos.InstanceName} ({nos.ClassType}) in {nos.GetContainer()}";
                 node.Tag = nos;
                 //LayersTreeNode.SelectedImageKey = "layerList.png";
                 //LayersTreeNode.ImageKey = "layerList.png";
-                FlattenedItems.Add(node);
+                tempListForSortingFilteredResults.Add(node);
             }
 
             foreach(var category in categories)
@@ -951,7 +966,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
                 treeNode.Text = category.ToString();
                 treeNode.Tag = category;
-                FlattenedItems.Add(treeNode);
+                treeNode.SearchTermMatchWeight = GetMatchWeight(category.Name);
+                tempListForSortingFilteredResults.Add(treeNode);
             }
             foreach(var state in states)
             {
@@ -959,7 +975,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 treeNode.ImageSource = NodeViewModel.StateIcon;
                 treeNode.Text = state.ToString();
                 treeNode.Tag = state;
-                FlattenedItems.Add(treeNode);
+                treeNode.SearchTermMatchWeight = GetMatchWeight(state.Name);
+                tempListForSortingFilteredResults.Add(treeNode);
 
             }
 
@@ -969,7 +986,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 treeNode.ImageSource = NodeViewModel.VariableIcon;
                 treeNode.Text = variable.ToString();
                 treeNode.Tag = variable;
-                FlattenedItems.Add(treeNode);
+                treeNode.SearchTermMatchWeight = GetMatchWeight(variable.Name);
+                tempListForSortingFilteredResults.Add(treeNode);
 
             }
 
@@ -979,7 +997,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 treeNode.ImageSource = NodeViewModel.EventIcon; 
                 treeNode.Text = eventItem.ToString();
                 treeNode.Tag= eventItem;
-                FlattenedItems.Add(treeNode);
+                treeNode.SearchTermMatchWeight = GetMatchWeight(eventItem.EventName);
+                tempListForSortingFilteredResults.Add(treeNode);
             }
 
             NodeViewModel NodeFor(ReferencedFileSave rfs)
@@ -992,6 +1011,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 nodeForFile.Tag = rfs;
                 nodeForFile.Text = rfs.ToString();
                 return nodeForFile;
+            }
+
+            var sorted = tempListForSortingFilteredResults
+                .OrderByDescending(item => item.SearchTermMatchWeight)
+                .ThenBy(item => item.Text);
+
+            FlattenedItems.Clear();
+
+            foreach (var item in sorted)
+            {
+                FlattenedItems.Add(item);
             }
 
             void AddInternalObjectsToLists(GlueElement element)
@@ -1048,6 +1078,37 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         }
                     }
                 }
+            }
+
+            double GetMatchWeight(string itemName)
+            {
+                if(itemName == searchTermCaseSensitive)
+                {
+                    return 1;
+                }
+                else if(itemName.StartsWith(searchTermCaseSensitive))
+                {
+                    return 0.8;
+                }
+                else if(itemName.ToLowerInvariant() == searchToLower)
+                {
+                    return 0.7;
+                }
+                else if(itemName.ToLowerInvariant().StartsWith(searchToLower))
+                {
+                    return 0.6;
+                }
+                else if(itemName.Contains(searchTermCaseSensitive))
+                {
+                    return 0.5;
+                }
+                else if (itemName.ToLowerInvariant().Contains(searchToLower))
+                {
+                    return 0.4;
+                }
+
+
+                return 0;
             }
 
             if(FlattenedSelectedItem == null)

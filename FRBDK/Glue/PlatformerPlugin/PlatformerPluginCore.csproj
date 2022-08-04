@@ -6,13 +6,21 @@
     <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Content\Icons\icon_duplicate.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Content\Icons\icon_duplicate.png" />
   </ItemGroup>
 
   <ItemGroup>
