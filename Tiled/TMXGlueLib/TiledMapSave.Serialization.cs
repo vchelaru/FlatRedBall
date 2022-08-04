@@ -167,6 +167,12 @@ namespace TMXGlueLib
             set;
         }
 
+        [XmlAttribute("infinite")]
+        public int Infinite
+        {
+            get; set; 
+        }
+
         public TiledMapSave()
         {
             MapLayers = new List<AbstractMapLayer>();
@@ -682,24 +688,17 @@ namespace TMXGlueLib
                     }
                     else if (encodingField == "csv")
                     {
-                        if (Value == null)
-                        {
-                            _ids = new uint[0];
-                        }
-                        else
-                        {
 
-                            string[] idStrs = Value.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                            _ids = idStrs.AsParallel().Select(id =>
+                        string[] idStrs = Value.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        _ids = idStrs.AsParallel().Select(id =>
+                        {
+                            uint gid;
+                            if (!uint.TryParse(id, out gid))
                             {
-                                uint gid;
-                                if (!uint.TryParse(id, out gid))
-                                {
-                                    gid = 0;
-                                }
-                                return gid;
-                            }).ToArray();
-                        }
+                                gid = 0;
+                            }
+                            return gid;
+                        }).ToArray();
                     }
                     else if (encodingField == null)
                     {

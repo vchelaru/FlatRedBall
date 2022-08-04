@@ -49,18 +49,28 @@ namespace TiledPluginCore.Managers
 
                 if (tms != null)
                 {
-                    foreach (var layer in tms.Layers)
+                    if(tms.Infinite == 1)
                     {
-                        if (MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
+                        errors.Add(new InfiniteMapNotSupportedViewModel()
                         {
-                            errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                            FilePath = filePath
+                        });
+                    }
+                    else
+                    {
+                        foreach (var layer in tms.Layers)
+                        {
+                            if (MultipleTilesetPerLayerErrorViewModel.HasMultipleTilesets(tms, layer))
                             {
-                                Details = $"The layer {layer.Name} in {filePath.FullPath} references multiple tilesets. This can cause rendering errors",
-                                FilePath = filePath,
-                                LayerName = layer.Name
+                                errors.Add(new MultipleTilesetPerLayerErrorViewModel()
+                                {
+                                    Details = $"The layer {layer.Name} in {filePath.FullPath} references multiple tilesets. This can cause rendering errors",
+                                    FilePath = filePath,
+                                    LayerName = layer.Name
 
-                            });
+                                });
 
+                            }
                         }
                     }
                 }
