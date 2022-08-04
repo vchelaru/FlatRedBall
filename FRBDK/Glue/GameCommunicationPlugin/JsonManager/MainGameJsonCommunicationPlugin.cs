@@ -28,6 +28,9 @@ namespace GameJsonCommunicationPlugin.JsonManager
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            //Turning this plugin off
+            return true;
+
             ReactToLoadedGlux -= HandleGluxLoaded;
             ReactToGlueJsonLoad -= HandleReactToGlueJsonLoad;
             ReactToScreenJsonLoad -= HandleReactToScreenJsonLoad;
@@ -44,6 +47,9 @@ namespace GameJsonCommunicationPlugin.JsonManager
 
         public override void StartUp()
         {
+            //Turning this plugin off
+            return;
+
             _glueJsonManager = new GlueJsonManager();
 
             ReactToGlueJsonLoad += HandleReactToGlueJsonLoad;
@@ -173,6 +179,8 @@ namespace GameJsonCommunicationPlugin.JsonManager
 
         public override void HandleEvent(string eventName, string payload)
         {
+            //Turning plugin off
+            return;
             base.HandleEvent(eventName, payload);
 
             switch(eventName)

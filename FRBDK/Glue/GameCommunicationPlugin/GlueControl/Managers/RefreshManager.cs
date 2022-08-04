@@ -760,14 +760,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     LastDtoPushedToGame = dto;
 
-                    if (GameCommunicationHelper.IsFrbUsesJson())
-                    {
-                        _eventCaller("GameJson_SetSelection", JsonConvert.SerializeObject(dto));
-                    }
-                    else
-                    {
-                        await _commandSender.Send(dto);
-                    }
+                    
+                    await _commandSender.Send(dto);
                 }
             }
         }
