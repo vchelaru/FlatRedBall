@@ -61,7 +61,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             fbd.UseDescriptionForTitle = true;
 
             //Get FRB Source Folder and Validate
-            fbd.Description = "Select FlatRedBall Source Folder";
+            fbd.Description = "Select FlatRedBall Repository Root";
             System.Windows.Forms.DialogResult result = fbd.ShowDialog();
 
             string frbSourceFolder;
@@ -81,7 +81,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             }
 
             //Get Gum Source Folder and Validate
-            fbd.Description = "Select Gum Source Folder";
+            fbd.Description = "Select Gum Repository Root";
             result = fbd.ShowDialog();
 
             string gumSourceFolder;

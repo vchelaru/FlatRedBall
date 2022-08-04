@@ -209,35 +209,38 @@ namespace GumPlugin.Managers
             return null;
         }
 
-        public void GenerateDerivedGueRuntimes(bool forceReload = false)
+        public async Task GenerateDerivedGueRuntimesAsync(bool forceReload = false)
         {
-            TaskManager.Self.WarnIfNotInTask();
-            if ((forceReload || AppState.Self.GumProjectSave == null) &&
-                FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
+            await TaskManager.Self.AddAsync(() =>
             {
-                var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
-                    .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
-
-                if (rfs != null)
+                if ((forceReload || AppState.Self.GumProjectSave == null) &&
+                    FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject != null)
                 {
-                    string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
+                    var rfs = FlatRedBall.Glue.Elements.ObjectFinder.Self.GlueProject.GetAllReferencedFiles()
+                        .FirstOrDefault(item => FlatRedBall.IO.FileManager.GetExtension(item.Name) == "gumx");
 
-                    string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
+                    if (rfs != null)
+                    {
+                        string fullFileName = GlueState.Self.ContentDirectory + rfs.Name;
 
-                    FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
+                        string gumXDirectory = FlatRedBall.IO.FileManager.GetDirectory(fullFileName);
+
+                        FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumXDirectory, forceReload);
+                    }
                 }
-            }
 
-            if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
-            {
-                var directoryToSave = GumRuntimesFolder;
+                if (Gum.Managers.ObjectFinder.Self.GumProjectSave != null)
+                {
+                    var directoryToSave = GumRuntimesFolder;
 
-                System.IO.Directory.CreateDirectory(directoryToSave.FullPath);
+                    System.IO.Directory.CreateDirectory(directoryToSave.FullPath);
 
-                GenerateAndSaveRuntimeAssociations();
+                    GenerateAndSaveRuntimeAssociations();
 
-                GenerateAllElements(directoryToSave);
-            }
+                    GenerateAllElements(directoryToSave);
+                }
+
+            }, "Generating all Gum runtimes code");
         }
 
         private void GenerateAllElements(FilePath directoryToSave)

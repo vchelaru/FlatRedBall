@@ -784,7 +784,7 @@ namespace GumPlugin
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(forceReload:true);
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync(forceReload:true);
                 }
                 propertiesManager.IsReactingToProperyChanges = true;
 
@@ -882,11 +882,11 @@ namespace GumPlugin
                 var behavior = GetBehavior(gumRfs);
 
                 // todo: Removing a file should cause this to get called, but I don't think Gum lets us subscribe to that yet.
-                await TaskManager.Self.AddAsync(() =>
+                await TaskManager.Self.AddAsync(async () =>
                 {
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
                     CodeGeneratorManager.Self.GenerateAllBehaviors();
 

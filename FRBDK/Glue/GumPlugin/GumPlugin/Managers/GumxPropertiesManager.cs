@@ -31,7 +31,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        public void HandlePropertyChanged(string propertyChanged)
+        public async void HandlePropertyChanged(string propertyChanged)
         {
             if(IsReactingToProperyChanges)
             {
@@ -55,9 +55,7 @@ namespace GumPlugin.Managers
                 }
                 else if (propertyChanged == nameof(GumViewModel.IncludeFormsInComponents))
                 {
-                    TaskManager.Self.Add(
-                        () => CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(),
-                        $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
 
                 }
                 else if(propertyChanged == nameof(GumViewModel.IncludeComponentToFormsAssociation))
@@ -75,9 +73,7 @@ namespace GumPlugin.Managers
                 }
                 else if(propertyChanged == nameof(GumViewModel.MakeGumInstancesPublic))
                 {
-                    TaskManager.Self.Add(
-                        () => CodeGeneratorManager.Self.GenerateDerivedGueRuntimes(),
-                        $"Regenerating Gum derived runtimes because of changed {propertyChanged}");
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
                 }
                 else if(propertyChanged == nameof(GumViewModel.IsMatchGameResolutionInGumChecked))
                 {

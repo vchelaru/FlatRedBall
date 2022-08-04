@@ -146,7 +146,7 @@ namespace GumPluginCore.Managers
 
                     if (extension == GumProjectSave.ProjectExtension)
                     {
-                        CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                        await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
                     }
                     else
                     {
@@ -193,7 +193,7 @@ namespace GumPluginCore.Managers
                     // Animations have changed, so we need to regenerate animation code.
                     // For now we'll generate everything, but we may want to make this faster
                     // and more precise by only generating the selected element:
-                    CodeGeneratorManager.Self.GenerateDerivedGueRuntimes();
+                    await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync();
                 }
                 else if (extension == "json")
                 {
