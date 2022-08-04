@@ -261,7 +261,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     foreach(var variableToAssign in variablesToAssign)
                     {
-                        var defaultValue = ObjectFinder.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+                        var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
                         toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
                     }
                 }

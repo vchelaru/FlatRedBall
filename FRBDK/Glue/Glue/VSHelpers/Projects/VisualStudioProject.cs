@@ -919,7 +919,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         
         public string GetNugetPackageVersion(string packageName)
         {
-            HasPackage(packageName, out var existingVersionNumber)
+            HasPackage(packageName, out var existingVersionNumber);
             
             return existingVersionNumber;
         }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <Platforms>x86</Platforms>
@@ -182,7 +182,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameCommunicationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.0\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\GameCommunicationPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\netcoreapp3.1\Plugins\GameCommunicationPlugin\GameCommunicationPlugin.dll&quot;" />
   </Target>
 
 </Project>
