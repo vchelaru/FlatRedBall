@@ -2116,6 +2116,36 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToStateCategoryExcludedVariablesChanged(category, variableName, action),
                 plugin => plugin.ReactToStateCategoryExcludedVariablesChanged != null);
 
+        public static Task ReactToScreenJsonSaveAsync(string screenName, string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToScreenJsonSave(screenName, json),
+                plugin => plugin.ReactToScreenJsonSave != null);
+
+        public static Task ReactToEntityJsonSaveAsync(string screenName, string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToEntityJsonSave(screenName, json),
+                plugin => plugin.ReactToEntityJsonSave != null);
+
+        public static Task ReactToGlueJsonSaveAsync(string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToGlueJsonSave(json),
+                plugin => plugin.ReactToGlueJsonSave != null);
+
+        public static Task ReactToScreenJsonLoadAsync(string screenName, string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToScreenJsonLoad(screenName, json),
+                plugin => plugin.ReactToScreenJsonLoad != null);
+
+        public static Task ReactToEntityJsonLoadAsync(string screenName, string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToEntityJsonLoad(screenName, json),
+                plugin => plugin.ReactToEntityJsonLoad != null);
+
+        public static Task ReactToGlueJsonLoadAsync(string json) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToGlueJsonLoad(json),
+                plugin => plugin.ReactToGlueJsonLoad != null);
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

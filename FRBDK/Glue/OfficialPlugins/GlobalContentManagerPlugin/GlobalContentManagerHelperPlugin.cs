@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Threading.Tasks;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
@@ -24,6 +25,9 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
+
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
 
         #region IPlugin Members
 
@@ -91,6 +95,19 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             }
 
             return null;
+        }
+
+        public void HandleEvent(string eventName, string payload)
+        {
+        }
+
+        public Task<string> HandleEventWithReturn(string eventName, string payload)
+        {
+            return Task.FromResult((string)null);
+        }
+
+        public void HandleEventResponseWithReturn(string payload)
+        {
         }
 
         #endregion

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using Glue;
 using FlatRedBall.Glue.FormHelpers;
+using System.Threading.Tasks;
 
 namespace OfficialPlugins.FrbUpdater
 {
@@ -16,6 +17,9 @@ namespace OfficialPlugins.FrbUpdater
         private const string UpdateLibrariesText = "Update Libraries";
         public const string PluginsMenuItem = "Update";
         FrbUpdaterPluginForm mForm;
+
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
 
         public FrbUpdaterPlugin()
         {
@@ -42,6 +46,17 @@ namespace OfficialPlugins.FrbUpdater
             mForm.Show();
         }
 
+        public void HandleEvent(string eventName, string payload)
+        {
+        }
 
+        public Task<string> HandleEventWithReturn(string eventName, string payload)
+        {
+            return Task.FromResult((string)null);
+        }
+
+        public void HandleEventResponseWithReturn(string payload)
+        {
+        }
     }
 }

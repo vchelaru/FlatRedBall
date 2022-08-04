@@ -919,10 +919,26 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         
         public string GetNugetPackageVersion(string packageName)
         {
-            var item = GetNugetPackageReference(packageName);
+            HasPackage(packageName, out var existingVersionNumber);
+            
+            return existingVersionNumber;
+        }
 
-            var metadata = item?.Metadata.FirstOrDefault(x => x.Name == "Version");
-            return metadata?.EvaluatedValue;
+        public bool HasPackage(string packageName, out string existingVersionNumber)
+        {
+            var packageNameToLower = packageName.ToLowerInvariant();
+
+            if(mBuildItemDictionaries.TryGetValue(packageNameToLower, out var buildItem))
+            {
+                if(buildItem.ItemType == "PackageReference" && buildItem.HasMetadata("Version"))
+                {
+                    existingVersionNumber = buildItem.Metadata.Where(item => item.Name == "Version").Select(item => item.EvaluatedValue).FirstOrDefault();
+                    return true;
+                }
+            }
+
+            existingVersionNumber=null;
+            return false;
         }
 
         public void RemoveNugetPackage(string packageName)

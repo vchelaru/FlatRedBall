@@ -12,6 +12,7 @@ using System.CodeDom.Compiler;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition;
 using System.Runtime.Loader;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -637,12 +638,68 @@ namespace FlatRedBall.Glue.Plugins
                 try
                 {
                     plugin.StartUp();
+                    plugin.ReactToPluginEventAction += HandlePluginEvent;
+                    plugin.ReactToPluginEventWithReturnAction += HandlePluginEventWithReturn;
                 }
                 catch (Exception e)
                 {
                     pluginContainer.Fail(e, "Plugin failed in StartUp");
                 }
             }
+        }
+
+        private void HandlePluginEvent(IPlugin callingPlugin, string eventName, string payload)
+        {
+            Task.Run(() =>
+            {
+                if (mPluginContainers.ContainsKey(callingPlugin) && mPluginContainers[callingPlugin].IsEnabled)
+                {
+                    foreach (var pluginContainer in mPluginContainers.Values)
+                    {
+                        if (pluginContainer.IsEnabled)
+                        {
+                            try
+                            {
+                                pluginContainer.Plugin.HandleEvent(eventName, payload);
+                            }
+                            catch (Exception e)
+                            {
+                                pluginContainer.Fail(e, $"Plugin {pluginContainer.Name} failed while handling event: {eventName}");
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        private void HandlePluginEventWithReturn(IPlugin callingPlugin, string eventName, string payload)
+        {
+            Task.Run(async () =>
+            {
+                if (mPluginContainers.ContainsKey(callingPlugin) && mPluginContainers[callingPlugin].IsEnabled)
+                {
+                    foreach (var pluginContainer in mPluginContainers.Values)
+                    {
+                        if (pluginContainer.IsEnabled && pluginContainer.Plugin != callingPlugin)
+                        {
+                            try
+                            {
+                                var returnValue = await pluginContainer.Plugin.HandleEventWithReturn(eventName, payload);
+
+                                if(returnValue != null)
+                                {
+                                    callingPlugin.HandleEventResponseWithReturn(returnValue);
+                                    return;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                pluginContainer.Fail(e, $"Plugin {pluginContainer.Name} failed while handling event: {eventName}");
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         protected void AddDisabledPlugin(string folder)

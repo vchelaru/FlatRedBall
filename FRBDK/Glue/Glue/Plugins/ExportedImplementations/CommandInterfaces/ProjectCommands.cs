@@ -18,6 +18,9 @@ using FlatRedBall.Glue.IO;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.VSHelpers;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -33,7 +36,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 nameof(SaveProjects),
                 TaskExecutionPreference.AddOrMoveToEnd);
         }
-        
+
         public void SaveProjectsImmediately()
         {
             TaskManager.Self.WarnIfNotInTask();
@@ -119,7 +122,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var save = false; // we'll be doing manual saving after it's created
             ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
-            
+
             // Now we can save it:
             FileManager.SaveText(code, fullFileName);
         }
@@ -156,12 +159,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
 
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs:referencedFileSave);
+                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
                     VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
-                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs:referencedFileSave);
+                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs: referencedFileSave);
                 }
             }
             return wasAnythingAdded;
@@ -196,7 +199,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             BuildItemMembershipType bimt = BuildItemMembershipType.CopyIfNewer;
 
             // useContentPipeline can come from the parent file, if it uses content pipeline. But there may be other cases where we want to force content pepeline
-            
+
             if (!useContentPipeline)
             {
                 useContentPipeline = GetIfShouldUseContentPipeline(fileToAddAbsolute, fileRfs);
@@ -240,13 +243,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
-            
+
 
             bool shouldSkipAdd = useContentPipeline &&
                 project.ContentProject is VisualStudioProject &&
                 !((VisualStudioProject)project.ContentProject).AllowContentCompile;
 
-            bool shouldRemoveFile = shouldSkipAdd && 
+            bool shouldRemoveFile = shouldSkipAdd &&
                 project.ContentProject.IsFilePartOfProject(fileRelativeToContent, bimt);
 
             if (shouldRemoveFile)
@@ -285,7 +288,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var inner = new List<FilePath>();
                 FileReferenceManager.Self.GetFilesReferencedBy(fileToAddAbsolute, TopLevelOrRecursive.TopLevel, inner);
                 listOfReferencedFiles.AddRange(inner.Select(item => item.Standardized));
-                if(alreadyReferencedFiles != null)
+                if (alreadyReferencedFiles != null)
                 {
                     listOfReferencedFiles = listOfReferencedFiles.Except(alreadyReferencedFiles).ToList();
                 }
@@ -299,7 +302,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 shouldAddChildren = false;
             }
 
-            if(alreadyReferencedFiles == null)
+            if (alreadyReferencedFiles == null)
             {
                 alreadyReferencedFiles = new List<string>();
             }
@@ -322,7 +325,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     else
                     {
-                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive:true, alreadyReferencedFiles: alreadyReferencedFiles);
+                        wasProjectModified |= UpdateFileMembershipInProject(project, file, useContentPipeline, shouldLink, fileToAddAbsolute, recursive: true, alreadyReferencedFiles: alreadyReferencedFiles);
                     }
                 }
             }
@@ -340,11 +343,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 useContentPipeline = true;
             }
 
-            if(!useContentPipeline)
+            if (!useContentPipeline)
             {
                 // let plugins decide:
                 var returnedValue = PluginManager.GetIfUsesContentPipeline(fileAbsolute);
-                if(returnedValue != null)
+                if (returnedValue != null)
                 {
                     useContentPipeline = returnedValue.Value;
                 }
@@ -360,7 +363,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             bool toReturn = false;
 
-            if(mainContentProject != null && mainProject != null)
+            if (mainContentProject != null && mainProject != null)
             {
                 var contentFolder = mainContentProject.GetAbsoluteContentFolder();
 
@@ -457,7 +460,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var mainProject = GlueState.Self.CurrentMainProject;
 
-            if(mainProject?.CodeProject == null)
+            if (mainProject?.CodeProject == null)
             {
                 throw new NullReferenceException("Main Project");
             }
@@ -466,7 +469,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 added = ((VisualStudioProject)mainProject.CodeProject).AddCodeBuildItem(filePath.FullPath);
 
-                if(save)
+                if (save)
                 {
                     GlueCommands.Self.TryMultipleTimes(mainProject.Save, 5);
                 }
@@ -521,13 +524,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         var handledByItem = false;
                         debugPath = foundProperty.EvaluatedValue.Replace('\\', '/');
-                        if(item != null)
+                        if (item != null)
                         {
                             var link = item.GetLink();
-                            if(!string.IsNullOrEmpty(link))
+                            if (!string.IsNullOrEmpty(link))
                             {
                                 FilePath destination = GlueState.Self.CurrentGlueProjectDirectory + debugPath + link;
-                                if(absoluteSource.Exists())
+                                if (absoluteSource.Exists())
                                 {
                                     try
                                     {
@@ -544,7 +547,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 handledByItem = true;
                             }
                         }
-                        if(!handledByItem)
+                        if (!handledByItem)
                         {
                             CopyToBuildFolder(absoluteSource.FullPath, debugPath);
                         }
@@ -570,7 +573,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //if (System.IO.Directory.Exists(destinationFolder))
             System.IO.Directory.CreateDirectory(destinationFolder);
 
-            if(absoluteSource.Exists())
+            if (absoluteSource.Exists())
             {
                 try
                 {
@@ -653,7 +656,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // but unless the .glux were to have explicit folder add/removes like .csproj, this
                 // is just something we'll have to deal with.
                 string directory;
-                
+
                 //directory = GlueState.Self.ContentDirectory +
                 directory = GlueState.Self.CurrentGlueProjectDirectory +
                         treeNodeToAddTo.GetRelativeFilePath() +
@@ -762,7 +765,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RemoveFromProjects(string absoluteFileName)
         {
-            ProjectManager.RemoveItemFromAllProjects(absoluteFileName, performSave:true);
+            ProjectManager.RemoveItemFromAllProjects(absoluteFileName, performSave: true);
         }
 
         public void CreateNewProject()
@@ -772,15 +775,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddNugetIfNotAdded(string packageName, string versionNumber)
         {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            AddNugetIfNotAddedWithReturn(packageName, versionNumber);
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+        }
+
+        public async Task<string> AddNugetIfNotAddedWithReturn(string packageName, string versionNumber)
+        {
             //////////////Early Out///////////////////
             // Just in case this is called when the project is unloaded:
             if (GlueState.Self.CurrentGlueProject == null)
             {
-                return;
+                return null;
             }
             ////////////End Early Out////////////////
 
-            if(string.IsNullOrWhiteSpace(packageName))
+            if (string.IsNullOrWhiteSpace(packageName))
             {
                 throw new ArgumentException(nameof(packageName));
             }
@@ -792,27 +802,96 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var hasNugetsEmbeddedInCsproj = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj;
             // If not....do we fail silently?
             // So far this is for adding Newtonsoft json, and if we don't have it the user will get a compile error so maybe that's enough to guide them?
-            if(hasNugetsEmbeddedInCsproj)
+            if (hasNugetsEmbeddedInCsproj)
             {
-                var mainProject = GlueState.Self.CurrentMainProject;
-
-                if (mainProject?.CodeProject == null)
+                return await TaskManager.Self.AddAsync(() =>
                 {
-                    throw new NullReferenceException("Main Project");
-                }
+                    var mainProject = GlueState.Self.CurrentMainProject;
 
-                var codeProject = mainProject.CodeProject as VisualStudioProject;
-
-                if(!codeProject.HasPackage(packageName))
-                {
-                    TaskManager.Self.Add(() =>
+                    if (mainProject?.CodeProject == null)
                     {
+                        throw new NullReferenceException("Main Project");
+                    }
+
+                    var codeProject = mainProject.CodeProject as VisualStudioProject;
+
+                    if (!codeProject.HasPackage(packageName, out var existingVersionNumber))
+                    {
+
                         codeProject.AddNugetPackage(packageName, versionNumber);
                         GlueCommands.Self.ProjectCommands.SaveProjects();
-                    }, $"Adding Nuget Package {packageName}");
-                }
+
+                        return versionNumber;
+                    }
+                    else
+                    {
+                        return existingVersionNumber;
+                    }
+                }, $"Adding Nuget Package {packageName}");
             }
 
+            return null;
+        }
+
+        public void AddAssemblyBinding(string name, string publicKeyToken, string oldVersion, string newVersion)
+        {
+            string appConfig = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + "app.config";
+
+            if (File.Exists(appConfig))
+            {
+                var doc = XDocument.Load(appConfig);
+                var configurationNode = doc.XPathSelectElement("configuration");
+                if (configurationNode == null)
+                {
+                    configurationNode = new XElement("configuration");
+                    doc.Add(configurationNode);
+                }
+
+                var runtimeNode = doc.XPathSelectElement("configuration/runtime");
+                if (runtimeNode == null)
+                {
+                    runtimeNode = new XElement("runtime");
+                    configurationNode.Add(runtimeNode);
+                }
+
+                var assemblyBindingNode = doc.XPathSelectElement("configuration/runtime/assemblyBinding");
+                if (assemblyBindingNode == null)
+                {
+                    XNamespace ns = "urn:schemas-microsoft-com:asm.v1";
+                    assemblyBindingNode = new XElement("assemblyBinding", new XAttribute("xlmns", ns));
+                    runtimeNode.Add(assemblyBindingNode);
+                }
+
+                var identityNode = doc.XPathSelectElements("configuration/runtime/assemblyBinding/dependentAssembly/assemblyIdentity").Where(item => item.Name == name).FirstOrDefault();
+                XElement dependentAssembly;
+                if (identityNode == null)
+                {
+                    dependentAssembly = new XElement("dependentAssembly");
+                    assemblyBindingNode.Add(dependentAssembly);
+
+                    identityNode = new XElement("assemblyIdentity");
+                    identityNode.SetAttributeValue("name", name);
+                    identityNode.SetAttributeValue("publicKeyToken", publicKeyToken);
+                    identityNode.SetAttributeValue("culture", "neutral");
+                    dependentAssembly.Add(identityNode);
+                }
+                else
+                {
+                    dependentAssembly = identityNode.Parent;
+                }
+
+                var redirectNode = dependentAssembly.XPathSelectElement("bindingRedirect");
+                if (redirectNode == null)
+                {
+                    redirectNode = new XElement("bindingRedirect");
+                    dependentAssembly.Add(redirectNode);
+                }
+
+                redirectNode.SetAttributeValue("oldVersion", oldVersion);
+                redirectNode.SetAttributeValue("newVersion", newVersion);
+
+                doc.Save(appConfig);
+            }
         }
     }
 }

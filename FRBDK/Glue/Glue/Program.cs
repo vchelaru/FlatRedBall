@@ -18,8 +18,7 @@ namespace Glue
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main()
-		{
+		static void Main(){
             // This is a semi-hack to fix blurry rendering issues with controls on some systems. This likely
             // sacrifices perf for stability. See:
             // https://github.com/vchelaru/FlatRedBall/issues/151

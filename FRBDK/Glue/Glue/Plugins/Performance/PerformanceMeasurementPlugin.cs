@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using System.Threading.Tasks;
 
 namespace PluginTestbed.PerformanceMeasurement
 {
@@ -115,6 +116,9 @@ namespace PluginTestbed.PerformanceMeasurement
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+        public event Action<IPlugin, string, string> ReactToPluginEventAction;
+        public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
+
         public void InitializeMenu(System.Windows.Forms.MenuStrip menuStrip)
         {
             mMenuStrip = menuStrip;
@@ -144,6 +148,19 @@ namespace PluginTestbed.PerformanceMeasurement
                 }
             }
             return null;
+        }
+
+        public void HandleEvent(string eventName, string payload)
+        {
+        }
+
+        public Task<string> HandleEventWithReturn(string eventName, string payload)
+        {
+            return Task.FromResult((string)null);
+        }
+
+        public void HandleEventResponseWithReturn(string payload)
+        {
         }
 
         #endregion
