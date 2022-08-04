@@ -119,6 +119,12 @@ namespace GumPlugin.DataGeneration
                         }
 
                     }
+                    else if(file.Extension == "gutx")
+                    {
+                        var name = file.NoPathNoExtension;
+                        AppState.Self.GumProjectSave.StandardElements.RemoveAll(item => item.Name == name);
+                        GumPluginCommands.Self.AddStandardElement(file.FullPath);
+                    }
                 }
 
                 UpdateTextStateCategory();

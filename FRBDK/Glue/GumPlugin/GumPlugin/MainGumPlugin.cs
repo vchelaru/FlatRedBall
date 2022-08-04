@@ -32,6 +32,7 @@ using GumPluginCore.ViewModels;
 using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
+using HQ.Util.Unmanaged;
 
 namespace GumPlugin
 {
@@ -577,10 +578,7 @@ namespace GumPlugin
             {
                 if (control == null)
                 {
-                    control = new GumControl();
-                    control.DataContext = viewModel;
-
-                    tab = this.CreateTab(control, "Gum Properties");
+                    CreateGumControl();
                 }
                 tab.Show();
                 raiseViewModelEvents = false;
@@ -751,10 +749,7 @@ namespace GumPlugin
 
                     if (control == null)
                     {
-                        control = new GumControl();
-                        control.DataContext = viewModel;
-
-                        tab = this.CreateTab(control, "Gum Properties");
+                        CreateGumControl();
                     }
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
@@ -784,6 +779,8 @@ namespace GumPlugin
                         await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly, askToOverwrite);
                         await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
 
+                        await HandleRebuildFonts();
+
                     }
                     GlueCommands.Self.GluxCommands.SaveGlux();
 
@@ -795,6 +792,47 @@ namespace GumPlugin
             },
             "Creating Gum Project");
 
+        }
+
+        private void CreateGumControl()
+        {
+            control = new GumControl();
+            control.DataContext = viewModel;
+
+            control.RebuildFontsClicked += async () => await HandleRebuildFonts();
+
+            tab = this.CreateTab(control, "Gum Properties");
+        }
+
+        public async Task HandleRebuildFonts()
+        {
+            // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
+            var gumFileName = AppState.Self.GumProjectSave.FullFileName;
+
+            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
+
+            if (string.IsNullOrEmpty(executable))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(
+                    "Could not find file association for Gum files - you need to set this up before performing this operation");
+            }
+            else
+            {
+                await TaskManager.Self.AddAsync(() =>
+                {
+                    var startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
+                    startInfo.FileName = executable;
+                    startInfo.UseShellExecute = false;
+
+                    var process = System.Diagnostics.Process.Start(startInfo);
+
+                    process.WaitForExit();
+                },
+                "Refreshing Font Cache");
+
+
+            }
         }
 
         private void HandleMakePluginRequiredYes()
