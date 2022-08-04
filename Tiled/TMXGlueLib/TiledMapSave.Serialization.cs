@@ -682,16 +682,24 @@ namespace TMXGlueLib
                     }
                     else if (encodingField == "csv")
                     {
-                        string[] idStrs = Value.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                        _ids = idStrs.AsParallel().Select(id =>
+                        if (Value == null)
                         {
-                            uint gid;
-                            if (!uint.TryParse(id, out gid))
+                            _ids = new uint[0];
+                        }
+                        else
+                        {
+
+                            string[] idStrs = Value.Split(",\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                            _ids = idStrs.AsParallel().Select(id =>
                             {
-                                gid = 0;
-                            }
-                            return gid;
-                        }).ToArray();
+                                uint gid;
+                                if (!uint.TryParse(id, out gid))
+                                {
+                                    gid = 0;
+                                }
+                                return gid;
+                            }).ToArray();
+                        }
                     }
                     else if (encodingField == null)
                     {
