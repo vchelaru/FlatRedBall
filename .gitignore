@@ -58,3 +58,4 @@ Tests/GlueTestProjectDesktopGl/.vs/GlueTestProjectDesktopGl/project-colors.json
 Tests/GlueTestProjectDesktopGl/.vs/GlueTestProjectDesktopGl/v17/fileList.bin
 Engines/Forms/FlatRedBall.Forms/packages/*
 .vs/
+FRBDK/Glue/GumPlugin/GumPlugin/Embedded/GumDefaults2/EventExport/*

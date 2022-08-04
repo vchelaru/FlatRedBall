@@ -59,7 +59,7 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
-        #region Initialize
+        #region Initialize Methods
 
         public TreeView() : base()
         {
@@ -140,6 +140,30 @@ namespace FlatRedBall.Forms.Controls
             {
                 var amountToMove = bottomOfItem - bottomOfView;
                 verticalScrollBar.Value += amountToMove;
+            }
+        }
+
+        protected override void UpdateState()
+        {
+            var category = "TreeViewCategory";
+            if (IsEnabled == false)
+            {
+                if (IsFocused)
+                {
+                    Visual.SetProperty(category, "DisabledFocused");
+                }
+                else
+                {
+                    Visual.SetProperty(category, "Disabled");
+                }
+            }
+            else if (IsFocused)
+            {
+                Visual.SetProperty(category, "Focused");
+            }
+            else
+            {
+                Visual.SetProperty(category, "Enabled");
             }
         }
 
