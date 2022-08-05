@@ -103,9 +103,11 @@ namespace OfficialPluginsCore.Compiler.ViewModels
             }
 
             var selected = AvailableScreens.FirstOrDefault(item => item.IsSelected);
-            if(selected == null && AvailableScreens.Count > 0)
-            {
-                AvailableScreens[0].IsSelected = true;
+            if(selected == null){
+                if(AvailableScreens.Count > 0)
+                    AvailableScreens[0].IsSelected = true;
+                else
+                    StartupScreenName = "";
             }
         }
     }

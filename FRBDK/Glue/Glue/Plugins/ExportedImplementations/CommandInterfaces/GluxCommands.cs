@@ -2488,6 +2488,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             filesThatCouldBeRemoved = filesThatCouldBeRemoved ?? new List<string>();
             List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
 
+            if(ProjectManager.StartUpScreen == screenToRemove.Name) {
+                var newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract && x.BaseScreen != null);
+                if(newScreen == null)
+                    newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract);
+                if(newScreen == null)
+                    newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove);
+                ProjectManager.StartUpScreen = newScreen == null ? "" : newScreen.Name;
+            }
+
             // Remove objects before removing files.  Otherwise Glue will complain if any objects reference the files.
             #region Remove the NamedObjectSaves
 
@@ -2513,11 +2522,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // as well as any ReferencedFiles
 
             RemoveUnreferencedFiles(screenToRemove, filesThatCouldBeRemoved);
-
-            if (screenToRemove.Name == ProjectManager.GlueProjectSave.StartUpScreen)
-            {
-                ProjectManager.StartUpScreen = "";
-            }
 
             for (int i = 0; i < inheritingScreens.Count; i++)
             {
