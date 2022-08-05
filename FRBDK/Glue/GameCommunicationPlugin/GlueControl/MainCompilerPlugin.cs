@@ -409,9 +409,9 @@ namespace GameCommunicationPlugin.GlueControl
                     if (hasErrors)
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-                        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
+                        var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
                         
-                        if(result == MessageBoxResult.Yes)
+                        if(innerResult == MessageBoxResult.Yes)
                         {
                             await ReactToPluginEventWithReturn("Runner_DoRun", JsonConvert.SerializeObject(new
                             {
