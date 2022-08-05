@@ -873,25 +873,30 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueGui.ShowMessageBox(message);
         }
 
-        public void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null, string caption = "Confirm")
+        public System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null, string caption = "Confirm")
         {
+            System.Windows.MessageBoxResult result = System.Windows.MessageBoxResult.None;
+
             if (GlueGui.ShowGui)
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                {
-                   var result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
+                   //var result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
+                   result = System.Windows.MessageBox.Show(message, caption, System.Windows.MessageBoxButton.YesNo);
 
-                   if (result == DialogResult.Yes)
+                   if (result == System.Windows.MessageBoxResult.Yes)
                    {
                        yesAction?.Invoke();
                    }
-                   else if (result == DialogResult.No)
+                   else if (result == System.Windows.MessageBoxResult.No)
                    {
                        noAction?.Invoke();
                    }
                });
 
             }
+
+            return result;
         }
 
         #endregion

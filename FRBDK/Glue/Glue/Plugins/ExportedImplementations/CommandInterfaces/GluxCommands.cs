@@ -2427,15 +2427,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 EntitySave inheritingEntity = inheritingEntities[i];
 
-                bool result = false;
-                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingEntity.Name + "?",
-                    () => { result = true; }, null, "Reset Inheritance?");
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingEntity.Name + "?",
+                    caption: "Reset Inheritance?");
 
-
-                if (result)
+                if (result == System.Windows.MessageBoxResult.Yes)
                 {
                     inheritingEntity.BaseEntity = "";
-                    CodeWriter.GenerateCode(inheritingEntity);
+                    await CodeWriter.GenerateCode(inheritingEntity);
                 }
             }
 
@@ -2531,11 +2529,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 ScreenSave inheritingScreen = inheritingScreens[i];
 
-                bool result = false;
-                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingScreen.Name + "?",
-                    () => { result = true; }, null, "Reset Inheritance?");
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingScreen.Name + "?",
+                    caption: "Reset Inheritance?");
 
-                if (result)
+                if (result == System.Windows.MessageBoxResult.Yes)
                 {
                     inheritingScreen.BaseScreen = "";
 

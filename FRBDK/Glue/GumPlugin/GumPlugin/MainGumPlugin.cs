@@ -550,7 +550,7 @@ namespace GumPlugin
         }
 
 
-        private void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
+        private async void HandleScreenRemoved(FlatRedBall.Glue.SaveClasses.ScreenSave glueScreen, List<string> listToFillWithAdditionalFilesToRemove)
         {
             if (AppState.Self.GumProjectSave != null)
             {
@@ -560,9 +560,12 @@ namespace GumPlugin
 
                 if (gumScreen != null)
                 {
-                    GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?",
-                        async () => await GumPluginCommands.Self.RemoveScreen(gumScreen));
+                    var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?");
+                    if(result == System.Windows.MessageBoxResult.Yes)
+                    {
+                        await GumPluginCommands.Self.RemoveScreen(gumScreen);
+                    }
 
                 }
 

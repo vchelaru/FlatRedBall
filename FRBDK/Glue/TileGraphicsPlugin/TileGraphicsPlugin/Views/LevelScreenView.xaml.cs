@@ -35,12 +35,12 @@ namespace TiledPluginCore.Views
 
         private void DeleteLevelClicked(object sender, RoutedEventArgs e)
         {
-            GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Are you sure you want to delete?",
-                () =>
-                {
-                    System.IO.File.Delete(ViewModel.SelectedTmxFilePath.FullPath);
-                    ViewModel.TmxFiles.Remove(ViewModel.SelectedTmxFile);
-                });
+            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Are you sure you want to delete?");
+            if(result == MessageBoxResult.Yes)
+            {
+                System.IO.File.Delete(ViewModel.SelectedTmxFilePath.FullPath);
+                ViewModel.TmxFiles.Remove(ViewModel.SelectedTmxFile);
+            }
         }
 
         private void DuplicateLevelClicked(object sender, RoutedEventArgs e)

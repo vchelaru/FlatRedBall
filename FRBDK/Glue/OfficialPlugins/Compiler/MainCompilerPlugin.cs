@@ -427,11 +427,13 @@ namespace OfficialPlugins.Compiler
                     if (hasErrors)
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () =>
+                        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
+                        
+                        if(result == MessageBoxResult.Yes)
                         {
                             await runner.Run(preventFocus: false);
                             CompilerViewModel.IsEditChecked = false;
-                        });
+                        }
                     }
                     else
                     {
@@ -1028,7 +1030,11 @@ namespace OfficialPlugins.Compiler
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
 
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await runner.Run(preventFocus: false));
+                        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
+                        if(result == MessageBoxResult.Yes)
+                        {
+                            await runner.Run(preventFocus: false);
+                        }
                     }
                 }
             };
