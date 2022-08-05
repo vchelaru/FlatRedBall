@@ -39,6 +39,8 @@ namespace GlueControl.Editing
                 UpdatePointCount(0);
             }
 
+            UpdatePointsToItem(itemAsPolygon, selectionMarker);
+
             ///////////Early Out//////////////
             if (!Visible || selectionMarker.CanMoveItem == false)
                 return;
@@ -46,7 +48,6 @@ namespace GlueControl.Editing
 
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
 
-            UpdatePointsToItem(itemAsPolygon);
 
             if (cursor.PrimaryPush)
             {
@@ -78,40 +79,47 @@ namespace GlueControl.Editing
             }
         }
 
-        private void UpdatePointsToItem(Polygon itemAsPolygon)
+        private void UpdatePointsToItem(Polygon itemAsPolygon, SelectionMarker selectionMarker)
         {
-            UpdatePointCount(itemAsPolygon.Points.Count);
-
-            itemAsPolygon.ForceUpdateDependencies();
-
-            var handledLast = false;
-            // for now assume polygons have the last point overlapping:
-            for (int i = 0; i < itemAsPolygon.Points.Count; i++)
+            if (!selectionMarker.CanMoveItem || itemAsPolygon == null)
             {
-                var position = itemAsPolygon.AbsolutePointPosition(i);
+                UpdatePointCount(0);
+            }
+            else
+            {
+                UpdatePointCount(itemAsPolygon.Points.Count);
 
-                var rectangle = rectangles[i];
+                itemAsPolygon.ForceUpdateDependencies();
 
-                rectangle.Position = position;
-
-                if (i < itemAsPolygon.Points.Count - 1 || !handledLast)
+                var handledLast = false;
+                // for now assume polygons have the last point overlapping:
+                for (int i = 0; i < itemAsPolygon.Points.Count; i++)
                 {
-                    if (i == PointIndexHighlighted)
+                    var position = itemAsPolygon.AbsolutePointPosition(i);
+
+                    var rectangle = rectangles[i];
+
+                    rectangle.Position = position;
+
+                    if (i < itemAsPolygon.Points.Count - 1 || !handledLast)
                     {
-                        rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
-                        rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
-                        if (i == 0)
+                        if (i == PointIndexHighlighted)
                         {
-                            rectangle = rectangles.LastOrDefault();
                             rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
                             rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
-                            handledLast = true;
+                            if (i == 0)
+                            {
+                                rectangle = rectangles.LastOrDefault();
+                                rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                                rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
+                                handledLast = true;
+                            }
                         }
-                    }
-                    else
-                    {
-                        rectangle.Width = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
-                        rectangle.Height = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                        else
+                        {
+                            rectangle.Width = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                            rectangle.Height = ResizeHandles.DefaultHandleDimension / CameraLogic.CurrentZoomRatio;
+                        }
                     }
                 }
             }
@@ -255,6 +263,7 @@ namespace GlueControl.Editing
             }
         }
     }
+
 
 }
 
