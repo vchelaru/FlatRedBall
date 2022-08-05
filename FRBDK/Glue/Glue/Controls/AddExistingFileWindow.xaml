@@ -34,7 +34,7 @@
                  PreviewKeyDown="TextBox_PreviewKeyDown"
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"></TextBox>
             <ListBox x:Name="ListBoxInstance"
-                 Grid.Row="1" Margin="5,0,5,5" 
+                 Grid.Row="1" Margin="5,0,5,5" SelectionMode="Extended"
                  ItemsSource="{Binding FilteredFileList}"
                  SelectedItem="{Binding SelectedListBoxItem}"
                  SelectionChanged="ListBoxInstance_SelectionChanged"

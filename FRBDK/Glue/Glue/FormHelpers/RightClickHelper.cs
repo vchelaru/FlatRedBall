@@ -1059,7 +1059,7 @@ namespace FlatRedBall.Glue.FormHelpers
             addObjectToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
 
             existingFileToolStripMenuItem = new GeneralToolStripMenuItem();
-            existingFileToolStripMenuItem.Text = "Existing File";
+            existingFileToolStripMenuItem.Text = "Existing File(s)";
             existingFileToolStripMenuItem.Click += (not, used) => AddExistingFileManager.Self.AddExistingFileClick();
 
             setCreatedClassToolStripMenuItem = new GeneralToolStripMenuItem();

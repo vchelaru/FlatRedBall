@@ -178,11 +178,18 @@ namespace FlatRedBall.Glue.Controls
         private void DoAcceptLogic()
         {
             var selectedItem = ViewModel.SelectedListBoxItem;
+            if(ViewModel.IsLocalFilesChecked)
+                ViewModel.SelectedListBoxItems = ListBoxInstance.SelectedItems;  //Can't just bind to SelectedItems in xaml...
 
             if (!string.IsNullOrEmpty(selectedItem))
             {
                 ViewModel.Files.Clear();
-                ViewModel.Files.Add(ViewModel.ContentFolder + ViewModel.SelectedListBoxItem);
+                if(ViewModel.IsDownloadFileChecked)
+                    //Could switch this to SelectedItems too - but haven't looked at how download works
+                    ViewModel.Files.Add(ViewModel.ContentFolder + ViewModel.SelectedListBoxItem);
+                else
+                    foreach(var s in ViewModel.SelectedListBoxItems)
+                        ViewModel.Files.Add(ViewModel.ContentFolder + s.ToString());
                 this.DialogResult = true;
             }
             else
