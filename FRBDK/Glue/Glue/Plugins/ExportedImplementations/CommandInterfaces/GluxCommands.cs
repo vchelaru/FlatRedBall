@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GluxCommands.Self.SaveGlux();
                     if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
                     {
-                        System.Windows.Forms.MessageBox.Show(
+                        GlueCommands.Self.DialogCommands.ShowMessageBox(
                             "Could not set the startup screen because Glue could not find the Game class.");
                     }
                     else
@@ -351,9 +351,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
-                    MessageBox.Show(errorMessage);
-                }
-                else if (rfs != null)
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
+                } else if (rfs != null)
                 {
 
                     var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
@@ -606,7 +605,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // I think we should show an error message.  I had a user
                 // try to add a file and no popup appeared telling them that
                 // the entity was named that.
-                //MessageBox.Show(errorMessage);
                 GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
             }
 
@@ -1576,7 +1574,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 generalResponse.Message = $"Could not copy {nos.InstanceName} because it would result in a circular reference";
                 succeeded = false;
                 // VerifyReferenceGraph (currently) shows a popup so we don't have to here
-                //MessageBox.Show("This movement would result in a circular reference");
                 if (listOfThisType != null)
                 {
                     listOfThisType.ContainedObjects.Remove(newNos);
@@ -2430,10 +2427,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 EntitySave inheritingEntity = inheritingEntities[i];
 
-                DialogResult resetInheritance = MessageBox.Show("Reset the inheritance for " + inheritingEntity.Name + "?",
-                    "Reset Inheritance?", MessageBoxButtons.YesNo);
+                bool result = false;
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingEntity.Name + "?",
+                    () => { result = true; }, null, "Reset Inheritance?");
 
-                if (resetInheritance == DialogResult.Yes)
+
+                if (result)
                 {
                     inheritingEntity.BaseEntity = "";
                     CodeWriter.GenerateCode(inheritingEntity);
@@ -2532,10 +2531,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 ScreenSave inheritingScreen = inheritingScreens[i];
 
-                DialogResult resetInheritance = MessageBox.Show("Reset the inheritance for " + inheritingScreen.Name + "?",
-                    "Reset Inheritance?", MessageBoxButtons.YesNo);
+                bool result = false;
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Reset the inheritance for " + inheritingScreen.Name + "?",
+                    () => { result = true; }, null, "Reset Inheritance?");
 
-                if (resetInheritance == DialogResult.Yes)
+                if (result)
                 {
                     inheritingScreen.BaseScreen = "";
 
@@ -2646,7 +2646,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (targetFile.Exists())
             {
-                System.Windows.Forms.MessageBox.Show(
+                GlueCommands.Self.DialogCommands.ShowMessageBox(
                     "Can't move the the file " + absoluteCodeFile + " because the following file exists in the target location: " + targetFile);
                 succeeded = false;
             }

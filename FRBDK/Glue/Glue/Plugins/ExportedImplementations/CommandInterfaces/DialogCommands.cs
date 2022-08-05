@@ -873,13 +873,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueGui.ShowMessageBox(message);
         }
 
-        public void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null)
+        public void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null, string caption = "Confirm")
         {
             if (GlueGui.ShowGui)
             {
                 GlueCommands.Self.DoOnUiThread(() =>
                {
-                   var result = MessageBox.Show(message, "", MessageBoxButtons.YesNo);
+                   var result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
 
                    if (result == DialogResult.Yes)
                    {

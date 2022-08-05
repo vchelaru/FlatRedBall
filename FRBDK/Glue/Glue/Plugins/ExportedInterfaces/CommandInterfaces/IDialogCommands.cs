@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ShowAddNewCategoryDialog();
 
         void ShowMessageBox(string message);
-        void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null);
+        void ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null, string caption = "Confirm");
 
         void FocusTab(string dialogTitle);
 
