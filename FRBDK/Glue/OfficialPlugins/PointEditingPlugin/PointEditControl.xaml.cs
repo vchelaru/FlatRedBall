@@ -119,8 +119,11 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             if(ViewModel.Points?.Count > 0)
             {
-                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?",
-                    AddRectanglePoints);
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?");
+                if(result == MessageBoxResult.Yes)
+                {
+                    AddRectanglePoints();
+                }
             }
             else
             {

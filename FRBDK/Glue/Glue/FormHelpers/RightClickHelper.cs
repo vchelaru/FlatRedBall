@@ -1059,7 +1059,7 @@ namespace FlatRedBall.Glue.FormHelpers
             addObjectToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
 
             existingFileToolStripMenuItem = new GeneralToolStripMenuItem();
-            existingFileToolStripMenuItem.Text = "Existing File";
+            existingFileToolStripMenuItem.Text = "Existing File(s)";
             existingFileToolStripMenuItem.Click += (not, used) => AddExistingFileManager.Self.AddExistingFileClick();
 
             setCreatedClassToolStripMenuItem = new GeneralToolStripMenuItem();
@@ -1979,8 +1979,11 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 message += "\n\nDo you really want to remove this Entity?";
 
-                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message,
-                    async () => await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved));
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
+                if(result == System.Windows.MessageBoxResult.Yes)
+                {
+                    await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
+                }
             }
             else
             {
