@@ -239,6 +239,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         GlueCommands.Self.PrintError(runResponse.Value<string>("Error"));
                     }
                     succeeded = runResponse.Value<bool>("Succeeded");
+
+                    if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableGameEditMode)
+                    {
+                        // Sometimes the game can update the window before the window becomes borderless. If that happens, this
+                        // fails to update the position. Need to delay.
+                        await Task.Delay(250);
+                        
+                        GlueCommands.Self.DoOnUiThread(() => gameHostView.SetGameToEmbeddedGameWindow());
+                    }
                 }
                 else
                 {

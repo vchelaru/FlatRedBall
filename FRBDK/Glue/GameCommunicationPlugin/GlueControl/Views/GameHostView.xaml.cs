@@ -224,7 +224,14 @@ namespace OfficialPlugins.GameHost.Views
 
         private void WinformsHost_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (ViewModel.IsRunning && ViewModel.IsGenerateGlueControlManagerInGame1Checked && gameHandle != IntPtr.Zero)
+            SetGameToEmbeddedGameWindow();
+
+        }
+
+        public void SetGameToEmbeddedGameWindow()
+        {
+            if (ViewModel.IsRunning && ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
+                gameHandle != IntPtr.Zero)
             {
                 var newWidth = (int)WinformsHost.ActualWidth;
                 var newHeight = (int)WinformsHost.ActualHeight;
@@ -238,7 +245,6 @@ namespace OfficialPlugins.GameHost.Views
                     Repaint = true
                 }));
             }
-
         }
 
         private void WhileRunningView_RestartGameCurrentScreenClicked(object sender, EventArgs e)
