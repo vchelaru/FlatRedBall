@@ -36,6 +36,7 @@ namespace FlatRedBall.Glue.ViewModels
             get => Get<string>();
             set => Set(value); 
         }
+        public System.Collections.IList SelectedListBoxItems { get; set; }
 
         public FileLocationType FileLocationType
         {
