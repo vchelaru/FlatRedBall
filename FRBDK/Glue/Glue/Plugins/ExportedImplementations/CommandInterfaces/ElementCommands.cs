@@ -157,9 +157,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 }
                             }
 
-                            if (ProjectManager.StartUpScreen == oldNameFull)
+                            if (GlueCommands.Self.GluxCommands.StartUpScreenName == oldNameFull)
                             {
-                                ProjectManager.StartUpScreen = newNameFull;
+                                GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
 
                             }
 

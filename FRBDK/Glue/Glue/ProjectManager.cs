@@ -205,30 +205,6 @@ namespace FlatRedBall.Glue
             }
         }
 
-
-        public static string StartUpScreen
-        {
-            get { return mGlueProjectSave.StartUpScreen; }
-            set
-            {
-                // if statement is here to prevent unnecessary saves
-                if (mGlueProjectSave.StartUpScreen != value)
-                {
-                    mGlueProjectSave.StartUpScreen = value;
-                    GluxCommands.Self.SaveGlux();
-                }
-                if (string.IsNullOrEmpty(mGameClass))
-                {
-                    System.Windows.Forms.MessageBox.Show(
-                        "Could not set the startup screen because Glue could not find the Game class.");
-                }
-                else
-                {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
-                }
-            }
-        }
-
         /// <summary>
         /// Returns the folder of the .sln for the project.
         /// </summary>

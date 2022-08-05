@@ -2483,18 +2483,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Screen
 
-        public void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null)
+        public async void RemoveScreen(ScreenSave screenToRemove, List<string> filesThatCouldBeRemoved = null)
         {
             filesThatCouldBeRemoved = filesThatCouldBeRemoved ?? new List<string>();
             List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
 
-            if(ProjectManager.StartUpScreen == screenToRemove.Name) {
+            if(GlueCommands.Self.GluxCommands.StartUpScreenName == screenToRemove.Name) 
+            {
                 var newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract && x.BaseScreen != null);
                 if(newScreen == null)
+                {
                     newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract);
+                }
                 if(newScreen == null)
+                {
                     newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove);
-                ProjectManager.StartUpScreen = newScreen == null ? "" : newScreen.Name;
+                }
+                GlueCommands.Self.GluxCommands.StartUpScreenName = newScreen == null ? "" : newScreen.Name;
             }
 
             // Remove objects before removing files.  Otherwise Glue will complain if any objects reference the files.
@@ -2514,7 +2519,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // For more information see the RemoveEntity function
             for (int i = screenToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                GluxCommands.Self.RemoveReferencedFile(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
+                await GluxCommands.Self.RemoveReferencedFileAsync(screenToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
             }
 
             ProjectManager.GlueProjectSave.Screens.Remove(screenToRemove);
@@ -2534,7 +2539,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     inheritingScreen.BaseScreen = "";
 
-                    CodeWriter.GenerateCode(inheritingScreen);
+                    await CodeWriter.GenerateCode(inheritingScreen);
                 }
             }
 

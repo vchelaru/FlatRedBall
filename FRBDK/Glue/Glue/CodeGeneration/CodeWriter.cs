@@ -786,7 +786,7 @@ namespace FlatRedBallAddOns.Entities
 
                 if (asScreenSave.IsRequiredAtStartup)
                 {
-                    string startupScreen = ProjectManager.StartUpScreen;
+                    string startupScreen = GlueCommands.Self.GluxCommands.StartUpScreenName;
 
                     string qualifiedName = ProjectManager.ProjectNamespace + "." + startupScreen.Replace("\\", ".");
 
@@ -1818,7 +1818,8 @@ namespace FlatRedBallAddOns.Entities
                 }
             }
 
-            var screenName = requiredScreen?.Name ?? ProjectManager.StartUpScreen;
+            var screenName = requiredScreen?.Name ?? 
+                GlueCommands.Self.GluxCommands.StartUpScreenName;
 
             CodeWriter.SetStartUpScreen(
                 ProjectManager.GameClassFileName,
