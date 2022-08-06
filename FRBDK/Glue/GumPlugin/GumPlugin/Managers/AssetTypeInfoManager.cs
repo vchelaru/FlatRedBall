@@ -428,6 +428,50 @@ namespace GumPlugin.Managers
             toReturn += 
                 $"Gum.Wireframe.GraphicalUiElement.ShowLineRectangles = {valueAsString};";
 
+            var gumProjectSave = AppState.Self.GumProjectSave;
+
+            var setSinglePixelTexture =
+                gumProjectSave != null &&
+                !string.IsNullOrWhiteSpace(gumProjectSave.SinglePixelTextureFile) &&
+                gumProjectSave.SinglePixelTextureLeft != null &&
+                gumProjectSave.SinglePixelTextureTop != null &&
+                gumProjectSave.SinglePixelTextureRight != null &&
+                gumProjectSave.SinglePixelTextureBottom != null;
+
+            if (setSinglePixelTexture)
+            {
+                var fileLocation = FileManager.GetDirectory(fileNameToLoad, RelativeType.Relative) + gumProjectSave.SinglePixelTextureFile;
+
+                int left = gumProjectSave.SinglePixelTextureLeft.Value;
+                int top = gumProjectSave.SinglePixelTextureTop.Value;
+                int right = gumProjectSave.SinglePixelTextureRight.Value;
+                int bottom = gumProjectSave.SinglePixelTextureBottom.Value;
+
+
+                toReturn +=
+                    $@"
+            var contentManagerWrapper = new FlatRedBall.Gum.ContentManagerWrapper();
+            contentManagerWrapper.ContentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;
+            RenderingLibrary.Content.LoaderManager.Self.ContentLoader = contentManagerWrapper;
+
+
+            var loaderManager = global::RenderingLibrary.Content.LoaderManager.Self;
+            var renderer = global::RenderingLibrary.Graphics.Renderer.Self;
+
+            renderer.SinglePixelTexture = loaderManager.LoadContent<Microsoft.Xna.Framework.Graphics.Texture2D>(""{fileLocation}"");
+
+            renderer.SinglePixelSourceRectangle = new Microsoft.Xna.Framework.Rectangle(
+                {left},
+                {top},
+                {right},
+                {bottom});";
+            }
+
+            //if(AppState.Self.GumProjectSave)
+            //{
+
+            //}
+
             return toReturn;
         }
 
