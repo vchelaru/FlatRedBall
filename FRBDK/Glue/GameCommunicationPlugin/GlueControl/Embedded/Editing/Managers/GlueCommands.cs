@@ -45,7 +45,7 @@ namespace GlueControl.Managers
             }
             var gameDirectory = GlueProjectFilePath.GetDirectoryContainingThis();
             var contentDirectory = gameDirectory + "Content/";
-            return gameDirectory + contentDirectory + rfs.Name;
+            return contentDirectory + rfs.Name;
         }
 
         public FilePath GetAbsoluteFilePath(ReferencedFileSave rfs)
