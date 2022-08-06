@@ -123,6 +123,7 @@ namespace GumPlugin.DataGeneration
                     {
                         var name = file.NoPathNoExtension;
                         AppState.Self.GumProjectSave.StandardElements.RemoveAll(item => item.Name == name);
+                        AppState.Self.GumProjectSave.StandardElementReferences.RemoveAll(item => item.Name == name);
                         GumPluginCommands.Self.AddStandardElement(file.FullPath);
                     }
                 }

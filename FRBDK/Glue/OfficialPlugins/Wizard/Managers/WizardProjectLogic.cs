@@ -160,6 +160,8 @@ namespace OfficialPluginsCore.Wizard.Managers
             });
             #endregion
 
+            #region Flush Files
+
             AddTask("Flushing Files", async () =>
             {
                 var didWait = false;
@@ -178,6 +180,8 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
                 } while (didWait);
             });
+
+            #endregion
 
             AddTask("Saving Project", () =>
             {
