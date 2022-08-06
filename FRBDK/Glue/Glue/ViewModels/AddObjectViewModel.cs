@@ -294,12 +294,11 @@ namespace FlatRedBall.Glue.ViewModels
                 }
             }
 
-            if (!string.IsNullOrEmpty(nameToAssign))
+            if (!string.IsNullOrEmpty(nameToAssign) && 
+                // We should tolerate this being null because the VM can have logic that assigns the type before we have selected anything in Glue.
+                // of course, that means that the name must be manually set later since it won't automatically be set based on the type.
+                EffectiveElement != null)
             {
-                if(EffectiveElement == null)
-                {
-                    throw new InvalidOperationException("The AddObjectViewModel must either have its ForcedElementToAddTo set, or there must be a selected element.");
-                }
                 // We need to make sure this is a unique name.
                 nameToAssign = StringFunctions.MakeStringUnique(nameToAssign, EffectiveElement.AllNamedObjects);
 

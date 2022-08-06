@@ -695,8 +695,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-
+            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
             UpdateInstanceCustomVariables(element);
 
