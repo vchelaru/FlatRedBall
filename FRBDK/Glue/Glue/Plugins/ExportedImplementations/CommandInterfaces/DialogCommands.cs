@@ -868,12 +868,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Show Message Box
 
-        public void ShowMessageBox(string message)
+        public void ShowMessageBox(string message, string caption = "")
         {
-            GlueGui.ShowMessageBox(message);
+            GlueGui.ShowMessageBox(message, caption);
         }
 
-        public System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, Action yesAction, Action noAction = null, string caption = "Confirm")
+        public System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = "Confirm", Action yesAction = null, Action noAction = null)
         {
             System.Windows.MessageBoxResult result = System.Windows.MessageBoxResult.None;
 
