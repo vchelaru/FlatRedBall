@@ -63,7 +63,7 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else if (targetNos != null && targetNos.SourceType == SourceType.FlatRedBallType)
                 {
-                    succeeded = DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
+                    succeeded = await DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
 
                 }
                 else
@@ -89,7 +89,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private bool DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
+        private async Task<bool> DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
         {
             var targetAti = targetNos.GetAssetTypeInfo();
             string targetClassType = targetAti?.FriendlyName;
@@ -136,7 +136,7 @@ namespace FlatRedBall.Glue.Managers
 
                 if (!response.Succeeded && IsCollidableOrCollidableList(movingNos))
                 {
-                    response = HandleCreateCollisionRelationship(movingNos, targetNos);
+                    response = await HandleCreateCollisionRelationship(movingNos, targetNos);
                 }
 
                 if (!response.Succeeded)
@@ -231,7 +231,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (canBeCollidable)
             {
-                var response = HandleCreateCollisionRelationship(movingNos, targetNos);
+                var response = await HandleCreateCollisionRelationship(movingNos, targetNos);
 
                 if (!response.Succeeded)
                 {
@@ -254,9 +254,9 @@ namespace FlatRedBall.Glue.Managers
 
         #region ... create CollisionRelationship
 
-        private GeneralResponse HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
+        private async Task<GeneralResponse> HandleCreateCollisionRelationship(NamedObjectSave movingNos, NamedObjectSave targetNos)
         {
-            PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
+            await PluginManager.ReactToCreateCollisionRelationshipsBetween(movingNos, targetNos);
             return GeneralResponse.SuccessfulResponse;
         }
 

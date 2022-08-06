@@ -101,7 +101,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 {
                     var playerEntity = await HandleAddPlayerEntity(vm);
 
-                    HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
+                    await HandleAddPlayerInstance(vm, gameScreen, solidCollisionNos, cloudCollisionNos, playerEntity);
                 });
             }
 
@@ -641,7 +641,7 @@ namespace OfficialPluginsCore.Wizard.Managers
             return playerEntity;
         }
 
-        private static void HandleAddPlayerInstance(WizardViewModel vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
+        private static async Task HandleAddPlayerInstance(WizardViewModel vm, ScreenSave gameScreen, NamedObjectSave solidCollisionNos,
             NamedObjectSave cloudCollisionNos, EntitySave playerEntity)
         {
             NamedObjectSave playerList = null;
@@ -690,7 +690,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     {
                         throw new NullReferenceException(nameof(cloudCollisionNos));
                     }
-                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
+                    await PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
 
                     var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
 
@@ -708,7 +708,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     {
                         throw new NullReferenceException(nameof(solidCollisionNos));
                     }
-                    PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
+                    await PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
 
                     var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
 
