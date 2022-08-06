@@ -1455,7 +1455,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
                 $"Are you sure you want to fill all values in the {stateSave.Name} State from the default variable values?  All previous values will be lost",
-                "Fill values from default?", null, null);
+                "Fill values from default?");
 
             if (result == System.Windows.MessageBoxResult.Yes)
             {
