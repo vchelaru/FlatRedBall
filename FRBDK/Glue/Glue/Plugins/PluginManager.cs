@@ -1116,14 +1116,10 @@ namespace FlatRedBall.Glue.Plugins
             nameof(ReactToResolutionChanged));
         }
 
-        public static void ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
+        public static async Task ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ReactToCreateCollisionRelationshipsBetween(firstNos, secondNos);
-            },
-            plugin => plugin.ReactToCreateCollisionRelationshipsBetween != null,
-            nameof(ReactToCreateCollisionRelationshipsBetween));
+            await CallMethodOnPluginAsync(plugin => plugin.ReactToCreateCollisionRelationshipsBetween(firstNos, secondNos),
+                plugin => plugin.ReactToCreateCollisionRelationshipsBetween != null);
         }
 
         internal static bool OpenSolution(string solutionName)
@@ -1742,7 +1738,8 @@ namespace FlatRedBall.Glue.Plugins
 
         static void CallMethodOnPlugin(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
         {
-            foreach (PluginManager manager in mInstances)
+            var instances = mInstances.ToArray();
+            foreach (PluginManager manager in instances)
             {
                 var plugins = manager.PluginContainers.Keys.Where(plugin => plugin is PluginBase)
                     .Select(item => item as PluginBase);

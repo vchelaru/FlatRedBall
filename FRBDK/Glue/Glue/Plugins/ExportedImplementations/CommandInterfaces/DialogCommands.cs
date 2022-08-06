@@ -37,8 +37,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
                 openFileDialog1.InitialDirectory = "c:\\";
-                openFileDialog1.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln)|*.vcproj;*.csproj;*.sln;";
-                openFileDialog1.FilterIndex = 2;
+                openFileDialog1.Filter = "Project/Solution files (*.vcproj;*.csproj;*.sln;*.glux;*.gluj)|*.vcproj;*.csproj;*.sln;*.glux;*.gluj";
+                openFileDialog1.FilterIndex = 1;
                 openFileDialog1.RestoreDirectory = true;
 
                 if (openFileDialog1.ShowDialog() == DialogResult.OK)
