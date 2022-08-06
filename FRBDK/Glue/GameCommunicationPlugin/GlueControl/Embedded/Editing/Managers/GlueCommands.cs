@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Dtos;
 using GlueControl.Models;
+using FlatRedBall.IO;
 
 
 namespace GlueControl.Managers
@@ -21,6 +22,7 @@ namespace GlueControl.Managers
 
         public GenerateCodeCommands GenerateCodeCommands { get; private set; }
 
+        FilePath GlueProjectFilePath;
         #endregion
 
         #region  Constructors
@@ -34,6 +36,22 @@ namespace GlueControl.Managers
         }
 
         #endregion
+
+        public string GetAbsoluteFileName(ReferencedFileSave rfs)
+        {
+            if (rfs == null)
+            {
+                throw new ArgumentNullException("rfs", "The argument ReferencedFileSave should not be null");
+            }
+            var gameDirectory = GlueProjectFilePath.GetDirectoryContainingThis();
+            var contentDirectory = gameDirectory + "Content/";
+            return gameDirectory + contentDirectory + rfs.Name;
+        }
+
+        public FilePath GetAbsoluteFilePath(ReferencedFileSave rfs)
+        {
+            return GetAbsoluteFileName(rfs);
+        }
 
         public void PrintOutput(string output)
         {
@@ -49,6 +67,7 @@ namespace GlueControl.Managers
         //public void LoadProjectAsync(string fileName)
         public void LoadProject(string fileName)
         {
+            GlueProjectFilePath = fileName;
             ObjectFinder.Self.GlueProject = GlueProjectSaveExtensions.Load(fileName);
         }
     }
