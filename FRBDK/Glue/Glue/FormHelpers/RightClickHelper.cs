@@ -1363,7 +1363,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (isInvalid)
             {
-                MessageBox.Show(failureMessage);
+                GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
             }
             else if (!isInvalid)
             {
@@ -1453,13 +1453,11 @@ namespace FlatRedBall.Glue.FormHelpers
             StateSave stateSave = GlueState.Self.CurrentStateSave;
             IElement element = GlueState.Self.CurrentElement;
 
-            DialogResult result = MessageBox.Show(
-                "Are you sure you want to fill all values in the " +
-                stateSave.Name +
-                " State from the default variable values?  All previous values will be lost", "Fill values from default?",
-                MessageBoxButtons.YesNo);
+            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                $"Are you sure you want to fill all values in the {stateSave.Name} State from the default variable values?  All previous values will be lost",
+                "Fill values from default?", null, null);
 
-            if (result == DialogResult.Yes)
+            if (result == System.Windows.MessageBoxResult.Yes)
             {
                 for (int i = 0; i < element.CustomVariables.Count; i++)
                 {
@@ -1703,7 +1701,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     GlueElement deletedElement = null;
                     ReferencedFileSave deletedRfs = null;
                     #region Find out if the user really wants to remove this - don't ask if askAreYouSure is false
-                    DialogResult reallyRemoveResult = DialogResult.Yes;
+                    var reallyRemoveResult = System.Windows.MessageBoxResult.Yes;
 
                     // Some objects may use a custom delete dialog. Those types should be checked here first:
                     if(currentObject is ScreenSave screenToRemove)
@@ -1728,7 +1726,7 @@ namespace FlatRedBall.Glue.FormHelpers
                             // for now, don't allow deleting it - must be removed from disk:
                             GlueCommands.Self.DialogCommands.ShowMessageBox("Cannot remove this file through the FRB Editor - it's a wildcard file, so it must be removed from disk.");
                             askAreYouSure = false;
-                            reallyRemoveResult = DialogResult.No;
+                            reallyRemoveResult = System.Windows.MessageBoxResult.No;
                         }
                     }
 
@@ -1737,12 +1735,11 @@ namespace FlatRedBall.Glue.FormHelpers
                     {
                         string message = "Are you sure you want to remove this:\n\n" + currentObject.ToString();
 
-                        reallyRemoveResult =
-                            MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
+                        reallyRemoveResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?");
                     }
                     #endregion
 
-                    if (reallyRemoveResult == DialogResult.Yes)
+                    if (reallyRemoveResult == System.Windows.MessageBoxResult.Yes)
                     {
                         #region If is NamedObjectSave
                         // handled above in AskToRemoveObject
@@ -1979,11 +1976,8 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 message += "\n\nDo you really want to remove this Entity?";
 
-                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
-                if(result == System.Windows.MessageBoxResult.Yes)
-                {
-                    await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved);
-                }
+                GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Remove?",
+                    async () => await GlueCommands.Self.GluxCommands.RemoveEntityAsync(entityToRemove, filesThatCouldBeRemoved));
             }
             else
             {
@@ -2006,10 +2000,10 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
             }
 
-            DialogResult result = MessageBox.Show(message, "Are you sure?", MessageBoxButtons.YesNo);
+            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message, "Are you sure?");
 
             var wasRemoved = false;
-            if (result == DialogResult.Yes)
+            if (result == System.Windows.MessageBoxResult.Yes)
             {
                 wasRemoved = true;
 
@@ -2078,7 +2072,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (GlueState.Self.CurrentGlueProject == null)
             {
-                MessageBox.Show("You must first load or create a Glue project");
+                GlueCommands.Self.DialogCommands.ShowMessageBox("You must first load or create a Glue project");
             }
             else
             {
@@ -2161,11 +2155,11 @@ namespace FlatRedBall.Glue.FormHelpers
                         {
                             screenOrEntity = "entity";
                         }
-                        MessageBox.Show($"This {screenOrEntity} does not have a content folder. It will be created when a file is added to this {screenOrEntity}.");
+                        GlueCommands.Self.DialogCommands.ShowMessageBox($"This {screenOrEntity} does not have a content folder. It will be created when a file is added to this {screenOrEntity}.");
                     }
                     else
                     {
-                        MessageBox.Show($"Glue has not created this content folder yet since it doesn't contain any files.");
+                        GlueCommands.Self.DialogCommands.ShowMessageBox($"Glue has not created this content folder yet since it doesn't contain any files.");
 
                     }
                 }
@@ -2201,15 +2195,16 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
 
-            DialogResult shouldDelete = DialogResult.Yes;
+            var shouldDelete = System.Windows.MessageBoxResult.Yes;
 
             if ((files != null && files.Length != 0) || (directories != null && directories.Length != 0))
             {
-                shouldDelete = MessageBox.Show("The directory\n\n" + absolutePath + "\n\nis not empty." +
-                    "Are you sure you want to delete it and everything inside of it?", "Are you sure?", MessageBoxButtons.YesNo);
+                shouldDelete = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
+                    $"The directory\n\n{absolutePath}\n\nis not empty. Are you sure you want to delete it and everything inside of it?",
+                    "Are you sure?");
             }
 
-            if (shouldDelete == DialogResult.Yes)
+            if (shouldDelete == System.Windows.MessageBoxResult.Yes)
             {
                 if (targetNode.IsChildOfRootEntityNode() && targetNode.IsFolderForEntities())
                 {
@@ -2275,7 +2270,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 if (!string.IsNullOrEmpty(whyIsInvalid))
                 {
-                    MessageBox.Show(whyIsInvalid);
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(whyIsInvalid);
                     shouldPerformMove = false;
                 }
                 else
@@ -2713,7 +2708,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 if (string.IsNullOrEmpty(rfs.SourceFile))
                 {
-                    MessageBox.Show("This object has a null source file.", "Error opening folder");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("This object has a null source file.", "Error opening folder");
                 }
                 else
                 {
@@ -2802,8 +2797,8 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (string.IsNullOrEmpty(fileName))
             {
-                MessageBox.Show("Could not create packaged file - likely because " +
-                    "the file " + rfs.Name + " contains files that are not relative.");
+                GlueCommands.Self.DialogCommands.ShowMessageBox(
+                    $"Could not create packaged file - likely because the file {rfs.Name} contains files that are not relative.");
             }
             else
             {

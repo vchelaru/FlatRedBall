@@ -33,8 +33,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ShowLoadProjectDialog();
         void ShowAddNewCategoryDialog();
 
-        void ShowMessageBox(string message);
-        System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, Action yesAction = null, Action noAction = null, string caption = "Confirm");
+        void ShowMessageBox(string message, string caption = "");
+        System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = "Confirm", Action yesAction = null, Action noAction = null);
 
         void FocusTab(string dialogTitle);
 
