@@ -151,7 +151,11 @@ namespace CompilerPlugin
                     else
                     {
                         var runAnywayMessage = "Your project has content errors. To fix them, see the Errors tab. You can still run the game but you may experience crashes. Run anyway?";
-                        GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage, async () => await _runner.Run(preventFocus: false));
+                        var innerResult = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(runAnywayMessage);
+                        if(innerResult == System.Windows.MessageBoxResult.Yes)
+                        {
+                            await _runner.Run(preventFocus: false);
+                        }
                     }
                 }
             };
