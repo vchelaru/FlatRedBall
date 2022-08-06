@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public static ReferencedFileSave GetReferencedFileSaveRecursively(this IElement instance, string fileName)
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this GlueElement instance, string fileName)
         {
             ReferencedFileSave rfs = FileReferencerHelper.GetReferencedFileSave(instance, fileName);
 

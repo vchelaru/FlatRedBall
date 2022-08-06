@@ -6,9 +6,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.IO;
+using GlueControl.Managers;
 
 namespace GlueControl.Models
 {
+    public interface IFileReferencer
+    {
+        bool UseGlobalContent
+        {
+            get;
+            set;
+        }
+
+        ReferencedFileSave GetReferencedFileSave(string name);
+
+
+        List<ReferencedFileSave> ReferencedFiles
+        {
+            get;
+        }
+    }
+
     public static class IElementExtensionMethods
     {
         public static void FixAllTypes(this GlueElement element)
@@ -131,6 +150,50 @@ namespace GlueControl.Models
             return variableValue;
         }
 
+        public static ReferencedFileSave GetReferencedFileSaveRecursively(this GlueElement instance, string fileName)
+        {
+            ReferencedFileSave rfs = GetReferencedFileSave(instance, fileName);
+
+            if (rfs == null && !string.IsNullOrEmpty(instance.BaseObject))
+            {
+                EntitySave baseEntitySave = ObjectFinder.Self.GetEntitySave(instance.BaseObject);
+                if (baseEntitySave != null)
+                {
+                    rfs = baseEntitySave.GetReferencedFileSaveRecursively(fileName);
+                }
+            }
+
+            return rfs;
+        }
+
+        public static ReferencedFileSave GetReferencedFileSave(IFileReferencer instance, FilePath filePath)
+        {
+            var name = filePath.FullPath;
+            if (!string.IsNullOrEmpty(name))
+            {
+                name = name.Replace("\\", "/");
+                foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
+                {
+                    if (rfs.Name?.ToLowerInvariant() == name?.ToLowerInvariant())
+                    {
+                        return rfs;
+                    }
+                }
+                // didn't find it, so let's try un-qualified
+                if (name.Contains('/') == false)
+                {
+                    foreach (ReferencedFileSave rfs in instance.ReferencedFiles)
+                    {
+                        var nameNoExtension = FileManager.RemoveExtension(rfs.Name);
+                        if (nameNoExtension.EndsWith('/' + name) || nameNoExtension == name)
+                        {
+                            return rfs;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
 
     }
 }

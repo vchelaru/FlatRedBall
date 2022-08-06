@@ -57,6 +57,7 @@
     <Compile Remove="GlueControl\Embedded\Models\INamedObjectContainer.cs" />
     <Compile Remove="GlueControl\Embedded\Models\NamedObjectSave.cs" />
     <Compile Remove="GlueControl\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
+    <Compile Remove="GlueControl\Embedded\Models\ReferencedFileSave.cs" />
     <Compile Remove="GlueControl\Embedded\Models\StateSave.cs" />
     <Compile Remove="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <Compile Remove="GlueControl\Embedded\Runtime\DynamicEntity.cs" />
@@ -128,6 +129,7 @@
     <EmbeddedResource Include="GlueControl\Embedded\Models\INamedObjectContainer.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Models\NamedObjectSave.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Models\NamedObjectSaveExtensionMethods.cs" />
+    <EmbeddedResource Include="GlueControl\Embedded\Models\ReferencedFileSave.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSave.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Models\StateSaveCategory.cs" />
     <EmbeddedResource Include="GlueControl\Embedded\Runtime\DynamicEntity.cs" />

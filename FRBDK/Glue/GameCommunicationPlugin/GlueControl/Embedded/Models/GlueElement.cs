@@ -7,8 +7,26 @@ using FlatRedBall.IO;
 
 namespace GlueControl.Models
 {
-    public abstract class GlueElement : INamedObjectContainer
+    public abstract class GlueElement : IFileReferencer, INamedObjectContainer
     {
+
+        public List<ReferencedFileSave> ReferencedFiles
+        {
+            get;
+            set;
+        }
+
+        public bool UseGlobalContent
+        {
+            get;
+            set;
+        }
+
+        public ReferencedFileSave GetReferencedFileSave(string fileName)
+        {
+            return IElementExtensionMethods.GetReferencedFileSave(this, fileName);
+        }
+
         public bool IsOnOwnLayer
         {
             get;

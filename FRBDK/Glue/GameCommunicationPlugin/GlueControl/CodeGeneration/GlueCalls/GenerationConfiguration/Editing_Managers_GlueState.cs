@@ -18,6 +18,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 Methods = new Method[0],
                 Properties = new[]
                 {
+                    GetProperty_CurrentGlueProject(),
                     GetProperty_CurrentElement(),
                     GetProperty_CurrentNamedObjectSave()
                 },
@@ -32,6 +33,16 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 Name = "CurrentElement",
                 ReturnType = "GlueElement",
                 GetSimpleBody = "Editing.EditingManager.Self.CurrentGlueElement"
+            };
+        }
+
+        private static Property GetProperty_CurrentGlueProject()
+        {
+            return new Property
+            {
+                Name = "CurrentGlueProject",
+                ReturnType = "GlueProjectSave",
+                GetSimpleBody = "ObjectFinder.Self.GlueProject"
             };
         }
 
