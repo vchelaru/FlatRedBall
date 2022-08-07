@@ -70,18 +70,11 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
-
-        string mSourceClassType;
-
         [CategoryAttribute("Source")]
         public string SourceClassType
         {
-            get  => mSourceClassType; 
-            set
-            {
-                mSourceClassType = value;
-
-            }
+            get;
+            set;
         }
 
         #region Fields

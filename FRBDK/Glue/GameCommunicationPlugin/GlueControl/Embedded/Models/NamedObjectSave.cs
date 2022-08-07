@@ -182,6 +182,18 @@ namespace GlueControl.Models
 
     public class NamedObjectSave
     {
+        public string InstanceName
+        {
+            get;
+            set;
+        }
+
+        public string SourceClassType
+        {
+            get;
+            set;
+        }
+
         public List<PropertySave> Properties
         {
             get;
@@ -194,7 +206,7 @@ namespace GlueControl.Models
             set;
         }
 
-        public string SourceClassType
+        public string SourceFile
         {
             get;
             set;
@@ -214,12 +226,6 @@ namespace GlueControl.Models
                     mSourceClassGenericType = null;
                 }
             }
-        }
-
-        public string InstanceName
-        {
-            get;
-            set;
         }
 
         public List<InstructionSave> InstructionSaves = new List<InstructionSave>();
