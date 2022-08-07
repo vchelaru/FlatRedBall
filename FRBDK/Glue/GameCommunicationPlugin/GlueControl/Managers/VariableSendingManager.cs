@@ -152,13 +152,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
         {
             List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
-            //////////////////Early Out//////////////////////////////
+
+            // If the value set is "ignored" that means we want to push a command to teh game to only
+            // re-run the command on screen change, but don't actually set the variable now.
             var isIgnored = GetIfChangedMemberIsIgnored(nos, changedMember);
+
             if(isIgnored)
             {
-                return toReturn;
+                assignOrRecordOnly = AssignOrRecordOnly.RecordOnly;
             }
-            ////////////////End Early Out////////////////////////////
+            ////////////////////Early Out//////////////////////////////
+            //if(isIgnored)
+            //{
+            //    return toReturn;
+            //}
+            //////////////////End Early Out////////////////////////////
 
             string typeName = null;
             object currentValue = null;
