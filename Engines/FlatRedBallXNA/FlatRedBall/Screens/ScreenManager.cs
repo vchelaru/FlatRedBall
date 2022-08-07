@@ -529,7 +529,13 @@ namespace FlatRedBall.Screens
             return newScreen;
         }
 
-
+        /// <summary>
+        /// Checks if all FlatRedBall managers (such as the SpriteManager) have been emptied out in preparation for
+        /// screen transition. If not, an informative exception is thrown indicating what is left over. Normally this is not
+        /// called in custom code since it is automatically called by the ScreenManager when a Screen is transitioning.
+        /// </summary>
+        /// <param name="screen">The Screen in question.</param>
+        /// <exception cref="System.Exception">Thrown if any manager is not empty.</exception>
         public static void CheckAndWarnIfNotEmpty(Screen screen = null)
         {
 
