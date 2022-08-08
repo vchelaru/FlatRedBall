@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
+using CompilerLibrary.ViewModels;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {

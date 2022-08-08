@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GameCommunicationPlugin.GlueControl.ViewModels;
 using System;
 using System.Windows;

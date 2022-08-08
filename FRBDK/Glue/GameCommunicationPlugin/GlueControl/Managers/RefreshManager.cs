@@ -25,6 +25,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.CodeGeneration;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.Common;
+using CompilerLibrary.ViewModels;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {

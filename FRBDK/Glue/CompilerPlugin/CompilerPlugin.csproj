@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&quot;&#xD;&#xA;echo copy $(TargetDir)CompilerPlugin.dll to $(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.dll&#xD;&#xA;copy &quot;$(TargetDir)CompilerPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.pdb&quot;" />
+    <Exec Command="echo Creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\&quot;&#xD;&#xA;&#xD;&#xA;echo $(TargetDir)&#xD;&#xA;&#xD;&#xA;echo creating $(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&#xD;&#xA;if not exist &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&quot; md &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\&quot;&#xD;&#xA;echo copy $(TargetDir)CompilerPlugin.dll to $(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.dll&#xD;&#xA;copy &quot;$(TargetDir)CompilerPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerPlugin.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerPlugin.pdb&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerLibrary.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerLibrary.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)CompilerLibrary.pdb&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\CompilerPlugin\CompilerLibrary.pdb&quot;&#xD;&#xA;" />
   </Target>
 
   <ItemGroup>
@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CompilerLibrary\CompilerLibrary.csproj" />
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
 

@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using CompilerPlugin.ViewModels;
+using CompilerLibrary.ViewModels;
 
 namespace CompilerPlugin.Managers
 {

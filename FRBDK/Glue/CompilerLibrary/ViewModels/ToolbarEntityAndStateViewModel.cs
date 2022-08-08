@@ -3,7 +3,7 @@ using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using GameCommunicationPlugin.GlueControl.Models;
+using CompilerLibrary.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
@@ -15,7 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace GameCommunicationPlugin.GlueControl.ViewModels
+namespace CompilerLibrary.ViewModels
 {
     public class ToolbarEntityAndStateViewModel : ViewModel
     {
@@ -79,7 +79,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             }
         }
 
-        internal void ApplyTo(ToolbarEntityAndState toolbarModel)
+        public void ApplyTo(ToolbarEntityAndState toolbarModel)
         {
 
             StateSaveCategory category = null;
@@ -114,7 +114,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         /// </summary>
         /// <param name="force">Whether to force generate the preview PNG. If true, then the PNG
         /// will be generated even if it already exists.</param>
-        internal void SetSourceFromElementAndState(bool force = false)
+        public void SetSourceFromElementAndState(bool force = false)
         {
             var imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(GlueElement, StateSave);
 

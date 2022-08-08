@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameCommunicationPlugin.GlueControl.Models
+namespace CompilerLibrary.Models
 {
     public class ToolbarEntityAndState
     {

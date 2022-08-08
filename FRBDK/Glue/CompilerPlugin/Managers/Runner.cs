@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using CompilerLibrary.ViewModels;
 
 namespace CompilerPlugin.Managers
 {
@@ -271,7 +272,7 @@ namespace CompilerPlugin.Managers
 
                         if (runningGameProcess != null)
                         {
-
+                            this._compilerViewModel.DidRunnerStartProcess = true;
                             runningGameProcess.EnableRaisingEvents = true;
                             runningGameProcess.Exited += HandleProcessExit;
 
@@ -303,6 +304,8 @@ namespace CompilerPlugin.Managers
                         }
                         else
                         {
+                            this._compilerViewModel.DidRunnerStartProcess = false;
+
                             string error;
                             if (didTimeoutOnProcess)
                             {
@@ -468,6 +471,8 @@ namespace CompilerPlugin.Managers
             }
 
             runningGameProcess = null;
+            this._compilerViewModel.DidRunnerStartProcess = false;
+
 
             if (!global::Glue.MainGlueWindow.Self.IsDisposed)
             {

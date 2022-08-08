@@ -1,5 +1,5 @@
-﻿using FlatRedBall.Glue.MVVM;
-using GameCommunicationPlugin.GlueControl.Models;
+﻿using CompilerLibrary.Models;
+using FlatRedBall.Glue.MVVM;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

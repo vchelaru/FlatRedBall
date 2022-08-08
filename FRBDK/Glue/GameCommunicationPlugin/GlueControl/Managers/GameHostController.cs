@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
+using CompilerLibrary.ViewModels;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -261,13 +262,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             await _eventCallerWithAction("Runner_Kill", "");
 
-            compilerViewModel.IsCompiling = true;
-            var toReturn = JObject.Parse(await _eventCallerWithAction("Compiler_DoCompile", JsonConvert.SerializeObject(new
-            {
-                Configuration = compilerViewModel.Configuration,
-                PrintMsBuildCommand = compilerViewModel.IsPrintMsBuildCommandChecked
-            })));
-            compilerViewModel.IsCompiling = false;
+            var eventResponse =
+                await _eventCallerWithAction("Compiler_DoCompile", JsonConvert.SerializeObject(new
+                {
+                    Configuration = compilerViewModel.Configuration,
+                    PrintMsBuildCommand = compilerViewModel.IsPrintMsBuildCommandChecked
+                }));
+            var toReturn = JObject.Parse(eventResponse);
             return toReturn.Value<bool>("Succeeded");
         }
     }

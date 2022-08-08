@@ -25,6 +25,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CompilerLibrary.ViewModels;
 
 namespace OfficialPlugins.GameHost.Views
 {
@@ -230,8 +231,12 @@ namespace OfficialPlugins.GameHost.Views
 
         public void SetGameToEmbeddedGameWindow()
         {
-            if (ViewModel.IsRunning && ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
-                gameHandle != IntPtr.Zero)
+            var shouldMove =
+                ViewModel.IsRunning &&
+                ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
+                ViewModel.DidRunnerStartProcess &&
+                gameHandle != IntPtr.Zero;
+            if (shouldMove)
             {
                 var newWidth = (int)WinformsHost.ActualWidth;
                 var newHeight = (int)WinformsHost.ActualHeight;

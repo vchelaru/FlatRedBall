@@ -1,5 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
-using GameCommunicationPlugin.GlueControl.Models;
+//using GameCommunicationPlugin.GlueControl.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace GameCommunicationPlugin.GlueControl.ViewModels
+namespace CompilerLibrary.ViewModels
 {
     #region Enums
     public enum PlayOrEdit
@@ -22,6 +22,16 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
     public class CompilerViewModel : ViewModel
     {
         #region Fields/Properties
+
+        static CompilerViewModel self;
+        public static CompilerViewModel Self
+        {
+            get
+            {
+                if (self == null) self = new CompilerViewModel();
+                return self;
+            }
+        }
 
         public bool HasLoadedGlux
         {
@@ -68,6 +78,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
 
         [DependsOn(nameof(IsCompiling))]
         public Visibility BuildingActivitySpinnerVisibility => IsCompiling.ToVisibility();
+
         public bool IsHotReloadAvailable
         {
             get => Get<bool>();
@@ -384,7 +395,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
 
         #region Constructor
 
-        public CompilerViewModel()
+        CompilerViewModel()
         {
             CurrentGameSpeed = "100%";
             ToolbarEntitiesAndStates = new ObservableCollection<ToolbarEntityAndStateViewModel>();
@@ -394,7 +405,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
 
         #region Commands
 
-        internal void DecreaseGameSpeed()
+        public void DecreaseGameSpeed()
         {
             var index = GameSpeedList.IndexOf(CurrentGameSpeed);
             if (index < GameSpeedList.Count-1)
@@ -403,7 +414,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             }
         }
 
-        internal void IncreaseGameSpeed()
+        public void IncreaseGameSpeed()
         {
             var index = GameSpeedList.IndexOf(CurrentGameSpeed);
             if(index > 0)

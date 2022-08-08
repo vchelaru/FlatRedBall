@@ -17,7 +17,7 @@ using FlatRedBall.Glue.Controls;
 using System.ComponentModel;
 using FlatRedBall.Glue.IO;
 using Newtonsoft.Json;
-using GameCommunicationPlugin.GlueControl.Models;
+using CompilerLibrary.Models;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPluginsCore.Compiler.ViewModels;
@@ -38,6 +38,7 @@ using System.Windows.Media.Imaging;
 using FlatRedBall.Glue.ViewModels;
 using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 using Newtonsoft.Json.Linq;
+using CompilerLibrary.ViewModels;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -660,7 +661,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         private void CreateBuildControl()
         {
-            CompilerViewModel = new CompilerViewModel();
+            CompilerViewModel = CompilerViewModel.Self;
             CompilerViewModel.Configuration = "Debug";
             GlueViewSettingsViewModel = new GlueViewSettingsViewModel();
             GlueViewSettingsViewModel.PropertyChanged += HandleGlueViewSettingsViewModelPropertyChanged;
@@ -766,7 +767,7 @@ namespace GameCommunicationPlugin.GlueControl
             switch (propertyName)
             {
 
-                case nameof(ViewModels.CompilerViewModel.CurrentGameSpeed):
+                case nameof(CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
                     await _commandSender.Send(new SetSpeedDto
                     {
@@ -774,21 +775,21 @@ namespace GameCommunicationPlugin.GlueControl
                     });
                     
                     break;
-                case nameof(ViewModels.CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
+                case nameof(CompilerViewModel.EffectiveIsRebuildAndRestartEnabled):
                     _refreshManager.IsExplicitlySetRebuildAndRestartEnabled = CompilerViewModel.EffectiveIsRebuildAndRestartEnabled;
                     break;
-                case nameof(ViewModels.CompilerViewModel.IsToolbarPlayButtonEnabled):
+                case nameof(CompilerViewModel.IsToolbarPlayButtonEnabled):
                     ToolbarController.Self.SetEnabled(CompilerViewModel.IsToolbarPlayButtonEnabled);
                     break;
-                case nameof(ViewModels.CompilerViewModel.IsRunning):
+                case nameof(CompilerViewModel.IsRunning):
                     //CommandSender.CancelConnect();
                     break;
-                case nameof(ViewModels.CompilerViewModel.PlayOrEdit):
+                case nameof(CompilerViewModel.PlayOrEdit):
 
                     await ReactToPlayOrEditSet();
 
                     break;
-                case nameof(ViewModels.CompilerViewModel.ToolbarEntitiesAndStates):
+                case nameof(CompilerViewModel.ToolbarEntitiesAndStates):
                     if(CompilerViewModel.HasLoadedGlux)
                     {
                         SaveCompilerSettingsModel();
@@ -1185,23 +1186,6 @@ namespace GameCommunicationPlugin.GlueControl
                     });
 
                     break;
-
-                case "Compiler_Prop_IsRunning":
-                    Task.Run(() => {
-                        CompilerViewModel.IsRunning = JObject.Parse(payload).Value<bool>("value");
-                        return Task.CompletedTask;
-                    });
-
-                    break;
-
-                case "Compiler_Prop_IsCompiling":
-                    Task.Run(() => {
-                        CompilerViewModel.IsCompiling = JObject.Parse(payload).Value<bool>("value");
-                        return Task.CompletedTask;
-                    });
-
-                    break;
-
                 case "GameCommunication_Connected":
                     _commandSender.IsConnected = true;
 

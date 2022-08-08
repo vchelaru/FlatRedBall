@@ -12,6 +12,7 @@ using CompilerPlugin.ViewModels;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
+using CompilerLibrary.ViewModels;
 
 namespace CompilerPlugin
 {
@@ -29,7 +30,7 @@ namespace CompilerPlugin
 
         public override void StartUp()
         {
-            _compilerViewModel = new CompilerViewModel(ReactToPluginEvent);
+            _compilerViewModel = CompilerViewModel.Self;
             _compiler = new Compiler(_compilerViewModel);
             _runner = new Runner(ReactToPluginEvent, _compilerViewModel);
             ReactToLoadedGlux += HandleGluxLoaded;
@@ -84,7 +85,7 @@ namespace CompilerPlugin
             switch (propertyName)
             {
 
-                case nameof(ViewModels.CompilerViewModel.IsRunning):
+                case nameof(CompilerViewModel.IsRunning):
                     //CommandSender.CancelConnect();
                     break;
             }
