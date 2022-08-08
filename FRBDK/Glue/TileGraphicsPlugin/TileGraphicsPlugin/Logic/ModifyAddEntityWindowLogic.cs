@@ -17,29 +17,31 @@ namespace TileGraphicsPlugin.Logic
 {
     class ModifyAddEntityWindowLogic
     {
+        // August 8, 2022
+        // History on this:
+        // The ability to add
+        // lists to GameScreen
+        // originally was created
+        // to simplify the creation
+        // of entities through Tiled.
+        // Over time it became standard
+        // to add lists of entities to the
+        // GameScreen regardless of whether
+        // there is a Tiled map. Since the option
+        // to add Lists to GameScreen is no longer
+        // tied to Tiled, this could (should?) get moved
+        // out into a separate plugin. But...it doesn't matter
+        // that much because the Tiled plugin is always active.
+        // If more work is being done here, eventually we'll want
+        // to move this to its own plugin.
         public static void HandleModifyAddEntityWindow(AddEntityWindow window)
         {
-            // See if any screens have tile maps
             var allScreens = GlueState.Self.CurrentGlueProject.Screens;
 
-            bool IsRfsTiledMap(ReferencedFileSave rfs)
-            {
-                return rfs.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo;
-            }
+            var doesProjectHaveGameScreen = allScreens.Any(item => item.ClassName == "GameScreen" ||
+                item.ClassName.EndsWith(".GameScreen"));
 
-            var doesProjectContainAnyTmxFiles = allScreens.Any(item =>
-            {
-                var hasRfs = item.ReferencedFiles.Any(IsRfsTiledMap);
-
-                if(!hasRfs)
-                {
-                    hasRfs = item.NamedObjects.Any(nos => nos.GetAssetTypeInfo() == AssetTypeInfoAdder.Self.TmxAssetTypeInfo);
-                }
-
-                return hasRfs;
-            });
-
-            if(doesProjectContainAnyTmxFiles)
+            if(doesProjectHaveGameScreen)
             {
                 var viewModel = new AdditionalEntitiesControlViewModel();
 

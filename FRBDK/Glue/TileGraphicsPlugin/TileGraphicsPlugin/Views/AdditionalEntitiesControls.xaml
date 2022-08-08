@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Tiled" Visibility="{Binding AllTileMapUiVisibility}">
+    <GroupBox Header="Game Screen" Visibility="{Binding AllTileMapUiVisibility}">
         
         <Grid>
             <Grid.RowDefinitions>
@@ -18,7 +18,7 @@
                       IsChecked="{Binding IncludeListsInScreens}">
                 <TextBlock>
                     <AccessText TextWrapping="Wrap"
-                        Text="Include lists in all base level screens (screens with Tiled maps)"/>
+                        Text="Include lists in GameScreen"/>
                 </TextBlock>
                 
             </CheckBox>

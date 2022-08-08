@@ -16,12 +16,6 @@ namespace TileGraphicsPlugin.ViewModels
             set => Set(value);
         }
 
-        public bool InstantiateInTileMap
-        {
-            get { return Get<bool>(); }
-            set { Set(value); }
-        }
-
         public Visibility ScreenListVisibility => Visibility.Visible;
 
         public bool IncludeListsInScreens
