@@ -2,6 +2,8 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using Glue;
+using GlueFormsCore.Extensions;
 using OfficialPlugins.SpritePlugin.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -80,11 +82,24 @@ namespace OfficialPlugins.SpritePlugin.Views
                 }
                 else
                 {
-                    viewModel.WindowWidth = 400;
-                    viewModel.WindowHeight = 400;
+                    var mw = Glue.MainGlueWindow.Self;
+                    if(mw != null) {
+                        viewModel.WindowWidth = mw.Width * .75f;
+                        viewModel.WindowHeight = mw.Height * .75f;
+                        viewModel.WindowX = mw.Left + ((mw.Width - viewModel.WindowWidth) / 2);
+                        viewModel.WindowY = mw.Top + ((mw.Height - viewModel.WindowHeight) / 4);
+                    } else {
+                        viewModel.WindowWidth = 400;
+                        viewModel.WindowHeight = 400;
+                    }
                 }
 
                 window.DataContext = viewModel;
+                // moving to ShiftWindowOntoScreen w/ NaN check window.UpdateLayout();
+                window.SetOwnerToMainGlueWindow(); //WHY!!! isn't this working... Could just use center parent startup.
+                //Bigger window feels weird moving to cursor GlueCommands.Self.DialogCommands.MoveToCursor(window);
+                window.ShiftWindowOntoScreen();
+
                 var result = window.ShowDialog();
 
                 if (result == true)

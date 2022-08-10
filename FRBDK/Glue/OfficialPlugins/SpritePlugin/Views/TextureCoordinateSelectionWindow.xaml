@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPlugins.SpritePlugin.Views"
         mc:Ignorable="d"
-        Title="TextureCoordinateSelectionWindow" 
-            Height="{Binding WindowHeight, Mode=TwoWay}" 
-            Width="{Binding WindowWidth, Mode=TwoWay}"
-
-            
+        Title="Texture Coordinate Selection" 
+        WindowStartupLocation="Manual"
+        Height="{Binding WindowHeight, Mode=TwoWay}" 
+        Width="{Binding WindowWidth, Mode=TwoWay}"
+        Left="{Binding WindowX, Mode=TwoWay}"
+        Top="{Binding WindowY, Mode=TwoWay}"
         >
     <Grid>
         <Grid.RowDefinitions>

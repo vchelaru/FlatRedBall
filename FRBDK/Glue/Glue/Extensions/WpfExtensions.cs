@@ -9,14 +9,18 @@ using System.Windows.Forms;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using Glue;
 
 namespace GlueFormsCore.Extensions
 {
     public static class WpfExtensions
     {
-        public static void MoveToCursor(System.Windows.Window window, PresentationSource source = null)
+        public static void MoveToCursor(this System.Windows.Window window, PresentationSource source = null)
         {
             window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+
+            if(double.IsNaN(window.Width) || double.IsNaN(window.Height))
+                try { window.UpdateLayout(); } catch { } //Can this throw exception? I don't know...
 
             double width = window.Width;
             if (double.IsNaN(width))
@@ -53,6 +57,9 @@ namespace GlueFormsCore.Extensions
         /// </summary>
         public static void ShiftWindowOntoScreen(this Window window)
         {
+            if(double.IsNaN(window.Height))
+                try { window.UpdateLayout(); } catch { } //Can this throw exception? I don't know...
+
             var heightToUse = window.Height;
             if (double.IsNaN(heightToUse))
             {
@@ -81,6 +88,15 @@ namespace GlueFormsCore.Extensions
                 window.Top = bounds.Bottom - heightToUse - 1;
             }
         }
+
+        public static void SetOwnerToMainGlueWindow(this System.Windows.Window window) {
+            if(MainGlueWindow.Self == null) return;
+            try {
+                //Why is this not setting window.Owner? (At least in the case of MapTextureButtonContainer.Button_Click)
+                new System.Windows.Interop.WindowInteropHelper(window).Owner = MainGlueWindow.Self.Handle;
+            } catch { }
+        }
+
     }
     public static class UserControlExtension
     {
