@@ -95,13 +95,24 @@ namespace GumPlugin.Managers
                         rfs = glueElement?.GetReferencedFileSave(nos.SourceFile);
                     }
                 }
+
+                // August 10, 2022
+                // This code was originally written assuming
+                // that an object is selected and its combo box
+                // is being filled. Now this method is used for other
+                // situations, like determining if an object's selected
+                // SourceName is contained in the file. The file should expose
+                // all of its SourceNames regardless of the current object, so it
+                // seems weird that the logic here uses the rfs to determine what to
+                // display.
+                // Therefore, we will use the RFS if it exists, otherwise we'll show everything
                 var rfsAti = rfs?.GetAssetTypeInfo();
-                if ( rfsAti == AssetTypeInfoManager.Self.ScreenIdbAti)
+                if ( rfsAti == AssetTypeInfoManager.Self.ScreenIdbAti  || rfsAti == null)
                 {
                     availableObjects.Add("this (" + 
                         GueDerivingClassCodeGenerator.Self.GetQualifiedRuntimeTypeFor(element) + ")");
                 }
-                else if(rfsAti != null)
+                if(rfsAti != null)
                 {
                     availableObjects.Add(
                         $"Entire File ({rfsAti.RuntimeTypeName})");
@@ -123,12 +134,8 @@ namespace GumPlugin.Managers
                         gueType = "Gum.Wireframe.GraphicalUiElement";
                     }
                     availableObjects.Add(instance.Name + " (" + gueType + ")");
-
                 }
-
             }
-
-
 
             return isEitherScreenOrComponent;
         }
