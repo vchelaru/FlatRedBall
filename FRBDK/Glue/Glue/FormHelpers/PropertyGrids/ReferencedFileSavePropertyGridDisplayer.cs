@@ -19,7 +19,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     #region ProjectSpecificFileDisplayer class
     public class ProjectSpecificFileDisplayer : ICustomTypeDescriptor
     {
-        public ProjectSpecificFileCollection Instance
+        public List<ProjectSpecificFile> Instance
         {
             get;
             set;
@@ -122,10 +122,10 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
     #region ProjectSpecificFileCollectionPropertyDescriptor
     public class ProjectSpecificFileCollectionPropertyDescriptor : PropertyDescriptor
     {
-        private ProjectSpecificFileCollection collection = null;
+        private List<ProjectSpecificFile> collection = null;
         private int index = -1;
 
-        public ProjectSpecificFileCollectionPropertyDescriptor(ProjectSpecificFileCollection coll, int idx)
+        public ProjectSpecificFileCollectionPropertyDescriptor(List<ProjectSpecificFile> coll, int idx)
             : base("#" + idx.ToString(), null)
         {
             this.collection = coll;

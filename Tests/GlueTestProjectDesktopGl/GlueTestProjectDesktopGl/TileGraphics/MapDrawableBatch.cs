@@ -1282,6 +1282,68 @@ namespace FlatRedBall.TileGraphics
                 return list.Length;
             }
         }
+
+        string GetTileNameAt(float worldX, float worldY)
+        {
+            var quadIndex = GetQuadIndex(worldX, worldY);
+
+            if (quadIndex != null)
+            {
+                // look in all the dictionaries to find which names exist at this index
+                var foundKeyValuePair = NamedTileOrderedIndexes.FirstOrDefault(item => item.Value.Contains(quadIndex.Value));
+
+                return foundKeyValuePair.Key;
+            }
+            return null;
+        }
+
+        TMXGlueLib.mapTilesetTile GetTilesetTileAt(float worldX, float worldY, LayeredTileMap map)
+        {
+            TMXGlueLib.mapTilesetTile tilesetTile = null;
+
+            var quadIndex = GetQuadIndex(worldX, worldY);
+
+            if (quadIndex != null)
+            {
+                // look in all the dictionaries to find which names exist at this index
+                var foundKeyValuePair = NamedTileOrderedIndexes.FirstOrDefault(item => item.Value.Contains(quadIndex.Value));
+
+                if (foundKeyValuePair.Key != null)
+                {
+                    var name = foundKeyValuePair.Key;
+
+                    foreach (var tileset in map.Tilesets)
+                    {
+                        tilesetTile = GetTilesetTile(tileset, name);
+
+                        if (tilesetTile != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return tilesetTile;
+        }
+
+        private TMXGlueLib.mapTilesetTile GetTilesetTile(TMXGlueLib.Tileset tileset, string name)
+        {
+            foreach (var kvp in tileset.TileDictionary)
+            {
+                var candidate = kvp.Value;
+                var nameProperty = candidate.properties.FirstOrDefault(item => item.StrippedNameLower == "name");
+
+                if (nameProperty?.value == name)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+
         #region XML Docs
         /// <summary>
         /// Here we update our batch - but this batch doesn't

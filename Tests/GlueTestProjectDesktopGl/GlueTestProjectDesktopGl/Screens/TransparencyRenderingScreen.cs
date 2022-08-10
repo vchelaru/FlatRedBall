@@ -84,8 +84,8 @@ namespace GlueTestProject.Screens
 
             ImageData imageData = ImageData.FromTexture2D(renderer.Texture);
 
-            int xOffset = MathFunctions.RoundToInt(Camera.Main.DestinationRectangle.X);
-            int yOffset = MathFunctions.RoundToInt(Camera.Main.DestinationRectangle.Y);
+            int xOffset = Camera.Main.DestinationRectangle.X;
+            int yOffset = Camera.Main.DestinationRectangle.Y;
 
             // verify that colors are what they should be:
             if(imageData.GetPixelColor(1 + xOffset,1 + yOffset).R != 255)

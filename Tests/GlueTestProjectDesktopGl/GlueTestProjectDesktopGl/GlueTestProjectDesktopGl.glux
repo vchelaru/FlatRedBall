@@ -21,12 +21,14 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FirstScreen/Running.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -80,6 +82,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
@@ -96,6 +99,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Media.Song</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -147,6 +151,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -564,6 +569,7 @@
                 </PropertySave>
               </Properties>
               <CustomProperty>
+                <Type>List&lt;Vector2&gt;</Type>
                 <Member>Points</Member>
                 <ValueAsListOfVector2 />
               </CustomProperty>
@@ -873,12 +879,14 @@
           <IsSharedStatic>false</IsSharedStatic>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>LoadedOnlyWhenReferencedScene.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -954,18 +962,21 @@
           <Name>Screens/CsvScreen/SpreadsheetFile.csv</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/SharedClassScreenCsv.csv</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CsvUsingCustomDataFile.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CsvManuallyLoadedForPropertyTest.csv</Name>
@@ -973,6 +984,7 @@
           <LoadedAtRuntime>false</LoadedAtRuntime>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CustomCsvClassLoadedOnlyWhenReferenced.csv</Name>
@@ -986,24 +998,28 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CsvWithAnimationFrameSaveBase.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CsvCustomClass1.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/CsvScreen/CsvCustomClass2.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -1200,6 +1216,7 @@
           <IsSharedStatic>false</IsSharedStatic>
           <RuntimeType>ProjectNamespace.RuntimeTypes.LinesOfText</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -1281,6 +1298,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>GlueTestProject.GumRuntimes.DerivedOfDerivedScreenGumRuntime</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -1323,6 +1341,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -1724,18 +1743,21 @@
           <IsSharedStatic>false</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/StaticGuy.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/ShapeCollectionFile.shcx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/EmitterFileLoadedOnlyWhenReferenced.emix</Name>
@@ -1749,12 +1771,14 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/EmitterListFile1.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/SceneFile1.scnx</Name>
@@ -1768,6 +1792,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/SceneFile2.scnx</Name>
@@ -1781,6 +1806,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FileScreen/NotAddedToManagers.scnx</Name>
@@ -1788,6 +1814,7 @@
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <AddToManagers>false</AddToManagers>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -1905,18 +1932,21 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FlatRedBallTypeScreen/ShapeCollectionFile.shcx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FlatRedBallTypeScreen/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FlatRedBallTypeScreen/SceneOption1.scnx</Name>
@@ -1930,6 +1960,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/FlatRedBallTypeScreen/SceneOption2.scnx</Name>
@@ -1943,6 +1974,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -2894,6 +2926,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/GlobalContentScreen/MenuSong.mp3</Name>
@@ -2910,24 +2943,28 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Media.Song</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/GlobalContentScreen/BackgroundEmitters.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/GlobalContentScreen/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>GlobalContent/arrow01.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -2981,12 +3018,14 @@
           <Summary>This gum screen uses the "old" GumIdb runtime type. We are going to also test the new one in a separate file.</Summary>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>GumProject/Screens/ScreenLoadedAsGraphicalUiElement.gusx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -3079,7 +3118,7 @@
           </Properties>
           <SourceType>File</SourceType>
           <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
-          <SourceName>this (GlueTestProject.GumRuntimes.TestScreenRuntime)</SourceName>
+          <SourceName>Entire File (GraphicalUiElement)</SourceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -3319,6 +3358,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -3388,6 +3428,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -3479,6 +3520,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -3573,6 +3615,7 @@
           <Name>Screens/LayerScreen/SceneFile.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -3899,16 +3942,19 @@
           <Name>Screens/LocalizationScreen/SceneFile.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/LocalizationScreen/SceneForObjects.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/LocalizationScreen/SceneForTextObjectOnly.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4334,12 +4380,14 @@
           <Name>Screens/NodeNetworkScreen/NodeNetworkFile.nntx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/NodeNetworkScreen/LayeredNodeNetwork.nntx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.AI.Pathfinding.NodeNetwork</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4469,6 +4517,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4753,6 +4802,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>GlueTestProject.GumRuntimes.RenderTargetScreenGumRuntime</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4790,12 +4840,14 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/RepeatingScreen/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4847,6 +4899,7 @@
           <IsSharedStatic>false</IsSharedStatic>
           <RuntimeType>FlatRedBall.Content.SpriteEditorScene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -4904,18 +4957,21 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/ScreenToLoadAsync/Logo2.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/ScreenToLoadAsync/Logo3.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -5002,6 +5058,7 @@
           <Name>Screens/SplashScreen/SceneFile.scnx</Name>
           <IsSharedStatic>false</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -5522,6 +5579,7 @@
           <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TiledLevelScreen/Tilesets/Level1Info.csv</Name>
@@ -5536,6 +5594,7 @@
           <SourceFile>Screens/TiledLevelScreen/Levels/Level1.tmx</SourceFile>
           <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -5665,18 +5724,21 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Gum.Wireframe.GraphicalUiElement</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TileShapeCollectionScreen/TmxFile.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TileShapeCollectionScreen/Tiles.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -5889,6 +5951,7 @@
           <BuildTool>*.tmx -&gt; TmxToScnx.exe -&gt; *.scnx</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/emptyMap1.csv</Name>
@@ -5897,6 +5960,7 @@
           <BuildTool>*.tmx -&gt; TmxToCSV.exe -&gt; *.csv</BuildTool>
           <AdditionalArguments>type=layer</AdditionalArguments>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TilbTest.tmx</Name>
@@ -5904,6 +5968,7 @@
           <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TmxWithEmptyLayers.tmx</Name>
@@ -5911,6 +5976,7 @@
           <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/RotatedTileTmx.tmx</Name>
@@ -5918,36 +5984,42 @@
           <BuildTool>&lt;None&gt;</BuildTool>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/WithLargeObjectOnFirstLayer.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TmxWithShapes.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TmxForObjectSourceFile.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TmxWithEntities.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/TmxWithTileShapeCollectionLayers.tmx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Screens/TmxScreen/MapWithDefaultTileset.tmx</Name>
@@ -5960,6 +6032,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -6201,6 +6274,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -6289,6 +6363,7 @@
           <Name>Screens/XmlScreen/XmlFileWithNoBackingObject.xml</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -6352,6 +6427,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -6406,18 +6482,21 @@
           <Name>Entities/AnimationChainEntity/AnimationChainListFile.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/AnimationChainEntity/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/AnimationChainEntity/AnimationChainListFile2.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -7056,6 +7135,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/BaseEntity/StaticFile1.png</Name>
@@ -7063,6 +7143,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -8699,6 +8780,7 @@
                 </PropertySave>
               </Properties>
               <CustomProperty>
+                <Type>List&lt;Vector2&gt;</Type>
                 <Member>Points</Member>
                 <ValueAsListOfVector2>
                   <Vector2>
@@ -8923,6 +9005,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <ConditionalCompilationSymbols>SOME_CONDITION</ConditionalCompilationSymbols>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -9378,24 +9461,28 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/redball.BMP</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/yellowball.bmp</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/CsvWithExtraCells.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/CsvForVariable.csv</Name>
@@ -9404,6 +9491,7 @@
           <CreatesDictionary>true</CreatesDictionary>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/WithFileAtEndFile.csv</Name>
@@ -9411,12 +9499,14 @@
           <CreatesDictionary>true</CreatesDictionary>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/CsvLoadedToList.csv</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CsvEntity/CsvWithCustomTypes.csv</Name>
@@ -9424,6 +9514,7 @@
           <CreatesDictionary>true</CreatesDictionary>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -9607,6 +9698,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>GlueTestProject.RuntimeTypes.TestRuntimeClass</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CustomContentTypeEntity/LoadedOnlyWhenReferencedFile.xml</Name>
@@ -9620,12 +9712,14 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>GlueTestProject.RuntimeTypes.TestRuntimeClass</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/CustomContentTypeEntity/LineOfTextFile.lin</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>ProjectNamespace.RuntimeTypes.LinesOfText</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -9803,12 +9897,14 @@
           <Name>Entities/DerivedEntity/ShapeCollectionFile.shcx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/DerivedEntity/Bear.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -11076,6 +11172,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/EmitterEntity/EmitterLoadedOnlyWhenReferenced.emix</Name>
@@ -11089,6 +11186,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Graphics.Particle.EmitterList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -11405,6 +11503,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -11814,6 +11913,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -12060,33 +12160,27 @@
           <IsSharedStatic>true</IsSharedStatic>
           <IncludeDirectoryRelativeToContainer>true</IncludeDirectoryRelativeToContainer>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/Folder2/Slug.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <IncludeDirectoryRelativeToContainer>true</IncludeDirectoryRelativeToContainer>
           <ProjectsToExcludeFrom />
-        </ReferencedFileSave>
-        <ReferencedFileSave>
-          <Name>Entities/FileReferencingEntity/ProjectSpecificShcx.shcx</Name>
-          <IsSharedStatic>true</IsSharedStatic>
-          <ProjectSpecificFiles>
-            <ProjectSpecificFile>
-              <FilePath>Entities/FileReferencingEntity/Xna3_1SpecificShcx.shcx</FilePath>
-            </ProjectSpecificFile>
-          </ProjectSpecificFiles>
-          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/Bear.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/TextFile.txt</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>System.String</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/SceneLoadedOnlyWhenReferenced.scnx</Name>
@@ -12101,30 +12195,35 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/BearClaws_attack.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/punchhit.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/RegularScene.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FileReferencingEntity/Running.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -12171,21 +12270,6 @@
             <ValueAsString>Bear</ValueAsString>
           </CustomProperty>
           <SourceType>FlatRedBallType</SourceType>
-          <AttachToContainer>true</AttachToContainer>
-          <GenerateTimedEmit>true</GenerateTimedEmit>
-          <IndependentOfCamera>true</IndependentOfCamera>
-        </NamedObjectSave>
-        <NamedObjectSave>
-          <InstanceName>EntireShapeCollection</InstanceName>
-          <Properties>
-            <PropertySave>
-              <Name>SourceType</Name>
-              <ValueAsObject xsi:type="SourceType">File</ValueAsObject>
-            </PropertySave>
-          </Properties>
-          <SourceType>File</SourceType>
-          <SourceFile>Entities/FileReferencingEntity/ProjectSpecificShcx.shcx</SourceFile>
-          <SourceName>Entire File (ShapeCollection)</SourceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>
@@ -12308,18 +12392,21 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FlatRedBallTypeEntity/SceneFileWithSprite.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/FlatRedBallTypeEntity/SceneWithAttachmentOffset.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -12687,6 +12774,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/GlobalContentEntity/burnOrb.wav</Name>
@@ -12700,6 +12788,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -12782,6 +12871,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>GlueTestProject.GumRuntimes.NineSliceButtonRuntime</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -13683,6 +13773,7 @@
           <Name>Entities/IncompleteDefinitionEntity/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -14701,12 +14792,14 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/LayerOwner/SceneFile2.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -15002,18 +15095,21 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/LoadedOnlyWhenReferenced/ShapeCollectionOption1.shcx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/LoadedOnlyWhenReferenced/ShapeCollectionOption2.shcx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -15140,6 +15236,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -15759,6 +15856,7 @@
             </PropertySave>
           </Properties>
           <CustomProperty>
+            <Type>List&lt;Vector2&gt;</Type>
             <Member>Points</Member>
             <ValueAsListOfVector2 />
           </CustomProperty>
@@ -15932,6 +16030,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -16114,6 +16213,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/PausingEntity/superHit.wav</Name>
@@ -16126,6 +16226,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -16207,6 +16308,7 @@
           <CreatesDictionary>true</CreatesDictionary>
           <RuntimeType />
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/PlatformerCharacterBase/Animations.achx</Name>
@@ -16214,6 +16316,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>FlatRedBall.Graphics.Animation.AnimationChainList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -16357,6 +16460,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -16477,6 +16581,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -16632,6 +16737,7 @@
             </PropertySave>
           </Properties>
           <CustomProperty>
+            <Type>List&lt;Vector2&gt;</Type>
             <Member>Points</Member>
             <ValueAsListOfVector2>
               <Vector2>
@@ -17221,11 +17327,13 @@
           <Name>EmitterListFile.emix</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/PositioningEntity/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -18112,6 +18220,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -18182,6 +18291,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -18550,6 +18660,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -18775,6 +18886,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Geometry.ShapeCollection</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -19082,6 +19194,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/SoundEffectEntity/DogBarkSoundEffect2.wav</Name>
@@ -19094,6 +19207,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/SoundEffectEntity/SoundEffectInstanceFile.wav</Name>
@@ -19106,6 +19220,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -19163,6 +19278,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Math.Splines.SplineList</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -19211,6 +19327,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -19571,6 +19688,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -19679,11 +19797,13 @@
           <Name>Entities/StateEntity/AnimationChainListFile.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/StateEntity/SceneFile.scnx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -20537,12 +20657,14 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Graphics.BitmapFont</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/TextEntity/nesfontTexture.png</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/TextEntity/BitmapFontFile.fnt</Name>
@@ -20551,6 +20673,7 @@
           <BuildTool>*.bmfc -&gt; bmfont.exe -&gt; *.fnt</BuildTool>
           <RuntimeType>FlatRedBall.Graphics.BitmapFont</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -20837,6 +20960,7 @@
           <HasPublicProperty>true</HasPublicProperty>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
         <ReferencedFileSave>
           <Name>Entities/TextureContainer/pipeJuiceBlue.png</Name>
@@ -20850,6 +20974,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -20897,6 +21022,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -20970,6 +21096,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -21060,6 +21187,7 @@
           <IsSharedStatic>true</IsSharedStatic>
           <CreatesDictionary>true</CreatesDictionary>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -21163,6 +21291,7 @@
           <Name>Entities/TunneledVariableEntity/AnimationChainListFile.achx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -21550,6 +21679,7 @@
           <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
           <RuntimeType>FlatRedBall.Scene</RuntimeType>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -21873,6 +22003,7 @@
           <Name>Entities/XmlEntity/XMLFile.xml</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
@@ -21963,6 +22094,7 @@
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/CsvFolder/SpreadsheetFile1.csv</Name>
@@ -21970,6 +22102,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/CsvFolder/SpreadsheetFile2.csv</Name>
@@ -21977,6 +22110,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/GlobalCsv.csv</Name>
@@ -21984,12 +22118,14 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/Waves.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/SharedClassGlobalCsv.csv</Name>
@@ -21997,24 +22133,28 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/Resources.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/Book.png</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/arrow01.png</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/TextureSettingsInfo.csv</Name>
@@ -22022,6 +22162,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/FolderInGlobalContent/SceneFileInFolder.scnx</Name>
@@ -22029,12 +22170,14 @@
       <IncludeDirectoryRelativeToContainer>true</IncludeDirectoryRelativeToContainer>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>FolderAtContentRoot/OtherRedBall.bmp</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/ListCsv.csv</Name>
@@ -22042,6 +22185,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/DogBarkSoundEffect.wav</Name>
@@ -22055,6 +22199,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffect</RuntimeType>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/DogBarkSoundEffect2.wav</Name>
@@ -22068,6 +22213,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <RuntimeType>Microsoft.Xna.Framework.Audio.SoundEffectInstance</RuntimeType>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/HugeCsv.csv</Name>
@@ -22075,6 +22221,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/SpreadsheetToReplace.csv</Name>
@@ -22082,6 +22229,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/NotLoadedTextFile.txt</Name>
@@ -22089,6 +22237,7 @@
       <HasPublicProperty>true</HasPublicProperty>
       <LoadedAtRuntime>false</LoadedAtRuntime>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GumProject/GumProject.gumx</Name>
@@ -22117,6 +22266,7 @@
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/BearContentPipeline.png</Name>
@@ -22129,6 +22279,7 @@
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/LoadedAtRuntimeFalseCsv.csv</Name>
@@ -22137,12 +22288,14 @@
       <LoadedAtRuntime>false</LoadedAtRuntime>
       <CreatesDictionary>true</CreatesDictionary>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/CreatedByExcel1.csv</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/GlobalBmfcToFnt.fnt</Name>
@@ -22151,6 +22304,7 @@
       <SourceFile>GlobalContent/GlobalBmfcToFnt.bmfc</SourceFile>
       <BuildTool>*.bmfc -&gt; bmfont.exe -&gt; *.fnt</BuildTool>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/LoadedOnlyWhenReferencedGlobal.mp3</Name>
@@ -22169,14 +22323,17 @@
       <DestroyOnUnload>false</DestroyOnUnload>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
     <ReferencedFileSave>
       <Name>GlobalContent/EmptyAnimationForReload.achx</Name>
       <IsSharedStatic>true</IsSharedStatic>
       <HasPublicProperty>true</HasPublicProperty>
       <ProjectsToExcludeFrom />
+      <IsCreatedByWildcard>false</IsCreatedByWildcard>
     </ReferencedFileSave>
   </GlobalFiles>
+  <GlobalFileWildcards />
   <GlobalContentSettingsSave>
     <LoadAsynchronously>false</LoadAsynchronously>
     <RecordLockContention>false</RecordLockContention>
@@ -22317,4 +22474,5 @@
     <TextureFilter>0</TextureFilter>
   </DisplaySettings>
   <AllDisplaySettings />
+  <UsesTranslation>true</UsesTranslation>
 </GlueProjectSave>

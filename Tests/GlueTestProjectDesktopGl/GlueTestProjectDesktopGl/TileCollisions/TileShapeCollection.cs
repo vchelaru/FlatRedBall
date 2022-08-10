@@ -169,6 +169,13 @@ namespace FlatRedBall.TileCollisions
             mShapes.AttachTo(newParent, changeRelative);
         }
 
+        public TileShapeCollection Clone()
+        {
+            var toReturn = (TileShapeCollection)this.MemberwiseClone();
+            toReturn.mShapes = this.mShapes.Clone();
+            return toReturn;
+        }
+
         public void CopyAbsoluteToRelative()
         {
             mShapes.CopyAbsoluteToRelative();
@@ -232,231 +239,8 @@ namespace FlatRedBall.TileCollisions
 
         public bool CollideAgainstClosest(Line line)
         {
-            line.LastCollisionPoint = new Point(double.NaN, double.NaN);
-
-            Segment a = line.AsSegment();
-
-            if (SortAxis == Axis.X)
-            {
-                var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
-                var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
-
-                float clampedPosition = line.Position.X;
-
-                bool isPositionOnEnd = false;
-                if (clampedPosition <= leftmost)
-                {
-                    clampedPosition = leftmost;
-                    isPositionOnEnd = true;
-                }
-                else if (clampedPosition >= rightmost)
-                {
-                    clampedPosition = rightmost;
-                    isPositionOnEnd = true;
-                }
-
-                // only support rectangles for now (maybe forever)
-                var rectangles = Rectangles;
-
-                var firstIndex = rectangles.GetFirstAfter(leftmost - GridSize, Axis.X, 0, rectangles.Count);
-                var lastIndex = rectangles.GetFirstAfter(rightmost + GridSize, Axis.X, firstIndex, rectangles.Count);
-
-                if (isPositionOnEnd)
-                {
-                    FlatRedBall.Math.Geometry.AxisAlignedRectangle collidedRectangle = null;
-                    Point? intersectionPoint = null;
-                    if (clampedPosition < rightmost)
-                    {
-
-                        // start at the beginning of the list, go up
-                        for (int i = firstIndex; i < lastIndex; i++)
-                        {
-                            var rectangle = Rectangles[i];
-
-                            if (collidedRectangle != null)
-                            {
-                                if (rectangle.X > collidedRectangle.X)
-                                {
-                                    break;
-                                }
-
-                                if (rectangle.Y > collidedRectangle.Y && collidedRectangle.Y > line.Position.Y)
-                                {
-                                    break;
-                                }
-                                if (rectangle.Y < collidedRectangle.Y && collidedRectangle.Y < line.Position.Y)
-                                {
-                                    break;
-                                }
-                            }
-
-
-                            Point tl = new Point(
-                                rectangle.Position.X - rectangle.ScaleX,
-                                rectangle.Position.Y + rectangle.ScaleY);
-                            Point tr = new Point(
-                                rectangle.Position.X + rectangle.ScaleX,
-                                rectangle.Position.Y + rectangle.ScaleY);
-                            Point bl = new Point(
-                                rectangle.Position.X - rectangle.ScaleX,
-                                rectangle.Position.Y - rectangle.ScaleY);
-                            Point br = new Point(
-                                rectangle.Position.X + rectangle.ScaleX,
-                                rectangle.Position.Y - rectangle.ScaleY);
-
-                            Point tempPoint;
-
-                            // left gets priority
-                            // left
-                            var intersects = a.Intersects(new Segment(tl, bl), out tempPoint);
-
-                            if (rectangle.Y > line.Y)
-                            {
-                                // bottom gets priority over top
-                                if (!intersects)
-                                {
-                                    // bottom
-                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
-                                }
-                                if (!intersects)
-                                {
-                                    // top
-                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
-                                }
-                            }
-                            else
-                            {
-                                // top gets priority over top
-                                if (!intersects)
-                                {
-                                    // top
-                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
-                                }
-                                if (!intersects)
-                                {
-                                    // bottom
-                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
-                                }
-                            }
-                            if (!intersects)
-                            {
-                                // right
-                                intersects = a.Intersects(new Segment(tr, br), out tempPoint);
-                            }
-
-                            if (intersects)
-                            {
-                                intersectionPoint = tempPoint;
-                                collidedRectangle = rectangle;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // start at the end of the list, go down
-                        for (int i = lastIndex - 1; i >= firstIndex; i--)
-                        {
-                            var rectangle = Rectangles[i];
-
-                            if (collidedRectangle != null)
-                            {
-                                if (rectangle.X < collidedRectangle.X)
-                                {
-                                    break;
-                                }
-
-                                if (rectangle.Y > collidedRectangle.Y && collidedRectangle.Y > line.Position.Y)
-                                {
-                                    break;
-                                }
-                                if (rectangle.Y < collidedRectangle.Y && collidedRectangle.Y < line.Position.Y)
-                                {
-                                    break;
-                                }
-                            }
-
-
-
-                            Point tl = new Point(
-                                rectangle.Position.X - rectangle.ScaleX,
-                                rectangle.Position.Y + rectangle.ScaleY);
-                            Point tr = new Point(
-                                rectangle.Position.X + rectangle.ScaleX,
-                                rectangle.Position.Y + rectangle.ScaleY);
-                            Point bl = new Point(
-                                rectangle.Position.X - rectangle.ScaleX,
-                                rectangle.Position.Y - rectangle.ScaleY);
-                            Point br = new Point(
-                                rectangle.Position.X + rectangle.ScaleX,
-                                rectangle.Position.Y - rectangle.ScaleY);
-
-                            Point tempPoint;
-
-                            // right gets priority
-                            // right
-                            var intersects = a.Intersects(new Segment(tr, br), out tempPoint);
-
-                            if (rectangle.Y > line.Y)
-                            {
-                                // bottom gets priority over top
-                                if (!intersects)
-                                {
-                                    // bottom
-                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
-                                }
-                                if (!intersects)
-                                {
-                                    // top
-                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
-                                }
-                            }
-                            else
-                            {
-                                // top gets priority over top
-                                if (!intersects)
-                                {
-                                    // top
-                                    intersects = a.Intersects(new Segment(tl, tr), out tempPoint);
-                                }
-                                if (!intersects)
-                                {
-                                    // bottom
-                                    intersects = a.Intersects(new Segment(bl, br), out tempPoint);
-                                }
-                            }
-                            if (!intersects)
-                            {
-                                // left
-                                intersects = a.Intersects(new Segment(tl, bl), out tempPoint);
-                            }
-
-                            if (intersects)
-                            {
-                                intersectionPoint = tempPoint;
-                                collidedRectangle = rectangle;
-                            }
-                        }
-                    }
-
-                    if (collidedRectangle != null)
-                    {
-                        line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);
-
-                    }
-                    return collidedRectangle != null;
-                }
-                else
-                {
-                    throw new NotImplementedException("The argument line's position is not on either endpoint. This is a requirement for this type of collision.");
-                }
-            }
-            else if (SortAxis == Axis.Y)
-            {
-                throw new NotImplementedException("Bug Vic to do Y. Currently just X is done");
-            }
-            return false;
+            return mShapes.CollideAgainstClosest(line, SortAxis, GridSize);
         }
-
 
         public bool CollideAgainst(ICollidable collidable)
         {
@@ -1112,9 +896,7 @@ namespace FlatRedBall.TileCollisions
 
         public void RemoveFromManagersOneWay()
         {
-            this.mShapes.MakeOneWay();
-            this.mShapes.RemoveFromManagers();
-            this.mShapes.MakeTwoWay();
+            this.mShapes.RemoveFromManagers(clearThis: false);
         }
 
         /// <summary>
@@ -1158,6 +940,20 @@ namespace FlatRedBall.TileCollisions
 
         }
 
+        public void Shift(Microsoft.Xna.Framework.Vector3 shiftVector)
+        {
+            mShapes.Shift(shiftVector);
+        }
+
+        /// <summary>
+        /// Updates the reposition directions for all contained shapes to prevent snagging. This can be called after performing add or remove operations on this ShapeCollection.
+        /// By default this does not need to be called when calling InsertRectangle or AddRectangle - reposition direcitons will be adjusted automatically when these methods are called
+        /// if AdjustRepositionDirectionsOnAddAndRemove is true.
+        /// </summary>
+        /// <remarks>
+        /// This method adjusts the reposition directions to point "outward" if the shape is on the outside. If a shape is fully enclosed, it
+        /// has no reposition direction assigned.
+        /// </remarks>
         public void RefreshAllRepositionDirections()
         {
             var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);

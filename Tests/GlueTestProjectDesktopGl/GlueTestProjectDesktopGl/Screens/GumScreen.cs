@@ -51,7 +51,7 @@ namespace GlueTestProject.Screens
                 "because NineSliceInstance should use the texture pattern");
 
             // Make sure that categories run fine...
-            EntireGumScreen.CurrentStateCategory1State = GumRuntimes.TestScreenRuntime.StateCategory1.On;
+            EntireGumScreen.CurrentState = GumRuntimes.TestScreenRuntime.StateCategory1.On;
 
             this.StateComponentInstance.CurrentVariableState.ShouldBe(GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState,
                 "because setting a state on an instance in a screen should result in the state being set on the runtime.");

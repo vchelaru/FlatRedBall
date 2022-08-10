@@ -10,7 +10,7 @@
   <RestrictToUnitValues>false</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
   <Guides />
-  <ParentProjectRoot>../../</ParentProjectRoot>
+  <ParentProjectRoot>../</ParentProjectRoot>
   <ShowLocalizationInGum>true</ShowLocalizationInGum>
   <CurrentLanguageIndex>0</CurrentLanguageIndex>
   <ScreenReference>
@@ -354,4 +354,8 @@
   <BehaviorReference>
     <Name>UserControlBehavior</Name>
   </BehaviorReference>
+  <SinglePixelTextureTop xsi:nil="true" />
+  <SinglePixelTextureLeft xsi:nil="true" />
+  <SinglePixelTextureRight xsi:nil="true" />
+  <SinglePixelTextureBottom xsi:nil="true" />
 </GumProjectSave>

@@ -214,9 +214,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             leftHandPlusEquals = sourceDot + velocityMember + " = ";
                         }
-                        codeBlock.Line(leftHandPlusEquals + "(" + valueAsString + " - " + sourceDot +
-                                       customVariable.SourceObjectProperty + ") / " + timeCastString +
-                                       "secondsToTake;");
+
+                        // Sept 9, 2022
+                        // If the variable is referencing a source variable, the variable may be a "converted" type which overrides
+                        // the base type.
+                        // In that case, the tunneled variable could interpoalte, but the base couldn't, so we should use the
+                        // exposed:
+                        //codeBlock.Line(leftHandPlusEquals + "(" + valueAsString + " - " + sourceDot +
+                        //               customVariable.SourceObjectProperty + ") / " + timeCastString +
+                        //               "secondsToTake;");
+                        codeBlock.Line($"{leftHandPlusEquals} ({valueAsString} - {customVariable.Name}) / {timeCastString}secondsToTake;");
 
                         otherBlock.Line(leftHandPlusEquals + " 0;");
 

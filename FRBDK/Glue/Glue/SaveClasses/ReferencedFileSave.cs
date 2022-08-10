@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (destType == typeof(string) && value is ProjectSpecificFile)
             {
                 var emp = (ProjectSpecificFile)value;
-                return emp.File.FullPath;
+                return emp.File?.FullPath;
             }
             return base.ConvertTo(context, culture, value, destType);
         }
@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.SaveClasses
         [Obsolete("Use File to handle equality consistently")]
         public string FilePath 
         {
-            get => File.FullPath;
+            get => File?.FullPath;
             set => File = value;
         }
 
@@ -163,7 +163,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
         string mName;
-        private ProjectSpecificFileCollection _projectSpecificFiles = new ProjectSpecificFileCollection();
+        private List<ProjectSpecificFile> _projectSpecificFiles = new List<ProjectSpecificFile>();
 
         // Vic says: Eventually we'll want to add this:
         //private string mLayerOn;
@@ -450,7 +450,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public ProjectSpecificFileCollection ProjectSpecificFiles
+        public List<ProjectSpecificFile> ProjectSpecificFiles
         {
             get { return _projectSpecificFiles; }
             set { _projectSpecificFiles = value; }

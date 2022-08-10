@@ -14,19 +14,20 @@ using FlatRedBall.Glue.FormHelpers.PropertyGrids;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.ViewModels;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.Controls
 {
     public partial class ProjectSpecificFileCollectionEditorForm : Form
     {
-        private ProjectSpecificFileCollection _value;
+        private List<ProjectSpecificFile> _value;
 
-        public ProjectSpecificFileCollection Value
+        public List<ProjectSpecificFile> Value
         {
             get { return _value; }
             set
             {
-                _value = new ProjectSpecificFileCollection();
+                _value = new List<ProjectSpecificFile>();
 
                 foreach (var item in value)
                 {
@@ -272,7 +273,7 @@ namespace FlatRedBall.Glue.Controls
 
             var CollectionEditor = new ProjectSpecificFileCollectionEditorForm
             {
-                Value = ((ProjectSpecificFileDisplayer)value).Instance as ProjectSpecificFileCollection,
+                Value = ((ProjectSpecificFileDisplayer)value).Instance as List<ProjectSpecificFile>,
                 Rfs = ((ReferencedFileSavePropertyGridDisplayer)context.Instance).Instance as ReferencedFileSave
             };
 
