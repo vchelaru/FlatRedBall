@@ -131,8 +131,19 @@ namespace OfficialPluginsCore.Compiler.Managers
         {
             if(toolbarViewModel != null)
             {
-                toolbarViewModel.StartupScreenName =
-                    GlueState.Self.CurrentGlueProject.StartUpScreen?.Substring("Screens\\".Length);
+                var startupScreen =
+                    GlueState.Self.CurrentGlueProject.StartUpScreen;
+
+                if(string.IsNullOrEmpty(startupScreen))
+                {
+                    toolbarViewModel.StartupScreenName = null;
+                }
+                else
+                {
+                    var substring =
+                        GlueState.Self.CurrentGlueProject.StartUpScreen?.Substring("Screens\\".Length);
+                    toolbarViewModel.StartupScreenName = substring;
+                }
             }
         }
 

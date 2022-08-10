@@ -124,7 +124,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldStartupScreen);
                     }
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+                    if(screen != null)
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
+                    }
                     GlueCommands.Self.RefreshCommands.RefreshErrors();
 
                     PluginManager.ReactToChangedStartupScreen();
