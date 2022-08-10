@@ -148,6 +148,7 @@ namespace GlueTestProject.Screens
 
 
             managedInvisiblTestSprite1 = new Sprite();
+            managedInvisiblTestSprite1.Name = nameof(managedInvisiblTestSprite1) + nameof(FlatRedBallTypeScreen);
             // January 25, 2015
             // A FRB user found a
             // crash bug occurring
@@ -156,7 +157,7 @@ namespace GlueTestProject.Screens
             // then later adding it to a Layer.
             // I was able to reproduce it in the
             // test project. Before the bug was fixed
-            // the engine would crash internall.
+            // the engine would crash internally.
             SpriteManager.AddManagedInvisibleSprite(managedInvisiblTestSprite1);
             SpriteManager.AddToLayer(managedInvisiblTestSprite1, this.LayerInstance);
 

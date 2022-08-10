@@ -147,6 +147,11 @@ namespace FlatRedBall.Instructions
             }
         }
 
+        /// <summary>
+        /// Performs the argument action on the main thread and awaits its execution. 
+        /// </summary>
+        /// <param name="action">The action to execute</param>
+        /// <returns>A task which can be awaited.</returns>
         public static async Task DoOnMainThreadAsync(Action action)
         {
             var semaphor = new SemaphoreSlim(1);

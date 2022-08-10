@@ -51,7 +51,7 @@ namespace GlueTestProject.Screens
                 "because NineSliceInstance should use the texture pattern");
 
             // Make sure that categories run fine...
-            EntireGumScreen.CurrentState = GumRuntimes.TestScreenRuntime.StateCategory1.On;
+            EntireGumScreen.CurrentStateCategory1State = GumRuntimes.TestScreenRuntime.StateCategory1.On;
 
             this.StateComponentInstance.CurrentVariableState.ShouldBe(GumRuntimes.StateComponentRuntime.VariableState.NonDefaultState,
                 "because setting a state on an instance in a screen should result in the state being set on the runtime.");
@@ -95,28 +95,39 @@ namespace GlueTestProject.Screens
 
             TestStronglyTypedGenericContainers();
 
-            TestResolutionChangeForcesLayout();
+            TestResolutionChangeUpdatesGumLayout();
 
         }
 
-        private void TestResolutionChangeForcesLayout()
+        private void TestResolutionChangeUpdatesGumLayout()
         {
             var oldWidth = CameraSetup.Data.ResolutionWidth;
+            var oldHeight = CameraSetup.Data.ResolutionHeight;
+
             var rectangle = new ColoredRectangleRuntime();
             rectangle.X = 0;
             rectangle.XUnits = Gum.Converters.GeneralUnitType.PixelsFromLarge;
             rectangle.AddToManagers();
             rectangle.UpdateLayout();
             rectangle.AbsoluteX.ShouldBe(oldWidth);
+            rectangle.Name = "RectangleFor" + nameof(TestResolutionChangeUpdatesGumLayout);
 
+            var rectangleAbsoluteXBefore = rectangle.AbsoluteX;
+            CameraSetup.Data.ResolutionWidth += 100;
+            CameraSetup.Data.ResolutionHeight += 100;
 
-            CameraSetup.Data.ResolutionWidth = 1234;
             CameraSetup.ResetCamera();
-            rectangle.AbsoluteX.ShouldBe(1234);
+
+            // This is required, as explained in ResetCamera
+            rectangle.UpdateLayout();
+            rectangle.AbsoluteX.ShouldBeGreaterThan(rectangleAbsoluteXBefore, "because changing ResolutionWidth and calling ResetCamera should force update Gum layout, which should push the rectangle out");
 
 
             CameraSetup.Data.ResolutionWidth = oldWidth;
+            CameraSetup.Data.ResolutionHeight = oldHeight;
             CameraSetup.ResetCamera();
+
+            rectangle.RemoveFromManagers();
 
         }
 

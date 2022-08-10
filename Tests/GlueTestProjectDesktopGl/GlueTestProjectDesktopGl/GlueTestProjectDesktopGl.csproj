@@ -1513,6 +1513,16 @@
       <Name>boom</Name>
       <Link>content\screens\audioscreen\boom.xnb</Link>
     </None>
+    <None Include="..\builtxnbs\desktopgl\screens\basescreen\basescreensongonlywhenreferenced.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BaseScreenSongOnlyWhenReferenced</Name>
+      <Link>content\screens\basescreen\basescreensongonlywhenreferenced.ogg</Link>
+    </None>
+    <None Include="..\builtxnbs\desktopgl\screens\basescreen\basescreensongonlywhenreferenced.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>BaseScreenSongOnlyWhenReferenced</Name>
+      <Link>content\screens\basescreen\basescreensongonlywhenreferenced.xnb</Link>
+    </None>
     <None Include="..\builtxnbs\desktopgl\screens\globalcontentscreen\menusong.ogg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MenuSong</Name>
@@ -2232,6 +2242,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>redball</Name>
     </None>
+    <None Include="content\screens\basescreen\textureinbase.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureInBase</Name>
+    </None>
     <None Include="content\screens\csvscreen\csvcustomclass1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>CsvCustomClass1</Name>
@@ -2267,6 +2281,10 @@
     <None Include="content\screens\customcontenttypescreen\lineoftextfile.lin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>LineOfTextFile</Name>
+    </None>
+    <None Include="content\screens\derivedscreen\textureinderived.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>TextureInDerived</Name>
     </None>
     <None Include="content\screens\filescreen\book.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

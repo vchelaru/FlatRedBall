@@ -153,6 +153,37 @@
           <ProjectsToExcludeFrom />
           <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/BaseScreen/TextureInBase.png</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
+          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/BaseScreen/BaseScreenSongOnlyWhenReferenced.mp3</Name>
+          <Properties>
+            <PropertySave>
+              <Name>UseContentPipeline</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>Boolean</Type>
+            </PropertySave>
+            <PropertySave>
+              <Name>Volume</Name>
+              <ValueAsInt>100</ValueAsInt>
+            </PropertySave>
+            <PropertySave>
+              <Name>LoadedOnlyWhenReferenced</Name>
+              <ValueAsBool>true</ValueAsBool>
+              <Type>Boolean</Type>
+            </PropertySave>
+          </Properties>
+          <IsSharedStatic>true</IsSharedStatic>
+          <LoadedOnlyWhenReferenced>true</LoadedOnlyWhenReferenced>
+          <RuntimeType>Microsoft.Xna.Framework.Media.Song</RuntimeType>
+          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
+        </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <NamedObjects>
@@ -1340,6 +1371,13 @@
           <Name>GumProject/Screens/DerivedScreenGum.gusx</Name>
           <IsSharedStatic>true</IsSharedStatic>
           <RuntimeType>FlatRedBall.Gum.GumIdb</RuntimeType>
+          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
+        </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/DerivedScreen/TextureInDerived.png</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>Microsoft.Xna.Framework.Graphics.Texture2D</RuntimeType>
           <ProjectsToExcludeFrom />
           <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
@@ -3118,7 +3156,7 @@
           </Properties>
           <SourceType>File</SourceType>
           <SourceFile>GumProject/Screens/TestScreen.gusx</SourceFile>
-          <SourceName>Entire File (GraphicalUiElement)</SourceName>
+          <SourceName>this (GlueTestProject.GumRuntimes.TestScreenRuntime)</SourceName>
           <AttachToContainer>true</AttachToContainer>
           <GenerateTimedEmit>true</GenerateTimedEmit>
           <IndependentOfCamera>true</IndependentOfCamera>

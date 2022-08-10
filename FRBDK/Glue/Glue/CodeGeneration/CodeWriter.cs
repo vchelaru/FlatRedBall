@@ -1390,9 +1390,10 @@ namespace FlatRedBallAddOns.Entities
                 codeGenerator.GenerateDestroy(currentBlock, saveObject);
             }
 
+
             #region Call base.Destroy if it has a derived object
 
-            if ( saveObject.InheritsFromEntity() || saveObject is ScreenSave )
+            if (saveObject.InheritsFromEntity() || saveObject is ScreenSave)
             {
                 currentBlock.Line("base.Destroy();");
             }
@@ -1413,11 +1414,11 @@ namespace FlatRedBallAddOns.Entities
                         currentBlock.Line(ati.DestroyMethod + ";");
                     }
                 }
-                else if (! saveObject.InheritsFromElement())
+                else if (!saveObject.InheritsFromElement())
                 {
                     currentBlock.Line("FlatRedBall.SpriteManager.RemovePositionedObject(this);");
                 }
-                
+
                 if ((saveObject as EntitySave).ImplementsIWindow && !(saveObject as EntitySave).GetInheritsFromIWindow())
                 {
                     currentBlock.Line("FlatRedBall.Gui.GuiManager.RemoveWindow(this);");
@@ -1429,13 +1430,38 @@ namespace FlatRedBallAddOns.Entities
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators
                 // eventually split these up:
-                .Where(item =>item.CodeLocation == CodeLocation.AfterStandardGenerated || item.CodeLocation == CodeLocation.StandardGenerated))
+                .Where(item => item.CodeLocation == CodeLocation.AfterStandardGenerated || item.CodeLocation == CodeLocation.StandardGenerated))
             {
                 codeGenerator.GenerateDestroy(currentBlock, saveObject);
             }
 
-            
+            // Sept 9, 2022
+            // Not sure if this should be at the beginning or end, but adding this
+            // at the end so it doesn't interrupt any other unload code:
+            GenerateUnloadContentManager(saveObject as GlueElement, currentBlock);
+
             codeBlock.Line("CustomDestroy();");
+        }
+
+        private static void GenerateUnloadContentManager(GlueElement saveObject, ICodeBlock currentBlock)
+        {
+            var shouldUnload = 
+                saveObject is ScreenSave screenSave && 
+                screenSave.UseGlobalContent == false &&
+                screenSave.ReferencedFiles.Any(item => item.LoadedOnlyWhenReferenced);
+
+            // This code could be in a screen that is the base
+            // for a derived screen (such as GameScreen for Level1)
+            // In that case, Level1 would use its own content manager,
+            // but when the LoadedOnlyWhenReferenced property is accessed,
+            // the base content manager would get used. Screens automatically
+            // clean up their content managers at the engine level, but only the
+            // content manager speicified by the most derived.
+
+            if (shouldUnload)
+            {
+                currentBlock.Line($"FlatRedBall.FlatRedBallServices.Unload(\"{saveObject.ClassName}\");");
+            }
         }
 
         public static ICodeBlock CreateClass(ClassProperties classProperties)
