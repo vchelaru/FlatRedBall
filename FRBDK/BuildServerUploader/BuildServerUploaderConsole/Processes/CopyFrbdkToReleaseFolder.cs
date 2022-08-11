@@ -88,6 +88,8 @@ namespace BuildServerUploaderConsole.Processes
                 CopyDirectory(DirectoryHelper.FrbdkDirectory + extraTool, "Copied" + extraTool, subdirectoryName:extraTool);
             }
 
+            CopyDirectory(DirectoryHelper.GumBuildDirectory, "Copied Gum", "Gum");
+
 
 
             //XNA 4 TOOLS

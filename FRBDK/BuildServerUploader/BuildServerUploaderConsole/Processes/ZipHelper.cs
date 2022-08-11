@@ -11,7 +11,7 @@ namespace BuildServerUploaderConsole.Processes
         {
             var containedObjects = new List<string>();
 
-            string fullZipFileName = directoryWithContentsToZip + "\\" + zipFileNameNoExtension + ".zip";
+            string fullZipFileName = directoryWithContentsToZip + zipFileNameNoExtension + ".zip";
 
             if (File.Exists(fullZipFileName))
             {
@@ -46,12 +46,20 @@ namespace BuildServerUploaderConsole.Processes
                     }
 
                 }
+                results.WriteMessage(" Finished adding files to zip");
 
                 zip.Save(fullZipFileName);
 
+                results.WriteMessage(" Finished saving zip file");
+
+
                 Directory.CreateDirectory(destinationDirectory);
 
+                results.WriteMessage(" Starting to copy zip file");
+
                 File.Copy(fullZipFileName, destinationDirectory + zipFileNameNoExtension + ".zip", true);
+
+
             }
 
             results.WriteMessage("Zipped directory " + directoryWithContentsToZip + " into " + zipFileNameNoExtension);
