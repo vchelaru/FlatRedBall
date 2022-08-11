@@ -814,6 +814,17 @@ namespace GumPlugin
 
             var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
 
+            // see if the prebuilt location exists:
+            if(string.IsNullOrEmpty(executable))
+            {
+                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+                if(prebuiltLocation.Exists())
+                {
+                    executable = prebuiltLocation.FullPath;
+                }
+
+            }
+
             if (string.IsNullOrEmpty(executable))
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox(
