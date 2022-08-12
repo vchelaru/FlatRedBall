@@ -2394,14 +2394,30 @@ namespace FlatRedBall
 
             RemoveSprite(spriteFrameToRemove.mCenter);
 
-            RemoveSprite(spriteFrameToRemove.mTopLeft);
-            RemoveSprite(spriteFrameToRemove.mTop);
-            RemoveSprite(spriteFrameToRemove.mTopRight);
-            RemoveSprite(spriteFrameToRemove.mRight);
-            RemoveSprite(spriteFrameToRemove.mBottomRight);
-            RemoveSprite(spriteFrameToRemove.mBottom);
-            RemoveSprite(spriteFrameToRemove.mBottomLeft);
-            RemoveSprite(spriteFrameToRemove.mLeft);
+            // These could be null depending on the bordersides, so do null checks
+            if(spriteFrameToRemove.mTopLeft != null)
+                RemoveSprite(spriteFrameToRemove.mTopLeft);
+
+            if(spriteFrameToRemove.mTop != null)
+                RemoveSprite(spriteFrameToRemove.mTop);
+            
+            if(spriteFrameToRemove.mTopRight != null)
+                RemoveSprite(spriteFrameToRemove.mTopRight);
+            
+            if(spriteFrameToRemove.mRight != null)
+                RemoveSprite(spriteFrameToRemove.mRight);
+            
+            if(spriteFrameToRemove.mBottomRight != null)
+                RemoveSprite(spriteFrameToRemove.mBottomRight);
+            
+            if(spriteFrameToRemove.mBottom != null)
+                RemoveSprite(spriteFrameToRemove.mBottom);
+
+            if(spriteFrameToRemove.mBottomLeft != null)
+                RemoveSprite(spriteFrameToRemove.mBottomLeft);
+            
+            if(spriteFrameToRemove.mLeft != null)
+                RemoveSprite(spriteFrameToRemove.mLeft);
 
             while (spriteFrameToRemove.ListsBelongingTo.Count > 0)
             {

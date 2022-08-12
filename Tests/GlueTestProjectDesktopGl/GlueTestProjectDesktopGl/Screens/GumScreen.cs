@@ -95,28 +95,39 @@ namespace GlueTestProject.Screens
 
             TestStronglyTypedGenericContainers();
 
-            TestResolutionChangeForcesLayout();
+            TestResolutionChangeUpdatesGumLayout();
 
         }
 
-        private void TestResolutionChangeForcesLayout()
+        private void TestResolutionChangeUpdatesGumLayout()
         {
             var oldWidth = CameraSetup.Data.ResolutionWidth;
+            var oldHeight = CameraSetup.Data.ResolutionHeight;
+
             var rectangle = new ColoredRectangleRuntime();
             rectangle.X = 0;
             rectangle.XUnits = Gum.Converters.GeneralUnitType.PixelsFromLarge;
             rectangle.AddToManagers();
             rectangle.UpdateLayout();
             rectangle.AbsoluteX.ShouldBe(oldWidth);
+            rectangle.Name = "RectangleFor" + nameof(TestResolutionChangeUpdatesGumLayout);
 
+            var rectangleAbsoluteXBefore = rectangle.AbsoluteX;
+            CameraSetup.Data.ResolutionWidth += 100;
+            CameraSetup.Data.ResolutionHeight += 100;
 
-            CameraSetup.Data.ResolutionWidth = 1234;
             CameraSetup.ResetCamera();
-            rectangle.AbsoluteX.ShouldBe(1234);
+
+            // This is required, as explained in ResetCamera
+            rectangle.UpdateLayout();
+            rectangle.AbsoluteX.ShouldBeGreaterThan(rectangleAbsoluteXBefore, "because changing ResolutionWidth and calling ResetCamera should force update Gum layout, which should push the rectangle out");
 
 
             CameraSetup.Data.ResolutionWidth = oldWidth;
+            CameraSetup.Data.ResolutionHeight = oldHeight;
             CameraSetup.ResetCamera();
+
+            rectangle.RemoveFromManagers();
 
         }
 

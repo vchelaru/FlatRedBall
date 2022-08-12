@@ -1667,28 +1667,22 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static void ModifyAddEntityWindow(AddEntityWindow addEntityWindow)
         {
-            CallMethodOnPlugin((plugin) =>
-            {
-                plugin.ModifyAddEntityWindow(addEntityWindow);
-            },
-            plugin => plugin.ModifyAddEntityWindow != null,
-            nameof(ModifyAddEntityWindow));
+            CallMethodOnPlugin(
+                plugin => plugin.ModifyAddEntityWindow(addEntityWindow),
+                plugin => plugin.ModifyAddEntityWindow != null);
         }
 
         internal static void ModifyAddScreenWindow(AddScreenWindow addScreenWindow)
         {
 
             CallMethodOnPlugin(
-                (plugin) => plugin.ModifyAddScreenWindow(addScreenWindow),
-                plugin => plugin.ModifyAddScreenWindow != null,
-                nameof(ModifyAddScreenWindow));
+                plugin => plugin.ModifyAddScreenWindow(addScreenWindow),
+                plugin => plugin.ModifyAddScreenWindow != null);
         }
 
-        internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer)
-        {
-            CallMethodOnPlugin(plugin => plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer),
+        internal static void AdjustDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer entitySaveDisplayer) => CallMethodOnPlugin(
+                plugin => plugin.AdjustDisplayedEntity(entitySave, entitySaveDisplayer),
                 plugin => plugin.AdjustDisplayedEntity != null);
-        }
 
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)
         {
@@ -1989,10 +1983,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             List<VariableDefinition> toReturn = new List<VariableDefinition>();
             CallMethodOnPlugin(
-                plugin =>
-                {
-                    toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element));
-                },
+                plugin => toReturn.AddRange(plugin.GetVariableDefinitionsForElement(element)),
                 plugin => plugin.GetVariableDefinitionsForElement != null);
             return toReturn;
         }
@@ -2004,10 +1995,7 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 plugin =>
                 {
-                    if (plugin.TryHandleTreeNodeDoubleClicked(treeNode))
-                    {
-                        handled = true;
-                    }
+                    handled = plugin.TryHandleTreeNodeDoubleClicked(treeNode) || handled;
                 },
                 plugin => plugin.TryHandleTreeNodeDoubleClicked != null);
 
@@ -2050,47 +2038,29 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToMainWindowResizeEnd != null);
         }
 
-        public static void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
-        {
-            CallMethodOnPlugin(
+        public static void RefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType) => CallMethodOnPlugin(
                 plugin => plugin.RefreshTreeNodeFor(element, treeNodeRefreshType),
                 plugin => plugin.RefreshTreeNodeFor != null);
-        }
 
-        public static void RefreshGlobalContentTreeNode()
-        {
-            CallMethodOnPlugin(
+        public static void RefreshGlobalContentTreeNode() => CallMethodOnPlugin(
                 plugin => plugin.RefreshGlobalContentTreeNode(),
                 plugin => plugin.RefreshGlobalContentTreeNode != null);
-        }
 
-        public static void RefreshDirectoryTreeNodes()
-        {
-            CallMethodOnPlugin(
+        public static void RefreshDirectoryTreeNodes() => CallMethodOnPlugin(
                 plugin => plugin.RefreshDirectoryTreeNodes(),
                 plugin => plugin.RefreshDirectoryTreeNodes != null);
-        }
 
-        public static void ReactToFocusOnTreeView()
-        {
-            CallMethodOnPlugin(
+        public static void ReactToFocusOnTreeView() => CallMethodOnPlugin(
                 plugin => plugin.FocusOnTreeView(),
                 plugin => plugin.FocusOnTreeView != null);
-        }
 
-        public static void ReactToCtrlF()
-        {
-            CallMethodOnPlugin(
+        public static void ReactToCtrlF() => CallMethodOnPlugin(
                 plugin => plugin.ReactToCtrlF(),
                 plugin => plugin.ReactToCtrlF != null);
-        }
 
-        public static void ReactToGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction treeNodeAction)
-        {
-            CallMethodOnPlugin(
+        public static void ReactToGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction treeNodeAction) => CallMethodOnPlugin(
                 plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
                 plugin => plugin.GrabbedTreeNodeChanged != null);
-        }
 
         public static void ReactToGlobalTimer()
         {
@@ -2258,56 +2228,18 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static bool TryAddContainedObjects(string sourceFile, List<string> listToAddTo)
         {
-
             SaveRelativeDirectory();
 
             bool wasAddHandled = false;
 
-            foreach (PluginManager pluginManager in mInstances)
+            CallMethodOnPlugin(plugin =>
             {
-                if (wasAddHandled)
+                if (!wasAddHandled)
                 {
-                    break;
+                    wasAddHandled = plugin.TryAddContainedObjects(sourceFile, listToAddTo);
                 }
-
-                var plugins = pluginManager.ImportedPlugins.Where(plugin =>
-                {
-                    return plugin.TryAddContainedObjects != null &&
-                    pluginManager.mPluginContainers[plugin].IsEnabled;
-                });
-
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-
-                        if (HandleExceptions)
-                        {
-                            try
-                            {
-                                wasAddHandled |= plugin.TryAddContainedObjects(sourceFile, listToAddTo);
-
-                            }
-                            catch (Exception e)
-                            {
-                                container.Fail(e, "Failed in TryHandleCopyFile");
-                            }
-                        }
-                        else
-                        {
-                            wasAddHandled |= plugin.TryAddContainedObjects(sourceFile, listToAddTo);
-                        }
-
-
-
-                        if (wasAddHandled)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
+            },
+            plugin => plugin.TryAddContainedObjects != null);
 
             ResumeRelativeDirectory("TryAddContainedObjects");
             return wasAddHandled;
@@ -2318,12 +2250,8 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                delegate (PluginBase plugin)
-                {
-                    plugin.ReactToLoadedSyncedProject(projectBase);
-                },
-                plugin => plugin.ReactToLoadedSyncedProject != null,
-                nameof(ReactToSyncedProjectLoad));
+                plugin => plugin.ReactToLoadedSyncedProject(projectBase),
+                plugin => plugin.ReactToLoadedSyncedProject != null);
 
             ResumeRelativeDirectory(nameof(ReactToSyncedProjectLoad));
         }
@@ -2335,7 +2263,7 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                (plugin) =>
+                plugin =>
                 {
                     var foundValue = plugin.GetTypeConverter(container, instance, memberType, memberName, customTypeName);
                     if (foundValue != null)
@@ -2357,19 +2285,16 @@ namespace FlatRedBall.Glue.Plugins
             string foundArgs = null;
 
             CallMethodOnPlugin(
-                delegate (PluginBase plugin)
+                plugin =>
                 {
-                    string tempFoundType;
-                    string tempFoundArgs;
-                    plugin.GetEventSignatureArgs(namedObjectSave, eventResponseSave, out tempFoundType, out tempFoundArgs);
+                    plugin.GetEventSignatureArgs(namedObjectSave, eventResponseSave, out string tempFoundType, out string tempFoundArgs);
                     if (tempFoundType != null)
                     {
                         foundType = tempFoundType;
                         foundArgs = tempFoundArgs;
                     }
                 },
-                plugin => plugin.GetEventSignatureArgs != null,
-                nameof(GetEventSignatureArgs));
+                plugin => plugin.GetEventSignatureArgs != null);
 
             type = foundType;
             args = foundArgs;
@@ -2382,12 +2307,8 @@ namespace FlatRedBall.Glue.Plugins
             SaveRelativeDirectory();
 
             CallMethodOnPlugin(
-                delegate (PluginBase plugin)
-                {
-                    plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);
-                },
-                plugin => plugin.WriteInstanceVariableAssignment != null,
-                nameof(WriteInstanceVariableAssignment));
+                plugin => plugin.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave),
+                plugin => plugin.WriteInstanceVariableAssignment != null);
 
             ResumeRelativeDirectory(nameof(WriteInstanceVariableAssignment));
         }

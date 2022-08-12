@@ -38,6 +38,10 @@ namespace GlueTestProject.Screens
                 GlueTestProject.GumRuntimes.BaseGlueScreenNotBaseGumRuntime.NumberOfTimesCustomInitializeCalled
                     .ShouldBe(2, "because the base screen comes before this, and that increments this value once");
             }
+
+            // access the song to force a load:
+            var songTemp = BaseScreenSongOnlyWhenReferenced;
+
         }
 
 		void CustomActivity(bool firstTimeCalled)
@@ -51,7 +55,12 @@ namespace GlueTestProject.Screens
 
 		void CustomDestroy()
 		{
+            // at this point all content should be unloaded. Therefore, accessing the song should return a non-disposed song:
+            var song = BaseScreenSongOnlyWhenReferenced;
+            song.IsDisposed.ShouldBe(false);
 
+            //Since that reloaded, unload ^^
+            FlatRedBallServices.Unload("BaseScreen");
 
 		}
 

@@ -24,7 +24,7 @@ namespace BuildServerUploaderConsole.Processes
 
         public override void ExecuteStep()
         {
-            string frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"\FRBDK For Zip\";
+            string frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"FRBDK For Zip\";
 
             ZipHelper.CreateZip(Results, mDestinationDirectory, frbdkForZipDirectory, mFrbdkZipFile);
         }

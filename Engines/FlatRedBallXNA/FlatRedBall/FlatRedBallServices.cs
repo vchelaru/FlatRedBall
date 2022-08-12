@@ -1110,7 +1110,8 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Unloads all content contained in the content manager with name matching the parameter contentManagerName.
+        /// Unloads all content contained in the content manager with name matching the parameter contentManagerName. This can be called multiple times safely. If the content
+        /// manager is not contained, this function performs no operations.
         /// </summary>
         /// <param name="contentManagerName">The content manager to remove.</param>
         public static void Unload(string contentManagerName)

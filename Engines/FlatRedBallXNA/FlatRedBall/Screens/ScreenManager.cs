@@ -610,6 +610,15 @@ namespace FlatRedBall.Screens
                 {
                     messages.Add("There are " + SpriteManager.ManuallyUpdatedSpriteCount +
                         " ManuallyUpdatedSprites in the SpriteManager.  See \"SpriteManager.ManuallyUpdatedSpriteCount\"");
+
+                    for(int i = 0; i < SpriteManager.ManuallyUpdatedSpriteCount; i++)
+                    {
+                        var sprite = SpriteManager.ManuallyUpdatedSprites[i];
+                        if(!string.IsNullOrEmpty(sprite.Name) )
+                        {
+                            messages.Add($"Manually Updated Sprite: {sprite.Name}");
+                        }
+                    }
                 }
                 #endregion
 

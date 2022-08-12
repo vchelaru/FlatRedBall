@@ -181,9 +181,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     ProjectSpecificFile psf = rfs.ProjectSpecificFiles[i];
 
-                    allFiles.Add(psf.File);
 
-                    AddFilesReferenced(psf.File, allFiles, topLevelOrRecursive, projectOrFile);
+                    if(psf.File != null)
+                    {
+                        allFiles.Add(psf.File);
+                        AddFilesReferenced(psf.File, allFiles, topLevelOrRecursive, projectOrFile);
+                    }
+                    else
+                    {
+                        // do we care?
+                        int m = 3;
+                    }
                 }
             }
         }

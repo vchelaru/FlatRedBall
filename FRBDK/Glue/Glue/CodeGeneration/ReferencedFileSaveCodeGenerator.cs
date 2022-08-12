@@ -899,7 +899,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (isProjectSpecific)
                 {
-                    fileName = referencedFile.ProjectSpecificFiles[i - 1].File.FullPath.ToLower().Replace("\\", "/");
+                    fileName = referencedFile.ProjectSpecificFiles[i - 1].File?.FullPath.ToLower().Replace("\\", "/");
 
                     // At one point
                     // the project specific

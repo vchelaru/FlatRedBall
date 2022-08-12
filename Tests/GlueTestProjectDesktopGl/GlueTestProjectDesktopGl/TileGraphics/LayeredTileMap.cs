@@ -1042,6 +1042,12 @@ namespace FlatRedBall.TileGraphics
                 toReturn.ShapeCollections.Add(shapeCollection.Clone());
             }
 
+            toReturn.Collisions = new List<TileCollisions.TileShapeCollection>(this.Collisions.Count);
+            foreach (var collision in this.Collisions)
+            {
+                toReturn.Collisions.Add(collision.Clone());
+            }
+
             return toReturn;
         }
 
@@ -1084,12 +1090,12 @@ namespace FlatRedBall.TileGraphics
 
             for (int i = 0; i < this.Collisions.Count; i++)
             {
-                this.Collisions[i].RemoveFromManagers();
+                this.Collisions[i].RemoveFromManagersOneWay();
             }
 
             for (int i = 0; i < this.ShapeCollections.Count; i++)
             {
-                this.ShapeCollections[i].RemoveFromManagers();
+                this.ShapeCollections[i].RemoveFromManagers(false);
             }
 
             SpriteManager.RemovePositionedObject(this);

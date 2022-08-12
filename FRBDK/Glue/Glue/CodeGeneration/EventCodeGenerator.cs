@@ -223,6 +223,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         {
                             NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, element.GetNamedObject(ers.SourceObject));
                         }
+
                         if (!string.IsNullOrEmpty(ers.SourceObject) && !string.IsNullOrEmpty(ers.SourceObjectEvent))
                         {
                             codeBlock.Line(ers.SourceObject + "." + ers.SourceObjectEvent + " -= On" + ers.EventName + "Tunnel;");
@@ -230,6 +231,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                             {
                                 NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, element.GetNamedObject(ers.SourceObject));
                             }
+                        }
+                        else if(IsDefinedByBase(ers, element as GlueElement))
+                        {
+                            var rightSide = "On" + ers.EventName;
+                            codeBlock.Line($"{leftSide} -= On{ers.EventName};");
+
                         }
                         else
                         {
@@ -243,6 +250,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
             return codeBlock;
+        }
+
+        private bool IsDefinedByBase(EventResponseSave ers, GlueElement element)
+        {
+            var baseElement = ObjectFinder.Self.GetBaseElement(element);
+
+            return baseElement?.Events.Any(item => item.EventName == ers.EventName) == true;
         }
 
 
