@@ -616,7 +616,9 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else
             {
-                return AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == nameof(PositionedObject));
+                var specificType = AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == element.Name);
+                return specificType ?? 
+                    AvailableAssetTypes.Self.AllAssetTypes.FirstOrDefault(item => item.RuntimeTypeName == nameof(PositionedObject));
             }
         }
     }

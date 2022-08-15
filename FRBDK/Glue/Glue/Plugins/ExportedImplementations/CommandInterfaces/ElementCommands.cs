@@ -419,6 +419,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
+        public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
+        {
+            EntitySave newEntity = null;
+            await TaskManager.Self.AddAsync(() =>
+            {
+                newEntity = AddEntity(viewModel, directory);
+            }, $"Adding entity {viewModel.Name}");
+
+
+            return newEntity;
+        }
+
         public SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null)
         {
             var gluxCommands = GlueCommands.Self.GluxCommands;
@@ -719,6 +731,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
         }
+
+        public async Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true)
+        {
+            await TaskManager.Self.AddAsync(() => AddCustomVariableToElement(newVariable, element, save),
+                $"Adding variable {newVariable.Name} to {element}");
+        }
+
 
         private void UpdateInstanceCustomVariables(IElement currentElement)
         {

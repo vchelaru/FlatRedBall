@@ -14,7 +14,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
 
+        [Obsolete("Use AddEntityAsync")]
         SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);
+        Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null);
+
+        void AddEntity(EntitySave entitySave);
+        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
 
 
         #endregion
@@ -40,16 +45,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
-        void AddEntity(EntitySave entitySave);
-        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
-
         #region Add CustomVariable
         Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
         void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true);
-
+        Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
         #endregion
 
         bool UpdateFromBaseType(GlueElement glueElement);

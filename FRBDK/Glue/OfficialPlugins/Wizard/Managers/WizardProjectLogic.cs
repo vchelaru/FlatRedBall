@@ -183,12 +183,18 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             #endregion
 
+            #region Save Project
+
             AddTask("Saving Project", () =>
             {
                 GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
                 return Task.CompletedTask;
             });
 
+            #endregion
+
+
+            #region Run All Tasks
             vm.Tasks = tasks;
 
             TaskItemViewModel currentTask = null;
@@ -235,8 +241,28 @@ namespace OfficialPluginsCore.Wizard.Managers
             // just in case, refresh everything
             GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
 
+            #endregion
+
         }
 
+        #region Add Gum
+
+        private static async Task HandleAddGum(WizardViewModel vm)
+        {
+            if (vm.AddFlatRedBallForms)
+            {
+                // false argument is for askToOverwrite parameter
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
+            }
+            else
+            {
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
+            }
+        }
+
+        #endregion
+
+        #region Add GameScreen
         private async Task<NamedObjectSave> HandleAddGumScreenToLayer(ScreenSave gameScreen)
         {
             // create an object named GumScreen, add it, and then 
@@ -253,6 +279,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             return namedObjectSave;
         }
+
+        #endregion
 
         private async Task ImportAdditionalObjects(string namedObjectSavesSerialized)
         {
@@ -376,18 +404,6 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleAddGum(WizardViewModel vm)
-        {
-            if (vm.AddFlatRedBallForms)
-            {
-                // false argument is for askToOverwrite parameter
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
-            }
-            else
-            {
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
-            }
-        }
 
         private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
         {

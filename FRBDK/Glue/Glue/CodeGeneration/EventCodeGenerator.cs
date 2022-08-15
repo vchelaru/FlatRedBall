@@ -483,6 +483,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 currentBlock = currentBlock.End();
             }
+
+            foreach(var generator in CodeWriter.CodeGenerators)
+            {
+                generator.GenerateEvent(currentBlock, element as GlueElement, ers);
+            }
+
             return currentBlock;
         }
 

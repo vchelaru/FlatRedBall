@@ -303,7 +303,8 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType,
             object callingObject, bool? isObject = null)
         {
-            bool isQualified = runtimeType != null && runtimeType.Contains('.');
+            bool isQualified = runtimeType?.Contains('.') == true ||
+                runtimeType?.Contains("\\") == true;
 
             var assetsToLoopThrough = AllAssetTypes;
 

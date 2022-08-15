@@ -282,6 +282,129 @@ namespace OfficialPlugins.VariableDisplay
             return instanceMember;
         }
 
+        private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
+            List<MemberCategory> categories, AssetTypeInfo ati)
+        {
+            Dictionary<string, VariableDefinition> variableDefinitions = new Dictionary<string, VariableDefinition>();
+
+            if (ati?.VariableDefinitions.Count > 0)
+            {
+                foreach (var definition in ati.VariableDefinitions)
+                {
+                    variableDefinitions[definition.Name] = definition;
+
+                }
+            }
+            else
+            {
+                var instanceElement = ObjectFinder.Self.GetElement(instance);
+                for (int i = 0; i < instance.TypedMembers.Count; i++)
+                {
+                    VariableDefinition baseVariableDefinition = null;
+                    TypedMemberBase typedMember = instance.TypedMembers[i];
+                    if (instanceElement != null)
+                    {
+                        var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
+                        var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
+                        if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
+                        {
+                            var ownerNos = instanceElement.GetNamedObjectRecursively(baseVariable.SourceObject);
+
+                            var ownerNosAti = ownerNos.GetAssetTypeInfo();
+                            baseVariableDefinition = ownerNosAti?.VariableDefinitions
+                                .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
+                        }
+                        // This could be null if the ownerNos doesn't have an ATI.
+                        if (variableInElement != null && baseVariableDefinition == null)
+                        {
+                            // we can create a new VariableDefinition here with the category:
+                            baseVariableDefinition = new VariableDefinition();
+                            //todo - may need to use culture invariant here...
+                            //baseVariableDefinition.DefaultValue = variableInElement.DefaultValue?.To;
+                            baseVariableDefinition.Name = variableInElement.Name;
+                            baseVariableDefinition.Category = variableInElement.Category;
+                            baseVariableDefinition.Type = variableInElement.Type;
+
+                            if (variableInElement.CustomGetForcedOptionsFunc != null)
+                            {
+                                baseVariableDefinition.CustomGetForcedOptionFunc = (element, namedObject, referencedFileSave) => variableInElement.CustomGetForcedOptionsFunc(instanceElement);
+
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(variableInElement.PreferredDisplayerTypeName) &&
+                                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variableInElement.PreferredDisplayerTypeName))
+                            {
+                                baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
+                                    [variableInElement.PreferredDisplayerTypeName];
+                            }
+                        }
+                    }
+
+                    if (baseVariableDefinition != null)
+                    {
+                        variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
+                    }
+                }
+            }
+
+
+            foreach (var kvp in variableDefinitions)
+            {
+                var variableDefinition = kvp.Value;
+                var variableName = kvp.Key;
+                bool fallBackToTypedMember = false;
+                try
+                {
+                    Type type = null;
+                    if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
+                    {
+                        type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
+                    }
+
+                    if (type == null)
+                    {
+                        fallBackToTypedMember = true;
+                    }
+                    else
+                    {
+                        TypedMemberBase typedMember = null;
+                        typedMember = TypedMemberBase.GetTypedMember(variableName, type);
+                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableName, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
+                        if (instanceMember != null)
+                        {
+                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
+                            categoryToAddTo.Members.Add(instanceMember);
+                        }
+                    }
+                }
+                catch
+                {
+                    fallBackToTypedMember = true;
+                }
+
+                if (fallBackToTypedMember)
+                {
+                    // this new code isn't working with some things like generics. Until I fix that, let's fall back:
+
+                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableName);
+
+                    if (typedMember != null)
+                    {
+                        AddForTypedMember(instance, container, categories, ati, typedMember, variableDefinition);
+                    }
+                }
+            }
+
+            bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
+                !string.IsNullOrEmpty(instance.SourceFile);
+
+            if (shouldAddSourceNameVariable)
+            {
+                AddSourceNameVariable(instance, categories);
+
+            }
+        }
+
         public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container,
             AssetTypeInfo assetTypeInfo = null)
         {
@@ -392,123 +515,6 @@ namespace OfficialPlugins.VariableDisplay
                     const byte brightness = 227;
                     category.SetAlternatingColors(new SolidColorBrush(Color.FromRgb(brightness, brightness, brightness)), Brushes.Transparent);
                 }
-            }
-        }
-
-        private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
-            List<MemberCategory> categories, AssetTypeInfo ati)
-        {
-            Dictionary<string, VariableDefinition> variableDefinitions = new Dictionary<string, VariableDefinition>();
-
-            if(ati?.VariableDefinitions.Count > 0)
-            {
-                foreach(var definition in ati.VariableDefinitions)
-                {
-                    variableDefinitions[definition.Name] = definition;
-
-                }
-            }
-            else
-            {
-                var instanceElement = ObjectFinder.Self.GetElement(instance);
-                for (int i = 0; i < instance.TypedMembers.Count; i++)
-                {
-                    VariableDefinition baseVariableDefinition = null;
-                    TypedMemberBase typedMember = instance.TypedMembers[i];
-                    if (instanceElement != null)
-                    {
-                        var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
-                        var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
-                        if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
-                        {
-                            var ownerNos = instanceElement.GetNamedObjectRecursively(baseVariable.SourceObject);
-
-                            var ownerNosAti = ownerNos.GetAssetTypeInfo();
-                            baseVariableDefinition = ownerNosAti?.VariableDefinitions
-                                .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
-                        }
-                        // This could be null if the ownerNos doesn't have an ATI.
-                        if (variableInElement != null && baseVariableDefinition == null)
-                        {
-                            // we can create a new VariableDefinition here with the category:
-                            baseVariableDefinition = new VariableDefinition();
-                            //todo - may need to use culture invariant here...
-                            //baseVariableDefinition.DefaultValue = variableInElement.DefaultValue?.To;
-                            baseVariableDefinition.Name = variableInElement.Name;
-                            baseVariableDefinition.Category = variableInElement.Category;
-                            baseVariableDefinition.Type = variableInElement.Type;
-
-                            if(!string.IsNullOrWhiteSpace(variableInElement.PreferredDisplayerTypeName) &&
-                                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variableInElement.PreferredDisplayerTypeName))
-                            {
-                                baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
-                                    [variableInElement.PreferredDisplayerTypeName];
-                            }
-                        }
-                    }
-
-                    if(baseVariableDefinition != null)
-                    {
-                        variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
-                    }
-                }
-            }
-
-            
-            foreach (var kvp in variableDefinitions)
-            {
-                var variableDefinition = kvp.Value;
-                var variableName = kvp.Key;
-                bool fallBackToTypedMember = false;
-                try
-                {
-                    Type type = null;
-                    if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
-                    {
-                        type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                    }
-
-                    if (type == null)
-                    {
-                        fallBackToTypedMember = true;
-                    }
-                    else
-                    {
-                        TypedMemberBase typedMember = null;
-                        typedMember = TypedMemberBase.GetTypedMember(variableName, type);
-                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableName, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
-                        if (instanceMember != null)
-                        {
-                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
-                            categoryToAddTo.Members.Add(instanceMember);
-                        }
-                    }
-                }
-                catch
-                {
-                    fallBackToTypedMember = true;
-                }
-
-                if (fallBackToTypedMember)
-                {
-                    // this new code isn't working with some things like generics. Until I fix that, let's fall back:
-
-                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableName);
-
-                    if (typedMember != null)
-                    {
-                        AddForTypedMember(instance, container, categories, ati, typedMember, variableDefinition);
-                    }
-                }
-            }
-            
-            bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
-                !string.IsNullOrEmpty(instance.SourceFile);
-
-            if (shouldAddSourceNameVariable)
-            {
-                AddSourceNameVariable(instance, categories);
-
             }
         }
 
@@ -665,11 +671,11 @@ namespace OfficialPlugins.VariableDisplay
         private static DataGridItem CreateIsLockedMember(NamedObjectSave instance)
         {
             var instanceMember = new DataGridItem();
-            instanceMember.DisplayName = 
+            instanceMember.DisplayName =
                 StringFunctions.InsertSpacesInCamelCaseString(nameof(instance.IsEditingLocked));
             instanceMember.UnmodifiedVariableName =
                 nameof(instance.IsEditingLocked);
-            
+
             var oldValue = instance.IsEditingLocked;
 
             instanceMember.CustomSetEvent += (throwaway, value) =>
@@ -823,7 +829,7 @@ namespace OfficialPlugins.VariableDisplay
             var isAlreadyTunneled = container.CustomVariables.Any(item =>
                 item.SourceObject == instance.InstanceName && item.SourceObjectProperty == memberName);
 
-            if(!isAlreadyTunneled)
+            if (!isAlreadyTunneled)
             {
                 instanceMember.ContextMenuEvents.Add("Tunnel Variable...", (not, used) =>
                 {
@@ -859,7 +865,7 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container, 
+        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container,
             string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
         {
             if (variableDefinition.CustomVariableGet != null)
@@ -966,7 +972,7 @@ namespace OfficialPlugins.VariableDisplay
 
                         StateSaveCategory matchingStateCategory = null;
 
-                        if(possibleStateCustomVariable?.Type != null)
+                        if (possibleStateCustomVariable?.Type != null)
                         {
                             matchingStateCategory = instanceElementType.GetStateCategory(possibleStateCustomVariable.Type);
                         }
@@ -1097,7 +1103,7 @@ namespace OfficialPlugins.VariableDisplay
 
             var element = ObjectFinder.Self.GetElementContaining(instance);
 
-            if(element != null)
+            if (element != null)
             {
                 // do we want to run this async?
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
