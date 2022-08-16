@@ -71,7 +71,10 @@ namespace OfficialPlugins.DoorEntityPlugin
             await AddVariablesFromAssetTypeInfo(newEntity);
 
             await CreateCollisionRelationshipBetweenPlayerAndDoors();
+
+            await CreateCollisionRelationshipEvent();
         }
+
 
         private void CreateAssetTypes()
         {
@@ -292,6 +295,19 @@ namespace OfficialPlugins.DoorEntityPlugin
                     await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(customVariable, doorEntity, save: false);
                 }
             }
+        }
+
+
+        private async Task CreateCollisionRelationshipEvent()
+        {
+            var viewModel = new AddEventViewModel();
+            viewModel.BeforeOrAfter = BeforeOrAfter.Before;
+            viewModel.DesiredEventType = FlatRedBall.Glue.Controls.CustomEventType.Exposed;
+            viewModel.EventName = "PlayerListVsDoorEntityListCollisionOccurred";
+            viewModel.TunnelingEvent = "CollisionOccurred";
+            viewModel.TunnelingObject = "PlayerListVsDoorEntityList";
+
+            await GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GameScreen);
         }
 
         #endregion
