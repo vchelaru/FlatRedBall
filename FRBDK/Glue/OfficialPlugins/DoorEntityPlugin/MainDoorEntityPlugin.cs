@@ -159,6 +159,20 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition()
             {
+                Name = "Width",
+                Type = "float",
+                Category = "Size"
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition()
+            {
+                Name = "Height",
+                Type = "float",
+                Category = "Size"
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition()
+            {
                 Name = "DestinationX",
                 Type = "float?",
                 Category = "Destination"

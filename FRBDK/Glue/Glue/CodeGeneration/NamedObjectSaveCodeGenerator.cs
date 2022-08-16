@@ -2034,6 +2034,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                             layerName = "mLayer";
                         }
 
+                        void WriteEntityAddToManagers()
+                        {
+                            if (isInsideVisibleProperty)
+                            {
+                                codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
+                            }
+                            else
+                            {
+                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
+                            }
+                        }
+
                         #region There is an ATI - it's a type defined in the ContentTypes.csv file in Glue
                         if (ati != null)
                         {
@@ -2080,36 +2092,36 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
                             }
-                            else
+                            else if(ati.AddToManagersMethod?.Count > 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
                             {
 
+                                string addLine = DecideOnLineToAdd(namedObject, ati, false);
 
-                                if (ati.AddToManagersMethod?.Count > 0 && !string.IsNullOrEmpty(ati.AddToManagersMethod[0]))
+                                codeBlock.Line(addLine.Replace("this", namedObject.FieldName) + ";");
+
+                                if (namedObject.IsLayer && element is EntitySave)
                                 {
-                                    string addLine = DecideOnLineToAdd(namedObject, ati, false);
+                                    string layerToAddAbove = layerName;
 
-                                    codeBlock.Line(addLine.Replace("this", namedObject.FieldName) + ";");
+                                    int indexOfThis = element.NamedObjects.IndexOf(namedObject);
 
-                                    if (namedObject.IsLayer && element is EntitySave)
+                                    for (int i = 0; i < indexOfThis; i++)
                                     {
-                                        string layerToAddAbove = layerName;
-
-                                        int indexOfThis = element.NamedObjects.IndexOf(namedObject);
-
-                                        for (int i = 0; i < indexOfThis; i++)
+                                        if (element.NamedObjects[i].IsLayer && !element.NamedObjects[i].IsDisabled)
                                         {
-                                            if (element.NamedObjects[i].IsLayer && !element.NamedObjects[i].IsDisabled)
-                                            {
-                                                layerToAddAbove = element.NamedObjects[i].InstanceName;
-                                            }
+                                            layerToAddAbove = element.NamedObjects[i].InstanceName;
                                         }
-
-                                        //If the EntitySave contains a Layer, the Layer should be inserted after whatever Layer the Entity is on.
-                                        codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + namedObject.FieldName + ", " + layerToAddAbove + ");");
                                     }
+
+                                    //If the EntitySave contains a Layer, the Layer should be inserted after whatever Layer the Entity is on.
+                                    codeBlock.Line("FlatRedBall.SpriteManager.MoveLayerAboveLayer(" + namedObject.FieldName + ", " + layerToAddAbove + ");");
                                 }
                             }
-
+                            else if(namedObject.SourceType == SourceType.Entity)
+                            {
+                                // it has an ATI but it's still an entity, so do the regular add:
+                                WriteEntityAddToManagers();
+                            }
                             AddLayerSpecificAddToManagersCode(namedObject, codeBlock);
 
                             AddTextSpecificAddToManagersCode(namedObject, codeBlock, layerName);
@@ -2118,14 +2130,8 @@ namespace FlatRedBall.Glue.CodeGeneration
                         #region No ATI - is it an Entity?
                         else if (namedObject.SourceType == SourceType.Entity)
                         {
-                            if (isInsideVisibleProperty)
-                            {
-                                codeBlock.Line(namedObject.FieldName + ".ReAddToManagers(" + layerName + ");");
-                            }
-                            else
-                            {
-                                codeBlock.Line(namedObject.FieldName + ".AddToManagers(" + layerName + ");");
-                            }
+                            WriteEntityAddToManagers();
+
                         }
                         #endregion
 
@@ -2186,6 +2192,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                     }
                     #endregion
+
 
 
 
