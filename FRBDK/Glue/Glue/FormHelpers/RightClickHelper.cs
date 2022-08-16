@@ -44,6 +44,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Utilities;
+using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -1354,53 +1355,20 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public static void HandleAddEventOk(AddEventWindow addEventWindow)
         {
-            string resultName = addEventWindow.ResultName;
-            IElement currentElement = GlueState.Self.CurrentElement;
+            var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel();
+            viewModel.EventName = addEventWindow.ResultName;
+            viewModel.TunnelingObject = addEventWindow.TunnelingObject;
+            viewModel.TunnelingEvent = addEventWindow.TunnelingEvent;
 
-            string failureMessage;
-            bool isInvalid = NameVerifier.IsEventNameValid(resultName,
-                currentElement, out failureMessage);
+            viewModel.SourceVariable = addEventWindow.SourceVariable;
+            viewModel.BeforeOrAfter = addEventWindow.BeforeOrAfter;
 
-            if (isInvalid)
-            {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
-            }
-            else if (!isInvalid)
-            {
-                EventResponseSave eventResponseSave = new EventResponseSave();
-                eventResponseSave.EventName = resultName;
+            viewModel.DelegateType = addEventWindow.ResultDelegateType;
 
-                eventResponseSave.SourceObject = addEventWindow.TunnelingObject;
-                eventResponseSave.SourceObjectEvent = addEventWindow.TunnelingEvent;
-
-                eventResponseSave.SourceVariable = addEventWindow.SourceVariable;
-                eventResponseSave.BeforeOrAfter = addEventWindow.BeforeOrAfter;
-
-                eventResponseSave.DelegateType = addEventWindow.ResultDelegateType;
-
-                AddEventToElementAndSave(currentElement, eventResponseSave);
-            }
+            GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
         }
 
-        public static void AddEventToElementAndSave(IElement currentElement, EventResponseSave eventResponseSave)
-        {
-            currentElement.Events.Add(eventResponseSave);
 
-            string fullGeneratedFileName = ProjectManager.ProjectBase.Directory + EventManager.GetGeneratedEventFileNameForElement(currentElement);
-
-            if (!File.Exists(fullGeneratedFileName))
-            {
-                CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
-            }
-
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-            GluxCommands.Self.SaveGlux();
-
-            GlueState.Self.CurrentEventResponseSave = eventResponseSave;
-        }
 
         static void ViewFileOrderClick(object sender, EventArgs e)
         {

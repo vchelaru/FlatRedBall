@@ -68,7 +68,7 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             await CreateWidthHeightVariables(newEntity);
 
-            await CreateDestinationVariables(newEntity);
+            await AddVariablesFromAssetTypeInfo(newEntity);
 
             await CreateCollisionRelationshipBetweenPlayerAndDoors();
         }
@@ -108,6 +108,27 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             ati.VariableDefinitions.Add(new VariableDefinition()
             {
+                Name = "Width",
+                Type = "float",
+                Category = "Size"
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition()
+            {
+                Name = "Height",
+                Type = "float",
+                Category = "Size"
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition()
+            {
+                Name = "AutoNavigate",
+                Type = "bool",
+                Category = "Destination"
+            });
+
+            ati.VariableDefinitions.Add(new VariableDefinition()
+            {
                 Name = "DestinationScreen",
                 Type = "string",
                 Category = "Destination",
@@ -117,6 +138,7 @@ namespace OfficialPlugins.DoorEntityPlugin
                     return names;
                 }
             });
+
 
 
             ati.VariableDefinitions.Add(new VariableDefinition()
@@ -157,19 +179,6 @@ namespace OfficialPlugins.DoorEntityPlugin
                 }
             });
 
-            ati.VariableDefinitions.Add(new VariableDefinition()
-            {
-                Name = "Width",
-                Type = "float",
-                Category = "Size"
-            });
-
-            ati.VariableDefinitions.Add(new VariableDefinition()
-            {
-                Name = "Height",
-                Type = "float",
-                Category = "Size"
-            });
 
             ati.VariableDefinitions.Add(new VariableDefinition()
             {
@@ -260,19 +269,28 @@ namespace OfficialPlugins.DoorEntityPlugin
             }
         }
 
-        private async Task CreateDestinationVariables(EntitySave doorEntity)
+        private async Task AddVariablesFromAssetTypeInfo(EntitySave doorEntity)
         {
 
             var ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(doorEntityName, this);
 
             foreach(var variableDefinition in ati.VariableDefinitions)
             {
-
-                var customVariable = new CustomVariable();
+                var customVariable = doorEntity.CustomVariables.FirstOrDefault(item => item.Name == variableDefinition.Name);
+                var isNew = false;
+                if(customVariable == null)
+                {
+                    customVariable = new CustomVariable();
+                    isNew = true;
+                }
                 customVariable.Name = variableDefinition.Name;
                 customVariable.Type = variableDefinition.Type;
                 customVariable.Category = variableDefinition.Category;
-                await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(customVariable, doorEntity, save: false);
+
+                if(isNew)
+                {
+                    await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(customVariable, doorEntity, save: false);
+                }
             }
         }
 

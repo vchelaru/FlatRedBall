@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,5 +27,28 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public string EventName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string SourceVariable
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public BeforeOrAfter BeforeOrAfter
+        {
+            get => Get<BeforeOrAfter>();
+            set => Set(value);
+        }
+
+        public string DelegateType
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
     }
 }

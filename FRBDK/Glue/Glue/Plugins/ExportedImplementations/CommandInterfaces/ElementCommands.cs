@@ -28,6 +28,7 @@ using GlueFormsCore.Managers;
 using System.Threading.Tasks;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.Glue.Events;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -1027,6 +1028,62 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return ProjectManager.ContentDirectory + resultNameInFolder;
         }
 
+        #endregion
+
+        #region Events
+
+        public async Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement)
+        {
+
+            string eventName = viewModel.EventName;
+
+            string failureMessage;
+            bool isInvalid = NameVerifier.IsEventNameValid(eventName,
+                glueElement, out failureMessage);
+
+            if (isInvalid)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
+            }
+            else if (!isInvalid)
+            {
+                await TaskManager.Self.AddAsync(() =>
+                {
+                    EventResponseSave eventResponseSave = new EventResponseSave();
+                    eventResponseSave.EventName = eventName;
+
+                    eventResponseSave.SourceObject = viewModel.TunnelingObject;
+                    eventResponseSave.SourceObjectEvent = viewModel.TunnelingEvent;
+
+                    eventResponseSave.SourceVariable = viewModel.SourceVariable;
+                    eventResponseSave.BeforeOrAfter = viewModel.BeforeOrAfter;
+
+                    eventResponseSave.DelegateType = viewModel.DelegateType;
+
+                    AddEventToElement(glueElement, eventResponseSave);
+                }, $"Adding element {viewModel.EventName}");
+            }
+        }
+
+        public void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave)
+        {
+            currentElement.Events.Add(eventResponseSave);
+
+            string fullGeneratedFileName = ProjectManager.ProjectBase.Directory + EventManager.GetGeneratedEventFileNameForElement(currentElement);
+
+            if (!File.Exists(fullGeneratedFileName))
+            {
+                CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
+            }
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+
+            GluxCommands.Self.SaveGlux();
+
+            GlueState.Self.CurrentEventResponseSave = eventResponseSave;
+        }
         #endregion
 
         /// <summary>

@@ -506,7 +506,7 @@ namespace FlatRedBall.Glue.Managers
                     eventResponseSave.DelegateType = null;
 
                     var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
-                    RightClickHelper.AddEventToElementAndSave(element, eventResponseSave);
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(element, eventResponseSave);
 
                 }
             }

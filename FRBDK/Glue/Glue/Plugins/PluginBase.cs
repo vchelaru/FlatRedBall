@@ -677,8 +677,13 @@ namespace FlatRedBall.Glue.Plugins
 
         protected void AddAssetTypeInfo(AssetTypeInfo ati)
         {
-            AddedAssetTypeInfos.Add(ati);
-            AvailableAssetTypes.Self.AddAssetType(ati);
+            // see if it already exists
+            var alreadyExists = AddedAssetTypeInfos.Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+            if(!alreadyExists)
+            {
+                AddedAssetTypeInfos.Add(ati);
+                AvailableAssetTypes.Self.AddAssetType(ati);
+            }
         }
 
         public void UnregisterAssetTypeInfos()
