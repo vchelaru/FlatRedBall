@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using WpfDataUi.DataTypes;
+using static System.ComponentModel.TypeConverter;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -62,7 +63,8 @@ namespace OfficialPlugins.VariableDisplay
 
         public void RefreshOptions()
         {
-            CustomOptions?.Clear();
+            StandardValuesCollection newCustomOptions = null;
+
 
             if (this.typeConverter != null)
             {
@@ -71,18 +73,52 @@ namespace OfficialPlugins.VariableDisplay
                     throw new InvalidOperationException("UnmodifiedVariableName must be set first.");
                 }
                 var descriptor = new TypeDescriptorContext(UnmodifiedVariableName);
-                var values = typeConverter.GetStandardValues(descriptor);
+                newCustomOptions = typeConverter.GetStandardValues(descriptor);
+            }
 
-                List<object> valuesAsList = new List<object>();
-
-                if(values.Count != 0 && CustomOptions == null)
+            if(newCustomOptions == null)
+            {
+                CustomOptions?.Clear();
+            }
+            else
+            {
+                var differs = false;
+                if(CustomOptions?.Count != newCustomOptions.Count)
                 {
-                    CustomOptions = new List<object>();
+                    differs = true;
                 }
-
-                foreach (var item in values)
+                else if(CustomOptions == null)
                 {
-                    CustomOptions.Add(item);
+                    differs = true;
+                }
+                else 
+                {
+                    // counts are the same
+                    for(int i = 0; i < CustomOptions.Count; i++)
+                    {
+                        if (CustomOptions[i] != newCustomOptions[i])
+                        {
+                            differs = true;
+                            break;
+                        }
+                    }
+                }
+                if(differs)
+                {
+                    CustomOptions?.Clear();
+
+                    List<object> valuesAsList = new List<object>();
+
+                    if(newCustomOptions.Count != 0 && CustomOptions == null)
+                    {
+                        CustomOptions = new List<object>();
+                    }
+
+                    foreach (var item in newCustomOptions)
+                    {
+                        CustomOptions.Add(item);
+                    }
+
                 }
             }
         }

@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Math.Geometry;
 using GlueFormsCore.ViewModels;
 using OfficialPlugins.DoorEntityPlugin.CodeGenerators;
@@ -56,25 +57,7 @@ namespace OfficialPlugins.DoorEntityPlugin
             }
         }
 
-        #region Add Door Entity
-
-        private async void AddDoorEntity()
-        {
-            CreateAssetTypes();
-
-            var newEntity = await CreateEntitySave();
-
-            await CreateEntityListInGameScreen(newEntity);
-
-            await CreateWidthHeightVariables(newEntity);
-
-            await AddVariablesFromAssetTypeInfo(newEntity);
-
-            await CreateCollisionRelationshipBetweenPlayerAndDoors();
-
-            await CreateCollisionRelationshipEvent();
-        }
-
+        #region DoorEntity AssetTypeInfo (ATI)
 
         private void CreateAssetTypes()
         {
@@ -127,7 +110,8 @@ namespace OfficialPlugins.DoorEntityPlugin
             {
                 Name = "AutoNavigate",
                 Type = "bool",
-                Category = "Destination"
+                Category = "Destination",
+                DefaultValue = "true"
             });
 
             ati.VariableDefinitions.Add(new VariableDefinition()
@@ -137,7 +121,9 @@ namespace OfficialPlugins.DoorEntityPlugin
                 Category = "Destination",
                 CustomGetForcedOptionFunc = (element, nos, rfs) =>
                 {
-                    var names = GlueState.Self.CurrentGlueProject.Screens.Select(item => item.ClassName).ToList();
+                    var names = GlueState.Self.CurrentGlueProject.Screens
+                        .Where(item => item.IsAbstract == false)
+                        .Select(item => item.ClassName).ToList();
                     return names;
                 }
             });
@@ -200,6 +186,29 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             this.AddAssetTypeInfo(ati);
         }
+
+        #endregion
+
+        #region Add Door Entity
+
+        private async void AddDoorEntity()
+        {
+            CreateAssetTypes();
+
+            var newEntity = await CreateEntitySave();
+
+            await CreateEntityListInGameScreen(newEntity);
+
+            await CreateWidthHeightVariables(newEntity);
+
+            await AddVariablesFromAssetTypeInfo(newEntity);
+
+            await CreateCollisionRelationshipBetweenPlayerAndDoors();
+
+            await CreateCollisionRelationshipEvent();
+        }
+
+
 
         private async Task CreateEntityListInGameScreen(EntitySave newEntity)
         {
@@ -289,6 +298,12 @@ namespace OfficialPlugins.DoorEntityPlugin
                 customVariable.Name = variableDefinition.Name;
                 customVariable.Type = variableDefinition.Type;
                 customVariable.Category = variableDefinition.Category;
+
+                if(!string.IsNullOrEmpty(variableDefinition.DefaultValue))
+                {
+                    customVariable.DefaultValue = PropertyValuePair.ConvertStringToType(
+                        variableDefinition.DefaultValue, variableDefinition.Type);
+                }
 
                 if(isNew)
                 {

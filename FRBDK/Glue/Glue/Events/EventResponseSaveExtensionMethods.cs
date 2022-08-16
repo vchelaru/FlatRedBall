@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue.Events
             return null;
         }
 
-        public static EventResponseSave GetEventThisTunnelsTo(this EventResponseSave instance, IElement element, out IElement containingElement)
+        public static EventResponseSave GetEventThisTunnelsTo(this EventResponseSave instance, IElement element, out GlueElement containingElement)
         {
             if (instance.GetIsTunneling() == false)
             {
@@ -167,7 +167,7 @@ namespace FlatRedBall.Glue.Events
 
                 if (nos != null && nos.SourceType == SourceType.Entity)
                 {
-                    containingElement = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                    containingElement = ObjectFinder.Self.GetElement(nos.SourceClassType);
 
                     if (containingElement != null)
                     {
@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.Events
             return null;
         }
 
-        public static string GetArgsForMethod(this EventResponseSave ers, IElement containingElement)
+        public static string GetArgsForMethod(this EventResponseSave ers, GlueElement containingElement)
         {
             EventSave eventSave = ers.GetEventSave();
 
@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.Events
             }
             else if (ers.GetIsTunneling())
             {
-                IElement tunneledContainingElement;
+                GlueElement tunneledContainingElement;
                 EventResponseSave tunneled = ers.GetEventThisTunnelsTo(containingElement, out tunneledContainingElement);
 
                 if (tunneled != null)
@@ -256,7 +256,7 @@ namespace FlatRedBall.Glue.Events
         {
             if (ers.GetIsTunneling())
             {
-                IElement tunneledElement;
+                GlueElement tunneledElement;
                 EventResponseSave tunneledTo = ers.GetEventThisTunnelsTo(containingElement, out tunneledElement);
 
                 if (tunneledTo != null)

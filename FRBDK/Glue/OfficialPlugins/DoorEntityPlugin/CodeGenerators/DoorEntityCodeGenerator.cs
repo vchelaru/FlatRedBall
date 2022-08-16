@@ -28,7 +28,28 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
                 codeBlock.Line("float FlatRedBall.Math.Geometry.IReadOnlyScalable.ScaleX => this.Width/2;");
 
                 codeBlock.Line("float FlatRedBall.Math.Geometry.IReadOnlyScalable.ScaleY => this.Height/2;");
+
+                codeBlock.Line("public static string NextDestinationObject { get; set; }");
+                codeBlock.Line("public static float? NextDestinationX { get; set; }");
+                codeBlock.Line("public static float? NextDestinationY { get; set; }");
             }
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
+        {
+            if(IsDoorEntity(element))
+            {
+                var block = codeBlock.Function("public void", "DoNavigation");
+
+                block = block.If("!string.IsNullOrEmpty(DestinationScreen)");
+                block.Line("FlatRedBall.Screens.ScreenManager.CurrentScreen.MoveToScreen(DestinationScreen);");
+
+                block.Line("NextDestinationObject = DestinationObject;");
+                block.Line("NextDestinationX = DestinationX;");
+                block.Line("NextDestinationY = DestinationY;");
+            }
+
             return codeBlock;
         }
 
@@ -57,10 +78,25 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
             var firstCollisionObject = element.GetNamedObjectRecursively(firstCollisionName);
             var secondCollisionObject = element.GetNamedObjectRecursively(secondCollisionName);
 
+            string parameterName = null;
             // are either of these door lists?
-            if(IsDoorEntityList(firstCollisionObject) || IsDoorEntityList(secondCollisionObject))
+            if (IsDoorEntityList(firstCollisionObject))
             {
+                var args = ers.GetArgsForMethod(element);
 
+                parameterName = args.Split(' ')[1];
+            }
+            
+            else if (IsDoorEntityList(secondCollisionObject))
+            {
+                var args = ers.GetArgsForMethod(element);
+                parameterName = args.Split(' ')[3];
+            }
+
+            if(parameterName != null)
+            {
+                var block = codeBlock.If($"{parameterName}.AutoNavigate");
+                block.Line($"{parameterName}.DoNavigation();");
             }
 
             base.GenerateEvent(codeBlock, element, ers);
