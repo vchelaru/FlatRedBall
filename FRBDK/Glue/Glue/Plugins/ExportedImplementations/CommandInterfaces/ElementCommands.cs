@@ -422,18 +422,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
         {
-            EntitySave newEntity = null;
-            await TaskManager.Self.AddAsync(() =>
-            {
-                newEntity = AddEntity(viewModel, directory);
-            }, $"Adding entity {viewModel.Name}");
-
-
-            return newEntity;
-        }
-
-        public SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null)
-        {
             var gluxCommands = GlueCommands.Self.GluxCommands;
 
             var newElement = gluxCommands.EntityCommands.AddEntity(
@@ -458,7 +446,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "SpriteInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -468,7 +456,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "TextInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -478,7 +466,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "CircleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -488,7 +476,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -512,7 +500,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
-                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 CustomVariableInNamedObject instructions = null;
                 instructions = nos.GetCustomVariable("Points");
                 if (instructions == null)

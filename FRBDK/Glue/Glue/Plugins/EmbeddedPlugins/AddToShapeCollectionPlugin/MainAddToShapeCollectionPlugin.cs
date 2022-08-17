@@ -46,28 +46,28 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
 
         }
 
-        private void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
+        private async void HandleAddAxisAlignedRectangle(object sender, EventArgs e)
         {
             string message = "Enter new AxisAlignedRectangle Name:";
             var sourceClassType = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
 
-            HandleAddShape(message, sourceClassType);
+            await HandleAddShape(message, sourceClassType);
         }
 
-        private void HandleAddCircle(object sender, EventArgs e)
+        private async void HandleAddCircle(object sender, EventArgs e)
         {
             string message = "Enter new Circle Name:";
             var sourceClassType = AvailableAssetTypes.CommonAtis.Circle;
 
-            HandleAddShape(message, sourceClassType);
+            await HandleAddShape(message, sourceClassType);
         }
 
-        private void HandleAddPolygon(object sender, EventArgs e)
+        private async void HandleAddPolygon(object sender, EventArgs e)
         {
             string message = "Enter new Polygon Name:";
             var sourceClassType = AvailableAssetTypes.CommonAtis.Polygon;
 
-            var namedObjectSave = HandleAddShape(message, sourceClassType);
+            var namedObjectSave = await HandleAddShape(message, sourceClassType);
 
             var points = new List<Vector2>();
             points.Add(new Vector2(-16, 16));
@@ -76,10 +76,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
             points.Add(new Vector2(-16, -16));
             points.Add(new Vector2(-16, 16));
 
-            GlueCommands.Self.GluxCommands.SetVariableOn(namedObjectSave, "Points", points);
+            await GlueCommands.Self.GluxCommands.SetVariableOnAsync(namedObjectSave, "Points", points);
         }
 
-        private static NamedObjectSave HandleAddShape(string message, AssetTypeInfo ati)
+        private static async Task<NamedObjectSave> HandleAddShape(string message, AssetTypeInfo ati)
         {
             NamedObjectSave toReturn = null;
 
@@ -104,7 +104,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.AddToShapeCollectionPlugin
                     viewModel.SourceType = SaveClasses.SourceType.FlatRedBallType;
                     viewModel.SelectedAti = ati;
 
-                    toReturn = GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElement(viewModel);
+                    toReturn = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElementAsync(viewModel);
 
                     GlueState.Self.CurrentNamedObjectSave = toReturn;
 

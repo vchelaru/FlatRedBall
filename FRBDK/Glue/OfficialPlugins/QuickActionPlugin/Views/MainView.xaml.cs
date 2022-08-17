@@ -103,7 +103,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         #endregion
 
-        private void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
+        private async void AddInstanceOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
             var viewModel = new AddObjectViewModel();
             viewModel.SourceType = SourceType.Entity;
@@ -115,14 +115,14 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
             var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(GlueState.Self.CurrentEntitySave, gameScreen);
 
-            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, listOfThisType);
+            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, gameScreen, listOfThisType);
 
             GlueState.Self.CurrentNamedObjectSave = newNos;
 
             AnyButtonClicked();
         }
 
-        private void AddListOfEntityButton_Clicked(object sender, RoutedEventArgs e)
+        private async void AddListOfEntityButton_Clicked(object sender, RoutedEventArgs e)
         {
             var viewModel = new AddObjectViewModel();
             viewModel.SourceType = SourceType.FlatRedBallType;
@@ -132,7 +132,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             viewModel.ObjectName = GlueState.Self.CurrentEntitySave.GetStrippedName() + "List";
 
             var gameScreen = GlueState.Self.CurrentGlueProject.GetScreenSave(GameScreenName);
-            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(viewModel, gameScreen, null);
+            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, gameScreen, null);
 
             newNos.ExposedInDerived = true;
             InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, gameScreen);

@@ -18,7 +18,7 @@ namespace TileGraphicsPlugin.Logic
 {
     class NewEntityCreatedReactionLogic
     {
-        internal static void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
+        internal static async void ReactToNewEntityCreated(EntitySave newEntity, AddEntityWindow window)
         {
             var control = window.UserControlChildren.FirstOrDefault(item => item is AdditionalEntitiesControls);
             var viewModel = control?.DataContext as AdditionalEntitiesControlViewModel;
@@ -45,7 +45,7 @@ namespace TileGraphicsPlugin.Logic
                             addObjectViewModel.ObjectName = $"{newEntity.GetStrippedName()}List";
                                 
 
-                            var newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
                                 addObjectViewModel, screen, listToAddTo:null, selectNewNos:false);
                             newNos.ExposedInDerived = true;
 

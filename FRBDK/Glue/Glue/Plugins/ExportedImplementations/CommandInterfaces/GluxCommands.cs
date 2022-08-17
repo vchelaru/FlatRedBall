@@ -1157,7 +1157,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region NamedObjectSave
 
-        public NamedObjectSave AddNewNamedObjectToSelectedElement(AddObjectViewModel addObjectViewModel)
+        public async Task<NamedObjectSave> AddNewNamedObjectToSelectedElementAsync(AddObjectViewModel addObjectViewModel)
         {
             var elementToAddTo = GlueState.Self.CurrentElement;
 
@@ -1187,148 +1187,146 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
 
-            return AddNewNamedObjectTo(addObjectViewModel,
+            return await AddNewNamedObjectToAsync(addObjectViewModel,
                 elementToAddTo,
                 currentList);
         }
 
         public async Task<NamedObjectSave> AddNewNamedObjectToAsync(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
-            var result = await TaskManager.Self.AddAsync(() =>
-                AddNewNamedObjectTo(addObjectViewModel, element, listToAddTo, selectNewNos), $"Adding new named object {addObjectViewModel?.ObjectName}");
-
-            return result;
-        }
-
-        public NamedObjectSave AddNewNamedObjectTo(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
-        {
-            if (element == null)
-            {
-                throw new ArgumentNullException(nameof(element));
-            }
-
-            addObjectViewModel.ForcedElementToAddTo = element;
-            MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
-
             NamedObjectSave newNos = new NamedObjectSave();
-
-            if (GlueState.Self.CurrentGlueProject.FileVersion >=
-                (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                newNos.AssociateWithFactory = true;
-            }
+                if (element == null)
+                {
+                    throw new ArgumentNullException(nameof(element));
+                }
 
-            newNos.InstanceName = addObjectViewModel.ObjectName;
-            newNos.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
+                addObjectViewModel.ForcedElementToAddTo = element;
+                MembershipInfo membershipInfo = NamedObjectSaveExtensionMethodsGlue.GetMemberMembershipInfo(addObjectViewModel.ObjectName);
 
-            if (addObjectViewModel.SourceType == SourceType.File)
-            {
-                newNos.SourceType = addObjectViewModel.SourceType;
-                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
-                newNos.SourceName = addObjectViewModel.SourceNameInFile;
-                newNos.UpdateCustomProperties();
-            }
-            else if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
-            {
-                newNos.SourceType = addObjectViewModel.SourceType;
-                newNos.SourceClassType =
-                    addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType ??
-                    addObjectViewModel.SourceClassType;
-                newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
-                newNos.SourceName = addObjectViewModel.SourceNameInFile;
-                newNos.UpdateCustomProperties();
-            }
 
-            newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
+                if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                    (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
+                {
+                    newNos.AssociateWithFactory = true;
+                }
 
-            newNos.Properties.AddRange(addObjectViewModel.Properties);
+                newNos.InstanceName = addObjectViewModel.ObjectName;
+                newNos.DefinedByBase = membershipInfo == MembershipInfo.ContainedInBase;
 
-            AddNamedObjectTo(newNos, element, listToAddTo, selectNewNos);
+                if (addObjectViewModel.SourceType == SourceType.File)
+                {
+                    newNos.SourceType = addObjectViewModel.SourceType;
+                    newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
+                    newNos.SourceName = addObjectViewModel.SourceNameInFile;
+                    newNos.UpdateCustomProperties();
+                }
+                else if (addObjectViewModel.SourceClassType != NoType && !string.IsNullOrEmpty(addObjectViewModel.SourceClassType))
+                {
+                    newNos.SourceType = addObjectViewModel.SourceType;
+                    newNos.SourceClassType =
+                        addObjectViewModel.SelectedAti?.QualifiedRuntimeTypeName.QualifiedType ??
+                        addObjectViewModel.SourceClassType;
+                    newNos.SourceFile = addObjectViewModel.SelectedItem?.MainText;
+                    newNos.SourceName = addObjectViewModel.SourceNameInFile;
+                    newNos.UpdateCustomProperties();
+                }
 
+                newNos.SourceClassGenericType = addObjectViewModel.SourceClassGenericType;
+
+                newNos.Properties.AddRange(addObjectViewModel.Properties);
+
+                await AddNamedObjectToAsync(newNos, element, listToAddTo, selectNewNos);
+
+            }, $"Adding Named Object {addObjectViewModel.ObjectName} to {element.Name}");
             return newNos;
         }
 
-        public void AddNamedObjectTo(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
+        public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
              bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
-            var ati = newNos.GetAssetTypeInfo();
-
-            if (listToAddTo != null)
+            await TaskManager.Self.AddAsync(() =>
             {
-                NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(newNos, listToAddTo);
+                var ati = newNos.GetAssetTypeInfo();
 
-            }
-            else if (element != null)
-            {
-                if(newNos.IsList)
+                if (listToAddTo != null)
                 {
-                    var firstInstance = element.NamedObjects.FirstOrDefault(
-                        item => item.IsList == false && item.IsLayer == false && item.IsCollisionRelationship() == false);
+                    NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(newNos, listToAddTo);
 
-                    if(firstInstance != null)
+                }
+                else if (element != null)
+                {
+                    if(newNos.IsList)
                     {
-                        var index = element.NamedObjects.IndexOf(firstInstance);
-                        element.NamedObjects.Insert(index, newNos);
+                        var firstInstance = element.NamedObjects.FirstOrDefault(
+                            item => item.IsList == false && item.IsLayer == false && item.IsCollisionRelationship() == false);
+
+                        if(firstInstance != null)
+                        {
+                            var index = element.NamedObjects.IndexOf(firstInstance);
+                            element.NamedObjects.Insert(index, newNos);
+                        }
+                        else
+                        {
+                            element.NamedObjects.Add(newNos);
+                        }
                     }
                     else
                     {
                         element.NamedObjects.Add(newNos);
                     }
                 }
-                else
+                if (ati != null && ati.DefaultPublic)
                 {
-                    element.NamedObjects.Add(newNos);
+                    newNos.HasPublicProperty = true;
                 }
-            }
-            if (ati != null && ati.DefaultPublic)
-            {
-                newNos.HasPublicProperty = true;
-            }
 
-            var entity = element as EntitySave;
+                var entity = element as EntitySave;
 
-            if (entity != null && entity.CreatedByOtherEntities && entity.PooledByFactory)
-            {
-                bool wasAnythingAdded =
-                    FlatRedBall.Glue.Factories.FactoryManager.AddResetVariablesFor(newNos);
-
-                if (wasAnythingAdded)
+                if (entity != null && entity.CreatedByOtherEntities && entity.PooledByFactory)
                 {
-                    PluginManager.ReceiveOutput("Added reset variables for " + newNos);
-                }
-            }
+                    bool wasAnythingAdded =
+                        FlatRedBall.Glue.Factories.FactoryManager.AddResetVariablesFor(newNos);
 
-            if (performSaveAndGenerateCode)
-            {
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-            }
-
-            // run after generated code so plugins like level editor work off latest code
-            PluginManager.ReactToNewObject(newNos);
-            if (listToAddTo != null)
-            {
-                PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
-            }
-
-            if (updateUi)
-            {
-                GlueCommands.Self.DoOnUiThread(() =>
-                {
-                    MainGlueWindow.Self.PropertyGrid.Refresh();
-                    PropertyGridHelper.UpdateNamedObjectDisplay();
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
-
-                    if (selectNewNos)
+                    if (wasAnythingAdded)
                     {
-                        GlueState.Self.CurrentNamedObjectSave = newNos;
+                        PluginManager.ReceiveOutput("Added reset variables for " + newNos);
                     }
-                });
-            }
+                }
 
-            if (performSaveAndGenerateCode)
-            {
-                GlueCommands.Self.GluxCommands.SaveGlux();
-            }
+                if (performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                }
+
+                // run after generated code so plugins like level editor work off latest code
+                PluginManager.ReactToNewObject(newNos);
+                if (listToAddTo != null)
+                {
+                    PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
+                }
+
+                if (updateUi)
+                {
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        MainGlueWindow.Self.PropertyGrid.Refresh();
+                        PropertyGridHelper.UpdateNamedObjectDisplay();
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+                        if (selectNewNos)
+                        {
+                            GlueState.Self.CurrentNamedObjectSave = newNos;
+                        }
+                    });
+                }
+
+                if (performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }, $"Adding named object {newNos.InstanceName} to {element.Name}");
         }
 
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,

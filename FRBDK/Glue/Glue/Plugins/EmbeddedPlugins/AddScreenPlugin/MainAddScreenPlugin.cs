@@ -122,9 +122,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             NamedObjectSave nos = null;
 
-            var task = TaskManager.Self.AddOrRunIfTasked(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
-                nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, screen, null);
+                nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, screen, null);
                 nos.SetByDerived = true;
 
                 if (setFromMapObject)
@@ -138,13 +138,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
             }, $"Adding collision {name}");
 
-            await TaskManager.Self.WaitForTaskToFinish(task);
 
             return nos;
         }
 
 
-        static void AddListsForAllBaseEntities(ScreenSave gameScreen)
+        static async Task AddListsForAllBaseEntities(ScreenSave gameScreen)
         {
             var entitiesForLists = GlueState.Self.CurrentGlueProject.Entities.Where(item => string.IsNullOrWhiteSpace(item.BaseElement))
                 .ToArray();
@@ -164,7 +163,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 addObjectViewModel.SourceClassGenericType = entity.Name;
                 addObjectViewModel.ObjectName = $"{entity.GetStrippedName()}List";
 
-                var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+                var nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, gameScreen, null);
                 nos.ExposedInDerived = true;
             }
         }
@@ -180,7 +179,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                     if(viewModel.IsAddMapLayeredTileMapChecked)
                     {
-                        AddMapObject(newScreen);
+                        await AddMapObjectAsync(newScreen);
 
                         shouldSave = true;
                     }
@@ -197,7 +196,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                     if(viewModel.IsAddListsForEntitiesChecked)
                     {
-                        AddListsForAllBaseEntities(newScreen);
+                        await AddListsForAllBaseEntities(newScreen);
                         shouldSave = true;
                     }
 
@@ -300,7 +299,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             return shouldSave;
         }
 
-        public static void AddMapObject(ScreenSave newScreen)
+        public static async Task AddMapObjectAsync(ScreenSave newScreen)
         {
             var addObjectViewModel = new AddObjectViewModel();
             addObjectViewModel.ForcedElementToAddTo = newScreen;
@@ -308,7 +307,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             addObjectViewModel.SourceClassType = "FlatRedBall.TileGraphics.LayeredTileMap";
             addObjectViewModel.ObjectName = "Map";
 
-            var nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, newScreen, null);
+            var nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newScreen, null);
             nos.SetByDerived = true;
             nos.SetVariable("CreateEntitiesFromTiles", true);
         }

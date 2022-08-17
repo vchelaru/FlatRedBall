@@ -1086,7 +1086,7 @@ namespace FlatRedBall.Glue.Managers
                     AddObjectViewModel viewModel = new AddObjectViewModel();
                     viewModel.SourceType = SourceType.File;
                     viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave);
-                    GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                    await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
                 }
                 else if (targetNode.IsNamedObjectNode() &&
                     // dropping on an object in the same element

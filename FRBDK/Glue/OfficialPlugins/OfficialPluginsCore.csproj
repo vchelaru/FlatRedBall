@@ -80,6 +80,10 @@
     <None Remove="TreeViewPlugin\Content\icon_screen_startup.png" />
     <None Remove="TreeViewPlugin\Content\icon_state.png" />
     <None Remove="TreeViewPlugin\Content\icon_variable.png" />
+    <None Remove="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
+    <None Remove="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
+    <None Remove="Wizard\EmbeddedContent\Levels\Level3Map.tmx" />
+    <None Remove="Wizard\EmbeddedContent\Levels\Level4Map.tmx" />
     <None Remove="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />
     <None Remove="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <None Remove="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
@@ -93,6 +97,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level3Map.tmx" />
+    <EmbeddedResource Include="Wizard\EmbeddedContent\Levels\Level4Map.tmx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\Player.PlatformerAnimations.json" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\PlatformerAnimations.achx" />
     <EmbeddedResource Include="Wizard\EmbeddedContent\Platformer\FRBeefcakeSpritesheet.png" />

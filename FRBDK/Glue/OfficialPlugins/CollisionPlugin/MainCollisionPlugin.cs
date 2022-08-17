@@ -91,7 +91,7 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.ReactToCreateCollisionRelationshipsBetween += (NamedObjectSave first, NamedObjectSave second) =>
             {
-                CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
+                return CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
             };
         }
 

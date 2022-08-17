@@ -144,7 +144,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             viewModel.NamedObjectPairs.Add(pairViewModel);
         }
 
-        private static void HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
+        private static async Task HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
         {
             // Vic asks - why is the selected "second"?
             // If I select the player and have it collide against
@@ -155,10 +155,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var firstNosName = pairViewModel.SelectedNamedObjectName;
             var secondNosName = pairViewModel.OtherObjectName;
 
-            CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
+            await CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
         }
 
-        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
+        public static async Task CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
         {
             var addObjectModel = new AddObjectViewModel();
 
@@ -253,7 +253,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             addObjectModel.ObjectName = "ToBeRenamed";
 
             var newNos =
-                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
+                await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
                 container, listToAddTo: null);
 
             // this will regenerate and save everything too:

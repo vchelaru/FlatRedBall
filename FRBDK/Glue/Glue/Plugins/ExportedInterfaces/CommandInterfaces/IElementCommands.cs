@@ -15,8 +15,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
 
-        [Obsolete("Use AddEntityAsync")]
-        SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);
         Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null);
 
         void AddEntity(EntitySave entitySave);
