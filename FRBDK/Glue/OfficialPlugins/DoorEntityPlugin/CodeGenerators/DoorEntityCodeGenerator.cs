@@ -40,7 +40,14 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
         {
             if(IsDoorEntity(element))
             {
+                codeBlock.Line("bool isDoorNavigationInProgress;");
                 var block = codeBlock.Function("public void", "DoNavigation");
+
+                block.If("isDoorNavigationInProgress")
+                    .Line("return;");
+
+                // todo - need to add a navigation event
+                block.Line("isDoornavigationInProgress = true;");
 
                 block = block.If("!string.IsNullOrEmpty(DestinationScreen)");
                 block.Line("FlatRedBall.Screens.ScreenManager.CurrentScreen.MoveToScreen(DestinationScreen);");
@@ -48,6 +55,10 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
                 block.Line("NextDestinationObject = DestinationObject;");
                 block.Line("NextDestinationX = DestinationX;");
                 block.Line("NextDestinationY = DestinationY;");
+
+                // this will be true then false immediately, but will matter when we eventually add a navigation transition
+                block.Line("isDoornavigationInProgress = false;");
+
             }
 
             return codeBlock;
