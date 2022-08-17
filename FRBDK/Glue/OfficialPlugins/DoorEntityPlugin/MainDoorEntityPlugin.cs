@@ -40,8 +40,9 @@ namespace OfficialPlugins.DoorEntityPlugin
         {
             this.AddMenuItemTo("Test Add DoorEntity", AddDoorEntity, "Plugins");
 
-            var codeGenerator = new DoorEntityCodeGenerator();
-            this.RegisterCodeGenerator(codeGenerator);
+            this.RegisterCodeGenerator(new DoorEntityCodeGenerator());
+
+            this.RegisterCodeGenerator(new DoorEntityPlayerPositioninCodeGenerator());
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
 
