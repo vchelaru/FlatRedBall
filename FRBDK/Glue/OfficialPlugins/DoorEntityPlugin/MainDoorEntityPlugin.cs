@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -6,6 +7,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Math.Geometry;
+using GlueFormsCore.FormHelpers;
 using GlueFormsCore.ViewModels;
 using OfficialPlugins.DoorEntityPlugin.CodeGenerators;
 using System;
@@ -14,6 +16,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace OfficialPlugins.DoorEntityPlugin
 {
@@ -29,6 +32,8 @@ namespace OfficialPlugins.DoorEntityPlugin
 
         string doorEntityName = "Entities\\DoorEntity";
 
+        bool HasDoorEntity => GlueState.Self.CurrentGlueProject?.Entities.Any(item => item.Name == doorEntityName) == true;
+
         #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -38,7 +43,7 @@ namespace OfficialPlugins.DoorEntityPlugin
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Test Add DoorEntity", AddDoorEntity, "Plugins");
+            this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
 
             this.RegisterCodeGenerator(new DoorEntityCodeGenerator());
 
@@ -48,15 +53,29 @@ namespace OfficialPlugins.DoorEntityPlugin
 
         }
 
+        #region Glux loaded
+
         private void HandleGluxLoaded()
         {
-            var hasDoorEntity = GlueState.Self.CurrentGlueProject.Entities.Any(item => item.Name == doorEntityName);
-
-            if(hasDoorEntity)
+            if(HasDoorEntity)
             {
                 CreateAssetTypes();
             }
         }
+
+        #endregion
+
+        #region Tree view right-click
+
+        private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
+        {
+            if(!HasDoorEntity)
+            {
+                listToAddTo.Add("Add DoorEntity", (not, used) => AddDoorEntity());
+            }
+        }
+
+        #endregion
 
         #region DoorEntity AssetTypeInfo (ATI)
 
@@ -208,8 +227,6 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             await CreateCollisionRelationshipEvent();
         }
-
-
 
         private async Task CreateEntityListInGameScreen(EntitySave newEntity)
         {

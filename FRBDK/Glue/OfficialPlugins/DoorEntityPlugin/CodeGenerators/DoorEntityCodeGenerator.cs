@@ -47,7 +47,7 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
                     .Line("return;");
 
                 // todo - need to add a navigation event
-                block.Line("isDoornavigationInProgress = true;");
+                block.Line("isDoorNavigationInProgress = true;");
 
                 block = block.If("!string.IsNullOrEmpty(DestinationScreen)");
                 block.Line("FlatRedBall.Screens.ScreenManager.CurrentScreen.MoveToScreen(DestinationScreen);");
@@ -57,7 +57,7 @@ namespace OfficialPlugins.DoorEntityPlugin.CodeGenerators
                 block.Line("NextDestinationY = DestinationY;");
 
                 // this will be true then false immediately, but will matter when we eventually add a navigation transition
-                block.Line("isDoornavigationInProgress = false;");
+                block.Line("isDoorNavigationInProgress = false;");
 
             }
 
