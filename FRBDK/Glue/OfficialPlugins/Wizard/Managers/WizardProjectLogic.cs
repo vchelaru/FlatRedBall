@@ -310,6 +310,19 @@ namespace OfficialPluginsCore.Wizard.Managers
             return namedObjectSave;
         }
 
+        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = gameScreen;
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
+            addObjectViewModel.ObjectName = "HudLayer";
+
+            NamedObjectSave nos = null;
+            nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, gameScreen, null);
+            return nos;
+        }
+
         #endregion
 
         #region Create Levels
@@ -368,7 +381,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 {
                     var levelIndex1Based = levelIndex0Based + 1;
 
-                    var resourceName = $"OfficialPlugins.Wizard.EmbeddedContent.Levels.Level{levelIndex1Based}.tmx";
+                    var resourceName = $"OfficialPlugins.Wizard.EmbeddedContent.Levels.{levelName}Map.tmx";
                     var resourceStream = typeof(WizardProjectLogic).Assembly.GetManifestResourceStream(resourceName);
 
                     var hasPremade = resourceStream != null;
@@ -377,6 +390,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                     if(hasPremade)
                     {
+                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveTilesetFilesToDisk");
+                        
                         try
                         {
                             var rfsAbsolute = GlueCommands.Self.GetAbsoluteFilePath(newRfs);
@@ -546,18 +561,6 @@ namespace OfficialPluginsCore.Wizard.Managers
         #endregion
 
 
-        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
-        {
-            var addObjectViewModel = new AddObjectViewModel();
-            addObjectViewModel.ForcedElementToAddTo = gameScreen;
-            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
-            addObjectViewModel.ObjectName = "HudLayer";
-
-            NamedObjectSave nos = null;
-            nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, gameScreen, null);
-            return nos;
-        }
 
         private static async Task<EntitySave> HandleAddPlayerEntity(WizardViewModel vm)
         {

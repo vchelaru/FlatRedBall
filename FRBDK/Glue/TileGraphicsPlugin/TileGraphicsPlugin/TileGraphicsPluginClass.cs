@@ -766,6 +766,11 @@ namespace TileGraphicsPlugin
             //mControl?.UpdateTilesetDisplay();
         }
 
+        public void SaveTilesetFilesToDisk()
+        {
+            TmxCreationManager.Self.SaveTilesetFilesToDisk();
+        }
+
         public void AddStandardTilesetOnCurrentFile()
         {
             var rfs = GlueState.Self.CurrentReferencedFileSave;
