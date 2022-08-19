@@ -458,6 +458,11 @@ namespace GlueControl.Editing
         public void Update()
         {
             TryResetEveryFrameValues();
+
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == true)
+            {
+                DestroyContainedObjects();
+            }
         }
 
         public void UpdateDependencies()

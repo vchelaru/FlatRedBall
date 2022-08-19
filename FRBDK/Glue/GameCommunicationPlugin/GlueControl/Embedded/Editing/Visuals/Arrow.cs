@@ -56,30 +56,34 @@ namespace GlueControl.Editing.Visuals
         public Arrow(FlatRedBall.Graphics.Layer layer, bool firstArrow = false, bool secondArrow = true)
         {
             MainLine = new Line();
-            ShapeManager.AddToLayer(MainLine, layer);
 
-            if (firstArrow)
+            if (FlatRedBall.Screens.ScreenManager.CurrentScreen?.IsActivityFinished == false)
             {
-                for (int i = 0; i < 3; i++)
+                ShapeManager.AddToLayer(MainLine, layer);
+                if (firstArrow)
                 {
-                    var arrowLine = new Line();
-                    ShapeManager.AddToLayer(arrowLine, layer);
-                    FirstArrow.Add(arrowLine);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var arrowLine = new Line();
+                        ShapeManager.AddToLayer(arrowLine, layer);
+                        FirstArrow.Add(arrowLine);
+
+                    }
 
                 }
-
-            }
-            if (secondArrow)
-            {
-                for (int i = 0; i < 3; i++)
+                if (secondArrow)
                 {
-                    var arrowLine = new Line();
-                    ShapeManager.AddToLayer(arrowLine, layer);
-                    SecondArrow.Add(arrowLine);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var arrowLine = new Line();
+                        ShapeManager.AddToLayer(arrowLine, layer);
+                        SecondArrow.Add(arrowLine);
 
+                    }
                 }
             }
         }
+
 
         public void SetFromAbsoluteEndpoints(Vector3 first, Vector3 second)
         {

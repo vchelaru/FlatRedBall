@@ -806,7 +806,7 @@ namespace GameCommunicationPlugin.GlueControl
             var dto = new Dtos.SetEditMode 
             { 
                 IsInEditMode = inEditMode ,
-                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName.FullPath
+                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
             var response = await _commandSender.Send<Dtos.GeneralCommandResponse>(dto);
 
