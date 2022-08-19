@@ -186,10 +186,7 @@ namespace FlatRedBall
             }
         }
 
-        public static GraphicsDevice GraphicsDevice
-        {
-            get { return Renderer.Graphics.GraphicsDevice; }
-        }
+        public static GraphicsDevice GraphicsDevice => Renderer.Graphics.GraphicsDevice; 
 
         public static bool IsWindowsCursorVisible
         {
