@@ -3,10 +3,27 @@ using System.Collections.Generic;
 
 namespace FlatRedBall.Input
 {
+    /// <summary>
+    /// Interface defining an input device which can return a single value. Typically this value will range between
+    /// 0 to +1 for analog buttons and -1 to +1 for direcitonal input devices such as analog sticks.
+    /// </summary>
 	public interface I1DInput
 	{
+        /// <summary>
+        /// The current value of the input device.
+        /// </summary>
 		float Value { get; }
+
+        /// <summary>
+        /// The change in value from the previous frame in units per second. 
+        /// </summary>
 		float Velocity { get; }
+
+        /// <summary>
+        /// Whether the hardware supports an analog value range (continuous range). If false, then
+        /// the device is digital and will return discrete values such as 0 or 1.
+        /// </summary>
+        bool IsAnalog { get; }
 	}
 
     /// <summary>
@@ -19,12 +36,15 @@ namespace FlatRedBall.Input
         public static Zero1DInput Instance = new Zero1DInput();
         public float Value => 0;
         public float Velocity => 0;
+        public bool IsAnalog => false;
     }
 
     public class DelegateBased1DInput : I1DInput
     {
         Func<float> value;
         Func<float> velocity;
+
+        public bool IsAnalog { get; set; }
 
         float Zero() => 0;
 
@@ -34,21 +54,9 @@ namespace FlatRedBall.Input
             this.velocity = velocity ?? Zero;
         }
 
-        public float Value
-        {
-            get
-            {
-                return value();
-            }
-        }
+        public float Value =>  value();
 
-        public float Velocity
-        {
-            get
-            {
-                return velocity();
-            }
-        }
+        public float Velocity => velocity();
     }
 
     public static class I1DInputExtensions
@@ -85,8 +93,9 @@ namespace FlatRedBall.Input
             get
             {
                 float toReturn = 0;
-                foreach(var item in Inputs)
+                for (int i = 0; i < Inputs.Count; i++)
                 {
+                    I1DInput item = Inputs[i];
                     toReturn = Math.MathFunctions.MaxAbs(toReturn, item.Value);
                 }
                 return toReturn;
@@ -99,11 +108,29 @@ namespace FlatRedBall.Input
             {
                 float toReturn = 0;
 
-                foreach (var item in Inputs)
+                for (int i = 0; i < Inputs.Count; i++)
                 {
+                    I1DInput item = Inputs[i];
                     toReturn = Math.MathFunctions.MaxAbs(toReturn, item.Velocity);
                 }
                 return toReturn;
+            }
+        }
+
+        public bool IsAnalog
+        {
+            get
+            {
+                for (int i = 0; i < Inputs.Count; i++)
+                {
+                    I1DInput item = Inputs[i];
+                    if (item.IsAnalog)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }

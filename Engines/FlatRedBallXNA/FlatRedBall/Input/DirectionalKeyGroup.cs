@@ -151,5 +151,8 @@ namespace FlatRedBall.Input
                 return as2D.XVelocity; 
             }
         }
+
+        bool I1DInput.IsAnalog => false;
+
     }
 }

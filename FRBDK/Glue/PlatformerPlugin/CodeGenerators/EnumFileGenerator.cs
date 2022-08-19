@@ -81,6 +81,11 @@ namespace {GlueState.Self.ProjectNamespace}.Entities
                 HorizontalDirection.Right :
                 HorizontalDirection.Left;
         }}
+
+
+        public static float XSign(this HorizontalDirection direction) => direction == HorizontalDirection.Left
+            ? -1
+            : 1;
     }}
 }}
 
