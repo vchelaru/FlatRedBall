@@ -90,6 +90,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IDamageArea.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\IEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\FloatExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\PointExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector2ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExtensionMethods\Vector3ExtensionMethods.cs" />
