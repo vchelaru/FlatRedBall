@@ -16,5 +16,8 @@ namespace FlatRedBall.Input
         public float Value => analogStick.Position.Y;
 
         public float Velocity => analogStick.Velocity.Y;
+
+        bool I1DInput.IsAnalog => true;
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
@@ -144,7 +145,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             viewModel.NamedObjectPairs.Add(pairViewModel);
         }
 
-        private static void HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
+        private static async Task HandleAddCollisionRelationshipAddClicked(NamedObjectPairRelationshipViewModel pairViewModel)
         {
             // Vic asks - why is the selected "second"?
             // If I select the player and have it collide against
@@ -155,125 +156,129 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var firstNosName = pairViewModel.SelectedNamedObjectName;
             var secondNosName = pairViewModel.OtherObjectName;
 
-            CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
+            await CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
         }
 
-        public static void CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
+        public static async Task CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
         {
-            var addObjectModel = new AddObjectViewModel();
-
-            var firstNos = container.GetNamedObjectRecursively(firstNosName);
-            var secondNos = container.GetNamedObjectRecursively(secondNosName);
-
-            if(firstNos == null)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                throw new InvalidOperationException(
-                    $"Could not find an entity with the name {firstNosName} in {container}");
-            }
+                var addObjectModel = new AddObjectViewModel();
 
-            addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
-            addObjectModel.SelectedAti =
-                AssetTypeInfoManager.Self.CollisionRelationshipAti;
+
+                var firstNos = container.GetNamedObjectRecursively(firstNosName);
+                var secondNos = container.GetNamedObjectRecursively(secondNosName);
+
+                if (firstNos == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Could not find an entity with the name {firstNosName} in {container}");
+                }
+
+                addObjectModel.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
+                addObjectModel.SelectedAti =
+                    AssetTypeInfoManager.Self.CollisionRelationshipAti;
                 //"FlatRedBall.Math.Collision.CollisionRelationship";
 
-            addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
+                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled), true);
 
-            string effectiveSecondCollisionName;
-            NamedObjectSave effectiveFirstNos;
+                string effectiveSecondCollisionName;
+                NamedObjectSave effectiveFirstNos;
 
-            bool needToInvert = firstNos.SourceType != SourceType.Entity &&
-                firstNos.IsList == false;
+                bool needToInvert = firstNos.SourceType != SourceType.Entity &&
+                    firstNos.IsList == false;
 
-            if (needToInvert)
-            {
-                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                        secondNosName);
-                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                        firstNosName);
-
-                effectiveFirstNos = secondNos;
-                effectiveSecondCollisionName = firstNosName;
-            }
-            else
-            {
-                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
-                        firstNosName);
-                addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
-                        secondNosName);
-
-                effectiveFirstNos = firstNos;
-                effectiveSecondCollisionName = secondNosName;
-            }
-            
-            // this used to rely on the name "SolidCollision" but that's not a set standard and there could be multiple
-            // TileShapeCollections
-            if(secondNos?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection")
-            {
-                EntitySave firstEntityType = null;
-                if(effectiveFirstNos.SourceType == SourceType.Entity)
+                if (needToInvert)
                 {
-                    firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassType);
-                }
-                else if(effectiveFirstNos.IsList)
-                {
-                    firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassGenericType);
-                }
+                    addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
+                            secondNosName);
+                    addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
+                            firstNosName);
 
-                bool isPlatformer = false;
-                if (firstEntityType != null)
-                {
-                    isPlatformer = firstEntityType.Properties.GetValue<bool>("IsPlatformer");
-                }
-
-                if(isPlatformer)
-                {
-                    addObjectModel.Properties.SetValue(
-                        nameof(CollisionRelationshipViewModel.CollisionType),
-                        (int)CollisionType.PlatformerSolidCollision);
-
+                    effectiveFirstNos = secondNos;
+                    effectiveSecondCollisionName = firstNosName;
                 }
                 else
                 {
+                    addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.FirstCollisionName),
+                            firstNosName);
+                    addObjectModel.Properties.SetValue(nameof(CollisionRelationshipViewModel.SecondCollisionName),
+                            secondNosName);
 
-                    addObjectModel.Properties.SetValue(
-                        nameof(CollisionRelationshipViewModel.CollisionType),
-                        (int)CollisionType.BounceCollision);
-
-
-                    addObjectModel.Properties.SetValue(
-                        nameof(CollisionRelationshipViewModel.CollisionElasticity),
-                        0.0f);
+                    effectiveFirstNos = firstNos;
+                    effectiveSecondCollisionName = secondNosName;
                 }
-            }
 
-            var sourceClassType = AssetTypeInfoManager.GetCollisionRelationshipSourceClassType(container, addObjectModel.Properties);
-            addObjectModel.SourceClassType = sourceClassType;
+                // this used to rely on the name "SolidCollision" but that's not a set standard and there could be multiple
+                // TileShapeCollections
+                if (secondNos?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection")
+                {
+                    EntitySave firstEntityType = null;
+                    if (effectiveFirstNos.SourceType == SourceType.Entity)
+                    {
+                        firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassType);
+                    }
+                    else if (effectiveFirstNos.IsList)
+                    {
+                        firstEntityType = ObjectFinder.Self.GetEntitySave(effectiveFirstNos.SourceClassGenericType);
+                    }
 
-            // setting the SourceClassType sets the ObjectName. Overwrite it...
-            addObjectModel.ObjectName = "ToBeRenamed";
+                    bool isPlatformer = false;
+                    if (firstEntityType != null)
+                    {
+                        isPlatformer = firstEntityType.Properties.GetValue<bool>("IsPlatformer");
+                    }
 
-            var newNos =
-                GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectModel,
-                container, listToAddTo: null);
+                    if (isPlatformer)
+                    {
+                        addObjectModel.Properties.SetValue(
+                            nameof(CollisionRelationshipViewModel.CollisionType),
+                            (int)CollisionType.PlatformerSolidCollision);
 
-            // this will regenerate and save everything too:
-            CollisionRelationshipViewModelController.TryApplyAutoName(
-                container, newNos);
+                    }
+                    else
+                    {
+
+                        addObjectModel.Properties.SetValue(
+                            nameof(CollisionRelationshipViewModel.CollisionType),
+                            (int)CollisionType.BounceCollision);
 
 
-            RefreshViewModelTo(container, firstNos, ViewModel);
+                        addObjectModel.Properties.SetValue(
+                            nameof(CollisionRelationshipViewModel.CollisionElasticity),
+                            0.0f);
+                    }
+                }
 
-            CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(container, newNos);
+                var sourceClassType = AssetTypeInfoManager.GetCollisionRelationshipSourceClassType(container, addObjectModel.Properties);
+                addObjectModel.SourceClassType = sourceClassType;
 
-            if (GlueState.Self.CurrentElement == container)
-            {
-                GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-            }
+                // setting the SourceClassType sets the ObjectName. Overwrite it...
+                addObjectModel.ObjectName = "ToBeRenamed";
 
-            GlueState.Self.CurrentNamedObjectSave = newNos;
-            GlueCommands.Self.DialogCommands.FocusTab("Collision");
+                var newNos =
+                    await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
+                    container, listToAddTo: null);
 
-            CollisionRelationshipViewModelController.RefreshViewModel(newNos);
+                // this will regenerate and save everything too:
+                CollisionRelationshipViewModelController.TryApplyAutoName(
+                    container, newNos);
+
+
+                RefreshViewModelTo(container, firstNos, ViewModel);
+
+                CollisionRelationshipViewModelController.TryFixMassesForTileShapeCollisionRelationship(container, newNos);
+
+                if (GlueState.Self.CurrentElement == container)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+                }
+
+                GlueState.Self.CurrentNamedObjectSave = newNos;
+                GlueCommands.Self.DialogCommands.FocusTab("Collision");
+
+                CollisionRelationshipViewModelController.RefreshViewModel(newNos);
+            }, $"Creating collision relationships between {firstNosName} and {secondNosName}", doOnUiThread:true);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
 {
@@ -24,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CleanupPlugin
         private void RemoveEventGeneratedCodefile(IElement element)
         {
             string fileName = element.Name + ".Generated.Event.cs";
-            string fullFileName = ProjectManager.ProjectBase.Directory + fileName;
+            FilePath fullFileName = ProjectManager.ProjectBase.Directory + fileName;
 
             GlueCommands.Self.ProjectCommands.RemoveFromProjects(fullFileName);
             

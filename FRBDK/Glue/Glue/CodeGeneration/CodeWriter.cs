@@ -995,7 +995,8 @@ namespace FlatRedBallAddOns.Entities
             PerformancePluginCodeGenerator.GenerateStart("General AddToManagers code");
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
-                .OrderBy(item => (int)item.CodeLocation))
+                .OrderBy(item => (int)item.CodeLocation)
+                .Where(item => item.CodeLocation != CodeLocation.AfterStandardGenerated))
             {
                 codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
             }
@@ -1040,6 +1041,17 @@ namespace FlatRedBallAddOns.Entities
                     currentBlock.Line("AddToManagersBottomUp(layerToAddTo);");
                 }
             }
+
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
+                .OrderBy(item => (int)item.CodeLocation)
+                .Where(item => item.CodeLocation == CodeLocation.AfterStandardGenerated))
+            {
+                codeGenerator.GenerateAddToManagers(currentBlock, saveObject);
+            }
+
+
+
             PerformancePluginCodeGenerator.GenerateEnd();
 
 

@@ -86,7 +86,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 }
                 else if(currentNode.IsRootNamedObjectNode())
                 {
-                    GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
+                    await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog();
                 }
                 else if(currentNode.IsRootCustomVariablesNode())
                 {

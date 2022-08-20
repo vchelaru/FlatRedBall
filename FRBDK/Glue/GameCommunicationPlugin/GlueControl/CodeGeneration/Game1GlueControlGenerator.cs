@@ -156,6 +156,12 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                     }
                 }
                 codeBlock.Line(";");
+
+                codeBlock.Line("FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += (screen) =>");
+                var innerDestroyBlock = codeBlock.Block();
+                innerDestroyBlock.Line("GlueControl.Editing.EditorVisuals.DestroyContainedObjects();");
+
+                codeBlock.Line(";");
             }
         }
     }

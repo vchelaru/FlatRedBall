@@ -267,6 +267,7 @@ namespace FlatRedBall.AnimationEditorForms
             else
             {
                 AnimationFrameSave afs = new AnimationFrameSave();
+                afs.ShapeCollectionSave = new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
 
                 var texture = this.mInspectableTexture.Texture;
                 var achxFolder = FlatRedBall.IO.FileManager.GetDirectory(ProjectManager.Self.FileName);
@@ -280,6 +281,7 @@ namespace FlatRedBall.AnimationEditorForms
                 afs.BottomCoordinate = maxY / (float)texture.Height;
 
                 afs.FrameLength = .1f; // default to .1 seconds.  
+
 
                 chain.Frames.Add(afs);
 

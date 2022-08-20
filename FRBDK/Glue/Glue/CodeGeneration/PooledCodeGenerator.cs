@@ -9,9 +9,18 @@ namespace FlatRedBall.Glue.CodeGeneration
 {
     internal class PooledCodeGenerator : ElementComponentCodeGenerator
     {
+        bool IsPoolable(IElement element)
+        {
+            return element is EntitySave asEntity &&
+                asEntity.PooledByFactory &&
+                asEntity.CreatedByOtherEntities &&
+                asEntity.GetAllBaseEntities().Count(item => item.CreatedByOtherEntities) == 0;
+        }
+
+
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {
-            if (element is EntitySave && ((EntitySave)element).CreatedByOtherEntities)
+            if (IsPoolable(element))
             {
                 listToAddTo.Add("FlatRedBall.Performance.IPoolable");
             }
@@ -24,7 +33,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 EntitySave asEntity = element as EntitySave;
 
-                if (asEntity.CreatedByOtherEntities && asEntity.GetAllBaseEntities().Count(item=>item.CreatedByOtherEntities) == 0)
+                // Sept 19, 2022
+                // Shouldn't this only be true if pooled?
+                //if (asEntity.CreatedByOtherEntities && asEntity.GetAllBaseEntities().Count(item=>item.CreatedByOtherEntities) == 0)
+                if (IsPoolable(element))
                 {
                     codeBlock.AutoProperty("public int", "Index");
                     codeBlock.AutoProperty("public bool", "Used");

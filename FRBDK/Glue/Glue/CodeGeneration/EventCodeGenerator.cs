@@ -316,7 +316,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         try
                         {
-                            InjectTextForEventAndSaveCustomFile(element, ers, "");
+                            InjectTextForEventAndSaveCustomFile(element as GlueElement, ers, "");
                         }
                         catch(Exception e)
                         {
@@ -337,7 +337,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             // because generated code expects this to always exist. Let's
                             // make an empty stub
 
-                            InjectTextForEventAndSaveCustomFile(element, ers, "");
+                            InjectTextForEventAndSaveCustomFile(element as GlueElement, ers, "");
                         }
                     }
                 }
@@ -410,7 +410,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(ProjectManager.ProjectBase, generatedFilePath, false, false);
             }
 
-            ICodeBlock codeBlock = GenerateEventGeneratedCodeFile(element);
+            ICodeBlock codeBlock = GenerateEventGeneratedCodeFile(element as GlueElement);
 
             // Let's try this a few times:
             int numberOfFailures = 0;
@@ -438,7 +438,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static ICodeBlock GenerateEventGeneratedCodeFile(IElement element)
+        private static ICodeBlock GenerateEventGeneratedCodeFile(GlueElement element)
         {
             ICodeBlock codeBlock = new CodeDocument();
             var currentBlock = codeBlock;
@@ -464,7 +464,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static ICodeBlock FillWithGeneratedEventCode(ICodeBlock currentBlock, EventResponseSave ers, IElement element)
+        public static ICodeBlock FillWithGeneratedEventCode(ICodeBlock currentBlock, EventResponseSave ers, GlueElement element)
         {
             EventSave eventSave = ers.GetEventSave();
 
@@ -481,12 +481,18 @@ namespace FlatRedBall.Glue.CodeGeneration
                     .Line(ers.EventName + "(" + reducedArgs + ");")
                     .End();
 
+                foreach(var generator in CodeWriter.CodeGenerators)
+                {
+                    generator.GenerateEvent(currentBlock, element as GlueElement, ers);
+                }
                 currentBlock = currentBlock.End();
             }
+
+
             return currentBlock;
         }
 
-        public static ICodeBlock FillWithCustomEventCode(ICodeBlock currentBlock, EventResponseSave ers, string contents, IElement element)
+        public static ICodeBlock FillWithCustomEventCode(ICodeBlock currentBlock, EventResponseSave ers, string contents, GlueElement element)
         {
             string args = ers.GetArgsForMethod(element);
 
@@ -619,7 +625,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// <param name="eventResponseSave">The EventResponseSave which should have its contents set or replaced.</param>
         /// <param name="insideOfMethod">The inside of the methods to assign.</param>
         /// <returns>The full file name which contains the method contents.</returns>
-        public static string InjectTextForEventAndSaveCustomFile(IElement currentElement, EventResponseSave eventResponseSave, string insideOfMethod)
+        public static string InjectTextForEventAndSaveCustomFile(GlueElement currentElement, EventResponseSave eventResponseSave, string insideOfMethod)
         {
             // In case the user passes null we don't want to have null reference exceptions:
             if (insideOfMethod == null)
@@ -648,7 +654,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
 
-            CreateEmptyCodeIfNecessary(currentElement as GlueElement, fullFileName, forceRegenerate);
+            CreateEmptyCodeIfNecessary(currentElement, fullFileName, forceRegenerate);
 
             fileContents = FileManager.FromFileText(fullFileName);
 

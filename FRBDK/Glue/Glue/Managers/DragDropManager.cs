@@ -506,7 +506,7 @@ namespace FlatRedBall.Glue.Managers
                     eventResponseSave.DelegateType = null;
 
                     var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
-                    RightClickHelper.AddEventToElementAndSave(element, eventResponseSave);
+                    GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(element, eventResponseSave);
 
                 }
             }
@@ -1086,7 +1086,7 @@ namespace FlatRedBall.Glue.Managers
                     AddObjectViewModel viewModel = new AddObjectViewModel();
                     viewModel.SourceType = SourceType.File;
                     viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave);
-                    GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                    await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
                 }
                 else if (targetNode.IsNamedObjectNode() &&
                     // dropping on an object in the same element

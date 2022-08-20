@@ -123,7 +123,7 @@ namespace GumPlugin.Managers
 
                 var newMenuitem = new GeneralToolStripMenuItem($"Add Gum Component to {FileManager.RemovePath(entity.Name)}");
                 menuToModify.Add(newMenuitem);
-                newMenuitem.Click += (not, used) =>
+                newMenuitem.Click += async (not, used) =>
                 {
                     var gumComponent = new ComponentSave();
                     gumComponent.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Component"));
@@ -149,7 +149,7 @@ namespace GumPlugin.Managers
                     addObjectViewModel.SourceClassType = ati.QualifiedRuntimeTypeName.QualifiedType;
                     addObjectViewModel.ObjectName = "GumObject";
 
-                    GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, entity);
+                    await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, entity);
                 };
             }
         }

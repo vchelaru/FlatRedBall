@@ -77,7 +77,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region NamedObjectSave
 
-        public NamedObjectSave ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null)
+        public async Task<NamedObjectSave> ShowAddNewObjectDialog(AddObjectViewModel addObjectViewModel = null)
         {
             NamedObjectSave newNamedObject = null;
 
@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (isValid)
                 {
-                    newNamedObject = GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                    newNamedObject = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                     GlueState.Self.CurrentNamedObjectSave = newNamedObject;
                 }
                 else
@@ -541,7 +541,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else
                         {
-                            var entity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(viewModel, directory);
+                            var entity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(viewModel, directory);
 
                             await TaskManager.Self.AddAsync(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),

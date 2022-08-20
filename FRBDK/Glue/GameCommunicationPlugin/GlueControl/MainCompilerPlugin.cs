@@ -295,7 +295,7 @@ namespace GameCommunicationPlugin.GlueControl
                 var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
                 newViewModel.GlueElement = entitySave;
                 newViewModel.StateSave = state;
-                newViewModel.Clicked += () =>
+                newViewModel.Clicked += async () =>
                 {
                     var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
                     if(!canEdit)
@@ -315,7 +315,7 @@ namespace GameCommunicationPlugin.GlueControl
 
                         var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
 
-                        newNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(
+                        newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
                             addObjectViewModel,
                             element,
                             listToAddTo);
@@ -330,7 +330,7 @@ namespace GameCommunicationPlugin.GlueControl
                         if (category != null)
                         {
                             var variableName = $"Current{category.Name}State";
-                            GlueCommands.Self.GluxCommands.SetVariableOn(newNos, variableName, state.Name);
+                            await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNos, variableName, state.Name);
                         }
                     }
                 };
@@ -806,7 +806,7 @@ namespace GameCommunicationPlugin.GlueControl
             var dto = new Dtos.SetEditMode 
             { 
                 IsInEditMode = inEditMode ,
-                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName.FullPath
+                AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
             var response = await _commandSender.Send<Dtos.GeneralCommandResponse>(dto);
 

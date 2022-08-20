@@ -86,13 +86,37 @@ namespace TiledPluginCore.Managers
 
         public void IncludeDefaultTilesetOn(ReferencedFileSave newFile)
         {
-            var old = Tileset.ShouldLoadValuesFromSource;
+            bool old;
+            FilePath fullTmxFile, existingDefaultTilesetFile;
+            TiledMapSave tileMapSave;
+            SaveTilesetFilesToDisk(out existingDefaultTilesetFile);
+            old = Tileset.ShouldLoadValuesFromSource;
             Tileset.ShouldLoadValuesFromSource = false;
-            var fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
-            var tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
+            fullTmxFile = new FilePath(GlueCommands.Self.FileCommands.GetFullFileName(newFile));
 
-            FilePath existingDefaultTilesetFile = null;
+            tileMapSave = TMXGlueLib.TiledMapSave.FromFile(fullTmxFile.FullPath);
 
+            var standardTileset = new Tileset();
+
+            var tmxDirectory = fullTmxFile.GetDirectoryContainingThis();
+            standardTileset.Source = FileManager.MakeRelative(existingDefaultTilesetFile.FullPath, tmxDirectory.FullPath);
+
+
+            tileMapSave.Tilesets.Add(standardTileset);
+
+            tileMapSave.Save(fullTmxFile.FullPath);
+            Tileset.ShouldLoadValuesFromSource = old;
+
+        }
+
+        public void SaveTilesetFilesToDisk()
+        {
+            SaveTilesetFilesToDisk(out FilePath ____);
+        }
+
+        private void SaveTilesetFilesToDisk(out FilePath existingDefaultTilesetFile)
+        {
+            existingDefaultTilesetFile = null;
             if (existingDefaultTilesetFile == null)
             {
                 var folder = new FilePath(
@@ -140,18 +164,6 @@ namespace TiledPluginCore.Managers
                     GlueCommands.Self.PrintOutput($"Did not save {destinationPng}, file already exists.");
                 }
             }
-
-
-            var standardTileset = new Tileset();
-
-            var tmxDirectory = fullTmxFile.GetDirectoryContainingThis();
-            standardTileset.Source = FileManager.MakeRelative( existingDefaultTilesetFile.FullPath, tmxDirectory.FullPath) ;
-
-            tileMapSave.Tilesets.Add(standardTileset);
-
-            tileMapSave.Save(fullTmxFile.FullPath);
-            Tileset.ShouldLoadValuesFromSource = old;
-
         }
 
         public void AddCollisionBorderOn(ReferencedFileSave newFile)

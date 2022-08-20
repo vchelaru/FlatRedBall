@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace FlatRedBall.Input
@@ -14,14 +13,11 @@ namespace FlatRedBall.Input
             this.analogStick = analogStick;
         }
 
-        public float Value
-        {
-            get { return analogStick.Position.X; }
-        }
+        public float Value => analogStick.Position.X; 
 
-        public float Velocity
-        {
-            get { return analogStick.Velocity.X; }
-        }
+        public float Velocity => analogStick.Velocity.X; 
+
+        bool I1DInput.IsAnalog => true;
+
     }
 }

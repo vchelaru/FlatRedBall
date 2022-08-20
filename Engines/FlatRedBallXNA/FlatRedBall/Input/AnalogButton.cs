@@ -58,29 +58,13 @@ namespace FlatRedBall.Input
             }
         }
 
-        public bool WasJustPressed
-        {
-            get
-            {
-                return !lastDPadDown && IsDown;
-            }
-        }
+        public bool WasJustPressed => !lastDPadDown && IsDown;
 
-        public bool WasJustReleased
-        {
-            get
-            {
-                return lastDPadDown && !IsDown;
-            }
-        }
+        public bool WasJustReleased => lastDPadDown && !IsDown;
 
-        float I1DInput.Value
-        {
-            get
-            {
-                return Position;
-            }
-        }
+        float I1DInput.Value =>  Position;
+
+        bool I1DInput.IsAnalog => true;
 
         #endregion
 

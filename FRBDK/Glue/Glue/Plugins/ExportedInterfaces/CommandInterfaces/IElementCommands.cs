@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.ViewModels;
 
@@ -14,7 +15,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         SaveClasses.EntitySave AddEntity(string entityName, bool is2D = false);
 
-        SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null);
+        Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null);
+
+        void AddEntity(EntitySave entitySave);
+        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
 
 
         #endregion
@@ -40,15 +44,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
-        void AddEntity(EntitySave entitySave);
-        void AddEntity(EntitySave entitySave, bool suppressAlreadyExistingFileMessage);
-
         #region Add CustomVariable
         Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true);
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
         void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true);
+        Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
+        #endregion
+
+        #region Events
+
+        Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement);
+
+        void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave);
 
         #endregion
 

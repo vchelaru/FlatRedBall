@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.SetVariable
                 if (string.IsNullOrEmpty(contents) || HasMatchingBrackets(contents))
                 {
                     EventCodeGenerator.InjectTextForEventAndSaveCustomFile(
-                        container, ers, contents);
+                        container as GlueElement, ers, contents);
                     PluginManager.ReceiveOutput("Saved " + ers);
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 

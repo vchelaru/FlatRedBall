@@ -584,6 +584,19 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 afs.RelativeY *= -1;
                 afs.FlipVertical = !afs.FlipVertical;
+
+                foreach(var rectangle in afs.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    rectangle.Y *= -1;
+                }
+                foreach(var circle in afs.ShapeCollectionSave.CircleSaves)
+                {
+                    circle.Y *= -1;
+                }
+                foreach(var polygon in afs.ShapeCollectionSave.PolygonSaves)
+                {
+                    polygon.Y *= -1;
+                }
             }
 
             WireframeManager.Self.RefreshAll();
@@ -607,6 +620,19 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 afs.RelativeX *= -1;
                 afs.FlipHorizontal = !afs.FlipHorizontal;
+
+                foreach(var rectangle in afs.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    rectangle.X *= -1;
+                }
+                foreach(var circle in afs.ShapeCollectionSave.CircleSaves)
+                {
+                    circle.X *= -1;
+                }
+                foreach(var polygon in afs.ShapeCollectionSave.PolygonSaves)
+                {
+                    polygon.X *= -1;
+                }
             }
 
             WireframeManager.Self.RefreshAll();

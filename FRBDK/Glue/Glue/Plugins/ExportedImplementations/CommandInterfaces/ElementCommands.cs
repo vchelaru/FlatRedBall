@@ -28,6 +28,7 @@ using GlueFormsCore.Managers;
 using System.Threading.Tasks;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.Glue.Events;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -419,7 +420,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
-        public SaveClasses.EntitySave AddEntity(AddEntityViewModel viewModel, string directory = null)
+        public async Task<SaveClasses.EntitySave> AddEntityAsync(AddEntityViewModel viewModel, string directory = null)
         {
             var gluxCommands = GlueCommands.Self.GluxCommands;
 
@@ -445,7 +446,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "SpriteInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -455,7 +456,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "TextInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -465,7 +466,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "CircleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -475,7 +476,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 GlueState.Self.CurrentElement = newElement;
             }
 
@@ -499,7 +500,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
-                var nos = gluxCommands.AddNewNamedObjectToSelectedElement(addObjectViewModel);
+                var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
                 CustomVariableInNamedObject instructions = null;
                 instructions = nos.GetCustomVariable("Points");
                 if (instructions == null)
@@ -719,6 +720,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
         }
+
+        public async Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true)
+        {
+            await TaskManager.Self.AddAsync(() => AddCustomVariableToElement(newVariable, element, save),
+                $"Adding variable {newVariable.Name} to {element}");
+        }
+
 
         private void UpdateInstanceCustomVariables(IElement currentElement)
         {
@@ -1008,6 +1016,62 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return ProjectManager.ContentDirectory + resultNameInFolder;
         }
 
+        #endregion
+
+        #region Events
+
+        public async Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement)
+        {
+
+            string eventName = viewModel.EventName;
+
+            string failureMessage;
+            bool isInvalid = NameVerifier.IsEventNameValid(eventName,
+                glueElement, out failureMessage);
+
+            if (isInvalid)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(failureMessage);
+            }
+            else if (!isInvalid)
+            {
+                await TaskManager.Self.AddAsync(() =>
+                {
+                    EventResponseSave eventResponseSave = new EventResponseSave();
+                    eventResponseSave.EventName = eventName;
+
+                    eventResponseSave.SourceObject = viewModel.TunnelingObject;
+                    eventResponseSave.SourceObjectEvent = viewModel.TunnelingEvent;
+
+                    eventResponseSave.SourceVariable = viewModel.SourceVariable;
+                    eventResponseSave.BeforeOrAfter = viewModel.BeforeOrAfter;
+
+                    eventResponseSave.DelegateType = viewModel.DelegateType;
+
+                    AddEventToElement(glueElement, eventResponseSave);
+                }, $"Adding element {viewModel.EventName}");
+            }
+        }
+
+        public void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave)
+        {
+            currentElement.Events.Add(eventResponseSave);
+
+            string fullGeneratedFileName = ProjectManager.ProjectBase.Directory + EventManager.GetGeneratedEventFileNameForElement(currentElement);
+
+            if (!File.Exists(fullGeneratedFileName))
+            {
+                CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
+            }
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+
+            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+
+            GluxCommands.Self.SaveGlux();
+
+            GlueState.Self.CurrentEventResponseSave = eventResponseSave;
+        }
         #endregion
 
         /// <summary>

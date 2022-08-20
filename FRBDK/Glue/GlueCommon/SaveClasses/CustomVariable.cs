@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Xml.Serialization;
@@ -298,6 +299,8 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             get; set;
         }
+
+        public Func<GlueElement, List<string>> CustomGetForcedOptionsFunc;
 
         #endregion
 

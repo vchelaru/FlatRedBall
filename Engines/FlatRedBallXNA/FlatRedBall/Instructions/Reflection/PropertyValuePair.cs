@@ -262,7 +262,7 @@ namespace FlatRedBall.Instructions.Reflection
 
                 #region bool
 
-                if (desiredType == typeof(bool).FullName)
+                if (desiredType == typeof(bool).FullName || desiredType == "bool")
                 {
                     if (string.IsNullOrEmpty(value))
                     {

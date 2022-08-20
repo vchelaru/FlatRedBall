@@ -592,6 +592,7 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 // ctrl is down, so add a new animation frame
                 AnimationFrameSave newFrame = new AnimationFrameSave();
+                newFrame.ShapeCollectionSave = new ShapeCollectionSave();
                 newFrame.FrameLength = .1f;
                 newFrame.TextureName = relativeFile;
                 animationChainSave.Frames.Add(newFrame);

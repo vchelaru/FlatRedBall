@@ -3,6 +3,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System.Collections.Generic;
+using FlatRedBall.Glue.Events;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -146,6 +147,11 @@ namespace FlatRedBall.Glue.CodeGeneration
         public virtual bool HandlesVariable(CustomVariable variable, IElement element)
         {
             return false;
+        }
+
+        public virtual void GenerateEvent(ICodeBlock codeBlock, GlueElement element, EventResponseSave ers)
+        {
+
         }
 
     }

@@ -183,12 +183,18 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             #endregion
 
+            #region Save Project
+
             AddTask("Saving Project", () =>
             {
                 GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
                 return Task.CompletedTask;
             });
 
+            #endregion
+
+
+            #region Run All Tasks
             vm.Tasks = tasks;
 
             TaskItemViewModel currentTask = null;
@@ -235,6 +241,58 @@ namespace OfficialPluginsCore.Wizard.Managers
             // just in case, refresh everything
             GlueCommands.Self.RefreshCommands.RefreshTreeNodes();
 
+            #endregion
+
+        }
+
+        #region Add Gum
+
+        private static async Task HandleAddGum(WizardViewModel vm)
+        {
+            if (vm.AddFlatRedBallForms)
+            {
+                // false argument is for askToOverwrite parameter
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
+            }
+            else
+            {
+                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
+            }
+        }
+
+        #endregion
+
+        #region Add GameScreen
+
+        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
+        {
+            ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
+            NamedObjectSave solidCollisionNos = null;
+            NamedObjectSave cloudCollisionNos = null;
+
+            if (vm.AddTiledMap)
+            {
+                await MainAddScreenPlugin.AddMapObjectAsync(gameScreen);
+            }
+
+            if (vm.AddSolidCollision)
+            {
+                solidCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision",
+                    setFromMapObject: vm.AddTiledMap);
+            }
+            if (vm.AddCloudCollision)
+            {
+                cloudCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
+                    setFromMapObject: vm.AddTiledMap);
+            }
+
+            if (vm.AddHudLayer)
+            {
+                await AddHudLayer(gameScreen);
+            }
+
+
+            return (gameScreen, solidCollisionNos, cloudCollisionNos);
         }
 
         private async Task<NamedObjectSave> HandleAddGumScreenToLayer(ScreenSave gameScreen)
@@ -247,13 +305,162 @@ namespace OfficialPluginsCore.Wizard.Managers
             namedObjectSave.SourceName = "Entire File (GameScreenGumRuntime)";
             namedObjectSave.LayerOn = "HudLayer";
 
-            await TaskManager.Self.AddAsync(
-                () => GlueCommands.Self.GluxCommands.AddNamedObjectTo(namedObjectSave, gameScreen),
-                $"Adding {namedObjectSave.InstanceName} to {gameScreen.Name}");
+            await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(namedObjectSave, gameScreen);
 
             return namedObjectSave;
         }
 
+        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
+        {
+            var addObjectViewModel = new AddObjectViewModel();
+            addObjectViewModel.ForcedElementToAddTo = gameScreen;
+            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
+            addObjectViewModel.ObjectName = "HudLayer";
+
+            NamedObjectSave nos = null;
+            nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, gameScreen, null);
+            return nos;
+        }
+
+        #endregion
+
+        #region Create Levels
+
+        private static async Task HandleCreateLevels(WizardViewModel vm, ScreenSave gameScreen)
+        {
+            for (int i = 0; i < vm.NumberOfLevels; i++)
+            {
+                var levelName = "Level" + (i + 1);
+                await CreateLevel(vm, gameScreen, i, levelName);
+            }
+        }
+
+        private static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int levelIndex0Based, string levelName)
+        {
+            var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
+            levelScreen.BaseScreen = gameScreen.Name;
+            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
+            GlueState.Self.CurrentScreenSave = levelScreen;
+
+
+            if (levelIndex0Based == 0)
+            {
+                GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
+            }
+
+            if (vm.AddGameScreen && vm.AddTiledMap)
+            {
+                // add a regular TMX
+                var addNewFileVm = new AddNewFileViewModel();
+
+                var tmxAti =
+                    AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
+                addNewFileVm.SelectedAssetTypeInfo = tmxAti;
+
+                addNewFileVm.ForcedType = tmxAti;
+                addNewFileVm.FileName = levelName + "Map";
+                var newRfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm, levelScreen);
+
+                var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
+                if (mapObject != null)
+                {
+                    mapObject.SourceType = SourceType.File;
+                    mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
+                    mapObject.SourceName = "Entire File (LayeredTileMap)";
+                }
+
+                void SelectTmxRfs()
+                {
+                    GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
+                        .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
+                }
+
+                bool handledByPremadeLevel = false;
+                if(vm.IncludStandardTilesetInLevels && vm.IncludeGameplayLayerInLevels && vm.IncludeCollisionBorderInLevels)
+                {
+                    var levelIndex1Based = levelIndex0Based + 1;
+
+                    var resourceName = $"OfficialPlugins.Wizard.EmbeddedContent.Levels.{levelName}Map.tmx";
+                    var resourceStream = typeof(WizardProjectLogic).Assembly.GetManifestResourceStream(resourceName);
+
+                    var hasPremade = resourceStream != null;
+                    // dispose it, we'll use standard code to save it:
+                    resourceStream?.Dispose();
+
+                    if(hasPremade)
+                    {
+                        PluginManager.CallPluginMethod("Tiled Plugin", "SaveTilesetFilesToDisk");
+                        
+                        try
+                        {
+                            var rfsAbsolute = GlueCommands.Self.GetAbsoluteFilePath(newRfs);
+                            FileManager.SaveEmbeddedResource(typeof(WizardProjectLogic).Assembly, resourceName, rfsAbsolute.FullPath);
+                            handledByPremadeLevel = true;
+                        }
+                        catch
+                        {
+                            // couldn't save it, oh well...
+                        }
+
+                    }
+                }
+
+                if(!handledByPremadeLevel)
+                {
+                    if (vm.IncludStandardTilesetInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
+                    }
+                    if (vm.IncludeGameplayLayerInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
+                    }
+
+                    if (vm.IncludeCollisionBorderInLevels)
+                    {
+                        SelectTmxRfs();
+                        PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
+                    }
+                }
+
+            }
+        }
+
+        #endregion
+
+        #region Importing Screens/Entities
+
+        private static void ImportElements(WizardViewModel vm)
+        {
+            var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
+
+            foreach (var item in vm.ElementImportUrls)
+            {
+                var destinationFileName = downloadFolder + FileManager.RemovePath(item);
+                TaskManager.Self.Add(() =>
+                {
+                    using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
+                    var downloadTask = NetworkManager.Self.DownloadWithProgress(
+                        httpClient, item, destinationFileName, null);
+
+                    downloadTask.Wait();
+
+                    var result = downloadTask.Result;
+
+                    if (result.Succeeded)
+                    {
+                        GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
+                    }
+                }, "Downloading " + item);
+            }
+        }
+
+        #endregion
+
+        #region Additional serialized Objects(from json)
         private async Task ImportAdditionalObjects(string namedObjectSavesSerialized)
         {
             Dictionary<string, List<NamedObjectSave>> deserialized = null;
@@ -321,7 +528,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     {
                         NamedObjectSave listToAddTo = ObjectFinder.Self.GetDefaultListToContain(nos, glueElement);
 
-                        GlueCommands.Self.GluxCommands.AddNamedObjectTo(nos, glueElement, listToAddTo);
+                        await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(nos, glueElement, listToAddTo);
 
                         if (nos.ExposedInDerived)
                         {
@@ -341,7 +548,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
                             foreach (var subNos in nos.ContainedObjects)
                             {
-                                GlueCommands.Self.GluxCommands.AddNamedObjectTo(subNos, glueElement, nos);
+                                await GlueCommands.Self.GluxCommands.AddNamedObjectToAsync(subNos, glueElement, nos);
 
                             }
 
@@ -351,94 +558,9 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static void ImportElements(WizardViewModel vm)
-        {
-            var downloadFolder = FileManager.UserApplicationDataForThisApplication + "ImportDownload\\";
-
-            foreach (var item in vm.ElementImportUrls)
-            {
-                var destinationFileName = downloadFolder + FileManager.RemovePath(item);
-                TaskManager.Self.Add(() =>
-                {
-                    using var httpClient = new HttpClient { Timeout = TimeSpan.FromDays(1), };
-                    var downloadTask = NetworkManager.Self.DownloadWithProgress(
-                        httpClient, item, destinationFileName, null);
-
-                    downloadTask.Wait();
-
-                    var result = downloadTask.Result;
-
-                    if (result.Succeeded)
-                    {
-                        GlueCommands.Self.GluxCommands.ImportScreenOrEntityFromFile(destinationFileName);
-                    }
-                }, "Downloading " + item);
-            }
-        }
-
-        private static async Task HandleAddGum(WizardViewModel vm)
-        {
-            if (vm.AddFlatRedBallForms)
-            {
-                // false argument is for askToOverwrite parameter
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectWithForms", false);
-            }
-            else
-            {
-                await PluginManager.CallPluginMethodAsync("Gum Plugin", "CreateGumProjectNoForms", false);
-            }
-        }
-
-        private static async Task<(ScreenSave gameScreen, NamedObjectSave solidCollision, NamedObjectSave cloudCollisionNos)> HandleAddGameScreen(WizardViewModel vm)
-        {
-            ScreenSave gameScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen("GameScreen");
-            NamedObjectSave solidCollisionNos = null;
-            NamedObjectSave cloudCollisionNos = null;
-
-            if (vm.AddTiledMap)
-            {
-                TaskManager.Self.AddOrRunIfTasked(() => MainAddScreenPlugin.AddMapObject(gameScreen), "Adding map object");
-            }
-
-            if (vm.AddSolidCollision)
-            {
-                solidCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "SolidCollision",
-                    setFromMapObject: vm.AddTiledMap);
-            }
-            if (vm.AddCloudCollision)
-            {
-                cloudCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
-                    setFromMapObject: vm.AddTiledMap);
-            }
-
-            if (vm.AddHudLayer)
-            {
-                await AddHudLayer(gameScreen);
-            }
+        #endregion
 
 
-            return (gameScreen, solidCollisionNos, cloudCollisionNos);
-        }
-
-        private static async Task<NamedObjectSave> AddHudLayer(ScreenSave gameScreen)
-        {
-            var addObjectViewModel = new AddObjectViewModel();
-            addObjectViewModel.ForcedElementToAddTo = gameScreen;
-            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-            addObjectViewModel.SourceClassType = "FlatRedBall.Graphics.Layer";
-            addObjectViewModel.ObjectName = "HudLayer";
-
-            NamedObjectSave nos = null;
-
-            var task = TaskManager.Self.AddOrRunIfTasked(() =>
-            {
-                nos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
-            }, "Adding Layer to Screen");
-
-            await TaskManager.Self.WaitForTaskToFinish(task);
-
-            return nos;
-        }
 
         private static async Task<EntitySave> HandleAddPlayerEntity(WizardViewModel vm)
         {
@@ -600,11 +722,7 @@ namespace OfficialPluginsCore.Wizard.Managers
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
 
-            await TaskManager.Self.AddAsync(() =>
-            {
-                playerEntity = GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(addEntityVm);
-            },
-            "Adding Player Entity");
+            playerEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(addEntityVm);
 
 
 
@@ -659,7 +777,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     addObjectViewModel.SourceClassGenericType = playerEntity.Name;
                     addObjectViewModel.ObjectName = $"{playerEntity.GetStrippedName()}List";
 
-                    playerList = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addObjectViewModel, gameScreen, null);
+                    playerList = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, gameScreen, null);
                 }
 
                 if (vm.AddPlayerToList)
@@ -670,7 +788,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     addPlayerVm.SourceClassType = playerEntity.Name;
                     addPlayerVm.ObjectName = "Player1";
 
-                    var playerNos = GlueCommands.Self.GluxCommands.AddNewNamedObjectTo(addPlayerVm, gameScreen, playerList);
+                    var playerNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addPlayerVm, gameScreen, playerList);
 
                     playerNos.SetVariable("X", 64.0f);
                     playerNos.SetVariable("Y", -64.0f);
@@ -739,74 +857,6 @@ namespace OfficialPluginsCore.Wizard.Managers
             }
         }
 
-        private static async Task HandleCreateLevels(WizardViewModel vm, ScreenSave gameScreen)
-        {
-            for (int i = 0; i < vm.NumberOfLevels; i++)
-            {
-                var levelName = "Level" + (i + 1);
-                await CreateLevel(vm, gameScreen, i, levelName);
-            }
-        }
-
-        private static async Task CreateLevel(WizardViewModel vm, ScreenSave gameScreen, int i, string levelName)
-        {
-            var levelScreen = await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(levelName);
-            levelScreen.BaseScreen = gameScreen.Name;
-            GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(levelScreen);
-            GlueState.Self.CurrentScreenSave = levelScreen;
-
-
-            if (i == 0)
-            {
-                GlueCommands.Self.GluxCommands.StartUpScreenName = levelScreen.Name;
-            }
-
-            if (vm.AddGameScreen && vm.AddTiledMap)
-            {
-                // add a regular TMX
-                var addNewFileVm = new AddNewFileViewModel();
-
-                var tmxAti =
-                    AvailableAssetTypes.Self.GetAssetTypeFromExtension("tmx");
-                addNewFileVm.SelectedAssetTypeInfo = tmxAti;
-
-                addNewFileVm.ForcedType = tmxAti;
-                addNewFileVm.FileName = levelName + "Map";
-                await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(addNewFileVm, levelScreen);
-
-                var mapObject = levelScreen.NamedObjects.FirstOrDefault(item => item.InstanceName == "Map" && item.GetAssetTypeInfo().FriendlyName.StartsWith("LayeredTileMap"));
-                if (mapObject != null)
-                {
-                    mapObject.SourceType = SourceType.File;
-                    mapObject.SourceFile = $"Screens/{levelName}/{levelName}Map.tmx";
-                    mapObject.SourceName = "Entire File (LayeredTileMap)";
-                }
-
-                void SelectTmxRfs()
-                {
-                    GlueState.Self.CurrentReferencedFileSave = levelScreen.ReferencedFiles
-                        .FirstOrDefault(Item => Item.GetAssetTypeInfo()?.Extension == "tmx");
-                }
-
-                if (vm.IncludStandardTilesetInLevels)
-                {
-                    SelectTmxRfs();
-                    PluginManager.CallPluginMethod("Tiled Plugin", "AddStandardTilesetOnCurrentFile");
-                }
-                if (vm.IncludeGameplayLayerInLevels)
-                {
-                    SelectTmxRfs();
-                    PluginManager.CallPluginMethod("Tiled Plugin", "AddGameplayLayerToCurrentFile");
-                }
-
-                if (vm.IncludeCollisionBorderInLevels)
-                {
-                    SelectTmxRfs();
-                    PluginManager.CallPluginMethod("Tiled Plugin", "AddCollisionBorderToCurrentFile");
-                }
-
-            }
-        }
 
         private static async Task AddAdditionalScreens(WizardViewModel vm)
         {

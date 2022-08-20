@@ -848,7 +848,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
                         if (this.Y > lastY)
                         {
-                            if (!mIsOnGround && LandedAction != null)
+                            if (!WasOnGroundLastFrame && LandedAction != null)
                             {
                                 LandedAction();
                             }

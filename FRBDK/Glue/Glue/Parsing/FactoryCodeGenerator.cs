@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.Parsing
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             // This needs to be before the base.Destroy(); call so that the derived class can make itself unused before the base class get a chance
-            if (element is EntitySave && (element as EntitySave).CreatedByOtherEntities)
+            if (element is EntitySave entity && entity.CreatedByOtherEntities && entity.PooledByFactory)
             {
                 // Other generators rely on wasUsed being declared in the method whether or not the type is abstract
                 codeBlock.Line("var wasUsed = this.Used;");
@@ -455,14 +455,19 @@ namespace FlatRedBall.Glue.Parsing
             var methodTag = codeContent.GetTag("Methods")[0];
 
             var methodBlock = GetAllFactoryMethods(factoryClassName, baseEntityName, numberOfInstancesToPool,
-                                                ShouldPoolObjects);
+                                                ShouldPoolObjects, EntitySave);
             methodTag.InsertBlock(methodBlock);
 
             var codeBlock = new CodeBlockBase(null);
             codeBlock.Line("static string mContentManagerName;");
             codeBlock.Line("static System.Collections.Generic.List<System.Collections.IList> ListsToAddTo = new System.Collections.Generic.List<System.Collections.IList>();");
 
-            codeBlock.Line(string.Format("static PoolList<{0}> mPool = new PoolList<{0}>();", entityClassName));
+            // August 19, 2022
+            // Let's only add this if it's pooled
+            if(EntitySave.PooledByFactory)
+            {
+                codeBlock.Line(string.Format("static PoolList<{0}> mPool = new PoolList<{0}>();", entityClassName));
+            }
 
             // January 9, 2022
             // Vic asks - why is
@@ -518,7 +523,7 @@ namespace FlatRedBall.Glue.Parsing
                 $"System.Collections.Generic.List<System.Collections.IList> IEntityFactory.ListsToAddTo => {factoryClassName}.ListsToAddTo;");
         }
 
-        private static ICodeBlock GetAllFactoryMethods(string factoryClassName, string baseClassName, int numberToPreAllocate, bool poolObjects)
+        private static ICodeBlock GetAllFactoryMethods(string factoryClassName, string baseClassName, int numberToPreAllocate, bool poolObjects, EntitySave entitySave)
         {
             string className = factoryClassName.Substring(0, factoryClassName.Length - "Factory".Length);
 
@@ -531,9 +536,9 @@ namespace FlatRedBall.Glue.Parsing
             GetInitializeFactoryMethod(codeBlock, className, poolObjects, "mScreenListReference");
             codeBlock._();
 
-            GetDestroyFactoryMethod(codeBlock, factoryClassName);
+            GetDestroyFactoryMethod(codeBlock, factoryClassName, entitySave);
             codeBlock._();
-            GetFactoryInitializeMethod(codeBlock, factoryClassName, numberToPreAllocate);
+            GetFactoryInitializeMethod(codeBlock, factoryClassName, numberToPreAllocate, entitySave);
             codeBlock._();
             GetMakeUnusedFactory(codeBlock, factoryClassName, poolObjects);
             codeBlock._();
@@ -665,25 +670,32 @@ namespace FlatRedBall.Glue.Parsing
             return codeBlock;
         }
 
-        private static ICodeBlock GetDestroyFactoryMethod(ICodeBlock codeBlock, string className)
+        private static ICodeBlock GetDestroyFactoryMethod(ICodeBlock codeBlock, string className, EntitySave entity)
         {
             className = className.Substring(0, className.Length - "Factory".Length);
 
-            codeBlock
-                .Function("public static void", "Destroy", "")
+            var functionBlock = codeBlock
+                .Function("public static void", "Destroy", "");
+
+            functionBlock
                     .Line("mContentManagerName = null;")
                     .Line("ListsToAddTo.Clear();")
-                    .Line("SortAxis = null;")
-                    .Line("mPool.Clear();")
-                    .Line("EntitySpawned = null;")
-                .End();
+                    .Line("SortAxis = null;");
+            if(entity.PooledByFactory)
+            {
+                functionBlock
+                        .Line("mPool.Clear();");
+            }
+
+            functionBlock
+                    .Line("EntitySpawned = null;");
 
             codeBlock.Line("void IEntityFactory.Destroy() => Destroy();");
 
             return codeBlock;
         }
 
-        private static ICodeBlock GetFactoryInitializeMethod(ICodeBlock codeBlock, string factoryClassName, int numberToPreAllocate)
+        private static ICodeBlock GetFactoryInitializeMethod(ICodeBlock codeBlock, string factoryClassName, int numberToPreAllocate, EntitySave entity)
         {
             string entityClassName = factoryClassName.Substring(0, factoryClassName.Length - "Factory".Length);
 
@@ -702,12 +714,15 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("numberToPreAllocate = 0;");
             }
 
-            functionBlock
-                    .For("int i = 0; i < numberToPreAllocate; i++")
-                        .Line(string.Format("{0} instance = new {0}(mContentManagerName, false);", entityClassName))
-                        .Line("mPool.AddToPool(instance);")
-                    .End()
-                .End();
+            if(entity.PooledByFactory)
+            {
+                functionBlock
+                        .For("int i = 0; i < numberToPreAllocate; i++")
+                            .Line(string.Format("{0} instance = new {0}(mContentManagerName, false);", entityClassName))
+                            .Line("mPool.AddToPool(instance);")
+                        .End()
+                    .End();
+            }
 
             return codeBlock;
         }

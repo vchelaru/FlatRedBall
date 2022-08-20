@@ -422,7 +422,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Func<ReferencedFileSave, List<AssetTypeInfo>> GetAvailableAssetTypes { get; protected set; }
 
-        public Action<NamedObjectSave, NamedObjectSave> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
+        public Func<NamedObjectSave, NamedObjectSave, Task> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
 
         public Func<ITreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
 
@@ -677,8 +677,13 @@ namespace FlatRedBall.Glue.Plugins
 
         protected void AddAssetTypeInfo(AssetTypeInfo ati)
         {
-            AddedAssetTypeInfos.Add(ati);
-            AvailableAssetTypes.Self.AddAssetType(ati);
+            // see if it already exists
+            var alreadyExists = AddedAssetTypeInfos.Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
+            if(!alreadyExists)
+            {
+                AddedAssetTypeInfos.Add(ati);
+                AvailableAssetTypes.Self.AddAssetType(ati);
+            }
         }
 
         public void UnregisterAssetTypeInfos()
