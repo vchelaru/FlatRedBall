@@ -1673,6 +1673,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            // The owner of this NOS could be an entity which is referenced in other collision relationships, and 
+            // those collision relationships may reference this NOS as a sub type
+            FillWithCollisionRelationshipsReferencing(namedObject, owner, toReturn);
+
             List<IElement> derivedElements = new List<IElement>();
             derivedElements.AddRange(ObjectFinder.Self.GetAllElementsThatInheritFrom(owner as EntitySave));
 
@@ -1707,6 +1711,54 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             return toReturn;
+        }
+
+        private static void FillWithCollisionRelationshipsReferencing(NamedObjectSave namedObject, GlueElement owner, ObjectsToRemove toReturn)
+        {
+            var nosesReferencingOwner = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
+
+            foreach(var possibleCollisionRelationship in nosesReferencingOwner)
+            {
+                if(possibleCollisionRelationship.IsCollisionRelationship())
+                {
+                    var collisionRelationshipOwner = ObjectFinder.Self.GetElementContaining(possibleCollisionRelationship);
+                    var firstReferencedNos = possibleCollisionRelationship.Properties.GetValue<string>("FirstCollisionName");
+                    var secondReferencedNos = possibleCollisionRelationship.Properties.GetValue<string>("SecondCollisionName");
+
+                    var firstNos = collisionRelationshipOwner.GetNamedObjectRecursively(firstReferencedNos);
+                    var secondNos = collisionRelationshipOwner.GetNamedObjectRecursively(secondReferencedNos);
+
+                    bool DoesReferenceOwner(NamedObjectSave nosToCheck)
+                    {
+                        return nosToCheck?.SourceClassType == owner.Name || nosToCheck?.SourceClassGenericType == owner.Name;
+                    }
+
+                    var shouldAdd = false;
+                    if(DoesReferenceOwner(firstNos))
+                    {
+                        var firstSub = possibleCollisionRelationship.Properties.GetValue<string>("FirstSubCollisionSelectedItem");
+
+                        if (firstSub == namedObject.InstanceName)
+                        {
+                            shouldAdd = true;
+                        }
+                    }
+                    if(!shouldAdd && DoesReferenceOwner(secondNos))
+                    {
+                        var secondSub = possibleCollisionRelationship.Properties.GetValue<string>("SecondSubCollisionSelectedItem");
+
+                        if(secondSub == namedObject.InstanceName)
+                        {
+                            shouldAdd = true;
+                        }
+                    }
+
+                    if(shouldAdd)
+                    {
+                        toReturn.CollisionRelationships.Add(possibleCollisionRelationship);
+                    }
+                }
+            }
         }
 
         private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi,

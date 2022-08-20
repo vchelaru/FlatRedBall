@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.Managers
 
             return false;
         }
-        public static void HandleDeletePressed()
+        public static async void HandleDeletePressed()
         {
             var treeNode = GlueState.Self.CurrentTreeNode;
             if(
@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                RightClickHelper.RemoveFromProjectToolStripMenuItem();
+                await RightClickHelper.RemoveFromProjectToolStripMenuItem();
             }
         }
     }
