@@ -99,9 +99,12 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 RefreshHandleVisuals();
                 View.Canvas.InvalidateVisual();
             } else {
-                View.GetWorldPosition(e.GetPosition(View.Canvas), out double worldX, out double worldY);
-                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
-                View.SelectCell(curr_cX, curr_cY);
+                if(e.ChangedButton == MouseButton.Left)
+                {
+                    View.GetWorldPosition(e.GetPosition(View.Canvas), out double worldX, out double worldY);
+                    View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
+                    View.SelectCell(curr_cX, curr_cY);
+                }
             }
 
             // Copy int to decimal values to prevent "flickering" due to half pixels when moving on subsequent grabs:
