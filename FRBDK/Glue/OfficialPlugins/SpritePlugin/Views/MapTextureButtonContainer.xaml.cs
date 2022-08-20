@@ -2,6 +2,8 @@
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using Glue;
+using GlueFormsCore.Extensions;
 using OfficialPlugins.SpritePlugin.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -69,22 +71,36 @@ namespace OfficialPlugins.SpritePlugin.Views
                 window.TextureFilePath = fullFile;
 
                 viewModel = GetNewViewModel(currentNos, currentElement, window, out left, out top, out right, out bottom);
+                window.DataContext = viewModel;
 
                 if(LastViewModel != null)
                 {
-                    viewModel.Snapping = LastViewModel.Snapping;
                     viewModel.WindowX = LastViewModel.WindowX;
                     viewModel.WindowY = LastViewModel.WindowY;
                     viewModel.WindowWidth = LastViewModel.WindowWidth;
                     viewModel.WindowHeight = LastViewModel.WindowHeight;
+                    window.ShiftWindowOntoScreen(); //Things could have changed and last position is off screen now
                 }
                 else
                 {
-                    viewModel.WindowWidth = 400;
-                    viewModel.WindowHeight = 400;
+                    if((viewModel.TextureHeight <= 512) && (viewModel.TextureWidth <= 512)) {
+                        //TODO test this
+                        window.Width = viewModel.TextureHeight + 100;
+                        window.Height = viewModel.TextureHeight + 50;
+                        window.MoveToCursor();
+                    } else {
+                        window.MoveToMainWindowCenterAndSize();
+                        window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
+                        window.MoveToCursor();
+                    }
+
+                    //better way to have viewmodel update itself from window?
+                    viewModel.WindowWidth = window.Width;
+                    viewModel.WindowHeight = window.Height;
+                    viewModel.WindowX = window.Left;
+                    viewModel.WindowY = window.Top;
                 }
 
-                window.DataContext = viewModel;
                 var result = window.ShowDialog();
 
                 if (result == true)
@@ -111,6 +127,8 @@ namespace OfficialPlugins.SpritePlugin.Views
                 defaultWidth = window.Texture.Width;
                 defaultHeight = window.Texture.Height;
             }
+            viewModel.TextureHeight = defaultHeight;
+            viewModel.TextureWidth = defaultWidth;
 
             right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;

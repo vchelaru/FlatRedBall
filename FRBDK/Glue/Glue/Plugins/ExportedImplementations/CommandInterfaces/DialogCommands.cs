@@ -557,7 +557,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void MoveToCursor(System.Windows.Window window)
         {
             var source = System.Windows.PresentationSource.FromVisual(MainGlueWindow.MainWpfControl);
-            WpfExtensions.MoveToCursor(window, source);
+            window.MoveToCursor(source);
         }
 
         #endregion

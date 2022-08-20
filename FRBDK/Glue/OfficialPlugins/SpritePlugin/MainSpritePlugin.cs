@@ -155,8 +155,7 @@ namespace OfficialPlugins.SpritePlugin
             mapSpriteTextureVariable.Type = "string"; // not used
             mapSpriteTextureVariable.Name = "MapSpriteTexturePlaceholder";
             mapSpriteTextureVariable.Category = "Texture";
-            var variableToAddAfter = ati.VariableDefinitions.FirstOrDefault(item => 
-            item.Name == nameof(Sprite.Texture));
+            var variableToAddAfter = ati.VariableDefinitions.FirstOrDefault(item => item.Name == nameof(Sprite.Texture));
             var index = ati.VariableDefinitions.IndexOf(variableToAddAfter);
             ati.VariableDefinitions.Insert(index+1, mapSpriteTextureVariable);
         }

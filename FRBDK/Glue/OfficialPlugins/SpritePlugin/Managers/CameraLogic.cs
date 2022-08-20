@@ -3,6 +3,7 @@ using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -70,25 +71,33 @@ namespace OfficialPlugins.SpritePlugin.Managers
             {
                 var screenPosition = args.GetPosition(View.Canvas);
                 View.GetWorldPosition(screenPosition, out double worldBeforeX, out double worldBeforeY);
-                var newValue = ViewModel.CurrentZoomLevelIndex;
+                var newValue = ViewModel.CurrentZoomPercent;
                 if (args.Delta > 0)
                 {
-                    newValue--;
-                    newValue = Math.Max(0, newValue);
-                }
-                else if(args.Delta < 0)
+                    var zooms = ViewModel.ZoomPercentages.Where(x => x > newValue);
+                    if(zooms.Count() == 0) return;
+                    newValue = zooms.Last();
+                } else if(args.Delta < 0)
                 {
-                    newValue++;
-                    newValue = Math.Min(newValue, ViewModel.ZoomPercentages.Count-1);
+                    var zooms = ViewModel.ZoomPercentages.Where(x => x < newValue);
+                    if(zooms.Count() == 0) return;
+                    newValue = zooms.First();
                 }
 
-                ViewModel.CurrentZoomLevelIndex = newValue;
+                ViewModel.CurrentZoomPercent = newValue;
 
                 Camera.X = (float)(worldBeforeX - screenPosition.X / ViewModel.CurrentZoomScale);
                 Camera.Y = (float)(worldBeforeY - screenPosition.Y / ViewModel.CurrentZoomScale);
 
                 RefreshCameraZoomToViewModel();
             }
+        }
+
+        public static void ResetCamera() {
+            Camera.X = -20;
+            Camera.Y = -20;
+            UpdateBackgroundPosition();
+            RefreshCameraZoomToViewModel();
         }
 
         public static void RefreshCameraZoomToViewModel()
