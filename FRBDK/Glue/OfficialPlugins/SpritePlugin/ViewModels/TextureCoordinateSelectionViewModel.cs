@@ -3,6 +3,7 @@ using FlatRedBall.Math;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows;
 
 namespace OfficialPlugins.SpritePlugin.ViewModels
 {
@@ -15,7 +16,7 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
             set => Set(value);
         }
 
-        int Rounded(decimal value) => MathFunctions.RoundToInt( (double)value );
+        int Rounded(decimal value) => MathFunctions.RoundToInt((double)value);
 
         [DependsOn(nameof(LeftTexturePixel))]
         public int LeftTexturePixelInt => Rounded(LeftTexturePixel);
@@ -38,7 +39,7 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
         [DependsOn(nameof(SelectedWidthPixels))]
         public int SelectedWidthPixelsInt => Rounded(SelectedWidthPixels);
 
-        public decimal SelectedHeightPixels 
+        public decimal SelectedHeightPixels
         {
             get => Get<decimal>();
             set => Set(value);
@@ -47,51 +48,18 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
         [DependsOn(nameof(SelectedHeightPixels))]
         public int SelectedHeightPixelsInt => Rounded(SelectedHeightPixels);
 
-
-
         public List<int> ZoomPercentages { get; set; } =
-            new List<int>
-            {
-                4000,// 0
-                2000,// 1
-                1500,// 2
-                1000,
-                750,
-                500,
-                350,
-                200,
-                100,
-                75,
-                50,
-                25,
-                10,
-                5
-            };
+            new List<int> { 4000, 2000, 1500, 1000, 750, 500, 350, 200, 100, 75, 50, 25, 10, 5 };
 
-        [DependsOn(nameof(CurrentZoomLevelIndex))]
-        public float CurrentZoomScale =>
-            ZoomPercentages[CurrentZoomLevelIndex] / 100.0f;
+        [DependsOn(nameof(CurrentZoomPercent))]
+        public float CurrentZoomScale => CurrentZoomPercent / 100.0f;
 
-        public int CurrentZoomLevelIndex 
-        {
-            get => Get<int>();
-            set
-            {
+        public float CurrentZoomPercent {
+            get => Get<float>();
+            set {
                 Set(value);
             }
-        } 
-
-        public decimal Snapping
-        {
-            get => Get<decimal>();
-            set => Set(value);
         }
-
-        [DependsOn(nameof(LeftTexturePixel))]
-        [DependsOn(nameof(TopTexturePixel))]
-        [DependsOn(nameof(SelectedWidthPixels))]
-        [DependsOn(nameof(SelectedHeightPixels))]
-        public string CoordinateDisplay => $"X:{LeftTexturePixel} Y:{TopTexturePixel} Width:{SelectedWidthPixels} Height:{SelectedHeightPixels}";
 
         public double WindowX { get; set; }
         public double WindowY { get; set; }
@@ -99,10 +67,42 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
         public double WindowWidth { get; set; }
         public double WindowHeight { get; set; }
 
+        public double TextureWidth { get; set; }
+        public double TextureHeight { get; set; }
+
+        public Visibility SnapWarningVisibility { get => Get<Visibility>(); set => Set(value); }
+        public System.Windows.Media.Brush SnapWidthColor { get => Get<System.Windows.Media.Brush>(); set => Set(value); }
+        public System.Windows.Media.Brush SnapHeightColor { get => Get<System.Windows.Media.Brush>(); set => Set(value); }
+
+        public ushort CellWidth {
+            get => Get<ushort>();
+            set {
+                Set(value);
+                CheckCellTextureDivision();
+            }
+        }
+        public ushort CellHeight {
+            get => Get<ushort>();
+            set {
+                Set(value);
+                CheckCellTextureDivision();
+            }
+        }
+
+        public void CheckCellTextureDivision()
+        {
+            double x = TextureWidth % CellWidth;
+            double y = TextureHeight % CellHeight;
+            SnapWidthColor = (x == 0) ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
+            SnapHeightColor = (y == 0) ? System.Windows.Media.Brushes.Black : System.Windows.Media.Brushes.OrangeRed;
+            SnapWarningVisibility = (y == 0) && (x == 0) ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         public TextureCoordinateSelectionViewModel()
         {
-            CurrentZoomLevelIndex = 8;
-            Snapping = 4;
+            CurrentZoomPercent = 100;
+            CellWidth = 16;
+            CellHeight = 16;
         }
     }
 }

@@ -63,6 +63,17 @@ namespace OfficialPlugins.SpritePlugin.Views
         SpriteRuntime MainSprite;
         public SolidRectangleRuntime Background { get; private set; }
 
+        public LineGridRuntime linegrid { get; private set; }
+        public void SelectCell(int curr_cX, int curr_cY)
+        {
+            if(linegrid.GetCellPosition(curr_cX, curr_cY, out float left, out float top, out float right, out float bottom))
+            {
+                ViewModel.LeftTexturePixel = (decimal)left;
+                ViewModel.TopTexturePixel = (decimal)top;
+                ViewModel.SelectedWidthPixels = (decimal)right;
+                ViewModel.SelectedHeightPixels = (decimal)bottom;
+            }
+        }
 
         public TextureCoordinateSelectionViewModel ViewModel => DataContext as TextureCoordinateSelectionViewModel;
 
@@ -103,17 +114,15 @@ namespace OfficialPlugins.SpritePlugin.Views
             InitializeComponent();
 
             CreateBackground();
-
             CreateMainSprite();
-
             CreateSpriteOutline();
-
-            this.Canvas.Children.Add(MainSprite);
 
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
             CameraLogic.Initialize(this);
             MouseEditingLogic.Initialize(this);
+
+            this.Canvas.Children.Add(MainSprite);
 
             TextureCoordinateRectangle = new TextureCoordinateRectangle();
 
@@ -134,6 +143,16 @@ namespace OfficialPlugins.SpritePlugin.Views
                 nameof(ViewModel.SelectedHeightPixelsInt));
 
             this.Canvas.Children.Add(TextureCoordinateRectangle);
+
+
+            linegrid = new LineGridRuntime();
+            linegrid.X = 0;
+            linegrid.Y = 0;
+            linegrid.SetBinding(nameof(linegrid.Width), nameof(ViewModel.TextureWidth));
+            linegrid.SetBinding(nameof(linegrid.Height), nameof(ViewModel.TextureHeight));
+            linegrid.SetBinding(nameof(linegrid.CellWidth), nameof(ViewModel.CellWidth));
+            linegrid.SetBinding(nameof(linegrid.CellHeight), nameof(ViewModel.CellHeight));
+            this.Canvas.Children.Add(linegrid);
 
             this.DataContextChanged += HandleDataContextChanged;
         }
@@ -188,7 +207,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             switch(e.PropertyName)
             {
-                case nameof(ViewModel.CurrentZoomLevelIndex):
+                case nameof(ViewModel.CurrentZoomPercent):
                     CameraLogic.RefreshCameraZoomToViewModel();
 
                     break;
@@ -244,8 +263,6 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public void GetWorldPosition(Point lastMousePoint, out double x, out double y)
         {
-
-
             var camera = this.Canvas.SystemManagers.Renderer.Camera;
           
             x = lastMousePoint.X * WindowsScaleFactor;
@@ -257,5 +274,38 @@ namespace OfficialPlugins.SpritePlugin.Views
             y += camera.Y;
         }
 
+        public void ZoomToTexture()
+        {
+            //Where do i find the value below that is 15ish - left and top of texture indented in canvas
+            var zoomw = 100 * ((ActualWidth - 15) / Texture.Width);
+            var zoomh = 100 * ((ActualHeight - 15) / Texture.Height);
+            ViewModel.CurrentZoomPercent = (float)Math.Round(Math.Min(zoomw, zoomh), 2);
+
+            CameraLogic.ResetCamera();
+
+            Canvas.InvalidateVisual();
+        }
+
+        #region it's always such a fight with wpf to do anything besides simple splut ui's https://stackoverflow.com/a/16328482/5679683
+        private void TextBox_Select(object sender, RoutedEventArgs e)
+        {
+            TextBox tb = (sender as TextBox);
+            if(tb != null)
+                tb.SelectAll();
+            }
+
+        private void TextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TextBox tb = (sender as TextBox);
+            if((tb != null) && (!tb.IsKeyboardFocusWithin)) {
+                e.Handled = true;
+                tb.Focus();
+            }
+        }
+        #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e) {
+            ZoomToTexture();
+        }
     }
 }

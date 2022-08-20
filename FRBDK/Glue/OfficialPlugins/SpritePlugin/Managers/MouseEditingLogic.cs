@@ -98,6 +98,10 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 UpdateHandleOver(e);
                 RefreshHandleVisuals();
                 View.Canvas.InvalidateVisual();
+            } else {
+                View.GetWorldPosition(e.GetPosition(View.Canvas), out double worldX, out double worldY);
+                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
+                View.SelectCell(curr_cX, curr_cY);
             }
 
             // Copy int to decimal values to prevent "flickering" due to half pixels when moving on subsequent grabs:
@@ -136,7 +140,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
             var yDifference = (decimal)(
                 (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
 
-            decimal Snapped(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.Snapping);
+            decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, (decimal)ViewModel.CellWidth);
+            decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, (decimal)ViewModel.CellHeight);
             if (HandleGrabbed != null)
             {
                 var viewModel = View.ViewModel;
@@ -147,14 +152,14 @@ namespace OfficialPlugins.SpritePlugin.Managers
                     {
                         grabbedDifferenceX -= xDifference;
 
-                        viewModel.SelectedWidthPixels = Snapped( grabbedDifferenceX);
-                        viewModel.LeftTexturePixel = xAnchor - Snapped(grabbedDifferenceX);
+                        viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
+                        viewModel.LeftTexturePixel = xAnchor - SnappedX(grabbedDifferenceX);
                     }
                     else if(xSideGrabbed == XSide.Right)
                     {
                         grabbedDifferenceX += xDifference;
 
-                        viewModel.SelectedWidthPixels = Snapped( grabbedDifferenceX);
+                        viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
                     }
 
                 }
@@ -163,13 +168,13 @@ namespace OfficialPlugins.SpritePlugin.Managers
                     if(ySideGrabbed == YSide.Top)
                     {
                         grabbedDifferenceY -= yDifference;
-                        viewModel.SelectedHeightPixels = Snapped(grabbedDifferenceY);
-                        viewModel.TopTexturePixel = yAnchor - Snapped(grabbedDifferenceY);
+                        viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
+                        viewModel.TopTexturePixel = yAnchor - SnappedY(grabbedDifferenceY);
                     }
                     else if(ySideGrabbed == YSide.Bottom)
                     {
                         grabbedDifferenceY += yDifference;
-                        viewModel.SelectedHeightPixels = Snapped(grabbedDifferenceY);
+                        viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
                     }
                 }
             }
@@ -179,8 +184,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 grabbedDifferenceX += (decimal)xDifference;
                 grabbedDifferenceY += (decimal)yDifference;
 
-                viewModel.LeftTexturePixel = xAnchor + Snapped(grabbedDifferenceX);
-                viewModel.TopTexturePixel = yAnchor + Snapped(grabbedDifferenceY);
+                viewModel.LeftTexturePixel = xAnchor + SnappedX(grabbedDifferenceX);
+                viewModel.TopTexturePixel = yAnchor + SnappedY(grabbedDifferenceY);
             }
 
             LastGrabbedMousePoint = newPosition;

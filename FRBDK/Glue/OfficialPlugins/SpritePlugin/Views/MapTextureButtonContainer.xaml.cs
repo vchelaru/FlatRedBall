@@ -71,34 +71,35 @@ namespace OfficialPlugins.SpritePlugin.Views
                 window.TextureFilePath = fullFile;
 
                 viewModel = GetNewViewModel(currentNos, currentElement, window, out left, out top, out right, out bottom);
+                window.DataContext = viewModel;
 
                 if(LastViewModel != null)
                 {
-                    viewModel.Snapping = LastViewModel.Snapping;
                     viewModel.WindowX = LastViewModel.WindowX;
                     viewModel.WindowY = LastViewModel.WindowY;
                     viewModel.WindowWidth = LastViewModel.WindowWidth;
                     viewModel.WindowHeight = LastViewModel.WindowHeight;
+                    window.ShiftWindowOntoScreen(); //Things could have changed and last position is off screen now
                 }
                 else
                 {
-                    var mw = Glue.MainGlueWindow.Self;
-                    if(mw != null) {
-                        viewModel.WindowWidth = mw.Width * .75f;
-                        viewModel.WindowHeight = mw.Height * .75f;
-                        viewModel.WindowX = mw.Left + ((mw.Width - viewModel.WindowWidth) / 2);
-                        viewModel.WindowY = mw.Top + ((mw.Height - viewModel.WindowHeight) / 4);
+                    if((viewModel.TextureHeight <= 512) && (viewModel.TextureWidth <= 512)) {
+                        //TODO test this
+                        window.Width = viewModel.TextureHeight + 100;
+                        window.Height = viewModel.TextureHeight + 50;
+                        window.MoveToCursor();
                     } else {
-                        viewModel.WindowWidth = 400;
-                        viewModel.WindowHeight = 400;
+                        window.MoveToMainWindowCenterAndSize();
+                        window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
+                        window.MoveToCursor();
                     }
-                }
 
-                window.DataContext = viewModel;
-                // moving to ShiftWindowOntoScreen w/ NaN check window.UpdateLayout();
-                window.SetOwnerToMainGlueWindow(); //WHY!!! isn't this working... Could just use center parent startup.
-                //Bigger window feels weird moving to cursor GlueCommands.Self.DialogCommands.MoveToCursor(window);
-                window.ShiftWindowOntoScreen();
+                    //better way to have viewmodel update itself from window?
+                    viewModel.WindowWidth = window.Width;
+                    viewModel.WindowHeight = window.Height;
+                    viewModel.WindowX = window.Left;
+                    viewModel.WindowY = window.Top;
+                }
 
                 var result = window.ShowDialog();
 
@@ -126,6 +127,8 @@ namespace OfficialPlugins.SpritePlugin.Views
                 defaultWidth = window.Texture.Width;
                 defaultHeight = window.Texture.Height;
             }
+            viewModel.TextureHeight = defaultHeight;
+            viewModel.TextureWidth = defaultWidth;
 
             right = ObjectFinder.Self.GetValueRecursively(currentNos, currentElement,
                 nameof(Sprite.RightTexturePixel)) as float? ?? defaultWidth;

@@ -15,7 +15,7 @@ namespace GlueFormsCore.Extensions
 {
     public static class WpfExtensions
     {
-        public static void MoveToCursor(this System.Windows.Window window, PresentationSource source = null)
+        public static void MoveToCursor(this Window window, PresentationSource source = null)
         {
             window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
 
@@ -50,6 +50,43 @@ namespace GlueFormsCore.Extensions
             window.ShiftWindowOntoScreen();
         }
 
+        public static void MoveToMainWindowCenterAndSize(this Window window, float WidthAmount = 0.75f, float HeightAmount = 0.75f)
+        {
+            const float MinSize = 400f;
+
+            //This isn't working... SetOwnerToMainGlueWindow(window);
+
+            var mw = Glue.MainGlueWindow.Self;
+            if(mw != null) {
+                window.Width = mw.Width * WidthAmount;
+                window.Height = mw.Height * HeightAmount;
+                window.Left = mw.Left + ((mw.Width - window.Width) / 2);
+                window.Top = mw.Top + ((mw.Height - window.Height) / 4);
+                if(window.Width < MinSize) window.Width = MinSize;
+                if(window.Height < MinSize) window.Height = MinSize;
+            } else {
+                window.Width = MinSize;
+                window.Height = MinSize;
+            }
+
+            window.ShiftWindowOntoScreen();
+        }
+
+        /// <summary> Attempt to place dialog where wanted.  If large center main window otherwise at cursor </summary>
+        //public static void MoveToPositionAndSize(this Window window, float? Left = null, float? Top = null, float? Width = null, float? Height = null) {
+        //    //This isn't working... SetOwnerToMainGlueWindow(window);
+
+        //}
+
+        public static void SetOwnerToMainGlueWindow(this Window window)
+        {
+            if(MainGlueWindow.Self == null) return;
+            try {
+                //Why is this not setting window.Owner? (At least in the case of MapTextureButtonContainer.Button_Click)
+                new System.Windows.Interop.WindowInteropHelper(window).Owner = MainGlueWindow.Self.Handle;
+            } catch { }
+        }
+
         /// <summary>
         ///     Intent:  
         ///     - Shift the window onto the visible screen.
@@ -70,7 +107,7 @@ namespace GlueFormsCore.Extensions
             // Note that "window.BringIntoView()" does not work.                            
             if (window.Top < bounds.Top)
             {
-                window.Top = bounds.Top;
+                window.Top = bounds.Top + 5;
             }
 
             if (window.Left < bounds.Left)
@@ -87,14 +124,6 @@ namespace GlueFormsCore.Extensions
             {
                 window.Top = bounds.Bottom - heightToUse - 1;
             }
-        }
-
-        public static void SetOwnerToMainGlueWindow(this System.Windows.Window window) {
-            if(MainGlueWindow.Self == null) return;
-            try {
-                //Why is this not setting window.Owner? (At least in the case of MapTextureButtonContainer.Button_Click)
-                new System.Windows.Interop.WindowInteropHelper(window).Owner = MainGlueWindow.Self.Handle;
-            } catch { }
         }
 
     }
