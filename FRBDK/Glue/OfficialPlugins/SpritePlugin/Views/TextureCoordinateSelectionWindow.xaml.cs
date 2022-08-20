@@ -48,8 +48,6 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             InnerView.ZoomToTexture();
-            InnerView.ViewModel.CellWidth = (ushort)(Texture.Width / 16);  //default to 16 cells
-            InnerView.ViewModel.CellHeight = (ushort)(Texture.Height / 16);
         }
 
     }

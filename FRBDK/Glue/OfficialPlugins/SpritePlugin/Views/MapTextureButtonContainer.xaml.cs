@@ -80,6 +80,8 @@ namespace OfficialPlugins.SpritePlugin.Views
                     viewModel.WindowWidth = LastViewModel.WindowWidth;
                     viewModel.WindowHeight = LastViewModel.WindowHeight;
                     window.ShiftWindowOntoScreen(); //Things could have changed and last position is off screen now
+                    viewModel.CellHeight = LastViewModel.CellHeight;
+                    viewModel.CellWidth = LastViewModel.CellWidth;
                 }
                 else
                 {
