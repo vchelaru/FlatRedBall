@@ -75,6 +75,25 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
         }
 
+        public void SelectCellDrag(int startX, int startY, int endX, int endY)
+        {
+            var startok = linegrid.GetCellPosition(startX, startY, out float startLeft, out float startTop, out float startRight, out float startBottom);
+            var endok = linegrid.GetCellPosition(endX, endY, out float endLeft, out float endTop, out float endRight, out float endBottom);
+            if(startok && endok)
+            {
+                ViewModel.LeftTexturePixel = (decimal)Math.Min(startLeft, endLeft);
+                ViewModel.TopTexturePixel = (decimal)Math.Min(startTop, endTop);
+                if(startLeft + startRight < endLeft + endRight)
+                    ViewModel.SelectedWidthPixels = (decimal)(endLeft - startLeft + endRight);
+                else
+                    ViewModel.SelectedWidthPixels = (decimal)(startLeft - endLeft + startRight);
+                if(startTop + startBottom < endTop + endBottom)
+                    ViewModel.SelectedHeightPixels = (decimal)(endTop - startTop + endBottom);
+                else
+                    ViewModel.SelectedHeightPixels = (decimal)(startTop - endTop + startBottom);
+            }
+        }
+
         public TextureCoordinateSelectionViewModel ViewModel => DataContext as TextureCoordinateSelectionViewModel;
 
         public TextureCoordinateRectangle TextureCoordinateRectangle { get; private set; }

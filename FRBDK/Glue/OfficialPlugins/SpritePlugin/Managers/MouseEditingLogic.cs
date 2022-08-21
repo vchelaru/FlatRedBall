@@ -40,11 +40,14 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         static TextureCoordinateSelectionView View;
         private static System.Windows.Point LastGrabbedMousePoint;
-        static ColoredCircleRuntime circle;
+        //static ColoredCircleRuntime circle;
 
         private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleOver;
         private static SkiaGum.GueDeriving.RoundedRectangleRuntime HandleGrabbed;
         private static bool IsBodyGrabbed;
+
+        private static int? StartDragSelectX = null;
+        private static int? StartDragSelectY = null;
 
         static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
@@ -66,10 +69,28 @@ namespace OfficialPlugins.SpritePlugin.Managers
         public static void HandleMousePush(MouseButtonEventArgs args)
         {
             UpdateHandleGrabbed(args);
+
+            //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
+            if((HandleGrabbed == null) && (!IsBodyGrabbed) && (args.ChangedButton == MouseButton.Left)) {
+                View.GetWorldPosition(args.GetPosition(View.Canvas), out double worldX, out double worldY);
+                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
+                View.SelectCell(curr_cX, curr_cY);
+                StartDragSelectX = curr_cX;
+                StartDragSelectY = curr_cY;
+            }
         }
 
         public static void HandleMouseMove(MouseEventArgs args)
         {
+            //start drag select / not interacting with TextureCoordinateRectangle
+            if((StartDragSelectX != null) && (!IsBodyGrabbed) && (args.LeftButton == MouseButtonState.Pressed)) {
+                View.GetWorldPosition(args.GetPosition(View.Canvas), out double worldX, out double worldY);
+                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
+                if((curr_cX != StartDragSelectX) || (curr_cY != StartDragSelectY))
+                    View.SelectCellDrag((int)StartDragSelectX, (int)StartDragSelectY, curr_cX, curr_cY);
+                return;
+            }
+
             if (HandleGrabbed == null)
             {
                 UpdateHandleOver(args);
@@ -88,6 +109,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         internal static void HandleMouseUp(MouseButtonEventArgs e)
         {
+            StartDragSelectX = null;
+            StartDragSelectY = null;
+
             if (HandleGrabbed != null)
             {
                 View.TextureCoordinateRectangle.MakeNormal(HandleGrabbed);
@@ -98,13 +122,6 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 UpdateHandleOver(e);
                 RefreshHandleVisuals();
                 View.Canvas.InvalidateVisual();
-            } else {
-                if(e.ChangedButton == MouseButton.Left)
-                {
-                    View.GetWorldPosition(e.GetPosition(View.Canvas), out double worldX, out double worldY);
-                    View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
-                    View.SelectCell(curr_cX, curr_cY);
-                }
             }
 
             // Copy int to decimal values to prevent "flickering" due to half pixels when moving on subsequent grabs:
