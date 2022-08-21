@@ -101,8 +101,6 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
-
-
         [DependsOn(nameof(EnableGameEditMode))]
         public Visibility ShowWindowDefenderUi => EnableGameEditMode.ToVisibility();
 

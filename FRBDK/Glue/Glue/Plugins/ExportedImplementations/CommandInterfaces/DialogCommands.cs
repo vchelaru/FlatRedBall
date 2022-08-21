@@ -24,6 +24,7 @@ using System.Runtime.InteropServices;
 using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
 
+
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
     class DialogCommands : IDialogCommands
@@ -570,22 +571,38 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueElement container = null)
         {
             container = container ?? GlueState.Self.CurrentElement;
-            // Search terms:  add new variable, addnewvariable, add variable
-            AddVariableWindow addVariableWindow = new AddVariableWindow(container);
-            addVariableWindow.DesiredVariableType = variableType;
 
-            addVariableWindow.TunnelingObject = tunnelingObject;
-            addVariableWindow.TunnelingVariable = tunneledVariableName;
+            var viewModel = new AddCustomVariableViewModel(container);
+            viewModel.SelectedTunneledObject = tunnelingObject;
+            viewModel.SelectedTunneledVariableName = tunneledVariableName;
+            viewModel.DesiredVariableType = variableType;
 
-            if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            var window = new AddVariableWindowWpf();
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if(result == true)
             {
-                HandleAddVariableOk(addVariableWindow.GetViewModel(), container);
+                HandleAddVariableOk(viewModel , container);
             }
+
+            //// Search terms:  add new variable, addnewvariable, add variable
+            //AddVariableWindow addVariableWindow = new AddVariableWindow(container);
+            //addVariableWindow.DesiredVariableType = variableType;
+
+            //addVariableWindow.TunnelingObject = tunnelingObject;
+            //addVariableWindow.TunnelingVariable = tunneledVariableName;
+
+            //if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            //{
+            //    HandleAddVariableOk(addVariableWindow.GetViewModel(), container);
+            //}
         }
 
         private static void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
         {
-            string resultName = viewModel.VariableName;
+            string resultName = viewModel.ResultName;
             string failureMessage;
 
             bool didFailureOccur = IsVariableInvalid(viewModel, currentElement, out failureMessage);
@@ -593,10 +610,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (!didFailureOccur)
             {
-                if (!string.IsNullOrEmpty(viewModel.TunnelingObject) && string.IsNullOrEmpty(viewModel.TunnelingVariable))
+                if (!string.IsNullOrEmpty(viewModel.SelectedTunneledObject) && string.IsNullOrEmpty(viewModel.SelectedTunneledVariableName))
                 {
                     didFailureOccur = true;
-                    failureMessage = $"You must select a variable on {viewModel.TunnelingObject}";
+                    failureMessage = $"You must select a variable on {viewModel.SelectedTunneledObject}";
                 }
             }
 
@@ -631,14 +648,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (canCreate)
                 {
                     string type = viewModel.ResultType;
-                    string sourceObject = viewModel.TunnelingObject;
+                    string sourceObject = viewModel.SelectedTunneledObject;
                     string sourceObjectProperty = null;
                     if (!string.IsNullOrEmpty(sourceObject))
                     {
-                        sourceObjectProperty = viewModel.TunnelingVariable;
+                        sourceObjectProperty = viewModel.SelectedTunneledVariableName;
                     }
-                    string overridingType = viewModel.OverridingType;
-                    string typeConverter = viewModel.TypeConverter;
+                    string overridingType = viewModel.SelectedOverridingType;
+                    string typeConverter = viewModel.SelectedTypeConverter;
 
                     CustomVariable newVariable = new CustomVariable();
                     newVariable.Name = resultName;
@@ -686,7 +703,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool didFailureOccur = false;
 
             string whyItIsntValid = "";
-            var resultName = viewModel.VariableName;
+            var resultName = viewModel.ResultName;
             didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
             failureMessage = null;
             if (didFailureOccur)
@@ -694,12 +711,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 failureMessage = whyItIsntValid;
 
             }
-            else if (NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.TunnelingObject, viewModel.TunnelingVariable, currentElement))
+            else if (NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
             {
                 didFailureOccur = true;
-                failureMessage = "There is already a variable that is modifying " + viewModel.TunnelingVariable + " on " + viewModel.TunnelingObject;
+                failureMessage = "There is already a variable that is modifying " + viewModel.SelectedTunneledVariableName + " on " + viewModel.SelectedTunneledObject;
             }
-            else if (viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.VariableName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
+            else if (viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
             {
                 didFailureOccur = true;
                 failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";
