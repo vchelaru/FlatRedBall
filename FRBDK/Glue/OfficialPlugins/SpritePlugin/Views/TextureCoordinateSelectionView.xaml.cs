@@ -64,10 +64,12 @@ namespace OfficialPlugins.SpritePlugin.Views
         public SolidRectangleRuntime Background { get; private set; }
 
         public LineGridRuntime linegrid { get; private set; }
-        public void SelectCell(int curr_cX, int curr_cY)
+
+        public void SelectCell(Point position, out int columnX, out int columnY)
         {
-            if(linegrid.GetCellPosition(curr_cX, curr_cY, out float left, out float top, out float right, out float bottom))
-            {
+            GetWorldPosition(position, out double worldX, out double worldY);
+            linegrid.LineGridCell(worldX, worldY, out columnX, out columnY);
+            if(linegrid.GetCellPosition(columnX, columnY, out float left, out float top, out float right, out float bottom)) {
                 ViewModel.LeftTexturePixel = (decimal)left;
                 ViewModel.TopTexturePixel = (decimal)top;
                 ViewModel.SelectedWidthPixels = (decimal)right;
@@ -75,22 +77,25 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
         }
 
-        public void SelectCellDrag(int startX, int startY, int endX, int endY)
-        {
-            var startok = linegrid.GetCellPosition(startX, startY, out float startLeft, out float startTop, out float startRight, out float startBottom);
-            var endok = linegrid.GetCellPosition(endX, endY, out float endLeft, out float endTop, out float endRight, out float endBottom);
-            if(startok && endok)
+        public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) {
+            GetWorldPosition(MousePoint, out double worldX, out double worldY);
+            linegrid.LineGridCell(worldX, worldY, out int ColX, out int ColY);
+            if((ColX != StartDragSelectX) || (ColY != StartDragSelectY))
             {
-                ViewModel.LeftTexturePixel = (decimal)Math.Min(startLeft, endLeft);
-                ViewModel.TopTexturePixel = (decimal)Math.Min(startTop, endTop);
-                if(startLeft + startRight < endLeft + endRight)
-                    ViewModel.SelectedWidthPixels = (decimal)(endLeft - startLeft + endRight);
-                else
-                    ViewModel.SelectedWidthPixels = (decimal)(startLeft - endLeft + startRight);
-                if(startTop + startBottom < endTop + endBottom)
-                    ViewModel.SelectedHeightPixels = (decimal)(endTop - startTop + endBottom);
-                else
-                    ViewModel.SelectedHeightPixels = (decimal)(startTop - endTop + startBottom);
+                var startok = linegrid.GetCellPosition(StartDragSelectX, StartDragSelectY, out float startLeft, out float startTop, out float startRight, out float startBottom);
+                var endok = linegrid.GetCellPosition(ColX, ColY, out float endLeft, out float endTop, out float endRight, out float endBottom);
+                if(startok && endok) {
+                    ViewModel.LeftTexturePixel = (decimal)Math.Min(startLeft, endLeft);
+                    ViewModel.TopTexturePixel = (decimal)Math.Min(startTop, endTop);
+                    if(startLeft + startRight < endLeft + endRight)
+                        ViewModel.SelectedWidthPixels = (decimal)(endLeft - startLeft + endRight);
+                    else
+                        ViewModel.SelectedWidthPixels = (decimal)(startLeft - endLeft + startRight);
+                    if(startTop + startBottom < endTop + endBottom)
+                        ViewModel.SelectedHeightPixels = (decimal)(endTop - startTop + endBottom);
+                    else
+                        ViewModel.SelectedHeightPixels = (decimal)(startTop - endTop + startBottom);
+                }
             }
         }
 
@@ -295,9 +300,9 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public void ZoomToTexture()
         {
-            //Where do i find the value below that is 15ish - left and top of texture indented in canvas
-            var zoomw = 100 * ((ActualWidth - 15) / Texture.Width);
-            var zoomh = 100 * ((ActualHeight - 15) / Texture.Height);
+            //-40 constant is x2 -20 in cameralogic initialization, but it doesn't seem to perfectly center w/ 20 all around.  must be wrong.
+            var zoomw = 100 * ((ActualWidth - 40) / Texture.Width);
+            var zoomh = 100 * ((ActualHeight - 40) / Texture.Height);
             ViewModel.CurrentZoomPercent = (float)Math.Round(Math.Min(zoomw, zoomh), 2);
 
             CameraLogic.ResetCamera();
