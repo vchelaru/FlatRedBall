@@ -215,6 +215,18 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableValue = newList;
                 }
             }
+            else if(type == "List<string>")
+            {
+                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    List<string> newList = new List<string>();
+                    foreach (string innerValue in jArray)
+                    {
+                        newList.Add(innerValue.ToString());
+                    }
+                    variableValue = newList;
+                }
+            }
 
             return variableValue;
         }

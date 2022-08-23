@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
         mc:Ignorable="d"
-        Title="AddVariableWindowWpf" Height="450" Width="400">
+        Title="New Variable" Height="450" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -80,10 +80,13 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
+            <StackPanel HorizontalAlignment="Right">
+                <CheckBox 
+                    IsChecked="{Binding IsShowStateCategoriesChecked}"
+                    VerticalAlignment="Bottom" >Show State Categories</CheckBox>
+
+            </StackPanel>
             <Label VerticalAlignment="Bottom">Type:</Label>
-            <CheckBox 
-                IsChecked="{Binding IsShowStateCategoriesChecked}"
-                VerticalAlignment="Bottom" HorizontalAlignment="Right">Show State Categories</CheckBox>
             <ListBox 
                 ItemsSource="{Binding AvailableNewVariableTypes}"
                 SelectedItem="{Binding SelectedNewType}"
@@ -91,10 +94,14 @@
             </ListBox>
             <StackPanel Grid.Row="2" Margin="0,4,0,0">
                 <Label Margin="0,0,0,-4">Name:</Label>
-                <TextBox Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown"></TextBox>
+                <TextBox Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+                <CheckBox 
+                    IsChecked="{Binding IsList}"
+                    Visibility="{Binding ListCheckBoxVisibility}"
+                    VerticalAlignment="Bottom" >List</CheckBox>
                 <CheckBox 
                     IsChecked="{Binding IsStatic}"
-                    Margin="0,6,0,0">Static (all objects share one copy of the same variable)</CheckBox>
+                    >Static (all objects share one copy of the same variable)</CheckBox>
             </StackPanel>
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Right">

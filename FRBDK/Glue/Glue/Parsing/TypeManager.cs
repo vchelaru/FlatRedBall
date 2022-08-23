@@ -472,7 +472,7 @@ namespace FlatRedBall.Glue.Parsing
                     Assembly assembly = null;
                     string location = "";
 
-#region FlatRedBall
+                    #region FlatRedBall
 
                     string programFilesLocation = Environment.GetEnvironmentVariable("ProgramFiles(x86)") + "\\"; ;
                     string alternativeProgramFilesLocation = @"C:\Program Files\";//Environment.GetEnvironmentVariable("ProgramFiles");
@@ -480,7 +480,7 @@ namespace FlatRedBall.Glue.Parsing
                     Assembly frbAssembly = Assembly.GetAssembly(typeof(Sprite));
 
                     FlatRedBallTypes = frbAssembly.GetTypes();
-#endregion
+                    #endregion
 
 
 
@@ -533,9 +533,9 @@ namespace FlatRedBall.Glue.Parsing
 
                     mCommonTypes.Add(typeof(ArrayList).Name, typeof(ArrayList));
                     mCommonTypes.Add("List`1", typeof(List<>));
+                    mCommonTypes.Add("List<>", typeof(List<>));
                     mCommonTypes.Add("Activator", typeof(Activator));
                     mCommonTypes.Add("IEquatable`1", typeof(IEquatable<object>));
-                    mCommonTypes.Add("IList`1", typeof(IList<object>));
                     mCommonTypes.Add("ReadOnlyCollection", typeof(ReadOnlyCollection<>));
                     mCommonTypes.Add("ReadOnlyCollection`1", typeof(ReadOnlyCollection<>));
                     mCommonTypes.Add("AttachableList<T>", typeof(AttachableList<IAttachable>));
@@ -543,6 +543,7 @@ namespace FlatRedBall.Glue.Parsing
                     mCommonTypes.Add("Dictionary<>", typeof(Dictionary<,>));
                     mCommonTypes.Add("Type", typeof(Type));
                     mCommonTypes.Add("IList", typeof(IList));
+                    mCommonTypes.Add("IList`1", typeof(IList<object>));
                     mCommonTypes.Add("IList<>", typeof(IList<>));
 
 

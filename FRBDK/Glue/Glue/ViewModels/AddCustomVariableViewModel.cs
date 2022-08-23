@@ -14,6 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 
+#region Enums
+
 namespace FlatRedBall.Glue.Controls
 {
     public enum CustomVariableType
@@ -23,6 +25,8 @@ namespace FlatRedBall.Glue.Controls
         New
     }
 }
+
+#endregion
 
 namespace GlueFormsCore.ViewModels
 {
@@ -116,7 +120,18 @@ namespace GlueFormsCore.ViewModels
 
         public string SelectedTunneledObject
         {
-            get => Get<string>();
+            get
+            {
+                var toReturn = Get<string>();
+                if (string.IsNullOrEmpty(toReturn))
+                {
+                    return null;
+                }
+                else
+                {
+                    return toReturn;
+                }
+            }
             set => Set(value);
         }
 
@@ -261,7 +276,13 @@ namespace GlueFormsCore.ViewModels
         public string SelectedNewType
         {
             get => Get<string>();
-            set => Set(value);
+            set
+            {
+                if (Set(value) && !CanBeList)
+                {
+                    IsList = false;
+                }
+            }
         }
 
         public bool IsStatic
@@ -269,6 +290,23 @@ namespace GlueFormsCore.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+
+        [DependsOn(nameof(SelectedNewType))]
+        public bool CanBeList => SelectedNewType == "string";
+
+        [DependsOn(nameof(CanBeList))]
+        public Visibility ListCheckBoxVisibility => CanBeList
+            ? Visibility.Visible
+            // so we don't have the list box shifting around...
+            : Visibility.Hidden;
+
+        public bool IsList
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Effective (Result) Properties
@@ -345,6 +383,8 @@ namespace GlueFormsCore.ViewModels
             FillTunneledTypeConverters();
 
         }
+
+        #region Fill Lists
 
         private void FillExposableVariables()
         {
@@ -429,6 +469,6 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
-
+        #endregion
     }
 }

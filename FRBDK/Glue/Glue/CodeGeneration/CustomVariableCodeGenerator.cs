@@ -20,28 +20,6 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
         #region Write Fields/Properties for CustomVariables
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            for (int i = 0; i < element.CustomVariables.Count; i++)
-            {
-                CustomVariable customVariable = element.CustomVariables[i];
-
-                VariableDefinition variableDefinition = null;
-                if (!string.IsNullOrEmpty(customVariable.SourceObject))
-                {
-                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
-                    var nosAti = owner.GetAssetTypeInfo();
-                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
-                }
-
-                if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
-                {
-                    AppendCodeForMember(element, codeBlock, customVariable, variableDefinition);
-                }
-            }
-            return codeBlock;
-        }
-
         private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
             VariableDefinition variableDefinition)
         {
@@ -348,6 +326,30 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
         }
+
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            for (int i = 0; i < element.CustomVariables.Count; i++)
+            {
+                CustomVariable customVariable = element.CustomVariables[i];
+
+                VariableDefinition variableDefinition = null;
+                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var nosAti = owner.GetAssetTypeInfo();
+                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                }
+
+                if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
+                {
+                    AppendCodeForMember(element, codeBlock, customVariable, variableDefinition);
+                }
+            }
+            return codeBlock;
+        }
+
+
 
         #endregion
 
@@ -931,22 +933,29 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (!isTypeFromCsv)
             {
 
-                Type type = null;
-
-                if (!string.IsNullOrEmpty(customVariableType))
+                if(customVariableType.StartsWith("List<"))
                 {
-                    type = TypeManager.GetTypeFromString(customVariableType);
+                    customVariableType = "System.Collections.Generic." + customVariableType;
                 }
-
-                if (type != null)
+                else
                 {
-                    // If it's a common type we don't want to make things confusing
-                    // by using "System.Single", but we do want to fully-qualify things
-                    // like FlatRedBall types to make sure we don't get any kind of naming
-                    // conflicts
-                    // If a value is defined inside a class (like the Borders enum in SpriteFrame)
-                    // then its type will come out with a +.  We need to replace that with a dot.
-                    customVariableType = TypeManager.ConvertToCommonType(type.FullName).Replace("+", ".");
+                    Type type = null;
+
+                    if (!string.IsNullOrEmpty(customVariableType))
+                    {
+                        type = TypeManager.GetTypeFromString(customVariableType);
+                    }
+
+                    if (type != null)
+                    {
+                        // If it's a common type we don't want to make things confusing
+                        // by using "System.Single", but we do want to fully-qualify things
+                        // like FlatRedBall types to make sure we don't get any kind of naming
+                        // conflicts
+                        // If a value is defined inside a class (like the Borders enum in SpriteFrame)
+                        // then its type will come out with a +.  We need to replace that with a dot.
+                        customVariableType = TypeManager.ConvertToCommonType(type.FullName).Replace("+", ".");
+                    }
                 }
             }
 
@@ -1280,90 +1289,95 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             // We don't support assigning lists yet, and lists are generic, so we're going to test for generic assignments
             // Eventually I may need to make this a little more accurate.
-            if (instructionSave.Value != null && instructionSave.Value.GetType().IsGenericType == false)
+            // Update August 22, 2022
+            // Now we do support lists!
+            //if (instructionSave.Value != null && instructionSave.Value.GetType().IsGenericType == false)
+            if (instructionSave.Value == null)
             {
-                bool usesStandardCodeGen = true;
+                return codeBlock;
+            }
 
-                var ati = namedObject.GetAssetTypeInfo();
-                var foundVariableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == instructionSave.Member);
-                if(foundVariableDefinition != null && foundVariableDefinition.UsesCustomCodeGeneration)
-                {
-                    usesStandardCodeGen = false;
-                }
+            bool usesStandardCodeGen = true;
 
-                var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
-                if(foundVariableDefinition?.CustomGenerationFunc != null)
+            var ati = namedObject.GetAssetTypeInfo();
+            var foundVariableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == instructionSave.Member);
+            if(foundVariableDefinition != null && foundVariableDefinition.UsesCustomCodeGeneration)
+            {
+                usesStandardCodeGen = false;
+            }
+
+            var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
+            if(foundVariableDefinition?.CustomGenerationFunc != null)
+            {
+                if(nosOwner != null)
                 {
-                    if(nosOwner != null)
+                    var line = foundVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, instructionSave.Member);
+                    if(!string.IsNullOrWhiteSpace(line))
                     {
-                        var line = foundVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, instructionSave.Member);
-                        if(!string.IsNullOrWhiteSpace(line))
-                        {
-                            codeBlock.Line(line);
-                        }
+                        codeBlock.Line(line);
                     }
                 }
-                else if (usesStandardCodeGen)
+            }
+            else if (usesStandardCodeGen)
+            {
+                CustomVariable customVariable = null;
+                EntitySave entitySave = null;
+                if (namedObject.SourceType == SourceType.Entity && !string.IsNullOrEmpty(namedObject.SourceClassType))
                 {
-                    CustomVariable customVariable = null;
-                    EntitySave entitySave = null;
-                    if (namedObject.SourceType == SourceType.Entity && !string.IsNullOrEmpty(namedObject.SourceClassType))
+                    entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
+                    if (entitySave != null)
                     {
-                        entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
-                        if (entitySave != null)
-                        {
-                            customVariable = entitySave.GetCustomVariable(instructionSave.Member);
-                        }
+                        customVariable = entitySave.GetCustomVariable(instructionSave.Member);
                     }
+                }
 
 
-                    IElement rootElementForVariable = entitySave;
-                    string rootVariable = instructionSave.Member;
-                    var handledByTunneledCustomCodeGeneration = false;
-                    while (customVariable != null && customVariable.IsTunneling)
+                IElement rootElementForVariable = entitySave;
+                string rootVariable = instructionSave.Member;
+                var handledByTunneledCustomCodeGeneration = false;
+                while (customVariable != null && customVariable.IsTunneling)
+                {
+                    NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
+                    if (referencedNamedObject != null && referencedNamedObject.IsFullyDefined && referencedNamedObject.SourceType == SourceType.Entity)
                     {
-                        NamedObjectSave referencedNamedObject = rootElementForVariable.GetNamedObjectRecursively(customVariable.SourceObject);
-                        if (referencedNamedObject != null && referencedNamedObject.IsFullyDefined && referencedNamedObject.SourceType == SourceType.Entity)
-                        {
-                            rootElementForVariable = ObjectFinder.Self.GetElement(referencedNamedObject.SourceClassType);
-                            rootVariable = customVariable.SourceObjectProperty;
+                        rootElementForVariable = ObjectFinder.Self.GetElement(referencedNamedObject.SourceClassType);
+                        rootVariable = customVariable.SourceObjectProperty;
 
-                            customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);
-                        }
-                        else
-                        {
-                            var nosAti = referencedNamedObject?.GetAssetTypeInfo();
-                            var nosAtiVariableDefinition = nosAti.VariableDefinitions?.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
+                        customVariable = rootElementForVariable.GetCustomVariable(customVariable.SourceObjectProperty);
+                    }
+                    else
+                    {
+                        var nosAti = referencedNamedObject?.GetAssetTypeInfo();
+                        var nosAtiVariableDefinition = nosAti.VariableDefinitions?.FirstOrDefault(item => item.Name == customVariable.SourceObjectProperty);
 
-                            if (nosAtiVariableDefinition?.CustomGenerationFunc != null)
+                        if (nosAtiVariableDefinition?.CustomGenerationFunc != null)
+                        {
+                            handledByTunneledCustomCodeGeneration = true;
+                            var line = nosAtiVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, customVariable.Name);
+                            if (!string.IsNullOrWhiteSpace(line))
                             {
-                                handledByTunneledCustomCodeGeneration = true;
-                                var line = nosAtiVariableDefinition.CustomGenerationFunc(nosOwner, namedObject, null, customVariable.Name);
-                                if (!string.IsNullOrWhiteSpace(line))
-                                {
-                                    codeBlock.Line(line);
-                                }
+                                codeBlock.Line(line);
                             }
-
-                            break;
                         }
-                    }
 
-                    // We do a check up top to see if we should skip generation, but that's based on null values.
-                    // This check requires a little more context.
-                    bool shouldSkipGeneration = customVariable?.GetIsVariableState(entitySave) == true &&
-                        (instructionSave.Value as string) == "<NONE>";
-
-                    if(!shouldSkipGeneration && !handledByTunneledCustomCodeGeneration)
-                    {
-                        AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, entitySave, customVariable, rootVariable);
-
+                        break;
                     }
                 }
-                else
+
+                // We do a check up top to see if we should skip generation, but that's based on null values.
+                // This check requires a little more context.
+                bool shouldSkipGeneration = customVariable?.GetIsVariableState(entitySave) == true &&
+                    (instructionSave.Value as string) == "<NONE>";
+
+                if(!shouldSkipGeneration && !handledByTunneledCustomCodeGeneration)
                 {
-                    PluginManager.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);
+                    AppendCustomVariableInInstanceStandard(namedObject, codeBlock, instructionSave, ati, entitySave, customVariable, rootVariable);
+
                 }
+            }
+            else
+            {
+                PluginManager.WriteInstanceVariableAssignment(namedObject, codeBlock, instructionSave);
             }
 
             return codeBlock;

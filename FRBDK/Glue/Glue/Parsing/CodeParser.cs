@@ -6,6 +6,7 @@ using System.IO;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.SaveClasses;
+using System.Collections;
 //using FlatRedBall.Gui;
 
 namespace FlatRedBall.Glue.Parsing
@@ -193,6 +194,25 @@ namespace FlatRedBall.Glue.Parsing
                 if (value.Contains("+"))
                 {
                     value = value.Replace("+", ".");
+                }
+            }
+            else if(objectToParse is IEnumerable)
+            {
+                if(objectToParse is List<string> stringList)
+                {
+                    string innerInstantiation = String.Empty;
+
+                    var isFirst = true;
+                    foreach(var item in stringList)
+                    {
+                        if(!isFirst)
+                        {
+                            innerInstantiation += ", ";
+                        }
+                        innerInstantiation += $"\"{item}\"";
+                        isFirst = false;
+                    }
+                    value = "new System.Collections.Generic.List<string> { " + innerInstantiation + "}";
                 }
             }
 

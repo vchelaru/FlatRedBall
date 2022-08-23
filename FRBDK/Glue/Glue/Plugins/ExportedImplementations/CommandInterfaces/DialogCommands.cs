@@ -239,7 +239,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     else
                     {
                         addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                        if(selectedAti != null)
+                        if (selectedAti != null)
                         {
                             addObjectViewModel.FlatRedBallAndCustomTypes.Clear();
                             addObjectViewModel.FlatRedBallAndCustomTypes.Add(selectedAti);
@@ -283,7 +283,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if(canDelete)
+            if (canDelete)
             {
                 var askAreYouSure = true;
 
@@ -293,9 +293,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var viewModel = new RemoveObjectViewModel();
                     viewModel.SetFrom(namedObjectToRemove);
                     var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
-                    if(owner == null)
+                    if (owner == null)
                     { System.Diagnostics.Debugger.Break(); }
-                    if(owner != null)
+                    if (owner != null)
                     {
                         var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
 
@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         var showDialogResult = window.ShowDialog();
 
-                        reallyRemoveResult = showDialogResult == true ?  DialogResult.Yes : DialogResult.No;
+                        reallyRemoveResult = showDialogResult == true ? DialogResult.Yes : DialogResult.No;
                     }
 
 
@@ -321,7 +321,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
 
-            
+
 
             if (canDelete && reallyRemoveResult == DialogResult.Yes)
             {
@@ -456,7 +456,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, GlueState.Self.CurrentElement,  option);
+                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, GlueState.Self.CurrentElement, option);
 
             }
 
@@ -546,7 +546,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                             await TaskManager.Self.AddAsync(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
-                                "Calling plugin ReactToNewEntityCreatedWithUi", doOnUiThread:true);
+                                "Calling plugin ReactToNewEntityCreatedWithUi", doOnUiThread: true);
 
                             GlueState.Self.CurrentEntitySave = entity;
                         }
@@ -582,9 +582,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var result = window.ShowDialog();
 
-            if(result == true)
+            if (result == true)
             {
-                HandleAddVariableOk(viewModel , container);
+                HandleAddVariableOk(viewModel, container);
             }
 
             //// Search terms:  add new variable, addnewvariable, add variable
@@ -600,8 +600,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //}
         }
 
-        private static void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
+        private static async void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
         {
+
             string resultName = viewModel.ResultName;
             string failureMessage;
 
@@ -624,77 +625,95 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else
             {
 
-                // See if there is already a variable in the base with this name
-                CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
-
-                bool canCreate = true;
-                bool isDefinedByBase = false;
-                if (existingVariableInBase != null)
+                await TaskManager.Self.AddAsync(() =>
                 {
-                    if (existingVariableInBase.SetByDerived)
+                    // See if there is already a variable in the base with this name
+                    CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
+
+                    bool canCreate = true;
+                    bool isDefinedByBase = false;
+                    if (existingVariableInBase != null)
                     {
-                        isDefinedByBase = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show("There is already a variable named\n\n" + resultName +
-                            "\n\nin the base element, but it is not SetByDerived.\nGlue will not " +
-                            "create a variable because it would result in a name conflict.");
-
-                        canCreate = false;
-                    }
-                }
-
-                if (canCreate)
-                {
-                    string type = viewModel.ResultType;
-                    string sourceObject = viewModel.SelectedTunneledObject;
-                    string sourceObjectProperty = null;
-                    if (!string.IsNullOrEmpty(sourceObject))
-                    {
-                        sourceObjectProperty = viewModel.SelectedTunneledVariableName;
-                    }
-                    string overridingType = viewModel.SelectedOverridingType;
-                    string typeConverter = viewModel.SelectedTypeConverter;
-
-                    CustomVariable newVariable = new CustomVariable();
-                    newVariable.Name = resultName;
-                    newVariable.Type = type;
-                    newVariable.SourceObject = sourceObject;
-                    newVariable.SourceObjectProperty = sourceObjectProperty;
-
-                    newVariable.IsShared = viewModel.IsStatic;
-                    newVariable.DefinedByBase = isDefinedByBase;
-
-
-
-                    if (!string.IsNullOrEmpty(overridingType))
-                    {
-                        newVariable.OverridingPropertyType = overridingType;
-                        newVariable.TypeConverter = typeConverter;
-                    }
-
-                    object defaultValue = null;
-
-                    if(!string.IsNullOrEmpty( sourceObject ))
-                    {
-                        var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
-                        if(namedObjectSource != null)
+                        if (existingVariableInBase.SetByDerived)
                         {
-                            var ati = namedObjectSource.GetAssetTypeInfo();
+                            isDefinedByBase = true;
+                        }
+                        else
+                        {
+                            MessageBox.Show("There is already a variable named\n\n" + resultName +
+                                "\n\nin the base element, but it is not SetByDerived.\nGlue will not " +
+                                "create a variable because it would result in a name conflict.");
 
-                            var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
-
-                            newVariable.Category = variableDefinition?.Category;
-
-                            defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
+                            canCreate = false;
                         }
                     }
 
-                    newVariable.DefaultValue = defaultValue;
+                    if (canCreate)
+                    {
+                        string type = viewModel.ResultType;
+                        string sourceObject = viewModel.SelectedTunneledObject;
+                        if(!string.IsNullOrEmpty(sourceObject))
+                        {
+                            sourceObject = null;
+                        }
+                        string sourceObjectProperty = null;
+                        if (!string.IsNullOrEmpty(sourceObject))
+                        {
+                            sourceObjectProperty = viewModel.SelectedTunneledVariableName;
+                        }
+                        string overridingType = viewModel.SelectedOverridingType;
+                        if(overridingType == "<none>")
+                        {
+                            overridingType = null;
+                        }
+                        string typeConverter = viewModel.SelectedTypeConverter;
 
-                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
-                }
+                        CustomVariable newVariable = new CustomVariable();
+                        newVariable.Name = resultName;
+                        if(viewModel.IsList)
+                        {
+                            newVariable.Type = $"List<{type}>";
+                        }
+                        else
+                        {
+                            newVariable.Type = type;
+                        }
+                        newVariable.SourceObject = sourceObject;
+                        newVariable.SourceObjectProperty = sourceObjectProperty;
+
+                        newVariable.IsShared = viewModel.IsStatic;
+                        newVariable.DefinedByBase = isDefinedByBase;
+
+
+
+                        if (!string.IsNullOrEmpty(overridingType))
+                        {
+                            newVariable.OverridingPropertyType = overridingType;
+                            newVariable.TypeConverter = typeConverter;
+                        }
+
+                        object defaultValue = null;
+
+                        if (!string.IsNullOrEmpty(sourceObject))
+                        {
+                            var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);
+                            if (namedObjectSource != null)
+                            {
+                                var ati = namedObjectSource.GetAssetTypeInfo();
+
+                                var variableDefinition = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == sourceObjectProperty);
+
+                                newVariable.Category = variableDefinition?.Category;
+
+                                defaultValue = namedObjectSource.GetCustomVariable(sourceObjectProperty)?.Value;
+                            }
+                        }
+
+                        newVariable.DefaultValue = defaultValue;
+
+                        GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
+                    }
+                }, $"Adding variable {resultName} through UI");
             }
         }
 
@@ -824,7 +843,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var name = eventOwner.InstanceName;
             var element = ObjectFinder.Self.GetElementContaining(eventOwner);
-            if(element != GlueState.Self.CurrentElement)
+            if (element != GlueState.Self.CurrentElement)
             {
                 GlueState.Self.CurrentElement = element;
             }
@@ -957,10 +976,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
 
-                if(nos.DefinedByBase)
+                if (nos.DefinedByBase)
                 {
                     var baseNos = ObjectFinder.Self.GetRootDefiningObject(nos);
-                    if(baseNos != null)
+                    if (baseNos != null)
                     {
                         GlueState.Self.CurrentNamedObjectSave = baseNos;
                     }

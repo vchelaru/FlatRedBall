@@ -710,7 +710,17 @@ namespace FlatRedBall.Glue.SaveClasses
             // so we need to have the values be fully qualified.
             //instructionSave.Type = type.Name;
 
-            instructionSave.Type = type.FullName;
+            if(type == typeof(List<string>))
+            {
+                instructionSave.Type = "List<string>";
+            }
+            else
+            {
+                instructionSave.Type = type.FullName;
+            }
+
+            // special case - if it's a list, then handle it here
+
             instructionSave.Type = TypeManager.ConvertToCommonType(instructionSave.Type);
             instructionSave.Member = member;
             // Create a new instruction
