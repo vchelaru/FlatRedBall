@@ -85,16 +85,9 @@ namespace OfficialPlugins.SpritePlugin.Views
                 }
                 else
                 {
-                    if((viewModel.TextureHeight <= 512) && (viewModel.TextureWidth <= 512)) {
-                        //TODO test this
-                        window.Width = viewModel.TextureHeight + 100;
-                        window.Height = viewModel.TextureHeight + 50;
-                        window.MoveToCursor();
-                    } else {
-                        window.MoveToMainWindowCenterAndSize();
-                        window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
-                        window.MoveToCursor();
-                    }
+                    window.MoveToMainWindowCenterAndSize(.7f, .85f);
+                    window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
+                    window.MoveToCursor();
 
                     //better way to have viewmodel update itself from window?
                     viewModel.WindowWidth = window.Width;
@@ -148,8 +141,8 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             viewModel.LeftTexturePixel = (int)left;
             viewModel.TopTexturePixel = (int)top;
-            viewModel.SelectedWidthPixels = (int)(right - left);
-            viewModel.SelectedHeightPixels = (int)(bottom - top);
+            viewModel.SelectedWidthPixels = (int)viewModel.CellWidth;
+            viewModel.SelectedHeightPixels = (int)viewModel.CellHeight;
             return viewModel;
         }
 

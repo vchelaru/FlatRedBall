@@ -6,6 +6,7 @@ using RenderingLibrary.Math;
 using SkiaGum.GueDeriving;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Input;
 
@@ -48,6 +49,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         private static int? StartDragSelectX = null;
         private static int? StartDragSelectY = null;
+        private static Stopwatch LeftClickTimer = new Stopwatch();
 
         static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
@@ -56,6 +58,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
         public static void Initialize(TextureCoordinateSelectionView view)
         {
             View = view;
+            LeftClickTimer.Start();
 
             //circle = new ColoredCircleRuntime();
             //circle.Width = 16;
@@ -70,13 +73,19 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             UpdateHandleGrabbed(args);
 
+            //double click
+            if(IsBodyGrabbed && (LeftClickTimer.ElapsedMilliseconds < System.Windows.Forms.SystemInformation.DoubleClickTime)) {
+                HandleGrabbed = null;
+                IsBodyGrabbed = false;
+            }
+            if(args.ChangedButton == MouseButton.Left)
+                LeftClickTimer.Restart();
+
             //Not interacting with TextureCoordinateRectangle, move TextureCoordinateRectangle to this cell & init start drag select
             if((HandleGrabbed == null) && (!IsBodyGrabbed) && (args.ChangedButton == MouseButton.Left)) {
-                View.GetWorldPosition(args.GetPosition(View.Canvas), out double worldX, out double worldY);
-                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
-                View.SelectCell(curr_cX, curr_cY);
-                StartDragSelectX = curr_cX;
-                StartDragSelectY = curr_cY;
+                View.SelectCell(args.GetPosition(View.Canvas), out int columnX, out int columnY);
+                StartDragSelectX = columnX;
+                StartDragSelectY = columnY;
             }
         }
 
@@ -84,10 +93,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             //start drag select / not interacting with TextureCoordinateRectangle
             if((StartDragSelectX != null) && (!IsBodyGrabbed) && (args.LeftButton == MouseButtonState.Pressed)) {
-                View.GetWorldPosition(args.GetPosition(View.Canvas), out double worldX, out double worldY);
-                View.linegrid.LineGridCell(worldX, worldY, out int curr_cX, out int curr_cY);
-                if((curr_cX != StartDragSelectX) || (curr_cY != StartDragSelectY))
-                    View.SelectCellDrag((int)StartDragSelectX, (int)StartDragSelectY, curr_cX, curr_cY);
+                View.SelectDragCell(args.GetPosition(View.Canvas), (int)StartDragSelectX, (int)StartDragSelectY);
                 return;
             }
 
