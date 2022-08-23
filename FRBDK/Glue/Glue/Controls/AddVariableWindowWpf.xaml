@@ -61,7 +61,7 @@
                 <Label Margin="0,10,0,0" Grid.Row="1">Converted Type:</Label>
                 <Label Margin="0,10,0,0" Grid.Row="2">Type Converter:</Label>
 
-                <TextBox Text="{Binding AlternativeName}" Grid.Column="1"></TextBox>
+                <TextBox Text="{Binding AlternativeName}" Grid.Column="1" KeyDown="TunneledVariableTextBox_KeyDown"></TextBox>
                 <ComboBox 
                     ItemsSource="{Binding AvailableOverridingTypes}"
                     SelectedItem="{Binding SelectedOverridingType}"
