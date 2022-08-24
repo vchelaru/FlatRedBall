@@ -299,7 +299,7 @@ namespace TiledPluginCore.Controllers
                     newScreen.BaseScreen = "Screens\\GameScreen";
 
                     await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(newScreen, suppressAlreadyExistingFileMessage: true);
-                    newScreen.UpdateFromBaseType();
+                    GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
 
 
                     // add the TMX file:

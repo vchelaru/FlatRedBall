@@ -10,20 +10,8 @@ namespace FlatRedBall.Glue.SaveClasses
 {
     public static class ElementExtensionMethods
     {
-        [Obsolete("Use GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType")]
-        public static bool UpdateFromBaseType(this IElement elementSave)
-        {
-            bool haveChangesOccurred = false;
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                haveChangesOccurred |= UpdateNamedObjectsFromBaseType(elementSave);
-
-                UpdateCustomVariablesFromBaseType(elementSave);
-            }
-            return haveChangesOccurred;
-
-        }
-
+        // todo - move this to ElementCommands
+        [Obsolete("Use ElementCommands.UpdateFromBaseType")]
         public static bool UpdateNamedObjectsFromBaseType(INamedObjectContainer namedObjectContainer)
         {
             bool haveChangesOccurred = false;

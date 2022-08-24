@@ -1078,10 +1078,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         /// Updates the argument glueElement from its base types. This updates variables and named objects.
         /// </summary>
         /// <param name="glueElement">The base Glue element to update.</param>
-        /// <returns>Whetehr the object updated</returns>
+        /// <returns>Whether the object updated</returns>
         public bool UpdateFromBaseType(GlueElement glueElement)
         {
-            return ElementExtensionMethods.UpdateFromBaseType(glueElement);
+            bool haveChangesOccurred = false;
+            if (ObjectFinder.Self.GlueProject != null)
+            {
+                haveChangesOccurred |= ElementExtensionMethods.UpdateNamedObjectsFromBaseType(glueElement);
+
+                ElementExtensionMethods.UpdateCustomVariablesFromBaseType(glueElement);
+            }
+            return haveChangesOccurred;
         }
 
 

@@ -189,7 +189,7 @@ namespace FlatRedBall.Glue.IO
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
                 TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
-                GlueState.Self.CurrentGlueProject.FixAllTypes();
+
                 if (shouldSaveGlux)
                 {
                     GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
@@ -414,7 +414,6 @@ namespace FlatRedBall.Glue.IO
                 foreach (var entity in ObjectFinder.Self.GlueProject.Entities)
                 {
                     entity.UpdateCustomProperties();
-                    entity.UpdateFromBaseType();
                     CheckForMissingCustomFile(entity);
                 }
 

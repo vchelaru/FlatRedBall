@@ -527,13 +527,15 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static void FixNamedObjects(this GlueProjectSave instance)
+        public static void FixNamedObjects(this GlueProjectSave glueProjectSave)
         {
-            instance.SearchForDuplicateNamedObjects();
+            glueProjectSave.SearchForDuplicateNamedObjects();
 
-            instance.FixBackSlashSourcefiles();
+            glueProjectSave.FixBackSlashSourcefiles();
 
-            instance.FixAttachmentProperties();
+            glueProjectSave.FixAttachmentProperties();
+
+            glueProjectSave.FixMissingDerivedNamedObjects();
         }
 
 
@@ -581,6 +583,18 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     nos.AttachToCamera = false;
                 }
+            }
+        }
+
+        public static void FixMissingDerivedNamedObjects(this GlueProjectSave instance)
+        {
+            foreach (var screen in instance.Screens)
+            {
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen);
+            }
+            foreach (var entity in instance.Entities)
+            {
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity);
             }
         }
     }

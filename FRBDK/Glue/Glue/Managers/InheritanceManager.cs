@@ -97,7 +97,8 @@ namespace GlueFormsCore.Managers
             }
             else
             {
-                screenSave.UpdateFromBaseType();
+                //screenSave.UpdateFromBaseType();
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screenSave);
             }
         }
 
