@@ -50,6 +50,8 @@ namespace OfficialPlugins.VariableDisplay
 
             DataGridItem instanceMember = null;
 
+            #region Property Displayer/forced options
+
             TypeConverter typeConverter = GetTypeConverter(instance, container, memberName, memberType, customTypeName, variableDefinition);
 
             bool isObjectInFile = typeConverter is IObjectsInFileConverter;
@@ -119,6 +121,8 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MinValue.Value;
             }
 
+            #endregion
+
             instanceMember.FirstGridLength = new System.Windows.GridLength(140);
 
             instanceMember.UnmodifiedVariableName = memberName;
@@ -127,7 +131,7 @@ namespace OfficialPlugins.VariableDisplay
 
             instanceMember.TypeConverter = typeConverter;
 
-
+            #region Types
 
             // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
             // shader situation solved. But until then, these cause crashes so let's remove them.
@@ -148,12 +152,15 @@ namespace OfficialPlugins.VariableDisplay
                 //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InterpolateColor);
             }
 
+            #endregion
+
             instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
 
-
-            instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
+            #region CustomGet
 
             AssignCustomGetEvent(instance, container, memberName, memberType, variableDefinition, instanceMember);
+
+            #endregion
 
             #region CustomSetEvent
 
@@ -250,6 +257,8 @@ namespace OfficialPlugins.VariableDisplay
             #endregion
 
             #region IsDefaultSet
+
+            instanceMember.IsDefault = instance.GetCustomVariable(memberName) == null;
 
             instanceMember.IsDefaultSet += (owner, args) =>
             {

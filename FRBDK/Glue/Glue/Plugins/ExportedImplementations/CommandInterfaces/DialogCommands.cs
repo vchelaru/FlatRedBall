@@ -652,7 +652,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         string type = viewModel.ResultType;
                         string sourceObject = viewModel.SelectedTunneledObject;
-                        if(!string.IsNullOrEmpty(sourceObject))
+                        if(string.IsNullOrEmpty(sourceObject))
                         {
                             sourceObject = null;
                         }

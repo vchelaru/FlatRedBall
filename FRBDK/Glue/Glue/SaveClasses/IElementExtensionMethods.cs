@@ -145,16 +145,15 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static object GetVariableValueRecursively(this IElement element, string variableName)
+        public static object GetVariableValueRecursively(this GlueElement element, string variableName)
         {
             //////////////////////Early Out///////////////////////////////////
             if (string.IsNullOrEmpty(variableName))
             {
                 return null;
             }
-
             ////////////////////End Early Out//////////////////////////
-            ///
+
             if (variableName.StartsWith("this."))
             {
                 variableName = variableName.Substring("this.".Length);
@@ -169,6 +168,19 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 toReturn = variable.DefaultValue;
                 foundValue = true;
+            }
+
+            if(!foundValue && !string.IsNullOrEmpty(variable?.SourceObject))
+            {
+                var nos = element.GetNamedObjectRecursively(variable.SourceObject);
+
+                if(nos != null)
+                {
+                    var value = ObjectFinder.Self.GetValueRecursively(nos, element, variable.SourceObjectProperty);
+
+                    foundValue = value != null;
+                    toReturn = value;
+                }
             }
 
             if (!foundValue)

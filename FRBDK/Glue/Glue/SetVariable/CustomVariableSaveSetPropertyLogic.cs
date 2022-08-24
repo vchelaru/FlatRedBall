@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.SetVariable
                         var cvino = nos.GetCustomVariable(customVariable.SourceObjectProperty);
 
                         var variableDefinition = nos.GetAssetTypeInfo()
-                            .VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+                            ?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
 
                         if (variableDefinition?.CustomVariableSet != null)
                         {
