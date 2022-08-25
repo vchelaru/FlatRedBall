@@ -11,7 +11,7 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         /// <param name="degrees">A degrees value as a float</param>
         /// <returns>The value in radians</returns>
-        public static float ToRadians(this float degrees)
+        public static float ConvertToRadians(this float degrees)
         {
             return degrees * (float)(System.Math.PI / 180f);
         }
@@ -21,7 +21,7 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         /// <param name="radians">A radians value as a float</param>
         /// <returns>The value in degrees</returns>
-        public static float ToDegrees(this float radians)
+        public static float ConvertToDegrees(this float radians)
         {
             return radians * (float)(180f / System.Math.PI);
         }
