@@ -433,7 +433,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region ReferencedFileSave
 
-        public async Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null)
+        public async Task<ReferencedFileSave> ShowAddNewFileDialogAsync(AddNewFileViewModel viewModel = null, GlueElement element = null)
         {
             ReferencedFileSave rfs = null;
 
@@ -456,7 +456,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     viewModel.SelectedAssetTypeInfo;
 
                 var option = nfw.GetOptionFor(resultAssetTypeInfo);
-                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, GlueState.Self.CurrentElement, option);
+                rfs = await GlueCommands.Self.GluxCommands.CreateNewFileAndReferencedFileSaveAsync(viewModel, element ?? GlueState.Self.CurrentElement, option);
 
             }
 

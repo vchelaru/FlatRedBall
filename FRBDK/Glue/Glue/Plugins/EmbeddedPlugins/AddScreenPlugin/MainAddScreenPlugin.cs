@@ -325,7 +325,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             addNewFileViewModel.ForcedType = tmxAti;
             addNewFileViewModel.FileName = newScreen.GetStrippedName() + "Map";
 
-            var newRfs = await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync(addNewFileViewModel);
+            var newRfs = await GlueCommands.Self.DialogCommands.ShowAddNewFileDialogAsync(addNewFileViewModel, newScreen);
 
             if (newRfs != null)
             {
