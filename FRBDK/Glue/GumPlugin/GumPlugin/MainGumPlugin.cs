@@ -33,6 +33,7 @@ using GumPlugin.DataGeneration;
 using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using HQ.Util.Unmanaged;
+using System.IO;
 
 namespace GumPlugin
 {
@@ -813,6 +814,8 @@ namespace GumPlugin
             var gumFileName = AppState.Self.GumProjectSave.FullFileName;
 
             var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
+            if(!File.Exists(executable))
+                executable = "";
 
             // see if the prebuilt location exists:
             if(string.IsNullOrEmpty(executable))
@@ -820,6 +823,15 @@ namespace GumPlugin
                 FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
                 if(prebuiltLocation.Exists())
                 {
+                    executable = prebuiltLocation.FullPath;
+                }
+
+            }
+            //find corresponding gum if in ide
+            if(string.IsNullOrEmpty(executable)) {
+                // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
+                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                if(prebuiltLocation.Exists()) {
                     executable = prebuiltLocation.FullPath;
                 }
 
