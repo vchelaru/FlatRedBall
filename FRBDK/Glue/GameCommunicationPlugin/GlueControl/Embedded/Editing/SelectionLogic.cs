@@ -467,9 +467,15 @@ namespace GlueControl.Editing
                 MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
                 polygon = polygonForCursorOver;
 
-                if (collisionObject is PositionedObject positionedObject)
+                if (collisionObject is PositionedObject positionedObject &&
+                    // Not if it's an AARect - that can't rotate
+                    collisionObject is AxisAlignedRectangle == false)
                 {
                     polygon.RotationMatrix = positionedObject.RotationMatrix;
+                }
+                else
+                {
+                    polygon.RotationMatrix = Matrix.Identity;
                 }
             }
             else if (collisionObject is Line asLine)
