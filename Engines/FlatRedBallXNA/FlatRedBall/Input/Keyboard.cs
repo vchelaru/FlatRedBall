@@ -493,6 +493,13 @@ namespace FlatRedBall.Input
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns an I2DInput using WASD keys.
+        /// </summary>
+        /// <returns>An input using WASD as an I2DInput object.</returns>
+        public I2DInput GetWasdInput() =>
+            Get2DInput(Keys.A, Keys.D, Keys.W, Keys.S);
+
         #endregion
 
         #region Internal Methods

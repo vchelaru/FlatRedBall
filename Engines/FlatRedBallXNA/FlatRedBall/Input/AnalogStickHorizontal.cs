@@ -8,12 +8,27 @@ namespace FlatRedBall.Input
     {
         private AnalogStick analogStick;
 
+        public float Deadzone { get; set; }
+
         public AnalogStickHorizontal(AnalogStick analogStick)
         {
             this.analogStick = analogStick;
         }
 
-        public float Value => analogStick.Position.X; 
+        public float Value
+        {
+            get
+            {
+                if (analogStick.Position.X > Deadzone || analogStick.Position.X < -Deadzone)
+                {
+                    return analogStick.Position.X;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
 
         public float Velocity => analogStick.Velocity.X; 
 

@@ -136,8 +136,8 @@ namespace FlatRedBall.Input
 
         public static Keyboard Keyboard
         {
-            get { return mKeyboard; }
-            set { mKeyboard = value; }
+            get => mKeyboard; 
+            set => mKeyboard = value; 
         }
         public static IInputReceiverKeyboard InputReceiverKeyboard
         {

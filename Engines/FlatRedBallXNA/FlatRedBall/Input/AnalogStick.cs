@@ -342,6 +342,10 @@ namespace FlatRedBall.Input
         #endregion
 
         I1DInput horizontal;
+        /// <summary>
+        /// Returns an I1DInput for the horizontal values in this AnalogStick. The same instance is returned if this property is accessed
+        /// multiple times.
+        /// </summary>
         public I1DInput Horizontal
         {
             get
@@ -355,7 +359,25 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Returns an AnalogStickHorizontal instance (I1DInput) for the horizontal values in this AnalogStick. A new instance is returned
+        /// each time this method is called.
+        /// </summary>
+        /// <param name="deadzone">The analog stick deadzone, which should be between 0 and 1</param>
+        /// <returns>A new AnalogStickHorizontal instance.</returns>
+        public AnalogStickHorizontal GetHorizontalWithDeadzone(float deadzone)
+        {
+            return new AnalogStickHorizontal(this)
+            {
+                Deadzone = deadzone
+            };
+        }
+
         I1DInput vertical;
+        /// <summary>
+        /// Returns an I1DInput for teh vertical values in this AnalogStick. The same instance is returned if htis property is accessed
+        /// multiple times.
+        /// </summary>
         public I1DInput Vertical
         {
             get
@@ -369,6 +391,18 @@ namespace FlatRedBall.Input
             }
         }
 
-
+        /// <summary>
+        /// Returns an AnalogStickVertical instance (I1DInput) for the vertical values in this AnalogStick. A new instance is returned
+        /// each time this method is called.
+        /// </summary>
+        /// <param name="deadzone">The analog stick deadzone, which should be between 0 and 1</param>
+        /// <returns>A new AnalogStickVertical instance.</returns>
+        public AnalogStickVertical GetVerticalWithDeadzone(float deadzone)
+        {
+            return new AnalogStickVertical(this)
+            {
+                Deadzone = deadzone
+            };
+        }
     }
 }
