@@ -9,6 +9,7 @@ using Npc.Managers;
 using ToolsUtilities;
 using System.Threading.Tasks;
 using FRBDKUpdater;
+using UpdaterWpf.Views;
 
 namespace Npc
 {
@@ -334,6 +335,7 @@ namespace Npc
                 ? System.Windows.Visibility.Visible
                 : System.Windows.Visibility.Collapsed;
 
+            window.Owner = viewModel.owner;
             var result = window.ShowDialog();
 
             if(result == null)

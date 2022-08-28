@@ -53,12 +53,8 @@ namespace FlatRedBall.Glue.Controls
 			DialogResult = DialogResult.Cancel;
 
 			StartPosition = FormStartPosition.Manual;
-            // This will be set in OnShow after all controls 
-            // have been added because we want to center the control 
-            // where the mouse is.
-            //Location = new Point(TextInputWindow.MousePosition.X, TextInputWindow.MousePosition.Y);
-
-            this.textBox1.Focus();
+            Location = new Point(TextInputWindow.MousePosition.X - Width / 2, TextInputWindow.MousePosition.Y - Height / 2);
+            this.EnsureOnScreen();
         }
 
         /// <summary>
@@ -95,36 +91,16 @@ namespace FlatRedBall.Glue.Controls
             this.Height += control.Height;
             this.textBox1.Focus();
             this.DefaultControlPanel.Location = new Point(0, ExtraControlsPanelAbove.Height);
-
-
-
         }
 
         public void ClickOk()
         {
             this.mOkWindow.PerformClick();
-
         }
 
-        protected override void OnShown(EventArgs e)
-        {
-            base.OnShown(e);
-            Location = new Point(TextInputWindow.MousePosition.X - Width / 2, TextInputWindow.MousePosition.Y - Height / 2);
-
-            this.EnsureOnScreen();
-
-            var screen = Screen.FromControl(this);
-            System.Drawing.Point newLocation = this.Location;
-
-            if (this.Bounds.Top < 0)
-                newLocation.Y = 0;
-
-            this.Location = newLocation;
-
-
-
-
+        protected override void OnActivated(EventArgs e) {
+            base.OnActivated(e);
             textBox1.Focus();
         }
-	}
+    }
 }

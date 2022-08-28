@@ -177,6 +177,8 @@ namespace FlatRedBall.Glue.Controls
                     ViewModel.IsNameDefault = true;
                 }
             }
+            TextBox.Focus();
+            TextBox.SelectAll();
         }
 
         private void HandleOkClicked(object sender, RoutedEventArgs e)
