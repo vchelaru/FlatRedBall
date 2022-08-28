@@ -653,7 +653,15 @@ namespace FlatRedBall.Forms.Controls
                     {
                         var uiValue = uiProperty.GetValue(this, null);
 
-                        vmProperty.SetValue(BindingContext, uiValue, null);
+                        try
+                        {
+                            vmProperty.SetValue(BindingContext, uiValue, null);
+                        }
+                        catch(System.ArgumentException argumentException)
+                        {
+                            throw new Exception($"Could not convert UI value {GetType().Name}.{uiPropertyName} of type {uiProperty.PropertyType} " +
+                                $"into ViewModel {BindingContext.GetType().Name}.{vmProperty.Name} of type {vmProperty.PropertyType}", argumentException);
+                        }
                     }
                 }
             }
