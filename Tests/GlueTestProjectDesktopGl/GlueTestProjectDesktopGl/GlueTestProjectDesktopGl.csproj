@@ -2474,6 +2474,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>MapWithDefaultTileset</Name>
     </None>
+    <None Include="content\screens\tmxscreen\mapwithparallax.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>MapWithParallax</Name>
+    </None>
     <None Include="content\screens\tmxscreen\rotatedtiletmx.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>RotatedTileTmx</Name>

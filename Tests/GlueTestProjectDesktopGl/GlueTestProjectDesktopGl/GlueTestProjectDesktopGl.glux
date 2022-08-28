@@ -6072,6 +6072,19 @@
           <ProjectsToExcludeFrom />
           <IsCreatedByWildcard>false</IsCreatedByWildcard>
         </ReferencedFileSave>
+        <ReferencedFileSave>
+          <Name>Screens/TmxScreen/MapWithParallax.tmx</Name>
+          <Properties>
+            <PropertySave>
+              <Name>CreationOptions</Name>
+              <ValueAsString>{"IncludeDefaultTileset":false,"IncludeGameplayLayer":true,"SolidCollisionCheckBoxVisibility":2,"IsSolidCollisionBorderChecked":true,"ShouldAddCollisionBorder":false}</ValueAsString>
+            </PropertySave>
+          </Properties>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>FlatRedBall.TileGraphics.LayeredTileMap</RuntimeType>
+          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
+        </ReferencedFileSave>
       </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <NamedObjects>

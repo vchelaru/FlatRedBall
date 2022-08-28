@@ -72,8 +72,9 @@ namespace GlueTestProject.Screens
                 shapeCollection.Visible = true;
                 shapeCollection.AddToManagers();
             }
-		}
 
+            TestParallax();
+		}
         private void TestFromPropertyCollision()
         {
             WaterTypeCollisionLayer.ShouldNotBe(null);
@@ -105,6 +106,18 @@ namespace GlueTestProject.Screens
             RotatedTileTmx.Y += 100;
             
         }
+
+        private void TestParallax()
+        {
+            var parallaxLayer = MapWithParallax.MapLayers.FindByName("ParallaxLayerXY");
+            parallaxLayer.ShouldNotBe(null);
+            // This doesn't carry over exactly due to floating point, so we do greater than/less than
+            parallaxLayer.ParallaxMultiplierX.ShouldBeGreaterThan(.199f);
+            parallaxLayer.ParallaxMultiplierX.ShouldBeLessThan(.201f);
+            parallaxLayer.ParallaxMultiplierY.ShouldBeGreaterThan(.299f);
+            parallaxLayer.ParallaxMultiplierY.ShouldBeLessThan(.301f);
+        }
+
 
 		void CustomActivity(bool firstTimeCalled)
 		{

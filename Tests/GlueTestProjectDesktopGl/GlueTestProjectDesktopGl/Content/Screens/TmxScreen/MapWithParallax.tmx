@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="16" tileheight="16" infinite="0" parallaxoriginx="0.2" parallaxoriginy="0.3" nextlayerid="3" nextobjectid="1">
+ <layer id="2" name="ParallaxLayerXY" width="32" height="32" parallaxx="0.2" parallaxy="0.3">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAACu3BAQ0AAADCoPdPbQ8HFAAAAPBuEQAcxwAQAAA=
+  </data>
+ </layer>
+</map>
