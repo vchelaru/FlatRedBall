@@ -30,6 +30,7 @@ namespace Npc
             InitializeComponent();
 
             ViewModel = new NewProjectViewModel();
+            ViewModel.owner = this;
             ViewModel.OpenSlnFolderAfterCreation = true;
             ViewModel.IsCreateProjectDirectoryChecked = true;
 
