@@ -458,6 +458,10 @@ namespace FlatRedBall.TileCollisions
             }
         }
 
+        /// <summary>
+        /// Adds all shapes from the argument TileShapeCollection into this TileShapeCollection and updates RepositionDirections on all contained AxisAlignedRectangles
+        /// </summary>
+        /// <param name="source">The source from which to copy the shapes.</param>
         public void InsertShapes(TileShapeCollection source)
         {
             foreach (var rectangle in source.Rectangles)
