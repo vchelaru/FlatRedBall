@@ -14,7 +14,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return element is EntitySave asEntity &&
                 asEntity.PooledByFactory &&
                 asEntity.CreatedByOtherEntities &&
-                asEntity.GetAllBaseEntities().Count(item => item.CreatedByOtherEntities) == 0;
+                asEntity.GetAllBaseEntities().Count(item => IsPoolable(item)) == 0;
         }
 
 

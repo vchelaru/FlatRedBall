@@ -300,6 +300,8 @@ namespace FlatRedBall.Glue.SaveClasses
             get; set;
         }
 
+        [XmlIgnore]
+        [JsonIgnore]
         public Func<GlueElement, List<string>> CustomGetForcedOptionsFunc;
 
         #endregion
