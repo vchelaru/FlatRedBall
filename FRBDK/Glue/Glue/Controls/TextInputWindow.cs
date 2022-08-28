@@ -55,8 +55,6 @@ namespace FlatRedBall.Glue.Controls
 			StartPosition = FormStartPosition.Manual;
             Location = new Point(TextInputWindow.MousePosition.X - Width / 2, TextInputWindow.MousePosition.Y - Height / 2);
             this.EnsureOnScreen();
-
-            this.textBox1.Focus();
         }
 
         /// <summary>
@@ -100,5 +98,9 @@ namespace FlatRedBall.Glue.Controls
             this.mOkWindow.PerformClick();
         }
 
-	}
+        protected override void OnActivated(EventArgs e) {
+            base.OnActivated(e);
+            textBox1.Focus();
+        }
+    }
 }
