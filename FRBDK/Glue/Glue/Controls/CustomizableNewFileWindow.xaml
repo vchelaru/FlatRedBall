@@ -14,8 +14,8 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="{Binding AdditionalUiStackColumn}" x:Name="AdditionalUiStack"></StackPanel>
         <Grid x:Name="FileTypeSelectionUi" Visibility="{Binding FileTypeSelectionVisibility}">
