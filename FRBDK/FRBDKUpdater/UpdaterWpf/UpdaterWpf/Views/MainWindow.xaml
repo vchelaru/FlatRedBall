@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="120" Width="400"
         Closing="Window_Closed"
-        
+        WindowStartupLocation="CenterOwner"
         >
     <Grid  Margin="10">
         <Grid.RowDefinitions>

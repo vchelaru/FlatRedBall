@@ -10,6 +10,8 @@ namespace Npc.ViewModels
 {
     public class NewProjectViewModel : ViewModel
     {
+        public Window owner;
+
         char[] invalidNamespaceCharacters = new char[]
         {
                 '~', '`', '!', '@', '#', '$', '%', '^', '&', '*',
