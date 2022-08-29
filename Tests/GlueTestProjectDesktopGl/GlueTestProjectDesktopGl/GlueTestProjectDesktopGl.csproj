@@ -825,6 +825,10 @@
     <Compile Include="Forms\Screens\DerivedScreenGumForms.Generated.cs">
       <DependentUpon>DerivedScreenGumForms.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\Screens\FormsScreenGumForms.cs" />
+    <Compile Include="Forms\Screens\FormsScreenGumForms.Generated.cs">
+      <DependentUpon>FormsScreenGumForms.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Screens\GumScreenLayeredGumForms.cs" />
     <Compile Include="Forms\Screens\GumScreenLayeredGumForms.Generated.cs">
       <DependentUpon>GumScreenLayeredGumForms.cs</DependentUpon>
@@ -1037,6 +1041,10 @@
     <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.cs" />
     <Compile Include="GumRuntimes\Folder2\FolderedEntity2Runtime.Generated.cs">
       <DependentUpon>FolderedEntity2Runtime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GumRuntimes\FormsScreenGumRuntime.cs" />
+    <Compile Include="GumRuntimes\FormsScreenGumRuntime.Generated.cs">
+      <DependentUpon>FormsScreenGumRuntime.cs</DependentUpon>
     </Compile>
     <Compile Include="GumRuntimes\GumIdb.Generated.cs" />
     <Compile Include="GumRuntimes\GumScreenLayeredGumRuntime.cs" />
@@ -2125,6 +2133,10 @@
     <None Include="content\gumproject\screens\derivedscreengum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Name>derivedscreengum</Name>
+    </None>
+    <None Include="content\gumproject\screens\formsscreengum.gusx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Name>FormsScreenGum</Name>
     </None>
     <None Include="content\gumproject\screens\gumscreenlayeredgum.gusx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

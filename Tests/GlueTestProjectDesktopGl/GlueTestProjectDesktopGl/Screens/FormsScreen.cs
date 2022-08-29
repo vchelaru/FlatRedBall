@@ -14,9 +14,52 @@ using FlatRedBall.Localization;
 using GlueTestProject.Forms.Controls;
 using FlatRedBall.Forms.Controls;
 using GlueTestProject.TestFramework;
+using FlatRedBall.Forms.MVVM;
 
 namespace GlueTestProject.Screens
 {
+    class TestViewModel : ViewModel
+    {
+        public bool IsChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+    }
+
+    class GumPageViewModel : ViewModel
+    {
+        public bool IsFirstChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsThirdChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsFourthChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsFifthChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+    }
+
 	public partial class FormsScreen
 	{
         CustomUserControl control;
@@ -26,12 +69,63 @@ namespace GlueTestProject.Screens
             control = new CustomUserControl();
             control.Visual.AddToManagers();
 
-
             TestRadioButtonSelected();
 
             TestListBoxSelected();
 
+            TestRemovalOfBinding();
+
 		}
+
+        private void TestRemovalOfBinding()
+        {
+            int timesCalled = 0;
+
+            var vm = new TestViewModel();
+            vm.PropertyChanged += (not, used) =>
+            {
+                timesCalled++;
+            };
+
+            timesCalled.ShouldBe(0);
+
+            // Stack it a few deep to make sure all works okay
+            var stack = new StackPanel();
+            var innerStack = new StackPanel();
+            var checkBox = new CheckBox();
+            checkBox.SetBinding(nameof(checkBox.IsChecked), nameof(TestViewModel.IsChecked));
+            stack.AddChild(innerStack);
+            innerStack.AddChild(checkBox);
+            stack.Visual.AddToManagers();
+
+            stack.BindingContext = vm;
+
+            timesCalled.ShouldBe(0);
+
+            checkBox.IsChecked = true;
+
+            timesCalled.ShouldBe(1);
+
+            stack.Visual.RemoveFromManagers();
+
+            stack.Visual.BindingContext.ShouldBe(null);
+
+            timesCalled.ShouldBe(1);
+
+            checkBox.IsChecked = false;
+
+            timesCalled.ShouldBe(1);
+
+            stack.Visual.AddToManagers();
+            stack.Visual.BindingContext = vm;
+
+            checkBox.IsChecked = !checkBox.IsChecked;
+
+            timesCalled.ShouldBe(2);
+
+            stack.Visual.RemoveFromManagers();
+
+        }
 
         private void TestListBoxSelected()
         {

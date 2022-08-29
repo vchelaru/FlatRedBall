@@ -2,25 +2,53 @@
   "UserEvents": {
     "vchel": [
       {
-        "NewName": "RedRectContainer",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 0,
-        "TimestampUtc": "2022-02-14T19:11:05.871193Z"
-      },
-      {
-        "NewName": "RedRectContainer.ColoredRectangleInstance",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2022-02-14T19:11:11.9270026Z"
-      },
-      {
-        "NewName": " InputScreenGum.ColoredRectangleInstance",
+        "NewName": "FormsScreenGum.UserControlInstance",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2022-02-14T19:11:46.9216238Z"
+        "TimestampUtc": "2022-08-29T14:14:12.6835501Z"
+      },
+      {
+        "NewName": "FormsScreenGum.ContainerInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:14:26.9920099Z"
+      },
+      {
+        "NewName": "FormsScreenGum.CheckBoxInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:14:51.2185437Z"
+      },
+      {
+        "NewName": "FormsScreenGum.CheckBoxInstance1",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:15:46.954527Z"
+      },
+      {
+        "NewName": "FormsScreenGum.CheckBoxInstance2",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:15:47.5458425Z"
+      },
+      {
+        "NewName": "FormsScreenGum.CheckBoxInstance3",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:15:47.9931279Z"
+      },
+      {
+        "NewName": "FormsScreenGum.CheckBoxInstance4",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-08-29T14:15:48.3782431Z"
       }
     ]
   }

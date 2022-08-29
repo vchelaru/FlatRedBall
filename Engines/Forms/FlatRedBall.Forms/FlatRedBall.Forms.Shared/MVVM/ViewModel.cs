@@ -31,6 +31,8 @@ namespace FlatRedBall.Forms.MVVM
         private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
         private List<string> dependsOnOwners;
 
+        public int PropertyChangedSubscriptionCount => this.PropertyChanged?.GetInvocationList().Length ?? 0;
+
         protected T Get<T>([CallerMemberName]string propertyName = null)
         {
             T toReturn = default(T);

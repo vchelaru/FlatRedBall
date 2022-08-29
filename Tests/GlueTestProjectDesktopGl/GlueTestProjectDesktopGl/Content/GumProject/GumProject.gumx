@@ -6,6 +6,9 @@
   <DefaultCanvasWidth>1000</DefaultCanvasWidth>
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
   <ShowOutlines>true</ShowOutlines>
+  <ShowCanvasOutline>true</ShowCanvasOutline>
+  <ShowRuler>true</ShowRuler>
+  <ShowCheckerBackground>true</ShowCheckerBackground>
   <ConvertVariablesOnUnitTypeChange>false</ConvertVariablesOnUnitTypeChange>
   <RestrictToUnitValues>false</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
@@ -25,6 +28,11 @@
   </ScreenReference>
   <ScreenReference>
     <Name>DerivedScreenGum</Name>
+    <ElementType>Screen</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ScreenReference>
+  <ScreenReference>
+    <Name>FormsScreenGum</Name>
     <ElementType>Screen</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ScreenReference>

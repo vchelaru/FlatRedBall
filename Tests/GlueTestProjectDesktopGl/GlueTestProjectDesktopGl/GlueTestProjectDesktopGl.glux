@@ -2941,6 +2941,15 @@
       </Tags>
       <Source>GLUE</Source>
       <UseGlobalContent>false</UseGlobalContent>
+      <ReferencedFiles>
+        <ReferencedFileSave>
+          <Name>GumProject/Screens/FormsScreenGum.gusx</Name>
+          <IsSharedStatic>true</IsSharedStatic>
+          <RuntimeType>GlueTestProject.GumRuntimes.FormsScreenGumRuntime</RuntimeType>
+          <ProjectsToExcludeFrom />
+          <IsCreatedByWildcard>false</IsCreatedByWildcard>
+        </ReferencedFileSave>
+      </ReferencedFiles>
       <IsHiddenInTreeView>false</IsHiddenInTreeView>
       <Name>Screens\FormsScreen</Name>
       <CustomClassesForExport />
