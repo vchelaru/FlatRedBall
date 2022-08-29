@@ -141,8 +141,8 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             viewModel.LeftTexturePixel = (int)left;
             viewModel.TopTexturePixel = (int)top;
-            viewModel.SelectedWidthPixels = (int)viewModel.CellWidth;
-            viewModel.SelectedHeightPixels = (int)viewModel.CellHeight;
+            viewModel.SelectedWidthPixels = (int)(right - left);
+            viewModel.SelectedHeightPixels = (int)(bottom - top);
             return viewModel;
         }
 
