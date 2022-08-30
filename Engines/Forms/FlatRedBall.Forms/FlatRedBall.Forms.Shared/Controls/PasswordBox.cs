@@ -154,6 +154,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void CallMethodsInResponseToPasswordChanged()
         {
+            TruncateTextToMaxLength();
             UpdateCaretPositionToCaretIndex();
             OffsetTextToKeepCaretInView();
             UpdateDisplayedCharacters();
@@ -306,5 +307,19 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected override void TruncateTextToMaxLength()
+        {
+#if UWP
+            while(password.Length > MaxLength)
+            {
+                password = password.Remove(password.Length-1);
+            }
+#else
+            while(SecurePassword.Length > MaxLength)
+            {
+                SecurePassword.RemoveAt(SecurePassword.Length-1);
+            }
+#endif
+        }
     }
 }

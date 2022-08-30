@@ -17,9 +17,14 @@ namespace FlatRedBall.Forms.Controls
         {
             get => coreTextObject.RawText;
             set
-            {
-                if(value != Text)
+            { 
+                if (value != Text)
                 {
+                    if(value?.Length > MaxLength)
+                    {
+                        value = value.Substring(0, MaxLength.Value);
+                    }
+
                     // go through the component instead of the core text object to force a layout refresh if necessary
                     textComponent.SetProperty("Text", value);
 
@@ -96,11 +101,12 @@ namespace FlatRedBall.Forms.Controls
                 else
                 {
                     this.Text = this.Text.Insert(caretIndex, "" + character);
-                    caretIndex++;
+                    // could be limited by MaxLength:
+                    caretIndex = System.Math.Min(caretIndex+1, Text.Length);
                 }
+                TruncateTextToMaxLength();
                 UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
-
             }
         }
 
@@ -186,9 +192,10 @@ namespace FlatRedBall.Forms.Controls
                     this.Text = this.Text.Insert(caretIndex, "" + character);
                     caretIndex++;
                 }
+
+                TruncateTextToMaxLength();
                 UpdateCaretPositionToCaretIndex();
                 OffsetTextToKeepCaretInView();
-                // Okay this is some stuff
             }
         }
 
@@ -210,5 +217,12 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected override void TruncateTextToMaxLength()
+        {
+            if(Text?.Length > MaxLength)
+            {
+                Text = Text.Substring(0, MaxLength.Value);
+            }
+        }
     }
 }

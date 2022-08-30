@@ -169,6 +169,17 @@ namespace FlatRedBall.Forms.Controls
         }
 
         protected abstract string CategoryName { get;  }
+
+        int? maxLength;
+        public int? MaxLength
+        {
+            get => maxLength;
+            set
+            {
+                maxLength = value;
+                TruncateTextToMaxLength();
+            }
+        }
         #endregion
 
         #region Events
@@ -218,9 +229,6 @@ namespace FlatRedBall.Forms.Controls
 
             HasFocus = false;
         }
-
-
-
 
 
         #endregion
@@ -901,6 +909,8 @@ namespace FlatRedBall.Forms.Controls
         #endregion
 
         public abstract void SelectAll();
+
+        protected abstract void TruncateTextToMaxLength();
 
         #region Utilities
 
