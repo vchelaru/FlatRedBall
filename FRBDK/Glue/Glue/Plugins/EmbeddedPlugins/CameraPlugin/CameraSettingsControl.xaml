@@ -148,6 +148,9 @@
                             <TextBox Width="40" Height="18" Text="{Binding ScaleGum}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
                             <Label>%</Label>
                         </StackPanel>
+                        <Label FontSize="10" Margin="8,-10,0,0" Visibility="{Binding EffectiveGumScaleVisibility}" Content="{Binding EffectiveFontScaleContent, FallbackValue=EffectiveGumScale}">
+                            
+                        </Label>
                         
                         <GroupBox Header="On Resize:" Visibility="{Binding OnResizeUiVisibility}">
                             <WrapPanel>

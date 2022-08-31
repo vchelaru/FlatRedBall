@@ -166,7 +166,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         public bool IsScaleUiEnabled => RunInFullScreen == false;
 
         [DependsOn(nameof(RunInFullScreen))]
-        public Visibility FullScreenScaleMessageVisibility => RunInFullScreen ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility FullScreenScaleMessageVisibility => 
+            RunInFullScreen ? Visibility.Visible : Visibility.Collapsed;
 
         public int ScaleGum
         {
@@ -174,16 +175,32 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
+        public Visibility EffectiveGumScaleVisibility =>
+            // always show it so there's no confusion
+            Visibility.Visible;
+            //(ScaleGum != 100).ToVisibility();
+
+        [DependsOn(nameof(Scale))]
+        [DependsOn(nameof(ScaleGum))]
+        public string EffectiveFontScaleContent
+        {
+            get
+            {
+                var effectiveScale = (int)(100 * ((ScaleGum / 100m) * (Scale / 100m)));
+                return $"Effective Gum Scale:{effectiveScale}%";
+            }
+        }
+
         public ResizeBehavior ResizeBehavior
         {
-            get { return Get<ResizeBehavior>(); }
-            set { Set(value); }
+            get => Get<ResizeBehavior>(); 
+            set => Set(value); 
         }
 
         [DependsOn(nameof(ResizeBehavior))]
         public bool UseStretchResizeBehavior
         {
-            get { return ResizeBehavior == ResizeBehavior.StretchVisibleArea; }
+            get => ResizeBehavior == ResizeBehavior.StretchVisibleArea; 
             set
             {
                 if (value) ResizeBehavior = ResizeBehavior.StretchVisibleArea;
@@ -193,7 +210,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         [DependsOn(nameof(ResizeBehavior))]
         public bool UseIncreaseVisibleResizeBehavior
         {
-            get { return ResizeBehavior == ResizeBehavior.IncreaseVisibleArea; }
+            get => ResizeBehavior == ResizeBehavior.IncreaseVisibleArea;
             set
             {
                 if (value) ResizeBehavior = ResizeBehavior.IncreaseVisibleArea;
@@ -202,21 +219,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
         public WidthOrHeight DominantInternalCoordinates
         {
-            get { return Get<WidthOrHeight>(); }
-            set { Set(value); }
+            get => Get<WidthOrHeight>(); 
+            set => Set(value); 
         }
 
         [DependsOn(nameof(DominantInternalCoordinates))]
         public bool UseHeightInternalCoordinates
         {
-            get { return DominantInternalCoordinates == WidthOrHeight.Height; }
+            get => DominantInternalCoordinates == WidthOrHeight.Height; 
             set { if (value) DominantInternalCoordinates = WidthOrHeight.Height; }
         }
 
         [DependsOn(nameof(DominantInternalCoordinates))]
         public bool UseWidthInternalCoordinates
         {
-            get { return DominantInternalCoordinates == WidthOrHeight.Width; }
+            get => DominantInternalCoordinates == WidthOrHeight.Width;
             set { if (value) DominantInternalCoordinates = WidthOrHeight.Width; }
         }
 
@@ -226,14 +243,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             get
             {
-                if(FixedAspectRatio)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
+                return FixedAspectRatio.ToVisibility();
             }
         }
 
@@ -283,10 +293,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         [DependsOn(nameof(Is2D))]
         public Visibility OnResizeUiVisibility
         {
-            get
-            {
-                return Is2D ? Visibility.Visible : Visibility.Collapsed;
-            }
+            get =>
+                Is2D ? Visibility.Visible : Visibility.Collapsed;
         }
 
         // always show this even in 3D projects
@@ -295,8 +303,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             get
             {
-                if (HasGumProject) return Visibility.Visible;
-                else return Visibility.Collapsed;
+                return HasGumProject.ToVisibility();
             }
         }
 
