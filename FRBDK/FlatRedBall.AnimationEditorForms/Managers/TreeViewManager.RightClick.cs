@@ -13,6 +13,7 @@ using FlatRedBall.Content.Math.Geometry;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.Utilities;
 using FlatRedBall.Math;
+using GlueFormsCore.Extensions;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -760,8 +761,7 @@ namespace FlatRedBall.AnimationEditorForms
             var AddFramesCount = 0;
 
             var aafwpf = new AnimationAddFramesWPF(chain.Frames.Count() > 0, NumberFramesCanMake);
-            aafwpf.Left = System.Windows.Forms.Cursor.Position.X;
-            aafwpf.Top = System.Windows.Forms.Cursor.Position.Y;
+            aafwpf.MoveToCursor();
             if (!(bool)aafwpf.ShowDialog()) return;
             IncrementFrames = aafwpf.IncrementFrames;
             AddFramesCount = aafwpf.AddCount;

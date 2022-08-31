@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using Glue;
 
 namespace GlueFormsCore.Extensions
 {
@@ -50,13 +49,11 @@ namespace GlueFormsCore.Extensions
             window.ShiftWindowOntoScreen();
         }
 
-        public static void MoveToMainWindowCenterAndSize(this Window window, float WidthAmount = 0.75f, float HeightAmount = 0.75f)
+        public static void MoveToMainWindowCenterAndSize(this Window window, System.Windows.Forms.Form MainWindow, float WidthAmount = 0.75f, float HeightAmount = 0.75f)
         {
             const float MinSize = 400f;
 
-            //This isn't working... SetOwnerToMainGlueWindow(window);
-
-            var mw = Glue.MainGlueWindow.Self;
+            var mw = MainWindow;
             if(mw != null) {
                 window.Width = mw.Width * WidthAmount;
                 window.Height = mw.Height * HeightAmount;
@@ -70,21 +67,6 @@ namespace GlueFormsCore.Extensions
             }
 
             window.ShiftWindowOntoScreen();
-        }
-
-        /// <summary> Attempt to place dialog where wanted.  If large center main window otherwise at cursor </summary>
-        //public static void MoveToPositionAndSize(this Window window, float? Left = null, float? Top = null, float? Width = null, float? Height = null) {
-        //    //This isn't working... SetOwnerToMainGlueWindow(window);
-
-        //}
-
-        public static void SetOwnerToMainGlueWindow(this Window window)
-        {
-            if(MainGlueWindow.Self == null) return;
-            try {
-                //Why is this not setting window.Owner? (At least in the case of MapTextureButtonContainer.Button_Click)
-                new System.Windows.Interop.WindowInteropHelper(window).Owner = MainGlueWindow.Self.Handle;
-            } catch { }
         }
 
         /// <summary>
