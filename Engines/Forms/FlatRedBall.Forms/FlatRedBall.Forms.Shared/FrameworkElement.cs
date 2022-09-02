@@ -73,6 +73,11 @@ namespace FlatRedBall.Forms.Controls
                     else
                     {
                         LostFocus?.Invoke(this, null);
+
+                        if(this is IInputReceiver inputReceiver2 && InputManager.InputReceiver == inputReceiver2)
+                        {
+                            InputManager.InputReceiver = null;
+                        }
                     }
                 }
             }
