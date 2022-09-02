@@ -24,6 +24,8 @@
                     <RowDefinition/>
                     <RowDefinition/>
                     <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0" >Zoom</TextBlock>
                 <ComboBox ItemsSource="{Binding ZoomPercentages}" Text="{Binding CurrentZoomPercent, UpdateSourceTrigger=Default}"
@@ -32,19 +34,28 @@
                 <Button Grid.Row="1" Grid.Column="1" Click="Button_Click">
                     <StackPanel Orientation="Horizontal"><TextBlock Text="Fit" Margin="0,0,4,0"/><Image Source="../Icons/fitresize.png" Stretch="None"/></StackPanel>
                 </Button>
+
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="2" FontSize="14" HorizontalAlignment="Center">Snapping</TextBlock>
                 
-                <TextBlock FontSize="14" Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center">Snapping</TextBlock>
-                <TextBlock Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding SnapWidthColor}">Width</TextBlock>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding CellWidth, UpdateSourceTrigger=PropertyChanged}"
-                         MouseDoubleClick="TextBox_Select" GotKeyboardFocus="TextBox_Select" PreviewMouseLeftButtonDown="TextBox_PreviewMouseLeftButtonDown"/>
-                <TextBlock Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,2,0" Foreground="{Binding SnapHeightColor}">Height</TextBlock>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding CellHeight, UpdateSourceTrigger=PropertyChanged}"
+                <CheckBox Grid.Row="4" Grid.ColumnSpan="2" IsChecked="{Binding SnapChecked, Mode=TwoWay}">Enabled</CheckBox>
+
+                <TextBlock Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding SnapWidthColor}">Width</TextBlock>
+                <TextBox Grid.Row="5" Grid.Column="1"
+                         Text="{Binding CellWidth, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding SnapChecked, UpdateSourceTrigger=PropertyChanged}"
                          MouseDoubleClick="TextBox_Select" GotKeyboardFocus="TextBox_Select" PreviewMouseLeftButtonDown="TextBox_PreviewMouseLeftButtonDown"/>
 
+                <TextBlock Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,2,0" Foreground="{Binding SnapHeightColor}">Height</TextBlock>
+                <TextBox Grid.Row="6" Grid.Column="1"
+                         Text="{Binding CellHeight, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding SnapHeightChecked, UpdateSourceTrigger=PropertyChanged}"
+                         MouseDoubleClick="TextBox_Select" GotKeyboardFocus="TextBox_Select" PreviewMouseLeftButtonDown="TextBox_PreviewMouseLeftButtonDown"/>
+
+                <CheckBox Grid.Row="7" Grid.ColumnSpan="2" FontSize="8" VerticalContentAlignment="Center"
+                          IsChecked="{Binding SnapHeightChecked}" IsEnabled="{Binding isSnapHeightCheckEnabled, UpdateSourceTrigger=PropertyChanged}" >Separate Height</CheckBox>
+
                 <!--too much rigmarole with wpf to get this to wrap nicely? just do it this crappy way...-->
-                <TextBlock Grid.Row="6" Grid.ColumnSpan="2" Foreground="OrangeRed" FontStyle="Italic" TextWrapping="Wrap"
+                <TextBlock Grid.Row="8" Grid.ColumnSpan="2" Foreground="OrangeRed" FontStyle="Italic" TextWrapping="Wrap"
                            Text="*Texture size" Visibility="{Binding SnapWarningVisibility}"/>
-                <TextBlock Grid.Row="7" Grid.ColumnSpan="2" Foreground="OrangeRed" FontStyle="Italic" TextWrapping="Wrap"
+                <TextBlock Grid.Row="9" Grid.ColumnSpan="2" Foreground="OrangeRed" FontStyle="Italic" TextWrapping="Wrap"
                            Text="  mismatch" Visibility="{Binding SnapWarningVisibility}"/>
             </Grid>
 

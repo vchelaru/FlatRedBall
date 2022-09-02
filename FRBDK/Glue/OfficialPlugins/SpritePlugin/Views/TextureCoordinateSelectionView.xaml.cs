@@ -233,7 +233,14 @@ namespace OfficialPlugins.SpritePlugin.Views
             {
                 case nameof(ViewModel.CurrentZoomPercent):
                     CameraLogic.RefreshCameraZoomToViewModel();
-
+                    break;
+                case nameof(ViewModel.SnapChecked):
+                case nameof(ViewModel.CellWidth):
+                    var show = ViewModel.SnapChecked && (ViewModel.CellWidth > 1);
+                    if(linegrid.Visible != show) {
+                        linegrid.Visible = show;
+                        Canvas.InvalidateVisual();
+                    }
                     break;
             }
         }
