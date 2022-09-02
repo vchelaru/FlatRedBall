@@ -1677,12 +1677,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // those collision relationships may reference this NOS as a sub type
             FillWithCollisionRelationshipsReferencing(namedObject, owner, toReturn);
 
-            List<IElement> derivedElements = new List<IElement>();
-            derivedElements.AddRange(ObjectFinder.Self.GetAllElementsThatInheritFrom(owner as EntitySave));
+            var derivedElements = new List<GlueElement>();
+            derivedElements.AddRange(ObjectFinder.Self.GetAllElementsThatInheritFrom(owner));
 
             List<NamedObjectSave> derivedNamedObjectsToRemove = new List<NamedObjectSave>();
 
-            foreach (IElement derivedElement in derivedElements)
+            foreach (var derivedElement in derivedElements)
             {
                 // At this point, namedObjectToRemove is already removed from the current Element, so this will only
                 // return NamedObjects that exist in the derived.

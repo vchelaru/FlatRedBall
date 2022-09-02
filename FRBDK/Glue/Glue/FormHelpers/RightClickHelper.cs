@@ -513,6 +513,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
         #endregion
+
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
         {
 
