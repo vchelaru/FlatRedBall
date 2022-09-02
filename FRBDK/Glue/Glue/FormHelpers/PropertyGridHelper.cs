@@ -65,63 +65,7 @@ namespace FlatRedBall.Glue.FormHelpers
             
         }
 
-        [Obsolete("Use RefreshCommands.RefreshPropertyGrid")]
-        public static void UpdateDisplayedPropertyGridProperties()
-        {
-            var node = GlueState.Self.CurrentTreeNode;
 
-            ///////////////Early Out/////////////////////
-            if (node == null)
-            {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-
-                return;
-            }
-            ////////////End Early Out///////////////////
-
-            var glueState = GlueState.Self;
-
-            if (glueState.CurrentNamedObjectSave != null)
-            {
-                PropertyGridHelper.UpdateNamedObjectDisplay();
-            }
-            else if (glueState.CurrentReferencedFileSave != null)
-            {
-                PropertyGridHelper.UpdateReferencedFileSaveDisplay();
-            }
-            else if (glueState.CurrentEventResponseSave != null)
-            {
-                PropertyGridHelper.UpdateEventResponseSaveDisplayer();
-            }
-            else if (glueState.CurrentCustomVariable != null)
-            {
-                PropertyGridHelper.UpdateCustomVariableDisplay();
-            }
-            else if (glueState.CurrentStateSave != null)
-            {
-                PropertyGridHelper.UpdateStateSaveDisplay();
-            }
-            else if (glueState.CurrentStateSaveCategory != null)
-            {
-                PropertyGridHelper.UpdateStateCategorySave();
-            }
-            else if (glueState.CurrentEntitySave != null)
-            {
-                PropertyGridHelper.UpdateEntitySaveDisplay();
-            }
-            else if (glueState.CurrentScreenSave != null)
-            {
-                PropertyGridHelper.UpdateScreenSaveDisplay();
-            }
-            else if (node.IsGlobalContentContainerNode() && ProjectManager.GlueProjectSave != null)
-            {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = ProjectManager.GlueProjectSave.GlobalContentSettingsSave;
-            }
-            else
-            {
-                MainGlueWindow.Self.PropertyGrid.SelectedObject = null;
-            }
-        }
 
 
 
@@ -160,7 +104,7 @@ namespace FlatRedBall.Glue.FormHelpers
             mStateSaveDisplayer.PropertyGrid = MainGlueWindow.Self.PropertyGrid;
         }
 
-        private static void UpdateStateCategorySave()
+        public static void UpdateStateCategorySave()
         {
 
             mStateSaveCategoryDisplayer.Instance = GlueState.Self.CurrentStateSaveCategory;

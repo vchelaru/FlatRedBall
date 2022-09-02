@@ -119,22 +119,19 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         private void HandleTypeProperty(CustomVariable variable)
         {
 
-            if (variable != null)
+            if (variable != null && 
+                // If it's defined by base, then don't let the type change
+                variable.DefinedByBase == false && variable.GetIsNewVariable(CurrentElement))
             {
-                bool isNewVariable = variable.GetIsNewVariable(CurrentElement);
-
-                if (isNewVariable)
-                {
                     // We want to allow the user to set the type on a variable if it's new
 
-                    ExcludeMember("Type");
-                    TypeConverter typeConverter = new AvailableCustomVariableTypes { AllowNone = false };
+                ExcludeMember(nameof(CustomVariable.Type));
+                TypeConverter typeConverter = new AvailableCustomVariableTypes { AllowNone = false };
 
-                    IncludeMember("Type", typeof(string),
-                        ChangeType,
-                        () => { return variable.Type; },
-                        typeConverter);
-                }
+                IncludeMember(nameof(CustomVariable.Type), typeof(string),
+                    ChangeType,
+                    () => { return variable.Type; },
+                    typeConverter);
             }
         }
 

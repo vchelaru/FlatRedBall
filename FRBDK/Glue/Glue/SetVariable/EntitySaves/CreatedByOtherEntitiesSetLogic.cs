@@ -57,7 +57,7 @@ namespace GlueFormsCore.SetVariable.EntitySaves
                     }
                 }
             }
-            PropertyGridHelper.UpdateDisplayedPropertyGridProperties();
+            GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
         }
     }
 }
