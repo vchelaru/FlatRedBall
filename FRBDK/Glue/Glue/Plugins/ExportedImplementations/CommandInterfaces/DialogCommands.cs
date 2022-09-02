@@ -577,6 +577,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             viewModel.SelectedTunneledVariableName = tunneledVariableName;
             viewModel.DesiredVariableType = variableType;
 
+            if(variableType == CustomVariableType.New)
+            {
+                viewModel.SelectedNewType = viewModel.AvailableNewVariableTypes.FirstOrDefault();
+            }
+
             var window = new AddVariableWindowWpf();
             window.DataContext = viewModel;
 
@@ -730,21 +735,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 failureMessage = whyItIsntValid;
 
             }
-            else if (NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
+
+            if (!didFailureOccur && NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
             {
                 didFailureOccur = true;
                 failureMessage = "There is already a variable that is modifying " + viewModel.SelectedTunneledVariableName + " on " + viewModel.SelectedTunneledObject;
             }
-            else if (viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
+            
+            if (!didFailureOccur && viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
             {
                 didFailureOccur = true;
                 failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";
             }
 
-            else if (ExposedVariableManager.IsReservedPositionedPositionedObjectMember(resultName) && currentElement is EntitySave)
+            if (!didFailureOccur && ExposedVariableManager.IsReservedPositionedPositionedObjectMember(resultName) && currentElement is EntitySave)
             {
                 didFailureOccur = true;
                 failureMessage = "The variable\n\n" + resultName + "\n\nis reserved by FlatRedBall.";
+            }
+
+            if(!didFailureOccur && viewModel.DesiredVariableType == CustomVariableType.New && string.IsNullOrEmpty(viewModel.SelectedNewType) )
+            {
+                didFailureOccur = true;
+                failureMessage = "A type must be selected for new variables";
             }
 
             return didFailureOccur;
