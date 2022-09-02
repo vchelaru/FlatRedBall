@@ -200,6 +200,10 @@ namespace GumPluginCore.CodeGeneration
             if(elementSave is ScreenSave)
             {
                 currentBlock.Line("private Gum.Wireframe.GraphicalUiElement Visual;");
+                currentBlock.Property("public object", "BindingContext")
+                    .Get().Line("return Visual.BindingContext;").End()
+                    .Set().Line("Visual.BindingContext = value;");
+                    
             }
 
             foreach (var instance in elementSave.Instances)
