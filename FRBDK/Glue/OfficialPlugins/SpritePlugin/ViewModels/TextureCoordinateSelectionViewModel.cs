@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
+using SkiaGum.Renderables;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -70,18 +71,54 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
         public double TextureWidth { get; set; }
         public double TextureHeight { get; set; }
 
+        public bool SnapChecked
+        {
+            get => Get<bool>();
+            set
+            {
+                Set(value);
+                isSnapHeightEnabled = value;
+                isSnapHeightCheckEnabled = value;
+            }
+        }
+        public bool SnapHeightChecked
+        {
+            get => Get<bool>();
+            set
+            {
+                Set(value);
+                if(!value)
+                    CellHeight = CellWidth;
+            }
+        }
+        public bool isSnapHeightEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool isSnapHeightCheckEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public Visibility SnapWarningVisibility { get => Get<Visibility>(); set => Set(value); }
         public System.Windows.Media.Brush SnapWidthColor { get => Get<System.Windows.Media.Brush>(); set => Set(value); }
         public System.Windows.Media.Brush SnapHeightColor { get => Get<System.Windows.Media.Brush>(); set => Set(value); }
 
-        public ushort CellWidth {
+        public ushort CellWidth
+        {
             get => Get<ushort>();
             set {
                 Set(value);
-                CheckCellTextureDivision();
+                if(!SnapHeightChecked)
+                    CellHeight = value;
+                else
+                    CheckCellTextureDivision();
             }
         }
-        public ushort CellHeight {
+        public ushort CellHeight
+        {
             get => Get<ushort>();
             set {
                 Set(value);
@@ -103,6 +140,8 @@ namespace OfficialPlugins.SpritePlugin.ViewModels
             CurrentZoomPercent = 100;
             CellWidth = 16;
             CellHeight = 16;
+            SnapChecked = true;
+            SnapHeightChecked = false;
         }
     }
 }

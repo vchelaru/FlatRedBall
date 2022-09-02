@@ -166,8 +166,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
             var yDifference = (decimal)(
                 (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
 
-            decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, (decimal)ViewModel.CellWidth);
-            decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, (decimal)ViewModel.CellHeight);
+            decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellWidth : 1);
+            decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellHeight : 1);
             if (HandleGrabbed != null)
             {
                 var viewModel = View.ViewModel;
