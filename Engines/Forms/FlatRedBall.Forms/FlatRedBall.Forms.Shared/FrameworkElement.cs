@@ -26,6 +26,12 @@ namespace FlatRedBall.Forms.Controls
         Down
     }
 
+    public enum TabbingFocusBehavior
+    {
+        FocusableIfInputReceiver,
+        SkipOnTab
+    }
+
     #endregion
 
     #region Events
@@ -317,6 +323,8 @@ namespace FlatRedBall.Forms.Controls
                 }
             }
         }
+
+        public TabbingFocusBehavior GamepadTabbingFocusBehavior { get; set; } = TabbingFocusBehavior.FocusableIfInputReceiver;
 
         #endregion
 
@@ -667,6 +675,24 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected void HandleGamepadNavigation(Xbox360GamePad gamepad, bool considerLeftAndRight = true)
+        {
+            if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight)) ||
+                gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
+                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)))
+            {
+                this.HandleTab(TabDirection.Down, this);
+            }
+            else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft)) ||
+                gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
+                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)))
+            {
+                this.HandleTab(TabDirection.Up, this);
+            }
+        }
+
         public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
         {
             ////////////////////Early Out/////////////////
@@ -767,7 +793,8 @@ namespace FlatRedBall.Forms.Controls
                     var childAtI = children[newIndex] as GraphicalUiElement;
                     var elementAtI = childAtI.FormsControlAsObject as FrameworkElement;
 
-                    if(elementAtI is IInputReceiver && elementAtI.IsVisible && elementAtI.IsEnabled)
+                    if(elementAtI is IInputReceiver && elementAtI.IsVisible && 
+                        elementAtI.IsEnabled && elementAtI.GamepadTabbingFocusBehavior == TabbingFocusBehavior.FocusableIfInputReceiver)
                     {
                         elementAtI.IsFocused = true;
 

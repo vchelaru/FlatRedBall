@@ -526,22 +526,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = gamepads[i];
 
-                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
-                {
-                    this.HandleTab(TabDirection.Down, this);
-                    // selectindex++
-                    //this.HandleTab(TabDirection.Down, this);
-                }
-                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
-                {
-                    this.HandleTab(TabDirection.Up, this);
-
-
-                    //this.HandleTab(TabDirection.Up, this);
-                    // selectindex--
-                }
+                HandleGamepadNavigation(gamepad);
 
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {

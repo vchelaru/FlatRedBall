@@ -115,16 +115,7 @@ namespace FlatRedBall.Forms.Controls.Primitives
             {
                 var gamepad = gamepads[i];
 
-                if(gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
-                {
-                    this.HandleTab(TabDirection.Down, this);
-                }
-                else if(gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
-                {
-                    this.HandleTab(TabDirection.Up, this);
-                }
+                HandleGamepadNavigation(gamepad);
                 
                 if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A) && 
                     // A button may be focused, then through the action of clicking the button
