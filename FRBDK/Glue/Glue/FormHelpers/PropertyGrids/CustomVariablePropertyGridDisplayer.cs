@@ -179,7 +179,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
                     instance.GetTypeConverter(CurrentElement);
 
                 IncludeMember(
-                    "DefaultValue",
+                    nameof(CustomVariable.DefaultValue),
                     typeToPass,
                     OnMemberChanged,
                     instance.GetValue,
@@ -188,7 +188,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
             }
             else
             {
-                ExcludeMember("DefaultValue");
+                ExcludeMember(nameof(CustomVariable.DefaultValue));
             }
         }
 

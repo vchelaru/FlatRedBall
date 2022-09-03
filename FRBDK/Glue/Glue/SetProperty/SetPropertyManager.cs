@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (GlueState.Self.CurrentNamedObjectSave != null)
             {
-                Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                     variableNameAsDisplayed, oldValue, parentGridItemName, GlueState.Self.CurrentNamedObjectSave);
             }
 
@@ -115,13 +115,13 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (GlueState.Self.CurrentCustomVariable != null)
             {
-                Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                await Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                     variableNameAsDisplayed, GlueState.Self.CurrentCustomVariable, oldValue);
             }
             else if (mPropertyGrid.SelectedObject != null && mPropertyGrid.SelectedObject is PropertyGridDisplayer &&
                 GlueState.Self.CurrentElement != null && GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName) != null)
             {
-                Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                await Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                     variableName, GlueState.Self.CurrentElement.GetCustomVariableRecursively(variableName), oldValue);
             }
             #endregion

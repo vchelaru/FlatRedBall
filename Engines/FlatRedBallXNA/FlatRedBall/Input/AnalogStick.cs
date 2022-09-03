@@ -375,7 +375,7 @@ namespace FlatRedBall.Input
 
         I1DInput vertical;
         /// <summary>
-        /// Returns an I1DInput for teh vertical values in this AnalogStick. The same instance is returned if htis property is accessed
+        /// Returns an I1DInput for the vertical values in this AnalogStick. The same instance is returned if htis property is accessed
         /// multiple times.
         /// </summary>
         public I1DInput Vertical

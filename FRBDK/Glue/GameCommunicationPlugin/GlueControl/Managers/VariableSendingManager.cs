@@ -154,7 +154,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             List<GlueVariableSetData> toReturn = new List<GlueVariableSetData>();
 
-            // If the value set is "ignored" that means we want to push a command to teh game to only
+            // If the value set is "ignored" that means we want to push a command to the game to only
             // re-run the command on screen change, but don't actually set the variable now.
             var isIgnored = GetIfChangedMemberIsIgnored(nos, changedMember);
 

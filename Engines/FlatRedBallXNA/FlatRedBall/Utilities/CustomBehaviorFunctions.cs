@@ -37,7 +37,7 @@ namespace FlatRedBall.Utilities
 
         #region XML Docs
         /// <summary>
-        /// Removes teh argument Sprite after it cycles its AnimationChain.  
+        /// Removes the argument Sprite after it cycles its AnimationChain.  
         /// </summary>
         /// <param name="sprite">The Sprite to remove.</param>
         #endregion

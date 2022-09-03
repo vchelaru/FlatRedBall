@@ -36,7 +36,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             try
             {
-                // These suck - they dont' return anything if the user is over only teh wpf item:
+                // These suck - they dont' return anything if the user is over only the wpf item:
                 //var point = System.Windows.Input.Mouse.GetPosition(gameHostView);
                 //var position = gameHostView.PointToScreen(point);
                 var winformsPoint = System.Windows.Forms.Control.MousePosition;

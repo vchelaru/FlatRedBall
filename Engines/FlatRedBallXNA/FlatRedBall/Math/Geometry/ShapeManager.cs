@@ -718,7 +718,7 @@ namespace FlatRedBall.Math.Geometry
         /// Adds the argument rectangle to the layer and optionally makes the rectangle automatically managed.
         /// </summary>
         /// <remarks>If the rectnagle's Visible property is set to false, the rectangle will not be added to the layer, but it will
-        /// set an internal value so that it will show up on teh layer when its Visibility is set to true.</remarks>
+        /// set an internal value so that it will show up on the layer when its Visibility is set to true.</remarks>
         /// <param name="rectangle">The rectangle to add.</param>
         /// <param name="layer">The layer to add to.</param>
         /// <param name="makeAutomaticallyUpdated">Whether the rectangle should also be automatically managed by the ShapeManager.</param>

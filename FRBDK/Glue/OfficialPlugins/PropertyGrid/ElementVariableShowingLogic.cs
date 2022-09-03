@@ -88,7 +88,7 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MinValue.Value;
             }
 
-            instanceMember.CustomSetEvent += (intance, value) =>
+            instanceMember.CustomSetEvent += async (intance, value) =>
             {
                 instanceMember.IsDefault = false;
 
@@ -99,7 +99,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 variable.DefaultValue = value;
 
-                EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
                     "DefaultValue", variable, oldValue);
 
 
