@@ -17,7 +17,10 @@
             <ItemsControl ItemsSource="{Binding PlatformerValues}" HorizontalContentAlignment="Stretch">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <views:PlatformerValuesView XClick="PlatformerValuesXClick"></views:PlatformerValuesView>
+                        <views:PlatformerValuesView XClick="PlatformerValuesXClick"
+                                                    MoveUpClicked="PlatformerValuesView_MoveUpClicked"
+                                                    MoveDownClicked="PlatformerValuesView_MoveDownClicked"
+                                                    DuplicateClicked="PlatformerValuesView_DuplicateClicked"></views:PlatformerValuesView>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

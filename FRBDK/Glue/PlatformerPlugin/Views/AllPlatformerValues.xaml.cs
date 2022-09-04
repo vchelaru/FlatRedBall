@@ -1,5 +1,7 @@
 ﻿using FlatRedBall.PlatformerPlugin.Data;
 using FlatRedBall.PlatformerPlugin.ViewModels;
+using FlatRedBall.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,5 +92,47 @@ namespace PlatformerPluginCore.Views
                 ViewModel.PlatformerValues.Remove(valuesViewModel);
             }
         }
+
+        private void PlatformerValuesView_MoveUpClicked(object sender, RoutedEventArgs args)
+        {
+            var valuesViewModel = (sender as UserControl).DataContext as PlatformerValuesViewModel;
+
+            var index = ViewModel.PlatformerValues.IndexOf(valuesViewModel);
+
+            if(index > 0)
+            {
+                ViewModel.PlatformerValues.Move(index, index - 1);
+            }
+        }
+
+        private void PlatformerValuesView_MoveDownClicked(object sender, RoutedEventArgs args)
+        {
+            var valuesViewModel = (sender as UserControl).DataContext as PlatformerValuesViewModel;
+
+            var index = ViewModel.PlatformerValues.IndexOf(valuesViewModel);
+
+            if (index > -1 && index < ViewModel.PlatformerValues.Count-1)
+            {
+                ViewModel.PlatformerValues.Move(index, index + 1);
+            }
+        }
+
+        private void PlatformerValuesView_DuplicateClicked(object sender, RoutedEventArgs args)
+        {
+            // todo....
+            var valuesViewModel = (sender as UserControl).DataContext as PlatformerValuesViewModel;
+
+            var newInstance = JsonConvert.DeserializeObject<PlatformerValuesViewModel>( JsonConvert.SerializeObject(valuesViewModel));
+            if(!StringFunctions.HasNumberAtEnd(newInstance.Name))
+            {
+                newInstance.Name += 2;
+            }
+            while (ViewModel.PlatformerValues.Any(item => item.Name == newInstance.Name))
+            {
+                newInstance.Name = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(newInstance.Name);
+            }
+            ViewModel.PlatformerValues.Add(newInstance);
+        }
+
     }
 }

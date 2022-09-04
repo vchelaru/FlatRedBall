@@ -246,6 +246,16 @@
             <Button.ToolTip>Deletes this set of movement values.</Button.ToolTip>
             X</Button>
 
+        <StackPanel Grid.Column="6" Grid.Row="1">
+            <Button x:Name="MoveUpButton" Click="HandleMoveUpClicked" Margin="0,5,0,0" Width="24">^</Button>
+            <Button x:Name="MoveDownButton" Click="HandleMoveDownClicked" Width="24">v</Button>
+            <Button x:Name="DuplicateButton" Click="HandleDuplicateClicked" Width="24" Margin="0,5,0,0">
+                <Image Source="/PlatformerPluginCore;component/Content/Icons/icon_duplicate.png"></Image>
+                <Button.ToolTip>
+                    Create a duplicate of this set of movement values.
+                </Button.ToolTip>
+            </Button>
+        </StackPanel>
 
     </Grid>
 </UserControl>
