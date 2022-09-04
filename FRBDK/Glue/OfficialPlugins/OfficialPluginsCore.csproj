@@ -63,6 +63,7 @@
     <None Remove="SpritePlugin\Icons\fitresize.png" />
     <None Remove="TreeViewPlugin\Content\icon_back.png" />
     <None Remove="TreeViewPlugin\Content\icon_code.png" />
+    <None Remove="TreeViewPlugin\Content\icon_collapse_to_definitions.png" />
     <None Remove="TreeViewPlugin\Content\icon_collision.png" />
     <None Remove="TreeViewPlugin\Content\icon_collisions.png" />
     <None Remove="TreeViewPlugin\Content\icon_contract.png" />
@@ -165,6 +166,7 @@
     <Resource Include="SpritePlugin\Icons\fitresize.png" />
     <Resource Include="TreeViewPlugin\Content\icon_back.png" />
     <Resource Include="TreeViewPlugin\Content\icon_code.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_collapse_to_definitions.png" />
     <Resource Include="TreeViewPlugin\Content\icon_collision.png" />
     <Resource Include="TreeViewPlugin\Content\icon_collisions.png" />
     <Resource Include="TreeViewPlugin\Content\icon_contract.png" />

@@ -220,6 +220,19 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        internal void CollapseToDefinitions()
+        {
+            if (this.Tag is GlueElement)
+            {
+                this.IsExpanded = false;
+            }
+
+            foreach (var child in this.Children)
+            {
+                child.CollapseToDefinitions();
+            }
+        }
+
         public void Focus(MainTreeViewControl mainView)
         {
             var container = mainView.MainTreeView.ItemContainerGenerator.ContainerFromItem(this) as ListBoxItem;

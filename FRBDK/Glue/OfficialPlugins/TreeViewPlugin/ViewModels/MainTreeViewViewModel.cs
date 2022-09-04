@@ -593,6 +593,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        internal void CollapseToDefinitions()
+        {
+            foreach (var node in VisibleRoot)
+            {
+                node.CollapseToDefinitions();
+            }
+        }
+
         #region Search for Nodes
 
         private NodeViewModel GetElementTreeNode(GlueElement element)

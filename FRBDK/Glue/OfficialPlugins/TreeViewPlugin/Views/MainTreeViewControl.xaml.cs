@@ -415,6 +415,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             ViewModel.CollapseAll();
         }
 
+        private void CollapseToDefinitionsClicked(object sender, RoutedEventArgs e)
+        {
+            ViewModel.CollapseToDefinitions();
+        }
+
         #region Searching
 
         private void SearchBar_ClearSearchButtonClicked()
