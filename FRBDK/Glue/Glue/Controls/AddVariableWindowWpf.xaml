@@ -94,7 +94,7 @@
             </ListBox>
             <StackPanel Grid.Row="2" Margin="0,4,0,0">
                 <Label Margin="0,0,0,-4">Name:</Label>
-                <TextBox Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+                <TextBox x:Name="NewVariableTextBox" Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
                 <CheckBox 
                     IsChecked="{Binding IsList}"
                     Visibility="{Binding ListCheckBoxVisibility}"

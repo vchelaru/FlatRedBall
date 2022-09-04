@@ -29,7 +29,16 @@ namespace FlatRedBall.Glue.Controls
         {
             InitializeComponent();
 
-            Loaded += (not, used) => this.MoveToCursor();
+            Loaded += (not, used) =>
+            {
+                if(ViewModel?.DesiredVariableType == CustomVariableType.New)
+                {
+                    NewVariableTextBox.Focus();
+                }
+
+                this.MoveToCursor();
+
+            };
         }
 
 
