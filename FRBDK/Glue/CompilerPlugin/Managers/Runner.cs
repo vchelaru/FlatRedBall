@@ -287,6 +287,11 @@ namespace CompilerPlugin.Managers
                                     await Task.Delay(millisecondsToWaitBeforeRetry);
                                     continue;
                                 }
+                                else
+                                {
+                                    // we got the handle, so break out:
+                                    break;
+                                }
                             }
 
                             TaskManager.Self.OnUiThread(() =>

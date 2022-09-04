@@ -379,6 +379,12 @@ namespace OfficialPlugins.GameHost.Views
             await ForceRefreshGameArea();
         }
 
+        /// <summary>
+        /// Quickly resizes the left panel which forces the MainPanelControl to redraw and bring the game
+        /// into view.
+        /// </summary>
+        /// <param name="force">Whether to force this. If false, then this will only perform logic if the sizes have changed.</param>
+        /// <returns>An awaitable task</returns>
         public async Task ForceRefreshGameArea(bool force = false)
         {
             var window = MainGlueWindow.Self;

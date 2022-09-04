@@ -1116,6 +1116,11 @@ namespace GameCommunicationPlugin.GlueControl
             if (handle != null)
             {
                 await gameHostView.EmbedHwnd(handle.Value);
+
+                // sometimes the game doesn't embed itself properly. To fix this, we can resize the window:
+                await Task.Delay(50);
+
+                await GlueCommands.Self.DoOnUiThread(() => gameHostView.ForceRefreshGameArea(force: true));
             }
             else
             {
