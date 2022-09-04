@@ -16,53 +16,54 @@ namespace FlatRedBall.Glue.Managers
 {
     public class HotkeyManager : Singleton<HotkeyManager>
     {
-        public async Task<bool> TryHandleKeys(Keys keyData)
-        {
-            switch (keyData)
-            {
-                // CTRL+F, control f, search focus, ctrl f, ctrl + f
-                case Keys.Control | Keys.F:
-                    PluginManager.ReactToCtrlF();
-                    return true;
-                case Keys.Control | Keys.C:
-                    CopyPasteManager.Self.HandleCopy();
-                    return true;
-                case Keys.Control | Keys.V:
-                    CopyPasteManager.Self.HandlePaste();
-                    return true;
-                case Keys.Alt | Keys.Left:
-                    TreeNodeStackManager.Self.GoBack();
-                    return true;
-                case Keys.Alt | Keys.Right:
-                    TreeNodeStackManager.Self.GoForward();
-                    return true;
-                case Keys.Alt | Keys.Up:
-                    RightClickHelper.MoveSelectedObjectUp();
-                    return true;
-                case Keys.Alt | Keys.Down:
-                    RightClickHelper.MoveSelectedObjectDown();
-                    return true;
-                case Keys.Alt | Keys.Shift | Keys.Down:
-                    RightClickHelper.MoveToBottom();
-                    return true;
-                case Keys.Alt | Keys.Shift | Keys.Up:
-                    RightClickHelper.MoveToTop();
-                    return true;
-                case Keys.F5:
-                    await PluginManager.CallPluginMethodAsync(
-                        "Glue Compiler",
-                        "BuildAndRun");
-                    return true;
-                case Keys.F12:
-                    GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
-                    return true;
-                case Keys.Delete:
-                    HandleDeletePressed();
-                    return true;
-                default:
-                    return false;
-            }
-        }
+        // Sept 4, 2022 - I dontdon't think this is used anymore:
+        //public async Task<bool> TryHandleKeys(Keys keyData)
+        //{
+        //    switch (keyData)
+        //    {
+        //        // CTRL+F, control f, search focus, ctrl f, ctrl + f
+        //        case Keys.Control | Keys.F:
+        //            PluginManager.ReactToCtrlF();
+        //            return true;
+        //        case Keys.Control | Keys.C:
+        //            CopyPasteManager.Self.HandleCopy();
+        //            return true;
+        //        case Keys.Control | Keys.V:
+        //            CopyPasteManager.Self.HandlePaste();
+        //            return true;
+        //        case Keys.Alt | Keys.Left:
+        //            TreeNodeStackManager.Self.GoBack();
+        //            return true;
+        //        case Keys.Alt | Keys.Right:
+        //            TreeNodeStackManager.Self.GoForward();
+        //            return true;
+        //        case Keys.Alt | Keys.Up:
+        //            RightClickHelper.MoveSelectedObjectUp();
+        //            return true;
+        //        case Keys.Alt | Keys.Down:
+        //            RightClickHelper.MoveSelectedObjectDown();
+        //            return true;
+        //        case Keys.Alt | Keys.Shift | Keys.Down:
+        //            RightClickHelper.MoveToBottom();
+        //            return true;
+        //        case Keys.Alt | Keys.Shift | Keys.Up:
+        //            RightClickHelper.MoveToTop();
+        //            return true;
+        //        case Keys.F5:
+        //            await PluginManager.CallPluginMethodAsync(
+        //                "Glue Compiler",
+        //                "BuildAndRun");
+        //            return true;
+        //        case Keys.F12:
+        //            GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();
+        //            return true;
+        //        case Keys.Delete:
+        //            HandleDeletePressed();
+        //            return true;
+        //        default:
+        //            return false;
+        //    }
+        //}
 
 
         public async Task<bool> TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)

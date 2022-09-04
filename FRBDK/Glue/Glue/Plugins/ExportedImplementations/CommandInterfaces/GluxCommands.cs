@@ -2175,6 +2175,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null)
         {
+            bool updateUi = true;
+            int indexInContainer = -1;
+            var wasSelected = customVariable == GlueState.Self.CurrentCustomVariable;
             // additionalFilesToRemove is added to keep this consistent with other remove methods
 
             var element = ObjectFinder.Self.GetElementContaining(customVariable);
@@ -2185,6 +2188,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
+                if(wasSelected)
+                {
+                    indexInContainer = element.CustomVariables.IndexOf(customVariable);
+                }
                 element.CustomVariables.Remove(customVariable);
                 element.SortStatesToCustomVariables();
 
@@ -2196,9 +2203,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            if(updateUi)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
-            GlueCommands.Self.DialogCommands.FocusOnTreeView();
+                if (wasSelected)
+                {
+                    if (element?.CustomVariables.Count != 0)
+                    {
+                        if (indexInContainer < element.CustomVariables.Count)
+                        {
+                            GlueState.Self.CurrentCustomVariable = element.CustomVariables[indexInContainer];
+                        }
+                        else
+                        {
+                            GlueState.Self.CurrentCustomVariable = element.CustomVariables.LastOrDefault();
+                        }
+                    }
+                    else
+                    {
+                        GlueState.Self.CurrentCustomVariable = null;
+                    }
+                }
+                GlueCommands.Self.DialogCommands.FocusOnTreeView();
+            }
+
 
 
             InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
