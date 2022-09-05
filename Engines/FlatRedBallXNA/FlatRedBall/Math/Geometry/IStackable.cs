@@ -39,6 +39,8 @@ namespace FlatRedBall.Math.Geometry
 
                     item2.LockVectorsTemp.Add(item2Reposition);
 
+                    item1.ForceUpdateDependenciesDeep();
+                    item2.ForceUpdateDependenciesDeep();
 
                     // move item 1 back, redo collision with 0,1
                     // so item1 doesn't move:
@@ -52,8 +54,11 @@ namespace FlatRedBall.Math.Geometry
 
                     item1.Velocity = item1VelocityBefore;
                     item2.Velocity = item2VelocityBefore;
-
+                    
                     item1.LockVectorsTemp.Add(item1Reposition);
+                    
+                    item1.ForceUpdateDependenciesDeep();
+                    item2.ForceUpdateDependenciesDeep();
 
                     // move item 1 back, redo collision with 0,1
                     // so item2 doesn't move:
