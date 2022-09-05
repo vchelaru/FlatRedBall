@@ -40,7 +40,8 @@ namespace TileGraphicsPlugin.Managers
             mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TileAnimation.cs");
             mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TiledMapToShapeCollectionConverter.cs");
             mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
-            mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
+            // Sept 5, 2022 - why is this being added 2x?
+            //mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/TilesetExtensionMethods.cs");
             mTileGraphicsAdder.Add("TiledPluginCore/EmbeddedCodeFiles/ReducedTileMapInfo.TiledMapSave.cs");
 
             

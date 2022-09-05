@@ -376,18 +376,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        public object GetPropertyValue(string propertyName)
-        {
-            for (int i = 0; i < CustomVariables.Count; i++)
-            {
-                if (CustomVariables[i].Name == propertyName)
-                {
-                    return CustomVariables[i].DefaultValue;
-                }
-            }
-            return null;
-
-        }
+        
 
 
         public void SetCustomVariable(string customVariableName, object valueToSet)

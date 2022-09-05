@@ -249,6 +249,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\IReadOnlyScalable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\IScalable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\IScalable3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\IStackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Line.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Point.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Point3D.cs" />

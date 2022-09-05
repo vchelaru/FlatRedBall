@@ -73,7 +73,8 @@ namespace FlatRedBall.Glue.SaveClasses
             SpriteHasTolerateMissingAnimations = 18,
             AnimationLayerHasName = 19,
             IPlatformer = 19,
-            GumDefaults2 = 20
+            GumDefaults2 = 20,
+            IStackableInEngine = 21
         }
 
         #endregion
@@ -82,7 +83,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumDefaults2;
+        public const int LatestVersion = (int)GluxVersions.IStackableInEngine;
 
         public int FileVersion { get; set; }
 

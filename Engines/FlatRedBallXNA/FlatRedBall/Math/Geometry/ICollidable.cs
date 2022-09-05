@@ -5,6 +5,9 @@ using System.Text;
 
 namespace FlatRedBall.Math.Geometry
 {
+    /// <summary>
+    /// Interface requiring implementing objets to have a ShapeCollection Collision property for collision.
+    /// </summary>
     public interface ICollidable
     {
         ShapeCollection Collision { get; }

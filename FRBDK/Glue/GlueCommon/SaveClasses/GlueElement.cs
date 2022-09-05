@@ -275,6 +275,11 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
+        public object GetPropertyValue(string propertyName)
+        {
+            return Properties.GetValue(propertyName);
+        }
+
         public bool IsAbstract => this.AllNamedObjects.Any(item => item.SetByDerived);
     }
 }

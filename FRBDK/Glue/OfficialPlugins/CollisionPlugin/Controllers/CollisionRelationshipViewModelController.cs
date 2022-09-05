@@ -205,7 +205,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             ViewModel.IsUpdatingFromGlueObject = true;
             RefreshAvailableCollisionObjects(currentElement, ViewModel, collisionRelationship);
             RefreshSubcollisionObjects(currentElement, ViewModel);
-            RefreshIfIsPlatformer(currentElement, ViewModel, out IElement firstNosElementType);
+            RefreshFirstProperties(currentElement, ViewModel, out IElement firstNosElementType);
+            RefreshSecondProperties(currentElement, ViewModel);
             RefreshPlatformerMovementValues(ViewModel, firstNosElementType);
             RefreshPartitioningIcons(currentElement, ViewModel);
             ViewModel.IsUpdatingFromGlueObject = wasUpdatingFromGlue;
@@ -541,7 +542,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                     TryApplyAutoName(element, namedObject);
 
-                    RefreshIfIsPlatformer(element, viewModel, out IElement firstElementType);
+                    RefreshFirstProperties(element, viewModel, out IElement firstElementType);
+                    RefreshSecondProperties(element, ViewModel);
 
                     RefreshPlatformerMovementValues(viewModel, firstElementType);
 
@@ -575,7 +577,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        static void RefreshIfIsPlatformer(IElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel, out IElement firstNosElementType)
+        static void RefreshFirstProperties(GlueElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel, out IElement firstNosElementType)
         {
             firstNosElementType = null;
             var firstName = viewModel.FirstCollisionName;
@@ -583,6 +585,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             var firstNos = collisionRelationshipOwner.GetNamedObject(firstName);
 
             bool isPlatformer = false;
+            bool isStackable = false;
                        
             if (firstNos != null)
             {                
@@ -598,9 +601,43 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
 
                 isPlatformer = firstNosElementType?.Properties.GetValue<bool>("IsPlatformer") == true;
+                isStackable = firstNosElementType?.Properties.GetValue<bool>("ImplementsIStackable") == true;
             }
 
             viewModel.IsFirstPlatformer = isPlatformer;
+            viewModel.IsFirstStackable = isStackable;
+        }
+
+        static void RefreshSecondProperties(GlueElement collisionRelationshipOwner, CollisionRelationshipViewModel viewModel)
+        {
+            GlueElement secondNosElement = null;
+
+            var secondName = viewModel.SecondCollisionName;
+
+            var secondNos = collisionRelationshipOwner.GetNamedObject(secondName);
+
+            bool isStackable = false;
+            bool isTileShapeCollection = false;
+
+            if(secondNos != null)
+            {
+                if (secondNos.IsList)
+                {
+                    var genericType = secondNos.SourceClassGenericType;
+                    secondNosElement = ObjectFinder.Self.GetEntitySave(genericType);
+
+                }
+                else
+                {
+                    secondNosElement = secondNos.GetReferencedElement();
+                }
+
+                isStackable = secondNosElement?.Properties.GetValue<bool>("ImplementsIStackable") == true;
+                isTileShapeCollection = secondNos?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
+            }
+
+            viewModel.IsSecondStackable = isStackable;
+            viewModel.IsSecondTileShapeCollection = isTileShapeCollection;
         }
 
         static void RefreshPlatformerMovementValues(CollisionRelationshipViewModel viewModel, IElement firstNosElementType)

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
@@ -26,6 +27,13 @@ namespace FlatRedBall.Glue.VSHelpers
 
     #endregion
 
+    public class ResourceAddInfo
+    {
+        public string ResourceName { get; set; }
+
+        public Func<string, string> ModifyString;
+    }
+
     /// <summary>
     /// Extracts code files from an assembly and saves them to disk, relative to the current project.
     /// </summary>
@@ -36,7 +44,7 @@ namespace FlatRedBall.Glue.VSHelpers
         /// <summary>
         /// The list of files which are contained in a library as embedded resources.
         /// </summary>
-        List<string> mFilesToAdd = new List<string>();
+        List<ResourceAddInfo> mFilesToAdd = new List<ResourceAddInfo>();
 
         public bool IsVerbose { get; set; } = false;
 
@@ -72,11 +80,16 @@ namespace FlatRedBall.Glue.VSHelpers
         /// </summary>
         /// <param name="resourceName">The name of the resource.  This is usally in the format of
         /// ProjectNamespace.Folder.FileName.cs</param>
-        public void Add(string resourceName)
+        public ResourceAddInfo Add(string resourceName)
         {
             lock(mFilesToAdd)
             {
-                mFilesToAdd.Add(resourceName);
+                var item = new ResourceAddInfo
+                {
+                    ResourceName = resourceName,
+                };
+                mFilesToAdd.Add(item);
+                return item;
             }
 
         }
@@ -87,7 +100,15 @@ namespace FlatRedBall.Glue.VSHelpers
 
             lock (mFilesToAdd)
             {
-                mFilesToAdd.AddRange(filesInFolder);
+                foreach(var file in filesInFolder)
+                {
+                    var item = new ResourceAddInfo
+                    {
+                        ResourceName = file
+                    };
+
+                    mFilesToAdd.Add(item);
+                }
             }
         }
 
@@ -132,11 +153,15 @@ namespace FlatRedBall.Glue.VSHelpers
 
             List<string> filesToAddToProject = new List<string>();
 
-            foreach (string resourceName in mFilesToAdd)
+            foreach (var resourceInfo in mFilesToAdd)
             {
                 // User may have shut down the project:
                 if (ProjectManager.ProjectBase != null)
                 {
+                    var resourceName = resourceInfo.ResourceName;
+
+
+
                     succeeded = SaveResourceFileToProject(assemblyContainingResource, succeeded, filesToAddToProject, resourceName);
                 }
                 else
@@ -177,9 +202,10 @@ namespace FlatRedBall.Glue.VSHelpers
         public void PerformRemoveAndSave(Assembly assemblyContainingResource)
         {
             bool removed = false;
-            foreach (string resourceName in mFilesToAdd)
+            foreach (var info in mFilesToAdd)
             {
                 string destinationDirectory, destination;
+                var resourceName = info.ResourceName;
                 GetDestination(resourceName, out destinationDirectory, out destination);
                 if(ProjectManager.ProjectBase?.IsFilePartOfProject(destination, Projects.BuildItemMembershipType.Any) == true)
                 {
@@ -298,11 +324,25 @@ namespace FlatRedBall.Glue.VSHelpers
 
                 string contents = "";
                 Plugins.ExportedImplementations.GlueCommands.Self.TryMultipleTimes(() => contents = System.IO.File.ReadAllText(destination), 5);
-                
+
+                bool shouldSave = false;
+
                 if (contents.Contains("$PROJECT_NAMESPACE$"))
                 {
                     contents = contents.Replace("$PROJECT_NAMESPACE$", ProjectManager.ProjectNamespace);
 
+                    shouldSave = true;
+                }
+
+                if(contents.Contains("$GLUE_VERSIONS$"))
+                {
+                    contents = contents.Replace("$GLUE_VERSIONS$", GetGlueVersionsString());
+
+                    shouldSave = true;
+                }
+
+                if(shouldSave)
+                { 
                     try
                     {
                         GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(destination, contents), maxFailures);
@@ -317,6 +357,23 @@ namespace FlatRedBall.Glue.VSHelpers
                 }
 
             }
+        }
+
+        private static string GetGlueVersionsString()
+        {
+            var version = GlueState.Self.CurrentGlueProject.FileVersion;
+
+            var toReturn = "";
+
+            // start at version 1, there is no version 0
+            for(int i = 1; i <= version; i++)
+            {
+                var casted = (GlueProjectSave.GluxVersions)i;
+
+                toReturn += $"#define {casted}\n";
+            }
+
+            return toReturn;
         }
 
         private bool DetermineIfShouldCopyAndAdd(string destinationFile, Assembly assembly)

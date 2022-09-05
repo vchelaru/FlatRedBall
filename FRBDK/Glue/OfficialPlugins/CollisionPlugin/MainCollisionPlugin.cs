@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
+using OfficialPlugins.CollisionPlugin.CodeGenerators;
 using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
@@ -63,12 +64,12 @@ namespace OfficialPlugins.CollisionPlugin
             collidableViewModel = new CollidableNamedObjectRelationshipViewModel();
             CollidableNamedObjectController.RegisterViewModel(collidableViewModel);
 
-            var collisionCodeGenerator = new CollisionCodeGenerator();
+            RegisterCodeGenerator(new CollisionCodeGenerator());
+            RegisterCodeGenerator(new StackableCodeGenerator());
 
             AvailableAssetTypes.Self.AddAssetType(
                 AssetTypeInfoManager.Self.CollisionRelationshipAti);
 
-            RegisterCodeGenerator(collisionCodeGenerator);
 
             AssignEvents();
 
@@ -88,6 +89,8 @@ namespace OfficialPlugins.CollisionPlugin
             this.ReactToObjectRemoved += HandleObjectRemoved;
 
             this.ReactToChangedPropertyHandler += CollisionRelationshipViewModelController.HandleGlueObjectPropertyChanged;
+
+            this.AdjustDisplayedEntity += StackableEntityManager.Self.HandleDisplayedEntity;
 
             this.ReactToCreateCollisionRelationshipsBetween += (NamedObjectSave first, NamedObjectSave second) =>
             {

@@ -23,7 +23,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         BounceCollision = 2,
         PlatformerSolidCollision = 3,
         PlatformerCloudCollision = 4,
-        DelegateCollision
+        DelegateCollision = 5,
+        StackingCollision = 6,
     }
     #endregion
 
@@ -228,10 +229,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => CollisionType == CollisionType.NoPhysics; 
             set
             {
-                if (value)
-                {
-                    CollisionType = CollisionType.NoPhysics;
-                }
+                if (value) CollisionType = CollisionType.NoPhysics;
             }
         }
 
@@ -241,10 +239,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => CollisionType == CollisionType.MoveCollision; 
             set
             {
-                if (value)
-                {
-                    CollisionType = CollisionType.MoveCollision;
-                }
+                if (value) CollisionType = CollisionType.MoveCollision;
             }
         }
 
@@ -402,6 +397,23 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+        public bool IsFirstStackable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondStackable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+        public bool IsSecondTileShapeCollection
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
 
         [DependsOn(nameof(IsFirstPlatformer))]
         public Visibility PlatformerOptionsVisibility => IsFirstPlatformer.ToVisibility();
@@ -438,40 +450,55 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        [DependsOn(nameof(CollisionType))]
         public bool IsDelegateCollisionChecked
         {
             get => CollisionType == CollisionType.DelegateCollision;
             set
             {
-                if(value)
-                {
-                    CollisionType = CollisionType.DelegateCollision;
-                }
+                if(value) CollisionType = CollisionType.DelegateCollision;
             }
         }
+
+        [DependsOn(nameof(CollisionType))]
+        public bool IsStackingCollisionChecked
+        {
+            get => CollisionType == CollisionType.StackingCollision;
+            set
+            {
+                if (value) CollisionType = CollisionType.StackingCollision;
+            }
+        }
+
+        [DependsOn(nameof(IsFirstStackable))]
+        [DependsOn(nameof(IsSecondStackable))]
+        [DependsOn(nameof(IsSecondTileShapeCollection))]
+        public Visibility StackingCollisionVisibility =>
+            (IsFirstStackable && 
+            (IsSecondStackable || IsSecondTileShapeCollection)).ToVisibility();
 
         [SyncedProperty]
         [DefaultValue(1.0f)]
         public float FirstCollisionMass
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         [DefaultValue(1.0f)]
         public float SecondCollisionMass
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value); 
         }
 
         [SyncedProperty]
         [DefaultValue(1.0f)]
         public float CollisionElasticity
         {
-            get { return Get<float>(); }
-            set { SetAndPersist(value); }
+            get => Get<float>(); 
+            set => SetAndPersist(value); 
         }
 
         [DependsOn(nameof(WarningText))]

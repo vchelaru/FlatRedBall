@@ -123,6 +123,10 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 GeneratePlatformerCollision(codeBlock, firstCollidable, secondCollidable, firstSubCollision, collisionType, instanceName, isFirstList, firstType, isSecondList, secondType);
             }
+            else if(collisionType == CollisionType.StackingCollision)
+            {
+                GenerateStackingCollision(codeBlock, firstCollidable, secondCollidable, namedObject, isFirstList, firstType, isSecondList, secondType);
+            }
             else if(collisionType == CollisionType.DelegateCollision)
             {
                 if(isFirstList && isSecondList)
@@ -400,6 +404,75 @@ namespace OfficialPlugins.CollisionPlugin
             block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
             block.Line($"{instanceName} = temp;");
             //CollisionManager.Self.Relationships.Add(PlayerVsSolidCollision);
+        }
+
+        private static void GenerateStackingCollision(ICodeBlock codeBlock, 
+            
+            string firstCollidable, string secondCollidable,
+            NamedObjectSave namedObjectSave, bool isFirstList, string firstType, bool isSecondList, string secondType)
+        {
+            var instanceName = namedObjectSave.InstanceName;
+
+
+            var block = codeBlock.Block();
+
+            var effectiveFirstType = firstType;
+            if (isFirstList)
+            {
+                effectiveFirstType = $"FlatRedBall.Math.PositionedObjectList<{firstType}>";
+            }
+            var effectiveSecondType = secondType;
+            if (isSecondList)
+            {
+                effectiveSecondType = $"FlatRedBall.Math.PositionedObjectList<{secondType}>";
+            }
+
+            string relationshipType;
+            relationshipType = namedObjectSave
+                //.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType;
+                .SourceClassType;
+            //if(isFirstList)
+            //{
+            //    relationshipType =
+            //        //$"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
+            //        // Since we create a list delegate if necessary, we don't use the list type:
+            //        $"FlatRedBall.Math.Collision.DelegateListVsSingleRelationship<{firstType}, {secondType}>";
+
+
+            //}
+
+            //else
+            //{
+            //    relationshipType =
+            //        //$"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{effectiveFirstType}, {effectiveSecondType}>";
+            //        // Since we create a list delegate if necessary, we don't use the list type:
+            //        $"FlatRedBall.Math.Collision.DelegateCollisionRelationship<{firstType}, {secondType}>";
+
+
+            //}
+
+            block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
+            block.Line($"temp.CollisionFunction = (first, second) =>");
+            block = block.Block();
+
+            var isSecondTileShapeCollection = secondType == "FlatRedBall.TileCollisions.TileShapeCollection" || secondType == "TileShapeCollection";
+
+            if(isSecondTileShapeCollection == false)
+            {
+                // return stackable vs stackable
+                block.Line($"return FlatRedBall.Math.Geometry.IStackableExtensionMethods.CollideAgainstBounceStackable(first, second, 1, 1);");
+            }
+            else
+            {
+                // stackable vs TileShapeCollection
+                block.Line($"return second.CollideAgainstSolid(first);");
+            }
+
+            block = block.End();
+            block.Line(";");
+
+            block.Line("FlatRedBall.Math.Collision.CollisionManager.Self.Relationships.Add(temp);");
+            block.Line($"{instanceName} = temp;");
         }
 
         public static bool CanBePartitioned(NamedObjectSave nos)

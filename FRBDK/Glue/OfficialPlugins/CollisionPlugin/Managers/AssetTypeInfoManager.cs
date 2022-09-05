@@ -142,6 +142,10 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             var isSecondTileShapeCollection =
                 secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
 
+            var firstElement = ObjectFinder.Self.GetElement(firstType);
+
+            var isFirstStackable = firstElement?.Properties.GetValue<bool>("ImplementsIStackable");
+
             var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
             var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
 
@@ -186,7 +190,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     relationshipType = $"FlatRedBall.Math.Collision.DelegateSingleVsListRelationship<{firstType}, {secondType}>";
                 }
             }
-            else if (collisionType == CollisionType.DelegateCollision)
+            else if (collisionType == CollisionType.DelegateCollision || collisionType == CollisionType.StackingCollision)
             {
                 if (isFirstList && isSecondList)
                 {
@@ -264,7 +268,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                 return relationshipType;
             }
             else if ( 
-                ( isSecondTileShapeCollection && collisionType != CollisionType.DelegateCollision )|| 
+                ( isSecondTileShapeCollection && collisionType != CollisionType.DelegateCollision && collisionType != CollisionType.StackingCollision) || 
                 isSecondShapeCollection || 
                 isSecondNull)
             {

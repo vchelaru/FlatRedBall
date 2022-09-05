@@ -523,7 +523,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public static IElement GetReferencedElement(this NamedObjectSave instance)
+        public static GlueElement GetReferencedElement(this NamedObjectSave instance)
         {
             if(instance == null)
             {
