@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace OfficialPlugins.CollisionPlugin.Controllers
 {
@@ -278,7 +279,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             {
                 var firstEntity = GetEntitySaveReferencedBy(firstNos);
 
-                var list = GetAvailableValues(firstEntity);
+                var list = GetAvailableSubCollisions(firstEntity);
 
                 var oldValue = viewModel.FirstSubCollisionSelectedItem;
 
@@ -306,7 +307,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             {
                 var secondEntity = GetEntitySaveReferencedBy(secondNos);
 
-                var list = GetAvailableValues(secondEntity);
+                var list = GetAvailableSubCollisions(secondEntity);
 
                 var oldValue = viewModel.SecondSubCollisionSelectedItem;
 
@@ -331,14 +332,16 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static List<string> GetAvailableValues(EntitySave firstEntity)
+        private static List<string> GetAvailableSubCollisions(EntitySave firstEntity)
         {
             List<string> availableValues = new List<string>();
             availableValues.Add(CollisionRelationshipViewModel.EntireObject);
 
             foreach (var nos in firstEntity.AllNamedObjects)
             {
-                if (IsShape(nos))
+                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection;
+
+                if (canBeSubCollision)
                 {
                     availableValues.Add(nos.InstanceName);
                 }

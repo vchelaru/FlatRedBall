@@ -2551,6 +2551,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
             GlueState.Self.CurrentElement.SortStatesToCustomVariables();
             var elementsToRegen = new HashSet<GlueElement>();
+            if(element != null)
+            {
+                elementsToRegen.Add(element);
+            }
 
             foreach (NamedObjectSave nos in ObjectFinder.Self.GetAllNamedObjectsThatUseElement(element))
             {
