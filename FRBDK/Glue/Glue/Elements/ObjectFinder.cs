@@ -1156,6 +1156,15 @@ namespace FlatRedBall.Glue.Elements
             return customVariable;
         }
 
+        /// <summary>
+        /// Returns the variable (InstructionSave) value on the argument NamedObjectSave recursively.
+        /// </summary>
+        /// <param name="instance">The NamedObjectSave, although this method may return values from base instances if the value isn't set
+        /// on the argument instance.</param>
+        /// <param name="container">The container of the NamedObjectSave. If the value is not found on this instance, this method will
+        /// look in base GlueElements.</param>
+        /// <param name="memberName">The name of the variable.</param>
+        /// <returns>The value found, or null if not found.</returns>
         public object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName)
         {
             var variableDefinition = instance?.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);

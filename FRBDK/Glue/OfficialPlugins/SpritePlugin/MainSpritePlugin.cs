@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.Common.Controls;
+using OfficialPlugins.SpritePlugin.Managers;
 using OfficialPlugins.SpritePlugin.Views;
 using System;
 using System.Collections.Generic;
@@ -35,8 +36,23 @@ namespace OfficialPlugins.SpritePlugin
 
             AddTextureCoordinateVariables();
 
+            AssignEvents();
+        }
+
+        private void AssignEvents()
+        {
             // This should be early so the variable can be added before codegen:
             this.ReactToLoadedGluxEarly += HandleGluxLoaded;
+
+            this.ReactToNamedObjectChangedValueList += HandleVariableChangeList;
+        }
+
+        private void HandleVariableChangeList(List<VariableChangeArguments> variableList)
+        {
+            foreach(var variable in variableList)
+            {
+                TextureVariableManager.Self.HandleChange(variable);
+            }
         }
 
         private void HandleGluxLoaded()

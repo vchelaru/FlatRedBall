@@ -124,7 +124,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(oldStartupScreen);
                     }
-                    if(screen != null)
+                    if (screen != null)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screen);
                     }
@@ -359,7 +359,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
-                } else if (rfs != null)
+                }
+                else if (rfs != null)
                 {
 
                     var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
@@ -462,13 +463,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 element.HasChanged = true;
             }
 
-            if(generateAndSave)
+            if (generateAndSave)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
             }
 
-            if(updateUi)
+            if (updateUi)
             {
                 GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
             }
@@ -1257,12 +1258,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else if (element != null)
                 {
-                    if(newNos.IsList)
+                    if (newNos.IsList)
                     {
                         var firstInstance = element.NamedObjects.FirstOrDefault(
                             item => item.IsList == false && item.IsLayer == false && item.IsCollisionRelationship() == false);
 
-                        if(firstInstance != null)
+                        if (firstInstance != null)
                         {
                             var index = element.NamedObjects.IndexOf(firstInstance);
                             element.NamedObjects.Insert(index, newNos);
@@ -1489,7 +1490,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
 
-            if(performSaveAndGenerateCode)
+            if (performSaveAndGenerateCode)
             {
                 GlueCommands.Self.GluxCommands.SaveGlux();
             }
@@ -1545,9 +1546,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return await CopyNamedObjectIntoElementInner(nos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
         }
 
-        public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi, 
+        public async Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElementInner(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode, bool updateUi,
             bool notifyPlugins)
-        { 
+        {
             bool succeeded = true;
 
             //// moving to another element, so let's copy
@@ -1588,7 +1589,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     targetElement.NamedObjects.Remove(newNos);
                 }
             }
-            if(succeeded && nos.DefinedByBase)
+            if (succeeded && nos.DefinedByBase)
             {
                 succeeded = false;
                 generalResponse.Message = $"Could not copy {nos.InstanceName} because it is defined by base. Select the object in the base screen/entity to copy it";
@@ -1605,18 +1606,18 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // the same thing.
                 newNos.LayerOn = null;
 
-                if(updateUi)
+                if (updateUi)
                 {
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
                 }
 
-                if(performSaveAndGenerateCode)
+                if (performSaveAndGenerateCode)
                 {
                     await GlueCommands.Self.GenerateCodeCommands
                         .GenerateElementAndReferencedObjectCode(targetElement);
                 }
 
-                if(notifyPlugins)
+                if (notifyPlugins)
                 {
                     PluginManager.ReactToNewObject(newNos);
                     if (listOfThisType != null)
@@ -1717,9 +1718,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var nosesReferencingOwner = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(owner);
 
-            foreach(var possibleCollisionRelationship in nosesReferencingOwner)
+            foreach (var possibleCollisionRelationship in nosesReferencingOwner)
             {
-                if(possibleCollisionRelationship.IsCollisionRelationship())
+                if (possibleCollisionRelationship.IsCollisionRelationship())
                 {
                     var collisionRelationshipOwner = ObjectFinder.Self.GetElementContaining(possibleCollisionRelationship);
                     var firstReferencedNos = possibleCollisionRelationship.Properties.GetValue<string>("FirstCollisionName");
@@ -1734,7 +1735,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
 
                     var shouldAdd = false;
-                    if(DoesReferenceOwner(firstNos))
+                    if (DoesReferenceOwner(firstNos))
                     {
                         var firstSub = possibleCollisionRelationship.Properties.GetValue<string>("FirstSubCollisionSelectedItem");
 
@@ -1743,17 +1744,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             shouldAdd = true;
                         }
                     }
-                    if(!shouldAdd && DoesReferenceOwner(secondNos))
+                    if (!shouldAdd && DoesReferenceOwner(secondNos))
                     {
                         var secondSub = possibleCollisionRelationship.Properties.GetValue<string>("SecondSubCollisionSelectedItem");
 
-                        if(secondSub == namedObject.InstanceName)
+                        if (secondSub == namedObject.InstanceName)
                         {
                             shouldAdd = true;
                         }
                     }
 
-                    if(shouldAdd)
+                    if (shouldAdd)
                     {
                         toReturn.CollisionRelationships.Add(possibleCollisionRelationship);
                     }
@@ -1907,26 +1908,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        
+
 
         public async Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
             HashSet<GlueElement> nosContainers = new HashSet<GlueElement>();
-            
-            
+
+
             var changes = new List<VariableChangeArguments>();
-            foreach(var assignment in nosVariableAssignments)
+            foreach (var assignment in nosVariableAssignments)
             {
                 // get the old value before calling SetVariableOnInner:
                 object oldValue = assignment.NamedObjectSave.GetCustomVariable(assignment.VariableName)?.Value;
 
-                await SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode:false, updateUi:false,
-                    notifyPlugins:false);
+                await SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode: false, updateUi: false,
+                    notifyPlugins: false);
                 nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
 
-                
+
                 changes.Add(new VariableChangeArguments
                 {
                     ChangedMember = assignment.VariableName,
@@ -1936,7 +1937,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             }
 
-            foreach(var nosContainer in nosContainers)
+            foreach (var nosContainer in nosContainers)
             {
                 if (performSaveAndGenerateCode)
                 {
@@ -1966,7 +1967,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 });
             }
             if (performSaveAndGenerateCode)
-            { 
+            {
                 GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
@@ -1975,10 +1976,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
-            await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins:true);
+            await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
         }
 
-        
+
         public async Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true)
         {
@@ -1989,7 +1990,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true, bool notifyPlugins = true)
-        { 
+        {
             // XML serialization doesn't like enums
             if (value?.GetType().IsEnum() == true)
             {
@@ -2067,7 +2068,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 nos.SetVariable(memberName, value);
 
-                if(notifyPlugins)
+                if (notifyPlugins)
                 {
                     // This does more than notify plugins, but the "more" doesn't apply to custom variables
                     // I think this should be refactored to handle NamedObjectProperties specifically anyway
@@ -2082,16 +2083,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
                 }
 
-                if(updateUi)
+                if (updateUi)
                 {
                     // Avoids accumulation when dragging a slider around:
                     // Even though this is inside a task, still add so we can move to end
                     TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
                 }
 
-                if(notifyPlugins)
+                if (notifyPlugins)
                 {
                     PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer);
+
+                    PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
+                    {
+                        new VariableChangeArguments
+                        {
+                            NamedObject = nos,
+                            ChangedMember = memberName,
+                            OldValue = oldValue
+                        }
+                    });
                 }
 
                 if (updateUi)
@@ -2106,7 +2117,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         // everything and causes the text box to lose focus. Why do we need to update here?
                         // Is it only if the Name changes? I can't think of any other properties that may require
                         // tree node refreshes, so let's limit that:
-                        if(memberName == nameof(NamedObjectSave.InstanceName) ||
+                        if (memberName == nameof(NamedObjectSave.InstanceName) ||
                             memberName == "Name")
                         {
                             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(nosContainer);
@@ -2188,7 +2199,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                if(wasSelected)
+                if (wasSelected)
                 {
                     indexInContainer = element.CustomVariables.IndexOf(customVariable);
                 }
@@ -2203,7 +2214,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            if(updateUi)
+            if (updateUi)
             {
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
 
@@ -2493,7 +2504,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // So we'll manually remove the RFS's first before removing the entire entity
             for (int i = entityToRemove.ReferencedFiles.Count - 1; i > -1; i--)
             {
-                await GluxCommands.Self.RemoveReferencedFileAsync (entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
+                await GluxCommands.Self.RemoveReferencedFileAsync(entityToRemove.ReferencedFiles[i], filesThatCouldBeRemoved, regenerateAndSave: false);
             }
 
 
@@ -2571,14 +2582,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             filesThatCouldBeRemoved = filesThatCouldBeRemoved ?? new List<string>();
             List<ScreenSave> inheritingScreens = ObjectFinder.Self.GetAllScreensThatInheritFrom(screenToRemove);
 
-            if(GlueCommands.Self.GluxCommands.StartUpScreenName == screenToRemove.Name) 
+            if (GlueCommands.Self.GluxCommands.StartUpScreenName == screenToRemove.Name)
             {
                 var newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract && x.BaseScreen != null);
-                if(newScreen == null)
+                if (newScreen == null)
                 {
                     newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove && !x.IsAbstract);
                 }
-                if(newScreen == null)
+                if (newScreen == null)
                 {
                     newScreen = ObjectFinder.Self.GlueProject.Screens.FirstOrDefault(x => x != screenToRemove);
                 }

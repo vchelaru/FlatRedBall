@@ -58,6 +58,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void RefreshPropertyGrid();
 
+        /// <summary>
+        /// Refreshes the variables tab.
+        /// </summary>
         void RefreshVariables();
 
         void RefreshSelection();

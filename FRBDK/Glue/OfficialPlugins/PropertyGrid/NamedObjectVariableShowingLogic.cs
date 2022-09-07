@@ -131,7 +131,7 @@ namespace OfficialPlugins.VariableDisplay
 
             instanceMember.TypeConverter = typeConverter;
 
-            #region Types
+            #region Restrict ColorOperation options
 
             // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
             // shader situation solved. But until then, these cause crashes so let's remove them.
@@ -154,7 +154,9 @@ namespace OfficialPlugins.VariableDisplay
 
             #endregion
 
+            #region CustomGetTypeEvent
             instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
+            #endregion
 
             #region CustomGet
 
@@ -1140,6 +1142,8 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void MakeDefault(NamedObjectSave instance, string memberName)
         {
+            var oldValue = instance.GetCustomVariable(memberName)?.Value;
+
             PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
 
             var element = ObjectFinder.Self.GetElementContaining(instance);
@@ -1154,7 +1158,17 @@ namespace OfficialPlugins.VariableDisplay
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
-            PluginManager.ReactToChangedProperty(memberName, null, element);
+            PluginManager.ReactToChangedProperty(memberName, oldValue, element);
+
+            PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
+            {
+                new VariableChangeArguments
+                {
+                    NamedObject = instance,
+                    ChangedMember = memberName,
+                    OldValue = oldValue
+                }
+            });
         }
 
 

@@ -1533,12 +1533,15 @@ namespace FlatRedBall.Glue.Plugins
         /// <remarks>Although this has the word "Property" in the name, it applies to both properties and variables.</remarks>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>
-        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner)
-        {
+        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
                 plugin => plugin.ReactToChangedPropertyHandler != null);
-        }
+
+        public static void ReactToVariableListChanged(List<NamedObjectSaveVariableChange> namedObjectSaveVariableChangeList) =>
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToChangedNamedObjectVariableList(namedObjectSaveVariableChangeList),
+                plugin => plugin.ReactToChangedNamedObjectVariableList != null);
 
         public class NamedObjectSaveVariableChange
         {
