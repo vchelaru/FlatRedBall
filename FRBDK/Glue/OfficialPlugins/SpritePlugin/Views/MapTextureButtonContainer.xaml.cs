@@ -27,14 +27,18 @@ namespace OfficialPlugins.SpritePlugin.Views
     /// </summary>
     public partial class MapTextureButtonContainer : UserControl, IDataUi
     {
+        #region Fields/Properties
+
         static TextureCoordinateSelectionViewModel LastViewModel;
+        public InstanceMember InstanceMember { get; set; }
+        public bool SuppressSettingProperty { get; set; }
+
+        #endregion
+
         public MapTextureButtonContainer()
         {
             InitializeComponent();
         }
-
-        public InstanceMember InstanceMember { get; set; }
-        public bool SuppressSettingProperty { get; set; }
 
         public void Refresh(bool forceRefreshEvenIfFocused = false)
         {
@@ -164,13 +168,13 @@ namespace OfficialPlugins.SpritePlugin.Views
             return textureRfs;
         }
 
-        private static void ApplyViewModel(NamedObjectSave currentNos, GlueElement currentElement, TextureCoordinateSelectionViewModel viewModel, 
+        private static async void ApplyViewModel(NamedObjectSave currentNos, GlueElement currentElement, TextureCoordinateSelectionViewModel viewModel, 
             float oldLeft, float oldTop, float oldRight, float oldBottom)
         {
             bool didAnyChange = false;
             if (viewModel.LeftTexturePixelInt != (int)oldLeft)
             {
-                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(currentNos,
                     nameof(Sprite.LeftTexturePixel),
                     (float)viewModel.LeftTexturePixelInt,
                     performSaveAndGenerateCode: false, updateUi: true);
@@ -178,7 +182,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
             if (viewModel.TopTexturePixelInt != (int)oldTop)
             {
-                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(currentNos,
                     nameof(Sprite.TopTexturePixel),
                     (float)viewModel.TopTexturePixelInt,
                     performSaveAndGenerateCode: false, updateUi: true);
@@ -186,7 +190,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
             if (viewModel.SelectedWidthPixelsInt != (int)(oldRight - oldLeft))
             {
-                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(currentNos,
                     nameof(Sprite.RightTexturePixel),
                     (float)(viewModel.LeftTexturePixelInt + viewModel.SelectedWidthPixelsInt),
                     performSaveAndGenerateCode: false, updateUi: true);
@@ -194,7 +198,7 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
             if (viewModel.SelectedHeightPixelsInt != (int)(oldBottom - oldTop))
             {
-                GlueCommands.Self.GluxCommands.SetVariableOn(currentNos,
+                await GlueCommands.Self.GluxCommands.SetVariableOnAsync(currentNos,
                     nameof(Sprite.BottomTexturePixel),
                     (float)(viewModel.TopTexturePixelInt + viewModel.SelectedHeightPixelsInt),
                     performSaveAndGenerateCode: false, updateUi: true);

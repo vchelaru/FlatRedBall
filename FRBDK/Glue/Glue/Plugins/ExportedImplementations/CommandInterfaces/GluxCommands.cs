@@ -2110,7 +2110,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
                         MainGlueWindow.Self.PropertyGrid.Refresh();
-                        PropertyGridHelper.UpdateNamedObjectDisplay();
+                        GlueCommands.Self.RefreshCommands.RefreshVariables();
+                        // Do we need this?
+                        //PropertyGridHelper.UpdateNamedObjectDisplay();
 
                         // If the user enters text in a text box (such as the X or Y value on
                         // the Points tab, that causes a refresh for the tree node, which refreshes
