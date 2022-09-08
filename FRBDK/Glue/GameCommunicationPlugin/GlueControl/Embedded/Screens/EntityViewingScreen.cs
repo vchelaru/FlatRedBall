@@ -116,10 +116,19 @@ namespace GlueControl.Screens
 
             CurrentEntity?.Destroy();
 
+            // there could be entities which normally would end up in a screen list (like bullets or particles) which do not have a matching list here. Therefore, we should
+            // destroy all destroyables:
+            for (int i = SpriteManager.ManagedPositionedObjects.Count - 1; i > -1; i--)
+            {
+                var item = SpriteManager.ManagedPositionedObjects[i] as IDestroyable;
+                item?.Destroy();
+            }
+
             foreach (var factory in {ProjectNamespace}.Performance.FactoryManager.GetAllFactories())
             {
                 factory.Destroy();
             }
+
 
             base.Destroy();
         }
