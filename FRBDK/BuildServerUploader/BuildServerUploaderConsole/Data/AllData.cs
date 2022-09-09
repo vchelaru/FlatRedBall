@@ -196,6 +196,44 @@ namespace BuildServerUploaderConsole.Data
 
             }
 
+            // Desktop GL Net 6
+            {
+                var engine = new EngineData();
+
+                engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
+                engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
+                engine.TemplateFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
+
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Debug\FlatRedBallDesktopGL.pdb");
+
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\DesktopGL\Debug\StateInterpolation.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\DesktopGL\Debug\StateInterpolation.pdb");
+
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Debug\FlatRedBall.Forms.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Debug\FlatRedBall.Forms.pdb");
+
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Debug\GumCoreXnaPc.dll");
+                engine.DebugFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Debug\GumCoreXnaPc.pdb");
+
+
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBall\bin\DesktopGL\Release\FlatRedBallDesktopGL.pdb");
+
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\DesktopGL\Release\StateInterpolation.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\StateInterpolation\bin\DesktopGL\Release\StateInterpolation.pdb");
+
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Release\FlatRedBall.Forms.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Release\FlatRedBall.Forms.pdb");
+
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Release\GumCoreXnaPc.dll");
+                engine.ReleaseFiles.Add(@"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms\bin\DesktopGL\Release\GumCoreXnaPc.pdb");
+
+
+                Engines.Add(engine);
+
+            }
+
 
         }
     }
