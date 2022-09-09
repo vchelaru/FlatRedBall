@@ -194,7 +194,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.NewEntityCreated += _refreshManager.HandleNewEntityCreated;
             this.NewScreenCreated += async (newScreen) =>
             {
-                ToolbarController.Self.HandleNewScreenCreated(newScreen);
+                GlueCommands.Self.DoOnUiThread(() => ToolbarController.Self.HandleNewScreenCreated(newScreen));
                 await _refreshManager.HandleNewScreenCreated();
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
