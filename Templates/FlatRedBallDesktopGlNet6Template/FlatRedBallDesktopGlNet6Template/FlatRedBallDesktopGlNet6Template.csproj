@@ -6,7 +6,7 @@
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	<DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+	<DefineConstants>MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
 	<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">

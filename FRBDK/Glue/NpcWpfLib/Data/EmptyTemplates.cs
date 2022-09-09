@@ -11,6 +11,7 @@ namespace Npc.Data
         static EmptyTemplates()
         {
             Add("Desktop GL (Windows, Mac, Linux)", "FlatRedBallDesktopGlTemplate", "FlatRedBallDesktopGL.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlTemplate.zip", true);
+            Add("Desktop GL .NET 6 (Windows, Mac, Linux)", "FlatRedBallDesktopGlNet6Template", "FlatRedBallDesktopGlNet6Template.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlNet6Template.zip", true);
             Add("Android (Phone, Tablet, Fire TV)", "FlatRedBallAndroidTemplate", "FlatRedBallAndroidTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallAndroidTemplate.zip", true);
             Add("iOS (iPhone, iPad, iPod Touch)", "FlatRedBalliOSTemplate", "FlatRedBalliOSTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBalliOSTemplate.zip" ,true);
             Add("Winows UWP (Windows Desktop, Xbox One, Tablet, Windows Phone)", "FlatRedBallUwpTemplate", "FlatRedBallUwpTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallUwpTemplate.zip" ,true);

@@ -11,13 +11,19 @@ namespace Npc.Managers
     {
         public static void ReplaceGuids(string unpackDirectory)
         {
-            string newGuid = Guid.NewGuid().ToString();
             string oldGuid = GetOldGuid(unpackDirectory);
 
-            ReplaceGuidInFile(oldGuid, newGuid, unpackDirectory, "csproj");
-            ReplaceGuidInFile(oldGuid, newGuid, unpackDirectory, "sln");
+            // SDK style projects (like .net 6) no longer require a GUID
+            if(!string.IsNullOrEmpty(oldGuid))
+            {
+                string newGuid = Guid.NewGuid().ToString();
+
+                ReplaceGuidInFile(oldGuid, newGuid, unpackDirectory, "csproj");
+                ReplaceGuidInFile(oldGuid, newGuid, unpackDirectory, "sln");
             
-            ReplaceAssemblyInfoGuids(unpackDirectory, newGuid);
+                ReplaceAssemblyInfoGuids(unpackDirectory, newGuid);
+            }
+
         }
 
         private static string GetOldGuid(string unpackDirectory)
@@ -95,13 +101,20 @@ namespace Npc.Managers
             }
         }
 
-        public static string GetGUID(string projectLocation)
+        private static string GetGUID(string projectLocation)
         {
             string projectContents = FileManager.FromFileText(projectLocation);
             int startIndex = projectContents.IndexOf("<ProjectGuid>{") + "<ProjectGuid>{".Length;
             int endIndex = projectContents.IndexOf("}</ProjectGuid>");
-            projectContents = projectContents.Substring(startIndex, endIndex - startIndex);
-            return projectContents;
+            if(startIndex == -1 || endIndex == -1)
+            {
+                return null;
+            }
+            else
+            {
+                projectContents = projectContents.Substring(startIndex, endIndex - startIndex);
+                return projectContents;
+            }
 
         }
     }
