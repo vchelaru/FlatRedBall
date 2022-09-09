@@ -6,6 +6,8 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Collections.Generic;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Controls;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -300,12 +302,12 @@ Additional Info:
             // We used to just look at the XML and had a broad way of determining the 
             // patterns.  I decided it was time to clean this up and make it more precise
             // so now we use the Properties from the project.
-            foreach (var property in coreVisualStudioProject.Properties)
+
+            var properties = coreVisualStudioProject.Properties.Where(item => item.Name == "DefineConstants").ToArray();
+
+            foreach (var property in properties)
             {
-                if (property.Name == "DefineConstants")
-                {
-                    preProcessorConstants += ";" + property.EvaluatedValue;
-                }
+                preProcessorConstants += ";" + property.EvaluatedValue;
             }
             return preProcessorConstants;
         }
