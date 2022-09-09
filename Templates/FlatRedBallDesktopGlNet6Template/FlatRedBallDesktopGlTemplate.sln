@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatRedBallDesktopGlTemplate", "FlatRedBallDesktopGlTemplate\FlatRedBallDesktopGlTemplate.csproj", "{EBE46970-B0EF-4151-96F2-92041F649931}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		DebugWindows|x86 = DebugWindows|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|x86.ActiveCfg = Debug|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Debug|x86.Build.0 = Debug|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.DebugWindows|x86.ActiveCfg = DebugWindows|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.DebugWindows|x86.Build.0 = DebugWindows|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Release|x86.ActiveCfg = Release|x86
+		{EBE46970-B0EF-4151-96F2-92041F649931}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2AD2E216-1070-4FED-B72B-C94FFB5120C8}
+	EndGlobalSection
+EndGlobal
