@@ -1,40 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <TargetFramework>net6.0</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{EBE46970-B0EF-4151-96F2-92041F649931}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlatRedBallDesktopGlTemplate</RootNamespace>
-    <AssemblyName>FlatRedBallDesktopGlTemplate</AssemblyName>
-    <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>DesktopGL</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	<DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
+	<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
@@ -43,37 +25,16 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\DebugWindows\</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA; WINDOWS</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  
-  
-  <ItemGroup>
-    <Compile Include="Game1.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="FlatRedBall.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -103,19 +64,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\shader.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll" />
-    <None Include="Libraries\DesktopGl\Debug\GumCoreXnaPc.dll" />
-    <None Include="Libraries\DesktopGl\Debug\StateInterpolation.dll" />
-    <None Include="Libraries\DesktopGl\Release\FlatRedBall.Forms.dll" />
-    <None Include="Libraries\DesktopGl\Release\GumCoreXnaPc.dll" />
-    <None Include="Libraries\DesktopGl\Release\StateInterpolation.dll" />
     <Content Include="MonoGame.Framework.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -125,58 +78,86 @@
     <Content Include="libSDL2-2.0.0.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="x64\SDL2.dll">
+    <None Update="x64\SDL2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x64\soft_oal.dll">
+    <None Update="x64\soft_oal.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\SDL2.dll">
+    <None Update="x86\SDL2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\soft_oal.dll">
+    <None Update="x86\soft_oal.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Icon.ico" />
-    <None Include="Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll" />
-    <None Include="Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.pdb" />
-    <None Include="Libraries\DesktopGl\Debug\Lidgren.Network.dll" />
-    <None Include="Libraries\DesktopGl\Debug\MonoGame.Framework.dll" />
-    <None Include="Libraries\DesktopGl\Debug\MonoGame.Framework.Net.dll" />
-    <None Include="Libraries\DesktopGl\Debug\NVorbis.dll" />
-    <None Include="Libraries\DesktopGl\Debug\OpenTK.dll" />
-    <None Include="Libraries\DesktopGl\Release\FlatRedBallDesktopGL.dll" />
-    <None Include="Libraries\DesktopGl\Release\FlatRedBallDesktopGL.pdb" />
-    <None Include="Libraries\DesktopGl\Release\Lidgren.Network.dll" />
-    <None Include="Libraries\DesktopGl\Release\MonoGame.Framework.dll" />
-    <None Include="Libraries\DesktopGl\Release\MonoGame.Framework.Net.dll" />
-    <None Include="Libraries\DesktopGl\Release\NVorbis.dll" />
-    <None Include="Libraries\DesktopGl\Release\OpenTK.dll" />
     <Content Include="OpenTK.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="x64\libopenal.so.1">
+    <None Update="x64\libopenal.so.1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x64\libSDL2-2.0.so.0">
+    <None Update="x64\libSDL2-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\libopenal.so.1">
+    <None Update="x86\libopenal.so.1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="x86\libSDL2-2.0.so.0">
+    <None Update="x86\libSDL2-2.0.so.0">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <Compile Remove="DataTypes\TileMapInfo.Generated.cs" />
+    <Compile Remove="FileAliases.Generated.cs" />
+    <Compile Remove="Game1.Generated.cs" />
+    <Compile Remove="GlobalContent.Generated.cs" />
+    <Compile Remove="GlueCommunication\GameConnectionManager.Generated.cs" />
+    <Compile Remove="GlueControl\CommandReceiver.Generated.cs" />
+    <Compile Remove="GlueControl\Dtos.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\CameraLogic.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\CopyPasteManager.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\EditingManager.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\EditorVisuals.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Guides.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\GenerateCodeCommands.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\GlueCommands.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\GlueCommandsStateBase.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\GlueState.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\GluxCommands.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\ObjectFinder.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Managers\RefreshCommands.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Markers\MeasurementMarker.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Markers\PolygonPointHandles.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Markers\SelectionMarker.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Markers\TileShapeCollectionMarker.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\MoveObjectToContainerLogic.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\SelectionLogic.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\VariableAssignmentLogic.Generated.cs" />
+    <Compile Remove="GlueControl\Editing\Visuals\Arrow.Generated.cs" />
+    <Compile Remove="GlueControl\Forms\ObjectCreationWindow.Generated.cs" />
+    <Compile Remove="GlueControl\GlueCallsClassGenerationManager.Generated.cs" />
+    <Compile Remove="GlueControl\GlueControlManager.Generated.cs" />
+    <Compile Remove="GlueControl\InstanceLogic.Generated.cs" />
+    <Compile Remove="GlueControl\Models\CustomVariable.Generated.cs" />
+    <Compile Remove="GlueControl\Models\GlueElement.Generated.cs" />
+    <Compile Remove="GlueControl\Models\GlueElementFileReference.Generated.cs" />
+    <Compile Remove="GlueControl\Models\GlueProjectSave.Generated.cs" />
+    <Compile Remove="GlueControl\Models\GlueProjectSaveExtensions.Generated.cs" />
+    <Compile Remove="GlueControl\Models\IElementExtensionMethods.Generated.cs" />
+    <Compile Remove="GlueControl\Models\INamedObjectContainer.Generated.cs" />
+    <Compile Remove="GlueControl\Models\NamedObjectSave.Generated.cs" />
+    <Compile Remove="GlueControl\Models\NamedObjectSaveExtensionMethods.Generated.cs" />
+    <Compile Remove="GlueControl\Models\ReferencedFileSave.Generated.cs" />
+    <Compile Remove="GlueControl\Models\StateSave.Generated.cs" />
+    <Compile Remove="GlueControl\Models\StateSaveCategory.Generated.cs" />
+    <Compile Remove="GlueControl\Runtime\DynamicEntity.Generated.cs" />
+    <Compile Remove="GlueControl\Screens\EntityViewingScreen.Generated.cs" />
+    <Compile Remove="Performance\IEntityFactory.Generated.cs" />
+    <Compile Remove="Performance\PoolList.Generated.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Compile Include="Game1.cs" />
+    <Compile Include="Program.cs" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlatRedBallDesktopGlTemplate
+namespace FlatRedBallDesktopGlNet6Template
 {
     /// <summary>
     /// The main class.
