@@ -89,8 +89,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 // https://github.com/dotnet/corefx/issues/10361
 
 
+                var environmentBefore = Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH");
                 try
                 {
+
+                    Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", null);
+
                     var startedProcess = Process.Start(startInfo);
                     var openedWithGlue = startedProcess?.ProcessName == "Glue";
 
@@ -109,6 +113,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 {
                     GlueCommands.Self.PrintOutput($"An error has occurred when trying to open the project file {fileToOpen}." +
                         $"You can still open this project manually through Windows Explorer or Visual Studio. Additional info:\n\n{e}");
+                }
+                finally
+                {
+                    Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", environmentBefore);
+
                 }
 
             }
