@@ -183,64 +183,80 @@ namespace CompilerPlugin.Managers
                         additionalArgumentPrefix = "msbuild ";
                     }
 
-                    #region Restore Nuget
-
+                    // To load a .NET 5+ project, we have to call
+                    // Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults(); in MainGlueWindow which adjusts
+                    // MSBUILD_EXE_PATH environment variable.
+                    // Unfortuantely, changing this variable also affects Visual Studio so that it can't open
+                    // projects. To make VS open projects correctly, undo this variable assignment.
+                    var environmentBefore = Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH");
+                    try
                     {
-                        string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
-                        string endOutput = "Nuget Restore succeeded";
 
-                        // For info on parameters:
-                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                        // \m uses multiple cores
-                        string arguments =
-                            additionalArgumentPrefix +
-                            $"\"{projectFileName}\" -t:restore " +
-                            "/nologo " +
-                            "/verbosity:minimal";
+                        Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", null);
 
-                        if (printMsBuildCommand)
+                        #region Restore Nuget
+
                         {
-                            printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                            string startOutput = "Nuget Restore started at " + DateTime.Now.ToLongTimeString();
+                            string endOutput = "Nuget Restore succeeded";
+
+                            // For info on parameters:
+                            // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                            // \m uses multiple cores
+                            string arguments =
+                                additionalArgumentPrefix +
+                                $"\"{projectFileName}\" -t:restore " +
+                                "/nologo " +
+                                "/verbosity:minimal";
+
+                            if (printMsBuildCommand)
+                            {
+                                printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                            }
+
+                            succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                         }
 
-                        succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
-                    }
+                        #endregion
 
-                    #endregion
+                        #region Build
 
-                    #region Build
-
-                    if (succeeded)
-                    {
-                        string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
-                        string endOutput = "Build succeeded";
-
-                        string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
-                        // For info on parameters:
-                        // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
-                        // \m uses multiple cores
-                        string arguments =
-                            additionalArgumentPrefix +
-                            $"\"{projectFileName}\" " +
-                            $"/p:Configuration=\"{configuration}\" " +
-
-                            $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
-                            $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
-                            $"/p:OutDir=\"{outputDirectory}\" " +
-                            "/m " +
-                            "/nologo " +
-                            "/verbosity:minimal";
-
-                        if (printMsBuildCommand)
+                        if (succeeded)
                         {
-                            printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                            string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
+                            string endOutput = "Build succeeded";
+
+                            string outputDirectory = GlueState.Self.CurrentGlueProjectDirectory + "bin/x86/Debug/";
+                            // For info on parameters:
+                            // https://msdn.microsoft.com/en-us/library/ms164311.aspx?f=255&MSPPError=-2147217396
+                            // \m uses multiple cores
+                            string arguments =
+                                additionalArgumentPrefix +
+                                $"\"{projectFileName}\" " +
+                                $"/p:Configuration=\"{configuration}\" " +
+
+                                $"/p:XNAContentPipelineTargetPlatform=\"Windows\" " +
+                                $"/p:XNAContentPipelineTargetProfile=\"HiDef\" " +
+                                $"/p:OutDir=\"{outputDirectory}\" " +
+                                "/m " +
+                                "/nologo " +
+                                "/verbosity:minimal";
+
+                            if (printMsBuildCommand)
+                            {
+                                printOutput?.Invoke($"\"{msBuildPath}\" {arguments}");
+                            }
+
+                            succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
                         }
 
-                        succeeded = await StartMsBuildWithParameters(printOutput, printError, startOutput, endOutput, arguments, msBuildPath);
+                        #endregion
+
                     }
-
-                    #endregion
-
+                    finally
+                    {
+                        Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", environmentBefore);
+                    }
                     if (!succeeded)
                     {
                         var fileExists = System.IO.File.Exists(msBuildPath);
