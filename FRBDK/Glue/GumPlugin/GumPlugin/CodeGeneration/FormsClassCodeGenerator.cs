@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using Gum.Managers;
 using GumPlugin.CodeGeneration;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GumPluginCore.CodeGeneration
 {
@@ -200,9 +202,13 @@ namespace GumPluginCore.CodeGeneration
             if(elementSave is ScreenSave)
             {
                 currentBlock.Line("private Gum.Wireframe.GraphicalUiElement Visual;");
-                currentBlock.Property("public object", "BindingContext")
-                    .Get().Line("return Visual.BindingContext;").End()
-                    .Set().Line("Visual.BindingContext = value;");
+
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasFormsObject)
+                {
+                    currentBlock.Property("public object", "BindingContext")
+                        .Get().Line("return Visual.BindingContext;").End()
+                        .Set().Line("Visual.BindingContext = value;");
+                }
                     
             }
 
