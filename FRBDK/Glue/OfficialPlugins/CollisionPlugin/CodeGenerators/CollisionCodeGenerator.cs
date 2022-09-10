@@ -85,8 +85,14 @@ namespace OfficialPlugins.CollisionPlugin
                 secondSubCollision = null;
             }
 
-            var isCollisionActive = Get<bool>(
-                nameof(CollisionRelationshipViewModel.IsCollisionActive));
+            //var isCollisionActive = Get<bool>(
+            //    nameof(CollisionRelationshipViewModel.IsCollisionActive));
+            // Old projects do not have control over whether the collision relationship is active
+            // therefore, we need to check if the property is there. If not, treat it as active:
+            var property = namedObject.Properties
+                .Find(item => item.Name == nameof(CollisionRelationshipViewModel.IsCollisionActive));
+            var isCollisionActive = property == null ||
+                (property.Value is bool asBool && asBool);
 
             var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit) Get<int>(
                 nameof(CollisionRelationshipViewModel.CollisionLimit));
