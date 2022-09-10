@@ -93,7 +93,7 @@ namespace Glue
         }
         internal async void StartUpGlue()
         {
-            Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
+            //Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
 
             Microsoft.Build.Evaluation.Project item = null;
 
