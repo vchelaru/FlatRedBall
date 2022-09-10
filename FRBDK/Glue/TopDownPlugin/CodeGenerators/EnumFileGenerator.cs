@@ -6,12 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace TopDownPlugin.CodeGenerators
 {
     public class EnumFileGenerator : FullFileCodeGenerator
     {
-        public override string RelativeFile => "TopDown/Enums.Generated.cs";
+        public override string RelativeFile => 
+            // Vic says - not sure when this was introduced, prior to versions:
+            GlueState.Self.CurrentGlueProject?.FileVersion > (int)GluxVersions.PreVersion 
+            ? "TopDown/Enums.Generated.cs"
+            : "TopDown/Enums.cs";
 
         static EnumFileGenerator mSelf;
         public static EnumFileGenerator Self

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace TopDownPlugin.CodeGenerators
 {
@@ -25,7 +26,11 @@ namespace TopDownPlugin.CodeGenerators
             }
         }
 
-        public override string RelativeFile => "TopDown/TopDownAiInput.Generated.cs";
+        public override string RelativeFile => 
+            GlueState.Self.CurrentGlueProject?.FileVersion > (int)GluxVersions.PreVersion
+            ? "TopDown/TopDownAiInput.Generated.cs"
+            : "TopDown/TopDownAiInput.cs"
+            ;
 
         protected override string GenerateFileContents()
         {

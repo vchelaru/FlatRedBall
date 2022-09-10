@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using System;
@@ -58,10 +59,13 @@ namespace GumPlugin.CodeGeneration
                     interpolationCharacteristics, SecondValue);
                 currentBlock = currentBlock.End();
 
-                // todo add here:
-                currentBlock.Line("var wasSuppressed = mIsLayoutSuspended;");
-                currentBlock.If("wasSuppressed == false")
-                    .Line("SuspendLayout(true);");
+                var suspendLayout = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumHasMIsLayoutSuspendedPublic;
+                if (suspendLayout)
+                {
+                    currentBlock.Line("var wasSuppressed = mIsLayoutSuspended;");
+                    currentBlock.If("wasSuppressed == false")
+                        .Line("SuspendLayout(true);");
+                }
 
                 currentBlock = AssignValuesUsingStartingValues(elementSave, currentBlock, interpolationCharacteristics);
 
@@ -82,8 +86,11 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line(fieldToAssign + " = secondState;");
                 currentBlock = currentBlock.End();
 
-                currentBlock.If("!wasSuppressed")
-                    .Line("ResumeLayout(true);");
+                if(suspendLayout)
+                {
+                    currentBlock.If("!wasSuppressed")
+                        .Line("ResumeLayout(true);");
+                }
             }
         }
 

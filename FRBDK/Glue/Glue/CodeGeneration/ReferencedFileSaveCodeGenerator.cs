@@ -1241,7 +1241,15 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 }
                 // CsvFileManager.CsvDeserializeDictionary<string, CarData>("Content/CarData.csv", carDataDictionary);
-                block.Line($"FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{keyType}, {valueType}>(\"{fileName}\", {whatToLoadInto}, FlatRedBall.IO.Csv.DuplicateDictionaryEntryBehavior.Replace);");
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CsvInheritanceSupport)
+                {
+                    block.Line($"FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{keyType}, {valueType}>(\"{fileName}\", {whatToLoadInto}, FlatRedBall.IO.Csv.DuplicateDictionaryEntryBehavior.Replace);");
+                }
+                else
+                {
+                    block.Line($"FlatRedBall.IO.Csv.CsvFileManager.CsvDeserializeDictionary<{keyType}, {valueType}>(\"{fileName}\", {whatToLoadInto});");
+
+                }
             }
             else
             {

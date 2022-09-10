@@ -12,6 +12,7 @@ using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.SaveClasses;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace FlatRedBall.Glue.VSHelpers
 {
@@ -361,16 +362,25 @@ namespace FlatRedBall.Glue.VSHelpers
 
         private static string GetGlueVersionsString()
         {
-            var version = GlueState.Self.CurrentGlueProject.FileVersion;
+            var currentFileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
             var toReturn = "";
 
             // start at version 1, there is no version 0
-            for(int i = 1; i <= version; i++)
-            {
-                var casted = (GlueProjectSave.GluxVersions)i;
+            //for(int i = 1; i <= version; i++)
+            //{
+            //    var casted = (GlueProjectSave.GluxVersions)i;
 
-                toReturn += $"#define {casted}\n";
+            //    toReturn += $"#define {casted}\n";
+            //}
+            // can't do index-based first, need to base it on the values in GluxVersions:
+            var gluxVersions = Enum.GetValues(typeof(GluxVersions));
+            foreach(GluxVersions version in gluxVersions)
+            {
+                if((int)version <= currentFileVersion)
+                {
+                    toReturn += $"#define {version}\n";
+                }
             }
 
             return toReturn;

@@ -44,7 +44,9 @@ namespace FlatRedBall.Glue.SaveClasses
             ListsHaveAssociateWithFactoryBool = 3,
             GumGueHasGetAnimation = 4,
             HasFormsObject = 4, // Not sure if this is exact, but it should be maybe around here. This will make old projects work
+            GumHasMIsLayoutSuspendedPublic = 4,
             CsvInheritanceSupport = 5,
+            IPositionedSizedObjectInEngine = 5,
             NugetPackageInCsproj = 6,
             SupportsEditMode = 7,
             SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated = 7,

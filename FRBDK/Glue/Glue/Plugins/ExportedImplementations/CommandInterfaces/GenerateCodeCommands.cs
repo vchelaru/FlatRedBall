@@ -256,17 +256,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         void GenerateGame1Internal()
         {
-            var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
-
-            FilePath filePath = GlueState.CurrentGlueProjectDirectory + "Game1.Generated.cs";
-
-            GlueCommands.TryMultipleTimes(() =>
+            if(GlueState.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1)
             {
-                System.IO.File.WriteAllText(filePath.FullPath, code);
+                var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
 
-                GlueCommands.ProjectCommands.CreateAndAddCodeFile(filePath);
-            },
-            5);
+                FilePath filePath = GlueState.CurrentGlueProjectDirectory + "Game1.Generated.cs";
+
+                GlueCommands.TryMultipleTimes(() =>
+                {
+                    System.IO.File.WriteAllText(filePath.FullPath, code);
+
+                    GlueCommands.ProjectCommands.CreateAndAddCodeFile(filePath);
+                },
+                5);
+            }
         }
 
     }

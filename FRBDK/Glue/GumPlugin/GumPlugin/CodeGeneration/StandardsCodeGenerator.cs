@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
 using System;
@@ -246,10 +247,17 @@ namespace GumPlugin.CodeGeneration
         {
             currentBlock = currentBlock.Function("public override void", "SetInitialState", "");
             {
-                currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
-                currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
+                var suspendLayout = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumHasMIsLayoutSuspendedPublic;
+                if(suspendLayout)
+                {
+                    currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
+                    currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
+                }
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
-                currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
+                if(suspendLayout)
+                {
+                    currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
+                }
 
             }
         }

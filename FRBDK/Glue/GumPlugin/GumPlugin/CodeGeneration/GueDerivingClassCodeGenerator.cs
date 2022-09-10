@@ -483,15 +483,23 @@ namespace GumPlugin.CodeGeneration
                 // If we don't do this:
                 // This could be slow...
                 // This could cause UI to update when it shouldn't (such as a Forms object responding to size changes before it is completely built)
-                currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
-                currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
+                var suspendLayout = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumHasMIsLayoutSuspendedPublic;
+
+                if(suspendLayout)
+                {
+                    currentBlock.Line("var wasSuppressed = this.IsLayoutSuspended;");
+                    currentBlock.Line("if(!wasSuppressed) this.SuspendLayout();");
+                }
                 bool shouldCallBase = elementSave is StandardElementSave == false;
                 if(shouldCallBase)
                 {
                     currentBlock.Line("base.SetInitialState();");
                 }
                 currentBlock.Line("this.CurrentVariableState = VariableState.Default;");
-                currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
+                if (suspendLayout)
+                {
+                    currentBlock.Line("if(!wasSuppressed) this.ResumeLayout();");
+                }
 
                 currentBlock.Line("CallCustomInitialize();");
             }
@@ -544,7 +552,8 @@ namespace GumPlugin.CodeGeneration
                 string controlType;
                 var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
 
-                if(!shouldGenerate)
+                if(!shouldGenerate &&
+                    GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.HasFormsObject)
                 {
                     shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(elementSave);
 
@@ -608,8 +617,12 @@ namespace GumPlugin.CodeGeneration
 
         private static bool GetIfShouldGenerateFormsCode(ElementSave element, out string controlType)
         {
-            bool shouldGenerateFormsCode = false;
             controlType = null;
+            if(GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.HasFormsObject)
+            {
+                return false;
+            }
+            bool shouldGenerateFormsCode = false;
 
             if(element is ComponentSave)
             {

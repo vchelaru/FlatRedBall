@@ -246,7 +246,14 @@ namespace GumPlugin.CodeGeneration
                         executionTime = ToFloatString( animation.States.Last().Time);
                     }
 
-                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + $"/{animationName}.AnimationSpeed;");
+                    if(HasAnimationSpeed)
+                    {
+                        currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + $"/{animationName}.AnimationSpeed;");
+                    }
+                    else
+                    {
+                        currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + executionTime + $";");
+                    }
                     currentBlock.Line("toReturn.Target = target;");
 
                     currentBlock.Line("yield return toReturn;");
@@ -256,6 +263,8 @@ namespace GumPlugin.CodeGeneration
             }
             
         }
+
+        static bool HasAnimationSpeed => GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation;
 
         private void GenerateOrderedStateAndSubAnimationCode(StateCodeGeneratorContext context, ICodeBlock currentBlock, AnimationSave animation, string animationType, AbsoluteOrRelative absoluteOrRelative)
         {
@@ -339,7 +348,14 @@ namespace GumPlugin.CodeGeneration
             }
 
             currentBlock.Line($"var instruction = new FlatRedBall.Instructions.DelegateInstruction(()=>{animationName}.Play({parentAnimation.PropertyNameInCode()}));");
-            currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + $"/{animationName}.AnimationSpeed;");
+            if (HasAnimationSpeed)
+            {
+                currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + $"/{animationName}.AnimationSpeed;");
+            }
+            else
+            {
+                currentBlock.Line("instruction.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + ToFloatString(animationReferenceSave.Time) + $";");
+            }
 
 
             currentBlock.Line("yield return instruction;");
@@ -400,7 +416,15 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line("Gum.DataTypes.Variables.StateSaveExtensionMethods.AddIntoThis(second, difference);");
 
 
-                    string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
+                    string interpolationTime;
+                    if(HasAnimationSpeed)
+                    {
+                        interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
+                    }
+                    else
+                    {
+                        interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"";
+                    }
 
                     string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                     string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
@@ -424,7 +448,15 @@ namespace GumPlugin.CodeGeneration
                 currentBlock.Line(");");
                 string previousStateTime = ToFloatString(previousState.Time);
 
-                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
+
+                if (HasAnimationSpeed)
+                {
+                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
+                }
+                else
+                {
+                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $";");
+                }
                 currentBlock.Line("toReturn.Target = target;");
 
                 currentBlock.Line("yield return toReturn;");
@@ -548,7 +580,16 @@ namespace GumPlugin.CodeGeneration
 
                 string previousStateTime = ToFloatString(previousState.Time);
 
-                string interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
+                string interpolationTime = null;
+
+                if (HasAnimationSpeed)
+                {
+                    interpolationTime = ToFloatString(currentState.Time - previousState.Time) + $"/{animationName}.AnimationSpeed";
+                }
+                else
+                {
+                    interpolationTime = ToFloatString(currentState.Time - previousState.Time);
+                }
 
                 string easing = "FlatRedBall.Glue.StateInterpolation.Easing." + previousState.Easing;
                 string interpolationType = "FlatRedBall.Glue.StateInterpolation.InterpolationType." + previousState.InterpolationType;
@@ -568,8 +609,16 @@ namespace GumPlugin.CodeGeneration
 
                 currentBlock.Line(line);
                 currentBlock.Line("toReturn.Target = target;");
-                currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
-                
+
+                if (HasAnimationSpeed)
+                {
+                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $"/{animationName}.AnimationSpeed;");
+                }
+                else
+                {
+                    currentBlock.Line("toReturn.TimeToExecute = FlatRedBall.TimeManager.CurrentTime + " + previousStateTime + $";");
+                }
+
 
             }
             currentBlock.Line("yield return toReturn;");

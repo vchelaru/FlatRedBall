@@ -6,12 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace TopDownPlugin.CodeGenerators
 {
     public class InterfacesFileGenerator : FullFileCodeGenerator
     {
-        public override string RelativeFile => "TopDown/Interfaces.Generated.cs";
+        public override string RelativeFile => 
+            GlueState.Self.CurrentGlueProject?.FileVersion > (int)GluxVersions.PreVersion
+            ? "TopDown/Interfaces.Generated.cs"
+            : "TopDown/Interfaces.cs";
 
         static InterfacesFileGenerator mSelf;
         public static InterfacesFileGenerator Self
