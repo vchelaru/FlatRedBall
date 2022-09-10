@@ -154,15 +154,15 @@
 
 	<ItemGroup>
 		<PackageReference Include="CompareNETObjects" Version="4.72.0" />
-		<PackageReference Include="DotNetZip" Version="1.15.0" />
+		<PackageReference Include="DotNetZip" Version="1.16.0" />
 		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
 		<PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
 		
-		<PackageReference Include="Microsoft.Build" Version="16.9.0">
+		<PackageReference Include="Microsoft.Build" Version="17.3.1">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
 
-		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="16.9.0">
+		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
 		
@@ -172,10 +172,10 @@
 		<PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
 		<PackageReference Include="SharpSerializer" Version="3.0.1" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
-		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageReference Include="System.Runtime" Version="4.3.1" />
 		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
-		<PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

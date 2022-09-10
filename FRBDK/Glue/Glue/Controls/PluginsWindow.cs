@@ -18,7 +18,6 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
 using FlatRedBall.Glue.Managers;
 using Glue;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
-using FlatRedBall.Glue.Plugins.Rss;
 using System.Threading;
 using System.Windows.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;

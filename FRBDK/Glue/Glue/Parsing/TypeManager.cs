@@ -10,7 +10,6 @@ using FlatRedBall.Math;
 using FlatRedBall.Glue.Elements;
 
 
-using FlatRedBall.Math;
 using System.Security.Policy;
 
 

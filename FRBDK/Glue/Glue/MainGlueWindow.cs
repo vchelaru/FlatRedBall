@@ -95,6 +95,9 @@ namespace Glue
         {
             Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
 
+            Microsoft.Build.Evaluation.Project item = null;
+
+
             // Some stuff can be parallelized.  We're going to run stuff
             // that can be parallelized in parallel, and then block to wait for
             // all tasks to finish when we need to

@@ -13,7 +13,6 @@ using FlatRedBall.Math;
 using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Graphics;
 using System.Windows.Forms;
-using FlatRedBall.Glue.SaveClasses;
 
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.AutomatedGlue;

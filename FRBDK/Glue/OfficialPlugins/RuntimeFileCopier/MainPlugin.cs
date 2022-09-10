@@ -29,8 +29,6 @@ namespace OfficialPlugins.RuntimeFileCopier
             "json"
         };
 
-        ToolStripMenuItem menuItem;
-
         public bool ShouldCopyFile(string fileName)
         {
             string extension = FileManager.GetExtension(fileName);

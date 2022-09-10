@@ -666,7 +666,7 @@ namespace EditorObjects.Parsing
                 #region case Scene (scnx)
                 case "scnx":
 
-                    SpriteEditorScene ses = SpriteEditorScene.FromFile(fileName);
+                    var ses = SceneSave.FromFile(fileName);
 
                     string oldRelative = FileManager.RelativeDirectory;
                     FileManager.RelativeDirectory = FileManager.GetDirectory(fileName);
@@ -692,7 +692,7 @@ namespace EditorObjects.Parsing
             return null;
         }
 
-        static object GetValueForPropertyInScene(SpriteEditorScene scene, string objectName, string property)
+        static object GetValueForPropertyInScene(SceneSave scene, string objectName, string property)
         {
             for (int i = 0; i < scene.SpriteFrameSaveList.Count; i++)
             {

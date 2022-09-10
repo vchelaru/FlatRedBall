@@ -136,14 +136,14 @@ namespace FlatRedBall.Content.SpriteGrid
            // where SpriteGridType : FlatRedBall.ManagedSpriteGroups.SpriteGrid, new()
         {
 
-            FlatRedBall.ManagedSpriteGroups.SpriteGrid.Plane plane = GetPlaneFromAxis();
+            var plane = GetPlaneFromAxis();
 
             // Since the TextureGrid is passed as an argument in the constructor of the SpriteGrid, it
             // needs to be created before the SpriteGrid is initialized
 
             TextureGrid<Texture2D> textureGrid = CreateTextureGrid(contentManagerName);
             
-            FlatRedBall.ManagedSpriteGroups.SpriteGrid spriteGrid = new FlatRedBall.ManagedSpriteGroups.SpriteGrid(
+            var spriteGrid = new FlatRedBall.ManagedSpriteGroups.SpriteGrid(
                 camera, plane, this.Blueprint.ToSprite(contentManagerName), textureGrid);
 
             CreateAnimationChainGrid(contentManagerName, spriteGrid);

@@ -12,7 +12,6 @@ using System.Xml.Serialization;
 using FlatRedBall.Glue.SaveClasses;
 
 using FlatRedBall.Instructions;
-using FlatRedBall.Instructions.Reflection;
 using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.Elements
