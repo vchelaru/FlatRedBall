@@ -401,7 +401,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(GetIfHasGumProject())
             {
-                block.Line($"ScaleGum = {(displaySettings.ScaleGum ).ToString(CultureInfo.InvariantCulture)}f,");
+                var scalePercent = displaySettings.ScaleGum;
+                if(scalePercent <=0)
+                {
+                    scalePercent = 100;
+                }
+                block.Line($"ScaleGum = {(scalePercent).ToString(CultureInfo.InvariantCulture)}f,");
                 block.Line($"ResizeBehaviorGum = ResizeBehavior.{displaySettings.ResizeBehaviorGum},");
             }
 
