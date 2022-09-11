@@ -42,6 +42,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             Project coreVisualStudioProject = null;
             CreateProjectResult result = new CreateProjectResult();
 
+            //SetMsBuildEnvironmentVariable();
+
             var didErrorOccur = false;
             try
             {
@@ -104,7 +106,11 @@ Additional Info:
                     result.ShouldTryToLoadProject = false;
                     shouldThrowException = false;
                 }
-
+                else if (exceptionMessage.Contains("Microsoft.NET.Sdk"))
+                {
+                    message = $"Could not load the project {fileName}\n" +
+                        $"Missing SDK:\n\n" + exceptionMessage;
+                }
                 else
                 {
                     message = $"Could not load the project {fileName}\n" +
@@ -146,6 +152,8 @@ Additional Info:
             result.Project = projectBase;
             return result;
         }
+
+
 
         public static ProjectBase CreatePlatformSpecificProject(Project coreVisualStudioProject, string fileName)
         {

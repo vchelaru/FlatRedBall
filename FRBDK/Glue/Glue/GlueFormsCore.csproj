@@ -169,7 +169,7 @@
 			<!--<ExcludeAssets>runtime</ExcludeAssets>-->
 		</PackageReference>
 		
-		<PackageReference Include="Microsoft.Build.Locator" Version="1.5.5" />
+		<!--<PackageReference Include="Microsoft.Build.Locator" Version="1.5.5" />-->
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="ParallelExtensionsExtras.CrossPlatform" Version="1.0.0" />
 		<PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
@@ -177,7 +177,7 @@
 		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageReference Include="System.Runtime" Version="4.3.1" />
-		<PackageReference Include="System.ServiceModel.Primitives" Version="4.8.1" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 	</ItemGroup>
 

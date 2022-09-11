@@ -26,6 +26,9 @@ using FlatRedBall.Instructions.Reflection;
 using Microsoft.Xna.Framework.Audio;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Glue
 {
@@ -61,8 +64,30 @@ namespace Glue
 
         #endregion
 
+        private static void SetMsBuildEnvironmentVariable()
+        {
+
+            var startInfo = new ProcessStartInfo("dotnet", "--list-sdks")
+            {
+                RedirectStandardOutput = true
+            };
+
+            var process = Process.Start(startInfo);
+            process.WaitForExit(1000);
+
+            var output = process.StandardOutput.ReadToEnd();
+            var sdkPaths = Regex.Matches(output, "([0-9]+.[0-9]+.[0-9]+) \\[(.*)\\]")
+                .OfType<Match>()
+                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"));
+
+            var sdkPath = sdkPaths.Last();
+            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+        }
+
         public MainGlueWindow()
         {
+            SetMsBuildEnvironmentVariable();
+
             mSelf = this;
             UiThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
             InitializeComponent();
