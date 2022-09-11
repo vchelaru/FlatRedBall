@@ -511,10 +511,6 @@ namespace FlatRedBall.Forms.Controls
                 {
                     IsDropDownOpen = false;
                 }
-                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
-                {
-                    //this.HandleClick(null);
-                }
             }
         }
 

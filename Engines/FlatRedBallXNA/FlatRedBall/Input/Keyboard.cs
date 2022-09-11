@@ -723,74 +723,27 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput IInputDevice.DefaultUpPressable
-        { get { return GetKey(Keys.W); } }
-        IPressableInput IInputDevice.DefaultDownPressable
-        { get { return GetKey(Keys.S); } }
-        IPressableInput IInputDevice.DefaultLeftPressable
-        { get { return GetKey(Keys.A); } }
-        IPressableInput IInputDevice.DefaultRightPressable
-        { get { return GetKey(Keys.D); } }
+        IPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W); 
+        IPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S); 
+        IPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A); 
+        IPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
 
-        I1DInput IInputDevice.DefaultHorizontalInput
-        {
-            get
-            {
-                return this.Get1DInput(Keys.A, Keys.D);
-            }
-        }
-        I1DInput IInputDevice.DefaultVerticalInput
-        {
-            get
-            {
-                return this.Get1DInput(Keys.S, Keys.W);
-            }
-        }
+        I1DInput IInputDevice.DefaultHorizontalInput => Get1DInput(Keys.A, Keys.D);
 
-        IPressableInput IInputDevice.DefaultPrimaryActionInput
-        {
-            get
-            {
-                return this.GetKey(Keys.Space);
-            }
-        }
+        I1DInput IInputDevice.DefaultVerticalInput => Get1DInput(Keys.S, Keys.W);
 
-        IPressableInput IInputDevice.DefaultSecondaryActionInput
-        {
-            get
-            {
-                return this.GetKey(Keys.LeftShift);
-            }
-        }
+        IPressableInput IInputDevice.DefaultPrimaryActionInput => GetKey(Keys.Space);
 
-        IPressableInput IInputDevice.DefaultConfirmInput
-        {
-            get
-            {
-                return this.GetKey(Keys.Enter);
-            }
-        }
-        IPressableInput IInputDevice.DefaultJoinInput
-        {
-            get
-            {
-                return this.GetKey(Keys.Enter);
-            }
-        }
-        IPressableInput IInputDevice.DefaultPauseInput
-        {
-            get
-            {
-                return this.GetKey(Keys.Escape);
-            }
-        }
-        IPressableInput IInputDevice.DefaultBackInput
-        {
-            get
-            {
-                return this.GetKey(Keys.Escape);
-            }
-        }
+        IPressableInput IInputDevice.DefaultSecondaryActionInput => GetKey(Keys.LeftShift);
+
+        IPressableInput IInputDevice.DefaultConfirmInput => GetKey(Keys.Enter);
+        IPressableInput IInputDevice.DefaultCancelInput => GetKey(Keys.Escape);
+
+        IPressableInput IInputDevice.DefaultJoinInput => GetKey(Keys.Enter);
+
+        IPressableInput IInputDevice.DefaultPauseInput => GetKey(Keys.Escape);
+
+        IPressableInput IInputDevice.DefaultBackInput => GetKey(Keys.Escape);
 
 
         #endregion

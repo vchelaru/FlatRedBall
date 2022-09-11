@@ -73,6 +73,11 @@ namespace FlatRedBall.Input
         IPressableInput defaultConfirmInput;
         IPressableInput IInputDevice.DefaultConfirmInput => defaultConfirmInput;
 
+        bool isCancelInputPressedThisFrame;
+        bool wasCancelInputPressedLastFrame;
+        IPressableInput defaultCancelInput;
+        IPressableInput IInputDevice.DefaultCancelInput => defaultCancelInput;
+
         bool isJoinPressedThisFrame;
         bool wasJoinPressedLastFrame;
         IPressableInput defaultJoinInput;
@@ -237,6 +242,23 @@ namespace FlatRedBall.Input
                     return WasJustReleased(isConfirmInputPressedThisFrame, wasConfirmInputPressedLastFrame);
                 });
 
+            defaultCancelInput = new DelegateBasedPressableInput(
+                () =>
+                {
+                    TryUpdateAll();
+                    return isCancelInputPressedThisFrame;
+                },
+                () =>
+                {
+                    TryUpdateAll();
+                    return WasJustPressed(isCancelInputPressedThisFrame, wasCancelInputPressedLastFrame);
+                },
+                () =>
+                {
+                    TryUpdateAll();
+                    return WasJustReleased(isCancelInputPressedThisFrame, wasCancelInputPressedLastFrame);
+                });
+
             defaultJoinInput = new DelegateBasedPressableInput(
                 () =>
                 {
@@ -307,6 +329,7 @@ namespace FlatRedBall.Input
                 wasPrimaryActionPressedLastFrame = isPrimaryActionPressedThisFrame;
                 wasSecondaryActionPressedLastFrame = isSecondaryActionPressedThisFrame;
                 wasConfirmInputPressedLastFrame = isConfirmInputPressedThisFrame;
+                wasCancelInputPressedLastFrame= isCancelInputPressedThisFrame;
                 wasJoinPressedLastFrame = isJoinPressedThisFrame;
                 wasPausePressedLastFrame = isPausePressedThisFrame;
                 wasBackPressedLastFrame = isBackPressedThisFrame;
@@ -327,6 +350,7 @@ namespace FlatRedBall.Input
                 isPrimaryActionPressedThisFrame = GetPrimaryActionPressed();
                 isSecondaryActionPressedThisFrame = GetSecondaryActionPressed();
                 isConfirmInputPressedThisFrame = GetConfirmPressed();
+                isCancelInputPressedThisFrame = GetCancelPressed();
                 isJoinPressedThisFrame = GetJoinPressed();
                 isPausePressedThisFrame = GetPausePressed();
                 isBackPressedThisFrame = GetBackPressed();
@@ -354,6 +378,7 @@ namespace FlatRedBall.Input
         protected virtual bool GetPrimaryActionPressed() => false;
         protected virtual bool GetSecondaryActionPressed() => false;
         protected virtual bool GetConfirmPressed() => false;
+        protected virtual bool GetCancelPressed() => false;
         protected virtual bool GetJoinPressed() => false;
         protected virtual bool GetPausePressed() => false;
         protected virtual bool GetBackPressed() => false;

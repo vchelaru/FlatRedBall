@@ -79,8 +79,14 @@ namespace FlatRedBall.Input
 
         /// <summary>
         /// The default input to indicate a "back" action. For example,
-        /// this may be the B button on a gamepad.
+        /// this may be the Back button on a gamepad.
         /// </summary>
         IPressableInput DefaultBackInput { get;  }
+
+        /// <summary>
+        /// The default input to indicate a cancel action. For example, this
+        /// may be the B button on a gamepad;
+        /// </summary>
+        IPressableInput DefaultCancelInput { get;  }
     }
 }

@@ -1311,7 +1311,7 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            return $"{mPlayerIndex} Left Stick{mLeftStick}";
+            return $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
         }
 
 
@@ -1430,51 +1430,19 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput IInputDevice.DefaultPrimaryActionInput
-        {
-            get
-            {
-                return this.GetButton(Button.A);
-            }
-        }
+        IPressableInput IInputDevice.DefaultPrimaryActionInput => GetButton(Button.A);
 
-        IPressableInput IInputDevice.DefaultSecondaryActionInput
-        {
-            get
-            {
-                return this.GetButton(Button.B);
-            }
-        }
+        IPressableInput IInputDevice.DefaultSecondaryActionInput => GetButton(Button.B);
 
+        IPressableInput IInputDevice.DefaultConfirmInput => GetButton(Button.A);
 
-        IPressableInput IInputDevice.DefaultConfirmInput
-        {
-            get
-            {
-                return this.GetButton(Button.A);
-            }
-        }
-        IPressableInput IInputDevice.DefaultJoinInput
-        {
-            get
-            {
-                return this.GetButton(Button.Start);
-            }
-        }
-        IPressableInput IInputDevice.DefaultPauseInput
-        {
-            get
-            {
-                return this.GetButton(Button.Start);
-            }
-        }
-        IPressableInput IInputDevice.DefaultBackInput
-        {
-            get
-            {
-                return this.GetButton(Button.Back);
-            }
-        }
+        IPressableInput IInputDevice.DefaultCancelInput => GetButton(Button.B);
+
+        IPressableInput IInputDevice.DefaultJoinInput => GetButton(Button.Start);
+
+        IPressableInput IInputDevice.DefaultPauseInput => GetButton(Button.Start);
+
+        IPressableInput IInputDevice.DefaultBackInput => GetButton(Button.Back);
 
 
 #endregion

@@ -2,22 +2,47 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework.Input;
+using static FlatRedBall.Input.Xbox360GamePad;
 
 namespace FlatRedBall.Input
 {
+    #region Classes
+
     public class InputDeviceMap
     {
         public int PrimaryAction { get; set; } = 1;
         public int SecondaryAction { get; set; } = 0;
         public int Confirm { get; set; } = 1;
+        public int Cancel { get; set; } = 2;
         public int Join { get; set; } = 9;
         public int Pause { get; set; } = 9;
         public int Back { get; set; } = 2;
 
     }
 
+    public class DelegateBasedIndexedButton : IPressableInput
+    {
+        public int Index;
+        private GenericGamePad gamepad;
+
+
+
+        public DelegateBasedIndexedButton(GenericGamePad gamepad) 
+        {
+            this.gamepad = gamepad;
+        }
+
+        public bool IsDown => gamepad.ButtonDown(Index);
+        public bool WasJustPressed => gamepad.ButtonPushed(Index);
+        public bool WasJustReleased => gamepad.ButtonReleased(Index);
+
+    }
+    #endregion
+
     public class GenericGamePad : IInputDevice
     {
+        #region Fields/Properties
+
         JoystickState lastJoystickState;
         JoystickState joystickState;
 
@@ -51,6 +76,9 @@ namespace FlatRedBall.Input
         DelegateBasedIndexedButton defaultConfirmInput;
         public IPressableInput DefaultConfirmInput => defaultConfirmInput;
 
+        DelegateBasedIndexedButton defaultCancelInput;
+        public IPressableInput DefaultCancelInput => defaultCancelInput;
+
         DelegateBasedIndexedButton defaultJoinInput;
         public IPressableInput DefaultJoinInput => defaultJoinInput;
 
@@ -72,19 +100,21 @@ namespace FlatRedBall.Input
         public int GamepadIndex { get; private set; }
         const float analogStickMaxValue = 32768;
 
+        public bool IsConnected => this.joystickState.IsConnected;
+
+        double[] lastDPadPush = new double[4];
+        double[] lastDPadRepeatRate = new double[4];
+
+        #endregion
+
         public GenericGamePad(int gamepadIndex)
         {
             GamepadIndex = gamepadIndex;
 
-
-            //Default2DInput = new DelegateBased2DInput(
-            //    () => AnalogSticks[0].Position.X,
-            //    () => AnalogSticks[0].Position.Y);
-
-            //DefaultHorizontalInput = new DelegateBased1DInput(
-            //    () => AnalogSticks[0].Position.X);
-            //DefaultVerticalInput = new DelegateBased1DInput(
-            //    () => AnalogSticks[0].Position.Y);
+            for (int i = 0; i < lastDPadPush.Length; i++)
+            {
+                lastDPadPush[i] = -1;
+            }
 
             defaultUpPressable = new DelegateBasedIndexedButton(this);
             defaultDownPressable = new DelegateBasedIndexedButton(this);
@@ -94,6 +124,7 @@ namespace FlatRedBall.Input
             defaultPrimaryActionInput = new DelegateBasedIndexedButton(this);
             defaultSecondaryActionInput = new DelegateBasedIndexedButton(this);
             defaultConfirmInput = new DelegateBasedIndexedButton(this);
+            defaultCancelInput = new DelegateBasedIndexedButton(this);
             defaultJoinInput = new DelegateBasedIndexedButton(this);
             defaultPauseInput = new DelegateBasedIndexedButton(this);
             defaultBackInput = new DelegateBasedIndexedButton(this);
@@ -177,6 +208,7 @@ namespace FlatRedBall.Input
             defaultPrimaryActionInput.Index = inputDeviceMap.PrimaryAction;
             defaultSecondaryActionInput.Index = inputDeviceMap.SecondaryAction;
             defaultConfirmInput.Index = inputDeviceMap.Confirm;
+            defaultCancelInput.Index = inputDeviceMap.Cancel;
             defaultJoinInput.Index = inputDeviceMap.Join;
             defaultPauseInput.Index = inputDeviceMap.Pause;
             defaultBackInput.Index = inputDeviceMap.Back;
@@ -273,23 +305,79 @@ namespace FlatRedBall.Input
             return toReturn;
         }
 
-
-    }
-    public class DelegateBasedIndexedButton : IPressableInput
-    {
-        public int Index;
-        private GenericGamePad gamepad;
-
-
-
-        public DelegateBasedIndexedButton(GenericGamePad gamepad) 
+        public override string ToString()
         {
-            this.gamepad = gamepad;
+            return $"{GamepadIndex} Connected:{IsConnected}";
         }
 
-        public bool IsDown => gamepad.ButtonDown(Index);
-        public bool WasJustPressed => gamepad.ButtonPushed(Index);
-        public bool WasJustReleased => gamepad.ButtonReleased(Index);
+        public bool DPadDown(DPadDirection dPadDirection)
+        {
+            switch(dPadDirection)
+            {
+                case DPadDirection.Left: return joystickState.Hats.Length != 0 && joystickState.Hats[0].Left == ButtonState.Pressed;
+                case DPadDirection.Right: return joystickState.Hats.Length != 0 && joystickState.Hats[0].Right == ButtonState.Pressed;
+                case DPadDirection.Up: return joystickState.Hats.Length != 0 && joystickState.Hats[0].Up == ButtonState.Pressed;
+                case DPadDirection.Down: return joystickState.Hats.Length != 0 && joystickState.Hats[0].Down == ButtonState.Pressed;
+            }
+            return false;
+        }
+
+        public bool DPadRepeatRate(DPadDirection dPadDirection, double timeAfterPush = .35, double timeBetweenRepeating = .12)
+        {
+            if(lastJoystickState.Hats.Length== 0 || joystickState.Hats.Length == 0)
+            {
+                return false;
+            }
+
+            var lastDad = lastJoystickState.Hats[0];
+            var dPad = joystickState.Hats[0];
+
+            switch(dPadDirection)
+            {
+                case DPadDirection.Left:
+                    if(dPad.Left == ButtonState.Pressed && lastDad.Left != ButtonState.Pressed)
+                    {
+                        return true;
+                    }
+                    break;
+                case DPadDirection.Right:
+                    if (dPad.Right == ButtonState.Pressed && lastDad.Right != ButtonState.Pressed)
+                    {
+                        return true;
+                    }
+                    break;
+                case DPadDirection.Up:
+                    if (dPad.Up == ButtonState.Pressed && lastDad.Up != ButtonState.Pressed)
+                    {
+                        return true;
+                    }
+                    break;
+                case DPadDirection.Down:
+                    if (dPad.Down == ButtonState.Pressed && lastDad.Down != ButtonState.Pressed)
+                    {
+                        return true;
+                    }
+                    break;
+            }
+
+            // If this method is called multiple times per frame this line
+            // of code guarantees that the user will get true every time until
+            // the next TimeManager.Update (next frame).
+            bool repeatedThisFrame = lastDPadRepeatRate[(int)dPadDirection] == TimeManager.CurrentTime;
+
+            if (repeatedThisFrame ||
+                (
+                DPadDown(dPadDirection) &&
+                TimeManager.CurrentTime - lastDPadPush[(int)dPadDirection] > timeAfterPush &&
+                TimeManager.CurrentTime - lastDPadRepeatRate[(int)dPadDirection] > timeBetweenRepeating)
+                )
+            {
+                lastDPadRepeatRate[(int)dPadDirection] = TimeManager.CurrentTime;
+                return true;
+            }
+
+            return false;
+        }
 
     }
 }

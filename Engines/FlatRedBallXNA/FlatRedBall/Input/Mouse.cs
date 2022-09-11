@@ -303,6 +303,7 @@ namespace FlatRedBall.Input
         IPressableInput IInputDevice.DefaultPrimaryActionInput => FalsePressableInput.Instance;
         IPressableInput IInputDevice.DefaultSecondaryActionInput => FalsePressableInput.Instance;
         IPressableInput IInputDevice.DefaultConfirmInput => FalsePressableInput.Instance;
+        IPressableInput IInputDevice.DefaultCancelInput => FalsePressableInput.Instance;
         IPressableInput IInputDevice.DefaultJoinInput => FalsePressableInput.Instance;
         IPressableInput IInputDevice.DefaultPauseInput => FalsePressableInput.Instance;
         IPressableInput IInputDevice.DefaultBackInput => FalsePressableInput.Instance;

@@ -330,7 +330,7 @@ namespace FlatRedBall.Input
 
 
 #if SUPPORTS_XBOX_GAMEPADS
-            PerformXbox360GamePadUpdate();
+            PerformGamePadUpdate();
 #endif
         }
 
@@ -412,22 +412,18 @@ namespace FlatRedBall.Input
                 new GenericGamePad(0),
                 new GenericGamePad(1),
                 new GenericGamePad(2),
-                new GenericGamePad(3)
+                new GenericGamePad(3),
+                new GenericGamePad(4),
+                new GenericGamePad(5),
+                new GenericGamePad(6),
+                new GenericGamePad(7),
             };
         }
 
         static partial void PlatformSpecificXbox360GamePadUpdate();
 
-        private static void PerformXbox360GamePadUpdate()
+        private static void PerformGamePadUpdate()
         {
-            // This might be a MonoGame 8 thing:
-            //for(int i = 0; i < Microsoft.Xna.Framework.Input.Joystick.LastConnectedIndex; i++)
-            for(int i = 0; i < 4; i++)
-            {
-
-            }
-            Microsoft.Xna.Framework.Input.Joystick.GetState(8);
-
 
             // Dec 18, 2021 - why do we check this before making updates. 
             // If we do it before, we'll miss the first frame of the game
@@ -449,7 +445,7 @@ namespace FlatRedBall.Input
                 PlatformSpecificXbox360GamePadUpdate();
             }
 
-            for(int i = 0; i < 4; i++)
+            for(int i = 0; i < genericGamePads.Length; i++)
             {
                 genericGamePads[i].Update();
             }
