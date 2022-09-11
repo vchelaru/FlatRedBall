@@ -375,11 +375,14 @@ namespace FlatRedBall.Glue.VSHelpers
             //}
             // can't do index-based first, need to base it on the values in GluxVersions:
             var gluxVersions = Enum.GetValues(typeof(GluxVersions));
-            foreach(GluxVersions version in gluxVersions)
+            var gluxNames = Enum.GetNames(typeof(GluxVersions));
+            for(int i = 0; i < gluxVersions.Length; i++)
             {
+                var version = gluxVersions.GetValue(i);
+
                 if((int)version <= currentFileVersion)
                 {
-                    toReturn += $"#define {version}\n";
+                    toReturn += $"#define {gluxNames.GetValue(i)}\n";
                 }
             }
 

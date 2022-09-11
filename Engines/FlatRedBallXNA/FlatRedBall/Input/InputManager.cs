@@ -25,6 +25,7 @@ namespace FlatRedBall.Input
 
 #if SUPPORTS_XBOX_GAMEPADS
         static Xbox360GamePad[] mXbox360GamePads;
+        static GenericGamePad[] genericGamePads;
 #endif
         static bool mUpdateXbox360GamePads = true;
 
@@ -107,9 +108,11 @@ namespace FlatRedBall.Input
         /// implement X Input, and newer hardware such as Xbox One also appear in this array when connected.
         /// </remarks>
         public static Xbox360GamePad[] Xbox360GamePads => mXbox360GamePads;
+        public static GenericGamePad[] GenericGamePads => genericGamePads;
 
         static Xbox360GamePad[] mConnectedXbox360GamePads;
         public static Xbox360GamePad[] ConnectedXbox360GamePads => mConnectedXbox360GamePads;
+
 #endif
 
         public static TouchScreen TouchScreen => mTouchScreen;
@@ -294,10 +297,13 @@ namespace FlatRedBall.Input
 
 #if SUPPORTS_XBOX_GAMEPADS
             InitializeXbox360GamePads();
+
+            InitializeGenericGamepads();
 #endif
 
 
         }
+
 
         #endregion
 
@@ -399,10 +405,30 @@ namespace FlatRedBall.Input
             mControllerConnectedStatus.Add(3, false);
         }
 
+        private static void InitializeGenericGamepads()
+        {
+            genericGamePads = new GenericGamePad[]
+            {
+                new GenericGamePad(0),
+                new GenericGamePad(1),
+                new GenericGamePad(2),
+                new GenericGamePad(3)
+            };
+        }
+
         static partial void PlatformSpecificXbox360GamePadUpdate();
 
         private static void PerformXbox360GamePadUpdate()
         {
+            // This might be a MonoGame 8 thing:
+            //for(int i = 0; i < Microsoft.Xna.Framework.Input.Joystick.LastConnectedIndex; i++)
+            for(int i = 0; i < 4; i++)
+            {
+
+            }
+            Microsoft.Xna.Framework.Input.Joystick.GetState(8);
+
+
             // Dec 18, 2021 - why do we check this before making updates. 
             // If we do it before, we'll miss the first frame of the game
             // if gamepads are connected:
@@ -421,6 +447,11 @@ namespace FlatRedBall.Input
     #endif
     #endif
                 PlatformSpecificXbox360GamePadUpdate();
+            }
+
+            for(int i = 0; i < 4; i++)
+            {
+                genericGamePads[i].Update();
             }
 
             CheckControllerConnectionChange();

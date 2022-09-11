@@ -1096,6 +1096,8 @@ namespace FlatRedBall.Input
             UpdateLastButtonPushedValues();
         }
 
+
+
         private void UpdateLastButtonPushedValues()
         {
             // Set the last pushed and clear the ignored input
