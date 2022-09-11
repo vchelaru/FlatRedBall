@@ -89,6 +89,24 @@ namespace FlatRedBall.Input
             }
         }
 
+        public static int NumberOfConnectedGenericGamepads
+        {
+            get
+            {
+                int count = 0;
+
+                for (int i = 0; i < GenericGamePads.Length; i++)
+                {
+                    if (GenericGamePads[i].IsConnected)
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+        }
+
         /// <summary>
         /// Whether to perform every-frame update logic on all gamepads.
         /// </summary>

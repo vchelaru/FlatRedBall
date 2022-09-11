@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using static FlatRedBall.Input.Xbox360GamePad;
 
@@ -17,6 +18,11 @@ namespace FlatRedBall.Input
         public int Join { get; set; } = 9;
         public int Pause { get; set; } = 9;
         public int Back { get; set; } = 2;
+
+        public int XboxX { get; set; } = 0;
+        public int XboxA { get; set; } = 1;
+        public int XboxB { get; set; } = 2;
+        public int XboxY { get; set; } = 3;
 
     }
 
@@ -105,6 +111,16 @@ namespace FlatRedBall.Input
         double[] lastDPadPush = new double[4];
         double[] lastDPadRepeatRate = new double[4];
 
+        public int NumberOfButtons { get; private set; }
+
+        public float Deadzone { get; set; } = .1f;
+
+        public DeadzoneType DeadzoneType { get; set; }
+             = DeadzoneType.Radial;
+        InputDeviceMap InputDeviceMap { get; set; }
+
+        JoystickCapabilities JoystickCapabilities;
+
         #endregion
 
         public GenericGamePad(int gamepadIndex)
@@ -131,6 +147,7 @@ namespace FlatRedBall.Input
 
             dPadHorizontal = new DelegateBased1DInput(() =>
             {
+                if (joystickState.Hats.Length == 0) return 0;
                 var hat = joystickState.Hats[0];
                 if (hat.Left == ButtonState.Pressed)
                 {
@@ -148,6 +165,7 @@ namespace FlatRedBall.Input
 
             dPadVertical = new DelegateBased1DInput(() =>
             {
+                if (joystickState.Hats.Length == 0) return 0;
                 var hat = joystickState.Hats[0];
                 if (hat.Down == ButtonState.Pressed)
                 {
@@ -203,8 +221,9 @@ namespace FlatRedBall.Input
             }
         }
 
-        private void ApplyInputDeviceMap(InputDeviceMap inputDeviceMap)
+        public void ApplyInputDeviceMap(InputDeviceMap inputDeviceMap)
         {
+            this.InputDeviceMap = inputDeviceMap;
             defaultPrimaryActionInput.Index = inputDeviceMap.PrimaryAction;
             defaultSecondaryActionInput.Index = inputDeviceMap.SecondaryAction;
             defaultConfirmInput.Index = inputDeviceMap.Confirm;
@@ -221,10 +240,26 @@ namespace FlatRedBall.Input
 
             for(int i = 0; i < AnalogSticks.Length; i++)
             {
-                var xAxis = joystickState.Axes[i*2] / analogStickMaxValue;
-                var yAxis = -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue;
+                var stickPosition = new Vector2(
+                    joystickState.Axes[i*2] / analogStickMaxValue,
+                    -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue);
 
-                AnalogSticks[i].Update(new Microsoft.Xna.Framework.Vector2(xAxis, yAxis));
+                if (Deadzone > 0)
+                {
+                    switch (DeadzoneType)
+                    {
+                        case DeadzoneType.Radial:
+                            stickPosition = GetRadialDeadzoneValue(stickPosition);
+                            break;
+                        case DeadzoneType.Cross:
+                            stickPosition = GetCrossDeadzoneValue(stickPosition);
+                            break;
+                    }
+
+                }
+
+
+                AnalogSticks[i].Update(new Microsoft.Xna.Framework.Vector2(stickPosition.X, stickPosition.Y));
 
             }
 
@@ -256,6 +291,38 @@ namespace FlatRedBall.Input
                 lastJoystickState.Buttons[buttonIndex] == ButtonState.Pressed;
         }
 
+        public bool ButtonPushed(Xbox360GamePad.Button xboxButton)
+        {
+            switch(xboxButton)
+            {
+                case Button.X:
+                    return ButtonPushed(InputDeviceMap.XboxX);
+                case Button.Y:
+                    return ButtonPushed(InputDeviceMap.XboxY);
+                case Button.A:
+                    return ButtonPushed(InputDeviceMap.XboxA);
+                case Button.B:
+                    return ButtonPushed(InputDeviceMap.XboxB);
+            }
+            return false;
+        }
+
+        public bool ButtonReleased(Xbox360GamePad.Button xboxButton)
+        {
+            switch (xboxButton)
+            {
+                case Button.X:
+                    return ButtonReleased(InputDeviceMap.XboxX);
+                case Button.Y:
+                    return ButtonReleased(InputDeviceMap.XboxY);
+                case Button.A:
+                    return ButtonReleased(InputDeviceMap.XboxA);
+                case Button.B:
+                    return ButtonReleased(InputDeviceMap.XboxB);
+            }
+            return false;
+        }
+
         public bool ButtonDown(int buttonIndex)
         {
             if (InputManager.mIgnorePushesThisFrame ||
@@ -270,22 +337,24 @@ namespace FlatRedBall.Input
         internal void Update()
         {
             var state = Joystick.GetState(GamepadIndex);
-            var caps = Joystick.GetCapabilities(GamepadIndex);
+            JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
 
             // each analog stick has an up/down
-            var currentAnalogStickCount = caps.AxisCount / 2;
+            var currentAnalogStickCount = JoystickCapabilities.AxisCount / 2;
             if(AnalogSticks.Length != currentAnalogStickCount)
             {
                 RecreateAnalogSticks(currentAnalogStickCount);
                 RecreateDirectionalInputs();
             }
 
+            NumberOfButtons = JoystickCapabilities.ButtonCount;
+
             Update(state);
         }
 
         public string GetJoystickStateInfo()
         {
-            string toReturn = $"IsConnected:{joystickState.IsConnected}\n";
+            string toReturn = $"{JoystickCapabilities.Identifier} IsConnected:{joystickState.IsConnected}\n";
 
             for(int i = 0; i < joystickState.Buttons.Length; i++)
             {
@@ -307,7 +376,7 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            return $"{GamepadIndex} Connected:{IsConnected}";
+            return $"{GamepadIndex} Connected:{IsConnected} ID:{JoystickCapabilities.Identifier}";
         }
 
         public bool DPadDown(DPadDirection dPadDirection)
@@ -379,5 +448,35 @@ namespace FlatRedBall.Input
             return false;
         }
 
+        Vector2 GetRadialDeadzoneValue(Vector2 originalValue)
+        {
+            var deadzoneSquared = Deadzone * Deadzone;
+
+            var originalValueLengthSquared =
+                (originalValue.X * originalValue.X) +
+                (originalValue.Y * originalValue.Y);
+
+            if (originalValueLengthSquared < deadzoneSquared)
+            {
+                return Vector2.Zero;
+            }
+            else
+            {
+                return originalValue;
+            }
+        }
+
+        Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
+        {
+            if (originalValue.X < Deadzone && originalValue.X > -Deadzone)
+            {
+                originalValue.X = 0;
+            }
+            if (originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
+            {
+                originalValue.Y = 0;
+            }
+            return originalValue;
+        }
     }
 }

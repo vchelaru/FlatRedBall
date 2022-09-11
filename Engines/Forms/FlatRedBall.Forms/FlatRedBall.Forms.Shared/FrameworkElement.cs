@@ -698,6 +698,28 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        protected void HandleGamepadNavigation(GenericGamePad gamepad, bool considerLeftAndRight = true)
+        {
+            AnalogStick leftStick = gamepad.AnalogSticks.Length > 0
+                ? gamepad.AnalogSticks[0]
+                : null;
+
+            if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
+                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)) ||
+                leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) == true ||
+                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true))
+            {
+                this.HandleTab(TabDirection.Down, this);
+            }
+            else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
+                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)) ||
+                leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) == true||
+                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true))
+            {
+                this.HandleTab(TabDirection.Up, this);
+            }
+        }
+
         public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
         {
             ////////////////////Early Out/////////////////

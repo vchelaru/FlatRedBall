@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework.Input;
@@ -180,6 +181,47 @@ namespace FlatRedBall.Forms.Controls.Games
                     HandleLetterSelect();
                 }
                 if(gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Back) || gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.Start))
+                {
+                    ConfirmSelected?.Invoke();
+                }
+            }
+
+            for (int i = 0; i < GuiManager.GenericGamePadsForUiControl.Count; i++)
+            {
+                var gamepad = GuiManager.GenericGamePadsForUiControl[i];
+
+                var leftStick = gamepad.AnalogSticks.Length > 0
+                    ? gamepad.AnalogSticks[0]
+                    : null;
+
+                if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
+                    leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) == true)
+                {
+                    HandleMove(RepositionDirections.Down);
+                }
+                else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
+                         leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) == true)
+                {
+                    HandleMove(RepositionDirections.Up);
+                }
+                else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) ||
+                    leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true)
+                {
+                    HandleMove(RepositionDirections.Left);
+                }
+                else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) ||
+                         leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true)
+                {
+                    HandleMove(RepositionDirections.Right);
+                }
+
+                var asInput = gamepad as IInputDevice;
+
+                if (asInput.DefaultConfirmInput.WasJustPressed)
+                {
+                    HandleLetterSelect();
+                }
+                if (asInput.DefaultCancelInput.WasJustPressed || asInput.DefaultJoinInput.WasJustPressed)
                 {
                     ConfirmSelected?.Invoke();
                 }

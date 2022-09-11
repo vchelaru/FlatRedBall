@@ -675,11 +675,26 @@ namespace FlatRedBall.Forms.Controls
 
                     ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
                 }
-                if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
+
+            }
+
+            var genericGamepads = GuiManager.GenericGamePadsForUiControl;
+            for (int i = 0; i < genericGamepads.Count; i++)
+            {
+                var gamepad = genericGamepads[i];
+
+                HandleGamepadNavigation(gamepad);
+
+                var inputDevice = gamepad as IInputDevice;
+
+                if (inputDevice.DefaultConfirmInput.WasJustPressed)
                 {
-                    //this.HandleClick(null);
+                    this.Visual.CallClick();
+
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.A);
                 }
             }
+
         }
 
         public void OnGainFocus()

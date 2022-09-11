@@ -381,7 +381,20 @@ namespace FlatRedBall.Forms.Controls.Games
 
                     var inputDevice = gamepad as IInputDevice;
 
-                    if(inputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                    if(inputDevice.DefaultConfirmInput.WasJustPressed)
+                    {
+                        ReactToInput();
+                    }
+                }
+
+                var genericGamepads = GuiManager.GenericGamePadsForUiControl;
+                for(int i = 0; i < genericGamepads.Count; i++)
+                {
+                    var gamepad = gamepads[i];
+
+                    var inputDevice = gamepad as IInputDevice;
+
+                    if (inputDevice.DefaultConfirmInput.WasJustPressed)
                     {
                         ReactToInput();
                     }

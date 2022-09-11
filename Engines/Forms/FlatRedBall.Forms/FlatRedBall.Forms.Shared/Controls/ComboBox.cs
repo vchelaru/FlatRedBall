@@ -156,6 +156,7 @@ namespace FlatRedBall.Forms.Controls
         public event Action<object, SelectionChangedEventArgs> SelectionChanged;
         public event FocusUpdateDelegate FocusUpdate;
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
+        public event Action<int> GenericGamepadButtonPushed;
 
 
         #endregion
@@ -455,62 +456,79 @@ namespace FlatRedBall.Forms.Controls
 
         private void DoOpenDropDownFocusUpdate()
         {
-            var gamepads = GuiManager.GamePadsForUiControl;
+            var xboxGamepads = GuiManager.GamePadsForUiControl;
 
-            for (int i = 0; i < gamepads.Count; i++)
+            for (int i = 0; i < xboxGamepads.Count; i++)
             {
-                var gamepad = gamepads[i];
+                var gamepad = xboxGamepads[i];
 
-                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                var movedDown = gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down);
+
+                var movedUp = gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                         gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up);
+
+                var pressedButton = gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A) ||
+                    gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B);
+                DoDropDownOpenFocusUpdate(movedDown, movedUp, pressedButton);
+            }
+
+            var genericGamepads = GuiManager.GenericGamePadsForUiControl;
+            for(int i = 0; i < genericGamepads.Count; i++)
+            {
+                var gamepad = genericGamepads[i];
+
+                var movedDown = gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Down) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Down));
+                var movedUp = gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Up) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Up));
+
+                var inputDevice = gamepad as IInputDevice;
+
+                var pressedButton = inputDevice.DefaultPrimaryActionInput.WasJustPressed || inputDevice.DefaultBackInput.WasJustPressed;
+
+                DoDropDownOpenFocusUpdate(movedDown, movedUp, pressedButton);
+            }
+        }
+
+        private void DoDropDownOpenFocusUpdate(bool movedDown, bool movedUp, bool pressedButton)
+        {
+            if (movedDown)
+            {
+                if (Items.Count > 0)
                 {
-                    if (Items.Count > 0)
+                    if (SelectedIndex < 0 && Items.Count > 0)
                     {
-                        if (SelectedIndex < 0 && Items.Count > 0)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        else if (SelectedIndex < Items.Count - 1)
-                        {
-                            SelectedIndex++;
-                        }
-
-                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                        SelectedIndex = 0;
                     }
-                }
-                else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                         gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
-                {
-                    if (Items.Count > 0)
+                    else if (SelectedIndex < Items.Count - 1)
                     {
-                        if (SelectedIndex < 0 && Items.Count > 0)
-                        {
-                            SelectedIndex = 0;
-                        }
-                        else if (SelectedIndex > 0)
-                        {
-                            SelectedIndex--;
-                        }
-
-                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                        SelectedIndex++;
                     }
-                }
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
+                    this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                }
+            }
+            else if (movedUp)
+            {
+                if (Items.Count > 0)
                 {
-                    // select...
+                    if (SelectedIndex < 0 && Items.Count > 0)
+                    {
+                        SelectedIndex = 0;
+                    }
+                    else if (SelectedIndex > 0)
+                    {
+                        SelectedIndex--;
+                    }
 
-                    // and close...
-                    IsDropDownOpen = false;
-
-                    //this.HandleTab(TabDirection.Down, this);
-                    //this.HandlePush(null);
+                    this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
                 }
+            }
 
-                if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B))
-                {
-                    IsDropDownOpen = false;
-                }
+            if (pressedButton)
+            {
+                IsDropDownOpen = false;
             }
         }
 
@@ -526,13 +544,8 @@ namespace FlatRedBall.Forms.Controls
 
                 if (gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
-                    // select...
-
-                    // and close...
                     IsDropDownOpen = IsDropDownOpen = true;
 
-                    //this.HandleTab(TabDirection.Down, this);
-                    //this.HandlePush(null);
                     if(SelectedIndex > -1 && SelectedIndex < this.Items.Count)
                     {
                         this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
@@ -552,6 +565,35 @@ namespace FlatRedBall.Forms.Controls
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+            }
+
+            var genericGamepads = GuiManager.GenericGamePadsForUiControl;
+            for(int i = 0; i < genericGamepads.Count; i++)
+            {
+                var gamepad = genericGamepads[i];
+
+                HandleGamepadNavigation(gamepad);
+
+                if ((gamepad as IInputDevice).DefaultConfirmInput.WasJustPressed)
+                {
+                    IsDropDownOpen = IsDropDownOpen = true;
+
+                    if (SelectedIndex > -1 && SelectedIndex < this.Items.Count)
+                    {
+                        this.listBox.ListBoxItems[SelectedIndex].IsFocused = true;
+                    }
+                }
+
+                if(IsEnabled)
+                {
+                    for(int buttonIndex = 0; buttonIndex < gamepad.NumberOfButtons; i++)
+                    {
+                        if(gamepad.ButtonPushed(buttonIndex))
+                        {
+                            GenericGamepadButtonPushed?.Invoke(buttonIndex);
+                        }
+                    }
+                }
             }
         }
 

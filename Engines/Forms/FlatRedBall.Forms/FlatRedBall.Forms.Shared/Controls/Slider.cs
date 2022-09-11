@@ -35,7 +35,7 @@ namespace FlatRedBall.Forms.Controls
         public event FocusUpdateDelegate FocusUpdate;
 
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
-
+        public event Action<int> GenericGamepadButtonPushed;
 
         #region Initialize
 
@@ -298,6 +298,40 @@ namespace FlatRedBall.Forms.Controls
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Y);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
+            }
+
+            var genericGamepads = GuiManager.GenericGamePadsForUiControl;
+            for (int i = 0; i < genericGamepads.Count; i++)
+            {
+                var gamepad = genericGamepads[i];
+
+                HandleGamepadNavigation(gamepad, considerLeftAndRight:false);
+
+                var leftStick = gamepad.AnalogSticks.Length > 0
+                    ? gamepad.AnalogSticks[0]
+                    : null;
+
+                if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) ||
+                    leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true)
+                {
+                    this.Value -= this.SmallChange;
+                }
+                else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) ||
+                    leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true)
+                {
+                    this.Value += this.SmallChange;
+                }
+
+                if (IsEnabled)
+                {
+                    for (int buttonIndex = 0; buttonIndex < gamepad.NumberOfButtons; i++)
+                    {
+                        if (gamepad.ButtonPushed(buttonIndex))
+                        {
+                            GenericGamepadButtonPushed?.Invoke(buttonIndex);
+                        }
+                    }
+                }
             }
         }
 

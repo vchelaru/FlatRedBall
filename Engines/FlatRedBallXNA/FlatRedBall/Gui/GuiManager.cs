@@ -229,10 +229,7 @@ namespace FlatRedBall.Gui
             get { return mPerishableArrayReadOnly; }
         }
 
-        public static IEnumerable<IWindow> DominantWindows
-        {
-            get { return mDominantWindows; }
-        }
+        public static IEnumerable<IWindow> DominantWindows => mDominantWindows; 
 
         public static string ToolTipText
         {
@@ -290,6 +287,11 @@ namespace FlatRedBall.Gui
         {
             get; private set;
         } = new List<Xbox360GamePad>();
+
+        public static List<GenericGamePad> GenericGamePadsForUiControl
+        {
+            get; private set;
+        } = new List<GenericGamePad>();
 
         #endregion
 
