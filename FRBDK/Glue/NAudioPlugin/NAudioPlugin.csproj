@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Platforms>x86</Platforms>
+    <Platforms>x86;AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\NAudioPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\NAudioPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\NAudioPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\x86\Debug\Plugins\NAudioPlugin\NAudioPlugin.dll&quot;" />
+    <Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\NAudioPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\NAudioPlugin\&quot;&#xD;&#xA; &#xD;&#xA;copy &quot;$(TargetDir)\NAudioPlugin.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\NAudioPlugin\NAudioPlugin.dll&quot;" />
   </Target>
 
 </Project>

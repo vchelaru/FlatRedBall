@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Platforms>x86</Platforms>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>

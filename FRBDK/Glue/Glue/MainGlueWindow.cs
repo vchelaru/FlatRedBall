@@ -29,6 +29,7 @@ using GlueFormsCore.Controls;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Microsoft.Build.Evaluation;
 
 namespace Glue
 {
@@ -66,7 +67,6 @@ namespace Glue
 
         private static void SetMsBuildEnvironmentVariable()
         {
-
             var startInfo = new ProcessStartInfo("dotnet", "--list-sdks")
             {
                 RedirectStandardOutput = true
@@ -86,6 +86,8 @@ namespace Glue
 
         public MainGlueWindow()
         {
+            // Vic says - this makes Glue use the latest MSBuild environments
+            // Running on AnyCPU means we run in 64 bit and can load VS 22 64 bit libs.
             SetMsBuildEnvironmentVariable();
 
             mSelf = this;
@@ -109,6 +111,7 @@ namespace Glue
             this.Controls.Add(this.mMenu);
 
         }
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
