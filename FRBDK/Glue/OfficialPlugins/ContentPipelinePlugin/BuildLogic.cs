@@ -30,12 +30,24 @@ namespace OfficialPlugins.MonoGameContent
 
         };
 
-        static FilePath commandLineBuildExe => possibleMGCBPaths.FirstOrDefault(item => item.Exists());
+        static string GetCommandLineBuildExe(VisualStudioProject project)
+        {
+
+            if(project.DotNetVersion == "v6.0")
+            {
+                return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
+            }
+            else
+            {
+                return possibleMGCBPaths.FirstOrDefault(item => item.Exists()).FullPath;
+            }
+        }
 
         public void RefreshBuiltFilesFor(VisualStudioProject project, bool forcePngsToContentPipeline, ContentPipelineController controller)
         {
 
-            var mgcbToUse = commandLineBuildExe;
+            var mgcbToUse = GetCommandLineBuildExe(project);
+
             /////////////Early Out///////////////////
             
             if (mgcbToUse == null)
@@ -323,6 +335,9 @@ namespace OfficialPlugins.MonoGameContent
         public async Task<List<FilePath>> TryAddXnbReferencesAndBuild(FilePath rfsFilePath, VisualStudioProject project, bool saveProjectAfterAdd, bool rebuild = false)
         {
             List<FilePath> toReturn = new List<FilePath>();
+
+            var commandLineBuildExe = GetCommandLineBuildExe(project);
+
             //////////////EARLY OUT////////////////////////
             if (commandLineBuildExe == null)
             {
@@ -339,13 +354,13 @@ namespace OfficialPlugins.MonoGameContent
                 var viewModel = new DelegateBasedErrorViewModel();
                 
                 viewModel.Details = 
-                    $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe.FullPath} " +
+                    $"Could not build {rfsFilePath.FullPath} because the Monogame Builder Tool could not be found at {commandLineBuildExe} " +
                     $"You can probably solve this by installing MonoGame for Visual Studio.";
                 // double click command?
                 viewModel.IfIsFixedDelegate = () =>
                 {
                     return rfsFilePath.Exists() == false ||
-                        commandLineBuildExe.Exists() == true ||
+                        System.IO.File.Exists(commandLineBuildExe) == true ||
                         GlueCommands.GluxCommands.GetReferencedFileSaveFromFile(rfsFilePath) == null;
                 };
 
@@ -379,7 +394,9 @@ namespace OfficialPlugins.MonoGameContent
 
                         if (contentItem.GetIfNeedsBuild(destinationDirectory) || rebuild)
                         {
-                            PerformBuild(contentItem, rebuild);
+                            InstallBuilderIfNecessary(project);
+
+                            PerformBuild(contentItem, project, rebuild);
                         }
 
                         string relativeToAddNoExtension =
@@ -405,18 +422,62 @@ namespace OfficialPlugins.MonoGameContent
             return toReturn;
         }
 
-        private static void PerformBuild(ContentItem contentItem, bool rebuild = false)
+        private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
+        {
+            var needsBuilder = visualStudioProject.DotNetVersion == "v6.0";
+
+            ///////////Early Out//////////////////
+            if(!needsBuilder)
+            {
+                return;
+            }
+            //////////End Early Out///////////////
+
+            var startInfo = new ProcessStartInfo("dotnet", "tool list -g")
+            {
+                RedirectStandardOutput = true
+            };
+
+            var process = Process.Start(startInfo);
+            process.WaitForExit(1000);
+
+            var output = process.StandardOutput.ReadToEnd();
+
+            var hasMgcb = output?.Contains("dotnet-mgcb ") == true;
+
+            if(!hasMgcb)
+            {
+                var exe = "dotnet";
+                var args = "tool install dotnet-mgcb --global";
+                startInfo = new ProcessStartInfo(exe, args)
+                {
+                    RedirectStandardOutput = true
+                };
+
+                process = Process.Start(startInfo);
+                process.WaitForExit(6000);
+
+                GlueCommands.PrintOutput($"{exe} {args}");
+                output = process.StandardOutput.ReadToEnd();
+                GlueCommands.PrintOutput(output);
+
+            }
+        }
+
+        private static void PerformBuild(ContentItem contentItem, VisualStudioProject project, bool rebuild = false)
         {
             StringBuilder stringBuilder = new StringBuilder();
             string contentDirectory = GlueState.ContentDirectory;
             string workingDirectory = contentDirectory;
 
-            string commandLine = contentItem.GenerateCommandLine(rebuild);
+            string commandLine = contentItem.GenerateCommandLine(project, rebuild);
             var process = new Process();
+
+            var commandLineBuildExe = GetCommandLineBuildExe(project);
 
             process.StartInfo.Arguments = commandLine;
             process.StartInfo.UseShellExecute = false;
-            process.StartInfo.FileName = commandLineBuildExe.FullPath;
+            process.StartInfo.FileName = commandLineBuildExe;
             process.StartInfo.WorkingDirectory = contentDirectory;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.RedirectStandardInput = true;

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.VSHelpers.Projects;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,9 +147,10 @@ namespace OfficialPlugins.MonoGameContent
 
         #endregion
 
-        public string GenerateCommandLine(bool rebuild = false)
+        public string GenerateCommandLine(VisualStudioProject project, bool rebuild = false)
         {
             var stringBuilder = new StringBuilder();
+
             stringBuilder.Append($"/outputDir:\"{OutputDirectory}\" /intermediateDir:\"{IntermediateDirectory}\" /platform:{Platform} /importer:{Importer} /processor:{Processor} ");
             foreach(var parameter in ProcessorParameters)
             {

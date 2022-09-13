@@ -107,6 +107,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public abstract string NeededVisualStudioVersion { get; }
 
+        public string DotNetVersion { get; private set; }
+
         #endregion
 
         #region Methods
@@ -125,6 +127,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             CodeProject = this;
 
             FindRootNamespace();
+
+            GetDotNetVersion();
+        }
+
+        private void GetDotNetVersion()
+        {
+            var property = mProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
+            DotNetVersion = property?.EvaluatedValue ?? "Unknown";
         }
 
         #endregion

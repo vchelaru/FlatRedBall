@@ -961,13 +961,20 @@ namespace FlatRedBall.Input
 
         public void ControlPositionedObject(PositionedObject positionedObject)
         {
-            ControlPositionedObject(positionedObject, 10);
+            // Make this more suitable for 2D games by increasing the default value
+            //ControlPositionedObject(positionedObject, 10);
+            ControlPositionedObject(positionedObject, 64);
         }
 
         public void ControlPositionedObject(PositionedObject positionedObject, float velocity)
         {
             positionedObject.XVelocity = this.LeftStick.Position.X * velocity;
             positionedObject.YVelocity = this.LeftStick.Position.Y * velocity;
+
+            if(ButtonDown(Button.DPadLeft)) positionedObject.XVelocity = -velocity;
+            if(ButtonDown(Button.DPadRight)) positionedObject.XVelocity = velocity;
+            if(ButtonDown(Button.DPadUp)) positionedObject.YVelocity = velocity;
+            if(ButtonDown(Button.DPadDown)) positionedObject.YVelocity = -velocity;
 
             if (ButtonDown(Button.LeftShoulder))
                 positionedObject.ZVelocity = velocity;
@@ -1311,7 +1318,18 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            return $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+            var toReturn= $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+
+            for(int i = 0; i < NumberOfButtons; i++)
+            {
+                var button = (Button)i;
+                if(ButtonDown(button))
+                {
+                    toReturn += " " + button;
+                }
+            }
+
+            return toReturn;
         }
 
 
@@ -1323,7 +1341,9 @@ namespace FlatRedBall.Input
         {
             GamePadState gamepadState;
 
-            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+            // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
+            //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
 #if !MONOGAME
             // Vic says April 4 2020 - not sure if this is supported on monogame or not, maybe it is now? This could be an old comment
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
