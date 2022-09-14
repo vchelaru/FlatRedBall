@@ -8,7 +8,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\FlatRedBallXNA\FlatRedBallDesktopGLNet5\FlatRedBallDesktopGLNet6.csproj" />
+    <ProjectReference Include="..\..\..\..\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj" />
   </ItemGroup>
-  <Import Project="..\..\..\..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />
+  <Import Project="..\..\..\..\..\FRBDK\Glue\StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems" Label="Shared" />
 </Project>

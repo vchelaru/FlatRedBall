@@ -9,8 +9,7 @@
     <PackageReference Include="TextCopy" Version="6.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj" />
-    <ProjectReference Include="..\..\StateInterpolation\StateInterpolation.DesktopGlNet6\StateInterpolation.DesktopNet6\StateInterpolation.DesktopNet6.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj" />
   </ItemGroup>
-  <Import Project="..\..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
+  <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
 </Project>
