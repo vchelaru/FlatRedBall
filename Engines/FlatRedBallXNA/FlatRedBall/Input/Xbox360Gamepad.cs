@@ -1505,9 +1505,9 @@ namespace FlatRedBall.Input
             : GetButton(Button.A);
 
         public IPressableInput DefaultSecondaryActionInput => 
-            ButtonLayout == ButtonLayout.NintendoPro ? GetButton(Button.X)
+            ButtonLayout == ButtonLayout.NintendoPro ? GetButton(Button.Y)
             : ButtonLayout == ButtonLayout.GameCube ? GetButton(Button.B)
-            : GetButton(Button.Y);
+            : GetButton(Button.X);
 
         IPressableInput IInputDevice.DefaultConfirmInput => GetButton(Button.A);
 
