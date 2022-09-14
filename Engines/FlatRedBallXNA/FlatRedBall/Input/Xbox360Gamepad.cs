@@ -15,9 +15,37 @@ namespace FlatRedBall.Input
         Cross
         
     }
+    public enum ButtonLayout
+    {
+        Unknown,
+        Xbox,
+        NintendoPro,
+        GameCube
+    }
 
     public class Xbox360GamePad : IInputDevice
     {
+        #region Static Dictionaries for identifying the gamepad
+
+        static HashSet<string> NintendoProControllerNames = new HashSet<string>
+        {
+            "Nintendo Switch Pro Controller",
+            "Retro Controller"
+        };
+
+        static HashSet<string> GamecubeControllerNames = new HashSet<string>
+        {
+            "Controller (HORIPAD S)"
+        };
+
+        static HashSet<string> XboxControllerNames = new HashSet<string>
+        {
+            "Controller (Xbox One For Windows)"
+        };
+
+        #endregion
+
+
         #region Enums
 
         /// <summary>
@@ -67,6 +95,7 @@ namespace FlatRedBall.Input
             DPad
         }
 
+
         #endregion
 
         #region Fields
@@ -99,6 +128,8 @@ namespace FlatRedBall.Input
         bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
 
         Dictionary<Button, Xbox360ButtonReference> cachedButtons = new Dictionary<Button, Xbox360ButtonReference>();
+
+        public ButtonLayout ButtonLayout { get; set; }
 
         #endregion
 
@@ -397,15 +428,10 @@ namespace FlatRedBall.Input
             }
         }
 
-#if !MONODROID
-        public GamePadType GamePadType
-        {
-            get
-            {
-                return mCapabilities.GamePadType;
-            }
-        }
-#endif
+        public GamePadType GamePadType => mCapabilities.GamePadType;
+
+        public GamePadCapabilities Capabilities => mCapabilities;
+
         #endregion
 
         #region Methods
@@ -1098,12 +1124,38 @@ namespace FlatRedBall.Input
 
             mGamePadState = gamepadState;
 
+            if(WasConnectedThisFrame)
+            {
+                UpdateToGamepadType();
+            }
+
             UpdateAnalogStickAndTriggerValues();
 
             UpdateLastButtonPushedValues();
         }
 
+        private void UpdateToGamepadType()
+        {
+            var name = mCapabilities.DisplayName;
 
+            if(string.IsNullOrEmpty(name))
+            {
+                ButtonLayout = ButtonLayout.Unknown;
+            }
+            else if(XboxControllerNames.Contains(name) || name.Contains("Xbox"))
+            {
+                ButtonLayout = ButtonLayout.Xbox;
+            }
+            else if(NintendoProControllerNames.Contains(name) || name.Contains("Nintendo"))
+            {
+                ButtonLayout = ButtonLayout.NintendoPro;
+
+            }
+            else if (GamecubeControllerNames.Contains(name))
+            {
+                ButtonLayout = ButtonLayout.GameCube;
+            }
+        }
 
         private void UpdateLastButtonPushedValues()
         {
@@ -1344,11 +1396,8 @@ namespace FlatRedBall.Input
             // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
-#if !MONOGAME
-            // Vic says April 4 2020 - not sure if this is supported on monogame or not, maybe it is now? This could be an old comment
-            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
-#endif
 
+            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
 
             Update(gamepadState);
 
@@ -1416,7 +1465,7 @@ namespace FlatRedBall.Input
             { 
                 if(defaultRightPressable == null)
                 {
-                    return GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); 
+                    defaultRightPressable = GetButton(Button.DPadRight).Or(LeftStick.RightAsButton); 
                 }
                 return defaultRightPressable;
             } 
@@ -1450,9 +1499,15 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput IInputDevice.DefaultPrimaryActionInput => GetButton(Button.A);
+        public IPressableInput DefaultPrimaryActionInput =>
+            ButtonLayout == ButtonLayout.NintendoPro 
+            ? GetButton(Button.B)
+            : GetButton(Button.A);
 
-        IPressableInput IInputDevice.DefaultSecondaryActionInput => GetButton(Button.B);
+        public IPressableInput DefaultSecondaryActionInput => 
+            ButtonLayout == ButtonLayout.NintendoPro ? GetButton(Button.X)
+            : ButtonLayout == ButtonLayout.GameCube ? GetButton(Button.B)
+            : GetButton(Button.Y);
 
         IPressableInput IInputDevice.DefaultConfirmInput => GetButton(Button.A);
 
