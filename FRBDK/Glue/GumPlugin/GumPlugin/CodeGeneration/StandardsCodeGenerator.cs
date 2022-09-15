@@ -129,6 +129,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("CustomFontFile");
             mVariableNamesToSkipForProperties.Add("UseCustomFont");
             mVariableNamesToSkipForProperties.Add("Children Layout");
+            mVariableNamesToSkipForProperties.Add("StackSpacing");
 
             // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
             mVariableNamesToSkipForProperties.Add("Contained Type");

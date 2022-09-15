@@ -856,9 +856,13 @@ namespace GumPlugin.CodeGeneration
 
                 }
 
-
+                var stateSaveValueInCode = (variableSave.Value as string)?.Replace(" ", "_")?.Replace("-", "_");
+                if (stateSaveValueInCode?.Length > 0 && char.IsDigit(stateSaveValueInCode[0]))
+                {
+                    stateSaveValueInCode = "_" + stateSaveValueInCode;
+                }
                 variableValue = GetQualifiedRuntimeTypeFor(categoryContainer) + 
-                    "." + categoryName + "." + variableSave.Value;
+                    "." + categoryName + "." + stateSaveValueInCode;
             }
 
             else if (variableSave.IsEnumeration())
