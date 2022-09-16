@@ -1037,8 +1037,8 @@ namespace FlatRedBall
         #endregion
         public float RotationXVelocity
         {
-            get { return mRotationXVelocity; }
-            set { mRotationXVelocity = value; }
+            get => mRotationXVelocity; 
+            set => mRotationXVelocity = value; 
         }
 
         #region XML Docs
@@ -1052,8 +1052,8 @@ namespace FlatRedBall
         #endregion
         public float RotationYVelocity
         {
-            get { return mRotationYVelocity; }
-            set { mRotationYVelocity = value; }
+            get => mRotationYVelocity; 
+            set => mRotationYVelocity = value; 
         }
 
         #region XML Docs
