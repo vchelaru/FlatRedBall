@@ -321,7 +321,6 @@ namespace FlatRedBall.Math
 
         }
 
-
         public static Ray GetRay(int pixelX, int pixelY, float distanceAlongForwardVector, Camera camera, LayerCameraSettings layerCameraSettings)
         {
             if (layerCameraSettings == null)

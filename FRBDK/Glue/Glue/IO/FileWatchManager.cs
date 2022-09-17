@@ -110,8 +110,10 @@ namespace FlatRedBall.Glue.IO
         {
             bool wasAnythingChanged = false;
 
-            IgnoreReason reason;
-            bool isIgnored = IsFileIgnored(file.FilePath, out reason);
+            IgnoreReason reason = IgnoreReason.NotIgnored;
+            bool isIgnored = false;
+
+            isIgnored = IsFileIgnoredBasedOnFileType(file.FilePath, out reason);
 
             if (!isIgnored)
             {
@@ -172,7 +174,7 @@ namespace FlatRedBall.Glue.IO
                     // *so many* generated files, that putting a check here on generated can eliminate hundreds
                     // of tasks from being created, improving startup performance
                     IgnoreReason reason;
-                    bool isIgnored = IsFileIgnored(fileCopy.FilePath, out reason);
+                    bool isIgnored = IsFileIgnoredBasedOnFileType(fileCopy.FilePath, out reason);
 
                     // November 12, 2019
                     // Vic asks - why do we only ignore files that are generated here?
@@ -302,7 +304,7 @@ namespace FlatRedBall.Glue.IO
         //}
 
 
-        private static bool IsFileIgnored(FilePath filePath, out IgnoreReason reason)
+        private static bool IsFileIgnoredBasedOnFileType(FilePath filePath, out IgnoreReason reason)
         {
             bool isIgnored = false;
             reason = IgnoreReason.NotIgnored;

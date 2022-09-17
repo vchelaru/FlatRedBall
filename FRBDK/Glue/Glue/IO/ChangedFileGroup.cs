@@ -334,7 +334,15 @@ namespace FlatRedBall.Glue.IO
 
             lock (LockObject)
             {
-                bool wasIgnored = TryIgnoreFileChange(fileName);
+                bool wasIgnored = false;
+
+                // When a file changes, it's deleted and then added. Therefore, if we make a change (delete + create), but we ignore
+                // one change, that means that the delete will get ignored, but the create won't. Therefore, we should not check ignores
+                // on deletes:
+                if(fileChangeType != FileChangeType.Deleted)
+                {
+                    wasIgnored = TryIgnoreFileChange(fileName);
+                }
                 if (!wasIgnored)
                 {
                     toAddTo.Add(fileName, fileChangeType);

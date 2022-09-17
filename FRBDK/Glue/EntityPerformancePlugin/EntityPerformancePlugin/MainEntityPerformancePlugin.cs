@@ -75,8 +75,25 @@ namespace EntityPerformancePlugin
             this.ReactToUnloadedGlux += HandleGluxUnload;
             this.ReactToItemSelectHandler += HandleGlueItemSelected;
             this.ReactToChangedPropertyHandler += HandleGluePropertyChanged;
-            this.ReactToFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChange;
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
+        }
+
+        private void HandleFileChange(FilePath filePath, FileChangeType changeType)
+        {
+            if(filePath == GetPerformanceFilePath() && changeType != FileChangeType.Deleted)
+            {
+                LoadManagementValues();
+
+                var entity = GlueState.Self.CurrentEntitySave;
+
+                if(entity != null)
+                {
+                    RefreshView();
+
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
+            }
         }
 
         private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement currentElement)
@@ -121,23 +138,6 @@ namespace EntityPerformancePlugin
                     RefreshView();
 
                     SavePerformanceData();
-                }
-            }
-        }
-
-        private void HandleFileChanged(string fileName)
-        {
-            if(new FilePath(fileName) == GetPerformanceFilePath())
-            {
-                LoadManagementValues();
-
-                var entity = GlueState.Self.CurrentEntitySave;
-
-                if(entity != null)
-                {
-                    RefreshView();
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             }
         }
@@ -319,17 +319,15 @@ namespace EntityPerformancePlugin
             {
                 System.IO.Directory.CreateDirectory(filePath.GetDirectoryContainingThis().FullPath);
 
-                // delete it before writing so it only raises 1 event:
-                if(filePath.Exists())
-                {
-                    // ignore it for the delete:
-                    GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(filePath.FullPath);
-                    System.IO.File.Delete(filePath.FullPath);
-                }
-
                 // Now ignore it for the write:
                 GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(filePath.FullPath);
-                GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(filePath.FullPath, serialized));
+                // Again again. Not sure why we get 2 writes on Windows, even though we're using FileManager.SaveText.
+                GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(filePath.FullPath);
+                GlueCommands.Self.TryMultipleTimes(() => 
+                    // According to FileManager.cs, WriteAllText causes 2 file changes to get raised, so instead use the FileManager
+                    //System.IO.File.WriteAllText(filePath.FullPath, serialized)
+                    FlatRedBall.IO.FileManager.SaveText(serialized, filePath.FullPath)
+                );
             },
             $"Saving performance file {filePath}",
             TaskExecutionPreference.Asap);
