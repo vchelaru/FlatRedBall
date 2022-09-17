@@ -840,7 +840,7 @@ namespace GumPlugin
             if (string.IsNullOrEmpty(executable))
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox(
-                    "Could not find file association for Gum files - you need to set this up before performing this operation");
+                    "Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files");
             }
             else
             {
