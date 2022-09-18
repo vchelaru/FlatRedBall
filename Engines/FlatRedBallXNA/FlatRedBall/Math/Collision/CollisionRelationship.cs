@@ -81,6 +81,9 @@ namespace FlatRedBall.Math.Collision
         /// </summary>
         public bool IsActive { get; set; } = true;
 
+
+        public bool ArePhysicsAppliedAutomatically { get; set; } = true;
+
         /// <summary>
         /// The number of frames to skip after performing collision logic. Default value is 0, which means no values are skipped.
         /// </summary>
@@ -193,10 +196,15 @@ namespace FlatRedBall.Math.Collision
 
         #endregion
 
-        protected bool CollideConsideringSubCollisions(FirstCollidableT first, SecondCollidableT second)
+        public bool DoCollisionPhysics(FirstCollidableT first, SecondCollidableT second)
+        {
+            return DoCollisionPhysicsInner(first, second, false);
+        }
+
+        protected bool DoCollisionPhysicsInner(FirstCollidableT first, SecondCollidableT second, bool eventOnly)
         {
 #if DEBUG
-            if(first == second)
+            if (first == second)
             {
                 throw new InvalidOperationException($"Cannot collide a {first.GetType()} named {first.Name} against itself in a CollisionRelationship " +
                     $"named {this.Name}");
@@ -205,7 +213,7 @@ namespace FlatRedBall.Math.Collision
 
             this.DeepCollisionsThisFrame++;
 
-            if (CollisionType == CollisionType.EventOnlyCollision)
+            if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
             {
                 return CollideAgainstConsiderSubCollisionEventOnly(first, second);
             }
@@ -222,7 +230,6 @@ namespace FlatRedBall.Math.Collision
                 throw new NotImplementedException();
             }
         }
-
 
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, SecondCollidableT second)
         {
@@ -703,7 +710,7 @@ namespace FlatRedBall.Math.Collision
             {
                 skippedFrames = 0;
                 // collision limit doesn't do anything here, since it's only 1 vs 1
-                if (CollideConsideringSubCollisions(first, second))
+                if (DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                 {
                     CollisionOccurred?.Invoke(first, second);
                     didCollisionOccur = true;
@@ -1004,7 +1011,7 @@ namespace FlatRedBall.Math.Collision
                     for (int i = startInclusive; i > endExclusive; i--)
                     {
                         var atI = list[i];
-                        if (CollideConsideringSubCollisions(singleObject, atI))
+                        if (DoCollisionPhysicsInner(singleObject, atI, !ArePhysicsAppliedAutomatically))
                         {
                             CollisionOccurred?.Invoke(singleObject, atI);
                             didCollisionOccur = true;
@@ -1038,7 +1045,7 @@ namespace FlatRedBall.Math.Collision
             for (int i = startInclusive; i > endExclusive; i--)
             {
                 var atI = list[i];
-                if (CollideConsideringSubCollisions(singleObject, atI))
+                if (DoCollisionPhysicsInner(singleObject, atI, !ArePhysicsAppliedAutomatically))
                 {
                     var distanceVector = singleObject.Position - atI.Position;
                     var distanceSquared = distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y;
@@ -1164,7 +1171,7 @@ namespace FlatRedBall.Math.Collision
                 for (int i = startInclusive; i > endExclusive; i--)
                 {
                     var atI = list[i];
-                    if (CollideConsideringSubCollisions(atI, singleObject))
+                    if (DoCollisionPhysicsInner(atI, singleObject, !ArePhysicsAppliedAutomatically))
                     {
                         CollisionOccurred?.Invoke(atI, singleObject);
                         didCollisionOccur = true;
@@ -1401,7 +1408,7 @@ namespace FlatRedBall.Math.Collision
                         var second = secondList[j];
 
                         // first != second needed since the two may be checked if allowing duplicate collisions per frame
-                        if (first != second && CollideConsideringSubCollisions(first, second))
+                        if (first != second && DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                         {
                             CollisionOccurred?.Invoke(first, second);
                             collisionOccurred = true;
@@ -1438,7 +1445,7 @@ namespace FlatRedBall.Math.Collision
                             var second = secondList[j];
 
                             // first != second needed since the two may be checked if allowing duplicate collisions per frame
-                            if (first != second && CollideConsideringSubCollisions(first, second))
+                            if (first != second && DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                             {
                                 CollisionOccurred?.Invoke(first, second);
                                 collisionOccurred = true;
@@ -1488,7 +1495,7 @@ namespace FlatRedBall.Math.Collision
                         continue;
                     }
 
-                    if (CollideConsideringSubCollisions(first, second))
+                    if (DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                     {
                         CollisionOccurred?.Invoke(first, second);
                         collisionOccurred = true;
@@ -1545,7 +1552,7 @@ namespace FlatRedBall.Math.Collision
                         continue;
                     }
 
-                    if (CollideConsideringSubCollisions(first, second))
+                    if (DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                     {
                         CollisionOccurred?.Invoke(first, second);
                         collisionOccurred = true;
@@ -1642,7 +1649,7 @@ namespace FlatRedBall.Math.Collision
                 for (int j = startInclusive; j > endExclusive; j--)
                 {
                     var second = secondList[j];
-                    if (CollideConsideringSubCollisions(first, second))
+                    if (DoCollisionPhysicsInner(first, second, !ArePhysicsAppliedAutomatically))
                     {
                         var distanceVector = first.Position - second.Position;
                         var distanceSquared = distanceVector.X * distanceVector.X + distanceVector.Y * distanceVector.Y;
@@ -1874,7 +1881,7 @@ namespace FlatRedBall.Math.Collision
             else
             {
                 skippedFrames = 0;
-                if (CollideConsideringSubCollisions(singleObject, shapeCollection))
+                if (DoCollisionPhysicsInner(singleObject, shapeCollection, !ArePhysicsAppliedAutomatically))
                 {
                     CollisionOccurred?.Invoke(singleObject, shapeCollection);
                     didCollisionOccur = true;
@@ -1887,11 +1894,16 @@ namespace FlatRedBall.Math.Collision
             return didCollisionOccur;
         }
 
-        protected bool CollideConsideringSubCollisions(FirstCollidableT first, ShapeCollection second)
+        public bool DoCollisionPhysics(FirstCollidableT first, ShapeCollection second)
+        {
+            return DoCollisionPhysicsInner(first, second, false);
+        }
+
+        private bool DoCollisionPhysicsInner(FirstCollidableT first, ShapeCollection second, bool eventOnly)
         {
             this.DeepCollisionsThisFrame++;
 
-            if (CollisionType == CollisionType.EventOnlyCollision)
+            if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
             {
                 return CollideAgainstConsiderSubCollisionEventOnly(first, second);
             }
@@ -1908,6 +1920,7 @@ namespace FlatRedBall.Math.Collision
                 throw new NotImplementedException();
             }
         }
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, ShapeCollection second)
         {
             if (firstSubCollisionCircle != null)
@@ -2033,7 +2046,7 @@ namespace FlatRedBall.Math.Collision
                 for (int i = startInclusive; i > endExclusive; i--)
                 {
                     var atI = list[i];
-                    if (CollideConsideringSubCollisions(atI, shapeCollection))
+                    if (DoCollisionPhysicsInner(atI, shapeCollection, !ArePhysicsAppliedAutomatically))
                     {
                         CollisionOccurred?.Invoke(atI, shapeCollection);
                         didCollisionOccur = true;
@@ -2050,11 +2063,16 @@ namespace FlatRedBall.Math.Collision
             return didCollisionOccur;
         }
 
-        protected bool CollideConsideringSubCollisions(FirstCollidableT first, ShapeCollection second)
+        public bool DoCollisionPhysics(FirstCollidableT first, ShapeCollection second)
+        {
+            return DoCollisionPhysicsInner(first, second, true);
+        }
+
+        private bool DoCollisionPhysicsInner(FirstCollidableT first, ShapeCollection second, bool eventOnly)
         {
             this.DeepCollisionsThisFrame++;
 
-            if (CollisionType == CollisionType.EventOnlyCollision)
+            if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
             {
                 return CollideAgainstConsiderSubCollisionEventOnly(first, second);
             }
@@ -2071,6 +2089,7 @@ namespace FlatRedBall.Math.Collision
                 throw new NotImplementedException();
             }
         }
+
         private bool CollideAgainstConsiderSubCollisionEventOnly(FirstCollidableT first, ShapeCollection second)
         {
             if (firstSubCollisionCircle != null)

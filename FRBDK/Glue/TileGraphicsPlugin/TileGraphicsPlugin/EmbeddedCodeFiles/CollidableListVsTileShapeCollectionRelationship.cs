@@ -72,24 +72,7 @@ namespace FlatRedBall.Math.Collision
                 {
                     var singleObject = list[i];
 
-                    var didCollide = false;
-                    // todo - tile shape collections need to report their deep collision, they don't currently:
-                    if (CollisionType == CollisionType.EventOnlyCollision)
-                    {
-                        didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject, CollisionLimit);
-                    }
-                    else if (CollisionType == CollisionType.MoveCollision)
-                    {
-                        didCollide = data.CollideAgainstConsiderSubCollisionMove(singleObject);
-                    }
-                    else if (CollisionType == CollisionType.BounceCollision)
-                    {
-                        didCollide = data.CollideAgainstConsiderSubCollisionBounce(singleObject, bounceElasticity);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
+                    bool didCollide = DoCollisionPhysicsInner(singleObject, ArePhysicsAppliedAutomatically == false);
 
                     if (didCollide)
                     {
@@ -103,6 +86,35 @@ namespace FlatRedBall.Math.Collision
                 }
             }
             return didCollisionOccur;
+        }
+
+        public bool DoCollisionPhysics(FirstCollidableT singleObject)
+        {
+            return DoCollisionPhysicsInner(singleObject, false);
+        }
+
+        private bool DoCollisionPhysicsInner(FirstCollidableT singleObject, bool eventOnly)
+        {
+            bool didCollide;
+            // todo - tile shape collections need to report their deep collision, they don't currently:
+            if (CollisionType == CollisionType.EventOnlyCollision || eventOnly)
+            {
+                didCollide = data.CollideAgainstConsiderSubCollisionEventOnly(singleObject, CollisionLimit);
+            }
+            else if (CollisionType == CollisionType.MoveCollision)
+            {
+                didCollide = data.CollideAgainstConsiderSubCollisionMove(singleObject);
+            }
+            else if (CollisionType == CollisionType.BounceCollision)
+            {
+                didCollide = data.CollideAgainstConsiderSubCollisionBounce(singleObject, bounceElasticity);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            return didCollide;
         }
     }
 }
