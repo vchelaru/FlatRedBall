@@ -9,6 +9,8 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.PlatformerPlugin.ViewModels;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace FlatRedBall.PlatformerPlugin.Generators
 {
@@ -269,6 +271,15 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         public System.Action LandedAction;
 
 ");
+
+
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasItemsCollidedAgainst)
+            {
+                codeBlock.Line("public HashSet<string> GroundCollidedAgainst { get; private set;} = new HashSet<string>();");
+            }
+
+
             return codeBlock;
         }
 
@@ -852,7 +863,21 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                             {
                                 LandedAction();
                             }
-                            mIsOnGround = true;
+                            mIsOnGround = true;");
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.ICollidableHasItemsCollidedAgainst)
+            {
+                codeBlock.Line(
+@"
+                    if(!string.IsNullOrEmpty(objectCollidedAgainst?.Name))
+                    {
+                        GroundCollidedAgainst.Add(objectCollidedAgainst?.Name);
+                    }
+");
+            }
+
+            codeBlock.Line(
+@"
 
                             groundHorizontalVelocity = objectCollidedAgainst?.TopParent.XVelocity ?? 0;
                         }

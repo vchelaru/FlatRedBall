@@ -553,7 +553,9 @@ namespace OfficialPlugins.CollisionPlugin
             if(ShouldGenerateCollisionNameListCode(element as GlueElement))
             {
                 codeBlock = codeBlock.Function("void", "HandleBeforeCollisionGenerated");
-                var itemsToGenerate = element.AllNamedObjects.Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item));
+                var itemsToGenerate = element
+                    // Only use the top level - lists will handle it
+                    .NamedObjects.Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item));
 
 
                 foreach (var item in itemsToGenerate)
@@ -562,6 +564,12 @@ namespace OfficialPlugins.CollisionPlugin
                     {
                         var forBlock = codeBlock.For($"int i = 0; i < {item.FieldName}.Count; i++");
                         forBlock.Line($"var item = {item.FieldName}[i];");
+
+                        if (IsPlatformer(item.SourceClassGenericType))
+                        {
+                            forBlock.Line("item.GroundCollidedAgainst.Clear();");
+                        }
+
                         forBlock.Line($"item.LastFrameItemsCollidedAgainst.Clear();");
                         {
                             var innerForeach = forBlock.ForEach("var name in item.ItemsCollidedAgainst");
@@ -572,6 +580,11 @@ namespace OfficialPlugins.CollisionPlugin
                     }
                     else
                     {
+                        if(IsPlatformer(item.SourceClassType))
+                        {
+                            codeBlock.Line($"{item.FieldName}.GroundCollidedAgainst.Clear();");
+
+                        }
                         codeBlock.Line($"{item.FieldName}.LastFrameItemsCollidedAgainst.Clear();");
                         {
                             var innerForeach = codeBlock.ForEach($"var name in {item.FieldName}.ItemsCollidedAgainst");
@@ -586,6 +599,14 @@ namespace OfficialPlugins.CollisionPlugin
 
 
             return codeBlock;
+        }
+
+        private bool IsPlatformer(string sourceClassGenericType)
+        {
+            var entity = ObjectFinder.Self.GetEntitySave(sourceClassGenericType);
+
+            return entity?.Properties.GetValue<bool>("IsPlatformer") == true;
+
         }
     }
 }
