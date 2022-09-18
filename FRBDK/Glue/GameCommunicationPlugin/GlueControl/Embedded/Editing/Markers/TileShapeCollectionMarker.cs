@@ -222,7 +222,9 @@ namespace GlueControl.Editing
                 var newYIndex = MathFunctions.RoundToInt(
                     (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
 
-                if (oldXIndex != newXIndex || oldYIndex != newYIndex)
+                if ((oldXIndex != newXIndex || oldYIndex != newYIndex) &&
+                    // If it's a push, we don't want to "zoom" from the previous location and draw a huge line.
+                    !cursor.PrimaryPush)
                 {
                     // need to paint a line
                     var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
@@ -305,7 +307,9 @@ namespace GlueControl.Editing
                     var newYIndex = MathFunctions.RoundToInt(
                         (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
 
-                    if (oldXIndex != newXIndex || oldYIndex != newYIndex)
+                    if ((oldXIndex != newXIndex || oldYIndex != newYIndex) &&
+                    // If it's a push, we don't want to "zoom" from the previous location and draw a huge line.
+                        !cursor.PrimaryPush)
                     {
                         var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
 

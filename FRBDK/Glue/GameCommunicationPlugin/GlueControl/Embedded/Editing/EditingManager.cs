@@ -383,6 +383,10 @@ namespace GlueControl.Editing
         #region Update/DoXXXXLogic
         public void Update()
         {
+            if (FlatRedBallServices.Game.IsActive == false)
+            {
+                return;
+            }
 #if SupportsEditMode
             var isInEditMode = ScreenManager.IsInEditMode;
 
