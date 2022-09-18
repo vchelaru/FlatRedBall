@@ -77,7 +77,8 @@ namespace FlatRedBall.Glue.SaveClasses
             IPlatformer = 19,
             GumDefaults2 = 20,
             IStackableInEngine = 21,
-            ICollidableHasItemsCollidedAgainst = 22
+            ICollidableHasItemsCollidedAgainst = 22,
+            CollisionRelationshipManualPhysics = 23
         }
 
         #endregion

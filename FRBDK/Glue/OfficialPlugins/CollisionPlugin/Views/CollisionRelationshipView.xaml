@@ -183,6 +183,8 @@
                         
                     <RadioButton
                         IsChecked="{Binding IsDelegateCollisionChecked}">Delegate Collision (delegate assigned in code)</RadioButton>
+                    
+                    <CheckBox Margin="0,5,0,0" Visibility="{Binding AutomaticallyApplyPhysicsVisibility}" IsChecked="{Binding IsAutomaticallyApplyPhysicsChecked}">Automatically Apply Physics On Collision</CheckBox>
                 </StackPanel>
             </GroupBox>
 

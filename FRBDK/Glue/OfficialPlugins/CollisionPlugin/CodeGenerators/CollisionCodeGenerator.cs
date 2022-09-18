@@ -80,10 +80,16 @@ namespace OfficialPlugins.CollisionPlugin
             //    nameof(CollisionRelationshipViewModel.IsCollisionActive));
             // Old projects do not have control over whether the collision relationship is active
             // therefore, we need to check if the property is there. If not, treat it as active:
-            var property = namedObject.Properties
+            var collisionActiveProperty = namedObject.Properties
                 .Find(item => item.Name == nameof(CollisionRelationshipViewModel.IsCollisionActive));
-            var isCollisionActive = property == null ||
-                (property.Value is bool asBool && asBool);
+            var isCollisionActive = collisionActiveProperty == null ||
+                (collisionActiveProperty.Value is bool asBool && asBool);
+
+            var automaticPhysicsProperty = namedObject.Properties
+                .Find(item => item.Name == nameof(CollisionRelationshipViewModel.IsAutomaticallyApplyPhysicsChecked));
+
+            var isAutomaticPhysics = automaticPhysicsProperty == null ||
+                (automaticPhysicsProperty.Value is bool automaticAsBool && automaticAsBool);
 
             var collisionLimit = (FlatRedBall.Math.Collision.CollisionLimit)Get<int>(
                 nameof(CollisionRelationshipViewModel.CollisionLimit));
@@ -254,6 +260,13 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 codeBlock.Line(
                     $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive)} = false;");
+            }
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics && 
+                !isAutomaticPhysics)
+            {
+                codeBlock.Line(
+                    $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.ArePhysicsAppliedAutomatically)} = false;");
             }
 
             if (!string.IsNullOrEmpty(groupPlatformerVariableName) ||

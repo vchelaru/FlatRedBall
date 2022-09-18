@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Collision;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -470,6 +471,23 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             }
         }
 
+        public bool SupportsManualPhysics
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SupportsManualPhysics))]
+        public Visibility AutomaticallyApplyPhysicsVisibility => SupportsManualPhysics.ToVisibility();
+
+        [SyncedProperty]
+        [DefaultValue(true)]
+        public bool IsAutomaticallyApplyPhysicsChecked
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
         [DependsOn(nameof(IsFirstStackable))]
         [DependsOn(nameof(IsSecondStackable))]
         [DependsOn(nameof(IsSecondTileShapeCollection))]
@@ -661,8 +679,6 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             Events = new ObservableCollection<EventResponseSave>();
             Events.CollectionChanged += (not, used) => 
                 NotifyPropertyChanged(nameof(AddEventButtonVisibility));
-
-
         }
 
         public void UpdateMassesForTileShapeCollectionCollision()

@@ -212,10 +212,12 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             RefreshPartitioningIcons(currentElement, ViewModel);
             ViewModel.IsUpdatingFromGlueObject = wasUpdatingFromGlue;
 
+            ViewModel.SupportsManualPhysics = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.CollisionRelationshipManualPhysics;
             // UpdateFromGlueObject should be called after refreshing the lists so the right values
             // get set
             ViewModel.UpdateFromGlueObject();
         }
+
 
         private static void RefreshFirstAndSecondTypes(CollisionRelationshipViewModel viewModel, NamedObjectSave collisionRelationship)
         {
