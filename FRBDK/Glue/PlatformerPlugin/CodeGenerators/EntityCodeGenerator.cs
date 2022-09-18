@@ -760,7 +760,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
         /// </summary>
         /// <param name=""collisionFunction"">The collision function to execute.</param>
         /// <param name=""isCloudCollision"">Whether to perform cloud collision (only check when moving down)</param>
-        public bool CollideAgainst(System.Func<(bool, PositionedObject)> collisionFunction, bool isCloudCollision)
+        public bool CollideAgainst(System.Func<(bool, PositionedObject)> collisionFunction, bool isCloudCollision, string objectName = null)
         {
             Microsoft.Xna.Framework.Vector3 positionBeforeCollision = this.Position;
             Microsoft.Xna.Framework.Vector3 velocityBeforeCollision = this.Velocity;
@@ -869,9 +869,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 codeBlock.Line(
 @"
-                    if(!string.IsNullOrEmpty(objectCollidedAgainst?.Name))
+                    if(!string.IsNullOrEmpty(objectCollidedAgainst?.Name ?? objectName))
                     {
-                        GroundCollidedAgainst.Add(objectCollidedAgainst?.Name);
+                        GroundCollidedAgainst.Add(objectCollidedAgainst?.Name ?? objectName);
                     }
 ");
             }
@@ -932,7 +932,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 var didCollideInternal = shapeCollection.CollideAgainstSolid(this);
                 return (didCollideInternal, null);
-            }, isCloudCollision);
+            }, isCloudCollision, shapeCollection.Name);
 
             if(collided)
             {
@@ -1059,7 +1059,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 var didCollide = shapeCollection.CollideAgainstSolid(thisCollision);
                 return (didCollide, null);
-            }, isCloudCollision);
+            }, isCloudCollision, shapeCollection.Name);
         }
 
 ");
