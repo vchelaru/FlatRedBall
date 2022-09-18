@@ -22,6 +22,67 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
     class MainTreeViewViewModel : ViewModel, ISearchBarViewModel
     {
+        #region Search-related
+
+        public static string SearchText;
+        public static string PrefixText;
+
+        public string SearchBoxText
+        {
+            get => Get<string>();
+            set
+            {
+                if (Set(value))
+                {
+                    PrefixText = String.Empty;
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        SearchText = String.Empty;
+                    }
+                    else
+                    {
+                        if (
+                            value.StartsWith("f ") ||
+                            value.StartsWith("e ") ||
+                            value.StartsWith("s ") ||
+                            value.StartsWith("o ") ||
+                            value.StartsWith("v ")
+                            )
+                        {
+                            SearchText = value.Substring(2);
+                            PrefixText = value.Substring(0, 1).ToLowerInvariant();
+
+                        }
+                        else
+                        {
+                            SearchText = value;
+                        }
+
+                    }
+                    PushSearchToContainedObject();
+                }
+            }
+        }
+
+        public bool IsSearchBoxFocused
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchListVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
+
+        [DependsOn(nameof(IsSearchBoxFocused))]
+        [DependsOn(nameof(SearchBoxText))]
+        public Visibility SearchPlaceholderVisibility =>
+            (IsSearchBoxFocused == false && string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
+
+        #endregion
+
         #region Fields/Properties
 
         public NodeViewModel ScreenRootNode { get; private set; }
@@ -59,62 +120,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         public int Count { get; set; }
 
-
-        public static string SearchText;
-        public static string PrefixText;
-
-        public string SearchBoxText
-        {
-            get => Get<string>();
-            set
-            {
-                if (Set(value))
-                {
-                    PrefixText = String.Empty;
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        SearchText = String.Empty;
-                    }
-                    else
-                    {
-                        if(
-                            value.StartsWith("f ") ||
-                            value.StartsWith("e ") ||
-                            value.StartsWith("s ") ||
-                            value.StartsWith("o ") ||
-                            value.StartsWith("v ")
-                            )
-                        {
-                            SearchText = value.Substring(2);
-                            PrefixText = value.Substring(0, 1).ToLowerInvariant();
-
-                        }
-                        else
-                        {
-                            SearchText = value;
-                        }
-
-                    }
-                    PushSearchToContainedObject();
-                }
-            }
-        }
-
-        public bool IsSearchBoxFocused
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        [DependsOn(nameof(SearchBoxText))]
-        public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
-
         [DependsOn(nameof(SearchBoxText))]
         public Visibility MainTreeViewVisibility => (string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
-
-        [DependsOn(nameof(SearchBoxText))]
-        public Visibility SearchListVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
-
         public bool HasUserDismissedTips
         {
             get => Get<bool>();
@@ -126,7 +133,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             get
             {
-                if(HasUserDismissedTips)
+                if (HasUserDismissedTips)
                 {
                     return Visibility.Collapsed;
                 }
@@ -148,12 +155,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             SearchBoxText?.StartsWith("o ") == true ? "Filtered to Objects..." :
             SearchBoxText?.StartsWith("v ") == true ? "Filtered to Variables..." :
             "Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.";
-
-
-        [DependsOn(nameof(IsSearchBoxFocused))]
-        [DependsOn(nameof(SearchBoxText))]
-        public Visibility SearchPlaceholderVisibility =>
-            (IsSearchBoxFocused == false && string.IsNullOrWhiteSpace(SearchBoxText)).ToVisibility();
 
         public bool IsForwardButtonEnabled
         {
@@ -191,7 +192,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             //this.AddRecursive(ScreenRootNode, 4, 4);
             //this.Title = "TreeListBox (N=" + this.Count + ")";
-            
+
         }
 
         #region Directories (top level)
@@ -256,9 +257,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 else
                 {
-                    if(treeNodeRefreshType == TreeNodeRefreshType.All)
+                    if (treeNodeRefreshType == TreeNodeRefreshType.All)
                     {
-                        var treeNodeRelativeDirectory = ((ITreeNode) elementTreeNode).GetRelativeFilePath();
+                        var treeNodeRelativeDirectory = ((ITreeNode)elementTreeNode).GetRelativeFilePath();
 
                         var elementNameModified = element.Name.Replace("\\", "/") + "/";
 
@@ -387,8 +388,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 string textToSet = FileManager.RemovePath(rfs.Name);
                 nodeForFile.Text = textToSet;
 
-                nodeForFile.ImageSource = 
-                    rfs.IsCreatedByWildcard 
+                nodeForFile.ImageSource =
+                    rfs.IsCreatedByWildcard
                     ? NodeViewModel.FileIconWildcard
                     : NodeViewModel.FileIcon;
 
@@ -587,7 +588,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         internal void CollapseAll()
         {
-            foreach(var node in VisibleRoot)
+            foreach (var node in VisibleRoot)
             {
                 node.CollapseRecursively();
             }
@@ -791,7 +792,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             var rootParent = node.Root();
 
-            return 
+            return
                 rootParent == GlobalContentRootNode ||
                 rootParent == EntityRootNode ||
                 rootParent == ScreenRootNode;
@@ -804,62 +805,26 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             var searchToLower = SearchText?.ToLowerInvariant();
 
-            if(searchToLower != null)
+            if (searchToLower != null)
             {
                 RefreshFlattenedList();
             }
             else
             {
-                bool shouldShowScreen = true;
-                bool shouldShowEntities = true;
-                bool shouldShowGlobalContent = true;
-
-                if (shouldShowEntities)
+                if (!VisibleRoot.Contains(EntityRootNode))
                 {
-                    if (!VisibleRoot.Contains(EntityRootNode))
-                    {
-                        VisibleRoot.Insert(0, EntityRootNode);
-                    }
-                }
-                else
-                {
-                    if (VisibleRoot.Contains(EntityRootNode))
-                    {
-                        VisibleRoot.Remove(EntityRootNode);
-                    }
-
+                    VisibleRoot.Insert(0, EntityRootNode);
                 }
 
-                if (shouldShowScreen)
+                if (!VisibleRoot.Contains(ScreenRootNode))
                 {
-                    if (!VisibleRoot.Contains(ScreenRootNode))
-                    {
-                        VisibleRoot.Insert(1, ScreenRootNode);
-                    }
-                }
-                else
-                {
-                    if (!VisibleRoot.Contains(ScreenRootNode))
-                    {
-                        VisibleRoot.Remove(ScreenRootNode);
-                    }
+                    VisibleRoot.Insert(1, ScreenRootNode);
                 }
 
-                if (shouldShowGlobalContent)
+                if (!VisibleRoot.Contains(GlobalContentRootNode))
                 {
-                    if (!VisibleRoot.Contains(GlobalContentRootNode))
-                    {
-                        VisibleRoot.Add(GlobalContentRootNode);
-                    }
+                    VisibleRoot.Add(GlobalContentRootNode);
                 }
-                else
-                {
-                    if (VisibleRoot.Contains(GlobalContentRootNode))
-                    {
-                        VisibleRoot.Remove(GlobalContentRootNode);
-                    }
-                }
-
             }
 
 
@@ -880,7 +845,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             List<StateSave> states = new List<StateSave>();
             List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
             List<CustomVariable> variables = new List<CustomVariable>();
-            List<EventResponseSave> events = new List<EventResponseSave>(); 
+            List<EventResponseSave> events = new List<EventResponseSave>();
 
             var showStates = !hasPrefix;
             var showCategories = !hasPrefix;
@@ -890,10 +855,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var entity in GlueState.Self.CurrentGlueProject.Entities.ToArray())
             {
-                if(!hasPrefix || PrefixText == "e")
+                if (!hasPrefix || PrefixText == "e")
                 {
                     // strip off "entities\\"
-                    var name = entity.Name.Substring("entities\\".Length);
+                    // Actually, strip off folder completely, as this can cause confusion:
+                    //var name = entity.Name.Substring("entities\\".Length);
+                    var name = entity.GetStrippedName();
                     var matchWeight = GetMatchWeight(name);
                     if (matchWeight > 0)
                     {
@@ -908,9 +875,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var screen in GlueState.Self.CurrentGlueProject.Screens.ToArray())
             {
-                if(!hasPrefix || PrefixText == "s")
+                if (!hasPrefix || PrefixText == "s")
                 {
-                    var name = screen.Name.Substring("screens\\".Length);
+                    //var name = screen.Name.Substring("screens\\".Length);
+                    var name = screen.GetStrippedName();
                     var matchWeight = GetMatchWeight(name);
                     if (matchWeight > 0)
                     {
@@ -923,7 +891,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 AddInternalObjectsToLists(screen);
             }
 
-            if(!hasPrefix || PrefixText == "f")
+            if (!hasPrefix || PrefixText == "f")
             {
                 foreach (var file in ObjectFinder.Self.GetAllReferencedFiles())
                 {
@@ -937,82 +905,103 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
 
-            foreach(var nos in namedObjects)
+            foreach (var nos in namedObjects)
             {
-                var node = new NodeViewModel(null);
-                if(nos.IsLayer)
+                var matchWeight = GetMatchWeight(nos.InstanceName);
+                if (matchWeight > 0)
                 {
-                    node.ImageSource = NodeViewModel.LayerIcon;
+                    var node = new NodeViewModel(null);
+                    if (nos.IsLayer)
+                    {
+                        node.ImageSource = NodeViewModel.LayerIcon;
+                    }
+                    else if (nos.IsCollisionRelationship())
+                    {
+                        node.ImageSource = NodeViewModel.CollisionIcon;
+                    }
+                    else if (nos.IsList)
+                    {
+                        node.ImageSource = NodeViewModel.EntityInstanceListIcon;
+                    }
+                    else
+                    {
+                        node.ImageSource = NodeViewModel.EntityInstanceIcon;
+                    }
+                    // ToString leads with the type not the name, so let's lead with the name instead
+                    //node.Text = nos.ToString();
+                    // don't use field name, that has the 'm' prefix in some cases
+                    //node.Text = $"{nos.FieldName} ({nos.ClassType}) in {nos.GetContainer()}";
+                    node.SearchTermMatchWeight = matchWeight;
+                    node.Text = $"{nos.InstanceName} ({nos.ClassType}) in {nos.GetContainer()}";
+                    node.Tag = nos;
+                    //LayersTreeNode.SelectedImageKey = "layerList.png";
+                    //LayersTreeNode.ImageKey = "layerList.png";
+
+                    tempListForSortingFilteredResults.Add(node);
                 }
-                else if(nos.IsCollisionRelationship())
-                {
-                    node.ImageSource = NodeViewModel.CollisionIcon;
-                }
-                else if(nos.IsList)
-                {
-                    node.ImageSource = NodeViewModel.EntityInstanceListIcon;
-                }
-                else
-                {
-                    node.ImageSource = NodeViewModel.EntityInstanceIcon;
-                }
-                // ToString leads with the type not the name, so let's lead with the name instead
-                //node.Text = nos.ToString();
-                // don't use field name, that has the 'm' prefix in some cases
-                //node.Text = $"{nos.FieldName} ({nos.ClassType}) in {nos.GetContainer()}";
-                node.SearchTermMatchWeight = GetMatchWeight(nos.InstanceName);
-                node.Text = $"{nos.InstanceName} ({nos.ClassType}) in {nos.GetContainer()}";
-                node.Tag = nos;
-                //LayersTreeNode.SelectedImageKey = "layerList.png";
-                //LayersTreeNode.ImageKey = "layerList.png";
-                tempListForSortingFilteredResults.Add(node);
             }
 
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
-                var treeNode = new NodeViewModel(null);
-                treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
-                treeNode.Text = category.ToString();
-                treeNode.Tag = category;
-                treeNode.SearchTermMatchWeight = GetMatchWeight(category.Name);
-                tempListForSortingFilteredResults.Add(treeNode);
+                var matchWeight = GetMatchWeight(category.Name);
+                if (matchWeight > 0)
+                {
+                    var treeNode = new NodeViewModel(null);
+                    treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
+                    treeNode.Text = category.ToString();
+                    treeNode.Tag = category;
+                    treeNode.SearchTermMatchWeight = GetMatchWeight(category.Name);
+                    tempListForSortingFilteredResults.Add(treeNode);
+                }
             }
-            foreach(var state in states)
+            foreach (var state in states)
             {
-                var treeNode = new NodeViewModel(null);
-                treeNode.ImageSource = NodeViewModel.StateIcon;
-                treeNode.Text = state.ToString();
-                treeNode.Tag = state;
-                treeNode.SearchTermMatchWeight = GetMatchWeight(state.Name);
-                tempListForSortingFilteredResults.Add(treeNode);
-
-            }
-
-            foreach(var variable in variables)
-            {
-                var treeNode = new NodeViewModel(null);
-                treeNode.ImageSource = NodeViewModel.VariableIcon;
-                treeNode.Text = variable.ToString();
-                treeNode.Tag = variable;
-                treeNode.SearchTermMatchWeight = GetMatchWeight(variable.Name);
-                tempListForSortingFilteredResults.Add(treeNode);
+                var matchWeight = GetMatchWeight(state.Name);
+                if (matchWeight > 0)
+                {
+                    var treeNode = new NodeViewModel(null);
+                    treeNode.ImageSource = NodeViewModel.StateIcon;
+                    treeNode.Text = state.ToString();
+                    treeNode.Tag = state;
+                    treeNode.SearchTermMatchWeight = GetMatchWeight(state.Name);
+                    tempListForSortingFilteredResults.Add(treeNode);
+                }
 
             }
 
-            foreach(var eventItem in events)
+            foreach (var variable in variables)
             {
-                var treeNode = new NodeViewModel(null);
-                treeNode.ImageSource = NodeViewModel.EventIcon; 
-                treeNode.Text = eventItem.ToString();
-                treeNode.Tag= eventItem;
-                treeNode.SearchTermMatchWeight = GetMatchWeight(eventItem.EventName);
-                tempListForSortingFilteredResults.Add(treeNode);
+                var matchWeight = GetMatchWeight(variable.Name);
+                if (matchWeight > 0)
+                {
+                    var treeNode = new NodeViewModel(null);
+                    treeNode.ImageSource = NodeViewModel.VariableIcon;
+                    treeNode.Text = variable.ToString();
+                    treeNode.Tag = variable;
+                    treeNode.SearchTermMatchWeight = GetMatchWeight(variable.Name);
+                    tempListForSortingFilteredResults.Add(treeNode);
+                }
+
+            }
+
+            foreach (var eventItem in events)
+            {
+                var matchWeight = GetMatchWeight(eventItem.EventName);
+                if(matchWeight > 0)
+                {
+                    var treeNode = new NodeViewModel(null);
+                    treeNode.ImageSource = NodeViewModel.EventIcon;
+                    treeNode.Text = eventItem.ToString();
+                    treeNode.Tag = eventItem;
+                    treeNode.SearchTermMatchWeight = GetMatchWeight(eventItem.EventName);
+                    tempListForSortingFilteredResults.Add(treeNode);
+                }
             }
 
             NodeViewModel NodeFor(ReferencedFileSave rfs)
             {
                 var nodeForFile = new NodeViewModel(null);
-                nodeForFile.ImageSource = 
+                nodeForFile.ImageSource =
                     rfs.IsCreatedByWildcard
                         ? NodeViewModel.FileIconWildcard
                         : NodeViewModel.FileIcon;
@@ -1034,53 +1023,54 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             void AddInternalObjectsToLists(GlueElement element)
             {
-                if(showStates)
+                if (showStates)
                 {
                     foreach (var state in element.AllStates)
                     {
-                        if (state.Name.ToLowerInvariant().Contains(searchToLower))
+                        // We can't do Contains checks anymore, because there are search terms like CCS (CamelCaseSearch)
+                        //if (state.Name.ToLowerInvariant().Contains(searchToLower))
                         {
                             states.Add(state);
                         }
                     }
 
                 }
-                if(showCategories)
+                if (showCategories)
                 {
                     foreach (var category in element.StateCategoryList)
                     {
-                        if (category.Name.ToLowerInvariant().Contains(searchToLower))
+                        //if (category.Name.ToLowerInvariant().Contains(searchToLower))
                         {
                             categories.Add(category);
                         }
                     }
                 }
 
-                if(showObjects)
+                if (showObjects)
                 {
-                    foreach(var item in element.AllNamedObjects)
+                    foreach (var item in element.AllNamedObjects)
                     {
-                        if(item.InstanceName.ToLowerInvariant().Contains(searchToLower))
+                        //if(item.InstanceName.ToLowerInvariant().Contains(searchToLower))
                         {
                             namedObjects.Add(item);
                         }
                     }
                 }
-                if(showVariables)
+                if (showVariables)
                 {
-                    foreach(var variable in element.CustomVariables)
+                    foreach (var variable in element.CustomVariables)
                     {
-                        if(variable.Name.ToLowerInvariant().Contains(searchToLower))
+                        //if(variable.Name.ToLowerInvariant().Contains(searchToLower))
                         {
                             variables.Add(variable);
                         }
                     }
                 }
-                if(showEvents)
+                if (showEvents)
                 {
-                    foreach(var eventItem in element.Events)
+                    foreach (var eventItem in element.Events)
                     {
-                        if(eventItem.EventName.ToLowerInvariant().Contains(searchToLower))
+                        //if(eventItem.EventName.ToLowerInvariant().Contains(searchToLower))
                         {
                             events.Add(eventItem);
                         }
@@ -1090,39 +1080,70 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             double GetMatchWeight(string itemName)
             {
-                if(itemName == searchTermCaseSensitive)
+                var itemNameToLower = itemName.ToLowerInvariant();
+                if (itemName == searchTermCaseSensitive)
                 {
+                    // Search: Sprite 
+                    // Actual: Sprite
                     return 1;
                 }
-                else if(itemName.StartsWith(searchTermCaseSensitive))
+                else if (itemName.StartsWith(searchTermCaseSensitive))
                 {
+                    // Search: Spri
+                    // Actual: Sprite
                     return 0.8;
                 }
-                else if(itemName.ToLowerInvariant() == searchToLower)
+                else if (itemNameToLower == searchToLower)
                 {
+                    // Search: sprite
+                    // Actual: Sprite
                     return 0.7;
                 }
-                else if(itemName.ToLowerInvariant().StartsWith(searchToLower))
+                else if (CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
                 {
+                    return 0.65;
+                }
+                else if (itemNameToLower.StartsWith(searchToLower))
+                {
+                    // Search: spri
+                    // Actual: Sprite
                     return 0.6;
                 }
-                else if(itemName.Contains(searchTermCaseSensitive))
+                else if (itemName.Contains(searchTermCaseSensitive))
                 {
+                    // Search: rit
+                    // Actual: Sprite
                     return 0.5;
                 }
-                else if (itemName.ToLowerInvariant().Contains(searchToLower))
+                else if (itemNameToLower.Contains(searchToLower))
                 {
+                    // Search: magetod
+                    // Actual: DamageToDeal
                     return 0.4;
                 }
 
 
                 return 0;
             }
+            bool CamelCaseMatchUpper(string itemName, string searchTermCaseSensitive)
+            {
+                string upperCaseLetters = string.Empty;
+                for (int i = 0; i < itemName.Length; i++)
+                {
+                    if (char.IsUpper(itemName[i]))
+                    {
+                        upperCaseLetters += itemName[i];
+                    }
+                }
 
-            if(FlattenedSelectedItem == null)
+                return upperCaseLetters.StartsWith(searchTermCaseSensitive);
+            }
+
+            if (FlattenedSelectedItem == null)
             {
                 FlattenedSelectedItem = FlattenedItems.FirstOrDefault();
             }
         }
+
     }
 }
