@@ -9,7 +9,7 @@ namespace FlatRedBall.Glue.Data
 {
     public class PluginSettings
     {
-        public const string SaveLocation = "Settings/PluginSettings.xml";
+        public const string SaveLocation = "GlueSettings/PluginSettings.xml";
 
         public List<string> PluginsToIgnore = new List<string>();
 
