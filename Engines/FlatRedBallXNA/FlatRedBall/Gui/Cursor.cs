@@ -384,28 +384,12 @@ namespace FlatRedBall.Gui
                 active = value;
                 if (value == false)
                 {
-                    PrimaryClick = false;
-                    PrimaryDoubleClick = false;
-                    PrimaryDown = false;
-                    PrimaryPush = false;
-                    PrimaryDoublePush = false;
-
-                    SecondaryClick = false;
-                    SecondaryDoubleClick = false;
-                    SecondaryDown = false;
-                    SecondaryPush = false;
-
-                    MiddleClick = false;
-                    MiddleDown = false;
-                    MiddlePush = false;
-
-                    WindowPushed = null;
-                    WindowOver = null;
-                    WindowGrabbed = null;
+                    ClearInputValues();
                 }
             }
             get { return active; }
         }
+
 
         /// <summary>
         /// Whether the game window must be in focus to perform cursor logic. If false, then
@@ -872,6 +856,33 @@ namespace FlatRedBall.Gui
             {
                 return WorldYChangeAt(z, layer) / TimeManager.SecondDifference;
             }
+        }
+
+
+        /// <summary>
+        /// Clears all input values for this frame. If this cursor is actively updated (default) these
+        /// values may get assigned again next frame.
+        /// </summary>
+        public void ClearInputValues()
+        {
+            PrimaryClick = false;
+            PrimaryDoubleClick = false;
+            PrimaryDown = false;
+            PrimaryPush = false;
+            PrimaryDoublePush = false;
+
+            SecondaryClick = false;
+            SecondaryDoubleClick = false;
+            SecondaryDown = false;
+            SecondaryPush = false;
+
+            MiddleClick = false;
+            MiddleDown = false;
+            MiddlePush = false;
+
+            WindowPushed = null;
+            WindowOver = null;
+            WindowGrabbed = null;
         }
 
         #region XML Docs
@@ -2223,6 +2234,13 @@ namespace FlatRedBall.Gui
             }
 
             mActiveThisFrame = !shouldEarlyOut;
+
+            if(RequiresGameWindowInFocus && !FlatRedBallServices.Game.IsActive)
+            {
+                // Monogame 3.8.1 seems to have a bug where the cursor may still get activity for one frame
+                // after the main window loses focus. If true, then the push/click buttons may remain down:
+                ClearInputValues();
+            }
 
             if (shouldEarlyOut)
             {

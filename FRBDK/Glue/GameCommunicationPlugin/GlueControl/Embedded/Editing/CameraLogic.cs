@@ -104,6 +104,11 @@ namespace GlueControl.Editing
 
         private static void DoCursorCameraControllingLogic()
         {
+            if (!FlatRedBallServices.Game.IsActive)
+            {
+                return;
+            }
+
             var cursor = GuiManager.Cursor;
             var camera = Camera.Main;
 
@@ -116,7 +121,7 @@ namespace GlueControl.Editing
                 camera.Y -= cursor.WorldYChangeAt(0);
             }
 
-            if (cursor.PrimaryDown || cursor.SecondaryDown)
+            if ((cursor.PrimaryDown || cursor.SecondaryDown) && cursor.IsInWindow())
             {
                 // If near the edges, move in that direction.
                 DoMouseDownScrollingLogic(cursor);
