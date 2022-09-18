@@ -72,7 +72,11 @@ namespace FlatRedBall.Math.Collision
                 {
                     var singleObject = list[i];
 
+#if CollisionRelationshipManualPhysics
                     bool didCollide = DoCollisionPhysicsInner(singleObject, ArePhysicsAppliedAutomatically == false);
+#else
+                    bool didCollide = DoCollisionPhysicsInner(singleObject, false);
+#endif
 
                     if (didCollide)
                     {

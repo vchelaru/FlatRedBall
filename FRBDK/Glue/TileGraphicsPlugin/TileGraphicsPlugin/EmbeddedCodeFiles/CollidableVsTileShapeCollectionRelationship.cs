@@ -208,7 +208,12 @@ namespace FlatRedBall.Math.Collision
                 {
                     skippedFrames = 0;
 
+#if CollisionRelationshipManualPhysics
                     bool didCollide = DoCollisionPhysicsInner(ArePhysicsAppliedAutomatically == false);
+#else
+                    bool didCollide = DoCollisionPhysicsInner(false);
+#endif
+
 
                     if (didCollide)
                     {
