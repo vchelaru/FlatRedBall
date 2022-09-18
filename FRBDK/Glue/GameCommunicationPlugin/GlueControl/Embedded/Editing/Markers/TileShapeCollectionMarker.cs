@@ -309,7 +309,7 @@ namespace GlueControl.Editing
 
                     if ((oldXIndex != newXIndex || oldYIndex != newYIndex) &&
                     // If it's a push, we don't want to "zoom" from the previous location and draw a huge line.
-                        !cursor.PrimaryPush)
+                        !cursor.SecondaryPush)
                     {
                         var listOfPoints = MathFunctions.GetGridLine(oldXIndex, oldYIndex, newXIndex, newYIndex);
 
