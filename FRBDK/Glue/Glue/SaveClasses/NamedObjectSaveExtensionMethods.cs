@@ -947,6 +947,38 @@ namespace FlatRedBall.Glue.SaveClasses
                 namedObjectSave.SourceClassType?.StartsWith("CollisionRelationship<") == true;
         }
 
+        public static bool IsCollidableOrCollidableList(this NamedObjectSave namedObjectSave)
+        {
+            if (namedObjectSave.IsList)
+            {
+                var type = namedObjectSave.SourceClassGenericType;
+
+                // For a more complete impl, see:
+                // CollisionRelationshipViewModelController
+                return !string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType) &&
+                    ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassGenericType)?.ImplementsICollidable == true;
+            }
+            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
+                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")
+            {
+                return true;
+            }
+            else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
+                namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
+            {
+                return true;
+            }
+            else if (namedObjectSave.SourceType == SourceType.Entity &&
+                ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassType)?.ImplementsICollidable == true)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
         {
             return

@@ -76,7 +76,8 @@ namespace FlatRedBall.Glue.SaveClasses
             AnimationLayerHasName = 19,
             IPlatformer = 19,
             GumDefaults2 = 20,
-            IStackableInEngine = 21
+            IStackableInEngine = 21,
+            ICollidableHasItemsCollidedAgainst = 22
         }
 
         #endregion
@@ -85,7 +86,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.IStackableInEngine;
+        public const int LatestVersion = (int)GluxVersions.ICollidableHasItemsCollidedAgainst;
 
         public int FileVersion { get; set; }
 

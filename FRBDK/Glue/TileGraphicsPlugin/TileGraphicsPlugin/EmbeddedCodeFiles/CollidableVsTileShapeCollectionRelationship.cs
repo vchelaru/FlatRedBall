@@ -1,4 +1,7 @@
-﻿using FlatRedBall;
+﻿$GLUE_VERSIONS$
+
+
+using FlatRedBall;
 using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.TileCollisions;
@@ -229,6 +232,10 @@ namespace FlatRedBall.Math.Collision
                         CollisionOccurred?.Invoke(singleObject, data.TileShapeCollection);
 
                         didCollisionOccur = true;
+
+#if ICollidableHasItemsCollidedAgainst
+                        singleObject.ItemsCollidedAgainst.Add(data.TileShapeCollection.Name);
+#endif
                     }
                 }
             }

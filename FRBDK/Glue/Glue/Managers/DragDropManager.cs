@@ -134,7 +134,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 var response = HandleDropOnShapeCollection(treeNodeMoving, targetNode, targetNos, movingNos);
 
-                if (!response.Succeeded && IsCollidableOrCollidableList(movingNos))
+                if (!response.Succeeded && movingNos.IsCollidableOrCollidableList())
                 {
                     response = await HandleCreateCollisionRelationship(movingNos, targetNos);
                 }
@@ -152,7 +152,7 @@ namespace FlatRedBall.Glue.Managers
 
             else
             {
-                if (IsCollidableOrCollidableList(movingNos) && IsCollidableOrCollidableList(targetNos))
+                if (movingNos.IsCollidableOrCollidableList() && targetNos.IsCollidableOrCollidableList())
                 {
                     canBeCollidable = true;
                 }
@@ -260,38 +260,7 @@ namespace FlatRedBall.Glue.Managers
             return GeneralResponse.SuccessfulResponse;
         }
 
-        // if both are lists, and both are ICollidable, then bring up the collision relationship 
-        static bool IsCollidableOrCollidableList(NamedObjectSave nos)
-        {
-            if (nos.IsList)
-            {
-                var type = nos.SourceClassGenericType;
 
-                // For a more complete impl, see:
-                // CollisionRelationshipViewModelController
-                return !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
-            }
-            else if(nos.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
-                nos.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")
-            {
-                return true;
-            }
-            else if(nos.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.Math.Geometry.ShapeCollection" ||
-                nos.GetAssetTypeInfo()?.RuntimeTypeName == "ShapeCollection")
-            {
-                return true;
-            }
-            else if(nos.SourceType == SourceType.Entity && 
-                ObjectFinder.Self.GetEntitySave( nos.SourceClassType)?.ImplementsICollidable == true)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         #endregion
 

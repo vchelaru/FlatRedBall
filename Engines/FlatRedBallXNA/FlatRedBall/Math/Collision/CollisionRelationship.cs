@@ -707,6 +707,9 @@ namespace FlatRedBall.Math.Collision
                 {
                     CollisionOccurred?.Invoke(first, second);
                     didCollisionOccur = true;
+
+                    first.ItemsCollidedAgainst.Add(second.Name);
+                    second.ItemsCollidedAgainst.Add(first.Name);
                 }
             }
 
@@ -750,6 +753,15 @@ namespace FlatRedBall.Math.Collision
             if(collided)
             {
                 CollisionOccurred?.Invoke(first, second);
+
+                if(first is ICollidable firstCollidable && second is INameable secondNameable)
+                {
+                    firstCollidable.ItemsCollidedAgainst.Add(secondNameable.Name);
+                }
+                if(second is ICollidable secondCollidable && first is INameable firstNameable)
+                {
+                    secondCollidable.ItemsCollidedAgainst.Add(firstNameable.Name);
+                }
             }
 
             return collided;
@@ -799,6 +811,15 @@ namespace FlatRedBall.Math.Collision
                         CollisionOccurred?.Invoke(singleObject, atI);
                         didCollisionOccur = true;
                         // Collision Limit doesn't do anything here
+
+                        if (singleObject is ICollidable firstCollidable && atI is INameable secondNameable)
+                        {
+                            firstCollidable.ItemsCollidedAgainst.Add(secondNameable.Name);
+                        }
+                        if (atI is ICollidable secondCollidable && singleObject is INameable firstNameable)
+                        {
+                            secondCollidable.ItemsCollidedAgainst.Add(firstNameable.Name);
+                        }
                     }
                 }
             }
@@ -856,6 +877,16 @@ namespace FlatRedBall.Math.Collision
                         CollisionOccurred?.Invoke(atI, singleObject);
                         didCollisionOccur = true;
                         // Collision Limit doesn't do anything here
+
+
+                        if (atI is ICollidable firstCollidable && singleObject is INameable secondNameable)
+                        {
+                            firstCollidable.ItemsCollidedAgainst.Add(secondNameable.Name);
+                        }
+                        if (singleObject is ICollidable secondCollidable && atI is INameable firstNameable)
+                        {
+                            secondCollidable.ItemsCollidedAgainst.Add(firstNameable.Name);
+                        }
                     }
                 }
             }
@@ -977,6 +1008,10 @@ namespace FlatRedBall.Math.Collision
                         {
                             CollisionOccurred?.Invoke(singleObject, atI);
                             didCollisionOccur = true;
+
+                            singleObject.ItemsCollidedAgainst.Add(atI.Name);
+                            atI.ItemsCollidedAgainst.Add(singleObject.Name);
+
                             if (CollisionLimit == CollisionLimit.First)
                             {
                                 break;
@@ -1134,6 +1169,10 @@ namespace FlatRedBall.Math.Collision
                         CollisionOccurred?.Invoke(atI, singleObject);
                         didCollisionOccur = true;
                         // Collision Limit doesn't do anything here
+
+
+                        singleObject.ItemsCollidedAgainst.Add(atI.Name);
+                        atI.ItemsCollidedAgainst.Add(singleObject.Name);
                     }
                 }
             }
@@ -1366,6 +1405,9 @@ namespace FlatRedBall.Math.Collision
                         {
                             CollisionOccurred?.Invoke(first, second);
                             collisionOccurred = true;
+
+                            first.ItemsCollidedAgainst.Add(second.Name);
+                            second.ItemsCollidedAgainst.Add(first.Name);
                             if (CollisionLimit == CollisionLimit.First)
                             {
                                 break;
@@ -1450,6 +1492,10 @@ namespace FlatRedBall.Math.Collision
                     {
                         CollisionOccurred?.Invoke(first, second);
                         collisionOccurred = true;
+
+                        first.ItemsCollidedAgainst.Add(second.Name);
+                        second.ItemsCollidedAgainst.Add(first.Name);
+
                         if (CollisionLimit == CollisionLimit.First)
                         {
                             break;
@@ -1503,6 +1549,10 @@ namespace FlatRedBall.Math.Collision
                     {
                         CollisionOccurred?.Invoke(first, second);
                         collisionOccurred = true;
+
+                        first.ItemsCollidedAgainst.Add(second.Name);
+                        second.ItemsCollidedAgainst.Add(first.Name);
+
                         if (CollisionLimit == CollisionLimit.First)
                         {
                             break;
@@ -1609,6 +1659,9 @@ namespace FlatRedBall.Math.Collision
                 if (closestFirst != null)
                 {
                     CollisionOccurred?.Invoke(closestFirst, closestSecond);
+
+                    closestFirst.ItemsCollidedAgainst.Add(closestSecond.Name);
+                    closestSecond.ItemsCollidedAgainst.Add(closestFirst.Name);
                 }
             }
         }
@@ -1717,6 +1770,15 @@ namespace FlatRedBall.Math.Collision
                             {
                                 CollisionOccurred?.Invoke(firstItem, secondItem);
                                 collisionOccurred = true;
+
+                                if(firstItem is ICollidable first && secondItem is INameable second)
+                                {
+                                    first.ItemsCollidedAgainst.Add(second.Name);
+                                }
+                                if(secondItem is ICollidable secondCollidable && firstItem is INameable firstNameable)
+                                {
+                                    secondCollidable.ItemsCollidedAgainst.Add(firstNameable.Name);
+                                }
                             }
                         }
                     }
@@ -1747,6 +1809,15 @@ namespace FlatRedBall.Math.Collision
                             {
                                 CollisionOccurred?.Invoke(firstItem, secondItem);
                                 collisionOccurred = true;
+
+                                if (firstItem is ICollidable first && secondItem is INameable second)
+                                {
+                                    first.ItemsCollidedAgainst.Add(second.Name);
+                                }
+                                if (secondItem is ICollidable secondCollidable && firstItem is INameable firstNameable)
+                                {
+                                    secondCollidable.ItemsCollidedAgainst.Add(firstNameable.Name);
+                                }
                             }
                         }
                     }
@@ -1808,6 +1879,9 @@ namespace FlatRedBall.Math.Collision
                     CollisionOccurred?.Invoke(singleObject, shapeCollection);
                     didCollisionOccur = true;
                     // Collision Limit doesn't do anything here
+
+                    singleObject.ItemsCollidedAgainst.Add(shapeCollection.Name);
+                    shapeCollection.ItemsCollidedAgainst.Add(singleObject.Name);
                 }
             }
             return didCollisionOccur;
@@ -1964,6 +2038,9 @@ namespace FlatRedBall.Math.Collision
                         CollisionOccurred?.Invoke(atI, shapeCollection);
                         didCollisionOccur = true;
                         // Collision Limit doesn't do anything here
+
+                        atI.ItemsCollidedAgainst.Add(shapeCollection.Name);
+                        shapeCollection.ItemsCollidedAgainst.Add(atI.Name);
                     }
                 }
             }

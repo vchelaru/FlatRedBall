@@ -1,3 +1,4 @@
+using FlatRedBall.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,12 @@ namespace FlatRedBall.Math.Geometry
     /// <summary>
     /// Interface requiring implementing objets to have a ShapeCollection Collision property for collision.
     /// </summary>
-    public interface ICollidable
+    public interface ICollidable : INameable
     {
         ShapeCollection Collision { get; }
+
+        HashSet<string> ItemsCollidedAgainst { get; }
+        HashSet<string> LastFrameItemsCollidedAgainst { get; } 
     }
 
 

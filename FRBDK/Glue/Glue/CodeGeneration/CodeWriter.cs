@@ -2600,7 +2600,9 @@ namespace FlatRedBallAddOns.Entities
 
             foreach (ElementComponentCodeGenerator codeGenerator in CodeWriter.CodeGenerators)
             {
-                currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, element);
+                // I see no reason to take the code block
+                //currentBlock = codeGenerator.GenerateAdditionalMethods(currentBlock, element);
+                codeGenerator.GenerateAdditionalMethods(currentBlock, element);
             }
 
             currentBlock.Line("partial void CustomActivityEditMode();");

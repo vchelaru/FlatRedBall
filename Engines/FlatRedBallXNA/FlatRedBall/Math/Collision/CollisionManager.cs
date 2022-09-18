@@ -4,6 +4,7 @@ using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,6 +46,8 @@ namespace FlatRedBall.Math.Collision
 
         public bool IsPausedByScreen { get; set; }
 
+        HashSet<ICollidable> Collidables = new HashSet<ICollidable>();
+
         #endregion
 
         #region Events/Delegates
@@ -60,11 +63,11 @@ namespace FlatRedBall.Math.Collision
             Self = new CollisionManager();
 
             FlatRedBallServices.AddManager(Self);
+
         }
 
         private CollisionManager()
         {
-
         }
 
         #endregion
@@ -165,7 +168,6 @@ namespace FlatRedBall.Math.Collision
             }
             //////End Early Out
             
-
             foreach(var partition in this.partitions)
             {
                 if (partition.SortEveryFrame)
@@ -173,6 +175,19 @@ namespace FlatRedBall.Math.Collision
                     partition.Sort();
                 }
             }
+
+            foreach(var collidable in Collidables)
+            {
+                collidable.LastFrameItemsCollidedAgainst.Clear();
+
+                foreach(var item in collidable.ItemsCollidedAgainst)
+                {
+                    collidable.LastFrameItemsCollidedAgainst.Add(item);
+                }
+                collidable.ItemsCollidedAgainst.Clear();
+            }
+
+
 
             BeforeCollision?.Invoke();
 

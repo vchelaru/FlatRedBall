@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math.Geometry;
 using System;
@@ -21,7 +22,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
             }
         }
 
-        static bool ShouldGenerateCollisionCodeFor(IElement element)
+        static bool ShouldGenerateCollisionCodeFor(GlueElement element)
         {
             var asEntitySave = element as EntitySave;
 
@@ -46,20 +47,28 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
         {
             EntitySave asEntitySave = element as EntitySave;
 
-            if (ShouldGenerateCollisionCodeFor(element))
+            if (ShouldGenerateCollisionCodeFor(element as GlueElement))
             {
 
                 codeBlock.Line("private FlatRedBall.Math.Geometry.ShapeCollection mGeneratedCollision;");
                 var propBlock = codeBlock.Property("public FlatRedBall.Math.Geometry.ShapeCollection", "Collision");
 
                 propBlock.Get().Line("return mGeneratedCollision;");
+
+                var glueProjectFileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+
+                if(glueProjectFileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasItemsCollidedAgainst)
+                {
+                    codeBlock.Line("public HashSet<string> ItemsCollidedAgainst { get; private set;} = new HashSet<string>();");
+                    codeBlock.Line("public HashSet<string> LastFrameItemsCollidedAgainst { get; private set;} = new HashSet<string>();");
+                }
             }
             return codeBlock;
         }
 
         public override ICodeBlock GeneratePostInitialize(ICodeBlock codeBlock, IElement element)
         {
-            if (ShouldGenerateCollisionCodeFor(element))
+            if (ShouldGenerateCollisionCodeFor(element as GlueElement))
             {
                 codeBlock.Line("mGeneratedCollision = new FlatRedBall.Math.Geometry.ShapeCollection();");
 
@@ -128,10 +137,10 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
         public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
         {
-            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element);
+            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element as GlueElement);
         }
 
-        private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, IElement element, bool shouldClear = false)
+        private static void TryGenerateRemoveShapeCollectionFromManagers(ICodeBlock codeBlock, GlueElement element, bool shouldClear = false)
         {
             if (ShouldGenerateCollisionCodeFor(element))
             {
@@ -143,14 +152,14 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
         {
             // Added shouldClear:true on Oct 30, 2021 so that
             // collision in a tight loop will effectively early-out
-            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element, shouldClear:true);
+            TryGenerateRemoveShapeCollectionFromManagers(codeBlock, element as GlueElement, shouldClear:true);
 
             return codeBlock;
         }
 
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {
-            if (ShouldGenerateCollisionCodeFor(element))
+            if (ShouldGenerateCollisionCodeFor(element as GlueElement))
             {
 
                 listToAddTo.Add("FlatRedBall.Math.Geometry.ICollidable");

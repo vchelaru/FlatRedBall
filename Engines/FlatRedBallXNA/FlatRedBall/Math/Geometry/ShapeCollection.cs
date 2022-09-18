@@ -221,6 +221,10 @@ namespace FlatRedBall.Math.Geometry
             set => mMaxPolygonsRadius = value;
         }
 
+        public HashSet<string> ItemsCollidedAgainst { get; private set; } = new HashSet<string>();
+        public HashSet<string> LastFrameItemsCollidedAgainst { get; private set; } = new HashSet<string>();
+
+
         #endregion
 
         #region Methods

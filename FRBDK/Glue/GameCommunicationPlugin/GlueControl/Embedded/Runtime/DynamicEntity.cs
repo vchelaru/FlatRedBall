@@ -11,6 +11,9 @@ namespace GlueControl.Runtime
     {
         public string EditModeType { get; set; }
 
+        public HashSet<string> ItemsCollidedAgainst { get; private set; } = new HashSet<string>();
+        public HashSet<string> LastFrameItemsCollidedAgainst { get; private set; } = new HashSet<string>();
+
         public ShapeCollection Collision
         {
             get; private set;
