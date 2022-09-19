@@ -260,8 +260,19 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     break;
                 case TmxOptions.CopiedTmx:
                     var originalFile = GlueCommands.Self.GetAbsoluteFilePath(viewModel.SelectedTmxFile);
+                    var globalContent = GlueCommands.Self.FileCommands.GetGlobalContentFolder();
 
-                    var destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(newScreen);
+                    string destinationFolder;
+
+                    if(globalContent.IsRootOf(originalFile))
+                    {
+                        destinationFolder = originalFile.GetDirectoryContainingThis().FullPath;
+                    }
+                    else
+                    {
+                        destinationFolder = GlueCommands.Self.FileCommands.GetContentFolder(newScreen);
+                    }
+
                     var strippedName = newScreen.GetStrippedName() + "Map";
                     FilePath destinationFile = new FilePath(destinationFolder + strippedName + ".tmx");
 
