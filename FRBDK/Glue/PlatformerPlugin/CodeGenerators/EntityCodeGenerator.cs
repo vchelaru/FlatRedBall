@@ -299,7 +299,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 
             BeforeGroundMovementSet += (newValue) => 
             {
-                if(mGroundMovement != null && mGroundMovement == ValuesJumpedWith)
+                if(mGroundMovement != null && mGroundMovement == ValuesJumpedWith && IsOnGround)
                 {
                     ValuesJumpedWith = newValue;
                 }
