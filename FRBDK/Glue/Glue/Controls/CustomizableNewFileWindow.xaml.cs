@@ -170,15 +170,26 @@ namespace FlatRedBall.Glue.Controls
                     //textBox1.Text = fileType + "File";
                     //This sets the IsNameDefault to false, so set it back to true:
                     ViewModel.FileName = StringFunctions.MakeStringUnique(fileType + "File", NamesAlreadyUsed, 2);
-                    while (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(ViewModel.FileName + "." +  ViewModel.SelectedAssetTypeInfo?.Extension) != null)
+
+                    var relativeFile = ViewModel.FileName + "." + ViewModel.SelectedAssetTypeInfo?.Extension;
+                    var absoluteFilePath = GlueCommands.Self.GetAbsoluteFilePath(relativeFile);
+
+                    while (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(absoluteFilePath) != null)
                     {
                         ViewModel.FileName = FlatRedBall.Utilities.StringFunctions.IncrementNumberAtEnd(ViewModel.FileName);
+                        relativeFile = ViewModel.FileName + "." + ViewModel.SelectedAssetTypeInfo?.Extension;
+                        absoluteFilePath = GlueCommands.Self.GetAbsoluteFilePath(relativeFile);
                     }
                     ViewModel.IsNameDefault = true;
                 }
             }
-            TextBox.Focus();
-            TextBox.SelectAll();
+            // The selection may change because the user clicked, or because the user entered new text in the filter text
+            // Don't focus if the search box has focus:
+            if(!SearchTermTextBox.IsFocused)
+            {
+                TextBox.Focus();
+                TextBox.SelectAll();
+            }
         }
 
         private void HandleOkClicked(object sender, RoutedEventArgs e)
