@@ -118,11 +118,22 @@ namespace FlatRedBall.Glue.Tiled
             {
                 if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
                 {
-                    var tms = TiledMapSave.FromFile(fileName.FullPath);
+                    TiledMapSave tms = null;
 
-                    CachedTiledMapSave cachedTiledMapSave = CreateCachedTiledMapSave(fileName, tms);
+                    try
+                    {
+                        tms = TiledMapSave.FromFile(fileName.FullPath);
+                    }
+                    catch (Exception e) 
+                    {
+                        GlueCommands.Self.PrintError($"Could not load TMX file {fileName} because of error: {e.ToString()}");
+                    }
+                    if(tms != null)
+                    {
+                        CachedTiledMapSave cachedTiledMapSave = CreateCachedTiledMapSave(fileName, tms);
 
-                    dictionary[fileName] = cachedTiledMapSave;
+                        dictionary[fileName] = cachedTiledMapSave;
+                    }
 
                 }
             });

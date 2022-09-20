@@ -305,6 +305,12 @@ namespace TMXGlueLib
 
                 tileset xts = null;
 
+                if(_sourceField.EndsWith(".json"))
+                {
+                    throw new System.InvalidOperationException(
+                        $"Could not load tileset {_sourceField} because it uses the .json format which is currently not supported. Try saving your tileset as tsx instead of json.");
+                }
+
                 try
                 {
 

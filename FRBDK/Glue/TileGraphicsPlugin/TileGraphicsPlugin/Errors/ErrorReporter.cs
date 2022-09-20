@@ -44,7 +44,15 @@ namespace TiledPluginCore.Managers
 
             foreach(var filePath in tmxFiles)
             {
-                TiledMapSave tms = GlueState.Self.TiledCache.GetTiledMap(filePath);
+                TiledMapSave tms = null;
+                try
+                {
+                    tms = GlueState.Self.TiledCache.GetTiledMap(filePath);
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintError($"Error loading TMX {filePath}:\n{e.ToString()}");
+                }
 
 
                 if (tms != null)
