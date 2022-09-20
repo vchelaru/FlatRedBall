@@ -172,6 +172,7 @@
     <Compile Include="Graphics\EffectCache.cs" />
     <Compile Include="Graphics\EffectContainer.cs" />
     <Compile Include="Graphics\Texture\BitmapList.cs" />
+    <Compile Include="Input\JoystickState.cs" />
     <Compile Include="Input\Windows\WindowsInputEventManager.cs" />
     <Compile Include="IO\HttpManager.cs" />
     <Compile Include="IO\ICSharpCode.SharpZLib\Checksums\Adler32.cs" />

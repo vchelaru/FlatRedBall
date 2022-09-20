@@ -431,7 +431,6 @@ namespace FlatRedBall.Input
         public GamePadType GamePadType => mCapabilities.GamePadType;
 
         public GamePadCapabilities Capabilities => mCapabilities;
-
         #endregion
 
         #region Methods
@@ -1136,8 +1135,11 @@ namespace FlatRedBall.Input
 
         private void UpdateToGamepadType()
         {
+#if MONOGAME
             var name = mCapabilities.DisplayName;
-
+#else
+            var name = "Xbox";
+#endif
             if(string.IsNullOrEmpty(name))
             {
                 ButtonLayout = ButtonLayout.Unknown;
@@ -1393,11 +1395,17 @@ namespace FlatRedBall.Input
         {
             GamePadState gamepadState;
 
+#if MONOGAME
             // Using PlayerIndex gives us only Xbox controllers. Using int indexes gives us all:
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
 
             mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+#else
+            gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
+
+            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities(mPlayerIndex);
+#endif
 
             Update(gamepadState);
 

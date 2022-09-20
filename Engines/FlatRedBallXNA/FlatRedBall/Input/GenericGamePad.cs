@@ -336,6 +336,7 @@ namespace FlatRedBall.Input
 
         internal void Update()
         {
+#if MONOGAME
             var state = Joystick.GetState(GamepadIndex);
             JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
 
@@ -350,6 +351,7 @@ namespace FlatRedBall.Input
             NumberOfButtons = JoystickCapabilities.ButtonCount;
 
             Update(state);
+#endif
         }
 
         public string GetJoystickStateInfo()
