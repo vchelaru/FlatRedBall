@@ -69,6 +69,43 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             WireframeManager.Self.RefreshAll();
         }
 
+        public void AddAxisAlignedRectangle(AnimationFrameSave frame)
+        {
+            var rectangleSave = new AxisAlignedRectangleSave();
+            rectangleSave.ScaleX = 8;
+            rectangleSave.ScaleY = 8;
+            rectangleSave.Name = "AxisAlignedRectangleInstance";
+
+            // do this before adding it to the list
+            rectangleSave.Name = ToolsUtilities.StringFunctions.MakeStringUnique(rectangleSave.Name,
+                SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                    .Select(item => item.Name).ToList()
+                );
+
+            // this loops through all frames. This could result in the wrong texture being used but....that's a pain to address so oh well...
+            MatchRectangleToFrame(rectangleSave, frame);
+
+            frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleSave);
+
+            AppCommands.Self.RefreshAnimationFrameDisplay();
+            AppCommands.Self.RefreshTreeNode(frame);
+            SelectedState.Self.SelectedRectangle = rectangleSave;
+            AppCommands.Self.SaveCurrentAnimationChainList();
+        }
+
+        public void MatchRectangleToFrame(AxisAlignedRectangleSave rectangle, AnimationFrameSave animationFrame)
+        {
+            if (SelectedState.Self.SelectedTexture != null)
+            {
+                rectangle.ScaleX = SelectedState.Self.SelectedTexture.Width *
+                    (animationFrame.RightCoordinate - animationFrame.LeftCoordinate) / 2.0f;
+                rectangle.ScaleY = SelectedState.Self.SelectedTexture.Height *
+                    (animationFrame.BottomCoordinate - animationFrame.TopCoordinate) / 2.0f;
+            }
+            rectangle.X = animationFrame.RelativeX;
+            rectangle.Y = animationFrame.RelativeY;
+        }
+
         public void DeleteAxisAlignedRectangle(AxisAlignedRectangleSave rectangle, AnimationFrameSave owner)
         {
             if(owner.ShapeCollectionSave.AxisAlignedRectangleSaves.Contains(rectangle))

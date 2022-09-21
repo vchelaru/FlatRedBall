@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,40 +8,20 @@ using System.Windows.Forms;
 
 namespace FlatRedBall.AnimationEditorForms.Plugins.FrameShapePlugin
 {
-    class MainFrameShapePlugin
+    class MainFrameShapePlugin : PluginBase
     {
-        public void StartUp()
+
+        public override void StartUp()
         {
-            //AddMenuItemTo("Add Rectangle", "Add", HandleAddRectangle());
+            AddMenuItemTo("Add Rectangle", "Add", HandleAddRectangle);
         }
 
-        private string HandleAddRectangle()
+        private void HandleAddRectangle()
         {
-            throw new NotImplementedException();
-        }
-
-        // move this to base:
-        //void AddMenuItemTo(string )
-
-        void AddMenuItemTo(string whatToAdd, Action eventHandler, string container, int preferredIndex)
-        {
-            //ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd, null, (not, used) => eventHandler());
-            //ToolStripMenuItem itemToAddTo = GetItem(container);
-            //toolStripItemsAndParents.Add(menuItem, itemToAddTo);
-
-
-            //if (preferredIndex == -1)
-            //{
-            //    itemToAddTo.DropDownItems.Add(menuItem);
-            //}
-            //else
-            //{
-            //    int indexToInsertAt = System.Math.Min(preferredIndex, itemToAddTo.DropDownItems.Count);
-
-            //    itemToAddTo.DropDownItems.Insert(indexToInsertAt, menuItem);
-            //}
-
-            //return menuItem;
+            if(AppState.Self.CurrentFrame != null)
+            {
+                AppCommands.Self.AddAxisAlignedRectangle(AppState.Self.CurrentFrame);
+            }
         }
 
     }

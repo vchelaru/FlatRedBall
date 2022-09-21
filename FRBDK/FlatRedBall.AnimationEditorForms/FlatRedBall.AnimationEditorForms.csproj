@@ -193,6 +193,7 @@
     <Compile Include="Managers\ObjectFinder.cs" />
     <Compile Include="Managers\WinformsCursorManager.cs" />
     <Compile Include="Plugins\FrameShapePlugin\MainFrameShapePlugin.cs" />
+    <Compile Include="Plugins\PluginBase.cs" />
     <Compile Include="Preview\CameraController.cs" />
     <Compile Include="Preview\PreviewManager.cs" />
     <Compile Include="PropertyGrids\AnimationChainDisplayer.cs" />

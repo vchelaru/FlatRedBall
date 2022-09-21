@@ -24,6 +24,8 @@ using FlatRedBall.AnimationEditorForms.Content;
 using RenderingLibrary.Content;
 using FilePath = ToolsUtilities.FilePath;
 using System.Threading.Tasks;
+using FlatRedBall.AnimationEditorForms.Plugins.FrameShapePlugin;
+using FlatRedBall.AnimationEditorForms.Plugins;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -70,6 +72,9 @@ namespace FlatRedBall.AnimationEditorForms
             get; private set;
         }
 
+        // todo - move this to a plugin manager eventually
+        List<PluginBase> plugins = new List<PluginBase>();
+
         #endregion
 
         #region Events
@@ -86,6 +91,8 @@ namespace FlatRedBall.AnimationEditorForms
         {
             mSelf = this;
             InitializeComponent();
+
+            InitializePlugins();
 
             this.animationsListToolBar1.AddAnimationClick += AddAnimationToolStripMenuItem_Click;
             this.animationsListToolBar1.ExpandAllClick += TreeViewManager.Self.HandleExpandAllTreeView;
@@ -154,6 +161,16 @@ namespace FlatRedBall.AnimationEditorForms
             PopulateUnitTypeComboBox();
 
             PreviewManager.Self.Initialize(PreviewGraphicsControl, previewControls1);
+        }
+
+        private void InitializePlugins()
+        {
+            this.plugins.Add(new MainFrameShapePlugin());
+
+            foreach(var plugin in plugins)
+            {
+                plugin.StartUp();
+            }
         }
 
         private void CreateViewModel()
