@@ -40,10 +40,10 @@ namespace FlatRedBall.Glue.SaveClasses
         public enum GluxVersions
         {
             PreVersion = 1,
+            HasFormsObject = 1, // Not sure if this is exact, but it should be maybe around here. This will make old projects work. It's before 4.
             AddedGeneratedGame1 = 2,
             ListsHaveAssociateWithFactoryBool = 3,
             GumGueHasGetAnimation = 4,
-            HasFormsObject = 4, // Not sure if this is exact, but it should be maybe around here. This will make old projects work
             GumHasMIsLayoutSuspendedPublic = 4,
             CsvInheritanceSupport = 5,
             IPositionedSizedObjectInEngine = 5,
@@ -78,7 +78,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GumDefaults2 = 20,
             IStackableInEngine = 21,
             ICollidableHasItemsCollidedAgainst = 22,
-            CollisionRelationshipManualPhysics = 23
+            CollisionRelationshipManualPhysics = 23,
+            GumSupportsStackSpacing = 24
         }
 
         #endregion

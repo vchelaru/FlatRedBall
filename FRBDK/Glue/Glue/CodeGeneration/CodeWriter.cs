@@ -1574,7 +1574,7 @@ namespace FlatRedBallAddOns.Entities
             currentBlock.Replace(" System.Int32 ", " int ");
             currentBlock.Replace(" System.String ", " string ");
 
-            if(members.Any(item => item.MemberName == "Name"))
+            if(members.Any(item => item.MemberName == "Name" && item.MemberType == typeof(string)))
             {
                 currentBlock.Line("public override string ToString() => Name;");
             }

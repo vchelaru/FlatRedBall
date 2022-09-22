@@ -893,6 +893,8 @@ namespace GumPlugin
                 viewModel.IsUpdatingFromGlueObject = wasUpdating;
 
             }
+
+            StateCodeGenerator.Self.RefreshVariableNamesToSkipBasedOnGlueVersion();
         }
 
         private async void HandleGluxLoad()
