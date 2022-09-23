@@ -58,7 +58,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                 {
                     codeBlock.Line("Destroyed?.Invoke();");
 
-                    if (entity.CreatedByOtherEntities)
+                    if (entity.CreatedByOtherEntities && entity.PooledByFactory)
                     {
                         codeBlock
                             .If("wasUsed")

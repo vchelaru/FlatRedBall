@@ -23,7 +23,8 @@ namespace FlatRedBall.Math.Collision
     {
         EventOnlyCollision,
         MoveCollision,
-        BounceCollision
+        BounceCollision,
+        MoveSoftCollision
         //,PlatformerCollision
     }
 
@@ -53,6 +54,7 @@ namespace FlatRedBall.Math.Collision
         protected float moveFirstMass;
         protected float moveSecondMass;
         protected float bounceElasticity;
+        protected float softSeparationCoefficient;
 
         /// <summary>
         /// Whether a collision occurred this frame. This is set when the collision performs its collision logic in DoCollisions, which
@@ -135,6 +137,14 @@ namespace FlatRedBall.Math.Collision
             this.moveFirstMass = firstMass;
             this.moveSecondMass = secondMass;
             this.bounceElasticity = elasticity;
+        }
+
+        public virtual void SetMoveSoftCollision(float firstMass, float secondMass, float separationCoefficient)
+        {
+            this.CollisionType = CollisionType.MoveSoftCollision;
+            this.moveFirstMass = firstMass;
+            this.moveSecondMass = secondMass;
+            this.softSeparationCoefficient = separationCoefficient;
         }
 
         public void SetEventOnlyCollision()
@@ -224,6 +234,10 @@ namespace FlatRedBall.Math.Collision
             else if (CollisionType == CollisionType.BounceCollision)
             {
                 return CollideAgainstConsiderSubCollisionBounce(first, second);
+            }
+            else if(CollisionType == CollisionType.MoveSoftCollision)
+            {
+                return CollideAgainstConsiderSubCollisionMoveSoft(first, second);
             }
             else
             {
@@ -524,6 +538,54 @@ namespace FlatRedBall.Math.Collision
                 else
                 {
                     return second.CollideAgainstMove(first, moveSecondMass, moveFirstMass);
+                }
+            }
+        }
+
+        private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, SecondCollidableT second)
+        {
+            if (firstSubCollisionCircle != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (firstSubCollisionRectangle != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (firstSubCollisionPolygon != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (firstSubCollisionLine != null)
+            {
+                throw new NotImplementedException();
+            }
+            else if (firstSubCollisionCollidable != null)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                if (secondSubCollisionCircle != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (secondSubCollisionRectangle != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (secondSubCollisionPolygon != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (secondSubCollisionCollidable != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else
+                {
+                    //return second.CollideAgainstMove(first, moveSecondMass, moveFirstMass);
+                    return second.Collision.CollideAgainstMoveSoft(first.Collision, moveSecondMass, moveFirstMass, softSeparationCoefficient);
                 }
             }
         }
@@ -1915,6 +1977,10 @@ namespace FlatRedBall.Math.Collision
             {
                 return CollideAgainstConsiderSubCollisionBounce(first, second);
             }
+            else if(CollisionType == CollisionType.MoveSoftCollision)
+            {
+                return CollideAgainstConsiderSubCollisionMoveSoft(first, second);
+            }
             else
             {
                 throw new NotImplementedException();
@@ -1965,6 +2031,31 @@ namespace FlatRedBall.Math.Collision
             else
             {
                 return first.CollideAgainstMove(second, moveFirstMass, moveSecondMass);
+            }
+        }
+                
+        private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, ShapeCollection second)
+        {
+            if(firstSubCollisionCircle != null)
+            {
+                throw new NotImplementedException("Circle vs shapecollection move soft collision is not yet implemented.");
+            }
+            else if(firstSubCollisionRectangle != null)
+            {
+                throw new NotImplementedException("AxisAlignedRectangle vs shapecollection move soft collision is not yet implemented.");
+            }
+            else if(firstSubCollisionPolygon != null)
+            {
+                throw new NotImplementedException("Polygon vs shapecollection move soft collision is not yet implemented.");
+
+            }
+            else if(firstSubCollisionCollidable != null)
+            {
+                return firstSubCollisionCollidable(first).Collision.CollideAgainstMoveSoft(second, moveFirstMass, moveSecondMass, softSeparationCoefficient);
+            }
+            else
+            {
+                return first.Collision.CollideAgainstMoveSoft(second, moveFirstMass, moveSecondMass, softSeparationCoefficient);
             }
         }
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, ShapeCollection second)
@@ -2084,6 +2175,10 @@ namespace FlatRedBall.Math.Collision
             {
                 return CollideAgainstConsiderSubCollisionBounce(first, second);
             }
+            else if (CollisionType == CollisionType.MoveSoftCollision)
+            {
+                return CollideAgainstConsiderSubCollisionMoveSoft(first, second);
+            }
             else
             {
                 throw new NotImplementedException();
@@ -2136,6 +2231,32 @@ namespace FlatRedBall.Math.Collision
                 return first.CollideAgainstMove(second, moveFirstMass, moveSecondMass);
             }
         }
+        private bool CollideAgainstConsiderSubCollisionMoveSoft(FirstCollidableT first, ShapeCollection second)
+        {
+            {
+                if (firstSubCollisionCircle != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (firstSubCollisionRectangle != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (firstSubCollisionPolygon != null)
+                {
+                    throw new NotImplementedException();
+                }
+                else if (firstSubCollisionCollidable != null)
+                {
+                    return firstSubCollisionCollidable(first).Collision.CollideAgainstMoveSoft(second, moveFirstMass, moveSecondMass, softSeparationCoefficient);
+                }
+                else
+                {
+                    return first.Collision.CollideAgainstMoveSoft(second, moveFirstMass, moveSecondMass, softSeparationCoefficient);
+                }
+            }
+        }
+
         private bool CollideAgainstConsiderSubCollisionBounce(FirstCollidableT first, ShapeCollection second)
         {
             if (firstSubCollisionCircle != null)
