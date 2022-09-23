@@ -345,6 +345,20 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
+                // This variable should not be included in derived categories by default, this could cause unexpected behavior so let's exclude it
+                var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element);
+                foreach(var derivedElement in derivedElements)
+                {
+                    foreach(var category in derivedElement.StateCategoryList)
+                    {
+                        if(!category.ExcludedVariables.Contains(customVariable.Name))
+                        {
+                            category.ExcludedVariables.Add(customVariable.Name);
+                        }
+                    }
+
+                }
+
                 InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
             }
         }
