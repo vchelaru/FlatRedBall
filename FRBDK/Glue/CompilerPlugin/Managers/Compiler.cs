@@ -162,9 +162,9 @@ namespace CompilerPlugin.Managers
                 //}
 
                 //do we actually want to do this ?
-                if (shouldCompile)
+                var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName;
+                if (shouldCompile && projectFileName != null)
                 {
-                    var projectFileName = GlueState.Self.CurrentMainProject.FullFileName;
 
                     var succeeded = false;
 
