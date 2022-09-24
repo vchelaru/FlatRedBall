@@ -711,6 +711,7 @@ namespace FlatRedBall.Input
                 }
             }
 
+            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
 
             switch (button)
             {
@@ -727,10 +728,24 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed && mLastGamePadState.Buttons.Y == ButtonState.Released;
                     break;
                 case Button.LeftShoulder:
-                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Released;
+                    if(areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mLeftTrigger.Position >= AnalogOnThreshold && mLeftTrigger.LastPosition < AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Released;
+                    }
                     break;
                 case Button.RightShoulder:
-                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.RightShoulder == ButtonState.Released;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mRightTrigger.Position >= AnalogOnThreshold && mRightTrigger.LastPosition < AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.RightShoulder == ButtonState.Released;
+                    }
                     break;
                 case Button.Back:
                     returnValue |= mGamePadState.Buttons.Back == ButtonState.Pressed && mLastGamePadState.Buttons.Back == ButtonState.Released;
@@ -757,10 +772,24 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.DPad.Right == ButtonState.Pressed && mLastGamePadState.DPad.Right == ButtonState.Released;
                     break;
                 case Button.LeftTrigger:
-                    returnValue |= mLeftTrigger.Position >= AnalogOnThreshold && mLeftTrigger.LastPosition < AnalogOnThreshold;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Released;
+                    }
+                    else
+                    {
+                        returnValue |= mLeftTrigger.Position >= AnalogOnThreshold && mLeftTrigger.LastPosition < AnalogOnThreshold;
+                    }
                     break;
                 case Button.RightTrigger:
-                    returnValue |= mRightTrigger.Position >= AnalogOnThreshold && mRightTrigger.LastPosition < AnalogOnThreshold;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed && mLastGamePadState.Buttons.RightShoulder == ButtonState.Released;
+                    }
+                    else
+                    {
+                        returnValue |= mRightTrigger.Position >= AnalogOnThreshold && mRightTrigger.LastPosition < AnalogOnThreshold;
+                    }
                     break;
                 case Button.LeftStickAsDPadUp:
                     returnValue |= LeftStick.AsDPadPushed(DPadDirection.Up);
