@@ -79,7 +79,8 @@ namespace FlatRedBall.Glue.SaveClasses
             IStackableInEngine = 21,
             ICollidableHasItemsCollidedAgainst = 22,
             CollisionRelationshipManualPhysics = 23,
-            GumSupportsStackSpacing = 24
+            GumSupportsStackSpacing = 24,
+            CollisionRelationshipsSupportMoveSoft = 25
         }
 
         #endregion

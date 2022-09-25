@@ -13,14 +13,70 @@ using System.Linq;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
+    public enum FrbOrGum
+    {
+        Frb,
+        Gum
+    }
+
+    public class ProjectReference
+    {
+        public FrbOrGum FrbOrGum;
+        public string RelativeProjectFilePath;
+        public Guid ProjectTypeId;
+        public Guid ProjectId;
+        public string ProjectName;
+        public List<VSSolution.SharedProject> SharedProjects;
+        public List<string> ProjectConfigurations;
+        public List<string> SolutionConfigurations;
+    }
+
+
     [Export(typeof(PluginBase))]
     public class FrbSourcePlugin : PluginBase
     {
+        public List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
+        {
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", FrbOrGum = FrbOrGum.Gum},
+
+            new ProjectReference()
+            { 
+                RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallShared.shproj", 
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"), 
+                ProjectId = Guid.Parse("0BB8CBE3-8503-46C1-9272-D98E153A230E"),
+                FrbOrGum = FrbOrGum.Frb
+            },
+
+            new ProjectReference()
+            {
+                RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj",
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
+                ProjectId = Guid.Parse("728151F0-03E0-4253-94FE-46B9C77EDEA6"),
+                FrbOrGum = FrbOrGum.Frb
+            },
+
+            new ProjectReference()
+            {
+                RelativeProjectFilePath = $"GumCoreShared.shproj",
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
+                ProjectId = Guid.Parse("F919C045-EAC7-4806-9A1F-CE421F923E97"),
+                FrbOrGum = FrbOrGum.Gum
+
+            },
+
+            // finish here....
+        };
+
         private ToolStripMenuItem miLinkSource;
 
         public override string FriendlyName => "FRB Source";
 
         public override Version Version => new Version(1, 0);
+
+
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -105,46 +161,43 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
             var referencedProject = sln.ReferencedProjects;
 
-            //ToDo Handle output and errors
-            if (!AddProject(referencedProject, sln.FullFileName, $"{frbSourceFolder}\\Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj"))
-                return;
-
-            if (!AddProject(referencedProject, sln.FullFileName, $"{frbSourceFolder}\\Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj"))
-                return;
-
-            if (!AddProject(referencedProject, sln.FullFileName, $"{frbSourceFolder}\\Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj"))
-                return;
-
-            if (!AddProject(referencedProject, sln.FullFileName, $"{gumSourceFolder}\\GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj"))
-                return;
-
-            if (!AddSharedProject(referencedProject, sln.FullFileName, $"{frbSourceFolder}\\Engines\\FlatREdBallXNA\\FlatRedBall\\FlatREdBallShared.shproj", Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"), Guid.Parse("0BB8CBE3-8503-46C1-9272-D98E153A230E"), "FlatRedBallShared", new List<VSSolution.SharedProject> { }, new List<string> { }, new List<string> { }))
-                return;
-
-            if (!AddSharedProject(referencedProject, sln.FullFileName, $"{frbSourceFolder}\\Engines\\Forms\\FlatRedBall.Forms\\FlatREdBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj", Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"), Guid.Parse("728151F0-03E0-4253-94FE-46B9C77EDEA6"), "FlatRedBall.Forms.Shared", new List<VSSolution.SharedProject> { }, new List<string> { }, new List<string> { }))
-                return;
-
-            if (!AddSharedProject(referencedProject, sln.FullFileName, $"{gumSourceFolder}\\GumCoreShared.shproj", Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"), Guid.Parse("F919C045-EAC7-4806-9A1F-CE421F923E97"), "GumCoreShared", new List<VSSolution.SharedProject> { }, new List<string> { }, new List<string> { }))
-                return;
-
             var proj = GlueState.Self.CurrentMainProject;
+
+            foreach(var reference in DesktopGlNetFramework)
+            {
+                var prefix = reference.FrbOrGum == FrbOrGum.Frb
+                    ? frbSourceFolder + "\\"
+                    : gumSourceFolder + "\\";
+
+                FilePath fullPath = prefix + reference.RelativeProjectFilePath;
+
+                var extension = fullPath.Extension;
+
+                if(extension == "csproj")
+                {
+                    if (!AddProject(referencedProject, sln.FullFileName, fullPath))
+                        return;
+                }
+                else if(extension == "shproj")
+                {
+                    if (!AddSharedProject(referencedProject, sln.FullFileName, fullPath, reference.ProjectTypeId, reference.ProjectId, fullPath.NoPathNoExtension))
+                    {
+                        //ToDo Handle output and errors
+                        return;
+                    }
+                }
+
+                if(!proj.HasProjectReference(fullPath.NoPathNoExtension) && fullPath.Extension == "csproj")
+                {
+                    proj.AddProjectReference(fullPath.FullPath);
+
+                }
+            }
 
             RemoveReference(proj, "FlatRedBall.Forms");
             RemoveReference(proj, "FlatRedBallDesktopGL");
             RemoveReference(proj, "GumCoreXnaPc");
             RemoveReference(proj, "StateInterpolation");
-
-            if(!proj.HasProjectReference("StateInterpolation.DesktopGL"))
-                proj.AddProjectReference($"{frbSourceFolder}\\Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj");
-
-            if (!proj.HasProjectReference("FlatRedBallDesktopGL"))
-                proj.AddProjectReference($"{frbSourceFolder}\\Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj");
-
-            if (!proj.HasProjectReference("FlatRedBall.Forms.DesktopGL"))
-                proj.AddProjectReference($"{frbSourceFolder}\\Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj");
-
-            if (!proj.HasProjectReference("GumCoreDesktopGL"))
-                proj.AddProjectReference($"{gumSourceFolder}\\GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj");
 
             proj.Save(proj.FullFileName.FullPath);
         }
@@ -175,14 +228,14 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             return true;
         }
 
-        private bool AddSharedProject(List<string> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName, List<VSSolution.SharedProject> sharedProjects, List<string> projectConfigurations, List<string> solutionConfigurations)
+        private bool AddSharedProject(List<string> existingProjects, FilePath solution, FilePath project, Guid projectTypeId, Guid projectId, string projectName)
         {
             var relativePath = project.RelativeTo(solution.GetDirectoryContainingThis());
 
             if (existingProjects.Any(item => item.ToLower() == relativePath.ToLower()))
                 return true;
 
-            if (!VSSolution.AddExistingProject(solution, projectTypeId, projectId, projectName, project, sharedProjects, projectConfigurations, solutionConfigurations, out var errorMessages))
+            if (!VSSolution.AddExistingProject(solution, projectTypeId, projectId, projectName, project, new List<VSSolution.SharedProject> { }, new List<string>(), new List<string>(), out var errorMessages))
             {
                 MessageBox.Show($"Failed to add project {project}. Errors: {errorMessages}");
                 return false;
@@ -199,20 +252,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 return false;
             }
 
-            if (!CheckFileExists($"{path}\\Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", out error))
-                return false;
-
-            if (!CheckFileExists($"{path}\\Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", out error))
-                return false;
-
-            if (!CheckFileExists($"{path}\\Engines\\FlatREdBallXNA\\FlatRedBall\\FlatREdBallShared.shproj", out error))
-                return false;
-
-            if (!CheckFileExists($"{path}\\Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", out error))
-                return false;
-
-            if (!CheckFileExists($"{path}\\Engines\\Forms\\FlatRedBall.Forms\\FlatREdBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj", out error))
-                return false;
+            foreach(var project in DesktopGlNetFramework.Where(item => item.FrbOrGum == FrbOrGum.Frb))
+            {
+                if (!CheckFileExists($"{path}\\{project.RelativeProjectFilePath}", out error))
+                    return false;
+            }
 
             error = null;
             return true;
@@ -226,11 +270,12 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 return false;
             }
 
-            if (!CheckFileExists($"{path}\\GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", out error))
-                return false;
+            foreach(var project in DesktopGlNetFramework.Where(item => item.FrbOrGum == FrbOrGum.Gum))
+            {
 
-            if (!CheckFileExists($"{path}\\GumCoreShared.shproj", out error))
-                return false;
+                if (!CheckFileExists($"{path}\\{project.RelativeProjectFilePath}", out error))
+                    return false;
+            }
 
             error = null;
             return true;

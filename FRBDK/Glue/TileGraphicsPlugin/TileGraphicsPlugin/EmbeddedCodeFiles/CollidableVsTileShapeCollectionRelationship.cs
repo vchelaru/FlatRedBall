@@ -252,10 +252,12 @@ namespace FlatRedBall.Math.Collision
             {
                 didCollide = data.CollideAgainstConsiderSubCollisionBounce(singleObject, bounceElasticity);
             }
-            else if (CollisionType == CollisionType.SoftMoveCollision)
+#if CollisionRelationshipsSupportMoveSoft
+            else if (CollisionType == CollisionType.MoveSoftCollision)
             {
                 throw new NotImplementedException("soft collision against tile shape collections is not currently supported");
             }
+#endif
             else
             {
                 throw new NotImplementedException();
