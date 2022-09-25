@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Media;
 using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Instructions;
+using System.Linq;
 
 namespace FlatRedBall.Audio
 {
@@ -424,6 +425,9 @@ namespace FlatRedBall.Audio
             }
         }
 
+        public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) => 
+            mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
+
 #if WINDOWS_PHONE
         private static void UserPermissionCallback(IAsyncResult r)
         {
@@ -534,7 +538,7 @@ namespace FlatRedBall.Audio
 
 
             // TODO:  Execute instructions
-#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+#if !MONOGAME
             for (int i = 0; i < PositionedSounds.Count; i++)
             {
                 PositionedSounds[i].TimedActivity(
