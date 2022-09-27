@@ -1179,9 +1179,29 @@ namespace FlatRedBall.Glue.Elements
             return GetValueRecursively(instance, container, memberName, type, variableDefinition);
         }
 
-        private static object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
+        public object GetValueRecursively(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, VariableDefinition variableDefinition)
         {
             var instruction = instance.GetCustomVariable(memberName);
+
+            GlueElement baseElement = null;
+            if(instance.DefinedByBase)
+            {
+                baseElement = ObjectFinder.Self.GetBaseElement(container);
+
+            }
+            if(baseElement != null)
+            {
+                var nosInBase = baseElement.GetNamedObject(instance.InstanceName);
+                if(nosInBase != null)
+                {
+                    var toReturn = GetValueRecursively(nosInBase, baseElement, memberName, memberType, variableDefinition);
+
+                    if(toReturn != null)
+                    {
+                        return toReturn; ////////////////////////Early Out/////////////////////////////////
+                    }
+                }
+            }
 
             if (instruction == null)
             {
@@ -1213,12 +1233,15 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-        private static (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)
+        private (CustomVariable customVariable, InstructionSave instructionOnState) GetVariableOnInstance(NamedObjectSave instance, GlueElement container, string memberName)
         {
             CustomVariable foundVariable = null;
             FlatRedBall.Content.Instructions.InstructionSave valueOnState = null;
 
             var instanceElementType = ObjectFinder.Self.GetElement(instance);
+
+
+
             if (instanceElementType != null)
             {
 
