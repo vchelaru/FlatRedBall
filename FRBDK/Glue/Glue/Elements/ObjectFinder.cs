@@ -1183,22 +1183,25 @@ namespace FlatRedBall.Glue.Elements
         {
             var instruction = instance.GetCustomVariable(memberName);
 
-            GlueElement baseElement = null;
-            if(instance.DefinedByBase)
+            if(instruction == null)
             {
-                baseElement = ObjectFinder.Self.GetBaseElement(container);
-
-            }
-            if(baseElement != null)
-            {
-                var nosInBase = baseElement.GetNamedObject(instance.InstanceName);
-                if(nosInBase != null)
+                GlueElement baseElement = null;
+                if(instance.DefinedByBase)
                 {
-                    var toReturn = GetValueRecursively(nosInBase, baseElement, memberName, memberType, variableDefinition);
+                    baseElement = ObjectFinder.Self.GetBaseElement(container);
 
-                    if(toReturn != null)
+                }
+                if(baseElement != null)
+                {
+                    var nosInBase = baseElement.GetNamedObject(instance.InstanceName);
+                    if(nosInBase != null)
                     {
-                        return toReturn; ////////////////////////Early Out/////////////////////////////////
+                        var toReturn = GetValueRecursively(nosInBase, baseElement, memberName, memberType, variableDefinition);
+
+                        if(toReturn != null)
+                        {
+                            return toReturn; ////////////////////////Early Out/////////////////////////////////
+                        }
                     }
                 }
             }

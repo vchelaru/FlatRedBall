@@ -31,7 +31,7 @@ namespace OfficialPlugins.VariableDisplay
 {
     static class NamedObjectVariableShowingLogic
     {
-
+        #region Create InstanceMember (Variable)
         private static InstanceMember CreateInstanceMember(NamedObjectSave instance,
             GlueElement container,
             string memberName,
@@ -292,6 +292,28 @@ namespace OfficialPlugins.VariableDisplay
 
             return instanceMember;
         }
+        #endregion
+
+        #region Get Variable Value
+        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container,
+            string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
+        {
+            if (variableDefinition.CustomVariableGet != null)
+            {
+                instanceMember.CustomGetEvent += (throwaway) =>
+                {
+                    return variableDefinition.CustomVariableGet(container, instance, memberName);
+                };
+            }
+            else
+            {
+                instanceMember.CustomGetEvent += (throwaway) =>
+                {
+                    return ObjectFinder.Self.GetValueRecursively(instance, container, memberName, memberType, variableDefinition);
+                };
+            }
+        }
+        #endregion
 
         private static TypeConverter GetTypeConverter(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, string customTypeName,
             VariableDefinition variableDefinition)
@@ -908,24 +930,6 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static void AssignCustomGetEvent(NamedObjectSave instance, GlueElement container,
-            string memberName, Type memberType, VariableDefinition variableDefinition, DataGridItem instanceMember)
-        {
-            if (variableDefinition.CustomVariableGet != null)
-            {
-                instanceMember.CustomGetEvent += (throwaway) =>
-                {
-                    return variableDefinition.CustomVariableGet(container, instance, memberName);
-                };
-            }
-            else
-            {
-                instanceMember.CustomGetEvent += (throwaway) =>
-                {
-                    return ObjectFinder.Self.GetValueRecursively(instance, container, memberName, memberType, variableDefinition);
-                };
-            }
-        }
 
         /// <summary>
         /// Determines if a variable should be ignored by the variable plugin.

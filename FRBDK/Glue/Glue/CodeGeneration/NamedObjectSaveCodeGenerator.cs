@@ -364,6 +364,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Add To Managers
+
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             NamedObjectSaveCodeGenerator.WriteAddToManagersBottomUpForNamedObjectList(
@@ -371,6 +373,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        #endregion
 
         public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
         {
