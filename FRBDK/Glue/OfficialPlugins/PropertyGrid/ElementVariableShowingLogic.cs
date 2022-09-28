@@ -71,6 +71,11 @@ namespace OfficialPlugins.VariableDisplay
                     instanceMember.PropertiesToSetOnDisplayer[property.Key] = property.Value;
                 }
             }
+            else if (string.IsNullOrEmpty(variable.SourceObject) && instanceMember.PreferredDisplayer == null &&
+                variable?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variable.Type == "float")
+            {
+                instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
+            }
             else if(instanceMember.PreferredDisplayer == null && variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
             {
                 instanceMember.PreferredDisplayer = typeof(SliderDisplay);
@@ -78,6 +83,17 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MaxValue.Value;
                 instanceMember.PropertiesToSetOnDisplayer[nameof(SliderDisplay.MinValue)] =
                     variableDefinition.MinValue.Value;
+            }
+
+            if (instanceMember.PreferredDisplayer == typeof(AngleSelectorDisplay))
+            {
+                instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.TypeToPushToInstance)] =
+                    AngleType.Radians;
+
+                // this used to be 1, then 5, but 10 is prob enough resolution. Numbers can be typed.
+                // 15 is better, gives the user access to 45
+                instanceMember.PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
+                    15m;
             }
 
             if (instanceMember.PreferredDisplayer == typeof(SliderDisplay) && variableDefinition?.MinValue != null && variableDefinition?.MaxValue != null)
