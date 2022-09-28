@@ -69,28 +69,37 @@ namespace OfficialPlugins.SpritePlugin.Managers
         {
             if(args.Delta != 0)
             {
+                var zoomDirection = args.Delta;
                 var screenPosition = args.GetPosition(View.Canvas);
-                View.GetWorldPosition(screenPosition, out double worldBeforeX, out double worldBeforeY);
-                var newValue = ViewModel.CurrentZoomPercent;
-                if (args.Delta > 0)
-                {
-                    var zooms = ViewModel.ZoomPercentages.Where(x => x > newValue);
-                    if(zooms.Count() == 0) return;
-                    newValue = zooms.Last();
-                } else if(args.Delta < 0)
-                {
-                    var zooms = ViewModel.ZoomPercentages.Where(x => x < newValue);
-                    if(zooms.Count() == 0) return;
-                    newValue = zooms.First();
-                }
 
-                ViewModel.CurrentZoomPercent = newValue;
-
-                Camera.X = (float)(worldBeforeX - screenPosition.X / ViewModel.CurrentZoomScale);
-                Camera.Y = (float)(worldBeforeY - screenPosition.Y / ViewModel.CurrentZoomScale);
-
-                RefreshCameraZoomToViewModel();
+                HandleZoomInDirection(zoomDirection, screenPosition);
             }
+        }
+
+        private static void HandleZoomInDirection(int zoomDirection, System.Windows.Point cursorPosition)
+        {
+
+            View.GetWorldPosition(cursorPosition, out double worldBeforeX, out double worldBeforeY);
+            var newValue = ViewModel.CurrentZoomPercent;
+            if (zoomDirection > 0)
+            {
+                var zooms = ViewModel.ZoomPercentages.Where(x => x > newValue);
+                if (zooms.Count() == 0) return;
+                newValue = zooms.Last();
+            }
+            else if (zoomDirection < 0)
+            {
+                var zooms = ViewModel.ZoomPercentages.Where(x => x < newValue);
+                if (zooms.Count() == 0) return;
+                newValue = zooms.First();
+            }
+
+            ViewModel.CurrentZoomPercent = newValue;
+
+            Camera.X = (float)(worldBeforeX - cursorPosition.X / ViewModel.CurrentZoomScale);
+            Camera.Y = (float)(worldBeforeY - cursorPosition.Y / ViewModel.CurrentZoomScale);
+
+            RefreshCameraZoomToViewModel();
         }
 
         public static void ResetCamera() {
@@ -105,6 +114,52 @@ namespace OfficialPlugins.SpritePlugin.Managers
             Camera.Zoom = ViewModel.CurrentZoomScale;
             UpdateBackgroundPosition();
             View.Canvas.InvalidateVisual();
+        }
+
+        internal static void HandleKey(KeyEventArgs e)
+        {
+            var moveAmount = 16 / ViewModel.CurrentZoomScale;
+            var refresh = false;
+            if (e.Key == Key.Left)
+            {
+                Camera.X -= moveAmount;
+                refresh = true;
+            }
+            else if(e.Key == Key.Right)
+            {
+                Camera.X += moveAmount;
+                refresh = true;
+            }
+            else if(e.Key == Key.Up)
+            {
+                Camera.Y -= moveAmount;
+                refresh = true;
+            }
+            else if(e.Key == Key.Down)
+            {
+                Camera.Y += moveAmount;
+                refresh = true;
+            }
+
+            if (e.Key == Key.OemPlus && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                // zoom in
+                HandleZoomInDirection(1, new Point());
+
+            }
+            else if(e.Key == Key.OemPlus && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                // zoom out
+                HandleZoomInDirection(-1, new Point());
+
+            }
+
+            e.Handled = refresh;
+            if (refresh)
+            {
+                UpdateBackgroundPosition();
+                View.Canvas.InvalidateVisual();
+            }
         }
     }
 }

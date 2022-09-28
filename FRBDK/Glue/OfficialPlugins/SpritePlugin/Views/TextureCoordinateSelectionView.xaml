@@ -108,7 +108,9 @@
                            MouseDown="Canvas_MouseDown"
                            MouseMove="Canvas_MouseMove"
                            MouseWheel="Canvas_MouseWheel"
-                           MouseUp="Canvas_MouseUp"></wpf1:GumSKElement>
+                           MouseUp="Canvas_MouseUp"
+                           KeyDown="Canvas_KeyDown"
+                           d:Width="300"></wpf1:GumSKElement>
 
     </DockPanel>
 </UserControl>

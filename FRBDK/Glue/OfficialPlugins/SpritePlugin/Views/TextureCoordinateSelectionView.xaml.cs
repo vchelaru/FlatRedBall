@@ -251,6 +251,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             CameraLogic.HandleMousePush(e);
             MouseEditingLogic.HandleMousePush(e);
+
+            // This allows the canvas to receive focus:
+            // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
+            Canvas.Focusable = true;
+            IInputElement element = Keyboard.Focus(Canvas);
         }
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
@@ -338,5 +343,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         private void Button_Click(object sender, RoutedEventArgs e) {
             ZoomToTexture();
         }
+
+        private void Canvas_KeyDown(object sender, KeyEventArgs e)
+        {
+            CameraLogic.HandleKey(e);
+        }
+
     }
 }

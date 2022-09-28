@@ -134,6 +134,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypesStandard.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\GumRuntimeStandard\GumRuntimeStandard\GumRuntimeStandard.csproj" />
+		<ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.NetCore3_0.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
 		<ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
