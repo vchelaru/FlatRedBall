@@ -264,12 +264,21 @@ namespace FlatRedBall.Input
             {
                 if (mXbox360GamePads[i].IsConnected != mControllerConnectedStatus[i])
                 {
-                    if (ControllerConnectionEvent != null)
-                        ControllerConnectionEvent(null,
-                                new ControllerConnectionEventArgs(i, mXbox360GamePads[i].IsConnected));
+                    // This used to be called before updating the status, but if the code
+                    // responding to this event depends on the # of connected gamepads, the
+                    // values will be out of date. Therefore, move this after the values are assigned:
+                    //if (ControllerConnectionEvent != null)
+                    //    ControllerConnectionEvent(null,
+                    //            new ControllerConnectionEventArgs(i, mXbox360GamePads[i].IsConnected));
+
                     mControllerConnectedStatus[i] = mXbox360GamePads[i].IsConnected;
 
                     mConnectedXbox360GamePads = Xbox360GamePads.Where(item => item.IsConnected).ToArray();
+
+                    if (ControllerConnectionEvent != null)
+                        ControllerConnectionEvent(null,
+                                new ControllerConnectionEventArgs(i, mXbox360GamePads[i].IsConnected));
+
                 }
             }
 
