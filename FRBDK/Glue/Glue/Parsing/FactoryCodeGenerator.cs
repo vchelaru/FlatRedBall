@@ -127,6 +127,9 @@ namespace FlatRedBall.Glue.Parsing
 
             foreach (var listNos in entityLists)
             {
+                T Get<T>(string propName) =>
+                    listNos.Properties.GetValue<T>(propName);
+
                 var isEligibleForAdding = true;
 
                 if(shouldConsiderAssociateWithFactory)
@@ -153,6 +156,24 @@ namespace FlatRedBall.Glue.Parsing
 
                             string factoryName = $"Factories.{entityClassName}Factory";
                             codeBlock.Line($"{factoryName}.AddList({listNos.FieldName});");
+
+                            if (Get<bool>("PerformCollisionPartitioning"))
+                            {
+                                //var sortAxis = Get<FlatRedBall.Math.Axis?>("SortAxis");
+                                var sortAxis = listNos.Properties.GetValue("SortAxis");
+                                if (sortAxis is int asInt)
+                                {
+                                    codeBlock.Line(
+                                        $"{factoryName}.SortAxis = FlatRedBall.Math.Axis.{(FlatRedBall.Math.Axis)asInt};");
+                                }
+                                else if(sortAxis is long asLong)
+                                {
+                                    codeBlock.Line(
+                                        $"{factoryName}.SortAxis = FlatRedBall.Math.Axis.{(FlatRedBall.Math.Axis)asLong};");
+
+                                }
+
+                            }
                         }
 
                     }
