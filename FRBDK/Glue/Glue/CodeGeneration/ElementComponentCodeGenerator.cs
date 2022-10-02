@@ -76,11 +76,18 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Destroy
+
         public virtual ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;
 
         }
+
+        #endregion
+
+        public virtual void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element) {  }
+
         public virtual ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
             return codeBlock;

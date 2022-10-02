@@ -32,31 +32,53 @@ namespace EntityPerformancePlugin.CodeGenerators
 
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, IElement element)
         {
-            EntityManagementValues managementValues;
-            managementValues = 
-                Values?.EntityManagementValueList?.FirstOrDefault(item => item.Name == element.Name);
+            WriteLiveUpdateCode(codeBlock, element as GlueElement);
 
-            if(managementValues != null)
+            return codeBlock;
+        }
+
+        public override void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement element)
+        {
+            WriteLiveUpdateCode(codeBlock, element);
+
+            // If this contains any entity lists, and those entities are not actively managed, then we need to call update on them:
+            foreach(var listNos in element.NamedObjects.Where(item => item.IsList))
+            {
+                var entity = ObjectFinder.Self.GetEntitySave(listNos.SourceClassGenericType);
+
+                if(entity != null && entity.IsManuallyUpdated)
+                {
+                    var foreachInner = codeBlock.ForEach($"var item in {listNos.FieldName}");
+                    foreachInner.Line("item.ActivityEditMode();");
+                }
+            }
+        }
+
+        private void WriteLiveUpdateCode(ICodeBlock codeBlock, GlueElement element)
+        {
+            EntityManagementValues managementValues = Values?.EntityManagementValueList?.FirstOrDefault(item => item.Name == element.Name);
+
+            if (managementValues != null)
             {
                 var entitySave = element as EntitySave;
-                if(entitySave != null && managementValues.PropertyManagementMode == Enums.PropertyManagementMode.SelectManagedProperties)
+                if (entitySave != null && managementValues.PropertyManagementMode == Enums.PropertyManagementMode.SelectManagedProperties)
                 {
                     GenerateVariableActivityFor(codeBlock, entitySave, managementValues.SelectedProperties);
                 }
 
-                foreach(var namedObject in element.AllNamedObjects)
+                foreach (var namedObject in element.AllNamedObjects)
                 {
 
                     var isManuallyUpdated = namedObject.IsManuallyUpdated;
 
                     InstanceManagementValues instanceManagementValues = null;
 
-                    if(isManuallyUpdated)
+                    if (isManuallyUpdated)
                     {
                         instanceManagementValues = managementValues.InstanceManagementValuesList.FirstOrDefault(item => item.Name == namedObject.InstanceName);
                     }
 
-                    var shouldGenerateForThisObject = 
+                    var shouldGenerateForThisObject =
                         // Don't generate if it's a container, use the main entity's values
                         namedObject.IsContainer == false &&
                         instanceManagementValues?.SelectedProperties?.Count > 0;
@@ -67,9 +89,6 @@ namespace EntityPerformancePlugin.CodeGenerators
                     }
                 }
             }
-
-
-            return codeBlock;
         }
 
         private void GenerateVariableActivityFor(ICodeBlock codeBlock, EntitySave element, List<string> selectedProperties)

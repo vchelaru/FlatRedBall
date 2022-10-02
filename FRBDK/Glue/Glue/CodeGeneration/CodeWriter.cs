@@ -1266,7 +1266,7 @@ namespace FlatRedBallAddOns.Entities
             
         }
 
-        static void GenerateActivityEditMode(ICodeBlock codeBlock, IElement saveObject)
+        static void GenerateActivityEditMode(ICodeBlock codeBlock, GlueElement saveObject)
         {
 
             string activityPre = "public virtual void";
@@ -1315,9 +1315,16 @@ namespace FlatRedBallAddOns.Entities
                         }
                     }
                 }
-
             }
+
+            foreach (var codeGenerator in CodeGenerators)
+            {
+                codeGenerator.GenerateActivityEditMode(currentBlock, saveObject);
+            }
+
             currentBlock.Line("CustomActivityEditMode();");
+
+
 
             if(inherits)
             {
