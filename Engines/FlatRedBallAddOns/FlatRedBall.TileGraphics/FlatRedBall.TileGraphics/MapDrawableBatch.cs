@@ -886,6 +886,12 @@ namespace FlatRedBall.TileGraphics
             y = vector.Y;
         }
 
+        /// <summary>
+        /// Returns the quad index at the argument worldX and worldY. Returns null if no quad is found at this index.
+        /// </summary>
+        /// <param name="worldX">The absolute world X position.</param>
+        /// <param name="worldY">The absolute world Y position.</param>
+        /// <returns>The index found, or null if one isn't found.</returns>
         public int? GetQuadIndex(float worldX, float worldY)
         {
             if (mVertices.Length == 0)
@@ -1799,6 +1805,10 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        /// <summary>
+        /// Removes quads from the TileMap using the argument QuadIndexes
+        /// </summary>
+        /// <param name="quadIndexes">The indexes of the quads</param>
         public void RemoveQuads(IEnumerable<int> quadIndexes)
         {
             var vertList = mVertices.ToList();
