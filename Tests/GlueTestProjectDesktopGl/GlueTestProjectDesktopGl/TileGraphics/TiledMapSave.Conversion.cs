@@ -1362,8 +1362,15 @@ namespace TMXGlueLib
 
             try
             {
-                tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
-                tms.FileName = fileName;
+                if(fileName?.EndsWith(".json") == true)
+                {
+                    throw new InvalidOperationException("Could not load TMX file with .json extension");
+                }
+                else
+                {
+                    tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                    tms.FileName = fileName;
+                }
             }
             finally
             {

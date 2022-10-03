@@ -367,6 +367,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public ErrorListViewModel ErrorList { get; private set; } = new ErrorListViewModel();
 
         public static object ErrorListSyncLock = new object();
+
+        public bool IsReferencingFrbSource
+        {
+            get
+            {
+                if(CurrentMainProject == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    // todo - handle different types of projects
+                    var projectReferenceName = "FlatRedBallDesktopGL";
+                    return CurrentMainProject.HasProjectReference(projectReferenceName);
+                }
+            }
+        }
+
         #endregion
 
         public GlueState()
@@ -376,39 +394,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
             System.Windows.Data.BindingOperations.EnableCollectionSynchronization(
                 ErrorList.Errors, ErrorListSyncLock);
-        }
-
-        public GlueElement GetElement(string name)
-        {
-            return ObjectFinder.Self.GetElement(name);
-        }
-
-        public NamedObjectSave GetNamedObjectSave(string containerName, string name)
-        {
-            var container = GetElement(containerName);
-
-            return container == null ? null : container.GetNamedObjectRecursively(name);
-        }
-
-        public CustomVariable GetCustomVariable(string containerName, string name)
-        {
-            var container = GetElement(containerName);
-
-            return container == null ? null : container.GetCustomVariableRecursively(name);
-        }
-
-        public StateSave GetState(string containerName, string name)
-        {
-            var container = GetElement(containerName);
-
-            return container == null ? null : container.GetState(name);
-        }
-
-        public StateSaveCategory GetStateCategory(string containerName, string name)
-        {
-            var container = GetElement(containerName);
-
-            return container == null ? null : container.GetStateCategory(name);
         }
 
         /// <summary>

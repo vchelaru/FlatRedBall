@@ -1,6 +1,7 @@
 ﻿using DialogTreePlugin.Controllers;
 using DialogTreePlugin.SaveClasses;
 using FlatRedBall.Glue;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -49,11 +50,11 @@ namespace DialogTreePlugin.Generators
         {
 
             var elementName = newFile.Name.Substring(0, newFile.Name.LastIndexOf('/'));
-            var element = GlueState.Self.GetElement(elementName);
+            var element = ObjectFinder.Self.GetElement(elementName);
             while (elementName.LastIndexOf('/') > 0 && element == null)
             {
                 elementName = elementName.Substring(0, elementName.LastIndexOf('/'));
-                element = GlueState.Self.GetElement(elementName);
+                element = ObjectFinder.Self.GetElement(elementName);
             }
             
             

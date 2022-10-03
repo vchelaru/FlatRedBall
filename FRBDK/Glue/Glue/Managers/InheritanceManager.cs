@@ -113,8 +113,8 @@ namespace GlueFormsCore.Managers
             }
             else
             {
-                var oldEntity = GlueState.Self.GetElement(oldValue) as EntitySave;
-                var newEntity = GlueState.Self.GetElement(entitySave.BaseEntity) as EntitySave;
+                var oldEntity = ObjectFinder.Self.GetEntitySave(oldValue);
+                var newEntity = ObjectFinder.Self.GetEntitySave(entitySave.BaseEntity);
 
                 HashSet<ScreenSave> screensToRegenerate = new HashSet<ScreenSave>();
 

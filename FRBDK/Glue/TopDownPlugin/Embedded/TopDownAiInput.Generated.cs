@@ -85,6 +85,7 @@ namespace $NAMESPACE$.TopDown
         public virtual IPressableInput DefaultSecondaryActionInput => throw new NotImplementedException();
 
         public virtual IPressableInput DefaultConfirmInput => throw new NotImplementedException();
+        public virtual IPressableInput DefaultCancelInput => throw new NotImplementedException();
 
         public virtual IPressableInput DefaultJoinInput => throw new NotImplementedException();
 

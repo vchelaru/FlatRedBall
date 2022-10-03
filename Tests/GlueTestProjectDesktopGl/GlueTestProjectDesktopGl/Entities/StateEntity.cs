@@ -72,7 +72,7 @@ namespace GlueTestProject.Entities
             mHasCurrentAdvancedInterpolationEventBeenRaised = false;
 
 
-            // If this is missing, then the advanced state interpolation plugin is not installed:
+            // If this is missing, then the advanced state interpolation plugin is not installed, or the source library is missing :
             this.InterpolateToState(AdvancedInterpolationCategory.Advanced1,
                 AdvancedInterpolationCategory.Advanced2, .1, 
                 FlatRedBall.Glue.StateInterpolation.InterpolationType.Exponential, 

@@ -84,14 +84,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
         ITreeNode DraggedTreeNode { get; set; }
 
+        bool IsReferencingFrbSource { get; }
+
         #endregion
 
-
-        GlueElement GetElement(string name);
-        NamedObjectSave GetNamedObjectSave(string containerName, string name);
-        CustomVariable GetCustomVariable(string containerName, string name);
-        StateSave GetState(string containerName, string name);
-        StateSaveCategory GetStateCategory(string containerName, string name);
         List<ProjectBase> GetProjects();
         IEnumerable<ReferencedFileSave> GetAllReferencedFiles();
 
@@ -199,10 +195,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
             set;
         }
 
-
-
         public string CurrentGlueProjectDirectory { get; set; }
-        // STOP!  If adding here be sure to add to SetFrom too
+
+        public bool IsReferencingFrbSource { get; set; }
+
+        // STOP!  If adding more properties, here be sure to add to SetFrom too
 
         public void SetFrom(IGlueState glueState)
         {
@@ -239,6 +236,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
 
             this.ProjectNamespace = glueState.ProjectNamespace;
 
+            this.IsReferencingFrbSource = glueState.IsReferencingFrbSource;
+
             if(glueState.CurrentGlueProject != null)
             {
                 this.ProjectSpecificSettingsFolder = glueState.ProjectSpecificSettingsFolder;
@@ -258,16 +257,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         }
 
         public CustomVariable GetCustomVariable(string containerName, string name)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public StateSave GetState(string containerName, string name)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public StateSaveCategory GetStateCategory(string containerName, string name)
         {
             throw new System.NotImplementedException();
         }

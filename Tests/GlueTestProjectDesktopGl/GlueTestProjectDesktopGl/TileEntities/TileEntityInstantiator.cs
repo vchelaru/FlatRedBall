@@ -257,7 +257,7 @@ namespace FlatRedBall.TileEntities
             IEntityFactory factory = GetFactory(entityType);
             if (factory != null)
             {
-                entity = factory.CreateNew(null) as PositionedObject;
+                entity = factory.CreateNew((FlatRedBall.Graphics.Layer)null) as PositionedObject;
             }
             else if (CreationFunction != null)
             {

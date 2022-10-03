@@ -737,27 +737,6 @@ namespace TMXGlueLib
                         this.Value = "\n   " + convertedString + "\n";
 
                     }
-                    //// now do back out as a test:
-                    //{
-                    //    Stream data = new MemoryStream(Convert.FromBase64String(Value), false);
-                    //    data = new GZipStream(data, CompressionMode.Decompress, false);
-
-
-                    //    using (data)
-                    //    {
-                    //        using (BinaryReader reader = new BinaryReader(data))
-                    //        {
-                    //            var _ids = new List<uint>();
-                    //            for (int i = 0; i < length; i++)
-                    //            {
-                    //                _ids.Add(reader.ReadUInt32());
-                    //            }
-
-                    //            int m = 3;
-                    //        }
-                    //    }
-                    //}
-
                 }
                 else
                 {
@@ -766,7 +745,7 @@ namespace TMXGlueLib
             }
             else
             {
-                throw new NotImplementedException();
+                throw new NotImplementedException($"Encoding {encodingField} not supported");
             }
         }
 
