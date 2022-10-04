@@ -88,6 +88,12 @@ namespace GlueControl.Models
             get;
             set;
         } = new List<NamedObjectSave>();
+
+        public List<PropertySave> Properties
+        {
+            get;
+            set;
+        } = new List<PropertySave>();
     }
 
     public class EntitySave : GlueElement
@@ -118,6 +124,20 @@ namespace GlueControl.Models
         {
             get { return mBaseEntity; }
             set { mBaseEntity = value; }
+        }
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public bool IsManuallyUpdated
+        {
+            get
+            {
+                return Properties.GetValue<bool>(nameof(IsManuallyUpdated));
+            }
+            set
+            {
+                Properties.SetValue(nameof(IsManuallyUpdated), value);
+            }
         }
     }
 

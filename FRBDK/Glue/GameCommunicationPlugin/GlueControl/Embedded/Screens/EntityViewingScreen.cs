@@ -23,6 +23,7 @@ namespace GlueControl.Screens
         bool isViewingAbstractEntity;
 
         System.Collections.Generic.List<System.Collections.IList> FactoryLists = new System.Collections.Generic.List<System.Collections.IList>();
+        System.Collections.Generic.List<System.Collections.IList> ListsNeedingManualUpdates = new System.Collections.Generic.List<System.Collections.IList>();
 
         #endregion
 
@@ -59,6 +60,14 @@ namespace GlueControl.Screens
 
                 factory.ListsToAddTo.Add(listInstance);
                 FactoryLists.Add(listInstance);
+
+                var glueElementName = CommandReceiver.GameElementTypeToGlueElement(genericType.FullName);
+                var element = Managers.ObjectFinder.Self.GetEntitySave(glueElementName);
+
+                if (element?.IsManuallyUpdated == true)
+                {
+                    ListsNeedingManualUpdates.Add(listInstance);
+                }
             }
         }
 
@@ -82,6 +91,14 @@ namespace GlueControl.Screens
                     {
                         entity.ActivityEditMode();
                     }
+                }
+                foreach (var list in ListsNeedingManualUpdates)
+                {
+                    foreach (var item in list)
+                    {
+                        (item as FlatRedBall.Entities.IEntity)?.ActivityEditMode();
+                    }
+
                 }
                 base.ActivityEditMode();
             }
