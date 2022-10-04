@@ -473,7 +473,7 @@ namespace GlueControl.Editing
 
             }
 
-            if (cursor.PrimaryPush)
+            if (cursor.PrimaryPush && cursor.IsInWindow())
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
