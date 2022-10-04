@@ -22,6 +22,8 @@ namespace GlueControl.Screens
 
         bool isViewingAbstractEntity;
 
+        System.Collections.Generic.List<System.Collections.IList> FactoryLists = new System.Collections.Generic.List<System.Collections.IList>();
+
         #endregion
 
         public EntityViewingScreen() : base(nameof(EntityViewingScreen))
@@ -33,12 +35,31 @@ namespace GlueControl.Screens
         {
             base.Initialize(addToManagers);
 
+            CreateFactoryLists();
+
             if (addToManagers)
             {
                 AddToManagers();
             }
 
             BeforeCustomInitialize?.Invoke();
+        }
+
+        private void CreateFactoryLists()
+        {
+            foreach (var factory in BattleCryptBombers.Performance.FactoryManager.GetAllFactories())
+            {
+                var factoryType = factory.GetType();
+                var createNewMethod = factoryType.GetMethod("CreateNew", new Type[] { typeof(Microsoft.Xna.Framework.Vector3) });
+                var genericType = createNewMethod.ReturnType;
+
+                var listType = typeof(FlatRedBall.Math.PositionedObjectList<>).MakeGenericType(genericType);
+
+                var listInstance = System.Activator.CreateInstance(listType) as System.Collections.IList;
+
+                factory.ListsToAddTo.Add(listInstance);
+                FactoryLists.Add(listInstance);
+            }
         }
 
         public override void ActivityEditMode()
@@ -124,7 +145,17 @@ namespace GlueControl.Screens
                 item?.Destroy();
             }
 
-            foreach (var factory in {ProjectNamespace}.Performance.FactoryManager.GetAllFactories())
+            // There could be objects that aren't destroyed 
+            foreach (var list in this.FactoryLists)
+            {
+                for (int i = list.Count - 1; i > -1; i--)
+                {
+                    var item = list[i] as IDestroyable;
+                    item?.Destroy();
+                }
+            }
+
+            foreach (var factory in BattleCryptBombers.Performance.FactoryManager.GetAllFactories())
             {
                 factory.Destroy();
             }
