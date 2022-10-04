@@ -188,7 +188,7 @@ namespace GlueControl.Editing
                     UpdateHandlePositions(asCircle, selectionMarker.Position);
                 }
 
-                if (selectionMarker.CanMoveItem && FlatRedBallServices.Game.IsActive)
+                if (selectionMarker.CanMoveItem)
                 {
                     if (item is Sprite asSprite && asSprite.TextureScale > 0)
                     {
@@ -208,7 +208,7 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (cursor.PrimaryPush)
+                if (cursor.PrimaryPush && FlatRedBallServices.Game.IsActive)
                 {
                     HandleCursorPushed(item);
                 }
