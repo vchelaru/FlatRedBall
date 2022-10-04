@@ -208,7 +208,7 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (cursor.PrimaryPush)
+                if (cursor.PrimaryPush && FlatRedBallServices.Game.IsActive)
                 {
                     HandleCursorPushed(item);
                 }
@@ -943,6 +943,7 @@ namespace GlueControl.Editing
 
             if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
                 !handledByPolygonHandles &&
+                FlatRedBallServices.Game.IsActive &&
                 // Currently only PositionedObjects can be moved. If an object is
                 // IStaticPositionalbe, techincally we could move it by changing its X
                 // and Y values (and that has been tested), but the objet's Glue representation
