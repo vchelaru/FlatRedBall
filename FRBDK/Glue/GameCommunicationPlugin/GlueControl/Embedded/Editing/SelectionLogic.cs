@@ -23,7 +23,7 @@ namespace GlueControl.Editing
         #region Fields/Properties
 
         static List<PositionedObject> tempPunchThroughList = new List<PositionedObject>();
-        static Vector2 PushStartLocation;
+        static Vector2? PushStartLocation;
 
         public static float? LeftSelect { get; private set; }
         public static float? RightSelect;
@@ -180,19 +180,26 @@ namespace GlueControl.Editing
 
             if (cursor.PrimaryPush)
             {
-                PushStartLocation = cursor.WorldPosition;
-                LeftSelect = null;
-                RightSelect = null;
-                TopSelect = null;
-                BottomSelect = null;
+                if (FlatRedBallServices.Game.IsActive)
+                {
+                    PushStartLocation = cursor.WorldPosition;
+                    LeftSelect = null;
+                    RightSelect = null;
+                    TopSelect = null;
+                    BottomSelect = null;
+                }
+                else
+                {
+                    PushStartLocation = null;
+                }
             }
-            if (cursor.PrimaryDown)
+            if (cursor.PrimaryDown && PushStartLocation != null)
             {
-                LeftSelect = Math.Min(PushStartLocation.X, cursor.WorldX);
-                RightSelect = Math.Max(PushStartLocation.X, cursor.WorldX);
+                LeftSelect = Math.Min(PushStartLocation.Value.X, cursor.WorldX);
+                RightSelect = Math.Max(PushStartLocation.Value.X, cursor.WorldX);
 
-                TopSelect = Math.Max(PushStartLocation.Y, cursor.WorldY);
-                BottomSelect = Math.Min(PushStartLocation.Y, cursor.WorldY);
+                TopSelect = Math.Max(PushStartLocation.Value.Y, cursor.WorldY);
+                BottomSelect = Math.Min(PushStartLocation.Value.Y, cursor.WorldY);
 
                 var centerX = (LeftSelect.Value + RightSelect.Value) / 2.0f;
                 var centerY = (TopSelect.Value + BottomSelect.Value) / 2.0f;
@@ -206,8 +213,15 @@ namespace GlueControl.Editing
             }
             if (cursor.PrimaryClick)
             {
-                // get all things within this rect...
-                PerformedRectangleSelection = LeftSelect != RightSelect && TopSelect != BottomSelect;
+                if (FlatRedBallServices.Game.IsActive == false)
+                {
+                    PushStartLocation = null;
+                }
+                else
+                {
+                    // get all things within this rect...
+                    PerformedRectangleSelection = LeftSelect != RightSelect && TopSelect != BottomSelect;
+                }
             }
         }
 

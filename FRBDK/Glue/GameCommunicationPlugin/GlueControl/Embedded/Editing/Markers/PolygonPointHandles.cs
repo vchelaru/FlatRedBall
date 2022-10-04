@@ -42,7 +42,7 @@ namespace GlueControl.Editing
             UpdatePointsToItem(itemAsPolygon, selectionMarker);
 
             ///////////Early Out//////////////
-            if (!Visible || selectionMarker.CanMoveItem == false)
+            if (!Visible || selectionMarker.CanMoveItem == false || FlatRedBallServices.Game.IsActive == false)
                 return;
             ////////End Early Out/////////////
 
