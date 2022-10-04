@@ -106,10 +106,26 @@ namespace FlatRedBall.Graphics
             {
                 if (sprite.Texture != null && sprite.Texture.IsDisposed)
                 {
-                    throw new ObjectDisposedException("The Sprite with the name \"" + sprite.Name + 
-                        "\" references a disposed texture of the name " + sprite.Texture.Name + 
+                    var msg = "The Sprite with the name \"" + sprite.Name +
+                        "\" references a disposed texture of the name " + sprite.Texture.Name +
                         ".  If you're using Screens you may have forgotten to remove a Sprite that was " +
-                        "added in the Screen.");
+                        "added in the Screen.";
+
+                    if (sprite.Parent != null)
+                    {
+                        msg += $"\n\n Sprite parent found, it is: {sprite.Parent.Name} of type: {sprite.Parent.GetType()}";
+                    }
+                    else
+                    {
+                        msg += "\n\n Sprite parent was null.";
+                    }
+
+                    if(sprite.CurrentChainName != null)
+                    {
+                        msg += $"\n\n Sprite chain name was: {sprite.CurrentChainName}";
+                    }
+
+                    throw new ObjectDisposedException(msg);
                 }
 
                 mTexture = sprite.Texture;
