@@ -745,13 +745,14 @@ namespace FlatRedBall.Glue.Managers
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
                         targetElement);
 
-                    GlueState.Self.CurrentNamedObjectSave = namedObject;
-
                     if (namedObject.SourceClassType != entity.Name)
                     {
                         namedObject.SourceClassType = entity.Name;
                         namedObject.UpdateCustomProperties();
                     }
+
+                    // This needs to happen after setting the SourceclassType.
+                    GlueState.Self.CurrentNamedObjectSave = namedObject;
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
 
