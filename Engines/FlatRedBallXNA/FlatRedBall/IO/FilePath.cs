@@ -216,11 +216,12 @@ namespace FlatRedBall.IO
                 }
             }
 
+            var beforeFix = fileNameToFix;
             fileNameToFix = FileManager.RemoveDotDotSlash(fileNameToFix);
 
             if (fileNameToFix.StartsWith(".."))
             {
-                throw new InvalidOperationException("Tried to remove all ../ but ended up with this: " + fileNameToFix);
+                throw new InvalidOperationException($"Tried to remove all ../ from {beforeFix} but ended up with this: " + fileNameToFix);
             }
 
             // It's possible that there will be double forward slashes.

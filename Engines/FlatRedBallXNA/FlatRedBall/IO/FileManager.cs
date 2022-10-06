@@ -813,16 +813,14 @@ namespace FlatRedBall.IO
 #region GetAllFilesInDirectory
 
 
-#region XML Docs
         /// <summary>
         /// Returns a List containing all of the files found in a particular directory and its subdirectories.
         /// </summary>
         /// <param name="directory">The directory to search in.</param>
         /// <returns></returns>
-#endregion
         public static List<string> GetAllFilesInDirectory(string directory)
         {
-#if SILVERLIGHT || USE_ISOLATED_STORAGE
+#if USE_ISOLATED_STORAGE
 
             return GetAllFilesInDirectoryIsolatedStorage(directory);
 #else
@@ -845,7 +843,6 @@ namespace FlatRedBall.IO
 #endif
         }
 
-#region XML Docs
         /// <summary>
         /// Returns a List containing all files which match the fileType argument which are 
         /// in the directory argument or a subfolder.  This recurs, returning all files.
@@ -856,7 +853,6 @@ namespace FlatRedBall.IO
         /// can either have a period or not.  That is ".jpg" and "jpg" are both valid fileType arguments.  An empty
         /// or null value for this parameter will return all files regardless of file type.</param>
         /// <returns>A list containing all of the files found which match the fileType.</returns>
-#endregion
         public static List<string> GetAllFilesInDirectory(string directory, string fileType)
         {
             return GetAllFilesInDirectory(directory, fileType, int.MaxValue);
@@ -864,7 +860,6 @@ namespace FlatRedBall.IO
         }
 
 
-#region XML Docs
         /// <summary>
         /// Returns a List containing all files which match the fileType argument which are within
         /// the depthToSearch folder range relative to the directory argument.
@@ -877,7 +872,6 @@ namespace FlatRedBall.IO
         /// <param name="depthToSearch">The depth to search through.  If the depthToSearch
         /// is 0, only the argument directory will be searched.</param>
         /// <returns>A list containing all of the files found which match the fileType.</returns>
-#endregion
         public static List<string> GetAllFilesInDirectory(string directory, string fileType, int depthToSearch)
         {
             List<string> arrayToReturn = new List<string>();
@@ -891,9 +885,6 @@ namespace FlatRedBall.IO
 
         public static void GetAllFilesInDirectory(string directory, string fileType, int depthToSearch, List<string> arrayToReturn)
         {
-#if SILVERLIGHT || WINDOWS_8
-            throw new NotImplementedException();
-#endif
             // EARLY OUT: Bad directory
             if (!Directory.Exists(directory))
             {
