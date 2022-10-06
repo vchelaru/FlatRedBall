@@ -17,7 +17,7 @@ namespace BuildServerUploaderConsole.Processes
         public override void ExecuteStep()
         {
             string executable = "dotnet";
-            string args = "build \"Glue with All.sln\" -c DEBUG";
+            string args = "build \"Glue with All.sln\" -c DEBUG --no-incremental";
 
             var processStart = new System.Diagnostics.ProcessStartInfo(
                 executable, args);

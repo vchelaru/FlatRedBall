@@ -86,8 +86,9 @@ namespace BuildServerUploaderConsole
         private static void CreateUploadProcessSteps(string buildType)
         {
             
-            ProcessSteps.Add(new BuildGlue(Results));
             ProcessSteps.Add(new PublishGlue(Results));
+            // Maybe this should be after?
+            ProcessSteps.Add(new BuildGlue(Results));
             ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
             ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
             ProcessSteps.Add(new ZipFrbdk(Results));
