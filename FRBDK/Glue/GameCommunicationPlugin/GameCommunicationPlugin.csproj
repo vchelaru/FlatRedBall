@@ -143,7 +143,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CompilerLibrary\CompilerLibrary.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+	  <ProjectReference Include="..\Glue\GlueFormsCore.csproj">
+		  <SpecificVersion>False</SpecificVersion>
+	  </ProjectReference> />
   </ItemGroup>
 
   <ItemGroup>
