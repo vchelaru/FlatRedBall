@@ -34,8 +34,6 @@ namespace FlatRedBall.Screens
 
         private static Screen mCurrentScreen;
 
-        private static bool mSuppressStatePush = false;
-
         private static bool mWarnIfNotEmptyBetweenScreens = true;
 
         private static int mNumberOfFramesSinceLastScreenLoad = 0;
@@ -483,8 +481,6 @@ namespace FlatRedBall.Screens
 
                     newScreen.ApplyRestartVariables();
                 }
-
-                mSuppressStatePush = false;
 
                 nextCallback?.Invoke(newScreen);
                 nextCallback = null;

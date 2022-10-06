@@ -359,7 +359,7 @@ namespace FlatRedBall.Input
             string toReturn = "";
             
             toReturn +=
-#if !UWP
+#if MONOGAME_381
                 $"{JoystickCapabilities.Identifier} " + 
 #endif
                 "IsConnected:{joystickState.IsConnected}\n";
@@ -385,8 +385,8 @@ namespace FlatRedBall.Input
         public override string ToString()
         {
             return $"{GamepadIndex} Connected:{IsConnected} "
-#if !UWP
-                + "ID:{JoystickCapabilities.Identifier}"
+#if MONOGAME_381
+                + $"ID:{JoystickCapabilities.Identifier}"
 #endif
                 ;
         }

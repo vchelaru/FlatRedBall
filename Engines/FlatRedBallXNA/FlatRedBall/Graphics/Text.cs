@@ -564,7 +564,7 @@ namespace FlatRedBall.Graphics
         /// Returns the distance from the center of the Text object to the edge;
         /// </summary>
         #endregion
-        [Obsolete("Use Width instead")]
+        [Obsolete("Use Width/2.0f instead")]
         public float ScaleX
         {
             get
@@ -581,7 +581,7 @@ namespace FlatRedBall.Graphics
             }
         }
 
-        [Obsolete("Use Height instead")]
+        [Obsolete("Use Height/2.0f instead")]
         public float ScaleY
         {
             get
