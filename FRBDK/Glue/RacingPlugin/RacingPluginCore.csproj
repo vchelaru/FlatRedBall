@@ -1,38 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+	<PropertyGroup>
+		<Platforms>AnyCPU</Platforms>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
 
+	<ItemGroup>
+		<Compile Remove="Properties\AssemblyInfo.cs" />
+	</ItemGroup>
 
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Platforms>x86;AnyCPU</Platforms>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+		<ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
+		<ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
-    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
-    <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
-  </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="echo PostBuild Racing Plugin&#xD;&#xA;&#xD;&#xA;IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\&quot;&#xD;&#xA;&#xD;&#xA;echo 1&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.dll&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.dll&quot;&#xD;&#xA;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)\RacingPluginCore.pdb&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\RacingPlugin\RacingPluginCore.pdb&quot;&#xD;&#xA;" />
+	</Target>
 
 </Project>
