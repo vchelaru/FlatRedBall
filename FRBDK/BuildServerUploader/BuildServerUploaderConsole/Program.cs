@@ -40,9 +40,6 @@ namespace BuildServerUploaderConsole
                     case CommandLineCommands.ChangeVersion:
                         CreateChangeVersionProcessSteps();
                         break;
-                    case CommandLineCommands.CopyToFrbdkInstallerTool:
-                        CreateCopyToInstallerSteps(false);
-                        break;
                     case CommandLineCommands.CopyDllsToTemplates:
                         CreateCopyToTemplatesSteps();
                         break;
@@ -88,8 +85,10 @@ namespace BuildServerUploaderConsole
 
         private static void CreateUploadProcessSteps(string buildType)
         {
+            
+            ProcessSteps.Add(new BuildGlue(Results));
             ProcessSteps.Add(new PublishGlue(Results));
-            ProcessSteps.Add(new CopyFrbdkToReleaseFolder(Results));
+            ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
             ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
             ProcessSteps.Add(new ZipFrbdk(Results));
             ProcessSteps.Add(new ZipGum(Results));
@@ -119,7 +118,7 @@ namespace BuildServerUploaderConsole
         {
             if (!debug)
             {
-                ProcessSteps.Add(new CopyFrbdkToReleaseFolder(Results));
+                ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
                 ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
                 ProcessSteps.Add(new ZipFrbdk(Results));
             }

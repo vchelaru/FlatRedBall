@@ -4,7 +4,7 @@ using FlatRedBall.IO;
 
 namespace BuildServerUploaderConsole.Processes
 {
-    public class CopyFrbdkToReleaseFolder : ProcessStep
+    public class CopyFrbdkAndPluginsToReleaseFolder : ProcessStep
     {
         #region Fields
 
@@ -51,7 +51,7 @@ namespace BuildServerUploaderConsole.Processes
 
         #endregion
 
-        public CopyFrbdkToReleaseFolder(IResults results)
+        public CopyFrbdkAndPluginsToReleaseFolder(IResults results)
             : base(
                 @"Copy all FRBDK .exe files, EditorObjects.dll, and the engine to ReleaseFiles\FRBDK For Zip\ (Auto)", results)
         {
