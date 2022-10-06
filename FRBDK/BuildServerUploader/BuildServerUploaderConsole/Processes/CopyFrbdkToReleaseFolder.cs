@@ -27,7 +27,7 @@ namespace BuildServerUploaderConsole.Processes
         };
 
         string GlueRegularBuildDestinationFolder =
-            @"Glue\Glue\bin\x86\Debug\";
+            @"Glue\Glue\bin\Debug\";
 
         // This is the output from: dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
         string GluePublishDestinationFolder
