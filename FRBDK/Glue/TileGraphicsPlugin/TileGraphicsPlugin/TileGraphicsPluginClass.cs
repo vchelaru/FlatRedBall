@@ -48,11 +48,9 @@ namespace TileGraphicsPlugin
 
         PluginTab collisionTab;
         PluginTab nodeNetworkTab;
-        PluginTab levelTab;
 
         TiledObjectTypeCreator tiledObjectTypeCreator;
         TiledToolbar tiledToolbar;
-        LevelScreenView levelScreenView;
 
         #endregion
 
@@ -517,7 +515,6 @@ namespace TileGraphicsPlugin
             if (shouldRemove)
             {
                 collisionTab?.Hide();
-                levelTab?.Hide();
                 nodeNetworkTab?.Hide();
             }
 
