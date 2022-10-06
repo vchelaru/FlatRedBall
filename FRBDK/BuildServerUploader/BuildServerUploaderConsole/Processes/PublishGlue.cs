@@ -17,7 +17,7 @@ namespace BuildServerUploaderConsole.Processes
         public override void ExecuteStep()
         {
             string executable = "dotnet";
-            string args = "publish GlueFormsCore.csproj -r win-x86 -c DEBUG";
+            string args = "publish GlueFormsCore.csproj -c DEBUG";
             var processStart = new System.Diagnostics.ProcessStartInfo(
                 executable, args);
             processStart.WorkingDirectory = DirectoryHelper.FrbdkDirectory + @"Glue\Glue\";
@@ -35,7 +35,7 @@ namespace BuildServerUploaderConsole.Processes
             //Process p = Process.Start(startInfo);
 
             Results.WriteMessage($"{executable} {args} in {processStart.WorkingDirectory}");
-            //dotnet publish GlueFormsCore.csproj -r win-x86 -c DEBUG
+            //dotnet publish GlueFormsCore.csproj -c DEBUG
             var process = System.Diagnostics.Process.Start(processStart);
 
             string output = process.StandardOutput.ReadToEnd();
