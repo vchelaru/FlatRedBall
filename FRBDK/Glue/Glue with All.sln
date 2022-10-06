@@ -75,7 +75,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewProjectCreator", "NewPro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NpcWpfLib", "NpcWpfLib\NpcWpfLib.csproj", "{A995B312-E16C-4427-BBDF-282A24115CFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGum.Wpf.NetCore3_0", "..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.NetCore3_0.csproj", "{C558F902-C842-44E2-9A60-39690FC3BBAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGum.Wpf.Net6", "..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj", "{C558F902-C842-44E2-9A60-39690FC3BBAF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaGumMonogame", "..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj", "{0040D9E0-8B3A-4D78-9575-57B9077D4931}"
 EndProject
