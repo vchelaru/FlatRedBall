@@ -1164,7 +1164,7 @@ namespace FlatRedBall.Input
 
         private void UpdateToGamepadType()
         {
-#if MONOGAME
+#if MONOGAME && !UWP
             var name = mCapabilities.DisplayName;
 #else
             var name = "Xbox";

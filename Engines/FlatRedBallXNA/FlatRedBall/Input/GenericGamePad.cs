@@ -356,7 +356,13 @@ namespace FlatRedBall.Input
 
         public string GetJoystickStateInfo()
         {
-            string toReturn = $"{JoystickCapabilities.Identifier} IsConnected:{joystickState.IsConnected}\n";
+            string toReturn = "";
+            
+            toReturn +=
+#if !UWP
+                $"{JoystickCapabilities.Identifier} " + 
+#endif
+                "IsConnected:{joystickState.IsConnected}\n";
 
             for(int i = 0; i < joystickState.Buttons.Length; i++)
             {
@@ -378,7 +384,11 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            return $"{GamepadIndex} Connected:{IsConnected} ID:{JoystickCapabilities.Identifier}";
+            return $"{GamepadIndex} Connected:{IsConnected} "
+#if !UWP
+                + "ID:{JoystickCapabilities.Identifier}"
+#endif
+                ;
         }
 
         public bool DPadDown(DPadDirection dPadDirection)
