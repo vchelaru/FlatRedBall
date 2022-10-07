@@ -163,7 +163,11 @@ namespace FlatRedBall.TileCollisions
             // 2. Downgrade to a version of Glue prior to July 2021 which will not include this method
             // 3. Re-compile your own version of the plugin for Glue and modify this code
             // 4. Remove this parameter by hand whenever this file is re-generated. This is painful!
+#if SupportsNamedSubcollisions
             this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
+#else 
+            this.mShapes.AddToManagers(layer);
+#endif
         }
 
         public void AttachTo(PositionedObject newParent, bool changeRelative = true)
@@ -238,12 +242,12 @@ namespace FlatRedBall.TileCollisions
         {
             return mShapes.CollideAgainst(line, true, mSortAxis);
         }
-
+#if ShapeManagerCollideAgainstClosest
         public bool CollideAgainstClosest(Line line)
         {
             return mShapes.CollideAgainstClosest(line, SortAxis, GridSize);
         }
-
+#endif
         public bool CollideAgainst(ICollidable collidable)
         {
             return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);

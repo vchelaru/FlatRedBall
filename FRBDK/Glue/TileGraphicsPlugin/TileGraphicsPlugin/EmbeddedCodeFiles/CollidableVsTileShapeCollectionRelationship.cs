@@ -159,7 +159,11 @@ namespace FlatRedBall.Math.Collision
         /// <returns></returns>
         public static bool DoFirstCollisionLineVsShapeCollection(Line line, TileShapeCollection tileShapeCollection)
         {
+#if ShapeManagerCollideAgainstClosest
             return tileShapeCollection.CollideAgainstClosest(line);
+#else
+            return false;
+#endif
         }
     }
 

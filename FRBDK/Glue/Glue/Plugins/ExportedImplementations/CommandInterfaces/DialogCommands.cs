@@ -66,7 +66,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
                     }
 
-                    await GlueCommands.Self.LoadProjectAsync(projectFileName);
+                    try
+                    {
+                        await GlueCommands.Self.LoadProjectAsync(projectFileName);
+                    }
+                    catch(Exception e)
+                    {
+                        GlueCommands.Self.DialogCommands.ShowMessageBox($"Attempted to open\n\n{projectFileName}\n\nbut failed:\n{e}");
+                    }
 
                     // not sure why we need to do this....
                     //SaveSettings();

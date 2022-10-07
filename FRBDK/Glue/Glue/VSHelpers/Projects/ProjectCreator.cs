@@ -81,8 +81,15 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 string message;
                 if(isMissingMonoGame)
                 {
-                    message = $"Could not load the project {fileName}\nbecause MonoGame files are missing. Try installing MonoGame, then try opening the project in Glue again.\n\n";
-                    locationToOpen = "http://teamcity.monogame.net/repository/download/MonoGame_PackagingWindows/latest.lastSuccessful/MonoGameSetup.exe?guest=1";
+
+                    //locationToOpen = "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
+                    locationToOpen =
+                        "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
+                    //"https://community.monogame.net/t/monogame-3-7-1/11173";
+                    message = $"Could not load the project {fileName}\nbecause MonoGame 3.7.1 files are missing. click OK to open your browser to the MonoGame 3.7.1 install location:\n\n" +
+                        locationToOpen + "\n\n" +
+                        "Alternatively you can remove the MonoGame content project from your .csproj. You probably don't need it if FlatRedBall is handling your content building." +
+                        "To do this, search your .csproj file for the following text and delete it";
                     shouldThrowException = false;
                     result.ShouldTryToLoadProject = false;
                 }
@@ -128,7 +135,9 @@ Additional Info:
 
                     if(locationToOpen != null)
                     {
-                        System.Diagnostics.Process.Start(locationToOpen);
+                        //System.Diagnostics.Process.Start(locationToOpen);
+                        // From here: https://stackoverflow.com/questions/4580263/how-to-open-in-default-browser-in-c-sharp
+                        Process.Start("explorer", locationToOpen);
                     }
                 }
             }

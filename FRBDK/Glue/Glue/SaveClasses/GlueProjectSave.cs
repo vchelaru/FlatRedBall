@@ -48,6 +48,7 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             IPositionedSizedObjectInEngine = 5,
             NugetPackageInCsproj = 6,
+            ShapeManagerCollideAgainstClosest = 6,
             SupportsEditMode = 7,
             SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated = 7,
             // this was added late summer 2021
