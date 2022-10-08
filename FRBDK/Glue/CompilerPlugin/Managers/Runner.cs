@@ -245,6 +245,14 @@ namespace CompilerPlugin.Managers
             {
                 if (System.IO.File.Exists(exeLocation))
                 {
+                    if(string.IsNullOrEmpty(runArguments))
+                    {
+                        runArguments = "LaunchedByEditor";
+                    }
+                    else
+                    {
+                        runArguments += " LaunchedByEditor";
+                    }
                     startResponse = await StartProcess(preventFocus, runArguments, exeLocation);
 
                     if (startResponse.Succeeded)
@@ -498,7 +506,7 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        private static async Task<string> GetCrashMessage()
+        private async Task<string> GetCrashMessage()
         {
             string exeLocation = GetGameExeLocation();
 
@@ -513,8 +521,13 @@ namespace CompilerPlugin.Managers
 
                 if (System.IO.File.Exists(logFile))
                 {
+                    message = $"The game has crashed. See the Build tab for a callstack";
                     var contents = System.IO.File.ReadAllText(logFile);
-                    message = $"The game has crashed:\n\n{contents}";
+
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+
+                    OutputReceived?.Invoke(contents);
+                    
                 }
                 else
                 {

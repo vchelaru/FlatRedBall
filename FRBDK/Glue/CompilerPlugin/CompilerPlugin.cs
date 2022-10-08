@@ -256,7 +256,11 @@ namespace CompilerPlugin
                 case "Runner_DoRun":
                     {
                         var settings = JObject.Parse(payload);
-                        return JsonConvert.SerializeObject(await _runner.Run(settings.ContainsKey("PreventFocus") ? settings.Value<bool>("PreventFocus") : false, settings.ContainsKey("RunArguments") ? settings.Value<string>("RunArguments") : ""));
+                        var preventFocus = settings.ContainsKey("PreventFocus") ? settings.Value<bool>("PreventFocus") : false;
+                        var runArguments = settings.ContainsKey("RunArguments") ? settings.Value<string>("RunArguments") : "";
+                        var runResponse = 
+                            await _runner.Run(preventFocus, runArguments);
+                        return JsonConvert.SerializeObject(runResponse);
                     }
                 case "Runner_Kill":
                     return await _runner.KillGameProcess();
