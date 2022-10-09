@@ -48,7 +48,7 @@ namespace GlueControl.Screens
 
         private void CreateFactoryLists()
         {
-            foreach (var factory in BattleCryptBombers.Performance.FactoryManager.GetAllFactories())
+            foreach (var factory in {ProjectNamespace}.Performance.FactoryManager.GetAllFactories())
             {
                 var factoryType = factory.GetType();
                 var createNewMethod = factoryType.GetMethod("CreateNew", new Type[] { typeof(Microsoft.Xna.Framework.Vector3) });
@@ -172,7 +172,7 @@ namespace GlueControl.Screens
                 }
             }
 
-            foreach (var factory in BattleCryptBombers.Performance.FactoryManager.GetAllFactories())
+            foreach (var factory in {ProjectNamespace}.Performance.FactoryManager.GetAllFactories())
             {
                 factory.Destroy();
             }
