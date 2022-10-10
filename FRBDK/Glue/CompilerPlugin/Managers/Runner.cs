@@ -182,12 +182,13 @@ namespace CompilerPlugin.Managers
             {
                 ProjectBase projectBase = null;
 
-                Process found = TryFindGameProcess();
+                // don't require a game window - the user should be able to shut it down:
+                var foundProcess = TryFindGameProcess(mustHaveWindow:false);
 
-                if (found != null)
+                if (foundProcess != null)
                 {
                     foundAlreadyRunningProcess = true;
-                    runningGameProcess = found;
+                    runningGameProcess = foundProcess;
 
                     try
                     {
