@@ -77,7 +77,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 if(GlueState.Self.CurrentGlueProject != null)
                 {
                     return
-                        failedToRebuildAndRestart ||
+                        // This causes confusing behavior and can make the game restart over and over, so let's get rid of it:
+                        //failedToRebuildAndRestart ||
                         IsExplicitlySetRebuildAndRestartEnabled ||
                         (ViewModel.IsRunning && ViewModel.IsEditChecked) ||
                         GlueViewSettingsViewModel.RestartScreenOnLevelContentChange;

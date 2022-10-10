@@ -18,12 +18,16 @@ namespace GameCommunicationPlugin
     [Export(typeof(PluginBase))]
     public class MainGameCommunicationPlugin : PluginBase
     {
+        #region Fields/Properties
+
         private GameConnectionManager _gameCommunicationManager;
         private Game1GlueCommunicationGenerator game1GlueCommunicationGenerator;
 
         public override string FriendlyName => "Game Communication Plugin";
 
         public override Version Version => new Version(1, 0);
+
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {

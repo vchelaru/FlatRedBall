@@ -19,9 +19,6 @@ namespace CompilerPlugin
     [Export(typeof(PluginBase))]
     public class CompilerPlugin : PluginBase
     {
-        public override string FriendlyName => "Compiler Plugin";
-
-        public override Version Version => new Version(1, 0);
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -90,6 +87,10 @@ namespace CompilerPlugin
                     break;
             }
         }
+
+        public override string FriendlyName => "Compiler Plugin";
+
+        public override Version Version => new Version(1, 0);
         #endregion
 
         #region Private Methods
