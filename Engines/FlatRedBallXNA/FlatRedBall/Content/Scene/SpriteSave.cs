@@ -25,7 +25,7 @@ using System.Xml.Linq;
 
 namespace FlatRedBall.Content.Scene
 {
-#if !UWP && !WINDOWS_8
+#if !UWP
 
     [Serializable]
 #endif

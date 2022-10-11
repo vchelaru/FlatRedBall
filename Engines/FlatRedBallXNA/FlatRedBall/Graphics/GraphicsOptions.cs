@@ -337,14 +337,7 @@ namespace FlatRedBall.Graphics
             if (game != null)
             {
 
-#if WINDOWS_8
-                // For some reason the W8 window reports the wrong
-                // width/height if the game is started when in portrait
-                // mode but the user wants to be in landscape.  But the GraphicsDevice
-                // is right.  Go figure.
-                ResolutionWidth = graphics.GraphicsDevice.Viewport.Width ;
-                ResolutionHeight = graphics.GraphicsDevice.Viewport.Height;
-#elif IOS || UWP || DESKTOP_GL
+#if IOS || UWP || DESKTOP_GL
                 // For UWP and WindowsGL projects the game.Window.ClientBounds is not accurate until after initialize, as explained here:
                 // http://community.monogame.net/t/graphicsdevice-viewport-doesnt-return-the-real-size-of-uwp-game-window/7314/5
                 ResolutionWidth = graphics.PreferredBackBufferWidth;
@@ -366,20 +359,10 @@ namespace FlatRedBall.Graphics
             #endregion
 #endif
 
-            // November 15, 2013
-            // Not sure why this is
-            // here.  We do this same
-            // code up above when we check
-            // if the game is not null.  This
-            // causes the event to fire twice.
-//#if WINDOWS_8
-//            game.Window.OrientationChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
-//            game.Window.ClientSizeChanged += new EventHandler<EventArgs>(HandleClientSizeOrOrientationChange);
-//#endif
-
         }
 
-        internal void CallSizeOrOrientationChanged()
+        // temp for testing:
+        public void CallSizeOrOrientationChanged()
         {
             SizeOrOrientationChanged?.Invoke(this, null);
         }

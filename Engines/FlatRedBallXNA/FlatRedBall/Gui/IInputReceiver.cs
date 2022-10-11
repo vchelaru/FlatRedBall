@@ -1,11 +1,6 @@
 using System;
 
-#if FRB_MDX
-using Keys = Microsoft.DirectX.DirectInput.Key;
-
-#else//if FRB_XNA || WINDOWS_PHONE 
 using Microsoft.Xna.Framework.Input;
-#endif
 using System.Collections.Generic;
 
 namespace FlatRedBall.Gui

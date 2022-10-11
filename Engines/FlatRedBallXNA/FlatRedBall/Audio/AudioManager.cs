@@ -351,19 +351,7 @@ namespace FlatRedBall.Audio
             bool shouldPlay = true;
 
 			shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
-#if WINDOWS_PHONE
 
-
-
-            if (!shouldPlay && !mDoesUserWantCustomSoundtrack.HasValue && AreSongsEnabled)
-            {
-                Guide.BeginShowMessageBox(
-                    "Stop music?",
-                    "Would you like to stop your current music and listen to the music for this game?",
-                    new string[] { "Yes", "No" }, 0, MessageBoxIcon.Alert, UserPermissionCallback, null);
-
-            }
-#endif
             if (toPlay.Name != mLastSongNameRequested || forceRestart || 
                 CurrentlyPlayingSong == null)
             {
@@ -428,24 +416,6 @@ namespace FlatRedBall.Audio
         public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) => 
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
 
-#if WINDOWS_PHONE
-        private static void UserPermissionCallback(IAsyncResult r)
-        {
-            int? dialogResult = Guide.EndShowMessageBox(r);
-
-            if (dialogResult == null || dialogResult == 1)
-            {
-                mDoesUserWantCustomSoundtrack = true;
-            }
-            else
-            {
-                mDoesUserWantCustomSoundtrack = false;
-
-                PlaySong(mSongLastRequested, true, mIsSongUsingGlobalContent);
-            }
-        }
-#endif
-
         public static void StopSong()
         {
 			Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
@@ -484,7 +454,7 @@ namespace FlatRedBall.Audio
             {
                 PlaySong(toPlay, false, songUsesGlobalContent);
 
-#if WINDOWS_8 || UWP
+#if UWP
                 MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
 #else
                 MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);
@@ -505,7 +475,7 @@ namespace FlatRedBall.Audio
 
         internal static void UpdateDependencies()
         {
-#if !WINDOWS_PHONE && !MONOGAME && !SILVERLIGHT
+#if !MONOGAME
             SoundListener.UpdateDependencies(TimeManager.CurrentTime);
             SoundListener.UpdateAudio();
 

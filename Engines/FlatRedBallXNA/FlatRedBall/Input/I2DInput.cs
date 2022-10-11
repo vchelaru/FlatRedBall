@@ -1,3 +1,4 @@
+using FlatRedBall.Math;
 using System;
 using System.Collections.Generic;
 
@@ -165,7 +166,7 @@ namespace FlatRedBall.Input
             }
             else
             {
-                return (float)System.Math.Atan2(instance.Y, instance.X);
+                return MathFunctions.NormalizeAngle((float)System.Math.Atan2(instance.Y, instance.X));
             }
         }
 

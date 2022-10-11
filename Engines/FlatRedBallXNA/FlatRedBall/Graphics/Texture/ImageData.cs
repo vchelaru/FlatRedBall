@@ -107,7 +107,7 @@ namespace FlatRedBall.Graphics.Texture
 
             ImageData imageData = null;
             // Might need to make this FRB MDX as well.
-#if FRB_XNA || SILVERLIGHT || WINDOWS_PHONE
+#if FRB_XNA 
 
             switch (texture2D.Format)
             {

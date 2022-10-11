@@ -46,7 +46,7 @@ namespace FlatRedBall
 
 
 
-#if WINDOWS_8 || UWP
+#if UWP
         IAsyncAction mAction = null;
 #else
         ManualResetEvent mManualResetEvent;
@@ -55,7 +55,7 @@ namespace FlatRedBall
 
         public Updater()
         {
-#if !WINDOWS_8 && !UWP
+#if !UWP
             mManualResetEvent = new ManualResetEvent(false);
 #endif
         }
@@ -63,7 +63,7 @@ namespace FlatRedBall
         public void Reset()
         {
             
-#if WINDOWS_8 || UWP
+#if UWP
             mAction = null;
 #else
             mManualResetEvent.Reset();
@@ -73,7 +73,7 @@ namespace FlatRedBall
 
         public void Wait()
         {
-#if WINDOWS_8 || UWP
+#if UWP
             mAction.AsTask().Wait();
 #else
             mManualResetEvent.WaitOne();
@@ -83,7 +83,7 @@ namespace FlatRedBall
         internal void TimedActivity()
         {
             Reset();
-#if WINDOWS_8 || UWP
+#if UWP
             mAction = Windows.System.Threading.ThreadPool.RunAsync(TimedActivityInternal);
 #else
             ThreadPool.QueueUserWorkItem(TimedActivityInternal);
@@ -106,7 +106,7 @@ namespace FlatRedBall
                     secondDifferenceSquaredDividedByTwo,
                     lastSecondDifference);
             }
-#if !WINDOWS_8 && !UWP
+#if !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -114,7 +114,7 @@ namespace FlatRedBall
         internal void AnimateSelf()
         {
             Reset();
-#if WINDOWS_8  || UWP
+#if UWP
             mAction = Windows.System.Threading.ThreadPool.RunAsync(AnimateSelfInternal);
 #else
             ThreadPool.QueueUserWorkItem(AnimateSelfInternal);
@@ -134,7 +134,7 @@ namespace FlatRedBall
                 Sprite s = AutomaticallyUpdatedSprites[i];
                 s.AnimateSelf(currentTime);
             }
-#if !WINDOWS_8 && !UWP
+#if !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -142,7 +142,7 @@ namespace FlatRedBall
         internal void ExecuteInstructions()
         {
             Reset();
-#if WINDOWS_8 || UWP
+#if UWP
             mAction = Windows.System.Threading.ThreadPool.RunAsync(ExecuteInstructionsInternal);
 #else
             ThreadPool.QueueUserWorkItem(ExecuteInstructionsInternal);
@@ -161,7 +161,7 @@ namespace FlatRedBall
                     AutomaticallyUpdatedSprites[i].ExecuteInstructions(currentTime);
                 }
             }
-#if !WINDOWS_8 && !UWP
+#if !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -169,7 +169,7 @@ namespace FlatRedBall
         internal void UpdateDependencies()
         {
             Reset();
-#if WINDOWS_8 || UWP
+#if UWP
             mAction = Windows.System.Threading.ThreadPool.RunAsync(UpdateDependenciesInternal);
 #else
             ThreadPool.QueueUserWorkItem(UpdateDependenciesInternal);
@@ -191,7 +191,7 @@ namespace FlatRedBall
 #endif
 
             }
-#if !WINDOWS_8 && !UWP
+#if !UWP
             mManualResetEvent.Set();
 #endif
         }
@@ -285,11 +285,7 @@ namespace FlatRedBall
         // Give the Emitter access to this array.
         internal static SpriteList mRemoveWhenAlphaIs0;
 
-#if WINDOWS_8
-        static MethodInfo mRemoveSpriteMethodInfo = typeof(SpriteManager).GetRuntimeMethod("RemoveSprite", new Type[] { typeof(Sprite) });
-#else
         static MethodInfo mRemoveSpriteMethodInfo = typeof(SpriteManager).GetMethod("RemoveSprite", new Type[] { typeof(Sprite) });
-#endif
 
         internal static List<TimedRemovalRecord> mTimedRemovalList = new List<TimedRemovalRecord>(100);
 
@@ -2953,7 +2949,7 @@ namespace FlatRedBall
 
             //Monitor.Enter(mAutomaticallyUpdatedSprites);
             // We are phasing this out:
-		#if !WINDOWS_8 && !ANDROID
+		#if !ANDROID
             for (int i = mAutomaticallyUpdatedSprites.Count - 1; i > -1; i--)
             {
                 if (i < mAutomaticallyUpdatedSprites.Count)

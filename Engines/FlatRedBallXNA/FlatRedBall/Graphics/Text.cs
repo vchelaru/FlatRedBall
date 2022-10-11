@@ -221,9 +221,6 @@ namespace FlatRedBall.Graphics
             set
             {
                 _renderOnTexture = value;
-#if WINDOWS_8
-                throw new NotImplementedException();
-#else
                 if (_renderOnTexture)
                 {
                     switch (FontType)
@@ -239,7 +236,6 @@ namespace FlatRedBall.Graphics
                     RemoveAndDisposePreRenderedObjects();
                 }
                 UpdateDisplayedText();
-#endif
             }
         }
 
@@ -1646,21 +1642,6 @@ namespace FlatRedBall.Graphics
 
                 float relativeXEdgeAt = camera.DestinationRectangle.Width / 2.0f;
                 float relativeYEdgeAt = camera.DestinationRectangle.Height / 2.0f;
-
-#if WINDOWS_PHONE
-                // It's possible that the Camera is rendering
-                // to only a part of the screen depending on the
-                // resolution that we're using.  For example, in Udder Chaos
-                // the resolution was 320X480, but the native WP7 resolution is
-                // 480X800.  The game view was centered, but this impacts the pixel
-                // placement relatve to the Camera, so we need to adjust for that.
-                // This does height/width instead of width/height
-                float nativeAspectRatio = FlatRedBallServices.GraphicsDevice.DisplayMode.AspectRatio;
-                float cameraAspectRatio = camera.DestinationRectangle.Height / (float)camera.DestinationRectangle.Width;
-
-                relativeXEdgeAt *= cameraAspectRatio / nativeAspectRatio;
-#endif
-
 
                 if (System.Math.Abs(difference) > epsilon)
                 {

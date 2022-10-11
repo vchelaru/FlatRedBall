@@ -2804,43 +2804,6 @@ namespace FlatRedBall.Graphics
 
 //                    arrayAtIndex[vertNum + 5].Color.PackedValue =
 //                        arrayAtIndex[vertNum + 0].Color.PackedValue;
-//#elif WINDOWS_8
-
-//                    // If the Sprite's Texture is null, it will behave as if it's got its ColorOperation set to Color instead of Texture
-//                    if (spriteAtIndex.ColorOperation == FlatRedBall.Graphics.ColorOperation.Texture && spriteAtIndex.Texture != null)
-//                    {
-//                        // If we are using the texture color, we want to ignore the Sprite's RGB values.  The W component is Alpha, so 
-//                        // we'll use full values for the others.
-//                        //arrayAtIndex[vertNum + 0].Color.PackedValue =
-//                        //    ((uint)(255)) +
-//                        //    (((uint)(255)) << 8) +
-//                        //    (((uint)(255)) << 16) +
-//                        //    (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 24);
-//                        arrayAtIndex[vertNum + 0].Color.PackedValue =
-//    ((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) +
-//    (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 8) +
-//    (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 16) +
-//    (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 24);
-//                    }
-//                    else
-//                    {
-//                        // If we are using the texture color, we 
-//                        arrayAtIndex[vertNum + 0].Color.PackedValue =
-//                            ((uint)(255 * spriteAtIndex.mVertices[3].Color.X)) +
-//                            (((uint)(255 * spriteAtIndex.mVertices[3].Color.Y)) << 8) +
-//                            (((uint)(255 * spriteAtIndex.mVertices[3].Color.Z)) << 16) +
-//                            (((uint)(255 * spriteAtIndex.mVertices[3].Color.W)) << 24);
-//                    }
-//                    arrayAtIndex[vertNum + 1].Color.PackedValue =
-//                        arrayAtIndex[vertNum + 0].Color.PackedValue;
-
-//                    arrayAtIndex[vertNum + 2].Color.PackedValue =
-//                        arrayAtIndex[vertNum + 0].Color.PackedValue;
-
-//                    arrayAtIndex[vertNum + 5].Color.PackedValue =
-//                        arrayAtIndex[vertNum + 0].Color.PackedValue;
-
-//#else
 
 //                    vertexLists[vertexBufferNum][vertNum + 0].Color.PackedValue =
 //                        ((uint)(255 * sa[i].mVertices[3].Color.Z)) +

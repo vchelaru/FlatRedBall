@@ -7,7 +7,7 @@ using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
-#if !UWP && !WINDOWS_8
+#if !UWP
 
     [Serializable]
 #endif

@@ -1,4 +1,4 @@
-#if ANDROID || WINDOWS_8 || IOS
+#if ANDROID || IOS
 #define USES_DOT_SLASH_ABOLUTE_FILES
 #endif
 using System;
@@ -600,8 +600,8 @@ namespace FlatRedBall.Content
 #endif
 				#endregion
 
-#region BitmapList
-#if !XBOX360 && !SILVERLIGHT && !WINDOWS_PHONE && !MONOGAME
+				#region BitmapList
+#if !MONOGAME
 
 				else if (typeof(T) == typeof(BitmapList))
 				{
@@ -610,7 +610,7 @@ namespace FlatRedBall.Content
 				}
 #endif
 
-#endregion
+				#endregion
 
 #region NodeNetwork
 				else if (typeof(T) == typeof(NodeNetwork))
@@ -655,7 +655,7 @@ namespace FlatRedBall.Content
 
 					if (assetName.EndsWith("gif"))
 					{
-#if WINDOWS_8 || UWP || DESKTOP_GL || STANDARD
+#if UWP || DESKTOP_GL || STANDARD
                         throw new NotImplementedException();
 #else
 						AnimationChainList acl = new AnimationChainList();

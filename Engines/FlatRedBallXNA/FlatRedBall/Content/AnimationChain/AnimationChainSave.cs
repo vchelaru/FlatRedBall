@@ -18,7 +18,7 @@ using System.Globalization;
 namespace FlatRedBall.Content.AnimationChain
 {
     [XmlRoot("AnimationChain")]
-#if !UWP && !WINDOWS_8
+#if !UWP
     [Serializable]
 #endif
     public class AnimationChainSave
@@ -99,7 +99,7 @@ namespace FlatRedBall.Content.AnimationChain
         {
             if (!string.IsNullOrEmpty(ParentFile))
             {
-#if !WINDOWS_8 && !UWP && !DESKTOP_GL && !STANDARD
+#if !UWP && !DESKTOP_GL && !STANDARD
                 FlatRedBall.Graphics.Animation.AnimationChain animationChain =
                     FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
                         ParentFile, contentManagerName);
@@ -164,7 +164,7 @@ namespace FlatRedBall.Content.AnimationChain
         //        {
         //            if (!string.IsNullOrEmpty(ParentFile))
         //            {
-        //#if !WINDOWS_8
+        //
         //                FlatRedBall.Graphics.Animation.AnimationChain animationChain = 
         //                    FlatRedBall.Graphics.Animation.AnimationChain.FromGif(
         //                        ParentFile, contentManagerName);
@@ -191,9 +191,6 @@ namespace FlatRedBall.Content.AnimationChain
         //                }
 
         //                return animationChain;
-        //#else
-        //                throw new NotImplementedException();
-        //#endif
         //            }
         //            else
         //            {

@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-#if FRB_MDX
-using FlatRedBall;
-#else // FRB_XNA  || ZUNE || SILVERLIGHT || WINDOWS_PHONE
+
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
-#endif
 using System.Xml;
 using System.Xml.Serialization;
 using FlatRedBall.Instructions;

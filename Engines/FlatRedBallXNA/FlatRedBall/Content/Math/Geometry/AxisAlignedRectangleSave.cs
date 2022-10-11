@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace FlatRedBall.Content.Math.Geometry
 {
-#if !UWP && !WINDOWS_8
+#if !UWP
     [Serializable]
 #endif
     public class AxisAlignedRectangleSave

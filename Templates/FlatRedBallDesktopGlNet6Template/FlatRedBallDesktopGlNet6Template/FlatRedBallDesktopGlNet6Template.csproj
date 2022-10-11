@@ -6,6 +6,7 @@
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredCompilation>false</TieredCompilation>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>MONOGAME;DESKTOP_GL;XNA4;FRB_XNA;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>

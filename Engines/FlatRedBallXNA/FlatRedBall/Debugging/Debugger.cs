@@ -8,10 +8,6 @@ using FlatRedBall.Math;
 using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
 
-#if WINDOWS_PHONE
-using Microsoft.Phone.Info;
-#endif
-
 namespace FlatRedBall.Debugging
 {
     #region CountedCategory class
@@ -62,11 +58,8 @@ namespace FlatRedBall.Debugging
         static long mLastMemoryUse = -1;
 #endif
 
-#if WINDOWS_PHONE
-        static double mMemoryUpdateFrequency = 1;
-#else
+
         static double mMemoryUpdateFrequency = .25;
-#endif
         #endregion
 
         #region Properties
@@ -197,15 +190,8 @@ namespace FlatRedBall.Debugging
 
             long currentUsage;
 
-#if WINDOWS_PHONE
-            currentUsage = (long)DeviceExtendedProperties.GetValue("ApplicationCurrentMemoryUsage");
-            memoryInformation = DeviceExtendedProperties.GetValue("DeviceTotalMemory") + "\n" +
-                currentUsage + "\n" +
-                DeviceExtendedProperties.GetValue("ApplicationPeakMemoryUsage");
-#else
                 currentUsage = GC.GetTotalMemory(false);
                 memoryInformation = "Total Memory: " + currentUsage;
-#endif
 
 #if DEBUG
             if (mLastMemoryUse >= 0)

@@ -318,7 +318,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-#if XBOX360 || WINDOWS_PHONE || MONOGAME
+#if MONOGAME
                     throw new NotSupportedException("Game required on the this platform");
 #else
                     System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
@@ -342,7 +342,6 @@ namespace FlatRedBall
                     // Resetting the device crashes W8, but we want the 
                     // values to be updated so we set the resolution values
                     // above
-#if !WINDOWS_8
                     mGraphicsOptions.ResumeDeviceReset();
 
 #if WINDOWS 
@@ -350,7 +349,6 @@ namespace FlatRedBall
 #endif
 
                     mGraphicsOptions.ResetDevice();
-#endif
                 }
                 mWindowResizing = false;
             }
@@ -406,7 +404,7 @@ namespace FlatRedBall
 #endif
 
 
-#if WINDOWS_8 || UWP
+#if UWP
                 mPrimaryThreadId = Environment.CurrentManagedThreadId;
 #else
                 mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -452,7 +450,7 @@ namespace FlatRedBall
         #endregion
         public static void InitializeCommandLine(Game game)
         {
-#if WINDOWS_8 || UWP
+#if UWP
                 mPrimaryThreadId = Environment.CurrentManagedThreadId;
 #else
             mPrimaryThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
@@ -596,43 +594,6 @@ namespace FlatRedBall
             
         }
 
-#if WINDOWS_8
-
-        private static void HandleSizeOrOrientationChanged(object sender, EventArgs e)
-        {
-            // Windows 8 is different than other engines (currently)
-            // because the user can run at a different resolution than
-            // the physical display.  In Windows 7 the resolution of the window
-            // is the resolution of the game.  In Windows 8 the game always runs
-            // in fullscreen.  We only want to set the resolution *if* the user hasn't
-            // already set the resolution manually.
-
-            mHandlingReset = true;
-
-            mGraphicsOptions.SuspendDeviceReset();
-            if ( mGraphicsOptions.mHasResolutionBeenManuallySet == false)
-            {
-                mGraphicsOptions.ResolutionWidth = mGame.Window.ClientBounds.Width;
-                mGraphicsOptions.ResolutionHeight = mGame.Window.ClientBounds.Height;
-            }
-            mGraphicsOptions.ResumeDeviceReset();
-
-            // Update client sizes
-            mClientWidth = mGraphicsOptions.ResolutionWidth;
-            mClientHeight = mGraphicsOptions.ResolutionHeight;
-
-            //Window_ClientSizeChanged(sender, e);
-
-            // Update cameras
-            foreach (Camera camera in SpriteManager.Cameras)
-            {
-                camera.UpdateOnResize();
-            }
-
-            mHandlingReset = false;
-        }
-#endif
-
         static void mOwner_GotFocus(object sender, EventArgs e)
         {
             InputManager.Mouse.Clear();
@@ -682,10 +643,9 @@ namespace FlatRedBall
 
 
             mGraphicsOptions = graphicsOptions;
-#if !WINDOWS_PHONE
+
             mGraphics.PreferredBackBufferWidth = mClientWidth;
             mGraphics.PreferredBackBufferHeight = mClientHeight;
-#endif
 
             mGraphics.PreferMultiSampling = mGraphicsOptions.UseMultiSampling;
 

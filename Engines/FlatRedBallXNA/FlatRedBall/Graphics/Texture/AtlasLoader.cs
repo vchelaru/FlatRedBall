@@ -179,11 +179,6 @@ namespace FlatRedBall.Graphics.Texture
 				}
 			}
 		}
-#elif WINDOWS_8
-        private static string[] ReadDataFile(string dataFile)
-        {
-            throw new NotImplementedException();
-        }
 #else
         private static string[] ReadDataFile(string dataFile) 
         {

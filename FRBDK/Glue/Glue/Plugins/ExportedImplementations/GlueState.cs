@@ -225,7 +225,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         {
             get
             {
-                return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName.FullPath);
+                if(CurrentCodeProjectFileName == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return VSHelpers.ProjectSyncer.LocateSolution(CurrentCodeProjectFileName.FullPath);
+                }
             }
         }
 

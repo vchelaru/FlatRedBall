@@ -51,7 +51,7 @@ namespace FlatRedBall.Content
         SpriteEditorSceneBase<SpriteSave, SpriteGridSave, SpriteFrameSave, TextSave>,
         ISaveableContent
     {
-#if WINDOWS_PHONE || XBOX360 || ANDROID || IOS
+#if ANDROID || IOS
         public static bool ManualDeserialization = true;
 #else
         public static bool ManualDeserialization = false;

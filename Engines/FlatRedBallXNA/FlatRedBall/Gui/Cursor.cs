@@ -2084,21 +2084,16 @@ namespace FlatRedBall.Gui
 
         float WorldXChangeAt(float zPosition, bool orthogonal, float orthogonalWidth)
         {
-#if MONODROID || WINDOWS_8 || IOS
+#if MONODROID || IOS
             if(PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
             }
-#if WINDOWS_8
-            // If the mouse has moved for the first time, we need to ignore velocity.
-#endif
 #endif
 
 
             float ratio = (mScreenX - mLastScreenX) /
-#if FRB_MDX
-                (float)FlatRedBallServices.ClientWidth;
-#else
+
                 // Victor Chelaru
                 // February 1, 2014
                 // This used to use the
@@ -2110,7 +2105,6 @@ namespace FlatRedBall.Gui
                 // than the full Screen's resolution:
                 //(float)FlatRedBallServices.GraphicsOptions.ResolutionWidth;
                 (float)Camera.DestinationRectangle.Width;
-#endif
 
             if (orthogonal)
             {

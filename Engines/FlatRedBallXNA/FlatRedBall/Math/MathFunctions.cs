@@ -1351,13 +1351,11 @@ namespace FlatRedBall.Math
                 Quaternion.Lerp(a, b, amount));
         }
 
-        #region XML Docs
         /// <summary>
         /// Wraps an angle from 0 to TwoPi
         /// </summary>
         /// <param name="angle">The angle to wrap</param>
         /// <returns>The new angle</returns>
-        #endregion
         public static float NormalizeAngle(float angle)
         {
             while (angle < 0f) angle += MathHelper.TwoPi;
