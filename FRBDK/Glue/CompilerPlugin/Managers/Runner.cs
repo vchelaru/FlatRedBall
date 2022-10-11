@@ -223,9 +223,13 @@ namespace CompilerPlugin.Managers
             var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
 
             var found = processes
-                .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&
-                (mustHaveWindow == false || item.MainWindowHandle != IntPtr.Zero));
-            return found;
+                .Where(item => item.ProcessName.ToLowerInvariant() == projectName &&
+                    (mustHaveWindow == false || item.MainWindowHandle != IntPtr.Zero))
+                .ToArray();
+
+
+
+            return found.FirstOrDefault();
         }
 
         internal async Task<object> Run(bool preventFocus, string runArguments = null)
@@ -380,7 +384,11 @@ namespace CompilerPlugin.Managers
 
             if (handle.HasValue)
             {
-                WindowMover.MoveWindow(handle.Value, x, y, width, height, repaint);
+                var succeededToMove = WindowMover.MoveWindow(handle.Value, x, y, width, height, repaint);
+
+                var succeeded = WindowMover.GetWindowRect(handle.Value, out WindowRectangle outValue);
+
+
             }
         }
 
