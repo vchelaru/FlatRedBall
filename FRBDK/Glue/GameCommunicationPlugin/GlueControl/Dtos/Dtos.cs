@@ -387,6 +387,12 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    public class ForceGameResolution
+    {
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+
     #region GlueViewSettingsDto
     public class GlueViewSettingsDto
     {

@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -202,14 +203,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
             }
 
-            var project = GlueState.Self.CurrentGlueProject;
-            if(project?.DisplaySettings?.AllowWindowResizing == true && glueViewSettingsViewModel.EmbedGameInGameTab)
+            // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
+            if(GlueState.Self.CurrentMainProject.DotNetVersion != "v6.0")
             {
-                if(!string.IsNullOrEmpty(args))
+                var project = GlueState.Self.CurrentGlueProject;
+                if(project?.DisplaySettings?.AllowWindowResizing == true && glueViewSettingsViewModel.EmbedGameInGameTab)
                 {
-                    args += " ";
+                    if(!string.IsNullOrEmpty(args))
+                    {
+                        args += " ";
+                    }
+                    args += "AllowWindowResizing=false";
                 }
-                args += "AllowWindowResizing=false";
             }
 
             return args;

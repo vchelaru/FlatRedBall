@@ -1060,6 +1060,13 @@ namespace GlueControl
 
         #endregion
 
+        private static void HandleDto(ForceGameResolution dto)
+        {
+            CameraSetup.Data.ResolutionWidth = dto.Width;
+            CameraSetup.Data.ResolutionHeight = dto.Height;
+            CameraSetup.ResetWindow();
+        }
+
         private static void HandleDto(GlueViewSettingsDto dto)
         {
             EditingManager.Self.ShowGrid = dto.ShowGrid;
