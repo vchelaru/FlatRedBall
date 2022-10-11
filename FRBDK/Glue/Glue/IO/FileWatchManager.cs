@@ -229,7 +229,12 @@ namespace FlatRedBall.Glue.IO
             // to mark how many changes Glue should ignore.
             Dictionary<string, int> mChangesToIgnore = new Dictionary<string, int>();
             mChangedProjectFiles.SetIgnoreDictionary(mChangesToIgnore);
-            mChangedProjectFiles.SortDelegate = CompareFiles;
+
+            // Oct 11, 2022 - why do we sort? This actually adds a bit to
+            // the loading process since so many files can change on disk.
+            // Was this for debugging? I can't figure out why we might want this
+            // so I'm going to remove this to make Glue load faster:
+            //mChangedProjectFiles.SortDelegate = CompareFiles;
 
             //mExternallyBuiltFileWatcher = new FileSystemWatcher();
             //mExternallyBuiltFileWatcher.Filter = "*.*";
