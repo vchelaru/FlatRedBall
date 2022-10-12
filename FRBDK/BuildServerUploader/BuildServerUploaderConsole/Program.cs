@@ -85,8 +85,10 @@ namespace BuildServerUploaderConsole
 
         private static void CreateUploadProcessSteps(string buildType)
         {
-            
-            ProcessSteps.Add(new PublishGlue(Results));
+            // I don't think we need publish....
+            // Users still need VS 2022 for msbuild
+            // and that installs .net 6
+            //ProcessSteps.Add(new PublishGlue(Results));
             // Maybe this should be after?
             ProcessSteps.Add(new BuildGlue(Results));
             ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
