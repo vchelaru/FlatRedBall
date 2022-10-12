@@ -105,7 +105,6 @@ namespace BuildServerUploaderConsole.Processes
             : base(
             @"Upload files to daily build location", results)
         {
-            int number = 1;
             //string fileName = "build_" + DateTime.Now.ToString("yyyy") + "_" + DateTime.Now.ToString("MM") + "_" +
             //    DateTime.Now.ToString("dd") + "_";
 
@@ -129,15 +128,7 @@ namespace BuildServerUploaderConsole.Processes
                     break;
             }
 
-            //while (FolderExists(_ftpFolder))// + fileName + number.ToString("00")))
-            //{
-            //    number++;
-            //}
-            //_ftpFolder += fileName + number.ToString("00") + "/";
 
-            // who cares about cleaning up backups? We have infinite storage, this takes time, and it's crashing as oif
-            // December 12, 2015
-            //CleanUpBackups();
         }
 
         private bool FolderExists(string fileName)

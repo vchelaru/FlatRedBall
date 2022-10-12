@@ -29,7 +29,7 @@ namespace BuildServerUploaderConsole.Sftp
 
         private static void Sftp_ErrorOccurred(object sender, Renci.SshNet.Common.ExceptionEventArgs e)
         {
-            int m = 3;
+
         }
 
         public static SftpClient GetClient(string host, string userName, string password)
