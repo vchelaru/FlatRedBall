@@ -216,6 +216,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     args += "AllowWindowResizing=false";
                 }
             }
+            else
+            {
+                var project = GlueState.Self.CurrentGlueProject;
+                if (project?.DisplaySettings?.AllowWindowResizing == false && glueViewSettingsViewModel.EmbedGameInGameTab)
+                {
+                    if (!string.IsNullOrEmpty(args))
+                    {
+                        args += " ";
+                    }
+                    args += "AllowWindowResizing=true";
+                }
+            }
 
             return args;
         }
