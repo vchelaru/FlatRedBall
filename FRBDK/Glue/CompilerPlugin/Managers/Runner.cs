@@ -15,6 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using CompilerLibrary.ViewModels;
+using System.Threading;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
 
 namespace CompilerPlugin.Managers
 {
@@ -232,8 +234,18 @@ namespace CompilerPlugin.Managers
             return found.FirstOrDefault();
         }
 
-        internal async Task<object> Run(bool preventFocus, string runArguments = null)
+        SemaphoreSlim runCallSemaphore = new SemaphoreSlim(1, 1);
+
+
+        internal async Task<GeneralResponse> Run(bool preventFocus, string runArguments = null)
         {
+            // early out
+            if(TryFindGameProcess(false) != null)
+            {
+                return GeneralResponse.UnsuccessfulWith("Found game process, so not building");
+            }
+
+
             int numberOfTimesToTryGettingProcess = 140;
             int numberOfTimesToTryGettingHandle = 60;
             int millisecondsToWaitBeforeRetry = 100;
@@ -248,6 +260,13 @@ namespace CompilerPlugin.Managers
 
             try
             {
+                var isAvailable = runCallSemaphore.Wait(0);
+                /////////////////////More Early Out/////////////
+                if(!isAvailable)
+                {
+                    return startResponse;
+                }
+                /////////////////End Early Out/////////////////
                 if (System.IO.File.Exists(exeLocation))
                 {
                     if(string.IsNullOrEmpty(runArguments))
@@ -315,9 +334,9 @@ namespace CompilerPlugin.Managers
                                 AfterSuccessfulRun();
                             });
 
-                            return new
+                            return new GeneralResponse
                             {
-                                Successful = true
+                                Succeeded = true
                             };
                         }
                         else
@@ -348,32 +367,33 @@ namespace CompilerPlugin.Managers
                                 }
                             }
 
-                            return new
+                            return new GeneralResponse
                             {
-                                Successful = false,
-                                Error = error
+                                Succeeded = false,
+                                Message = error
                             };
                         }
                     }
                     else
                     {
-                        return new
+                        return new GeneralResponse
                         {
-                            Successful = false
+                            Succeeded = false
                         };
                     }
                 }
                 else
                 {
-                    return new
+                    return new GeneralResponse
                     {
                         Succeeded = false,
-                        Error = $"Could not find game .exe"
+                        Message = $"Could not find game .exe"
                     };
                 }
             }
             finally
             {
+                runCallSemaphore.Release();
                 IsWaitingForGameToStart = false;
             }
         }

@@ -282,7 +282,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 if(!handled)
                 {
-                    StopAndRestartAsync($"File {fileName} changed");
+                    CreateStopAndRestartTask($"File {fileName} changed");
                 }
             }
         }
@@ -366,11 +366,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #region Screen Created
 
-        internal async Task HandleNewScreenCreated()
+        internal void HandleNewScreenCreated()
         {
             if (ShouldRestartOnChange)
             {
-                await StopAndRestartAsync($"New screen created");
+                // Don't await this because this could soft lock the app.
+
+                CreateStopAndRestartTask($"New screen created");
+
             }
         }
 
@@ -436,7 +439,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     response.Data.Data == null ||
                     response.Data.Data.Any(item => item.WasObjectCreated == false))
                 {
-                    await StopAndRestartAsync("Restarting because the add object group failed");
+                    CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
                 // else do we want to position based on camera? This is likely a copy/paste so...maybe not?
             }
@@ -479,7 +482,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    await StopAndRestartAsync($"Restarting because of added object {newNamedObject}");
+                    CreateStopAndRestartTask($"Restarting because of added object {newNamedObject}");
                 }
             }
         }
@@ -654,7 +657,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             else
             {
                 // it's a brand new variable, so let's restart it...
-                StopAndRestartAsync($"Restarting because of added variable {newVariable}");
+                CreateStopAndRestartTask($"Restarting because of added variable {newVariable}");
             }
         }
 
@@ -847,12 +850,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         }
 
-        internal async void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
+        internal void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
         {
             if(excludedOrIncluded == StateCategoryVariableAction.Included)
             {
                 // If a new state variable is included, it won't be functional. This could be confusing, so let's restart
-                await StopAndRestartAsync($"New variable {variableName} added to category {category}");
+                CreateStopAndRestartTask($"New variable {variableName} added to category {category}");
             }
         }
 
@@ -912,7 +915,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 if(!generalResponse.Succeeded)
                 {
-                    StopAndRestartAsync($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
+                    CreateStopAndRestartTask($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
                 }
             }
         }
@@ -954,7 +957,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 if (response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
                 {
-                    await StopAndRestartAsync(
+                    CreateStopAndRestartTask(
                         $"Restarting because {namedObjects.Count} items were deleted from Glue but not from game");
                 }
             }
@@ -977,21 +980,24 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
 
-        public async Task StopAndRestartAsync(string reason)
+        public void CreateStopAndRestartTask(string reason)
         {
             if (CanRestart)
             {
-                if(!string.IsNullOrEmpty(reason))
+                TaskManager.Self.Add(async () =>
                 {
-                    printOutput($"Restarting because: {reason}. Waiting for tasks to finish...");
-                }
-                await TaskManager.Self.WaitForAllTasksFinished();
-                var wasInEditMode = ViewModel.IsEditChecked;
-                await StopAndRestartImmediately(PortNumber);
-                if(wasInEditMode)
-                {
-                    ViewModel.IsEditChecked = true;
-                }
+                    if (!string.IsNullOrEmpty(reason))
+                    {
+                        printOutput($"Restarting because: {reason}. Waiting for tasks to finish...");
+                    }
+                    var wasInEditMode = ViewModel.IsEditChecked;
+                    await StopAndRestartImmediately(PortNumber);
+                    if (wasInEditMode)
+                    {
+                        ViewModel.IsEditChecked = true;
+                    }
+
+                }, nameof(CreateStopAndRestartTask), TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 

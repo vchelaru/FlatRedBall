@@ -192,10 +192,11 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
             this.NewEntityCreated += _refreshManager.HandleNewEntityCreated;
-            this.NewScreenCreated += async (newScreen) =>
+            this.NewScreenCreated += (newScreen) =>
             {
                 GlueCommands.Self.DoOnUiThread(() => ToolbarController.Self.HandleNewScreenCreated(newScreen));
-                await _refreshManager.HandleNewScreenCreated();
+                _refreshManager.HandleNewScreenCreated();
+                return Task.CompletedTask;
             };
             this.ReactToScreenRemoved += ToolbarController.Self.HandleScreenRemoved;
             // todo - handle startup changed...
@@ -950,7 +951,7 @@ namespace GameCommunicationPlugin.GlueControl
                 GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
             }
 
-            await _refreshManager.StopAndRestartAsync($"{propertyName} changed");
+            _refreshManager.CreateStopAndRestartTask($"{propertyName} changed");
 
             ReactToPluginEvent("Compiler_Output_Standard", "Waiting for tasks to finish...");
             await TaskManager.Self.WaitForAllTasksFinished();

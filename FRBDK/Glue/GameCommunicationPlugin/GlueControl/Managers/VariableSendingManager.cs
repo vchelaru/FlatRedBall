@@ -140,7 +140,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             Output.Print(exception);
                         }
                         var waitTimeout = TimeSpan.FromSeconds(5);
-                        _refreshManager.StopAndRestartAsync($"Unhandled variable changed").Wait(waitTimeout);
+                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed").Wait(waitTimeout);
                     }
                 }
                 catch
@@ -655,7 +655,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             else
             {
-                await _refreshManager.StopAndRestartAsync($"Object variable {variable.Name} changed");
+                _refreshManager.CreateStopAndRestartTask($"Object variable {variable.Name} changed");
             }
         }
 
