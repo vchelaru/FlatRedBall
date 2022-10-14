@@ -198,8 +198,8 @@ namespace FlatRedBall.TileGraphics
         /// </summary>
         public float ParallaxMultiplierX
         {
-            get { return -_parallaxMultiplierX + 1; }
-            set { _parallaxMultiplierX = 1 - value; }
+            get => -_parallaxMultiplierX + 1;
+            set => _parallaxMultiplierX = 1 - value;
         }
 
         private float _parallaxMultiplierY;
@@ -1358,14 +1358,32 @@ namespace FlatRedBall.TileGraphics
         #endregion
         public void Update()
         {
-            float leftView = Camera.Main.AbsoluteLeftXEdgeAt(0);
-            float topView = Camera.Main.AbsoluteTopYEdgeAt(0);
+            var camera = Camera.Main;
+            float leftView = camera.AbsoluteLeftXEdgeAt(0);
+            float topView = camera.AbsoluteTopYEdgeAt(0);
 
             float cameraOffsetX = leftView - CameraOriginX;
             float cameraOffsetY = topView - CameraOriginY;
 
-            this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
-            this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            if (camera.Orthogonal)
+            {
+                var zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
+
+                var pixelRoundingValue = 1 / zoom;
+                pixelRoundingValue = System.Math.Min(1, pixelRoundingValue);
+
+                this.RelativeX = MathFunctions.RoundFloat(cameraOffsetX * _parallaxMultiplierX, pixelRoundingValue);
+                this.RelativeY = MathFunctions.RoundFloat(cameraOffsetY * _parallaxMultiplierY, pixelRoundingValue);
+
+
+            }
+
+            else
+            {
+                this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
+                this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            }
+
 
             this.TimedActivity(TimeManager.SecondDifference, TimeManager.SecondDifferenceSquaredDividedByTwo, TimeManager.LastSecondDifference);
 
