@@ -40,7 +40,8 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati,
             VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
         {
-            bool shouldBeSkipped = GetIfShouldBeSkipped(memberName, instance, ati);
+            bool shouldBeSkipped = 
+                GetIfShouldBeSkipped(memberName, instance, ati);
             ///////Early Out//////////
             if (shouldBeSkipped)
             {
@@ -51,6 +52,25 @@ namespace OfficialPlugins.VariableDisplay
             DataGridItem instanceMember = null;
 
             #region Property Displayer/forced options
+
+
+            EntitySave nosEntity = instance.SourceType == SourceType.Entity
+                ? ObjectFinder.Self.GetEntitySave(instance.SourceClassType)
+                : null;
+
+            var variableInNos = nosEntity.GetCustomVariableRecursively(memberName);
+            CustomVariable baseNos = variableInNos != null
+                ? ObjectFinder.Self.GetBaseCustomVariable(variableInNos)
+                : null ;
+
+            var isSharedStatic = baseNos?.IsShared == true;
+
+            /////////////////Early Out///////////////////////////
+            if(isSharedStatic)
+            {
+                return null;
+            }
+            ///////////////End Early Out/////////////////////////
 
             TypeConverter typeConverter = GetTypeConverter(instance, container, memberName, memberType, customTypeName, variableDefinition);
 
@@ -954,7 +974,6 @@ namespace OfficialPlugins.VariableDisplay
 
             if (ati != null)
             {
-
                 if (ati.IsPositionedObject)
                 {
                     if (name.EndsWith("Velocity") || name.EndsWith("Acceleration") || name.StartsWith("Relative") ||

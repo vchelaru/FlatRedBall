@@ -139,8 +139,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             GlueCommands.Self.PrintError(exception);
                             Output.Print(exception);
                         }
-                        var waitTimeout = TimeSpan.FromSeconds(5);
-                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed").Wait(waitTimeout);
+
+                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
                     }
                 }
                 catch
