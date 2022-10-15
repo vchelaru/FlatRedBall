@@ -58,7 +58,7 @@ namespace OfficialPlugins.VariableDisplay
                 ? ObjectFinder.Self.GetEntitySave(instance.SourceClassType)
                 : null;
 
-            var variableInNos = nosEntity.GetCustomVariableRecursively(memberName);
+            var variableInNos = nosEntity?.GetCustomVariableRecursively(memberName);
             CustomVariable baseNos = variableInNos != null
                 ? ObjectFinder.Self.GetBaseCustomVariable(variableInNos)
                 : null ;
