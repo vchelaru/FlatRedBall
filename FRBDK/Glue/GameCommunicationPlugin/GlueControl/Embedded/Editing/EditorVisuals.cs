@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math.Paths;
-using static System.Net.Mime.MediaTypeNames;
-using System.IO;
 
 namespace GlueControl.Editing
 {
