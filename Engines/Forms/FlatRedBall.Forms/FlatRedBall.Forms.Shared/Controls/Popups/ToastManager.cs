@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Graphics;
 using FlatRedBall.Managers;
+using FlatRedBall.Screens;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -48,6 +49,10 @@ namespace FlatRedBall.Forms.Controls.Popups
                 // This seems to be the only one that supports add, remove, and foreach
                 liveToasts = ArrayList.Synchronized(new ArrayList());
                 hasBeenStarted = true;
+
+                // Make sure we destroy toasts when the screen navigates
+                ScreenManager.AfterScreenDestroyed += (unused) => DestroyLiveToasts();
+
                 var thread = new System.Threading.Thread(new ThreadStart(DoLoop));
                 thread.Start();
             }
