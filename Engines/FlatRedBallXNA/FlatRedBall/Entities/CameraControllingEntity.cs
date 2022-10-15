@@ -198,19 +198,44 @@ namespace FlatRedBall.Entities
         {
             #region Get the average position of all the target instances
 
-            Vector2 averagePosition = this.Position.ToVector2();
+            Vector2 centerOfTargets = this.Position.ToVector2();
 
             if(Targets.Count > 0)
             {
-                averagePosition = Vector2.Zero;
-                foreach (PositionedObject targetAtI in Targets)
+                var first = (PositionedObject)Targets[0];
+
+                float minX = first.X;
+                float maxX = first.X;
+
+                float minY = first.Y;
+                float maxY = first.Y;
+
+                for(int i = 1; i < Targets.Count; i++)
                 {
-                    averagePosition.X += targetAtI.X;
-                    averagePosition.Y += targetAtI.Y;
+                    var positionable = ((PositionedObject)Targets[i]);
+                    var position = positionable.Position;
+
+                    if(position.X < minX)
+                    {
+                        minX = position.X;
+                    }
+                    if(position.X > maxX)
+                    {
+                        maxX = position.X;
+                    }
+
+                    if(position.Y < minY)
+                    {
+                        minY = position.Y;
+                    }
+                    if(position.Y > maxY)
+                    {
+                        maxY = position.Y;
+                    }
                 }
 
-                averagePosition.X /= Targets.Count;
-                averagePosition.Y /= Targets.Count;
+                centerOfTargets.X = (minX + maxX) / 2.0f;
+                centerOfTargets.Y = (minY + maxY) / 2.0f;
             }
 
             #endregion
@@ -242,26 +267,26 @@ namespace FlatRedBall.Entities
             var windowBottom = effectiveThis.Y - windowHeightHalf;
             var windowTop = effectiveThis.Y + windowHeightHalf;
 
-            if(averagePosition.X < windowLeft)
+            if(centerOfTargets.X < windowLeft)
             {
-                target.X = averagePosition.X + windowWidthHalf;
+                target.X = centerOfTargets.X + windowWidthHalf;
             }
-            else if(averagePosition.X > windowRight)
+            else if(centerOfTargets.X > windowRight)
             {
-                target.X = averagePosition.X - windowWidthHalf;
+                target.X = centerOfTargets.X - windowWidthHalf;
             }
             else
             {
                 target.X = effectiveThis.X;
             }
 
-            if(averagePosition.Y < windowBottom)
+            if(centerOfTargets.Y < windowBottom)
             {
-                target.Y = averagePosition.Y + windowHeightHalf;
+                target.Y = centerOfTargets.Y + windowHeightHalf;
             }
-            else if(averagePosition.Y > windowTop)
+            else if(centerOfTargets.Y > windowTop)
             {
-                target.Y = averagePosition.Y - windowHeightHalf;
+                target.Y = centerOfTargets.Y - windowHeightHalf;
             }
             else
             {
