@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math.Paths;
+using static System.Net.Mime.MediaTypeNames;
+using System.IO;
 
 namespace GlueControl.Editing
 {
@@ -55,6 +57,7 @@ namespace GlueControl.Editing
             DefaultLayer = SpriteManager.TopLayer;
         }
 
+        #region Draw specific shapes
         public static Text Text(string text, Vector3 position, Color? color = null)
         {
             if (position.Z == Camera.Main.Z)
@@ -335,6 +338,31 @@ namespace GlueControl.Editing
             }
 
             return pathPolygon;
+        }
+
+        #endregion
+
+        public static void DrawRepositionDirections(AxisAlignedRectangle rectangle)
+        {
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))
+            {
+                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(rectangle.Height / 2));
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Down))
+            {
+                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(-rectangle.Height / 2));
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Left))
+            {
+                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(-rectangle.Width / 2));
+            }
+
+            if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Right))
+            {
+                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(rectangle.Width / 2));
+            }
         }
 
         public static List<FlatRedBall.Math.Geometry.Point> GetPoints(Path pathInstance, bool flipHorizontally)
