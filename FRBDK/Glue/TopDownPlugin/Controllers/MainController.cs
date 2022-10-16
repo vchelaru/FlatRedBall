@@ -603,10 +603,12 @@ namespace TopDownPlugin.Controllers
                         .Animations
                         .FirstOrDefault(item => item.MovementValuesName == backingData.Name);
 
-                    animationToRename.MovementValuesName = senderAsViewModel.Name;
+                    if(animationToRename != null)
+                    {
+                        animationToRename.MovementValuesName = senderAsViewModel.Name;
 
-                    SaveCurrentEntitySaveAnimationDataTask();
-                    
+                        SaveCurrentEntitySaveAnimationDataTask();
+                    }
                     // todo - regenerate
 
                     break;
