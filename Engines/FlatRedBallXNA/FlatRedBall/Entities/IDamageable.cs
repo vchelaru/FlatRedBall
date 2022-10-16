@@ -13,6 +13,14 @@ namespace FlatRedBall.Entities
 
     public static class DamageableExtensionMethods
     {
+        /// <summary>
+        /// Returns whether the argument IDamageable should take damage from the argument IDamageArea.
+        /// This returns true if the team indexes are different, and if enough time has passed since the 
+        /// last damage wad ealt by this particular IDamageArea instance.
+        /// </summary>
+        /// <param name="damageable">The damageable object, typically a Player or Enemy.</param>
+        /// <param name="damageArea">The damage dealing object, typically a bullet or enemy.</param>
+        /// <returns></returns>
         public static bool ShouldTakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
             if(damageable.TeamIndex == damageArea.TeamIndex)

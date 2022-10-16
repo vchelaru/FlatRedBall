@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FlatRedBall.TileGraphics;
 using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
+using Microsoft.Xna.Framework;
 
 namespace FlatRedBall.AI.Pathfinding
 {
@@ -19,6 +20,48 @@ namespace FlatRedBall.AI.Pathfinding
             FillFromPredicate(nodeNetwork, layeredTileMap, predicate);
 
             return nodeNetwork;
+        }
+
+        public static void FillAllExceptFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate)
+        {
+            var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
+
+            var properties = layeredTileMap.TileProperties;
+
+            nodeNetwork.FillCompletely();
+
+            foreach (var kvp in properties)
+            {
+                string name = kvp.Key;
+                var namedValues = kvp.Value;
+
+                if (predicate(namedValues))
+                {
+                    foreach (var layer in layeredTileMap.MapLayers)
+                    {
+                        var dictionary = layer.NamedTileOrderedIndexes;
+
+                        if (dictionary.ContainsKey(name))
+                        {
+                            var indexList = dictionary[name];
+
+                            foreach (var index in indexList)
+                            {
+                                float left;
+                                float bottom;
+                                layer.GetBottomLeftWorldCoordinateForOrderedTile(index, out left, out bottom);
+
+                                Vector3 positionToRemove = new Vector3();
+
+                                positionToRemove.X = left + dimensionHalf;
+                                positionToRemove.Y = bottom + dimensionHalf;
+
+                                nodeNetwork.RemoveAndUnlinkNode(ref positionToRemove);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public static void FillFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate)
@@ -131,6 +174,41 @@ namespace FlatRedBall.AI.Pathfinding
                 return toReturn;
             }
             return CreateFrom(layeredTileMap, directionalType, CreateFromTypesPredicate);
+        }
+
+        public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, params string[] types) =>
+            CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types);
+
+        public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
+        {
+            bool CreateFromTypesPredicate(List<NamedValue> list)
+            {
+                var toReturn = false;
+
+                foreach (var namedValue in list)
+                {
+                    if (namedValue.Name == "Type")
+                    {
+                        var valueAsString = namedValue.Value as string;
+
+                        if (!string.IsNullOrEmpty(valueAsString) && types.Contains(valueAsString))
+                        {
+                            toReturn = true;
+                            break;
+                        }
+                    }
+                }
+
+                return toReturn;
+            }
+
+            //return CreateFrom(layeredTileMap, directionalType, CreateFromTypesPredicate);
+
+            TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
+
+            FillAllExceptFromPredicate(nodeNetwork, layeredTileMap, CreateFromTypesPredicate);
+
+            return nodeNetwork;
         }
 
         public static void FillFromTypes(this TileNodeNetwork tileNodeNetwork, LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
