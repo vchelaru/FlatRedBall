@@ -89,7 +89,31 @@ namespace FlatRedBall.Forms.Controls
         }
 
         public FrameworkElementTemplate FrameworkElementTemplate { get; set; }
-        public VisualTemplate VisualTemplate { get; set; }
+
+        VisualTemplate visualTemplate;
+        public VisualTemplate VisualTemplate 
+        { 
+            get => visualTemplate;
+            set
+            {
+                if (value != visualTemplate)
+                {
+                    visualTemplate = value;
+
+                    if (items != null)
+                    {
+                        ClearVisualsInternal();
+
+                        if (items.Count > 0)
+                        {
+                            // refresh!
+                            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items, startingIndex: 0);
+                            HandleCollectionChanged(this, args);
+                        }
+                    }
+                }
+            }
+        }
 
         #endregion
 

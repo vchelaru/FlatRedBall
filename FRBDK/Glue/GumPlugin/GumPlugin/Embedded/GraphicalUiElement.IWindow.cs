@@ -163,34 +163,20 @@ namespace Gum.Wireframe
 
         }
 
-        public void CallClick()
-        {
-            Click?.Invoke(this);
-        }
+        public void CallClick() => Click?.Invoke(this);
 
-        public void CallRollOff()
-        {
-            RollOff?.Invoke(this);
-        }
+        public void CallRollOff() => RollOff?.Invoke(this);
+        
 
-        public void CallRollOver()
-        {
-            RollOver?.Invoke(this);
-        }
+        public void CallRollOver() => RollOver?.Invoke(this);
 
-        public void CallRollOn()
-        {
-            RollOn?.Invoke(this);
-        }
+        public void CallRollOn() => RollOn?.Invoke(this);
 
-        void CallLosePush()
-        {
-            LosePush?.Invoke(this);
-        }
+        void CallLosePush() => LosePush?.Invoke(this);
 
         System.Collections.ObjectModel.ReadOnlyCollection<IWindow> IWindow.Children
         {
-            get { throw new NotImplementedException(); }
+            get  => throw new NotImplementedException();
         }
 
         public void CloseWindow()
@@ -202,10 +188,7 @@ namespace Gum.Wireframe
 
         public bool Enabled
         {
-            get
-            {
-                return mEnabled;
-            }
+            get => mEnabled;
             set
             {
                 if(value != mEnabled)
@@ -269,10 +252,7 @@ namespace Gum.Wireframe
 
         public void OnDragging()
         {
-            if (this.DragOver != null)
-            {
-                DragOver(this);
-            }
+            DragOver?.Invoke(this);
         }
 
         public void OnLosingFocus()
