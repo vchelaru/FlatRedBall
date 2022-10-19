@@ -434,7 +434,10 @@ namespace FlatRedBall.Gui
                 {
                     // there's been a change
                     if (mLastWindowOver != null)
-                        mLastWindowOver.CallRollOff();
+                    {
+                        CallRollOffRecursively(mLastWindowOver);
+
+                    }
 
                     mLastWindowOver = value;
 
@@ -442,6 +445,15 @@ namespace FlatRedBall.Gui
                         mLastWindowOver.CallRollOn();
 
                 }
+            }
+        }
+
+        private void CallRollOffRecursively(IWindow window)
+        {
+            window.CallRollOff();
+            if(window.Parent != null && !window.Parent.HasCursorOver(this))
+            {
+                CallRollOffRecursively(window.Parent);
             }
         }
 

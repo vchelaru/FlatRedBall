@@ -571,6 +571,14 @@ namespace FlatRedBall
             }
         }
 
+        public static async Task DelayUntil(Func<bool> predicate)
+        {
+            while(predicate() == false)
+            {
+                await Task.Yield();
+            }
+        }
+
         public static async Task DelayFrames(int frameCount)
         {
             var currentFrame = TimeManager.CurrentTime;

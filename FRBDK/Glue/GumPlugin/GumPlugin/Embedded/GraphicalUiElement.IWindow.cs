@@ -165,42 +165,27 @@ namespace Gum.Wireframe
 
         public void CallClick()
         {
-            if (this.Click != null)
-            {
-                Click(this);
-            }
+            Click?.Invoke(this);
         }
 
         public void CallRollOff()
         {
-            if (this.RollOff != null)
-            {
-                RollOff(this);
-            }
+            RollOff?.Invoke(this);
         }
 
         public void CallRollOver()
         {
-            if (this.RollOver != null)
-            {
-                RollOver(this);
-            }
+            RollOver?.Invoke(this);
         }
 
         public void CallRollOn()
         {
-            if (this.RollOn != null)
-            {
-                RollOn(this);
-            }
+            RollOn?.Invoke(this);
         }
 
         void CallLosePush()
         {
-            if (LosePush != null)
-            {
-                LosePush(this);
-            }
+            LosePush?.Invoke(this);
         }
 
         System.Collections.ObjectModel.ReadOnlyCollection<IWindow> IWindow.Children
