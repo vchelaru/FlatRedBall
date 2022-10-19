@@ -289,6 +289,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public FilePath ProjectSpecificSettingsPath => new FilePath(ProjectSpecificSettingsFolder);
+
         public IEnumerable<ProjectBase> SyncedProjects => ProjectManager.SyncedProjects;
 
         public GlueProjectSave CurrentGlueProject => ObjectFinder.Self.GlueProject; 

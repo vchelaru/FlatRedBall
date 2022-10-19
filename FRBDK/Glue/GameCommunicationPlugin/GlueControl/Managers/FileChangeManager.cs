@@ -1,6 +1,7 @@
 ﻿using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.IO;
 using GameCommunicationPlugin.GlueControl.ViewModels;
 using System;
@@ -46,6 +47,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var extension = FileManager.GetExtension(fileName);
             var shouldCopy = copiedExtensions.Contains(extension);
 
+            if(shouldCopy)
+            {
+                shouldCopy = !IsFileIgnored(fileName);
+            }
+
             if (shouldCopy)
             {
                 GlueCommands.Self.ProjectCommands.CopyToBuildFolder(fileName);
@@ -55,6 +61,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             _refreshManager.HandleFileChanged(fileName);
         }
 
+        private bool IsFileIgnored(FilePath fileName)
+        {
+            var settingsFolder = GlueState.Self.ProjectSpecificSettingsPath;
+
+            return settingsFolder.IsRootOf(fileName);
+        }
 
         private void OutputSuccessOrFailure(bool succeeded)
         {
