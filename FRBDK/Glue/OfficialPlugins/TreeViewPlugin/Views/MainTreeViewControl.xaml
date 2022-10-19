@@ -108,6 +108,7 @@
                         PreviewMouseLeftButtonUp="MainTreeView_PreviewMouseLeftButtonUp"
                         PreviewMouseRightButtonUp="MainTreeView_PreviewMouseRightButtonUp"
                         PreviewMouseMove="MainTreeView_PreviewMouseMove"
+                        DragLeave="MainTreeView_DragLeave"
                         Drop="MainTreeView_Drop"
                         DragEnter="MainTreeView_DragEnter"
                         MouseDoubleClick="MainTreeView_MouseDoubleClick"

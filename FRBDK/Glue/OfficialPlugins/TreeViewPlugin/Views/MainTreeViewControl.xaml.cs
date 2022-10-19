@@ -503,5 +503,12 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 }
             }, "Saving settings after dismissing tree view hint text");
         }
+
+        private void MainTreeView_DragLeave(object sender, DragEventArgs e)
+        {
+            // If the user leaves, then set the nodeWaitingOnSelection to null so that a later push doesn't select
+            // the node that was dragged off
+            nodeWaitingOnSelection = null;
+        }
     }
 }
