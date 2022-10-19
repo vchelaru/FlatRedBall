@@ -15,6 +15,9 @@
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+    <None Remove="**\*.glsj" />
+	  <None Remove="**\*.glej" />
+	  <None Remove="**\*.gluj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game1.cs" />
