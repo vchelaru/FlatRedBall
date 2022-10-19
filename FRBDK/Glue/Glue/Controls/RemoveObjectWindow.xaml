@@ -5,18 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlueFormsCore.Controls"
         mc:Ignorable="d"
-        Title="Delete Object?" SizeToContent="Height" Width="400">
-    <StackPanel Margin="6">
+        Title="Delete Object?" SizeToContent="Height" Width="400" Height="250">
+    <Grid Margin="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
         <Label Content="{Binding WouldYouLikeToDeleteMessage, FallbackValue='Would you like to delete XXXX?'}"></Label>
-        <StackPanel Margin="5" Visibility="{Binding ObjectsToRemoveVisibility}">
+        <Grid Margin="5" Grid.Row="1" Visibility="{Binding ObjectsToRemoveVisibility}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
             <Label>The following items will also be deleted:</Label>
-            <ListBox Height="100" ItemsSource="{Binding ObjectsToRemove}">
+            <ListBox Grid.Row="1" ItemsSource="{Binding ObjectsToRemove}">
                 
             </ListBox>
-        </StackPanel>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Click="DeleteButton_Click" IsDefault="True">Delete</Button>
             <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" >Cancel</Button>
         </StackPanel>
-    </StackPanel>
+    </Grid>
 </Window>
