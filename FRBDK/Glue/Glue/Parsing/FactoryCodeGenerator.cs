@@ -552,7 +552,7 @@ namespace FlatRedBall.Glue.Parsing
 
             codeBlock.Line("public static FlatRedBall.Math.Axis? SortAxis { get; set;}");
 
-            GetCreateNewFactoryMethod(codeBlock, factoryClassName, poolObjects, baseClassName);
+            GetCreateNewFactoryMethods(codeBlock, factoryClassName, poolObjects, baseClassName);
             codeBlock._();
             GetInitializeFactoryMethod(codeBlock, className, poolObjects, "mScreenListReference");
             codeBlock._();
@@ -595,7 +595,7 @@ namespace FlatRedBall.Glue.Parsing
             method.Line("ListsToAddTo.Clear();");
         }
 
-        private static ICodeBlock GetCreateNewFactoryMethod(ICodeBlock codeBlock, string className, bool poolObjects, string baseEntityName)
+        private static ICodeBlock GetCreateNewFactoryMethods(ICodeBlock codeBlock, string className, bool poolObjects, string baseEntityName)
         {
             className = className.Substring(0, className.Length - "Factory".Length);
 
@@ -610,6 +610,23 @@ namespace FlatRedBall.Glue.Parsing
                     .Line("return CreateNew(null, position.X, position.Y, position.Z);")
                 .End();
 
+            codeBlock
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Microsoft.Xna.Framework.Vector2 position")
+                    .Line("return CreateNew(null, position.X, position.Y, 0);")
+                .End();
+
+
+            /*
+             * public static EnemyBullet CreateNew(Layer layer, Vector3 vector3)
+                {
+                    return CreateNew(layer, vector3.X, vector3.Y, vector3.Z);
+                }
+            */
+
+            codeBlock = codeBlock
+                .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, Microsoft.Xna.Framework.Vector3 position")
+                    .Line("return CreateNew(layer , position.X, position.Y, position.Z);")
+                .End();
 
             codeBlock = codeBlock
                 .Function(StringHelper.SpaceStrings("public", "static", className), "CreateNew", "Layer layer, float x = 0, float y = 0, float z = 0");
