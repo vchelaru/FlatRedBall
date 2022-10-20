@@ -81,7 +81,8 @@ namespace FlatRedBall.Glue.SaveClasses
             ICollidableHasItemsCollidedAgainst = 22,
             CollisionRelationshipManualPhysics = 23,
             GumSupportsStackSpacing = 24,
-            CollisionRelationshipsSupportMoveSoft = 25
+            CollisionRelationshipsSupportMoveSoft = 25,
+            GeneratedCameraSetupFile = 26
         }
 
         #endregion

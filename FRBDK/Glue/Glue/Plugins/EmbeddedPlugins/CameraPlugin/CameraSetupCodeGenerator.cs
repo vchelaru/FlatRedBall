@@ -13,6 +13,7 @@ using FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using Microsoft.Xna.Framework.Graphics;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -121,7 +122,16 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             TaskManager.Self.AddOrRunIfTasked(() =>
             {
-                FilePath fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
+                FilePath fileName;
+                
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GeneratedCameraSetupFile)
+                {
+                    fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.Generated.cs";
+                }
+                else
+                {
+                    fileName = GlueState.Self.CurrentGlueProjectDirectory + @"Setup\CameraSetup.cs";
+                }
 
                 string newContents = GetCameraSetupCsContents();
 
