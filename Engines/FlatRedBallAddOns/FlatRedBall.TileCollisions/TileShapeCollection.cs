@@ -28,7 +28,8 @@ namespace FlatRedBall.TileCollisions
         /// The bottommost edge of the map. This will correspond with the bottom edge of an AxisAlignedRectangle.
         /// </summary>
         public float BottomSeedY = 0;
-        float mGridSize;
+        float mGridSizeX;
+        float mGridSizeY;
         bool mVisible = true;
 
 
@@ -57,7 +58,7 @@ namespace FlatRedBall.TileCollisions
 
         public float GridSize
         {
-            get { return mGridSize; }
+            get { return mGridSizeX; }
             set
             {
 #if DEBUG
@@ -68,9 +69,10 @@ namespace FlatRedBall.TileCollisions
 #endif
 
 
-                mGridSize = value;
-                mShapes.MaxAxisAlignedRectanglesScale = mGridSize;
-                mShapes.MaxPolygonRadius = mGridSize;
+                mGridSizeX = value;
+                mGridSizeY = value;
+                mShapes.MaxAxisAlignedRectanglesScale = mGridSizeX;
+                mShapes.MaxPolygonRadius = mGridSizeX;
             }
         }
 
@@ -663,8 +665,8 @@ namespace FlatRedBall.TileCollisions
             var worldX = positionedObject.Position.X;
             var worldY = positionedObject.Position.Y;
 
-            var xIndex = MathFunctions.RoundToInt((worldX - collectionLeft) / mGridSize);
-            var yIndex = MathFunctions.RoundToInt((worldY - collectionBottom) / mGridSize);
+            var xIndex = MathFunctions.RoundToInt((worldX - collectionLeft) / mGridSizeX);
+            var yIndex = MathFunctions.RoundToInt((worldY - collectionBottom) / mGridSizeY);
 
             bool ValueAt(int xIndexInner, int yIndexInner)
             {
@@ -1188,8 +1190,8 @@ namespace FlatRedBall.TileCollisions
                 }
 
                 // now we know the mins and maxes
-                var numberOfXTiles = 1 + MathFunctions.RoundToInt((maxX - minX) / mGridSize);
-                var numberOfYTiles = 1 + MathFunctions.RoundToInt((maxY - minY) / mGridSize);
+                var numberOfXTiles = 1 + MathFunctions.RoundToInt((maxX - minX) / mGridSizeX);
+                var numberOfYTiles = 1 + MathFunctions.RoundToInt((maxY - minY) / mGridSizeY);
 
                 left = minX;
                 bottom = minY;
@@ -1204,8 +1206,8 @@ namespace FlatRedBall.TileCollisions
                 {
                     var rect = mShapes.AxisAlignedRectangles[i];
 
-                    var xIndex = MathFunctions.RoundToInt((rect.Position.X - minX) / mGridSize);
-                    var yIndex = MathFunctions.RoundToInt((rect.Position.Y - minY) / mGridSize);
+                    var xIndex = MathFunctions.RoundToInt((rect.Position.X - minX) / mGridSizeX);
+                    var yIndex = MathFunctions.RoundToInt((rect.Position.Y - minY) / mGridSizeY);
 
                     var index = xIndex + yIndex * numberOfXTiles;
 
@@ -1848,5 +1850,4 @@ namespace FlatRedBall.TileCollisions
                 removeTilesOnAdd);
         }
     }
-
 }

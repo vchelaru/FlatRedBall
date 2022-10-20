@@ -37,35 +37,36 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
 			    out endIndex, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
-			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+                // SET THIS:
+                rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -202,17 +203,21 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
+
             #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
 					boundStartPosition = shapeToCollideAgainstThis.X;
+					rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
 					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
@@ -230,7 +235,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -390,19 +395,23 @@ namespace FlatRedBall.Math.Geometry
             {
 				float min;
 				float max;
+                float rectangleRadius = 0;
 
-				if (axisToUse == Axis.X)
+                if (axisToUse == Axis.X)
                 {
 					min = shapeToCollideAgainstThis.Vertices[0].Position.X;
 					max = shapeToCollideAgainstThis.Vertices[0].Position.X;
-				}
+					rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
+
+                }
 				else // if(axisToUse == Axis.Y)
                 {
 					min = shapeToCollideAgainstThis.Vertices[0].Position.Y;
 					max = shapeToCollideAgainstThis.Vertices[0].Position.Y;
-				}
+					rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
+                }
 
-				for (int vertexIndex = 1; vertexIndex < shapeToCollideAgainstThis.Vertices.Length; vertexIndex++)
+                for (int vertexIndex = 1; vertexIndex < shapeToCollideAgainstThis.Vertices.Length; vertexIndex++)
 				{
 					var position = shapeToCollideAgainstThis.Vertices[vertexIndex].Position;
 
@@ -428,8 +437,8 @@ namespace FlatRedBall.Math.Geometry
 					out endIndex, 
 					averagePosition, 
 					width,
-					// SET THIS:
-					thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+                    // SET THIS:
+                    rectangleRadius, 
 					thisShapeCollection.mAxisAlignedRectangles
 					// END OF SET
 					);
@@ -687,10 +696,12 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
+
+
+			float rectangleRadius = 0;
             float lineStartPosition = 0;
-			float lineHalfWidthOrHeight = 0;
+            float lineHalfWidthOrHeight = 0;
 
             switch (axisToUse)
             {
@@ -699,18 +710,20 @@ namespace FlatRedBall.Math.Geometry
 					var right = System.Math.Max(shapeToCollideAgainstThis.AbsolutePoint1.X, shapeToCollideAgainstThis.AbsolutePoint2.X);
 					lineHalfWidthOrHeight = (float)(right - left) / 2.0f;
 					lineStartPosition = (float)(left + right) / 2.0f;
+					rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
 					var bottom = System.Math.Min(shapeToCollideAgainstThis.AbsolutePoint1.Y, shapeToCollideAgainstThis.AbsolutePoint2.Y);
 					var top = System.Math.Max(shapeToCollideAgainstThis.AbsolutePoint1.Y, shapeToCollideAgainstThis.AbsolutePoint2.Y);
 					lineHalfWidthOrHeight = (float)(top - bottom) / 2.0f;
 					lineStartPosition = (float)((top + bottom) / 2.0f);
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
                 // break;
             }
-            #endregion
+            
 
 		    #region vs. AxisAlignedRectangles
 
@@ -722,7 +735,7 @@ namespace FlatRedBall.Math.Geometry
 			    lineStartPosition,
 				lineHalfWidthOrHeight,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -858,27 +871,28 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -886,7 +900,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -1197,27 +1211,27 @@ namespace FlatRedBall.Math.Geometry
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-			#region Get the boundStartPosition
-
-			float boundStartPosition = 0;
+            float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -1225,7 +1239,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -1370,27 +1384,27 @@ namespace FlatRedBall.Math.Geometry
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-			#region Get the boundStartPosition
-
-			float boundStartPosition = 0;
+            float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -1398,7 +1412,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -1543,27 +1557,27 @@ namespace FlatRedBall.Math.Geometry
 			#endregion
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-			#region Get the boundStartPosition
-
-			float boundStartPosition = 0;
+            float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -1571,7 +1585,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -1713,27 +1727,28 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -1741,7 +1756,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -1882,27 +1897,28 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -1910,7 +1926,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -2231,27 +2247,27 @@ namespace FlatRedBall.Math.Geometry
 
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-            #region Get the boundStartPosition
-
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -2259,7 +2275,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -2405,27 +2421,27 @@ namespace FlatRedBall.Math.Geometry
 
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-			#region Get the boundStartPosition
-
-			float boundStartPosition = 0;
+            float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -2433,7 +2449,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -2579,27 +2595,27 @@ namespace FlatRedBall.Math.Geometry
 
 			var positionBefore = shapeToCollideAgainstThis.Position;
 
-			#region Get the boundStartPosition
-
-			float boundStartPosition = 0;
+            float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -2607,7 +2623,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -2750,27 +2766,28 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+            float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
-					boundStartPosition = shapeToCollideAgainstThis.X;
+                    boundStartPosition = shapeToCollideAgainstThis.X;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
-					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
-                // break;
+                    // break;
             }
-            #endregion
 
-		    #region vs. AxisAlignedRectangles
+            #region vs. AxisAlignedRectangles
 
-		    GetStartAndEnd(
+            GetStartAndEnd(
 			    considerAxisBasedPartitioning, 
 			    axisToUse, 
 			    out startIndex, 
@@ -2778,7 +2795,7 @@ namespace FlatRedBall.Math.Geometry
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
 			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+			    rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );
@@ -2919,23 +2936,25 @@ namespace FlatRedBall.Math.Geometry
             int endIndex;
 
             #endregion
-            #region Get the boundStartPosition
 
             float boundStartPosition = 0;
+			float rectangleRadius = 0;
 
             switch (axisToUse)
             {
                 case Axis.X:
 					boundStartPosition = shapeToCollideAgainstThis.X;
+					rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusX;
                     break;
                 case Axis.Y:
 					boundStartPosition = shapeToCollideAgainstThis.Y;
+                    rectangleRadius = thisShapeCollection.mMaxAxisAlignedRectanglesRadiusY;
                     break;
                 case Axis.Z:
                     throw new ArgumentException();
                 // break;
             }
-            #endregion
+
 
 		    #region vs. AxisAlignedRectangles
 
@@ -2946,8 +2965,8 @@ namespace FlatRedBall.Math.Geometry
 			    out endIndex, 
 			    boundStartPosition, 
 			    shapeToCollideAgainstThis.BoundingRadius,
-			    // SET THIS:
-			    thisShapeCollection.mMaxAxisAlignedRectanglesRadius, 
+                // SET THIS:
+                rectangleRadius, 
 			    thisShapeCollection.mAxisAlignedRectangles
 			    // END OF SET
 			    );

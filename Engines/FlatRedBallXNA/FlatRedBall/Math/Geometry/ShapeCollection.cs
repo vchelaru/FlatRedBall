@@ -27,7 +27,8 @@ namespace FlatRedBall.Math.Geometry
 		internal PositionedObjectList<Capsule2D> mCapsule2Ds = new PositionedObjectList<Capsule2D>();
         // if you add here, add below too!
 
-		internal protected float mMaxAxisAlignedRectanglesRadius;
+		internal protected float mMaxAxisAlignedRectanglesRadiusX;
+		internal protected float mMaxAxisAlignedRectanglesRadiusY;
 		internal protected float mMaxCirclesRadius;
 		internal protected float mMaxPolygonsRadius;
 		internal protected float mMaxLinesRadius;
@@ -211,8 +212,24 @@ namespace FlatRedBall.Math.Geometry
 
         public float MaxAxisAlignedRectanglesScale
         {
-            get { return mMaxAxisAlignedRectanglesRadius; }
-            set { mMaxAxisAlignedRectanglesRadius = value; }
+            get { return mMaxAxisAlignedRectanglesRadiusX; }
+            set 
+            { 
+                mMaxAxisAlignedRectanglesRadiusX = value;
+                mMaxAxisAlignedRectanglesRadiusY = value; 
+            }
+        }
+
+        public float MaxAxisAlignedRectanglesRadiusX
+        {
+            get => mMaxAxisAlignedRectanglesRadiusX;
+            set => mMaxAxisAlignedRectanglesRadiusX = value;
+        }
+
+        public float MaxAxisAlignedRectanglesRadiusY
+        {
+            get => mMaxAxisAlignedRectanglesRadiusY;
+            set => mMaxAxisAlignedRectanglesRadiusY = value;
         }
 
         public float MaxPolygonRadius
@@ -346,7 +363,8 @@ namespace FlatRedBall.Math.Geometry
         public void CalculateAllMaxRadii()
         {
 
-            mMaxAxisAlignedRectanglesRadius = 0;
+            mMaxAxisAlignedRectanglesRadiusX = 0;
+            mMaxAxisAlignedRectanglesRadiusY = 0;
             mMaxCirclesRadius = 0;
             mMaxPolygonsRadius = 0;
             mMaxLinesRadius = 0;
@@ -356,7 +374,9 @@ namespace FlatRedBall.Math.Geometry
 
             for(int i = 0; i < mAxisAlignedRectangles.Count; i++)
             {
-                mMaxAxisAlignedRectanglesRadius = System.Math.Max(mMaxAxisAlignedRectanglesRadius,
+                mMaxAxisAlignedRectanglesRadiusX = System.Math.Max(mMaxAxisAlignedRectanglesRadiusX,
+                    mAxisAlignedRectangles[i].BoundingRadius);
+                mMaxAxisAlignedRectanglesRadiusY = System.Math.Max(mMaxAxisAlignedRectanglesRadiusY,
                     mAxisAlignedRectangles[i].BoundingRadius);
             }
 
