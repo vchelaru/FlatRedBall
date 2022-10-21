@@ -1501,7 +1501,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
             foreach (var originalNos in nosList)
             {
-                var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi, notifyPlugins: false);
+                var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi: false, notifyPlugins: false);
                 toReturn.Add(response);
             }
 

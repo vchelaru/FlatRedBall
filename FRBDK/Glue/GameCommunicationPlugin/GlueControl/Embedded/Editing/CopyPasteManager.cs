@@ -102,13 +102,25 @@ namespace GlueControl.Editing
         private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
         {
             var currentElement = GlueState.Self.CurrentElement;
-            NamedObjectSave newObjectToSelect = null;
 
             GetOffsetForPasting(itemGrabbed, selectedNamedObjects, out float? offsetX, out float? offsetY);
 
             List<Task> tasksToWait = new List<Task>();
 
             Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
+
+            var positionOnPaste =
+                                new Vector3(FlatRedBall.Gui.GuiManager.Cursor.WorldXAt(0), FlatRedBall.Gui.GuiManager.Cursor.WorldYAt(0), 0); // todo - make this better for 3D
+
+
+            if (EditingManager.Self.IsSnappingEnabled && EditingManager.Self.SnapSize != 0)
+            {
+                var snapSize = EditingManager.Self.SnapSize;
+
+                positionOnPaste.X = MathFunctions.RoundFloat(positionOnPaste.X, snapSize);
+                positionOnPaste.Y = MathFunctions.RoundFloat(positionOnPaste.Y, snapSize);
+            }
+
 
             var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
                 CopiedNamedObjects,
@@ -123,48 +135,112 @@ namespace GlueControl.Editing
             Debug.WriteLine($"Moving newNameObjects count {newNamedObjects.Count}" +
                 $" with offset {offsetX}, {offsetY}");
 
-            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
-            foreach (var newNos in newNamedObjects)
+            List<Vector3> newPositionedOrdered = new List<Vector3>();
+            var positionables = CopiedObjects
+                .Select(item => item as IStaticPositionable)
+                .ToArray();
+            var minX = positionables.Min(item => item.X);
+            var minY = positionables.Min(item => item.Y);
+            var maxX = positionables.Max(item => item.X);
+            var maxY = positionables.Max(item => item.Y);
+
+            var offsetForCenteringX = -1 * (maxX - minX) / 2.0f;
+            var offsetForCenteringY = -1 * (maxY - minY) / 2.0f;
+
+            // Start with the cursor position, subtract the offset to get the bottom-left most position...
+            var snappedLeft = positionOnPaste.X - offsetForCenteringX;
+            var snappedBottom = positionOnPaste.Y - offsetForCenteringY;
+            if (EditingManager.Self.IsSnappingEnabled && EditingManager.Self.SnapSize != 0)
             {
-                if (offsetX != null)
-                {
-                    (float oldX, float oldY) = GetXY(newNos);
-                    var newX = oldX + offsetX;
-                    var newY = oldY + offsetY;
+                var snapSize = EditingManager.Self.SnapSize;
 
-                    Debug.WriteLine($"Old X,Y:{oldX},{oldY}");
-                    Debug.WriteLine($"New X,Y:{newX},{newY}");
-
-
-                    if (newX != oldX)
-                    {
-                        variableAssignments.Add(new NosVariableAssignment
-                        {
-                            NamedObjectSave = newNos,
-                            VariableName = "X",
-                            Value = newX
-                        });
-                    }
-                    if (newY != oldY)
-                    {
-                        variableAssignments.Add(new NosVariableAssignment
-                        {
-                            NamedObjectSave = newNos,
-                            VariableName = "Y",
-                            Value = newY
-                        });
-                    }
-                }
+                snappedLeft = MathFunctions.RoundFloat(snappedLeft, snapSize);
+                snappedBottom = MathFunctions.RoundFloat(snappedBottom, snapSize);
             }
+
+            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
+            EditingManager.Self.Select((string)null);
+
+            for (int i = 0; i < newNamedObjects.Count; i++)
+            {
+                var newNos = newNamedObjects[i];
+
+                // Add the position of this object relative to its group's bototm left
+                var offsetFromMinX = minX - positionables[i].X;
+                var offsetFromMinY = minY - positionables[i].Y;
+                var x = snappedLeft + offsetFromMinX;
+                var y = snappedBottom + offsetFromMinY;
+
+                // place this where the cursor is - assuming the cursor is in the window
+                variableAssignments.Add(new NosVariableAssignment
+                {
+                    NamedObjectSave = newNos,
+                    VariableName = "X",
+                    Value = x
+                });
+                variableAssignments.Add(new NosVariableAssignment
+                {
+                    NamedObjectSave = newNos,
+                    VariableName = "Y",
+                    Value = y
+                });
+
+                var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
+                if (newINameable is IStaticPositionable positionable)
+                {
+                    positionable.X = x;
+                    positionable.Y = y;
+                }
+
+                EditingManager.Self.Select(newNos, addToExistingSelection: true);
+            }
+
             await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
                 variableAssignments,
                 currentElement,
                 performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
 
-            if (newObjectToSelect != null)
+            //await GlueState.Self.SetCurrentNamedObjectSave(newNamedObjects.FirstOrDefault());
+
+            //if (newObjectToSelect != null)
+            //{
+            //    await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, currentElement);
+            //}
+
+
+        }
+
+        private List<NosVariableAssignment> GetAfterPasteVariableAssignments(float? offsetX, float? offsetY, Vector3 positionOnPaste, List<NamedObjectSave> newNamedObjects)
+        {
+            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
+            foreach (var newNos in newNamedObjects)
             {
-                await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, currentElement);
+                var x = positionOnPaste.X;
+                var y = positionOnPaste.Y;
+
+                if (offsetX != null)
+                {
+                    (float oldX, float oldY) = GetXY(newNos);
+                    x = oldX + offsetX.Value;
+                    y = oldY + offsetY.Value;
+                }
+
+                // place this where the cursor is - assuming the cursor is in the window
+                variableAssignments.Add(new NosVariableAssignment
+                {
+                    NamedObjectSave = newNos,
+                    VariableName = "X",
+                    Value = positionOnPaste.X
+                });
+                variableAssignments.Add(new NosVariableAssignment
+                {
+                    NamedObjectSave = newNos,
+                    VariableName = "Y",
+                    Value = positionOnPaste.X
+                });
             }
+
+            return variableAssignments;
         }
 
         private void GetOffsetForPasting(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects, out float? offsetX, out float? offsetY)
@@ -197,5 +273,7 @@ namespace GlueControl.Editing
         }
 
         #endregion
+
+
     }
 }
