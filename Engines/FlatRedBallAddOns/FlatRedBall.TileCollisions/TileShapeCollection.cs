@@ -71,10 +71,39 @@ namespace FlatRedBall.TileCollisions
 
                 mGridSizeX = value;
                 mGridSizeY = value;
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+                mShapes.MaxAxisAlignedRectanglesRadiusX = mGridSizeX;
+                mShapes.MaxAxisAlignedRectanglesRadiusY = mGridSizeY;
+#else
                 mShapes.MaxAxisAlignedRectanglesScale = mGridSizeX;
+#endif
                 mShapes.MaxPolygonRadius = mGridSizeX;
             }
         }
+
+#if ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX
+        public float GridSizeX
+        {
+            get => mGridSizeX;
+            set
+            {
+                mGridSizeX = value;
+                mShapes.MaxAxisAlignedRectanglesRadiusX = mGridSizeX;
+                mShapes.MaxPolygonRadius = mGridSizeX;
+            }
+        }
+
+        public float GridSizeY
+        {
+            get => mGridSizeY;
+            set
+            {
+                mGridSizeY = value;
+                mShapes.MaxAxisAlignedRectanglesRadiusY = mGridSizeY;
+                mShapes.MaxPolygonRadius = mGridSizeY;
+            }
+        }
+#endif
 
         public PositionedObjectList<AxisAlignedRectangle> Rectangles
         {
@@ -144,7 +173,7 @@ namespace FlatRedBall.TileCollisions
 
         public bool AdjustRepositionDirectionsOnAddAndRemove { get; set; } = true;
 
-        #endregion
+#endregion
 
         public TileShapeCollection()
         {
@@ -167,7 +196,7 @@ namespace FlatRedBall.TileCollisions
             // 4. Remove this parameter by hand whenever this file is re-generated. This is painful!
 #if SupportsNamedSubcollisions
             this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
-#else 
+#else
             this.mShapes.AddToManagers(layer);
 #endif
         }

@@ -82,7 +82,8 @@ namespace FlatRedBall.Glue.SaveClasses
             CollisionRelationshipManualPhysics = 23,
             GumSupportsStackSpacing = 24,
             CollisionRelationshipsSupportMoveSoft = 25,
-            GeneratedCameraSetupFile = 26
+            GeneratedCameraSetupFile = 26,
+            ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27
         }
 
         #endregion
