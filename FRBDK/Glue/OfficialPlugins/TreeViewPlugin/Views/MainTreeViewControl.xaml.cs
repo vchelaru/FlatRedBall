@@ -150,7 +150,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 var timeSinceLastClick = DateTime.Now - lastClick;
                 if(timeSinceLastClick.TotalSeconds < .25)
                 {
-                    MainTreeView_MouseDoubleClick(this, null);
+                    MainTreeView_MouseDoubleClick(this, e);
                 }
                 lastClick = DateTime.Now;
                 startPoint = e.GetPosition(null);
@@ -180,7 +180,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 var timeSinceLastClick = DateTime.Now - lastClick;
                 if (timeSinceLastClick.TotalSeconds < .25)
                 {
-                    MainTreeView_MouseDoubleClick(this, null);
+                    MainTreeView_MouseDoubleClick(this, e);
                 }
                 lastClick = DateTime.Now;
                 startPoint = e.GetPosition(null);
@@ -390,8 +390,16 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            var selectedNode = SelectionLogic.CurrentNode;
-            GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(selectedNode);
+            // If we rely on the selected node, then double-clicking the up or down arrows
+            // on the scroll bar also cause a strong select. Instead, use what was actually clicked:
+            //var selectedNode = SelectionLogic.CurrentNode;
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+            var nodeViewModel = frameworkElementPushed?.DataContext as NodeViewModel;
+            if(nodeViewModel != null)
+            {
+                GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(nodeViewModel);
+            }
         }
 
         #endregion

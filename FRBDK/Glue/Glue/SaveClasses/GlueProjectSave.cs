@@ -92,7 +92,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ICollidableHasItemsCollidedAgainst;
+        public const int LatestVersion = (int)GluxVersions.ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX;
 
         public int FileVersion { get; set; }
 
