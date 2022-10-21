@@ -121,7 +121,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override void StartUp()
         {
-            miLinkSource = this.AddMenuItemTo("Link Game to FRB Source", (not, used) => LinkGameToGlueSource(), "Update");
+            miLinkSource = this.AddMenuItemTo("Link Game to FRB Source", (_, _) => LinkGameToGlueSource(), "Update");
 
             miLinkSource.Enabled = false;
 

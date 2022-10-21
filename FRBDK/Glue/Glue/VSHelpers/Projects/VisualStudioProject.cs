@@ -309,7 +309,23 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public void AddProjectReference(string projectPath)
         {
             var tempProj = new Project(projectPath, null, null, new ProjectCollection());
-            Project.AddItem("ProjectReference", new FilePath(projectPath).RelativeTo(FullFileName), new Dictionary<string, string> { { "Project", $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}" }, { "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() } });
+
+            var csprojFolder = this.FullFileName.GetDirectoryContainingThis();
+            var newProjectPathRelative = new FilePath(projectPath).RelativeTo(csprojFolder);
+            var metadata = new Dictionary<string, string>
+            { 
+                { 
+                    "Project", $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}" 
+                }, 
+                { 
+                    "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() 
+                }
+            };
+
+            Project.AddItem(
+                "ProjectReference", 
+                newProjectPathRelative,
+                metadata);
         }
 
         public bool IsCodeItem(ProjectItem buildItem)
