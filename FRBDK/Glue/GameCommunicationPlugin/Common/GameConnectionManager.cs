@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ToolsUtilities;
 
 namespace GameJsonCommunicationPlugin.Common
 {
@@ -292,8 +293,10 @@ namespace GameJsonCommunicationPlugin.Common
                 _sendItems.Enqueue(item);
         }
 
-        public async Task<Packet> SendItemWithResponse(Packet item)
+        public async Task<GeneralResponse<Packet>> SendItemWithResponse(Packet item)
         {
+            var responseToReturn = new GeneralResponse<Packet>();
+
             if (IsConnected)
             {
                 _sendItems.Enqueue(item);
@@ -303,7 +306,7 @@ namespace GameJsonCommunicationPlugin.Common
                     WaitingFor = item.Id
                 });
 
-                return await Task.Run(async () =>
+                var packet = await Task.Run(async () =>
                 {
                     do
                     {
@@ -330,11 +333,16 @@ namespace GameJsonCommunicationPlugin.Common
                     }
                     while (true);
                 });
+
+                responseToReturn.Succeeded = packet != null;
+                responseToReturn.Data = packet;
             }
             else
             {
-                return null;
+                responseToReturn.Succeeded = false;
+                responseToReturn.Message = "Not connected";
             }
+            return responseToReturn;
         }
 
         public void Dispose()

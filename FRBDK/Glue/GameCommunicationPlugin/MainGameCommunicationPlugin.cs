@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.CodeGeneration;
 using EmbeddedCodeManager = GameCommunicationPlugin.CodeGeneration.EmbeddedCodeManager;
+using ToolsUtilities;
 
 namespace GameCommunicationPlugin
 {
@@ -92,21 +93,24 @@ namespace GameCommunicationPlugin
                 case "GameCommunication_SendPacket":
                     var returnValue = await _gameCommunicationManager.SendItemWithResponse(JsonConvert.DeserializeObject<GameConnectionManager.Packet>(payload));
 
-                    return returnValue?.Payload;
+                    return returnValue.Data?.Payload;
                 case "GameCommunication_Send_OldDTO":
-                    var returnPacket = await _gameCommunicationManager.SendItemWithResponse(new GameConnectionManager.Packet
+                    var response = await _gameCommunicationManager.SendItemWithResponse(new GameConnectionManager.Packet
                     {
                         PacketType = "OldDTO",
                         Payload = payload
                     });
 
+                    var returnPacket = response.Data;
+
                     if(returnPacket?.PacketType == "OldDTO" && returnPacket?.Payload != "{\"Commands\":[]}")
                         Debug.WriteLine($"{returnPacket.PacketType}, {returnPacket.Payload}");
 
-                    return JsonConvert.SerializeObject(new
+                    return JsonConvert.SerializeObject(new GeneralResponse<string>
                     {
                         Succeeded = returnPacket != null,
-                        Data = returnPacket?.Payload
+                        Data = returnPacket?.Payload,
+                        Message = response.Message
                     });
 
                 case "GameCommunication_SetPrimarySettings":

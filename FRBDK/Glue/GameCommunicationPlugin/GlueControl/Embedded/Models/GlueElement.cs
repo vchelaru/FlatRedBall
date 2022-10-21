@@ -94,6 +94,11 @@ namespace GlueControl.Models
             get;
             set;
         } = new List<PropertySave>();
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class EntitySave : GlueElement
