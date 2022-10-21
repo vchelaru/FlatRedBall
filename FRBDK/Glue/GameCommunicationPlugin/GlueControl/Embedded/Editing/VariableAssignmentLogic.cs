@@ -44,7 +44,7 @@ namespace GlueControl.Editing
                 else if (!string.IsNullOrEmpty(data.InstanceOwnerGameType))
                 {
                     var glueType = CommandReceiver.GameElementTypeToGlueElement(data.InstanceOwnerGameType);
-                    ownerElement = ObjectFinder.Self.GetElement(glueType);
+                    ownerElement = Managers.ObjectFinder.Self.GetElement(glueType);
                 }
 
 

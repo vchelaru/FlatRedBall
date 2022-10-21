@@ -27,6 +27,12 @@ namespace GlueControl.Models
             return IElementExtensionMethods.GetReferencedFileSave(this, fileName);
         }
 
+        public List<CustomVariable> CustomVariables
+        {
+            get;
+            set;
+        }
+
         public bool IsOnOwnLayer
         {
             get;

@@ -810,6 +810,11 @@ namespace GlueControl
 #if SpriteHasTolerateMissingAnimations
                     Sprite.TolerateMissingAnimations = true;
 #endif
+                    if(!CameraSetup.Data.AllowWindowResizing)
+                    {
+                        CameraSetup.Data.AllowWindowResizing = true;
+                        CameraSetup.ResetWindow();
+                    }
                 }
 
                 FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
