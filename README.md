@@ -56,7 +56,7 @@ https://store.steampowered.com/app/921450/King_Randalls_Party/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/921450/ss_a351ab3a6ac0b21ef419b52b138dce265dff2b33.1920x1080.jpg?t=1548201312)
 ![](https://cdn.akamai.steamstatic.com/steam/apps/921450/ss_a4aa1ac83243d2c8c1bd03509f9657d051b8f304.1920x1080.jpg?t=1548201312)
 
-## Championhs of Anteria (Gum UI only)
+## Champions of Anteria (Gum UI only)
 https://store.steampowered.com/app/374520/Champions_of_Anteria/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/374520/ss_98523eead132f34b66056b839421809da173389e.1920x1080.jpg?t=1571649906)
 ![](https://pbs.twimg.com/media/C3cV439VYAAOolx?format=jpg&name=large)
