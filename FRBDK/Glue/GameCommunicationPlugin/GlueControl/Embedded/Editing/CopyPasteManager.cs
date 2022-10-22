@@ -139,66 +139,72 @@ namespace GlueControl.Editing
             var positionables = CopiedObjects
                 .Select(item => item as IStaticPositionable)
                 .ToArray();
-            var minX = positionables.Min(item => item.X);
-            var minY = positionables.Min(item => item.Y);
-            var maxX = positionables.Max(item => item.X);
-            var maxY = positionables.Max(item => item.Y);
 
-            var offsetForCenteringX = -1 * (maxX - minX) / 2.0f;
-            var offsetForCenteringY = -1 * (maxY - minY) / 2.0f;
-
-            // Start with the cursor position, subtract the offset to get the bottom-left most position...
-            var snappedLeft = positionOnPaste.X - offsetForCenteringX;
-            var snappedBottom = positionOnPaste.Y - offsetForCenteringY;
-            if (EditingManager.Self.IsSnappingEnabled && EditingManager.Self.SnapSize != 0)
+            if (positionables.Length > 0)
             {
-                var snapSize = EditingManager.Self.SnapSize;
 
-                snappedLeft = MathFunctions.RoundFloat(snappedLeft, snapSize);
-                snappedBottom = MathFunctions.RoundFloat(snappedBottom, snapSize);
-            }
+                var minX = positionables.Min(item => item.X);
+                var minY = positionables.Min(item => item.Y);
+                var maxX = positionables.Max(item => item.X);
+                var maxY = positionables.Max(item => item.Y);
 
-            List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
-            EditingManager.Self.Select((string)null);
+                var offsetForCenteringX = -1 * (maxX - minX) / 2.0f;
+                var offsetForCenteringY = -1 * (maxY - minY) / 2.0f;
 
-            for (int i = 0; i < newNamedObjects.Count; i++)
-            {
-                var newNos = newNamedObjects[i];
-
-                // Add the position of this object relative to its group's bototm left
-                var offsetFromMinX = minX - positionables[i].X;
-                var offsetFromMinY = minY - positionables[i].Y;
-                var x = snappedLeft + offsetFromMinX;
-                var y = snappedBottom + offsetFromMinY;
-
-                // place this where the cursor is - assuming the cursor is in the window
-                variableAssignments.Add(new NosVariableAssignment
+                // Start with the cursor position, subtract the offset to get the bottom-left most position...
+                var snappedLeft = positionOnPaste.X - offsetForCenteringX;
+                var snappedBottom = positionOnPaste.Y - offsetForCenteringY;
+                if (EditingManager.Self.IsSnappingEnabled && EditingManager.Self.SnapSize != 0)
                 {
-                    NamedObjectSave = newNos,
-                    VariableName = "X",
-                    Value = x
-                });
-                variableAssignments.Add(new NosVariableAssignment
-                {
-                    NamedObjectSave = newNos,
-                    VariableName = "Y",
-                    Value = y
-                });
+                    var snapSize = EditingManager.Self.SnapSize;
 
-                var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
-                if (newINameable is IStaticPositionable positionable)
-                {
-                    positionable.X = x;
-                    positionable.Y = y;
+                    snappedLeft = MathFunctions.RoundFloat(snappedLeft, snapSize);
+                    snappedBottom = MathFunctions.RoundFloat(snappedBottom, snapSize);
                 }
 
-                EditingManager.Self.Select(newNos, addToExistingSelection: true);
-            }
+                List<NosVariableAssignment> variableAssignments = new List<NosVariableAssignment>();
+                EditingManager.Self.Select((string)null);
 
-            await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
-                variableAssignments,
-                currentElement,
-                performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
+                for (int i = 0; i < newNamedObjects.Count; i++)
+                {
+                    var newNos = newNamedObjects[i];
+
+                    // Add the position of this object relative to its group's bototm left
+                    var offsetFromMinX = minX - positionables[i].X;
+                    var offsetFromMinY = minY - positionables[i].Y;
+                    var x = snappedLeft + offsetFromMinX;
+                    var y = snappedBottom + offsetFromMinY;
+
+                    // place this where the cursor is - assuming the cursor is in the window
+                    variableAssignments.Add(new NosVariableAssignment
+                    {
+                        NamedObjectSave = newNos,
+                        VariableName = "X",
+                        Value = x
+                    });
+                    variableAssignments.Add(new NosVariableAssignment
+                    {
+                        NamedObjectSave = newNos,
+                        VariableName = "Y",
+                        Value = y
+                    });
+
+                    var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
+                    if (newINameable is IStaticPositionable positionable)
+                    {
+                        positionable.X = x;
+                        positionable.Y = y;
+                    }
+
+                    EditingManager.Self.Select(newNos, addToExistingSelection: true);
+                }
+
+                await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
+                    variableAssignments,
+                    currentElement,
+                    performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
+
+            }
 
             //await GlueState.Self.SetCurrentNamedObjectSave(newNamedObjects.FirstOrDefault());
 
@@ -273,6 +279,7 @@ namespace GlueControl.Editing
         }
 
         #endregion
+
 
 
     }

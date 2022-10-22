@@ -44,6 +44,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
 
+        //void SaveElement(GlueElement element);
+        Task SaveElementAsync(GlueElement element);
+
         void SaveSettings();
 
         #endregion

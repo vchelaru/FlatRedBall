@@ -27,14 +27,21 @@ namespace OfficialPlugins.ErrorReportingPlugin
             AddErrorReporter(new ReferencedFileSaveErrorReporter());
 
             this.ReactToFileChangeHandler += HandleFileChanged;
-            this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
+            //this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
+            this.ReactToChangedNamedObjectVariableList += HandleChangedNamedObjectVariableList;
         }
 
-        private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        private async void HandleChangedNamedObjectVariableList(List<PluginManager.NamedObjectSaveVariableChange> obj)
         {
             await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
             this.RefreshErrors();
         }
+
+        //private async void HandleNamedObjectChangedValue(string changedMember, object oldValue, NamedObjectSave namedObject)
+        //{
+        //    await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
+        //    this.RefreshErrors();
+        //}
 
 
         private void HandleFileChanged(string fileName)

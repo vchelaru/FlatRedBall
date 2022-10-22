@@ -35,6 +35,10 @@ using GeneralResponse = ToolsUtilities.GeneralResponse;
 using System.Threading.Tasks;
 using FlatRedBall.Utilities;
 using static FlatRedBall.Glue.Plugins.PluginManager;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+//using Gum.DataTypes;
+using Newtonsoft.Json;
+using FlatRedBall.Entities;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -153,6 +157,43 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // asap because otherwise this may get added
                 // after a reload command
                 taskExecutionPreference);
+        }
+
+        public async Task SaveElementAsync(GlueElement element)
+        {
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                var target = GlueState.Self.GlueProjectFileName;
+                var glueDirectory = target.GetDirectoryContainingThis();
+
+                var extension = element is SaveClasses.ScreenSave ? GlueProjectSave.ScreenExtension
+                    : GlueProjectSave.EntityExtension;
+
+                var fileToIgnore = glueDirectory + element.Name + "." + extension;
+
+                FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
+
+                // todo - eventually need to handle wildcards here
+
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.Formatting = Formatting.Indented;
+                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+                var serialized = JsonConvert.SerializeObject(element, settings);
+
+                var locationToSave = glueDirectory + element.Name + "." + extension;
+
+                if (element is EntitySave entitySave)
+                {
+                    await PluginManager.ReactToEntityJsonSaveAsync(entitySave.Name, serialized);
+                }
+                else if (element is ScreenSave screenSave)
+                {
+                    await PluginManager.ReactToScreenJsonSaveAsync(screenSave.Name, serialized);
+                }
+                FileManager.SaveText(serialized, locationToSave);
+
+            }, $"{nameof(SaveElementAsync)} {element}");
         }
 
         /// <summary>
@@ -1492,7 +1533,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                {
+                    foreach(var element in ownerHashSet)
+                    {
+                        await GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                    }
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
             }
         }
 
@@ -1501,7 +1552,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var toReturn = new List<ToolsUtilities.GeneralResponse<NamedObjectSave>>();
             foreach (var originalNos in nosList)
             {
-                var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode, updateUi: false, notifyPlugins: false);
+                var response = await CopyNamedObjectIntoElementInner(originalNos, targetElement, performSaveAndGenerateCode:false, updateUi: false, notifyPlugins: false);
                 toReturn.Add(response);
             }
 
@@ -1536,7 +1587,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                {
+                    // Much faster to save just the changed element, especially
+                    // when we're doing copy/paste and we want it to go fast
+                    await GlueCommands.Self.GluxCommands.SaveElementAsync(targetElement);
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+
+                }
             }
             return toReturn;
         }
@@ -1968,7 +2029,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             if (performSaveAndGenerateCode)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                {
+                    foreach(var element in nosContainers)
+                    {
+                        await GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                    }
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                }
             }
         }
 
@@ -2092,7 +2163,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (notifyPlugins)
                 {
-                    PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer);
+                    var variableChange = new NamedObjectSaveVariableChange
+                    {
+                        NamedObjectSave = nos,
+                        ChangedMember = memberName
+                    };
+                    PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer, variableChange);
 
                     PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
                     {

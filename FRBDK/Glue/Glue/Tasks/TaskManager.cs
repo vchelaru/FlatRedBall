@@ -25,7 +25,8 @@ namespace FlatRedBall.Glue.Managers
         Created,
         Queued,
         Started,
-        Removed
+        Removed,
+        MovedToEnd
     }
 
     #endregion
@@ -466,6 +467,7 @@ namespace FlatRedBall.Glue.Managers
             priorityValue += taskoffset;
             taskoffset++;
 
+            var wasMoved = false;
             if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
             {
                 var existing = taskQueue.FirstOrDefault(item => 
@@ -475,12 +477,21 @@ namespace FlatRedBall.Glue.Managers
                 if (existing.Key != 0)
                 {
                     existing.Value.IsCancelled = true;
+                    wasMoved = true;
                     taskQueueCount--;
                 }
 
             }
 
-            TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
+            if(wasMoved == false)
+            {
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Queued, glueTask);
+            }
+            else
+            {
+                TaskAddedOrRemoved?.Invoke(TaskEvent.MovedToEnd, glueTask);
+            }
+
             taskQueue.Add(new KeyValuePair<ulong, GlueTaskBase>(priorityValue, glueTask));
             taskQueueCount++;
 

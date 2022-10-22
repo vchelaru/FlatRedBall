@@ -166,7 +166,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 if(pushReactToChangedProperty)
                 {
-                    PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentElement);
+                    PluginManager.ReactToChangedProperty(variableNameAsDisplayed, oldValue, GlueState.Self.CurrentElement, null);
                 }
             }
 

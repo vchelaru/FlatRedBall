@@ -26,6 +26,7 @@ using FlatRedBall.Glue.Errors;
 using OfficialPlugins.PropertyGrid.Managers;
 using System.ComponentModel;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -272,7 +273,15 @@ namespace OfficialPlugins.VariableDisplay
                                     FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
                             }
                         });
-                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+
+                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                        {
+                            await GlueCommands.Self.GluxCommands.SaveElementAsync(container);
+                        }
+                        else
+                        {
+                            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                        }
 
 
                     }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
@@ -1065,7 +1074,11 @@ namespace OfficialPlugins.VariableDisplay
 
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
-            PluginManager.ReactToChangedProperty(memberName, oldValue, element);
+            PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSaveVariableChange
+            { 
+                NamedObjectSave = instance,
+                ChangedMember = memberName
+            });
 
             PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
             {

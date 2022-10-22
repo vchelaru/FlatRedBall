@@ -1536,10 +1536,20 @@ namespace FlatRedBall.Glue.Plugins
         /// <remarks>Although this has the word "Property" in the name, it applies to both properties and variables.</remarks>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>
-        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner) =>
+        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner, NamedObjectSaveVariableChange nosVariableChange)
+        {
+
             CallMethodOnPlugin(
                 plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
                 plugin => plugin.ReactToChangedPropertyHandler != null);
+
+            if(nosVariableChange != null)
+            {
+                var list = new List<NamedObjectSaveVariableChange>();
+                ReactToVariableListChanged(list);
+            }
+
+        }
 
         public static void ReactToVariableListChanged(List<NamedObjectSaveVariableChange> namedObjectSaveVariableChangeList) =>
             CallMethodOnPlugin(
@@ -1801,7 +1811,7 @@ namespace FlatRedBall.Glue.Plugins
                         }
                     }
                 }
-            }, methodName);
+            }, methodName + " for all plugins");
 
             return task;
         }
@@ -2092,12 +2102,14 @@ namespace FlatRedBall.Glue.Plugins
         public static Task ReactToScreenJsonSaveAsync(string screenName, string json) =>
             CallMethodOnPluginAsync(
                 plugin => plugin.ReactToScreenJsonSave(screenName, json),
-                plugin => plugin.ReactToScreenJsonSave != null);
+                plugin => plugin.ReactToScreenJsonSave != null,
+                nameof(ReactToEntityJsonSaveAsync) + $"for {screenName}");
 
-        public static Task ReactToEntityJsonSaveAsync(string screenName, string json) =>
+        public static Task ReactToEntityJsonSaveAsync(string entityName, string json) =>
             CallMethodOnPluginAsync(
-                plugin => plugin.ReactToEntityJsonSave(screenName, json),
-                plugin => plugin.ReactToEntityJsonSave != null);
+                plugin => plugin.ReactToEntityJsonSave(entityName, json),
+                plugin => plugin.ReactToEntityJsonSave != null, 
+                nameof(ReactToEntityJsonSaveAsync) + $"for {entityName}");
 
         public static Task ReactToGlueJsonSaveAsync(string json) =>
             CallMethodOnPluginAsync(

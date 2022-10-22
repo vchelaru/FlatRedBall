@@ -185,7 +185,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #endregion
 
-            PluginManager.ReactToChangedProperty(changedMember, oldValue, entitySave);
+            PluginManager.ReactToChangedProperty(changedMember, oldValue, entitySave, null);
         }
 
         private static void ReactToChangedImplementsIVisible(object oldValue, EntitySave entitySave)
