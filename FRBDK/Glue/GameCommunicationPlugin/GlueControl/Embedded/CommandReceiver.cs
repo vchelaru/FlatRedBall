@@ -834,6 +834,30 @@ namespace GlueControl
 
         #region Move to Container
 
+        private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerListDto dto)
+        {
+            MoveObjectToContainerDtoResponse toReturn = null;
+
+            foreach (var item in dto.Changes)
+            {
+                var result = HandleDto(item);
+
+                if (toReturn == null)
+                {
+                    toReturn = result;
+                }
+
+                if (result.WasObjectMoved == false)
+                {
+                    toReturn = result;
+                }
+            }
+
+
+            return toReturn;
+
+        }
+
         private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerDto dto)
         {
             var toReturn = new MoveObjectToContainerDtoResponse();

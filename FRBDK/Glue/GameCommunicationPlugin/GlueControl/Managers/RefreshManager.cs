@@ -26,6 +26,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using Newtonsoft.Json.Linq;
 using GameCommunicationPlugin.Common;
 using CompilerLibrary.ViewModels;
+using static FlatRedBall.Glue.Plugins.PluginManager;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -58,7 +59,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
 
         bool isExplicitlySetRebuildAndRestartEnabled;
-        public bool IsExplicitlySetRebuildAndRestartEnabled 
+        public bool IsExplicitlySetRebuildAndRestartEnabled
         {
             get => isExplicitlySetRebuildAndRestartEnabled;
             set
@@ -74,7 +75,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             get
             {
-                if(GlueState.Self.CurrentGlueProject != null)
+                if (GlueState.Self.CurrentGlueProject != null)
                 {
                     return
                         // This causes confusing behavior and can make the game restart over and over, so let's get rid of it:
@@ -86,8 +87,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 return false;
             }
         }
-            
-            
+
+
 
         public int PortNumber { get; set; }
 
@@ -121,11 +122,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public string GetGameTypeFor(GlueElement element)
         {
-            if(element == null)
+            if (element == null)
             {
                 throw new ArgumentNullException(nameof(element));
             }
-            else if(element.Name == null)
+            else if (element.Name == null)
             {
                 throw new NullReferenceException(nameof(element.Name));
             }
@@ -142,7 +143,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             var toRemove = FilePathsToIgnore.Where(item => item.Expiration < DateTime.Now).ToArray();
 
-            foreach(var item in toRemove)
+            foreach (var item in toRemove)
             {
                 FilePathsToIgnore.Remove(item);
             }
@@ -156,7 +157,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 FilePathsToIgnore.FirstOrDefault(item => item.FilePath == fileName);
             if (foundTempIgnoredFilePath != null)
             {
-                if(DateTime.Now > foundTempIgnoredFilePath.Expiration)
+                if (DateTime.Now > foundTempIgnoredFilePath.Expiration)
                 {
                     FilePathsToIgnore.Remove(foundTempIgnoredFilePath);
                 }
@@ -171,7 +172,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 ShouldRestartOnChange &&
                 GetIfShouldReactToFileChange(fileName);
 
-            if(shouldReactToFileChange)
+            if (shouldReactToFileChange)
             {
                 var rfses = GlueCommands.Self.FileCommands.GetReferencedFiles(fileName.FullPath);
                 var firstRfs = rfses.FirstOrDefault();
@@ -181,7 +182,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 var handled = false;
 
-                if(canSendCommands)
+                if (canSendCommands)
                 {
                     string strippedName = null;
                     if (firstRfs != null)
@@ -206,7 +207,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         await Task.Delay(600);
                         try
                         {
-                            if(ViewModel.IsRunning)
+                            if (ViewModel.IsRunning)
                             {
                                 var extension = fileName.Extension;
                                 var shouldReloadFile = extension == "csv";
@@ -236,8 +237,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                     shouldReloadScreen = true;
                                 }
 
-                                if(shouldReloadScreen)
-                                { 
+                                if (shouldReloadScreen)
+                                {
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
                                     await _commandSender.Send(dto);
@@ -246,7 +247,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                             handled = true;
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             printError($"Error trying to send command:{e.ToString()}");
                         }
@@ -254,7 +255,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     var isContentPipeline = firstRfs?.UseContentPipeline == true || firstRfs?.GetAssetTypeInfo()?.MustBeAddedToContentPipeline == true;
                     // the game should reload only after copying the file
-                    if(isGlobalContent && 
+                    if (isGlobalContent &&
                         // if it's using the content pipeline, it can't be reloaded individually. FRB Will throw an exception:
                         !isContentPipeline
                         // Why do we check if the CustomReloadFunc != null?
@@ -280,7 +281,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         handled = true;
                     }
                 }
-                if(!handled)
+                if (!handled)
                 {
                     CreateStopAndRestartTask($"File {fileName} changed");
                 }
@@ -289,28 +290,28 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal bool HandleTreeNodeDoubleClicked(ITreeNode arg)
         {
-            if(arg.Tag is NamedObjectSave asNos)
+            if (arg.Tag is NamedObjectSave asNos)
             {
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                PushGlueSelectionToGame(bringIntoFocus:true);
+                PushGlueSelectionToGame(bringIntoFocus: true);
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 return true;
             }
             return false;
         }
 
-        private bool GetIfShouldReactToFileChange(FilePath filePath )
+        private bool GetIfShouldReactToFileChange(FilePath filePath)
         {
             var noPath = filePath.NoPath;
-            if(filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
+            if (filePath.FullPath.Contains(".Generated.") && filePath.FullPath.EndsWith(".cs"))
             {
                 return false;
             }
-            if(filePath.FullPath.EndsWith(".Generated.xml"))
+            if (filePath.FullPath.EndsWith(".Generated.xml"))
             {
                 return false;
             }
-            if(noPath == "CompilerSettings.json")
+            if (noPath == "CompilerSettings.json")
             {
                 return false;
             }
@@ -331,7 +332,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void HandleNewEntityCreated(EntitySave newEntity)
         {
-            if(ViewModel.IsRunning && ViewModel.IsEditChecked)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 var filePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(newEntity);
 
@@ -383,7 +384,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void HandleStateCreated(StateSave state, StateSaveCategory category)
         {
-            if(category != null)
+            if (category != null)
             {
                 var container = ObjectFinder.Self.GetElementContaining(category);
 
@@ -393,9 +394,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // cateorized states always set a value. That value will either
                 // be explicitly set on the state, or it will be inherited from the
                 // default value on the object.
-                foreach(var variable in container.CustomVariables)
+                foreach (var variable in container.CustomVariables)
                 {
-                    if(category.ExcludedVariables.Contains(variable.Name))
+                    if (category.ExcludedVariables.Contains(variable.Name))
                     {
                         continue;
                     }
@@ -426,7 +427,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 var list = new Dtos.AddObjectDtoList();
 
-                foreach(var newObject in newObjectList)
+                foreach (var newObject in newObjectList)
                 {
                     var individualDto = CreateAddObjectDtoFor(newObject);
 
@@ -435,7 +436,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 var response = await _commandSender.Send<AddObjectDtoListResponse>(list);
 
-                if(response.Succeeded == false || 
+                if (response.Succeeded == false ||
                     response.Data.Data == null ||
                     response.Data.Data.Any(item => item.WasObjectCreated == false))
                 {
@@ -492,7 +493,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var tempSerialized = JsonConvert.SerializeObject(newNamedObject);
             var nosCopy = JsonConvert.DeserializeObject<NamedObjectSave>(tempSerialized);
 
-            foreach(var instruction in nosCopy.InstructionSaves)
+            foreach (var instruction in nosCopy.InstructionSaves)
             {
                 // qualify here!
                 instruction.Type = VariableSendingManager.GetQualifiedStateTypeName(instruction.Member, null, nosCopy, out bool isState, out StateSaveCategory category);
@@ -522,7 +523,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             Vector2 newPosition = Vector2.Zero;
 
-            if(ForcedNextObjectPosition != null)
+            if (ForcedNextObjectPosition != null)
             {
                 newPosition = ForcedNextObjectPosition.Value;
                 ForcedNextObjectPosition = null;
@@ -681,11 +682,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void HandleItemSelected(ITreeNode selectedTreeNode)
         {
-            if(IgnoreNextObjectSelect)
+            if (IgnoreNextObjectSelect)
             {
                 IgnoreNextObjectSelect = false;
             }
-            else if(ViewModel.IsEditChecked)
+            else if (ViewModel.IsEditChecked)
             {
                 await PushGlueSelectionToGame();
             }
@@ -715,7 +716,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var dto = new SelectObjectDto();
 
             NamedObjectSave nos = null;
-            if(forcedElement == null)
+            if (forcedElement == null)
             {
                 nos = GlueState.Self.CurrentNamedObjectSave;
             }
@@ -728,7 +729,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // ... now reset it
             LastDtoPushedToGame = null;
 
-            if(needsScreenReload)
+            if (needsScreenReload)
             {
                 await _commandSender.Send(new Dtos.RestartScreenDto());
             }
@@ -752,7 +753,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var canSend = !isAbstract || !string.IsNullOrEmpty(dto.BackupElementNameGlue);
 
                 // If its abstract and there's no derived, don't try to select it
-                if(canSend)
+                if (canSend)
                 {
                     dto.BringIntoFocus = bringIntoFocus;
                     dto.NamedObject = nos;
@@ -765,7 +766,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     LastDtoPushedToGame = dto;
 
-                    
+
                     await _commandSender.Send(dto);
                 }
             }
@@ -785,7 +786,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void HandleNamedObjectVariableOrPropertyChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
-            if(ViewModel.IsRunning && ViewModel.IsEditChecked)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 await VariableSendingManager.HandleNamedObjectVariableChanged(variableName, oldValue, nos, assignOrRecordOnly);
             }
@@ -809,13 +810,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var container = ObjectFinder.Self.GetElementContaining(category);
 
             ChangeStateVariableDto dto = null;
-            if(container != null)
+            if (container != null)
             {
                 dto = new ChangeStateVariableDto();
                 // Clone this...
                 dto.StateSave = state.Clone();
                 // ...because if the variable was deleted, we need to force the value to have the default:
-                if(dto.StateSave.InstructionSaves.Any(item => item.Member == variableName) == false &&
+                if (dto.StateSave.InstructionSaves.Any(item => item.Member == variableName) == false &&
                     !category.ExcludedVariables.Contains(variableName))
                 {
                     var variable = container.GetCustomVariable(variableName);
@@ -833,18 +834,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 dto.VariableName = variableName;
 
             }
-            if(dto != null)
+            if (dto != null)
             {
                 await _commandSender.Send(dto);
 
                 // This forces the game to refresh the view according to the current state.
-                if (ViewModel.IsEditChecked && 
+                if (ViewModel.IsEditChecked &&
                     (state == GlueState.Self.CurrentStateSave || category == GlueState.Self.CurrentStateSaveCategory))
                 {
                     await PushGlueSelectionToGame(
-                        forcedCategoryName:category?.Name, 
-                        forcedStateName:state?.Name,
-                        forcedElement:container);
+                        forcedCategoryName: category?.Name,
+                        forcedStateName: state?.Name,
+                        forcedElement: container);
                 }
             }
 
@@ -852,7 +853,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
         {
-            if(excludedOrIncluded == StateCategoryVariableAction.Included)
+            if (excludedOrIncluded == StateCategoryVariableAction.Included)
             {
                 // If a new state variable is included, it won't be functional. This could be confusing, so let's restart
                 CreateStopAndRestartTask($"New variable {variableName} added to category {category}");
@@ -862,60 +863,71 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         #endregion
 
         #region Object Container (List, Layer, ShapeCollection) changed
-        internal async void HandleObjectContainerChanged(NamedObjectSave objectMoving, 
-            NamedObjectSave newContainer)
+
+        internal async Task HandleObjectListContainerChanged(List<ObjectContainerChange> changeList)
         {
             if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             {
                 GeneralResponse generalResponse = GeneralResponse.UnsuccessfulWith("Unknown error");
                 string responseAsString = null;
-                var element = ObjectFinder.Self.GetElementContaining(objectMoving);
+                MoveObjectToContainerListDto changesListDto = new MoveObjectToContainerListDto();
 
-                if(element == null)
+                foreach (var change in changeList)
                 {
-                    generalResponse = GeneralResponse.UnsuccessfulWith("Could not find Glue Element containing {objectMoving}");
-                }
-                else
-                {
-                    var dto = new MoveObjectToContainerDto
+                    var objectMoving = change.ObjectMoved;
+                    var newContainer = change.NewContainer;
+                    var element = ObjectFinder.Self.GetElementContaining(objectMoving);
+
+                    if (element == null)
                     {
-                        ElementName = element.Name,
-                        ObjectName = objectMoving.InstanceName,
-                        ContainerName = newContainer?.InstanceName
-
-                    };
-
-                    var sendResponse = await _commandSender.Send(dto);
-                    responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
-
-                    if(string.IsNullOrEmpty(responseAsString))
-                    {
-                        generalResponse = GeneralResponse.UnsuccessfulWith($"Sent the command to move {objectMoving} to {newContainer} but never got a response from the game");
+                        generalResponse = GeneralResponse.UnsuccessfulWith("Could not find Glue Element containing {objectMoving}");
                     }
                     else
                     {
-                        try
+                        var dto = new MoveObjectToContainerDto
                         {
-                            var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
-                            if(response.WasObjectMoved)
-                            {
-                                generalResponse = GeneralResponse.SuccessfulResponse;
-                            }
-                            else
-                            {
-                                generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to move object to game. No extra info provided by game.");
-                            }
-                        }
-                        catch(Exception e)
-                        {
-                            generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to deserialie response:\n\n{responseAsString}\n\n{e}");
-                        }
+                            ElementName = element.Name,
+                            ObjectName = objectMoving.InstanceName,
+                            ContainerName = newContainer?.InstanceName
+
+                        };
+
+                        changesListDto.Changes.Add(dto);
                     }
                 }
 
-                if(!generalResponse.Succeeded)
+
+
+                var sendResponse = await _commandSender.Send(changesListDto);
+                responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
+
+                if (string.IsNullOrEmpty(responseAsString))
                 {
-                    CreateStopAndRestartTask($"Restarting due to changed container for {objectMoving}\n{generalResponse.Message}");
+                    generalResponse = GeneralResponse.UnsuccessfulWith($"Sent the command to move {changeList.Count} objects but never got a response from the game");
+                }
+                else
+                {
+                    try
+                    {
+                        var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
+                        if (response.WasObjectMoved)
+                        {
+                            generalResponse = GeneralResponse.SuccessfulResponse;
+                        }
+                        else
+                        {
+                            generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to move object to game. No extra info provided by game.");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to deserialie response:\n\n{responseAsString}\n\n{e}");
+                    }
+                }
+
+                if (!generalResponse.Succeeded)
+                {
+                    CreateStopAndRestartTask($"Restarting due to changed container\n{generalResponse.Message}");
                 }
             }
         }
@@ -975,7 +987,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         bool CanRestart => ViewModel.IsGenerateGlueControlManagerInGame1Checked &&
             (
-                ViewModel.DidRunnerStartProcess || 
+                ViewModel.DidRunnerStartProcess ||
                 (ViewModel.IsRunning == false && failedToRebuildAndRestart) ||
                 (ViewModel.IsRunning && ViewModel.IsEditChecked)
             );
@@ -1009,7 +1021,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 return TaskManager.Self.HasRestartTask;
             }
 
-            if(CanRestart)
+            if (CanRestart)
             {
 
                 if (ViewModel.IsRunning)
@@ -1033,7 +1045,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
 
                 bool compileSucceeded = false;
-                if(!DoesTaskManagerHaveAnotherRestartTask())
+                if (!DoesTaskManagerHaveAnotherRestartTask())
                 {
                     var compileResult = JObject.Parse(await _eventCallerWithReturn("Compiler_DoCompile", JsonConvert.SerializeObject(new
                     {
@@ -1046,7 +1058,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 if (compileSucceeded)
                 {
-                    if(!DoesTaskManagerHaveAnotherRestartTask())
+                    if (!DoesTaskManagerHaveAnotherRestartTask())
                     {
                         // If we aren't generating Glue, then the game will not be embedded, so prevent focus
                         var preventFocus = ViewModel.IsGenerateGlueControlManagerInGame1Checked == false;
@@ -1055,7 +1067,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             PreventFocus = preventFocus,
                             RunArguments = screenToRestartOn
                         })));
-                        if(response.Value<bool>("Succeeded") == false)
+                        if (response.Value<bool>("Succeeded") == false)
                         {
                             printError(response.Value<string>("Error"));
                         }

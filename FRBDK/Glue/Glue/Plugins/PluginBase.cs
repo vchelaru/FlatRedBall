@@ -432,9 +432,10 @@ namespace FlatRedBall.Glue.Plugins
 
         /// <summary>
         /// Delegate raised whenever an object (first NamedObjectSave) has its container (list or ShapeCollection)
-        /// changed. The second parameter is the new container whihc may be null if the object is being moved out of a list.
+        /// changed. The second parameter is the new container which may be null if the object is being moved out of a list.
         /// </summary>
         public Action<NamedObjectSave, NamedObjectSave> ReactToObjectContainerChanged { get; protected set; }
+        public Func<List<ObjectContainerChange>, Task> ReactToObjectListContainerChanged { get; protected set; }
 
         public Action ReactToMainWindowMoved { get; protected set; }
         public Action ReactToMainWindowResizeEnd { get; protected set; }

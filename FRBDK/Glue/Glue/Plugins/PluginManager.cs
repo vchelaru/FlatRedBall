@@ -2033,12 +2033,40 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToImportedElement != null);
         }
 
-        public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer)
+        public class ObjectContainerChange
         {
+            public NamedObjectSave ObjectMoved { get; set; }
+            public NamedObjectSave NewContainer { get; set; }
+
+        }
+        public static Task ReactToObjectListContainerChanged(List<ObjectContainerChange> objectContainerChanges)
+        {
+            return CallMethodOnPluginAsync(async (plugin) =>
+            {
+                var handledByList = false;
+                if (plugin.ReactToObjectListContainerChanged != null)
+                {
+                    await plugin.ReactToObjectListContainerChanged(objectContainerChanges);
+                    handledByList = true;
+                }
+
+                if (!handledByList)
+                {
+                    foreach (var change in objectContainerChanges)
+                    {
+                        plugin.ReactToObjectContainerChanged(change.ObjectMoved, change.NewContainer);
+                    }
+                }
+            },
+            plugin => plugin.ReactToObjectListContainerChanged != null || plugin.ReactToObjectContainerChanged != null);
+        }
+            
+
+
+        public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
                 plugin => plugin.ReactToObjectContainerChanged != null);
-        }
 
         public static void ReactToMainWindowMoved()
         {

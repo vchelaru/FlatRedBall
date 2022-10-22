@@ -251,6 +251,12 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
             return $"Move {ElementName}.{ObjectName} to container {ContainerName}";
         }
     }
+
+    public class MoveObjectToContainerListDto
+    {
+        public List<MoveObjectToContainerDto> Changes { get; set; } = new List<MoveObjectToContainerDto>();
+    }
+
     #endregion
 
     #region MoveObjectToContainerDtoResponse

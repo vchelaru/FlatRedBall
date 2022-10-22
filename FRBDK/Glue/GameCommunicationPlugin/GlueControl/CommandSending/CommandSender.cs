@@ -70,6 +70,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
             return toReturn;
         }
 
+        string lastSend;
         private async Task<ToolsUtilities.GeneralResponse<string>> SendCommand(string text, bool isImportant = true)
         {
             var shouldPrint = isImportant && text?.StartsWith("SelectObjectDto:") == false;
@@ -107,6 +108,7 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
                     await sendCommandSemaphore.WaitAsync();
                 }
 
+                lastSend = text;
                 return await SendCommandNoSemaphore(text, isImportant, shouldPrint, shouldRetry:true);
             }
             finally

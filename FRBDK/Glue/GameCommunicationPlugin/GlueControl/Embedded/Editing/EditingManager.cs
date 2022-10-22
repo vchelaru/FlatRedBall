@@ -734,7 +734,7 @@ namespace GlueControl.Editing
                     NamedObjectSave nos = null;
                     if (itemOver?.Name != null)
                     {
-                        nos = CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
                     }
 
                     var didSelect = false;

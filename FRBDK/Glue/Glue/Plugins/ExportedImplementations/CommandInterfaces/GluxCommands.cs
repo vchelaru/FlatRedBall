@@ -1571,18 +1571,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             await PluginManager.ReactToNewObjectListAsync(newNosList);
 
+            List<ObjectContainerChange> changeList = new List<ObjectContainerChange>();
+
             foreach (var item in toReturn)
             {
                 if (item.Succeeded)
                 {
                     // this could be faster but I suspect it's not too slow:
-                    var listNos = targetElement.NamedObjects.FirstOrDefault(candidateList => candidateList.ContainedObjects.Contains(item.Data));
-                    if (listNos != null)
+                    var newListForObject = targetElement.NamedObjects.FirstOrDefault(candidateList => candidateList.ContainedObjects.Contains(item.Data));
+                    if (newListForObject != null)
                     {
-                        PluginManager.ReactToObjectContainerChanged(item.Data, listNos);
+                        changeList.Add(new ObjectContainerChange
+                        { 
+                            ObjectMoved = item.Data,
+                            NewContainer = newListForObject
+                            
+                        });
                     }
                 }
             }
+
+            await PluginManager.ReactToObjectListContainerChanged(changeList);
 
 
             if (performSaveAndGenerateCode)
@@ -1618,8 +1627,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             UpdateNosAttachmentAfterDragDrop(newNos, targetElement);
 
             //clonedNos.InstanceName = IncrementNumberAtEndOfNewObject(elementMovingInto, clonedNos.InstanceName);
-            FlatRedBall.Utilities.StringFunctions.MakeNameUnique(
-                newNos, targetElement.AllNamedObjects);
+
+            // For games with a lot of items in a screen, this can be REALLY slow!!!
+            // FlatRedBall.Utilities.StringFunctions.MakeNameUnique(newNos, targetElement.AllNamedObjects);
+            // let's go faster:
+            var allNamedObjects = targetElement.AllNamedObjects;
+            HashSet<string> allNames = new HashSet<string>();
+            foreach(var allNamedObjectsInstance in allNamedObjects)
+            {
+                allNames.Add(allNamedObjectsInstance.InstanceName);
+            }
+            while (allNames.Contains(newNos.InstanceName))
+            {
+                newNos.InstanceName = StringFunctions.IncrementNumberAtEnd(newNos.InstanceName);
+            }
 
             var listOfThisType = ObjectFinder.Self.GetDefaultListToContain(newNos, targetElement);
 
@@ -1689,7 +1710,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (performSaveAndGenerateCode)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    if(GlueState.Self.CurrentGlueProject.FileVersion > (int)GluxVersions.SeparateJsonFilesForElements )
+                    {
+                        await GlueCommands.Self.GluxCommands.SaveElementAsync(targetElement);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.GluxCommands.SaveGlux();
+                    }
                 }
                 generalResponse.Data = newNos;
             }
@@ -1981,6 +2009,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var changes = new List<VariableChangeArguments>();
             foreach (var assignment in nosVariableAssignments)
             {
+                // This could be malformed somehow? This could come from the game which got out of sync with Glue:
+                if(assignment.NamedObjectSave == null)
+                {
+                    continue;
+                }
                 // get the old value before calling SetVariableOnInner:
                 object oldValue = assignment.NamedObjectSave.GetCustomVariable(assignment.VariableName)?.Value;
 
