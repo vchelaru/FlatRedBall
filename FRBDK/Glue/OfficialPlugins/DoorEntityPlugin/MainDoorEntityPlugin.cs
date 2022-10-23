@@ -69,7 +69,12 @@ namespace OfficialPlugins.DoorEntityPlugin
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
         {
-            if(!HasDoorEntity)
+            var canAdd =
+                !HasDoorEntity &&
+                !rightClickedTreeNode.IsChildOfGlobalContent() &&
+                !rightClickedTreeNode.Root.IsRootScreenNode()
+                ;
+            if (canAdd)
             {
                 listToAddTo.Add("Add DoorEntity", (not, used) => AddDoorEntity());
             }

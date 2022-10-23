@@ -303,6 +303,10 @@ namespace FlatRedBall.Glue.FormHelpers
         void Remove(ITreeNode child);
         void Add(ITreeNode child);
 
+        /// <summary>
+        /// The root tree node - the node which has no parent. Can be 'this', the parent of 'this',
+        /// or many levels up from 'this'.
+        /// </summary>
         public ITreeNode Root => Parent?.Root ?? this;
 
         /// <summary>
@@ -865,7 +869,12 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 //AddItem(form.viewInExplorerToolStripMenuItem);
                 Add("View content folder", () => ViewContentFolderInExplorer(targetNode));
-                Add("View code folder", () => ViewCodeFolderInExplorerClick(targetNode));
+
+                if(!targetNode.IsChildOfGlobalContent())
+                {
+                    Add("View code folder", () => ViewCodeFolderInExplorerClick(targetNode));
+                }
+
                 AddSeparator();
 
 
