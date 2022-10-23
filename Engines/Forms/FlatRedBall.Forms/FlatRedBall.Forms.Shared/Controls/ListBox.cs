@@ -125,6 +125,16 @@ namespace FlatRedBall.Forms.Controls
 
         public IInputReceiver NextInTabSequence { get; set; }
 
+        /// <summary>
+        /// Whether the primary input button (usually the A button) results in the highlighted list box item
+        /// being selected and in the ListBox focus moving outside of the individual items.
+        /// </summary>
+        /// <remarks>
+        /// This value is true, but can be changed to false if the A button should perform actions on the highlighted
+        /// list box item (such as toggling a check box) without focus being moved out of the individual items.
+        /// </remarks>
+        public bool LoseListItemFocusOnPrimaryInput { get; set; } = true;
+
         #endregion
 
         #region Events
@@ -272,7 +282,7 @@ namespace FlatRedBall.Forms.Controls
                 var movedUp = gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
                          gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up);
 
-                var pressedButton = gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A) ||
+                var pressedButton = (LoseListItemFocusOnPrimaryInput && gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A)) ||
                     gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B);
 
                 DoListItemFocusUpdate(movedDown, movedUp, pressedButton);
@@ -291,7 +301,9 @@ namespace FlatRedBall.Forms.Controls
 
                 var inputDevice = gamepad as IInputDevice;
 
-                var pressedButton = inputDevice.DefaultPrimaryActionInput.WasJustPressed || inputDevice.DefaultBackInput.WasJustPressed;
+                var pressedButton = 
+                    (LoseListItemFocusOnPrimaryInput && inputDevice.DefaultPrimaryActionInput.WasJustPressed) || 
+                    inputDevice.DefaultBackInput.WasJustPressed;
 
                 DoListItemFocusUpdate(movedDown, movedUp, pressedButton);
 
