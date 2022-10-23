@@ -11,6 +11,7 @@ using RenderingLibrary;
 using FlatRedBall.Gui;
 using Microsoft.Xna.Framework.Input;
 using FlatRedBall.Input;
+using FlatRedBall.Math.Geometry;
 
 namespace FlatRedBall.Forms.Controls
 {
@@ -272,20 +273,42 @@ namespace FlatRedBall.Forms.Controls
         {
             var xboxGamepads = GuiManager.GamePadsForUiControl;
 
+
             for (int i = 0; i < xboxGamepads.Count; i++)
             {
                 var gamepad = xboxGamepads[i];
 
-                var movedDown = gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down);
+                RepositionDirections? direction = null;
 
-                var movedUp = gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                         gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up);
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down))
+                {
+                    direction = RepositionDirections.Down;
+                }
+                
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right))
+                {
+                    direction = RepositionDirections.Right;
+                }
+
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up))
+                {
+                    direction = RepositionDirections.Up;
+                }
+
+                if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
+                    gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left))
+                {
+                    direction = RepositionDirections.Left;
+                }
+
 
                 var pressedButton = (LoseListItemFocusOnPrimaryInput && gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.A)) ||
                     gamepad.ButtonPushed(FlatRedBall.Input.Xbox360GamePad.Button.B);
 
-                DoListItemFocusUpdate(movedDown, movedUp, pressedButton);
+                DoListItemFocusUpdate(direction, pressedButton);
             }
 
             var genericGamePads = GuiManager.GenericGamePadsForUiControl;
@@ -294,10 +317,31 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = genericGamePads[i];
 
-                var movedDown = gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Down) ||
-                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Down));
-                var movedUp = gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Up) ||
-                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Up));
+                RepositionDirections? direction = null;
+
+                if(gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Down) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Down)))
+                {
+                    direction = RepositionDirections.Down;
+                }
+
+                if (gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Right) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Right)))
+                {
+                    direction = RepositionDirections.Right;
+                }
+
+                if(gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Up) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Up)))
+                {
+                    direction = RepositionDirections.Up;
+                }
+                
+                if(gamepad.DPadRepeatRate(Xbox360GamePad.DPadDirection.Left) ||
+                    (gamepad.AnalogSticks.Length > 0 && gamepad.AnalogSticks[0].AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection.Left)))
+                {
+                    direction = RepositionDirections.Left;
+                }
 
                 var inputDevice = gamepad as IInputDevice;
 
@@ -305,43 +349,121 @@ namespace FlatRedBall.Forms.Controls
                     (LoseListItemFocusOnPrimaryInput && inputDevice.DefaultPrimaryActionInput.WasJustPressed) || 
                     inputDevice.DefaultBackInput.WasJustPressed;
 
-                DoListItemFocusUpdate(movedDown, movedUp, pressedButton);
+                DoListItemFocusUpdate(direction, pressedButton);
 
             }
 
         }
 
-        private void DoListItemFocusUpdate(bool movedDown, bool movedUp, bool pressedButton)
+        private int? GetListBoxIndexAt(float x, float y)
         {
-            if (movedDown)
+            for (int i = 0; i < ListBoxItemsInternal.Count; i++)
             {
-                if (Items.Count > 0)
+                ListBoxItem listBoxItem = ListBoxItemsInternal[i];
+                var item = listBoxItem.Visual;
+                if (item.Visible)
                 {
-                    if (SelectedIndex < 0 && Items.Count > 0)
+                    var widthHalf = item.GetAbsoluteWidth() / 2.0f;
+                    var heightHalf = item.GetAbsoluteHeight() / 2.0f;
+
+                    var absoluteX = item.GetAbsoluteCenterX();
+                    var absoluteY = item.GetAbsoluteCenterY();
+
+                    if (x > absoluteX - widthHalf && x < absoluteX + widthHalf &&
+                        y > absoluteY - heightHalf && y < absoluteY + heightHalf)
                     {
-                        SelectedIndex = 0;
+                        return i;
                     }
-                    else if (SelectedIndex < Items.Count - 1)
-                    {
-                        SelectedIndex++;
-                    }
-                    this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                 }
             }
-            else if (movedUp)
+
+            return null;
+        }
+
+        private void DoListItemFocusUpdate(RepositionDirections? direction, bool pressedButton)
+        {
+            var wraps = InnerPanel.WrapsChildren;
+            var handledByWrapping = false;
+            if(wraps && direction != null)
             {
-                if (Items.Count > 0)
+                if(SelectedIndex > -1 && SelectedIndex < ListBoxItems.Count)
                 {
-                    if (SelectedIndex < 0 && Items.Count > 0)
+                    var currentSelection = this.ListBoxItemsInternal[SelectedIndex].Visual;
+
+                    var offsetToCheck = InnerPanel.StackSpacing + 1 ;
+
+                    float xCenter = currentSelection.GetAbsoluteX() + currentSelection.GetAbsoluteWidth() / 2.0f;
+                    float yCenter = currentSelection.GetAbsoluteY() + currentSelection.GetAbsoluteHeight() / 2.0f;
+
+                    float x = xCenter;
+                    float y = yCenter;
+                    switch(direction.Value)
                     {
-                        SelectedIndex = 0;
-                    }
-                    else if (SelectedIndex > 0)
-                    {
-                        SelectedIndex--;
+                        case RepositionDirections.Left:
+                            x = currentSelection.GetAbsoluteLeft() - offsetToCheck;
+                            break;
+
+                        case RepositionDirections.Right:
+                            x = currentSelection.GetAbsoluteRight() + offsetToCheck;
+                            break;
+
+                        case RepositionDirections.Up:
+                            y = currentSelection.GetAbsoluteTop() - offsetToCheck;
+                            break;
+
+                        case RepositionDirections.Down:
+                            y = currentSelection.GetAbsoluteBottom() + offsetToCheck;
+                            break;
                     }
 
-                    this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
+                    var index = GetListBoxIndexAt(x, y);
+
+                    if(index != null)
+                    {
+                        SelectedIndex = index.Value;
+                        this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
+                    }
+                }
+
+                // The fallback behavior is kinda confusing, so let's just handle it if it wraps.
+                // This could change in the future?
+                handledByWrapping = true;
+                
+            }
+
+
+            if(!handledByWrapping)
+            {
+                if (direction == RepositionDirections.Down || direction == RepositionDirections.Right)
+                {
+                    if (Items.Count > 0)
+                    {
+                        if (SelectedIndex < 0 && Items.Count > 0)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        else if (SelectedIndex < Items.Count - 1)
+                        {
+                            SelectedIndex++;
+                        }
+                        this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
+                    }
+                }
+                else if (direction == RepositionDirections.Up || direction == RepositionDirections.Left)
+                {
+                    if (Items.Count > 0)
+                    {
+                        if (SelectedIndex < 0 && Items.Count > 0)
+                        {
+                            SelectedIndex = 0;
+                        }
+                        else if (SelectedIndex > 0)
+                        {
+                            SelectedIndex--;
+                        }
+
+                        this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
+                    }
                 }
             }
 
