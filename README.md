@@ -60,3 +60,8 @@ https://store.steampowered.com/app/921450/King_Randalls_Party/
 https://store.steampowered.com/app/374520/Champions_of_Anteria/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/374520/ss_98523eead132f34b66056b839421809da173389e.1920x1080.jpg?t=1571649906)
 ![](https://pbs.twimg.com/media/C3cV439VYAAOolx?format=jpg&name=large)
+
+## A.R.E.S.: Extinction Agenda
+https://store.steampowered.com/app/92300/ARES_Extinction_Agenda/
+![](https://cdn.akamai.steamstatic.com/steam/apps/92300/ss_a146ba2429618f97fd8b5f538ca26e64e48bdc70.1920x1080.jpg?t=1447353830)
+![](https://cdn.akamai.steamstatic.com/steam/apps/92300/ss_916e68f18a240452f3b81ed25e2dd874c6230209.1920x1080.jpg?t=1447353830)
