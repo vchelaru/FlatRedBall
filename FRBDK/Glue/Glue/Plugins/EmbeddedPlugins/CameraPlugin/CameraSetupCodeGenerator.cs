@@ -294,20 +294,61 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             codeBlock.Line(@"
 #if WINDOWS
-            internal static readonly System.IntPtr HWND_TOPMOST = new System.IntPtr(-1);
-            internal static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
-            internal static readonly System.IntPtr HWND_TOP = new System.IntPtr(0);
-            internal static readonly System.IntPtr HWND_BOTTOM = new System.IntPtr(1);
+        internal static readonly System.IntPtr HWND_TOPMOST = new System.IntPtr(-1);
+        internal static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
+        internal static readonly System.IntPtr HWND_TOP = new System.IntPtr(0);
+        internal static readonly System.IntPtr HWND_BOTTOM = new System.IntPtr(1);
     
-            [System.Flags]
-            internal enum SetWindowPosFlags : uint
-            {
-                IgnoreMove = 0x0002,
-                IgnoreResize = 0x0001,
-            }
+        [System.Flags]
+        internal enum SetWindowPosFlags : uint
+        {
+            IgnoreMove = 0x0002,
+            IgnoreResize = 0x0001,
+        }
+
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        public struct RECT
+
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        [System.Runtime.InteropServices.DllImport(""user32.dll"")]
+        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(System.IntPtr hWnd, out RECT lpRect);
+
     
-            [System.Runtime.InteropServices.DllImport(""user32.dll"", SetLastError = true)]
-            internal static extern bool SetWindowPos(System.IntPtr hWnd, System.IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+        [System.Runtime.InteropServices.DllImport(""user32.dll"", SetLastError = true)]
+        internal static extern bool SetWindowPos(System.IntPtr hWnd, System.IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
+
+        public static Microsoft.Xna.Framework.Rectangle GetWindowRectangle()
+        {
+            var hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
+
+            GetWindowRect(hWnd, out RECT rectInner);
+
+            return new Microsoft.Xna.Framework.Rectangle(
+                rectInner.Left,
+                rectInner.Top,
+                rectInner.Right - rectInner.Left,
+                rectInner.Bottom - rectInner.Top);
+
+        }
+
+        public static void SetWindowPosition(int x, int y)
+        {
+            var hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;
+            SetWindowPos(
+                hWnd,
+                HWND_TOPMOST,
+                x, y,
+                0, 0, //FlatRedBallServices.GraphicsOptions.ResolutionWidth, FlatRedBallServices.GraphicsOptions.ResolutionHeight,
+                SetWindowPosFlags.IgnoreResize
+            );
+        }
 
         public static void SetWindowAlwaysOnTop()
         {
