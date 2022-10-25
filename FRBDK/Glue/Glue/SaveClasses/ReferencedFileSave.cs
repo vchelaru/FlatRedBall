@@ -180,6 +180,10 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         public FilePath FilePath;
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public string CachedInstanceName;
+
         // Have Name be first so it JSON serializes first:
         /// <summary>
         /// The name of the file name, relative to the Content folder.
@@ -195,6 +199,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 mName = value;
 
                 FilePath = null;
+                CachedInstanceName = null;
             }
         }
 
@@ -225,11 +230,16 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        bool mIncludeDirectoryRelativeToContainer;
         [CategoryAttribute("Access"), DefaultValue(false)]
         public bool IncludeDirectoryRelativeToContainer
         {
-            get;
-            set;
+            get => mIncludeDirectoryRelativeToContainer;
+            set
+            {
+                mIncludeDirectoryRelativeToContainer = value;
+                CachedInstanceName = null;
+            }
         }
         
         // Moved to Properties June 9, 2019

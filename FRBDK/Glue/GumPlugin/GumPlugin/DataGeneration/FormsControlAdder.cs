@@ -39,8 +39,7 @@ namespace GumPlugin.DataGeneration
 
         public static async Task SaveElements(Assembly assembly, bool askToOverwrite = true)
         {
-            var gumDirectory = FileManager.GetDirectory(
-                GumProjectManager.Self.GetGumProjectFileName());
+            var gumDirectory = GumProjectManager.Self.GetGumProjectFileName().FullPath;
 
 
             Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
@@ -170,8 +169,7 @@ namespace GumPlugin.DataGeneration
         {
             var names = assembly.GetManifestResourceNames();
 
-            var gumDirectory = FileManager.GetDirectory(
-                GumProjectManager.Self.GetGumProjectFileName());
+            var gumDirectory = GumProjectManager.Self.GetGumProjectFileName().GetDirectoryContainingThis();
 
             var behaviorDestination = gumDirectory + "Behaviors\\";
 

@@ -131,10 +131,10 @@ namespace GumPlugin.Managers
 
                 FileReferenceTracker.Self.UseAtlases = useAtlases;
 
-                var absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(gumRfs);
+                var absoluteFileName = GlueCommands.Self.GetAbsoluteFilePath(gumRfs);
 
                 // clear the cache for all screens, components, and standards - because whether we use atlases or not has changed
-                var gumFiles = GlueCommands.Self.FileCommands.GetFilesReferencedBy(absoluteFileName, TopLevelOrRecursive.TopLevel);
+                var gumFiles = GlueCommands.Self.FileCommands.GetFilePathsReferencedBy(absoluteFileName.FullPath, TopLevelOrRecursive.TopLevel);
 
                 foreach (var file in gumFiles)
                 {

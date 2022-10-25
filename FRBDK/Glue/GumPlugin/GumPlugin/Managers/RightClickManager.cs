@@ -130,11 +130,11 @@ namespace GumPlugin.Managers
                     gumComponent.BaseType = "Container";
                     gumComponent.Name = gumComponentName;
 
-                    string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+                    var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
                     GumPluginCommands.Self.AddComponentToGumProject(gumComponent);
 
-                    GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
+                    await GumPluginCommands.Self.SaveGumxAsync(saveAllElements: false);
 
                     GumPluginCommands.Self.SaveComponent(gumComponent);
 
