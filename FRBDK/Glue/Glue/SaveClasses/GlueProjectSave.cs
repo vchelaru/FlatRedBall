@@ -48,7 +48,8 @@ namespace FlatRedBall.Glue.SaveClasses
             CsvInheritanceSupport = 5,
             IPositionedSizedObjectInEngine = 5,
             NugetPackageInCsproj = 6,
-            ShapeManagerCollideAgainstClosest = 6,
+            // Actually the TileShapeCollection had a CollideAgainstClosest, but the ShapeManager didn't get it until v 17+, so moving this down:
+            //ShapeManagerCollideAgainstClosest = 6,
             SupportsEditMode = 7,
             SupportsShapeCollectionAddToManagerMakeAutomaticallyUpdated = 7,
             // this was added late summer 2021
@@ -72,7 +73,13 @@ namespace FlatRedBall.Glue.SaveClasses
             RemoveAutoLocalizationOfVariables = 14,
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
+            // Not exact, but close enough to help address issues:
+            HasGetGridLine = 17,
+            // also not exact, but close enough:
+            HasScreenManagerAfterScreenDestroyed = 17,
             ScreenManagerHasPersistentPolygons = 17,
+            ShapeManagerCollideAgainstClosest = 17,
+
             SpriteHasTolerateMissingAnimations = 18,
             AnimationLayerHasName = 19,
             IPlatformer = 19,

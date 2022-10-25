@@ -1,4 +1,6 @@
-﻿using FlatRedBall;
+﻿{CompilerDirectives}
+
+using FlatRedBall;
 using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -222,6 +224,7 @@ namespace GlueControl.Editing
                 var newYIndex = MathFunctions.RoundToInt(
                     (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
 
+#if HasGetGridLine
                 if ((oldXIndex != newXIndex || oldYIndex != newYIndex) &&
                     // If it's a push, we don't want to "zoom" from the previous location and draw a huge line.
                     !cursor.PrimaryPush)
@@ -246,6 +249,7 @@ namespace GlueControl.Editing
                     }
                 }
                 else
+#endif
                 {
                     // paint a single spot
                     // try to paint
@@ -307,6 +311,8 @@ namespace GlueControl.Editing
                     var newYIndex = MathFunctions.RoundToInt(
                         (currentTileHighlight.Y - (owner.BottomSeedY + owner.GridSize / 2)) / owner.GridSize);
 
+#if HasGetGridLine
+
                     if ((oldXIndex != newXIndex || oldYIndex != newYIndex) &&
                     // If it's a push, we don't want to "zoom" from the previous location and draw a huge line.
                         !cursor.SecondaryPush)
@@ -325,6 +331,7 @@ namespace GlueControl.Editing
                         }
                     }
                     else
+#endif
                     {
                         var worldX = currentTileHighlight.X;
                         var worldY = currentTileHighlight.Y;

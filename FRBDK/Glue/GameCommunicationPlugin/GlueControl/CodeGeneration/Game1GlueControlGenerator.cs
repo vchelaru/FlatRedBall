@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 
 namespace GameCommunicationPlugin.GlueControl.CodeGeneration
 {
@@ -157,11 +158,14 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 }
                 codeBlock.Line(";");
 
-                codeBlock.Line("FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += (screen) =>");
-                var innerDestroyBlock = codeBlock.Block();
-                innerDestroyBlock.Line("GlueControl.Editing.EditorVisuals.DestroyContainedObjects();");
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasScreenManagerAfterScreenDestroyed)
+                {
+                    codeBlock.Line("FlatRedBall.Screens.ScreenManager.AfterScreenDestroyed += (screen) =>");
+                    var innerDestroyBlock = codeBlock.Block();
+                    innerDestroyBlock.Line("GlueControl.Editing.EditorVisuals.DestroyContainedObjects();");
 
-                codeBlock.Line(";");
+                    codeBlock.Line(";");
+                }
             }
         }
     }
