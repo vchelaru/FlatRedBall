@@ -114,15 +114,36 @@ namespace BuildServerUploaderConsole.Processes
 
         public void PerformCopy(IResults results, string message)
         {
-
-            System.IO.File.Copy(SourceFile, DestinationFile, true);
-
-            if(!string.IsNullOrEmpty(Namespace))
+            var succeeded = false;
+            string errorMessage = null;
+            try
             {
-                ReplaceNamespace(DestinationFile, Namespace);
+                System.IO.File.Copy(SourceFile, DestinationFile, true);
+                succeeded = true;
+            }
+            catch (System.Exception e)
+            {
+                errorMessage = $"Error copying {SourceFile} to {DestinationFile}" +
+                    e;
+                System.Console.WriteLine(errorMessage);
+                succeeded = false;
             }
 
-            results.WriteMessage(message);
+            if(!succeeded)
+            {
+                throw new System.Exception(errorMessage);
+            }
+            else
+            {
+                if(!string.IsNullOrEmpty(Namespace))
+                {
+                    ReplaceNamespace(DestinationFile, Namespace);
+                }
+
+                results.WriteMessage(message);
+
+                System.Diagnostics.Debug.WriteLine(message);
+            }
 
         }
 
