@@ -64,12 +64,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return FileReferenceManager.Self.GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
         }
 
-        public IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
+        public IEnumerable<FilePath> GetFilePathsReferencedBy(FilePath filePath, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive)
         {
-            return GetFilesReferencedBy(absoluteName, topLevelOrRecursive);
+            return GetFilesReferencedBy(filePath.FullPath, topLevelOrRecursive);
         }
 
-        public void ClearFileCache(string absoluteName)
+        public void ClearFileCache(FilePath absoluteName)
         {
             FileReferenceManager.Self.ClearFileCache(absoluteName);
         }
@@ -232,36 +232,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return filePath;
         }
 
-        public ReferencedFileSave GetReferencedFile(string fileName)
+        public ReferencedFileSave GetReferencedFile(FilePath filePath)
         {
-            return GetReferencedFiles(fileName).FirstOrDefault();
+            return GetReferencedFiles(filePath).FirstOrDefault();
         }
 
-        public List<ReferencedFileSave> GetReferencedFiles(string fileName)
+        public List<ReferencedFileSave> GetReferencedFiles(FilePath filePath)
         {
             List<ReferencedFileSave> files = new List<ReferencedFileSave>();
-            ////////////////Early Out//////////////////////////////////
-            var invalidPathChars = Path.GetInvalidPathChars();
-            if (invalidPathChars.Any(item => fileName.Contains(item)))
-            {
-                // This isn't a RFS, because it's got a bad path. Early out here so that FileManager.IsRelative doesn't throw an exception
-                return files;
-            }
-
-            //////////////End Early Out////////////////////////////////
-
-
-            fileName = fileName.ToLower();
-
-            if (FileManager.IsRelative(fileName))
-            {
-
-                fileName = GlueCommands.GetAbsoluteFileName(fileName, isContent:true);
-
-            }
-
-            fileName = FileManager.Standardize(fileName).ToLower();
-
 
             if (GlueProject != null)
             {
@@ -269,9 +247,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     foreach (ReferencedFileSave rfs in screenSave.ReferencedFiles.ToArray())
                     {
-                        string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
-
-                        if (absoluteRfsFile == fileName)
+                        if(GlueCommands.Self.GetAbsoluteFilePath(rfs) == filePath)
                         {
                             files.Add(rfs);
                         }
@@ -282,9 +258,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     foreach (ReferencedFileSave rfs in entitySave.ReferencedFiles.ToArray())
                     {
-                        string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
-
-                        if (absoluteRfsFile == fileName)
+                        if (GlueCommands.Self.GetAbsoluteFilePath(rfs) == filePath)
                         {
                             files.Add(rfs);
                         }
@@ -293,9 +267,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 foreach (ReferencedFileSave rfs in GlueProject.GlobalFiles.ToArray())
                 {
-                    string absoluteRfsFile = FileManager.Standardize(GlueCommands.GetAbsoluteFileName(rfs)).ToLower();
-
-                    if (absoluteRfsFile == fileName)
+                    if (GlueCommands.Self.GetAbsoluteFilePath(rfs) == filePath)
                     {
                         files.Add(rfs);
                     }

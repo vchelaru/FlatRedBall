@@ -88,7 +88,7 @@ namespace OfficialPluginsCore.ErrorPlugin.ViewModels
                     }
 
                     var referencedFiles =
-                        GlueCommands.Self.FileCommands.GetFilePathsReferencedBy(current.Standardized, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
+                        GlueCommands.Self.FileCommands.GetFilePathsReferencedBy(current, EditorObjects.Parsing.TopLevelOrRecursive.TopLevel);
 
                     var stillReferences = referencedFiles.Any(item => item == next);
 

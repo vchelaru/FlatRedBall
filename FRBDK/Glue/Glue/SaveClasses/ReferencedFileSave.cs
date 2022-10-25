@@ -172,6 +172,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Properties
 
+        /// <summary>
+        /// A cached FilePath. This will remain null unless other code sets it (such as Glue).
+        /// This gets nulled out whenever Name is set.
+        /// </summary>
+        [JsonIgnore]
+        [XmlIgnore]
+        public FilePath FilePath;
+
         // Have Name be first so it JSON serializes first:
         /// <summary>
         /// The name of the file name, relative to the Content folder.
@@ -181,12 +189,12 @@ namespace FlatRedBall.Glue.SaveClasses
             get { return mName; }
             set
             {
-                string oldName = mName;
-
                 if (!String.IsNullOrEmpty(value) && value.ToLower().Replace("\\", "/").StartsWith("content/"))
                     value = value.Substring("content/".Length);
 
                 mName = value;
+
+                FilePath = null;
             }
         }
 

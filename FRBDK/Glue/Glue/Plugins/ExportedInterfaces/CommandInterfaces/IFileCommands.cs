@@ -19,8 +19,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
     {
         GeneralResponse GetLastParseResponse(FilePath file);
 
-        IEnumerable<FilePath> GetFilesReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
-        IEnumerable<FilePath> GetFilePathsReferencedBy(string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
+        IEnumerable<FilePath> GetFilesReferencedBy    (string absoluteName, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
+        IEnumerable<FilePath> GetFilePathsReferencedBy(FilePath filePath, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
 
         IEnumerable<FilePath> GetFilesReferencedBy(ReferencedFileSave file, EditorObjects.Parsing.TopLevelOrRecursive topLevelOrRecursive);
 
@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         List<FilePath> GetAllReferencedFileNames(TopLevelOrRecursive topLevelOrRecursive);
 
-        void ClearFileCache(string absoluteName);
+        void ClearFileCache(FilePath absoluteName);
 
         string GetContentFolder(IElement element);
         FilePath GetGlobalContentFolder();
@@ -40,8 +40,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         string GetFullFileName(ReferencedFileSave rfs);
         FilePath GetFilePath(ReferencedFileSave rfs);
-        ReferencedFileSave GetReferencedFile(string absoluteFile);
-        List<ReferencedFileSave> GetReferencedFiles(string fileName);
+        ReferencedFileSave GetReferencedFile(FilePath filePath);
+        List<ReferencedFileSave> GetReferencedFiles(FilePath filePath);
 
         FilePath GetCustomCodeFilePath(GlueElement glueElement);
 

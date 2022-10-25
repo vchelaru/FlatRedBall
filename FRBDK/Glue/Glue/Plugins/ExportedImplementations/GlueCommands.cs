@@ -130,21 +130,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs)
         {
-            if(rfs == null)
-            {
-                throw new ArgumentNullException("rfs", "The argument ReferencedFileSave should not be null");
-            }
-            return MakeAbsolute(rfs.Name, true);
+            return GetAbsoluteFilePath(rfs).FullPath;
         }
 
         public FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs)
         {
-            return GetAbsoluteFileName(rfs);
+            if(rfs.FilePath == null)
+            {
+                var relativePath = rfs.Name;
+                // We can reduce some branching by not calling the shared code:
+                if (ProjectManager.ContentProject != null)
+                {
+                    rfs.FilePath = !relativePath.StartsWith(ProjectManager.ContentDirectoryRelative)
+                                ? ProjectManager.ContentProject.MakeAbsolute(ProjectManager.ContentDirectoryRelative + relativePath)
+                                : ProjectManager.ContentProject.MakeAbsolute(relativePath);
+                }
+                else
+                {
+                    rfs.FilePath = ProjectManager.ProjectBase.MakeAbsolute(relativePath);
+                }
+
+            }
+
+            return rfs.FilePath;
         }
 
-        public FilePath GetAbsoluteFilePath(string rfsName, bool forceAsContent=true)
+        public FilePath GetAbsoluteFilePath(string relativeFilePath, bool forceAsContent=true)
         {
-            return MakeAbsolute(rfsName, forceAsContent);
+            return MakeAbsolute(relativeFilePath, forceAsContent);
 
         }
 
