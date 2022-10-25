@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Facades;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -72,8 +73,8 @@ namespace FlatRedBall.Glue.SaveClasses
             string error = "";
             if (!string.IsNullOrEmpty(instance.SourceFile))
             {
-                string absoluteDestinationName = ProjectManager.MakeAbsolute(instance.Name, true);
-                string absoluteSourceName = ProjectManager.MakeAbsolute(instance.SourceFile, true);
+                string absoluteDestinationName = GlueCommands.Self.GetAbsoluteFileName(instance.Name, true);
+                string absoluteSourceName = GlueCommands.Self.GetAbsoluteFileName(instance.SourceFile, true);
 
                 error = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
             }
@@ -83,8 +84,8 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 foreach (SourceReferencingFile srf in instance.SourceFileCache)
                 {
-                    string absoluteSourceName = ProjectManager.MakeAbsolute(srf.SourceFile, true);
-                    string absoluteDestinationName = ProjectManager.MakeAbsolute(srf.DestinationFile, true);
+                    string absoluteSourceName = GlueCommands.Self.GetAbsoluteFileName(srf.SourceFile, true);
+                    string absoluteDestinationName = GlueCommands.Self.GetAbsoluteFileName(srf.DestinationFile, true);
 
                     string resultOfBuild = instance.PerformBuildOnFile(absoluteSourceName, absoluteDestinationName, runAsync);
 
@@ -103,7 +104,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             error = null;
             string verboseError = "";
-            string fullName = ProjectManager.MakeAbsolute(instance.Name, true);
+            string fullName = GlueCommands.Self.GetAbsoluteFileName(instance);
 
             try
             {

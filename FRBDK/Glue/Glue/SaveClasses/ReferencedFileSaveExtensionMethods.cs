@@ -5,7 +5,6 @@ using System.Text;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Content;
-using GluePropertyGridClasses.Interfaces;
 
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
@@ -17,6 +16,7 @@ using System.Windows.Forms;
 using EditorObjects.SaveClasses;
 using System.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -101,7 +101,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         className = className.Substring(0, className.Length - "File".Length);
                     }
 
-                    className = EditorObjects.IoC.Container.Get<IVsProjectState>().DefaultNamespace + ".DataTypes." + className;
+                    className = GlueState.Self.ProjectNamespace + ".DataTypes." + className;
 
                 }
                 else
@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-                        className = EditorObjects.IoC.Container.Get<IVsProjectState>().DefaultNamespace + ".DataTypes." + ccs.Name;
+                        className = GlueState.Self.ProjectNamespace + ".DataTypes." + ccs.Name;
                     }
                 }
                 return className;

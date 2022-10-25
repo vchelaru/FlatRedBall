@@ -244,11 +244,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
                 {
                     fileName =
-                        ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
+                        GlueCommands.Self.GetAbsoluteFileName(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
                 }
                 else
                 {
-                    fileName = ProjectManager.MakeAbsolute(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.Name);
+                    fileName = GlueCommands.Self.GetAbsoluteFileName(currentReferencedFileSave);
                 }
             }
 

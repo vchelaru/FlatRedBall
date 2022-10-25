@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                     // If moving to content pipeline, remove the files from the project.
                     // If moving to copy if newer, add the files back to the project.
-                    string absoluteFileName = ProjectManager.MakeAbsolute(fileToAddOrRemove.FullPath, true);
+                    string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(fileToAddOrRemove.FullPath, true);
 
                     projectsAlreadyModified.Add(projectBase);
 
@@ -169,7 +169,7 @@ namespace FlatRedBall.Glue.ContentPipeline
             }
             else
             {
-                string absoluteName = ProjectManager.MakeAbsolute(rfs.Name, true);
+                string absoluteName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                 shouldRemoveAndAdd = usesContentPipeline && !projectBase.IsFilePartOfProject(absoluteName, BuildItemMembershipType.CompileOrContentPipeline) ||
                     !usesContentPipeline && !projectBase.IsFilePartOfProject(absoluteName, BuildItemMembershipType.CopyIfNewer);
@@ -294,7 +294,7 @@ namespace FlatRedBall.Glue.ContentPipeline
                         filesInModifiedRfs.Remove(modifiedPossibleReferencerFile);
                     }
 
-                    string absoluteFileName = ProjectManager.MakeAbsolute(possibleReferencer.Name);
+                    string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(possibleReferencer);
 
                     if (File.Exists(absoluteFileName))
                     {

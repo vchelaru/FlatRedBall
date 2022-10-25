@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -33,7 +34,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             string relativeDirectory = ((ITreeNode)this).GetRelativeFilePath();
 
 
-            AddAndRemoveDirectoryNodesRecursively(ProjectManager.MakeAbsolute(relativeDirectory, true), this);
+            AddAndRemoveDirectoryNodesRecursively(GlueCommands.Self.GetAbsoluteFileName(relativeDirectory, true), this);
 
 
 
@@ -46,8 +47,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 if (nodeForFile == null)
                 {
-                    string thisAbsolute = ProjectManager.MakeAbsolute(((ITreeNode)this).GetRelativeFilePath(), true);
-                    string fullFile = ProjectManager.MakeAbsolute(file.GetRelativePath(), true);
+                    string thisAbsolute = GlueCommands.Self.GetAbsoluteFileName(((ITreeNode)this).GetRelativeFilePath(), true);
+                    string fullFile = GlueCommands.Self.GetAbsoluteFileName(file);
                     string directoryNodeToFind = FileManager.GetDirectory(fullFile);
                     directoryNodeToFind = FileManager.MakeRelative(directoryNodeToFind, thisAbsolute);
                     var nodeToAddTo = GetNodeForDirectory(directoryNodeToFind, this);
@@ -215,7 +216,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         // See if there is already a tree node with this name
                         string directoryRelativeToThisTreeNode = FileManager.MakeRelative(
-                            directory, ProjectManager.MakeAbsolute(((ITreeNode)treeNode).GetRelativeFilePath(), true)) + "/";
+                            directory, GlueCommands.Self.GetAbsoluteFileName(((ITreeNode)treeNode).GetRelativeFilePath(), true)) + "/";
 
                         var existingTreeNode = GetNodeForDirectory(directoryRelativeToThisTreeNode, treeNode);
 
@@ -240,7 +241,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     {
                         string subDirectory = ((ITreeNode)subNode).GetRelativeFilePath();
 
-                        subDirectory = ProjectManager.MakeAbsolute(subDirectory, true);
+                        subDirectory = GlueCommands.Self.GetAbsoluteFileName(subDirectory, true);
 
                         AddAndRemoveDirectoryNodesRecursively(subDirectory, subNode);
 

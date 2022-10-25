@@ -673,8 +673,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (referencedFileSave != null)
                 {
-                    string file = referencedFileSave.GetRelativePath();
-                    file = ProjectManager.MakeAbsolute(file, true);
+                    var file = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
 
                     string contents = FileManager.FromFileText(file);
 
@@ -884,9 +883,9 @@ namespace FlatRedBall.Glue.SetVariable
                         {
 
                             var width = ImageHeader.GetDimensions(
-                                    ProjectManager.MakeAbsolute(rfs.Name)).Width;
+                                    GlueCommands.Self.GetAbsoluteFileName(rfs)).Width;
                             var height = ImageHeader.GetDimensions(
-                                    ProjectManager.MakeAbsolute(rfs.Name)).Height;
+                                    GlueCommands.Self.GetAbsoluteFileName(rfs)).Height;
 
                             string whatIsWrong = null;
 
@@ -907,7 +906,7 @@ namespace FlatRedBall.Glue.SetVariable
                             {
                                 whatIsWrong += "\nWhat would you like to do?";
 
-                                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                                var mbmb = new MultiButtonMessageBox();
                                 mbmb.MessageText = whatIsWrong;
                                 mbmb.AddButton("Undo the change", DialogResult.Cancel);
                                 mbmb.AddButton("Keep the change (May cause runtime crashes)", DialogResult.Yes);

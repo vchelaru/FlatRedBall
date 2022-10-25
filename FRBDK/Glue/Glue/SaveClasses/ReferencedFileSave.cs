@@ -165,7 +165,6 @@ namespace FlatRedBall.Glue.SaveClasses
         string mName;
         private List<ProjectSpecificFile> _projectSpecificFiles = new List<ProjectSpecificFile>();
 
-        // Vic says: Eventually we'll want to add this:
         //private string mLayerOn;
 
 
@@ -188,8 +187,6 @@ namespace FlatRedBall.Glue.SaveClasses
                     value = value.Substring("content/".Length);
 
                 mName = value;
-
-
             }
         }
 

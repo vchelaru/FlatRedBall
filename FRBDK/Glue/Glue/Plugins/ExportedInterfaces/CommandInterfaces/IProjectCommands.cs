@@ -60,8 +60,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void AddDirectory(string folderName, ITreeNode treeNodeToAddTo);
 
-        string MakeAbsolute(string relativeFileName, bool forceAsContent);
-
         void MakeGeneratedCodeItemsNested();
 
         /// <summary>

@@ -157,7 +157,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                         matchingReferencedFileSaves.Add(rfs);
                     }
 
-                    string absoluteFileName = ProjectManager.MakeAbsolute(rfs.Name);
+                    string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                     if (File.Exists(absoluteFileName))
                     {

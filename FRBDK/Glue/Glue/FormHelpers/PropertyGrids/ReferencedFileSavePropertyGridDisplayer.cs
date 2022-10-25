@@ -13,6 +13,7 @@ using Glue.IO;
 using System.IO;
 using FlatRedBall.Content.Particle;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 {
@@ -293,18 +294,18 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
         object GetImageWidth()
         {
             return ImageHeader.GetDimensions(
-                    ProjectManager.MakeAbsolute(((ReferencedFileSave)Instance).Name)).Width;
+                    GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance)).Width;
         }
 
         object GetImageHeight()
         {
             return ImageHeader.GetDimensions(
-                    ProjectManager.MakeAbsolute(((ReferencedFileSave)Instance).Name)).Height;
+                    GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance)).Height;
         }
 
         object GetEquilibriumParticleCount()
         {
-            string fileName = ProjectManager.MakeAbsolute(((ReferencedFileSave)Instance).Name);
+            string fileName = GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance);
             if (File.Exists(fileName))
             {
                 EmitterSaveList esl = EmitterSaveList.FromFile(fileName);
@@ -319,7 +320,7 @@ namespace FlatRedBall.Glue.FormHelpers.PropertyGrids
 
         object GetBurstParticleCount()
         {
-            EmitterSaveList esl = EmitterSaveList.FromFile(ProjectManager.MakeAbsolute(((ReferencedFileSave)Instance).Name));
+            EmitterSaveList esl = EmitterSaveList.FromFile(GlueCommands.Self.GetAbsoluteFileName((ReferencedFileSave)Instance));
             return esl.GetBurstParticleCount();
         }
 

@@ -371,7 +371,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // I don't know why - that seems wrong, because we want to 
                     // show all files that are part of the project. The project should
                     // decide what to show, not what is on disk.
-                    string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
+                    string absoluteRfs = GlueCommands.Self.GetAbsoluteFileName(rfs);
                     var nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs)) ??
                         GlobalContentRootNode;
                     nodeForFile = new NodeViewModel(nodeToAddTo);
@@ -446,7 +446,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
                 {
                     // If it's null that may mean the directory doesn't exist.  We should make it
-                    string absoluteDirectory = ProjectManager.MakeAbsolute(containingDirectory);
+                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
                     if (!Directory.Exists(absoluteDirectory))
                     {
                         Directory.CreateDirectory(absoluteDirectory);
@@ -573,7 +573,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
 
-                        string directory = ProjectManager.MakeAbsolute(treeNode.GetRelativeFilePath(), isGlobalContent);
+                        string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
 
                         directory = FileManager.Standardize(directory.ToLower());
 

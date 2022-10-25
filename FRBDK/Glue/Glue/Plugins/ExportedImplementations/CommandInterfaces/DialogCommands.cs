@@ -342,7 +342,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         if (FileManager.IsRelative(filesToRemove[i]))
                         {
-                            filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
+                            filesToRemove[i] = GlueCommands.Self.GetAbsoluteFileName(filesToRemove[i], false);
                         }
                         filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
                     }
@@ -371,7 +371,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         foreach (string file in filesToRemove)
                         {
-                            FilePath fileName = ProjectManager.MakeAbsolute(file);
+                            FilePath fileName = GlueCommands.Self.GetAbsoluteFileName(file, false);
                             // This file may have been removed
                             // in windows explorer, and now removed
                             // from Glue.  Check to prevent a crash.
@@ -384,7 +384,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         foreach (string file in filesToRemove)
                         {
-                            string fileName = ProjectManager.MakeAbsolute(file);
+                            string fileName = GlueCommands.Self.GetAbsoluteFileName(file, false);
                             // This file may have been removed
                             // in windows explorer, and now removed
                             // from Glue.  Check to prevent a crash.

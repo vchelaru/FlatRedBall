@@ -1027,7 +1027,7 @@ namespace FlatRedBall.Glue.Managers
                         }
                         else
                         {
-                            string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                            string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
                             response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                         }
                     }
@@ -1046,7 +1046,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                        string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
                         response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                     }
 
@@ -1105,7 +1105,7 @@ namespace FlatRedBall.Glue.Managers
 
                             GlueState.Self.CurrentReferencedFileSave = referencedFileSave;
 
-                            string absoluteFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
+                            string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
                             string creationReport;
                             string errorMessage;
 
@@ -1152,7 +1152,7 @@ namespace FlatRedBall.Glue.Managers
 
                             if(isRelativeToElementBeforeMove)
                             {
-                                string targetDirectory = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                                string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
                                 response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
                             }
                             else
@@ -1260,7 +1260,7 @@ namespace FlatRedBall.Glue.Managers
             string newNodeText = FlatRedBall.IO.FileManager.MakeRelative(targetDirectory, ProjectManager.ProjectBase.GetAbsoluteContentFolder()) + FileManager.RemovePath(referencedFileSave.Name);
             newNodeText = newNodeText.Replace("/", "\\");
 
-            string oldFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name, true);
+            string oldFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
             string targetFile = targetDirectory + FileManager.RemovePath(oldFileName);
             var elementContainingMovedFile = ObjectFinder.Self.GetElementContaining(referencedFileSave);
             Dictionary<string, string> mOldNewDependencyFileDictionary;

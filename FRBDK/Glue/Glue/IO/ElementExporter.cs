@@ -59,7 +59,7 @@ namespace FlatRedBall.Glue.IO
                 // have been selected for export.
                 foreach (ReferencedFileSave rfs in element.ReferencedFiles)
                 {
-                    string absoluteFile = ProjectManager.MakeAbsolute(rfs.Name, true);
+                    string absoluteFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                     absoluteFile = FileManager.Standardize(absoluteFile, null, false).ToLower();
 
@@ -249,10 +249,10 @@ namespace FlatRedBall.Glue.IO
 
             List<string> allFiles = new List<string>();
 
-            string contentDirectory = ProjectManager.MakeAbsolute(element.Name, true);
+            string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
-                string absoluteRfsName = ProjectManager.MakeAbsolute(rfs.Name);
+                string absoluteRfsName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
 
                 allFiles.Add(absoluteRfsName);
@@ -384,7 +384,7 @@ namespace FlatRedBall.Glue.IO
             mOldElementName = element.Name;
 
             string oldContentRelativeDirectory = "Content\\" + element.Name + "\\";
-            string oldContentRelativeDirectoryAbsolute = ProjectManager.MakeAbsolute(element.Name, true);
+            string oldContentRelativeDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
             
             if (element is EntitySave)
             {
@@ -401,7 +401,7 @@ namespace FlatRedBall.Glue.IO
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
-                string absoluteRfsPath = ProjectManager.MakeAbsolute(rfs.Name, true);
+                string absoluteRfsPath = GlueCommands.Self.GetAbsoluteFileName(rfs.Name, true);
 
                 if (FileManager.IsRelativeTo(absoluteRfsPath, oldContentRelativeDirectoryAbsolute))
                 {
@@ -420,7 +420,7 @@ namespace FlatRedBall.Glue.IO
         {
             foreach (NamedObjectSave nos in nosList)
             {
-                if (!string.IsNullOrEmpty(nos.SourceFile) && FileManager.IsRelativeTo(ProjectManager.MakeAbsolute(nos.SourceFile, true), oldContentRelativeDirectoryAbsolute))
+                if (!string.IsNullOrEmpty(nos.SourceFile) && FileManager.IsRelativeTo(GlueCommands.Self.GetAbsoluteFileName(nos.SourceFile, true), oldContentRelativeDirectoryAbsolute))
                 {
                     mOldNamedObjectFileNames.Add(nos, nos.SourceFile);
                     nos.SourceFile = (newContentRelativeDirectory + FileManager.RemovePath(nos.SourceFile)).Replace("\\", "/");
@@ -546,7 +546,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (filesNotIncluded.Count > 0)
                 {
-                    string contentDirectory = ProjectManager.MakeAbsolute(element.Name, true);
+                    string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
                     toReturn = "The file\n\n" + filesNotIncluded[0] + "\n\nis not relative to the content folder for the element which is\n\n" + contentDirectory;
                 }
             }
@@ -556,13 +556,13 @@ namespace FlatRedBall.Glue.IO
 
         private static List<string> GetExternalFiles(IElement element, List<string> filesAlreadyIncluded)
         {
-            string contentDirectory = ProjectManager.MakeAbsolute(element.Name, true);
+            string contentDirectory = GlueCommands.Self.GetAbsoluteFileName(element.Name, true);
 
             List<string> filesNotIncluded = new List<string>();
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
-                string absolutePath = ProjectManager.MakeAbsolute(rfs.Name, true);
+                string absolutePath = GlueCommands.Self.GetAbsoluteFileName(rfs.Name, true);
 
                 absolutePath = FileManager.Standardize(absolutePath, null, false);
 

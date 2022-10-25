@@ -416,7 +416,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 string directory = treeNode.GetRelativeFilePath();
 
-                directory = ProjectManager.MakeAbsolute(directory, true);
+                directory = GlueCommands.Self.GetAbsoluteFileName(directory, true);
 
 
                 if (!Directory.Exists(directory))

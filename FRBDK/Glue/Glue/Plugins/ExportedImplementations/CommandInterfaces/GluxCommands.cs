@@ -404,7 +404,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 else if (rfs != null)
                 {
 
-                    var createdFile = ProjectManager.MakeAbsolute(rfs.GetRelativePath());
+                    var createdFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                     if (createdFile.EndsWith(".csv"))
                     {
@@ -615,10 +615,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // make sure this doesn't happen at the same time as a background sync:
                     TaskManager.Self.AddParallelTask(() =>
                         {
-                            UpdateReactor.UpdateFile(ProjectManager.MakeAbsolute(toReturn.Name));
+                            UpdateReactor.UpdateFile(GlueCommands.Self.GetAbsoluteFileName(toReturn));
                         },
                         "Updating file " + toReturn.Name);
-                    string directoryOfFile = FileManager.GetDirectory(ProjectManager.MakeAbsolute(fileName));
+                    string directoryOfFile = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName(fileName, 
+                        // not sure why this is false...
+                        false));
 
                     RightClickHelper.SetExternallyBuiltFileIfHigherThanCurrent(directoryOfFile, false);
                 }
@@ -800,7 +802,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if (fileToAdd.EndsWith(".csv"))
                         {
-                            string fileToAddAbsolute = ProjectManager.MakeAbsolute(fileToAdd);
+                            string fileToAddAbsolute = GlueCommands.Self.GetAbsoluteFileName(fileToAdd,
+                                // not sure why this is false
+                                false);
                             CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
                         }
                         if (isUnknownType)
@@ -996,7 +1000,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
 
                 string itemName = referencedFileToRemove.GetRelativePath();
-                string absoluteName = ProjectManager.MakeAbsolute(referencedFileToRemove.Name, true);
+                string absoluteName = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove);
 
                 // I don't know why we were removing the file from the ProjectBase - it should
                 // be from the Content project
@@ -2803,21 +2807,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             filesThatCouldBeRemoved.Add(elementName + ".Generated.cs");
 
             string eventFile = elementName + ".Event.cs";
-            string absoluteEvent = ProjectManager.MakeAbsolute(eventFile);
+            string absoluteEvent = GlueCommands.Self.GetAbsoluteFileName(eventFile, false);
             if (System.IO.File.Exists(absoluteEvent))
             {
                 filesThatCouldBeRemoved.Add(eventFile);
             }
 
             string generatedEventFile = elementName + ".Generated.Event.cs";
-            string absoluteGeneratedEventFile = ProjectManager.MakeAbsolute(generatedEventFile);
+            string absoluteGeneratedEventFile = GlueCommands.Self.GetAbsoluteFileName(generatedEventFile, false);
             if (System.IO.File.Exists(absoluteGeneratedEventFile))
             {
                 filesThatCouldBeRemoved.Add(generatedEventFile);
             }
 
             string factoryName = "Factories/" + FileManager.RemovePath(elementName) + "Factory.Generated.cs";
-            string absoluteFactoryNameFile = ProjectManager.MakeAbsolute(factoryName);
+            string absoluteFactoryNameFile = GlueCommands.Self.GetAbsoluteFileName(factoryName, false);
             if (System.IO.File.Exists(absoluteFactoryNameFile))
             {
                 filesThatCouldBeRemoved.Add(absoluteFactoryNameFile);

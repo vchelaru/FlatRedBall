@@ -359,8 +359,8 @@ namespace FlatRedBall.Glue.Factories
             // todo - support resetting animation chains on Sprites that aren't using a .scnx
             if (nos.SourceType == SourceType.File && !string.IsNullOrEmpty(nos.SourceFile))
             {
-                string fullFile = ProjectManager.MakeAbsolute(nos.SourceFile);
-                SpriteEditorScene ses = SpriteEditorScene.FromFile(fullFile);
+                string fullFile = GlueCommands.Self.GetAbsoluteFileName(nos.SourceFile, true);
+                var ses = SpriteEditorScene.FromFile(fullFile);
 
                 int endingIndex = nos.SourceName.LastIndexOf('(');
 

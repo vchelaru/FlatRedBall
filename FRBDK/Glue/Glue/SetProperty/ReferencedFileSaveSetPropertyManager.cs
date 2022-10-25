@@ -319,8 +319,8 @@ namespace FlatRedBall.Glue.SetVariable
             // unrecognizable. In this case we still want to have 
             // it be content
             bool forceAsContent = true;
-            var oldFilePath = new FilePath(ProjectManager.MakeAbsolute(oldName, forceAsContent));
-            var newFilePath = new FilePath(ProjectManager.MakeAbsolute(newName, forceAsContent));
+            var oldFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(oldName, forceAsContent));
+            var newFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(newName, forceAsContent));
 
             string instanceName = FileManager.RemovePath(FileManager.RemoveExtension(newName));
             string whyIsntValid;
@@ -482,7 +482,7 @@ namespace FlatRedBall.Glue.SetVariable
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
             string fileToDelete = whatToRemove;
-            fileToDelete = ProjectManager.MakeAbsolute(fileToDelete);
+            fileToDelete = GlueCommands.Self.GetAbsoluteFileName(fileToDelete, false);
             if (System.IO.File.Exists(fileToDelete))
             {
                 try

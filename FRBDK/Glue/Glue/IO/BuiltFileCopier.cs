@@ -49,7 +49,7 @@ namespace FlatRedBall.Glue.IO
             {
                 foreach (var rfs in ObjectFinder.Self.GetAllReferencedFiles())
                 {
-                    TryCopyingBuiltFile(ProjectManager.MakeAbsolute(rfs.Name), ErrorReportingStyle.GlueOutput);
+                    TryCopyingBuiltFile(GlueCommands.Self.GetAbsoluteFileName(rfs), ErrorReportingStyle.GlueOutput);
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace FlatRedBall.Glue.IO
 
         void HandleNewFile(ReferencedFileSave rfs)
         {
-            HandleBuiltFileChange(ProjectManager.MakeAbsolute(rfs.Name));
+            HandleBuiltFileChange(GlueCommands.Self.GetAbsoluteFileName(rfs));
         }
 
         bool NeedsCopiedXnbs(ProjectBase project)

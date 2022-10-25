@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue
         {
             TaskManager.Self.WarnIfNotInTask();
             string fileName = rfs.Name;
-            fileName = ProjectManager.MakeAbsolute(fileName);
+            fileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
             /////////////// Early Out /////////////////////////
             if (!System.IO.File.Exists(fileName))
@@ -154,7 +154,7 @@ namespace FlatRedBall.Glue
                     break;
             }
 
-            string absoluteFileName = ProjectManager.MakeAbsolute(referencedFileSave.Name);
+            string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
 
             // If the file doesn't exist this will generate bad code.  But this isn't
             // considered a silent failure because Glue will raise flags about missing
@@ -188,8 +188,8 @@ namespace FlatRedBall.Glue
             List<string> toReturn = new List<string>();
                 
                         
-            string fileName = rfs.Name;
-            fileName = ProjectManager.MakeAbsolute(fileName);
+            string fileName;
+            fileName = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
             RuntimeCsvRepresentation rcr = CsvFileManager.CsvDeserializeToRuntime(
                 fileName);
@@ -319,7 +319,7 @@ namespace FlatRedBall.Glue
                 if (rfs.CreatesDictionary)
                 {
                     string fileName = rfs.Name;
-                    fileName = ProjectManager.MakeAbsolute(fileName, forceAsContent:true);
+                    fileName = GlueCommands.Self.GetAbsoluteFileName(fileName, true);
 
                     var rcr = CsvFileManager.CsvDeserializeToRuntime(fileName);
 
@@ -425,8 +425,7 @@ namespace FlatRedBall.Glue
                     }
                     else
                     {
-                        fileName = foundRfs.Name;
-                        fileName = ProjectManager.MakeAbsolute(fileName);
+                        fileName = GlueCommands.Self.GetAbsoluteFileName(foundRfs);
 
                         RuntimeCsvRepresentation runtimeToAdd = null;
                         try

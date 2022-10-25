@@ -35,7 +35,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     {
 
         IGlueState GlueState => Container.Get<IGlueState>();
-        IGlueCommands GlueCommands => Container.Get<IGlueCommands>();
+        GlueCommands GlueCommands => GlueCommands.Self;
 
         GlueProjectSave GlueProject
         {
@@ -339,8 +339,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // unrecognizable. In this case we still want to have 
             // it be content
             bool forceAsContent = true;
-            var oldFilePath = new FilePath(ProjectManager.MakeAbsolute(oldName, forceAsContent));
-            var newFilePath = new FilePath(ProjectManager.MakeAbsolute(newName, forceAsContent));
+            var oldFilePath = GlueCommands.GetAbsoluteFilePath(oldName, forceAsContent);
+            var newFilePath = GlueCommands.GetAbsoluteFilePath(newName, forceAsContent);
 
             string instanceName = FileManager.RemovePath(FileManager.RemoveExtension(newName));
             string whyIsntValid;
