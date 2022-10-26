@@ -28,19 +28,15 @@ namespace GlueFormsCore.Controls
 
             DataContextChanged += HandleDataContextChanged;
 
-            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            Loaded += (_, _) =>
+            {
+                SearchTextBox.Focus();
 
-            // uses winforms:
-            System.Drawing.Point point = System.Windows.Forms.Control.MousePosition;
-            this.Left = point.X - this.Width / 2;
-            // not sure why this is so high
-            //this.Top = point.Y - this.Height/2;
-            this.Top = point.Y - 50;
-
-            this.ShiftWindowOntoScreen();
-
-            SearchTextBox.Focus();
+                this.MoveToCursor();
+            };
         }
+
+        
 
         private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
