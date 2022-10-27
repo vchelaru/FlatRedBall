@@ -27,7 +27,7 @@ namespace OfficialPlugins.MonoGameContent
         {
             new FilePath( AppDomain.CurrentDomain.BaseDirectory + @"..\PrebuiltTools\MGCB\MGCB.exe"),
             new FilePath(@"C:\Program Files (x86)\MSBuild\MonoGame\v3.0\Tools\MGCB.exe"),
-
+            new FilePath(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\..\PrebuiltTools\MGCB\MGCB.exe"),
         };
 
         static string GetCommandLineBuildExe(VisualStudioProject project)
