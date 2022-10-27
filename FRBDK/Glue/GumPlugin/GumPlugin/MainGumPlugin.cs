@@ -832,7 +832,7 @@ namespace GumPlugin
                 //find corresponding gum if in ide
                 if(string.IsNullOrEmpty(executable)) {
                     // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
-                    FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                    FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
                     if(prebuiltLocation.Exists()) {
                         executable = prebuiltLocation.FullPath;
                     }
