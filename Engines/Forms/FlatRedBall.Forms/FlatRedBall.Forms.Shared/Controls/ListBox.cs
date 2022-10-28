@@ -424,6 +424,11 @@ namespace FlatRedBall.Forms.Controls
                         this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
                     }
                 }
+                else
+                {
+                    SelectedIndex = 0;
+                    this.ListBoxItemsInternal[SelectedIndex].IsFocused = true;
+                }
 
                 // The fallback behavior is kinda confusing, so let's just handle it if it wraps.
                 // This could change in the future?

@@ -516,7 +516,7 @@ namespace FlatRedBall.Glue.IO
         private static void ReactToChangedCodeFile(string codeFileName)
         {
             
-            string absoluteName = ProjectManager.MakeAbsolute(codeFileName);
+            string absoluteName = GlueCommands.Self.GetAbsoluteFileName(codeFileName, false);
 
             if(FileManager.FileExists(absoluteName))
             {

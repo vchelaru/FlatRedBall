@@ -591,7 +591,7 @@ namespace TileGraphicsPlugin
                 fileNameToUse = rfs.SourceFile;
             }
 
-            string fullFileName = FlatRedBall.Glue.ProjectManager.MakeAbsolute(fileNameToUse, true);
+            string fullFileName = GlueCommands.Self.GetAbsoluteFileName(fileNameToUse, true);
             mLastFile = fullFileName;
 
             EntityCreationManager.Self.ReactToRfsSelected(rfs);

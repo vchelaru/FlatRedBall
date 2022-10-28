@@ -26,7 +26,6 @@ using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
-using GluePropertyGridClasses.Interfaces;
 using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.IO
@@ -752,7 +751,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (!string.IsNullOrEmpty(error))
                 {
-                    ErrorReporter.ReportError(ProjectManager.MakeAbsolute(rfs.Name, true), error, false);
+                    ErrorReporter.ReportError(GlueCommands.Self.GetAbsoluteFileName(rfs), error, false);
                 }
             }
         }

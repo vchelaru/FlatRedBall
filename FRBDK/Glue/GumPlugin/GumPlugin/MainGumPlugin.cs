@@ -766,8 +766,7 @@ namespace GumPlugin
                     // list return is then cached, and future calls will always treat the .gumx as having 
                     // no referenced files. Now that we've assigned the custom project, clear the cache so
                     // it can properly be set up.
-                    GlueCommands.Self.FileCommands.ClearFileCache(
-                    GlueCommands.Self.GetAbsoluteFileName(gumRfs));
+                    GlueCommands.Self.FileCommands.ClearFileCache(GlueCommands.Self.GetAbsoluteFilePath(gumRfs));
                     GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
 
 

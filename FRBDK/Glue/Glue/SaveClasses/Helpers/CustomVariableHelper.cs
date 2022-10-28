@@ -12,6 +12,7 @@ using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Reflection;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses.Helpers
 {
@@ -136,7 +137,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
 
                     if (!string.IsNullOrEmpty(nos.SourceFile) && !string.IsNullOrEmpty(nos.SourceNameWithoutParenthesis))
                     {
-                        string absoluteFileName = ProjectManager.MakeAbsolute(nos.SourceFile, true);
+                        string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(nos.SourceFile, true);
 
 
 
@@ -151,7 +152,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
                 case SourceType.Entity:
                     if (!string.IsNullOrEmpty(nos.SourceClassType))
                     {
-                        IElement element = ObjectFinder.Self.GetIElement(nos.SourceClassType);
+                        var element = ObjectFinder.Self.GetElement(nos.SourceClassType);
 
                         if (element != null)
                         {

@@ -189,7 +189,7 @@ namespace TileGraphicsPlugin.Managers
             foreach (var rfs in GlueState.Self.CurrentGlueProject.GetAllReferencedFiles().Where(item => IsTmx(item)))
             {
                 TiledMapSave tms = null;
-                string fullFile = FlatRedBall.Glue.ProjectManager.MakeAbsolute(GetTsxFileFor(rfs), true);
+                string fullFile = GlueCommands.Self.GetAbsoluteFileName(GetTsxFileFor(rfs), true);
                 bool succeeded = true;
 
                 string tmxDirectory = FileManager.GetDirectory(fullFile);

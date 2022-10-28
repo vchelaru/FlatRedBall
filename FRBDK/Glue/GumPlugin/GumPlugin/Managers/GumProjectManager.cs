@@ -36,27 +36,25 @@ namespace GumPlugin.Managers
             return GetRfsForGumProject() != null;
         }
 
-        public string GetGumProjectFileName()
+        public FilePath GetGumProjectFileName()
         {
             // Let's get all the available Screens:
             ReferencedFileSave gumxRfs = GumProjectManager.Self.GetRfsForGumProject();
             if (gumxRfs != null)
             {
-                string fullFileName = GlueCommands.Self.GetAbsoluteFileName(gumxRfs);
-
-                return fullFileName;
+                return GlueCommands.Self.GetAbsoluteFilePath(gumxRfs);
             }
             return null;
         }
 
         public void ReloadGumProject()
         {
-            string gumProjectFileName = GetGumProjectFileName();
-            if (!string.IsNullOrEmpty(gumProjectFileName))
+            var gumProjectFileName = GetGumProjectFileName();
+            if (gumProjectFileName != null)
             {
                 string gumxDirectory = null;
 
-                gumxDirectory = FileManager.GetDirectory(gumProjectFileName);
+                gumxDirectory = gumProjectFileName.GetDirectoryContainingThis().FullPath;
 
                 FileReferenceTracker.Self.LoadGumxIfNecessaryFromDirectory(gumxDirectory, force:true);
             }

@@ -5,7 +5,6 @@ using System.Text;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Content;
-using GluePropertyGridClasses.Interfaces;
 
 using SourceReferencingFile = FlatRedBall.Glue.Content.SourceReferencingFile;
 
@@ -17,6 +16,7 @@ using System.Windows.Forms;
 using EditorObjects.SaveClasses;
 using System.IO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -101,7 +101,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         className = className.Substring(0, className.Length - "File".Length);
                     }
 
-                    className = EditorObjects.IoC.Container.Get<IVsProjectState>().DefaultNamespace + ".DataTypes." + className;
+                    className = GlueState.Self.ProjectNamespace + ".DataTypes." + className;
 
                 }
                 else
@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-                        className = EditorObjects.IoC.Container.Get<IVsProjectState>().DefaultNamespace + ".DataTypes." + ccs.Name;
+                        className = GlueState.Self.ProjectNamespace + ".DataTypes." + ccs.Name;
                     }
                 }
                 return className;
@@ -148,62 +148,67 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>The name as generated.</returns>
         public static string GetInstanceName(this ReferencedFileSave instance)
         {
-            string toReturn =
-                FileManager.RemoveExtension(instance.Name)
-                    .Replace(" ", "")
-                    .Replace("-", "_")
-                    // May 17, 2022
-                    // File names with 
-                    // invalid characters
-                    // may make their way in
-                    // to a project. In this case
-                    // we will just strip out the invalid
-                    // characters. We treat the dash as a special
-                    // case since it can be converted to an underscore
-                    // and still look somewhat similar. 
-                    .Replace("(", "")
-                    .Replace(")", "");
-
-            if (instance.IncludeDirectoryRelativeToContainer)
+            if(instance.CachedInstanceName == null)
             {
-                IElement container = instance.GetContainer();
 
-                if (container != null)
+                instance.CachedInstanceName =
+                    FileManager.RemoveExtension(instance.Name)
+                        .Replace(" ", "")
+                        .Replace("-", "_")
+                        // May 17, 2022
+                        // File names with 
+                        // invalid characters
+                        // may make their way in
+                        // to a project. In this case
+                        // we will just strip out the invalid
+                        // characters. We treat the dash as a special
+                        // case since it can be converted to an underscore
+                        // and still look somewhat similar. 
+                        .Replace("(", "")
+                        .Replace(")", "");
+
+                if (instance.IncludeDirectoryRelativeToContainer)
                 {
-                    string directoryToMakeRelativeTo = container.Name;
+                    IElement container = instance.GetContainer();
 
-                    bool isRelativeTo = FileManager.IsRelativeTo(toReturn, directoryToMakeRelativeTo);
-
-                    if (isRelativeTo)
+                    if (container != null)
                     {
-                        toReturn = FileManager.MakeRelative(toReturn, directoryToMakeRelativeTo);
-                        toReturn = toReturn.Replace("/", "_");
+                        string directoryToMakeRelativeTo = container.Name;
+
+                        bool isRelativeTo = FileManager.IsRelativeTo(instance.CachedInstanceName, directoryToMakeRelativeTo);
+
+                        if (isRelativeTo)
+                        {
+                            instance.CachedInstanceName = FileManager.MakeRelative(instance.CachedInstanceName, directoryToMakeRelativeTo);
+                            instance.CachedInstanceName = instance.CachedInstanceName.Replace("/", "_");
+                        }
+                        else
+                        {
+                            instance.CachedInstanceName = FileManager.RemovePath(instance.CachedInstanceName);
+                        }
+
+                        //string modifiedName = FileManager.Relativethis.Name;
                     }
                     else
                     {
-                        toReturn = FileManager.RemovePath(toReturn);
+                        // Might be something like:  "GlobalContent/FolderInGlobalContent/SceneFileInFolder"
+                        if (instance.CachedInstanceName.StartsWith("GlobalContent/"))
+                        {
+                            instance.CachedInstanceName = instance.CachedInstanceName.Substring("GlobalContent/".Length);
+                        }
+                        instance.CachedInstanceName = instance.CachedInstanceName.Replace("/", "_");
                     }
-
-                    //string modifiedName = FileManager.Relativethis.Name;
                 }
                 else
                 {
-                    // Might be something like:  "GlobalContent/FolderInGlobalContent/SceneFileInFolder"
-                    if (toReturn.StartsWith("GlobalContent/"))
-                    {
-                        toReturn = toReturn.Substring("GlobalContent/".Length);
-                    }
-                    toReturn = toReturn.Replace("/", "_");
+
+                    instance.CachedInstanceName = FileManager.RemovePath(instance.CachedInstanceName);
+
                 }
-            }
-            else
-            {
-
-                toReturn = FileManager.RemovePath(toReturn);
 
             }
 
-            return toReturn;
+            return instance.CachedInstanceName;
 
         }
 

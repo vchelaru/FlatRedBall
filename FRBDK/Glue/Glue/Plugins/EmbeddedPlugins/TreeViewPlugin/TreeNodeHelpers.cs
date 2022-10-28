@@ -423,7 +423,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else if (treeNodeInQuestion.Parent.IsGlobalContentContainerNode())
                 {
 
-                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent", true);
+                    string contentDirectory = GlueCommands.Self.GetAbsoluteFileName("GlobalContent", true);
 
                     string returnValue = contentDirectory + treeNodeInQuestion.Text;
                     if (treeNodeInQuestion.IsDirectoryNode())

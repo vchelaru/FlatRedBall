@@ -22,10 +22,10 @@ namespace GumPlugin.Managers
         {
             await TaskManager.Self.AddAsync(() =>
             {
-                string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+                var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-                GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName);
-                GlueCommands.Self.TryMultipleTimes(() => AppState.Self.GumProjectSave.Save(gumProjectFileName, saveAllElements));
+                GlueCommands.Self.FileCommands.IgnoreNextChangeOnFile(gumProjectFileName.FullPath);
+                GlueCommands.Self.TryMultipleTimes(() => AppState.Self.GumProjectSave.Save(gumProjectFileName.FullPath, saveAllElements));
             }, "Saving gum projects");
         }
 
@@ -81,9 +81,9 @@ namespace GumPlugin.Managers
 
         internal void SaveComponent(ComponentSave gumComponent)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ComponentSubfolder + "/";
+            var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.ComponentSubfolder + "/";
             string componentFileName =
                 directory + gumComponent.Name + "." + GumProjectSave.ComponentExtension;
 
@@ -155,9 +155,9 @@ namespace GumPlugin.Managers
 
         internal void SaveScreen(ScreenSave gumScreen)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.ScreenSubfolder + "/";
+            var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.ScreenSubfolder + "/";
             string screenFileName =
                 directory + gumScreen.Name + "." + GumProjectSave.ScreenExtension;
 
@@ -179,7 +179,7 @@ namespace GumPlugin.Managers
                 gumScreen.Initialize(StandardElementsManager.Self.GetDefaultStateFor("Screen"));
                 gumScreen.Name = gumScreenName;
 
-                string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+                var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
                 AddScreenToGumProject(gumScreen);
 
@@ -242,8 +242,8 @@ namespace GumPlugin.Managers
 
         internal void SaveBehavior(BehaviorSave behavior)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
-            var directory = FileManager.GetDirectory(gumProjectFileName) + BehaviorReference.Subfolder + "/";
+            var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + BehaviorReference.Subfolder + "/";
             string behaviorFileName =
                 directory + behavior.Name + "." + BehaviorReference.Extension;
 
@@ -255,9 +255,9 @@ namespace GumPlugin.Managers
 
         internal void SaveStandardElement(StandardElementSave gumStandardElement)
         {
-            string gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
+            var gumProjectFileName = GumProjectManager.Self.GetGumProjectFileName();
 
-            var directory = FileManager.GetDirectory(gumProjectFileName) + ElementReference.StandardSubfolder + "/";
+            var directory = FileManager.GetDirectory(gumProjectFileName.FullPath) + ElementReference.StandardSubfolder + "/";
             string standardsFileName =
                 directory + gumStandardElement.Name + "." + GumProjectSave.StandardExtension;
 

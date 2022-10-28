@@ -1,7 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using GluePropertyGridClasses.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +52,7 @@ namespace FlatRedBall.Glue.Errors
             }
             else
             {
-                className = EditorObjects.IoC.Container.Get<IVsProjectState>().DefaultNamespace +
+                className = GlueState.Self.ProjectNamespace +
                 ".DataTypes." + customClass.Name;
             }
             var areSameName = file.GetTypeForCsvFile() == className;

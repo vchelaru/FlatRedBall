@@ -39,7 +39,6 @@ using FlatRedBall.Glue.Data;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Collections.ObjectModel;
 using EditorObjects.IoC;
-using GluePropertyGridClasses.Interfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using GlueFormsCore.Managers;
 
@@ -51,7 +50,7 @@ namespace FlatRedBall.Glue
 
     #endregion
 
-    public class ProjectManager : IVsProjectState
+    public class ProjectManager
     {
         #region Enums
 
@@ -177,14 +176,6 @@ namespace FlatRedBall.Glue
             get => mProjectBase?.ContentProject as VisualStudioProject;
         }
 
-        string IVsProjectState.DefaultNamespace
-        {
-            get
-            {
-                return ProjectManager.ProjectNamespace;
-            }
-        }
-
         public static string ProjectNamespace
         {
             get
@@ -255,7 +246,6 @@ namespace FlatRedBall.Glue
             mSyncedProjectsReadOnly = new ReadOnlyCollection<ProjectBase>(mSyncedProjects);
 
             self = new ProjectManager();
-            Container.Set<IVsProjectState>(self);
         }
 
         public static void Initialize()
@@ -327,39 +317,6 @@ namespace FlatRedBall.Glue
             {
                 return SyncedProjects.FirstOrDefault(project => project.Name == name);
             }
-        }
-
-        public static string MakeAbsolute(string relativePath)
-        {
-            // We standardize to get rid of "../"
-            return FileManager.Standardize(MakeAbsolute(relativePath, false));
-        }
-
-        /// <summary>
-        /// Converts a relative path to an absolute path assuming that the relative path
-        /// is relative to the base Project's directory.  This determines whether to use
-        /// the base project or the content project according to the extension of the file or whether forceAsContent is true.
-        /// </summary>
-        /// <param name="relativePath">The path to make absolute.</param>
-        /// <param name="forceAsContent">Whether to force as content - can be passed as true if the file should be treated as content despite its extension.</param>
-        /// <returns>The absolute file name.</returns>
-        public static string MakeAbsolute(string relativePath, bool forceAsContent)
-        {
-            if (FileManager.IsRelative(relativePath))
-            {
-                if ((forceAsContent || GlueCommands.Self.FileCommands.IsContent(relativePath)) && ContentProject != null)
-                {
-                    return !relativePath.StartsWith(ContentDirectoryRelative)
-                               ? ContentProject.MakeAbsolute(ContentDirectoryRelative + relativePath)
-                               : ContentProject.MakeAbsolute(relativePath);
-                }
-                else
-                {
-                    return ProjectBase.MakeAbsolute(relativePath);
-                }
-            }
-
-            return relativePath;
         }
 
         public static string MakeRelativeContent(string relativePath)

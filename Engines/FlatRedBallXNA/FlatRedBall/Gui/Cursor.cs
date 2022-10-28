@@ -111,9 +111,7 @@ namespace FlatRedBall.Gui
 
         bool mHasDraggedAwayFromPushPoint;
 
-#if !FRB_MDX
         Ray mLastRay;
-#endif
 
         #region XML Docs
         /// <summary>
@@ -1897,6 +1895,11 @@ namespace FlatRedBall.Gui
             devicesControllingCursor.Add(gamePad);
         }
 
+        /// <summary>
+        /// Clears all input devices and sets the cursor to be controlled by all argument gamepads. This allows multiple
+        /// gamepads to control a single cursor.
+        /// </summary>
+        /// <param name="gamePads">The gamepads to control this.</param>
         public void SetControllingGamepads(IEnumerable<Xbox360GamePad> gamePads)
         {
             devicesControllingCursor.Clear();

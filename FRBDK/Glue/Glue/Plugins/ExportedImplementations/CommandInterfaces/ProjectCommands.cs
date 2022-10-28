@@ -661,7 +661,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 directory = GlueState.Self.CurrentGlueProjectDirectory +
                         treeNodeToAddTo.GetRelativeFilePath() +
                         folderName;
-                directory = ProjectManager.MakeAbsolute(directory, true);
+                directory = GlueCommands.Self.GetAbsoluteFileName(directory, true);
 
                 Directory.CreateDirectory(directory);
 
@@ -671,7 +671,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 string directory =
                     treeNodeToAddTo.GetRelativeFilePath() + folderName;
 
-                Directory.CreateDirectory(ProjectManager.MakeAbsolute(directory, true));
+                Directory.CreateDirectory(GlueCommands.Self.GetAbsoluteFileName(directory, true));
 
                 GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
             }
@@ -699,12 +699,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             GlueCommands.Self.RefreshCommands.RefreshDirectoryTreeNodes();
-        }
-
-        public string MakeAbsolute(string relativeFileName, bool forceAsContent = false)
-        {
-            return ProjectManager.MakeAbsolute(relativeFileName, forceAsContent);
-
         }
 
         public void MakeGeneratedCodeItemsNested()
@@ -735,7 +729,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                             foreach (VisualStudioProject project in ProjectManager.SyncedProjects)
                             {
-                                var associatedBuildItem = project.GetItem(ProjectManager.MakeAbsolute(biInclude));
+                                var associatedBuildItem = project.GetItem(GlueCommands.Self.GetAbsoluteFileName(biInclude, false));
                                 if (associatedBuildItem != null)
                                 {
                                     project.MakeBuildItemNested(associatedBuildItem, whatToNestUnder);

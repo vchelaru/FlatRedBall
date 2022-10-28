@@ -13,6 +13,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.Collections.Generic;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.VSHelpers.Projects;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -129,21 +130,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs)
         {
-            if(rfs == null)
-            {
-                throw new ArgumentNullException("rfs", "The argument ReferencedFileSave should not be null");
-            }
-            return ProjectManager.MakeAbsolute(rfs.Name, true);
+            return GetAbsoluteFilePath(rfs).FullPath;
         }
 
         public FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs)
         {
-            return GetAbsoluteFileName(rfs);
+            if(rfs.FilePath == null)
+            {
+                var relativePath = rfs.Name;
+                // We can reduce some branching by not calling the shared code:
+                if (ProjectManager.ContentProject != null)
+                {
+                    rfs.FilePath = !relativePath.StartsWith(ProjectManager.ContentDirectoryRelative)
+                                ? ProjectManager.ContentProject.MakeAbsolute(ProjectManager.ContentDirectoryRelative + relativePath)
+                                : ProjectManager.ContentProject.MakeAbsolute(relativePath);
+                }
+                else
+                {
+                    rfs.FilePath = ProjectManager.ProjectBase.MakeAbsolute(relativePath);
+                }
+
+            }
+
+            return rfs.FilePath;
         }
 
-        public FilePath GetAbsoluteFilePath(string rfsName)
+        public FilePath GetAbsoluteFilePath(string relativeFilePath, bool forceAsContent=true)
         {
-            return ProjectManager.MakeAbsolute(rfsName, forceAsContent:true);
+            return MakeAbsolute(relativeFilePath, forceAsContent);
 
         }
 
@@ -160,7 +174,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public string GetAbsoluteFileName(string relativeFileName, bool isContent)
         {
-            return ProjectManager.MakeAbsolute(relativeFileName, isContent);
+            return MakeAbsolute(relativeFileName, isContent);
+        }
+
+        /// <summary>
+        /// Converts a relative path to an absolute path assuming that the relative path
+        /// is relative to the base Project's directory.  This determines whether to use
+        /// the base project or the content project according to the extension of the file or whether forceAsContent is true.
+        /// </summary>
+        /// <param name="relativePath">The path to make absolute.</param>
+        /// <param name="forceAsContent">Whether to force as content - can be passed as true if the file should be treated as content despite its extension.</param>
+        /// <returns>The absolute file name.</returns>
+        string MakeAbsolute(string relativePath, bool forceAsContent)
+        {
+            if (FileManager.IsRelative(relativePath))
+            {
+                if ((forceAsContent || GlueCommands.Self.FileCommands.IsContent(relativePath)) && ProjectManager.ContentProject != null)
+                {
+                    return !relativePath.StartsWith(ProjectManager.ContentDirectoryRelative)
+                               ? ProjectManager.ContentProject.MakeAbsolute(ProjectManager.ContentDirectoryRelative + relativePath)
+                               : ProjectManager.ContentProject.MakeAbsolute(relativePath);
+                }
+                else
+                {
+                    return ProjectManager.ProjectBase.MakeAbsolute(relativePath);
+                }
+            }
+
+            return relativePath;
         }
 
         public Task UpdateGlueSettingsFromCurrentGlueStateAsync(bool saveToDisk = true)

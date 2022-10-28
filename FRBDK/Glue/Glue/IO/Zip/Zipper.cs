@@ -7,6 +7,7 @@ using EditorObjects.Parsing;
 using Ionic.Zip;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.IO.Zip
 {
@@ -14,7 +15,7 @@ namespace FlatRedBall.Glue.IO.Zip
     {
         public static string CreateZip(ReferencedFileSave rfs)
         {
-            string absoluteFile = ProjectManager.MakeAbsolute(rfs.Name, true);
+            string absoluteFile = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
             var allFiles = FileReferenceManager.Self.GetFilesReferencedBy(
                 absoluteFile, TopLevelOrRecursive.Recursive);

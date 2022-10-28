@@ -254,7 +254,7 @@ namespace FlatRedBall.Glue.IO
             Directory.CreateDirectory(destinationDirectory);
 
             string contentDestinationDirectory =
-                FileManager.GetDirectory(ProjectManager.MakeAbsolute("a.scnx", true)) + subdirectory + FileManager.RemovePath(elementName) + "/";
+                FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName("a.scnx", true)) + subdirectory + FileManager.RemovePath(elementName) + "/";
             Directory.CreateDirectory(contentDestinationDirectory);
             #endregion
 
@@ -363,7 +363,7 @@ namespace FlatRedBall.Glue.IO
 
                 if (fileToCopy.StartsWith("__external/"))
                 {
-                    destinationFolder = FileManager.GetDirectory(ProjectManager.MakeAbsolute("a.scnx", true));
+                    destinationFolder = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName("a.scnx", true));
                     int indexOfSlash = fileToCopy.IndexOf("/");
                     fileToCopy = fileToCopy.Substring(indexOfSlash + 1);
                 }

@@ -371,8 +371,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     // I don't know why - that seems wrong, because we want to 
                     // show all files that are part of the project. The project should
                     // decide what to show, not what is on disk.
-                    string absoluteRfs = ProjectManager.MakeAbsolute(rfs.Name, true);
-                    var nodeToAddTo = TreeNodeForDirectory(FileManager.GetDirectory(absoluteRfs)) ??
+                    var absoluteRfs = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
+                    var nodeToAddTo = TreeNodeForDirectory(absoluteRfs.GetDirectoryContainingThis()) ??
                         GlobalContentRootNode;
                     nodeForFile = new NodeViewModel(nodeToAddTo);
 
@@ -446,7 +447,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
                 {
                     // If it's null that may mean the directory doesn't exist.  We should make it
-                    string absoluteDirectory = ProjectManager.MakeAbsolute(containingDirectory);
+                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
                     if (!Directory.Exists(absoluteDirectory))
                     {
                         Directory.CreateDirectory(absoluteDirectory);
@@ -573,7 +574,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     if (((ITreeNode)treeNode).IsDirectoryNode())
                     {
 
-                        string directory = ProjectManager.MakeAbsolute(treeNode.GetRelativeFilePath(), isGlobalContent);
+                        string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
 
                         directory = FileManager.Standardize(directory.ToLower());
 
@@ -720,14 +721,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             return null;
         }
 
-        public NodeViewModel TreeNodeForDirectory(string containingDirectory)
+        public NodeViewModel TreeNodeForDirectory(FilePath containingDirectory)
         {
             bool isEntity = true;
 
             // Let's see if this thing is really an Entity
 
 
-            string relativeToProject = FileManager.Standardize(containingDirectory).ToLower();
+            string relativeToProject = FileManager.Standardize(containingDirectory.FullPath).ToLower();
 
             if (FileManager.IsRelativeTo(relativeToProject, FileManager.RelativeDirectory))
             {
@@ -746,13 +747,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             if (isEntity)
             {
-                if (!FileManager.IsRelative(containingDirectory))
-                {
-                    containingDirectory = FileManager.MakeRelative(containingDirectory,
+                var relativeToEntities = FileManager.MakeRelative(containingDirectory.FullPath,
                         FileManager.RelativeDirectory + "Entities/");
-                }
-
-                return TreeNodeForDirectoryOrEntityNode(containingDirectory, EntityRootNode);
+                return TreeNodeForDirectoryOrEntityNode(relativeToEntities, EntityRootNode);
             }
             else
             {
@@ -764,17 +761,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 subdirectory += "GlobalContent/";
 
+                var relative = FileManager.MakeRelative(containingDirectory.FullPath, subdirectory);
 
-                containingDirectory = FileManager.MakeRelative(containingDirectory, subdirectory);
-
-                if (containingDirectory == "")
+                if (relative == "")
                 {
                     return GlobalContentRootNode;
                 }
                 else
                 {
 
-                    return TreeNodeForDirectoryOrEntityNode(containingDirectory, GlobalContentRootNode);
+                    return TreeNodeForDirectoryOrEntityNode(relative, GlobalContentRootNode);
                 }
             }
         }

@@ -333,7 +333,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else if (((ITreeNode)Parent).IsGlobalContentContainerNode())
                 {
 
-                    string contentDirectory = ProjectManager.MakeAbsolute("GlobalContent/", true);
+                    string contentDirectory = GlueCommands.Self.GetAbsoluteFileName("GlobalContent/", true);
 
                     string returnValue = contentDirectory + Text;
                     if (((ITreeNode)this).IsDirectoryNode())
@@ -816,7 +816,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
                 AddItem(mCopyToBuildFolder);
 
-                if (!File.Exists(ProjectManager.MakeAbsolute(rfs.Name, true)))
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
+                if (!filePath.Exists())
                 {
                     AddItem(mCreateNewFileForMissingFile);
                 }
@@ -1318,8 +1320,8 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             if (GlueState.Self.CurrentReferencedFileSave != null)
             {
-                string absolute = ProjectManager.MakeAbsolute(GlueState.Self.CurrentReferencedFileSave.Name, true);
-                absolute = FileManager.GetDirectory(absolute);
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(GlueState.Self.CurrentReferencedFileSave);
+                var absolute = filePath.GetDirectoryContainingThis().FullPath;
                 Clipboard.SetText(absolute);
             }
         }
@@ -1817,7 +1819,7 @@ namespace FlatRedBall.Glue.FormHelpers
                             {
                                 if (FileManager.IsRelative(filesToRemove[i]))
                                 {
-                                    filesToRemove[i] = ProjectManager.MakeAbsolute(filesToRemove[i]);
+                                    filesToRemove[i] = GlueCommands.Self.GetAbsoluteFileName(filesToRemove[i], false);
                                 }
                                 filesToRemove[i] = filesToRemove[i].Replace("\\", "/");
                             }
@@ -1849,7 +1851,7 @@ namespace FlatRedBall.Glue.FormHelpers
                                     {
                                         foreach (var file in filesToRemove)
                                         {
-                                            FilePath filePath = ProjectManager.MakeAbsolute(file);
+                                            FilePath filePath = GlueCommands.Self.GetAbsoluteFileName(file, false);
                                             // This file may have been removed
                                             // in windows explorer, and now removed
                                             // from Glue.  Check to prevent a crash.
@@ -2065,12 +2067,12 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
 
-                    locationToShow = ProjectManager.MakeAbsolute(rfs.Name);
+                    locationToShow = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                 }
                 else if (targetNode.IsDirectoryNode() || targetNode.IsGlobalContentContainerNode())
                 {
-                    locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                    locationToShow = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
                     // global content may not have yet been created. If not, just show the level above:
                     if(targetNode.IsGlobalContentContainerNode() && !File.Exists(locationToShow))
                     {
@@ -2093,7 +2095,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     //    relativePath = "Screens/" + relativePath;
                     //}
 
-                    locationToShow = ProjectManager.MakeAbsolute(relativePath, true);
+                    locationToShow = GlueCommands.Self.GetAbsoluteFileName(relativePath, true);
 
                     // If the user hasn't put any files in this element, then this directory may not exist.  Therefore,
                     // let's create it.
@@ -2106,7 +2108,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     var relativePath = targetNode.GetRelativeFilePath();
 
-                    locationToShow = ProjectManager.MakeAbsolute(relativePath, false);
+                    locationToShow = GlueCommands.Self.GetAbsoluteFileName(relativePath, false);
                 }
 
                 string extension = FileManager.GetExtension(locationToShow);
@@ -2119,7 +2121,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (targetNode.IsDirectoryNode())
             {
-                string locationToShow = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), true);
+                string locationToShow = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
 
                 if (System.IO.Directory.Exists(locationToShow))
                 {
@@ -2163,7 +2165,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 forceContent = true;
             }
 
-            string absolutePath = ProjectManager.MakeAbsolute(targetNode.GetRelativeFilePath(), forceContent);
+            string absolutePath = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), forceContent);
 
             string[] files = null;
             string[] directories = null;
@@ -2621,7 +2623,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (!string.IsNullOrEmpty(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory))
             {
-                currentExternalDirectory = ProjectManager.MakeAbsolute(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory, true);
+                currentExternalDirectory = GlueCommands.Self.GetAbsoluteFileName(ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory, true);
             }
 
             if (string.IsNullOrEmpty(currentExternalDirectory) ||
@@ -2671,7 +2673,7 @@ namespace FlatRedBall.Glue.FormHelpers
                     }
 
                     var absoluteFileName =
-                        ProjectManager.MakeAbsolute(rfs.Name);
+                        GlueCommands.Self.GetAbsoluteFileName(rfs);
 
                     await UpdateReactor.UpdateFile(absoluteFileName);
 
@@ -2697,7 +2699,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else
                 {
 
-                    string file = FileManager.Standardize(ProjectManager.MakeAbsolute(rfs.SourceFile, true)).Replace("/", "\\");
+                    string file = FileManager.Standardize(GlueCommands.Self.GetAbsoluteFileName(rfs.SourceFile, true)).Replace("/", "\\");
 
                     Process.Start("explorer.exe", "/select," + file
                         );
@@ -2757,7 +2759,7 @@ namespace FlatRedBall.Glue.FormHelpers
             AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
 
             string resultNameInFolder = FileManager.RemoveExtension(FileManager.RemovePath(rfs.Name));
-            string directory = FileManager.GetDirectory(ProjectManager.MakeAbsolute(rfs.Name, true));
+            string directory = FileManager.GetDirectory(GlueCommands.Self.GetAbsoluteFileName(rfs));
 
             PluginManager.CreateNewFile(
                 ati, false, directory, resultNameInFolder);

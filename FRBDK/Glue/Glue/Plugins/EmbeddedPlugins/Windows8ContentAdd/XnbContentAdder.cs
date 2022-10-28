@@ -9,6 +9,7 @@ using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using System.IO;
 using Microsoft.Build.Evaluation;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 {
@@ -150,7 +151,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
                 // projects so the file needs to be
                 // made absolute according to that project.
                 //whatToAddToProject = project.MakeAbsolute("content/" + buildItem.Include);
-                whatToAddToProject = ProjectManager.MakeAbsolute("content/" + buildItem.UnevaluatedInclude, true);
+                whatToAddToProject = GlueCommands.Self.GetAbsoluteFileName("content/" + buildItem.UnevaluatedInclude, true);
             }
             else
             {

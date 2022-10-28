@@ -887,7 +887,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if (fileToAdd.EndsWith(".csv"))
                         {
-                            string fileToAddAbsolute = ProjectManager.MakeAbsolute(fileToAdd);
+                            string fileToAddAbsolute = GlueCommands.Self.GetAbsoluteFileName(fileToAdd, true);
                             CsvCodeGenerator.GenerateAndSaveDataClass(referencedFileSaveToReturn, referencedFileSaveToReturn.CsvDelimiter);
                         }
                         if (isUnknownType)
