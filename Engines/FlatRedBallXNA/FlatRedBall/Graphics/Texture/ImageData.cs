@@ -165,18 +165,8 @@ namespace FlatRedBall.Graphics.Texture
         public void ApplyColorOperation(ColorOperation colorOperation, float red, float green, float blue, float alpha)
         {
             Color appliedColor;
-#if FRB_MDX
-            // passed values from MDX will be 0-255 instead of 0-1 so we simply cast into a byte (Justin 5/15/2012)
-            appliedColor = Color.FromArgb(
-                (byte)FlatRedBall.Math.MathFunctions.RoundToInt(alpha),
-                (byte)FlatRedBall.Math.MathFunctions.RoundToInt(red),
-                (byte)FlatRedBall.Math.MathFunctions.RoundToInt(green),
-                (byte)FlatRedBall.Math.MathFunctions.RoundToInt(blue)
-            );
-#else
             // passed values from XNA will be 0-1, use the float constructor to create a color object (Justin 5/15/2012)
             appliedColor = new Color(red, green, blue, alpha);
-#endif
             ApplyColorOperation(colorOperation, appliedColor);
         }
 
@@ -194,16 +184,7 @@ namespace FlatRedBall.Graphics.Texture
                         for (int y = 0; y < height; y++)
                         {
                             baseColor = GetPixelColor(x, y);
-#if FRB_MDX
-                            // System.Drawing.Color doesn't have setters for A, R, G, B
-                            // so we have to do it a more inefficient way in FRB MDX
-                            Color combinedColor = Color.FromArgb(
-                                baseColor.A,
-                                (byte)System.Math.Min((baseColor.R + appliedColor.R), 255),
-                                (byte)System.Math.Min((baseColor.G + appliedColor.G), 255),
-                                (byte)System.Math.Min((baseColor.B + appliedColor.B), 255));
-                            baseColor = combinedColor;
-#elif XNA4
+#if XNA4
                             baseColor.R = (byte)(System.Math.Min((baseColor.R + appliedColor.R), 255) * baseColor.A / 255);
                             baseColor.G = (byte)(System.Math.Min((baseColor.G + appliedColor.G), 255) * baseColor.A / 255);
                             baseColor.B = (byte)(System.Math.Min((baseColor.B + appliedColor.B), 255) * baseColor.A / 255);
@@ -229,20 +210,9 @@ namespace FlatRedBall.Graphics.Texture
                         for (int y = 0; y < height; y++)
                         {
                             baseColor = GetPixelColor(x, y);
-#if FRB_MDX
-                            // System.Drawing.Color doesn't have setters for A, R, G, B
-                            // so we have to do it a more inefficient way in FRB MDX
-                            Color combinedColor = Color.FromArgb(
-                                baseColor.A,
-                                (byte)(baseColor.R * red),
-                                (byte)(baseColor.G * green),
-                                (byte)(baseColor.B * blue));
-                            baseColor = combinedColor;
-#else
                             baseColor.R = (byte)(baseColor.R * red);
                             baseColor.G = (byte)(baseColor.G * green);
                             baseColor.B = (byte)(baseColor.B * blue);
-#endif
                             SetPixel(x, y, baseColor);
                         }
                     }
