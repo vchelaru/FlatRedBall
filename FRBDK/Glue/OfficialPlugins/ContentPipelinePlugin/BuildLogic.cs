@@ -435,7 +435,9 @@ namespace OfficialPlugins.MonoGameContent
 
             var startInfo = new ProcessStartInfo("dotnet", "tool list -g")
             {
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                // If we don't do this, it flickers open:
+                CreateNoWindow = true
             };
 
             var process = Process.Start(startInfo);
@@ -451,7 +453,8 @@ namespace OfficialPlugins.MonoGameContent
                 var args = "tool install dotnet-mgcb --global";
                 startInfo = new ProcessStartInfo(exe, args)
                 {
-                    RedirectStandardOutput = true
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
                 };
 
                 process = Process.Start(startInfo);
