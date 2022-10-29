@@ -460,6 +460,9 @@ namespace FlatRedBall.Screens
                 ScreenDestroy();
         }
 
+        /// <summary>
+        /// Pauses all Instructable objects, disables collision, and sets IsPaused to true.
+        /// </summary>
         public virtual void PauseThisScreen()
         {
             this.IsPaused = true;
@@ -468,6 +471,9 @@ namespace FlatRedBall.Screens
 
         }
 
+        /// <summary>
+        /// Executes all Unpause instructions, enables collision, and sets the IsPaused property to false.
+        /// </summary>
         public virtual void UnpauseThisScreen()
         {
             InstructionManager.UnpauseEngine();

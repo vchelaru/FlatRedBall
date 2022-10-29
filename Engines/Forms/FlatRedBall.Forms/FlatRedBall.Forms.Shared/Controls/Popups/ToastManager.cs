@@ -1,10 +1,12 @@
 ﻿using FlatRedBall.Graphics;
+using FlatRedBall.Gui;
 using FlatRedBall.Managers;
 using FlatRedBall.Screens;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -82,6 +84,7 @@ namespace FlatRedBall.Forms.Controls.Popups
 
         public static void DestroyLiveToasts()
         {
+            int numberOfToastsToClean = liveToasts?.Count ?? 0;
             if(liveToasts != null)
             {
                 foreach(Toast item in liveToasts)
@@ -91,6 +94,13 @@ namespace FlatRedBall.Forms.Controls.Popups
 
             }
             liveToasts?.Clear();
+
+#if DEBUG
+            if(GuiManager.Windows.Any(item => item is Toast))
+            {
+                throw new Exception("Toasts did not clean up and they should have. Why not?");
+            }
+#endif
         }
 
         private static async void DoLoop()

@@ -139,7 +139,7 @@ namespace GumPlugin.CodeGeneration
             GenerateFormsCode(elementSave, currentBlock);
         }
 
-        #region Class Name
+        #region Class Header/Name
         private ICodeBlock GenerateClassHeader(ICodeBlock codeBlock, ElementSave elementSave)
         {
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave); 
@@ -149,6 +149,22 @@ namespace GumPlugin.CodeGeneration
             if(elementSave.BaseType != "Component" && !string.IsNullOrEmpty(elementSave.BaseType))
             {
                 inheritance = GueRuntimeNamespace + "." + elementSave.BaseType.Replace("/", ".") + "Runtime";
+
+                if(elementSave.BaseType == "Container")
+                {
+                    // does this have a contained type?
+                    var rfv = new RecursiveVariableFinder(elementSave.DefaultState);
+
+                    var containedType = rfv.GetValue<string>("Contained Type");
+
+                    if(!string.IsNullOrEmpty(containedType))
+                    {
+                        var genericType =
+                            GueRuntimeNamespace + "." + containedType.Replace("/", ".") + "Runtime";
+                        inheritance += $"<{genericType}>";
+                    }
+                }
+
             }
 
             var asComponentSave = elementSave as ComponentSave;
