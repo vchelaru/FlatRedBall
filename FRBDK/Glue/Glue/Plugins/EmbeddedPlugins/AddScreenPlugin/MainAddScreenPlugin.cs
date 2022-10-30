@@ -241,7 +241,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                         foreach(var original in namedObjectsToCopy)
                         {
                             // todo - copy this to the new object
-                            GlueCommands.Self.GluxCommands
+                            await GlueCommands.Self.GluxCommands
                                 .CopyNamedObjectIntoElement(original, newScreen, performSaveAndGenerateCode: false);
                         }
                     }
@@ -294,7 +294,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
 
                     if (destinationFile.Exists())
                     {
-                        var newRfs = GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFile(newScreen, destinationFile);
+                        var newRfs = await GlueCommands.Self.GluxCommands.CreateReferencedFileSaveForExistingFileAsync(newScreen, destinationFile);
 
                         if (newRfs != null)
                         {
@@ -321,6 +321,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             var nos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newScreen, null);
             nos.SetByDerived = true;
             nos.SetVariable("CreateEntitiesFromTiles", true);
+
+            // Oct 30, 2022
+            // This should have been done a while ago, it's standard
+            nos.SetVariable("ShiftMapToMoveGameplayLayerToZ0", true);
         }
 
         private static async Task ShowUiForNewTmx(ScreenSave newScreen)
