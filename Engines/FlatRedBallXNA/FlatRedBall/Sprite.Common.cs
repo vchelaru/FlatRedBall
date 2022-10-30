@@ -185,7 +185,7 @@ namespace FlatRedBall
         /// <summary>
         /// Gets or sets the name of the current animation chain on the sprite. Setting this value is the recommended way to switch between animations.
         /// Setting this value will search the Sprite's AnimationChains for an animation with a matching name. If the argument differs from the current
-        /// animation, the animation is set and played from the beginning. If the current animation matches the assigned value, no logic is performed.
+        /// animation, the animation is set and played from the beginning. If the current animation matches the assigned value, no changes are made.
         /// </summary>
         public string CurrentChainName
         {
