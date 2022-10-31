@@ -36,6 +36,12 @@ namespace REPLACED_NAMESPACE
             return Factories.ToList();
         }
 
+        /// <summary>
+        /// Gets a Factory for the unqualified entity name. For example, to get a factory for an Entity named 
+        /// "Enemy", pass the argument "Enemy" without the prefix "Entities/"
+        /// </summary>
+        /// <param name="entityName">The unqualified Entity name.</param>
+        /// <returns>An IFactory instance for the argument entity name.</returns>
         public static IEntityFactory Get(string entityName)
         {
             if (FactoryDictionary.ContainsKey(entityName))
@@ -49,6 +55,8 @@ namespace REPLACED_NAMESPACE
                 return factory;
             }
         }
+
+        public static IEntityFactory Get(Type type) => Get(type.Name);
 
         static Type[] typesInThisAssembly;
         public static IEntityFactory FindFactory(string entityType)
