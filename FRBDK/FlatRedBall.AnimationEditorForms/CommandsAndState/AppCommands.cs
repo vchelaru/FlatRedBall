@@ -78,9 +78,7 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
 
             // do this before adding it to the list
             rectangleSave.Name = ToolsUtilities.StringFunctions.MakeStringUnique(rectangleSave.Name,
-                SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
-                    .Select(item => item.Name).ToList()
-                );
+                GetSelectedFrameShapeNames());
 
             // this loops through all frames. This could result in the wrong texture being used but....that's a pain to address so oh well...
             MatchRectangleToFrame(rectangleSave, frame);
@@ -90,6 +88,40 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             AppCommands.Self.RefreshAnimationFrameDisplay();
             AppCommands.Self.RefreshTreeNode(frame);
             SelectedState.Self.SelectedRectangle = rectangleSave;
+            AppCommands.Self.SaveCurrentAnimationChainList();
+        }
+
+        List<string> GetSelectedFrameShapeNames()
+        {
+            var rectNames = SelectedState.Self.SelectedFrame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                    .Select(item => item.Name).ToList();
+
+            var circleNames = SelectedState.Self.SelectedFrame.ShapeCollectionSave.CircleSaves
+                    .Select(item => item.Name).ToList();
+
+            rectNames.AddRange(circleNames);
+
+            return rectNames;
+        }
+
+
+        public void AddCircle(AnimationFrameSave frame)
+        {
+            var circleSave = new CircleSave();
+            circleSave.Radius = 8;
+            circleSave.Name = "CircleInstance";
+
+            // do this before adding it to the list
+            circleSave.Name = ToolsUtilities.StringFunctions.MakeStringUnique(circleSave.Name,
+                GetSelectedFrameShapeNames());
+
+            MatchCircleToFrame(circleSave, frame);
+
+            frame.ShapeCollectionSave.CircleSaves.Add(circleSave);
+
+            AppCommands.Self.RefreshAnimationFrameDisplay();
+            AppCommands.Self.RefreshTreeNode(frame);
+            SelectedState.Self.SelectedCircle = circleSave;
             AppCommands.Self.SaveCurrentAnimationChainList();
         }
 
@@ -104,6 +136,37 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
             }
             rectangle.X = animationFrame.RelativeX;
             rectangle.Y = animationFrame.RelativeY;
+        }
+
+        public void MatchCircleToFrame(CircleSave circle, AnimationFrameSave animationFrame)
+        {
+            if (SelectedState.Self.SelectedTexture != null)
+            {
+                circle.Radius = SelectedState.Self.SelectedTexture.Width *
+                    (animationFrame.RightCoordinate - animationFrame.LeftCoordinate) / 2.0f;
+            }
+
+            circle.X = animationFrame.RelativeX;
+            circle.Y = animationFrame.RelativeY;
+        }
+
+        public void DeleteCircle(CircleSave circle, AnimationFrameSave owner)
+        {
+            if (owner.ShapeCollectionSave.CircleSaves.Contains(circle))
+            {
+                owner.ShapeCollectionSave.CircleSaves.Remove(circle);
+
+                // refresh the tree view before refreshing the PreviewManager, since refreshing the tree view deselects the animation
+                AppCommands.Self.RefreshTreeNode(owner);
+
+                PreviewManager.Self.RefreshAll();
+
+                ApplicationEvents.Self.RaiseAnimationChainsChanged();
+
+                // wireframe currently doesn't need to refresh
+                //WireframeManager.Self.RefreshAll();
+
+            }
         }
 
         public void DeleteAxisAlignedRectangle(AxisAlignedRectangleSave rectangle, AnimationFrameSave owner)
@@ -145,6 +208,31 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
                     if(frame != null)
                     {
                         AppCommands.Self.DeleteAxisAlignedRectangle(rectangle, frame);
+                    }
+                }
+            }
+        }
+
+        public void AskToDelete(List<CircleSave> circles)
+        {
+            var message = "Delete the following circle(s)?\n\n";
+
+            foreach(var circle in circles)
+            {
+                message += circle.Name + "\n";
+            }
+
+            var result = MessageBox.Show(message, "Delete?", MessageBoxButtons.YesNo);
+
+            if(result == DialogResult.Yes)
+            {
+                // Create a copy in case the list passed is the current circles
+                foreach(var circle in circles.ToArray())
+                {
+                    var frame = ObjectFinder.Self.GetAnimationFrameContaining(circle);
+                    if(frame != null)
+                    {
+                        AppCommands.Self.DeleteCircle(circle, frame);
                     }
                 }
             }

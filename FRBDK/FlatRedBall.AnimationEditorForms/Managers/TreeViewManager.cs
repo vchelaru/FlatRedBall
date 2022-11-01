@@ -253,6 +253,14 @@ namespace FlatRedBall.AnimationEditorForms
                         treeNode.Nodes.Remove(childNode);
                     }
                 }
+                else if(shape is CircleSave circle)
+                {
+                    var isReferenced = animationFrameSave.ShapeCollectionSave?.CircleSaves.Contains(circle) == true;
+                    if(!isReferenced)
+                    {
+                        treeNode.Nodes.Remove(childNode);
+                    }
+                }
                 else
                 {
                     throw new NotImplementedException();

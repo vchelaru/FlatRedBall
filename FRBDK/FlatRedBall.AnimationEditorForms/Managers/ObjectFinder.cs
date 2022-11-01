@@ -26,5 +26,21 @@ namespace FlatRedBall.AnimationEditorForms.Managers
 
             return null;
         }
+
+        public AnimationFrameSave GetAnimationFrameContaining(CircleSave circle)
+        {
+            foreach (var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
+            {
+                foreach (var frame in animationChain.Frames)
+                {
+                    if (frame.ShapeCollectionSave.CircleSaves.Contains(circle))
+                    {
+                        return frame;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

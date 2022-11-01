@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.AnimationEditorForms.PropertyGrids
 {
-    class AxisAlignedRectangleDisplayer : PropertyGridDisplayer
+    internal class CircleDisplayer : PropertyGridDisplayer
     {
         public override System.Windows.Forms.PropertyGrid PropertyGrid
         {

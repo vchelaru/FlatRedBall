@@ -13,9 +13,11 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
         public event Action WireframeTextureChange;
         public event Action<string> AchxLoaded;
         public event Action<AxisAlignedRectangleSave> AfterAxisAlignedRectangleChanged;
+        public event Action<CircleSave> AfterCircleChanged;
         public event Action AnimationChainsChanged;
 
         public void RaiseAfterAxisAlignedRectangleChanged(AxisAlignedRectangleSave rectangle) => AfterAxisAlignedRectangleChanged?.Invoke(rectangle);
+        public void RaiseAfterCircleChanged(CircleSave circle) => AfterCircleChanged?.Invoke(circle);
         public void RaiseAnimationChainsChanged() => AnimationChainsChanged?.Invoke();
 
         public void CallAchxLoaded(string newFileName) => AchxLoaded?.Invoke(newFileName);

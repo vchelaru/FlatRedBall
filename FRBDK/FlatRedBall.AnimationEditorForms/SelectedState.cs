@@ -299,6 +299,57 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        public CircleSave SelectedCircle
+        {
+            get => SelectedNode?.Tag as CircleSave;
+            set
+            {
+                if(value != null)
+                {
+                    var treeNode = TreeViewManager.Self.GetTreeNodeByTag(value);
+                    if(treeNode != null)
+                    {
+                        SelectedNode = treeNode;
+                    }
+                }
+            }
+        }
+
+        public List<CircleSave> SelectedCircles
+        {
+            get
+            {
+                var toReturn = new List<CircleSave>();
+                var treeNodes = SelectedNodes;
+
+                foreach(var treeNode in treeNodes)
+                {
+                    if(treeNode.Tag is CircleSave circle)
+                    {
+                        toReturn.Add(circle);
+                    }
+                }
+
+                return toReturn;
+            }
+            set
+            {
+                if(value?.Count > 0)
+                {
+                    var treeNodesToSelect = new List<TreeNode>();
+                    foreach(var item in value)
+                    {
+                        var treeNode = TreeViewManager.Self.GetTreeNodeByTag(item);
+                        if(treeNode != null)
+                        {
+                            treeNodesToSelect.Add(treeNode);
+                        }
+                    }
+                    SelectedNodes = treeNodesToSelect;
+                }
+            }
+        }
+
         public Texture2D SelectedTexture
         {
             get

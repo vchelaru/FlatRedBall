@@ -19,6 +19,7 @@ namespace FlatRedBall.AnimationEditorForms
         AnimationFrameDisplayer mAnimationFrameDisplayer;
         AnimationChainDisplayer mAnimationChainDisplayer;
         AxisAlignedRectangleDisplayer rectangleDisplayer;
+        CircleDisplayer circleDisplayer;
 
         static PropertyGridManager mSelf;
 
@@ -66,6 +67,7 @@ namespace FlatRedBall.AnimationEditorForms
             mAnimationFrameDisplayer = new AnimationFrameDisplayer();
             mAnimationChainDisplayer = new AnimationChainDisplayer();
             rectangleDisplayer = new AxisAlignedRectangleDisplayer();
+            circleDisplayer = new CircleDisplayer();
         }
 
         public void Initialize(System.Windows.Forms.PropertyGrid propertyGrid, TileMapInfoWindow tileMapInfoWindow)
@@ -112,6 +114,11 @@ namespace FlatRedBall.AnimationEditorForms
                 PreviewManager.Self.RefreshAll();
                 ApplicationEvents.Self.RaiseAfterAxisAlignedRectangleChanged(SelectedState.Self.SelectedAxisAlignedRectangle);
             }
+            else if(SelectedState.Self.SelectedCircle != null)
+            {
+                PreviewManager.Self.RefreshAll();
+                ApplicationEvents.Self.RaiseAfterCircleChanged(SelectedState.Self.SelectedCircle);
+            }
 
         }
 
@@ -122,34 +129,54 @@ namespace FlatRedBall.AnimationEditorForms
 
         public void Refresh()
         {
+            // check shapes (most specific) before frames or chains (more general)
             if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
             {
                 mAnimationChainDisplayer.PropertyGrid = null;
                 mAnimationFrameDisplayer.PropertyGrid = null;
+                circleDisplayer.PropertyGrid = null;
+
                 rectangleDisplayer.PropertyGrid = mPropertyGrid;
                 rectangleDisplayer.RefreshOnTimer = true;
                 rectangleDisplayer.Instance = SelectedState.Self.SelectedAxisAlignedRectangle;
+
+                mPropertyGrid.Refresh();
+            }
+            else if(SelectedState.Self.SelectedCircle != null)
+            {
+                mAnimationChainDisplayer.PropertyGrid = null;
+                mAnimationFrameDisplayer.PropertyGrid = null;
+                rectangleDisplayer.PropertyGrid = null;
+
+                circleDisplayer.PropertyGrid = mPropertyGrid;
+                circleDisplayer.RefreshOnTimer = true;
+                circleDisplayer.Instance = SelectedState.Self.SelectedCircle;
+
                 mPropertyGrid.Refresh();
             }
             else if (SelectedState.Self.SelectedFrame != null)
             {
                 mAnimationChainDisplayer.PropertyGrid = null;
                 rectangleDisplayer.PropertyGrid = null;
+                circleDisplayer.PropertyGrid = null;
+
                 mAnimationFrameDisplayer.PropertyGrid = mPropertyGrid;
                 mAnimationFrameDisplayer.SetFrame(SelectedState.Self.SelectedFrame,
                     SelectedState.Self.SelectedTexture);
                 mAnimationFrameDisplayer.RefreshOnTimer = true;
+
                 mPropertyGrid.Refresh();
             }
             else if (SelectedState.Self.SelectedChain != null)
             {
                 mAnimationFrameDisplayer.PropertyGrid = null;
                 rectangleDisplayer.PropertyGrid = null;
+                circleDisplayer.PropertyGrid = null;
+
                 mAnimationChainDisplayer.PropertyGrid = mPropertyGrid;
-
                 mAnimationChainDisplayer.Instance = SelectedState.Self.SelectedChain;
-
                 mAnimationChainDisplayer.RefreshOnTimer = true;
+
                 mPropertyGrid.Refresh();
 
             }

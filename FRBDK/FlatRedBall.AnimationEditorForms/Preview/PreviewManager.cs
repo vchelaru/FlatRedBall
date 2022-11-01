@@ -38,6 +38,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         List<RenderingLibrary.Graphics.Sprite> mOnionSkinSprites = new List<RenderingLibrary.Graphics.Sprite>();
 
         List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
+        List<RenderingLibrary.Math.Geometry.LineCircle> frameCircles = new List<LineCircle>();
 
         LineRectangle outlineRectangle;
 
@@ -186,9 +187,6 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             {
                 int index = mSprite.Animation.CurrentFrameIndex;
 
-                float animationXOffset = 0;
-                float animationYOffset = 0;
-
                 AnimationChainSave chain = SelectedState.Self.SelectedChain;
 
                 AnimationFrameSave frame = null;
@@ -199,9 +197,6 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     {
                         frame = chain.Frames[index];
                     }
-
-                    animationXOffset = frame.RelativeX * OffsetMultiplier;
-                    animationYOffset = frame.RelativeY * OffsetMultiplier;
                 }
 
                 UpdateShapesToFrame(frame);
@@ -370,7 +365,25 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
                 }
 
-                // todo - remove any rectangles not part of the frame
+                foreach (var frameCircleSave in frame.ShapeCollectionSave.CircleSaves)
+                {
+                    LineCircle circle = null;
+
+                    circle = frameCircles.FirstOrDefault(possibleCircle => possibleCircle.Tag == frameCircleSave);
+
+                    if (circle == null)
+                    {
+                        circle = new LineCircle(mManagers);
+                        circle.Tag = frameCircleSave;
+                        mManagers.ShapeManager.Add(circle);
+                        frameCircles.Add(circle);
+                    }
+
+                    circle.Radius = frameCircleSave.Radius;
+                    circle.X = frameCircleSave.X;// - frameCircleSave.Radius/2.0f;
+                    circle.Y = -frameCircleSave.Y;// - frameCircleSave.Radius / 2.0f;
+                }
+
                 for (int i = frameRectangles.Count - 1; i > -1; i--)
                 {
                     var frameRectangle = frameRectangles[i];
@@ -391,6 +404,27 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                         frameRectangles.RemoveAt(i);
                     }
                 }
+
+                for (int i = frameCircles.Count - 1; i > -1; i--)
+                {
+                    var frameCircle = frameCircles[i];
+
+                    var tag = frameCircle.Tag;
+
+                    var isReferencedByCurrentFrame = false;
+
+                    if(tag is CircleSave tagAsCircle)
+                    {
+                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.CircleSaves
+                            .Contains(tagAsCircle);
+                    }
+
+                    if(!isReferencedByCurrentFrame)
+                    {
+                        mManagers.ShapeManager.Remove(frameCircle);
+                        frameCircles.RemoveAt(i);
+                    }
+                }
             }
             else
             {
@@ -400,7 +434,14 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     mManagers.ShapeManager.Remove(rectangle);
                 }
 
+                for(int i = 0; i < frameCircles.Count; i++)
+                {
+                    var circle = frameCircles[i];
+                    mManagers.ShapeManager.Remove(circle);
+                }
+
                 frameRectangles.Clear();
+                frameCircles.Clear();
             }
         }
 

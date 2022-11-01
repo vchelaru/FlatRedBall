@@ -216,6 +216,7 @@
     <Compile Include="ProjectManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyGrids\AxisAlignedRectangleDisplayer.cs" />
+    <Compile Include="PropertyGrids\CircleDisplayer.cs" />
     <Compile Include="PropertyGrids\PropertyGridManager.cs" />
     <Compile Include="SelectedState.cs" />
     <Compile Include="Singleton.cs" />

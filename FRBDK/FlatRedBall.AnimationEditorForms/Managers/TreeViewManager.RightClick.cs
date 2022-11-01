@@ -59,6 +59,7 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("-");
 
                 mMenu.Items.Add("Add AxisAlignedRectangle", null, HandleAddAxisAlignedRectangle);
+                mMenu.Items.Add("Add Circle", null, HandleAddCircle);
 
                 mMenu.Items.Add("-");
 
@@ -131,6 +132,15 @@ namespace FlatRedBall.AnimationEditorForms
             foreach(var frame in selectedFrames)
             {
                 AppCommands.Self.AddAxisAlignedRectangle(frame);
+            }
+        }
+
+        private void HandleAddCircle(object sender, EventArgs e)
+        {
+            var selectedFrames = SelectedState.Self.SelectedFrames;
+            foreach(var frame in selectedFrames)
+            {
+                AppCommands.Self.AddCircle(frame);
             }
         }
 

@@ -40,6 +40,10 @@ namespace FlatRedBall.AnimationEditorForms.Managers
                     {
                         AppCommands.Self.AskToDelete(SelectedState.Self.SelectedRectangles);
                     }
+                    else if(SelectedState.Self.SelectedCircle != null)
+                    {
+                        AppCommands.Self.AskToDelete(SelectedState.Self.SelectedCircles);
+                    }
                     else if(SelectedState.Self.SelectedFrames.Count > 0)
                     {
                         AppCommands.Self.AskToDelete(SelectedState.Self.SelectedFrames);
