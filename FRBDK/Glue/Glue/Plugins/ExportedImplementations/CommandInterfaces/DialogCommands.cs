@@ -46,7 +46,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     string projectFileName = openFileDialog1.FileName;
 
-                    if (FileManager.GetExtension(projectFileName) == "sln")
+                    var extension = FileManager.GetExtension(projectFileName);
+                    if (extension == "sln")
                     {
                         var solution = VSSolution.FromFile(projectFileName);
 
@@ -64,6 +65,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         });
 
                         projectFileName = FileManager.GetDirectory(solutionName) + projectFileName;
+                    }
+                    else if(extension == "gluj")
+                    {
+                        projectFileName = FileManager.RemoveExtension(projectFileName) + ".csproj";
                     }
 
                     try
