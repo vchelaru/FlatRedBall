@@ -105,7 +105,7 @@ namespace FlatRedBall.Utilities
 
         /// <summary>
         /// Returns a 2-dimensional vector in a random direction with length within
-        /// the specified range.
+        /// the specified range. A higher distribution will occur around the lower-end.
         /// </summary>
         /// <param name="minLength">The inclusive lower bound of the length.</param>
         /// <param name="maxLength">The inclusive upper bound of the length.</param>
@@ -113,7 +113,10 @@ namespace FlatRedBall.Utilities
         public Vector2 RadialVector2(float minLength, float maxLength)
         {
             var angle = AngleRadians();
-            var length = Between(minLength, maxLength);
+
+            float length;
+            
+            length = Between(minLength, maxLength);
 
             return new Vector2(
                 (float)System.Math.Cos((double)angle) * length, 
@@ -121,7 +124,7 @@ namespace FlatRedBall.Utilities
         }
 
         /// <summary>
-        /// Returns a Vector2 of random length and angle between the argument values. 
+        /// Returns a Vector2 of random length and angle between the argument values. A higher distribution will appear at the center of the wedge.
         /// </summary>
         /// <param name="minLength">The minimum length of the returned vector.</param>
         /// <param name="maxLength">The maximum length of the returned vector.</param>
@@ -139,7 +142,27 @@ namespace FlatRedBall.Utilities
         }
 
         /// <summary>
-        /// Returns a Vector2 of random length and angle between the argument values.
+        /// Returns a random point in a circle with uniform distribution (as opposed to higher distribution at the center).
+        /// </summary>
+        /// <param name="radius">The circle radius</param>
+        /// <returns>The random point</returns>
+        public Vector2 PointInCircle(float radius)
+        {
+            // this gets us a random distribution instead of bunching up at the center:
+
+            var calculatedRadius = System.Math.Sqrt(Between(0.0f,1.0f)) * radius;
+
+            var angle = AngleRadians();
+            //var radius = _random.NextDouble() * _radius;
+
+
+            var x = (float)(calculatedRadius * System.Math.Cos(angle));
+            var y = (float)(calculatedRadius * System.Math.Sin(angle));
+            return new Vector2(x, y);
+        }
+
+        /// <summary>
+        /// Returns a Vector2 of random length and angle between the argument values. A higher distribution will appear at the center of the wedge.
         /// </summary>
         /// <param name="minLength">The minimum length of the returned vector.</param>
         /// <param name="maxLength">The maximum length of the returned vector.</param>
@@ -153,6 +176,7 @@ namespace FlatRedBall.Utilities
 
             return WedgeVector2Radians(minLength, maxLength, minRadians, maxRadians);
         }
+
 
         public bool NextBool() => Next(2) == 0;
 
