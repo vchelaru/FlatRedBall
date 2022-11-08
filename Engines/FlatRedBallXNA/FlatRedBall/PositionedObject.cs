@@ -29,8 +29,6 @@ namespace FlatRedBall
     {
         #region Fields
 
-        string mParentBone;
-
         /// <summary>
         /// The absolute world position of the instance.
         /// </summary>
@@ -358,10 +356,11 @@ namespace FlatRedBall
             get { return mParent; }
         }
 
+        [Obsolete("Was used when we supported 3D, but FRB has moved away from that")]
         public string ParentBone
         {
-            get { return mParentBone; }
-            protected set { mParentBone = value; }
+            get;
+            protected set;
         }
 
         /// <summary>
@@ -1600,7 +1599,6 @@ namespace FlatRedBall
         #endregion
         public virtual void Detach()
         {
-            mParentBone = null;
             if (mParent == null)
                 return;
             mParent.mChildren.Remove(this);

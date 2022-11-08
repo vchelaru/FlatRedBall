@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StateInterpolationPlugin
 {
@@ -156,6 +157,15 @@ namespace StateInterpolationPlugin
             return toReturn;
         }
 
+        public static async Task TweenAsync(this PositionedObject positionedObject, string property, float to,
+            float during, InterpolationType interpolation, Easing easing)
+        {
+            var tweener = Tween(positionedObject, property, to, during, interpolation, easing);
+            var didFinish = false;
+            tweener.Ended += () => didFinish = true;
+            await TimeManager.DelayUntil(() => didFinish);
+        }
+
         public static Tweener Tween(this PositionedObject positionedObject, string property, float to,
             float during, InterpolationType interpolation, Easing easing)
         {
@@ -186,6 +196,10 @@ namespace StateInterpolationPlugin
             else if (property == nameof(PositionedObject.RelativeZ))
             {
                 return positionedObject.Tween((value) => positionedObject.RelativeZ = value, positionedObject.RelativeZ, to, during, interpolation, easing);
+            }
+            else if(property == nameof(PositionedObject.RotationZ))
+            {
+                return positionedObject.Tween((value) => positionedObject.RotationZ = value, positionedObject.RotationZ, to, during, interpolation, easing);
             }
             else
             {

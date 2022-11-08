@@ -297,6 +297,9 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             // this provides default controls for the platformer using either keyboad or 360. Can be overridden in custom code:
             this.InitializeInput();
 
+            // needed to figure out corner collisions
+            KeepTrackOfReal = true;
+
             BeforeGroundMovementSet += (newValue) => 
             {
                 if(mGroundMovement != null && mGroundMovement == ValuesJumpedWith && IsOnGround)
@@ -922,17 +925,89 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 
                 codeBlock.Line(@"
+
+
+        (bool, PositionedObject) DoCollisionWithShapeCollectionConsideringCornerLanding(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision)
+        {
+            var positionBefore = this.Position;
+            var velocityBefore = this.Velocity;
+
+            var didCollideInternal = shapeCollection.CollideAgainstSolid(this);
+            if(isCloudCollision == false && didCollideInternal && velocityBefore.Y < 0)
+            {
+                var repositionDirection = this.Position - positionBefore;
+                if(repositionDirection.X != 0)
+                {
+                    var positionAfter = this.Position;
+                    var velocityAfter = this.Velocity;
+
+                    // undo the last frame to figure out where the Y was for the player last frame:
+
+                    var didRedoWithUpward = false;
+                    var didTryCollision = true;
+
+                    for(int i = 0; i < shapeCollection.LastCollisionAxisAlignedRectangles.Count; i++)
+                    {
+                        var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
+
+                        if((rectangle.RepositionDirections & FlatRedBall.Math.Geometry.RepositionDirections.Up) == FlatRedBall.Math.Geometry.RepositionDirections.Up)
+                        {
+                            // Player was repositioned horizontally by a shape which can also reposition upward.
+                            // Did they get pushed off a ledge?
+
+                            // to test this, move the player back to original position, force an upward collision, and see if the resulting upward
+                            // collision is <= the position before.
+                            this.Position = positionBefore;
+                            this.Velocity = velocityBefore;
+                            this.ForceUpdateDependenciesDeep();
+
+                            var oldReposition = rectangle.RepositionDirections;
+
+                            rectangle.RepositionDirections = FlatRedBall.Math.Geometry.RepositionDirections.Up;
+
+                            this.Collision.CollideAgainstBounce(rectangle, 0, 1, 0);
+                            didTryCollision = true;
+                            rectangle.RepositionDirections = oldReposition;
+
+                            if(this.Y <= LastPosition.Y)
+                            {
+                                didRedoWithUpward = true;
+                                //break;
+                            }
+                            else
+                            {
+                                didAnyRedoWithoutUpward = true;
+                            }
+
+                        }
+                    }
+
+
+                    if(didAnyRedoWithoutUpward)
+                    {
+                        this.Position = positionAfter;
+                        this.Velocity = velocityAfter;
+                    }
+
+                    else if(!didRedoWithUpward && didTryCollision)
+                    {
+                        this.Position = positionAfter;
+                        this.Velocity = velocityAfter;
+                        this.ForceUpdateDependenciesDeep();
+                    }
+                }
+            }
+            return (didCollideInternal, null);
+        }
+
         public bool CollideAgainst(FlatRedBall.TileCollisions.TileShapeCollection shapeCollection, bool isCloudCollision = false)
         {
             var positionBefore = this.Position;
             var velocityBefore = this.Velocity;
 
 
-            var collided = CollideAgainst(() =>
-            {
-                var didCollideInternal = shapeCollection.CollideAgainstSolid(this);
-                return (didCollideInternal, null);
-            }, isCloudCollision, shapeCollection.Name);
+            var collided = CollideAgainst(() => DoCollisionWithShapeCollectionConsideringCornerLanding(shapeCollection, isCloudCollision), isCloudCollision, shapeCollection.Name);
+
 
             if(collided)
             {
