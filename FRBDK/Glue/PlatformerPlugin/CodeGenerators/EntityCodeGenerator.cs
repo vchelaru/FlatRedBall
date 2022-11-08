@@ -952,7 +952,12 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     {
                         var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
 
-                        if((rectangle.RepositionDirections & FlatRedBall.Math.Geometry.RepositionDirections.Up) == FlatRedBall.Math.Geometry.RepositionDirections.Up)
+                        var canRepositionHorizontally =
+                            (rectangle.RepositionDirections & FlatRedBall.Math.Geometry.RepositionDirections.Left) == FlatRedBall.Math.Geometry.RepositionDirections.Left ||
+                            (rectangle.RepositionDirections & FlatRedBall.Math.Geometry.RepositionDirections.Right) == FlatRedBall.Math.Geometry.RepositionDirections.Right;
+
+                        if ((rectangle.RepositionDirections & FlatRedBall.Math.Geometry.RepositionDirections.Up) == FlatRedBall.Math.Geometry.RepositionDirections.Up &&
+                            canRepositionHorizontally)
                         {
                             // Player was repositioned horizontally by a shape which can also reposition upward.
                             // Did they get pushed off a ledge?

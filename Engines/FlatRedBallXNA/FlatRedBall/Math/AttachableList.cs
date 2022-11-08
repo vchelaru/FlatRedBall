@@ -91,7 +91,7 @@ namespace FlatRedBall.Math
         }
 
 #if DEBUG
-        internal void AddInternalHashSet()
+        public void AddInternalHashSet()
         {
             InternalHashSet = new HashSet<T>();
 
@@ -215,13 +215,11 @@ namespace FlatRedBall.Math
                 Add(t);
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds all IAttachables contained in the argument AttachableList to this AttachableList and creates two
         /// way relationships.
         /// </summary>
         /// <param name="listToAdd"></param>
-        #endregion
         public void AddRange(AttachableList<T> listToAdd)
         {
             for (int i = 0; i < listToAdd.Count; i++)
@@ -230,12 +228,10 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds the argument attachable to this without creating a two-way relationship.
         /// </summary>
         /// <param name="attachable">The IAttachable to add to this.</param>
-        #endregion
         public void AddOneWay(T attachable)
         {
             if (attachable == null) return;
@@ -250,13 +246,11 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds all IAttachables contained in the argument AttachableList to this
         /// without creating two-way relationships.
         /// </summary>
         /// <param name="listToAdd">The list of IAttachables to add.</param>
-        #endregion
         public void AddRangeOneWay(AttachableList<T> listToAdd)
         {
             for (int i = 0; i < listToAdd.Count; i++)
@@ -271,13 +265,11 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds a new IAttachable if it is not already in the list.
         /// </summary>
         /// <param name="attachable">The IAttachable to add.</param>
         /// <returns>Index where the IAttachable was added.  -1 is returned if the list already contains the argument attachable</returns>
-        #endregion
         public void AddUnique(T attachable)
         {
             if (this.Contains(attachable))
@@ -286,13 +278,11 @@ namespace FlatRedBall.Math
                 Add(attachable);
         }
 
-        #region XML Docs
         /// <summary>
         /// Adds the argument IAttachable to this and creates a two-way relationship if
         /// this does not already contain the IAttachable.
         /// </summary>
         /// <param name="attachable">The IAttachable to add.</param>
-        #endregion
         public void AddUniqueOneWay(T attachable)
         {
             if (this.Contains(attachable))
@@ -335,12 +325,10 @@ namespace FlatRedBall.Math
         }
         */
 
-        #region XML Docs
         /// <summary>
         /// Removes all IAttachables contained in this and eliminates all
         /// two-way relationships.
         /// </summary>
-        #endregion
         public void Clear()
         {
             List<T> removed = null;
@@ -364,7 +352,6 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns whether this contains the argument IAttachable.
         /// </summary>
@@ -375,7 +362,6 @@ namespace FlatRedBall.Math
         /// </remarks>
         /// <param name="attachable">The argument IAttachable to search for.</param>
         /// <returns>Whether the argument attachable is contained in this list.</returns>
-        #endregion
         public bool Contains(T attachable)
         {
 #if DEBUG
@@ -520,7 +506,6 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Makes the relationship between all contained IAttachables and this a two way relationship.
         /// </summary>
@@ -532,7 +517,6 @@ namespace FlatRedBall.Math
         /// this instance in their ListsBelongingTo field.  One-way relationships are often created in
         /// FRB methods which return AttachableLists.
         /// </remarks>
-        #endregion
         public void MakeTwoWay()
         {
             for (int i = 0; i < this.Count; i++)
@@ -543,7 +527,6 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Moves the position of a block of IAttachables beginning at the argument
         /// sourceIndex of numberToMove count to the argument destinationIndex.
@@ -551,7 +534,6 @@ namespace FlatRedBall.Math
         /// <param name="sourceIndex">The index of the first IAttachable in the block.</param>
         /// <param name="numberToMove">The number of elements in the block.</param>
         /// <param name="destinationIndex">The index to insert the block at.</param>
-        #endregion
         public void MoveBlock(int sourceIndex, int numberToMove, int destinationIndex)
         {
             if (destinationIndex < sourceIndex)
@@ -572,12 +554,10 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the argument IAttachable from this and clears the two-way relationship.
         /// </summary>
         /// <param name="attachable">The IAttachable to remove from this.</param>
-        #endregion
         public void Remove(T attachable)
         {
             if (attachable.ListsBelongingTo.Contains(this))
@@ -599,13 +579,11 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes all IAttachables contained in the argument attachableList from this and clears the two-way relationships between
         /// this and all IAttachables removed.
         /// </summary>
         /// <param name="attachableList">The list of IAttachables to remove.</param>
-        #endregion
         public void Remove(AttachableList<T> attachableList)
         {
             for (int i = 0; i < attachableList.Count; i++)
@@ -614,12 +592,10 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the IAttachable at the argument index and clears two-way relationships.
         /// </summary>
         /// <param name="index">The index of the object to remove.</param>
-        #endregion
         public void RemoveAt(int index)
         {
             T removed = mInternalList[index];
@@ -741,12 +717,10 @@ namespace FlatRedBall.Math
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns a string with the name and the number of elements that this contains.
         /// </summary>
         /// <returns>The string with this instance's name and element count.</returns>
-        #endregion
         public override string ToString()
         {
             return mName + ": " + this.Count;

@@ -396,10 +396,8 @@ namespace FlatRedBall.Glue.Parsing
     {
         #region Fields/Properties
 
-        public bool ShouldPoolObjects
-        {
-            get{ return EntitySave.PooledByFactory;}
-        }
+        public bool ShouldPoolObjects => EntitySave.PooledByFactory;
+        
 
         public EntitySave EntitySave
         {
@@ -409,7 +407,7 @@ namespace FlatRedBall.Glue.Parsing
 
         public override string ClassName
         {
-            get { return FileManager.RemovePath(EntitySave.Name) + "Factory"; }
+            get => FileManager.RemovePath(EntitySave.Name) + "Factory"; 
         }
 
         public override string Namespace
@@ -482,7 +480,8 @@ namespace FlatRedBall.Glue.Parsing
             var codeBlock = new CodeBlockBase(null);
             codeBlock.Line("static string mContentManagerName;");
             codeBlock.Line("static System.Collections.Generic.List<System.Collections.IList> ListsToAddTo = new System.Collections.Generic.List<System.Collections.IList>();");
-
+            codeBlock.Line("public static int NewInstancesCreatedThisScreen;");
+            codeBlock.Line("int IEntityFactory.NewInstancesCreatedThisScreen => NewInstancesCreatedThisScreen;");
             // August 19, 2022
             // Let's only add this if it's pooled
             if(EntitySave.PooledByFactory)
@@ -658,6 +657,7 @@ namespace FlatRedBall.Glue.Parsing
                     .If("instance == null")
                         .Line("mPool.AddToPool(new " + className + "(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false));")
                         .Line("instance =  mPool.GetNextAvailable();")
+                        .Line("NewInstancesCreatedThisScreen++;")
                     .End()
                     .Line("instance.AddToManagers(layer);");
             }
@@ -669,7 +669,9 @@ namespace FlatRedBall.Glue.Parsing
 
                 codeBlock
                     .Line($"instance = new {className}(mContentManagerName ?? FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName, false);")
-                    .Line("instance.AddToManagers(layer);");
+                    .Line("instance.AddToManagers(layer);")
+                    .Line("NewInstancesCreatedThisScreen++;");
+
             }
 
             codeBlock.Line("instance.X = x;");
@@ -718,8 +720,10 @@ namespace FlatRedBall.Glue.Parsing
             functionBlock
                     .Line("mContentManagerName = null;")
                     .Line("ListsToAddTo.Clear();")
-                    .Line("SortAxis = null;");
-            if(entity.PooledByFactory)
+                    .Line("SortAxis = null;")
+                    .Line("NewInstancesCreatedThisScreen = 0;");
+            
+            if (entity.PooledByFactory)
             {
                 functionBlock
                         .Line("mPool.Clear();");

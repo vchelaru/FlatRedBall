@@ -10,7 +10,7 @@ namespace REPLACED_NAMESPACE
         object CreateNew(float x = 0, float y = 0);
         object CreateNew(Microsoft.Xna.Framework.Vector3 position);
         object CreateNew(FlatRedBall.Graphics.Layer layer);
-
+        int NewInstancesCreatedThisScreen { get; }
         void Initialize(string contentManager);
         void ClearListsToAddTo();
 
@@ -116,6 +116,23 @@ namespace REPLACED_NAMESPACE
                         var value = propertyInfo.GetValue(null, null);
                         return value as IEntityFactory;
                     }).ToList();
+        }
+
+        static StringBuilder creationReportBuilder = new StringBuilder();
+        public static string GetCreationReport(bool includeFactoriesWith0Instances = false)
+        {
+            creationReportBuilder.Clear();
+            var allFactories = GetAllFactories()
+                .OrderByDescending(item => item.NewInstancesCreatedThisScreen);
+            foreach (var factory in allFactories)
+            {
+                if (includeFactoriesWith0Instances || factory.NewInstancesCreatedThisScreen > 0)
+                {
+                    creationReportBuilder.AppendLine($"{factory.GetType().Name}:{factory.NewInstancesCreatedThisScreen:N0}");
+                }
+            }
+
+            return creationReportBuilder.ToString();
         }
     }
 }
