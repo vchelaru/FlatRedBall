@@ -610,7 +610,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         }
                         string whereToSave = FileManager.UserApplicationDataForThisApplication + "ProjectFileOutput.txt";
                         FileManager.SaveText(stringBuilder.ToString(), whereToSave);
-                        Process.Start(whereToSave);
+                        Process.Start(new ProcessStartInfo(whereToSave) { UseShellExecute = true });
 
 
                         mProject.RemoveItem(buildItem);
