@@ -946,6 +946,8 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                     var didRedoWithUpward = false;
                     var didTryCollision = true;
 
+                    var didAnyRedoWithoutUpward = false;
+
                     for(int i = 0; i < shapeCollection.LastCollisionAxisAlignedRectangles.Count; i++)
                     {
                         var rectangle = shapeCollection.LastCollisionAxisAlignedRectangles[i];
