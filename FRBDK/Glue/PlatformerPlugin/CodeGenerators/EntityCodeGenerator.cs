@@ -982,6 +982,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
                             }
 
                         }
+                        else if(rectangle.RepositionDirections != FlatRedBall.Math.Geometry.RepositionDirections.None)
+                        {
+                            didAnyRedoWithoutUpward = true;
+                            break;
+                        }
                     }
 
 
