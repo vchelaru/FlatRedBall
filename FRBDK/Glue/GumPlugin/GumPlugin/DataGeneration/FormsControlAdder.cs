@@ -39,7 +39,7 @@ namespace GumPlugin.DataGeneration
 
         public static async Task SaveElements(Assembly assembly, bool askToOverwrite = true)
         {
-            var gumDirectory = GumProjectManager.Self.GetGumProjectFileName().FullPath;
+            var gumDirectory = GumProjectManager.Self.GetGumProjectFileName().GetDirectoryContainingThis();
 
 
             Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
@@ -138,17 +138,17 @@ namespace GumPlugin.DataGeneration
 
         }
 
-        private static void AddContentItemsToResourceFileDestinations(string gumDirectory, Dictionary<string, FilePath> resourceToFileDestinations)
+        private static void AddContentItemsToResourceFileDestinations(FilePath gumDirectory, Dictionary<string, FilePath> resourceToFileDestinations)
         {
             var contentDestination = gumDirectory;
             foreach (var file in ContentItems)
             {
                 var resourceName = EmbeddedProjectRoot + "/" + file;
-                resourceToFileDestinations[resourceName.Replace("/", ".")] = contentDestination + file;
+                resourceToFileDestinations[resourceName.Replace("/", ".")] = contentDestination.FullPath + file;
             }
         }
 
-        private static void AddElementsToResourceFileDestinations(string componentDestination, Dictionary<string, FilePath> resourceToFileDestinations, string[] resourcesInAssembly, string defaultFormsPrefix, string extensionWithDot)
+        private static void AddElementsToResourceFileDestinations(FilePath componentDestination, Dictionary<string, FilePath> resourceToFileDestinations, string[] resourcesInAssembly, string defaultFormsPrefix, string extensionWithDot)
         {
             foreach (var resourceSource in resourcesInAssembly)
             {
@@ -159,7 +159,7 @@ namespace GumPlugin.DataGeneration
                     var noPrefixName = resourceSource.Substring(defaultFormsPrefix.Length);
                     var withoutExtension = noPrefixName.Substring(0, noPrefixName.Length - extensionWithDot.Length);
                     var split = withoutExtension.Split('.');
-                    var destination = componentDestination + String.Join('/', split) + extensionWithDot;
+                    var destination = componentDestination.FullPath + String.Join('/', split) + extensionWithDot;
                     resourceToFileDestinations[resourceSource] = destination;
                 }
             }
