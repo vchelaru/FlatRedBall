@@ -236,18 +236,12 @@ namespace FlatRedBall
         /// <summary>
         /// The height of the entire drawable area of the game window.
         /// </summary>
-        public static int ClientWidth
-        {
-            get { return mClientWidth; }
-        }
+        public static int ClientWidth => mClientWidth; 
 
         /// <summary>
         /// The width of the entire drawable area of the game window.
         /// </summary>
-        public static int ClientHeight
-        {
-            get { return mClientHeight; }
-        }
+        public static int ClientHeight => mClientHeight; 
 
         public const string GlobalContentManager = "Global";
 
@@ -268,21 +262,8 @@ namespace FlatRedBall
             set { mEncryptionKey = value; }
         }
 
-        public static IEnumerable<FlatRedBall.Content.ContentManager> ContentManagers
-        {
-            get
-            {
-                return mContentManagers.Values;
-            }
-        }
+        public static IEnumerable<FlatRedBall.Content.ContentManager> ContentManagers => mContentManagers.Values;
 
-#if XBOX360
-        public static bool IgnoreExtensionsWhenLoadingContent
-        {
-            get { return mIgnoreExtensionsWhenLoadingContent; }
-            set { mIgnoreExtensionsWhenLoadingContent = value; }
-        }
-#endif
         #endregion
 
         #region Events
