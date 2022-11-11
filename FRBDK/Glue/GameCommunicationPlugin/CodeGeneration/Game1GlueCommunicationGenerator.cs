@@ -51,7 +51,7 @@ namespace GameCommunicationPlugin.CodeGeneration
                 codeBlock.Line($"gameConnectionManager = new GlueCommunication.GameConnectionManager({PortNumber});");
                 codeBlock.Line("gameConnectionManager.OnPacketReceived += async (packet) =>");
                 codeBlock.Line("{");
-                codeBlock.Line("    if (packet.Packet.PacketType == \"OldDTO\")");
+                codeBlock.Line("    if (packet.Packet.PacketType == \"OldDTO\" && glueControlManager != null)");
                 codeBlock.Line("    {");
                 codeBlock.Line("        var returnValue = await glueControlManager?.ProcessMessage(packet.Packet.Payload);");
                 codeBlock.Line("");
