@@ -2,6 +2,8 @@
 {
     public class CodeBlockFunction : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockFunction(ICodeBlock parent,string pre, string name, string parameters, string whereClause = null) : base(parent)
         {
             string functionSignature = StringHelper.SpaceStrings(pre, name, "(") + (string.IsNullOrEmpty(parameters) ? "" : parameters) + ")" + " " + whereClause;

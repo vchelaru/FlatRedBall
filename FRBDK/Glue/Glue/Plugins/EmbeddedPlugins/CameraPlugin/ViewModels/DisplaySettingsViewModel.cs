@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.SaveClasses;
 using Microsoft.Xna.Framework.Graphics;
+using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,8 +22,34 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
     #endregion
 
+    #region AspectRatioViewModel Class
+    public class AspectRatioViewModel : ViewModel
+    {
+        public decimal AspectRatioWidth
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+        public decimal AspectRatioHeight
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
+        public Visibility Visibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+        public DisplaySettingsViewModel ParentViewModel { get; internal set; }
+    }
+
+    #endregion
+
     public class DisplaySettingsViewModel : ViewModel
     {
+        #region Fields/Properties
+
         public bool GenerateDisplayCode
         {
             get => Get<bool>();
@@ -102,6 +129,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
         #endregion
 
+        #region Resolution Width/Height
         public int ResolutionWidth
         {
             get => Get<int>();
@@ -113,24 +141,164 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get => Get<int>();
             set => Set(value);
         }
+        #endregion
 
-        public bool FixedAspectRatio
+        #region Aspect Ratio
+
+        public AspectRatioBehavior AspectRatioBehavior
         {
-            get => Get<bool>();
+            get => Get<AspectRatioBehavior>();
+            set
+            {
+                if (Set(value))
+                {
+                    RefreshAspectRatioVisibility();
+                }
+            }
+        }
+
+        private void RefreshAspectRatioVisibility()
+        {
+            AspectRatio1.Visibility = 
+                (AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio || 
+                AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio
+                    ).ToVisibility();
+            AspectRatio2.Visibility =
+                (AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                    .ToVisibility();
+        }
+
+        [DependsOn(nameof(AspectRatioBehavior))]
+        public Visibility DashVisibility => (AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                    .ToVisibility();
+
+        [DependsOn(nameof(AspectRatioBehavior))]
+        public bool IsVariableAspectRatio
+        {
+            get => AspectRatioBehavior == AspectRatioBehavior.NoAspectRatio;
+            set
+            {
+                if(value)
+                {
+                    AspectRatioBehavior = AspectRatioBehavior.NoAspectRatio;
+                }
+            }
+        }
+
+        [DependsOn(nameof(AspectRatioBehavior))]
+        public bool IsFixedAspectRatio
+        {
+            get => AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio;
+            set
+            {
+                if (value)
+                {
+                    AspectRatioBehavior = AspectRatioBehavior.FixedAspectRatio;
+                }
+            }
+        }
+
+        [DependsOn(nameof(AspectRatioBehavior))]
+        public bool IsRangedAspectRatio
+        {
+            get => AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio;
+            set
+            {
+                if (value)
+                {
+                    AspectRatioBehavior = AspectRatioBehavior.RangedAspectRatio;
+                }
+            }
+        }
+
+        public AspectRatioViewModel AspectRatio1
+        {
+            get => Get<AspectRatioViewModel>();
             set => Set(value);
         }
 
-        public decimal AspectRatioWidth
+        public AspectRatioViewModel AspectRatio2
         {
-            get => Get<decimal>();
+            get => Get<AspectRatioViewModel>();
             set => Set(value);
         }
 
-        public decimal AspectRatioHeight
+        [DependsOn(nameof(AspectRatioBehavior))]
+        [DependsOn(nameof(AspectRatio1))]
+        [DependsOn(nameof(AspectRatio2))]
+        [DependsOn(nameof(ResolutionWidth))]
+        [DependsOn(nameof(ResolutionHeight))]
+        public Visibility ShowAspectRatioMismatch
         {
-            get => Get<decimal>();
-            set => Set(value);
+            get
+            {
+                Visibility visibility = Visibility.Collapsed;
+                
+                if(AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
+                {
+                    bool isMismatch = GetIfIsMismatch(AspectRatio1);
+                    visibility = isMismatch.ToVisibility();
+                }
+                else if(AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                {
+                    bool isMismatch = GetIfIsMismatch(AspectRatio1) || GetIfIsMismatch(AspectRatio2);
+                    visibility = isMismatch.ToVisibility();
+                }
+
+                return visibility;
+            }
         }
+
+        private bool GetIfIsMismatch(AspectRatioViewModel aspectRatioViewModel)
+        {
+            decimal desiredAspectRatio = 1;
+
+            if (aspectRatioViewModel.AspectRatioHeight != 0)
+            {
+                desiredAspectRatio = aspectRatioViewModel.AspectRatioWidth / aspectRatioViewModel.AspectRatioHeight;
+            }
+
+            decimal resolutionAspectRatio = 1;
+
+            if (ResolutionHeight != 0)
+            {
+                resolutionAspectRatio = (decimal)ResolutionWidth / (decimal)ResolutionHeight;
+            }
+
+            var isMismatch =
+                desiredAspectRatio != resolutionAspectRatio;
+            return isMismatch;
+        }
+
+        [DependsOn(nameof(ResolutionHeight))]
+        public string KeepResolutionHeightConstantMessage => $"Keep game world height at {ResolutionHeight}";
+
+        [DependsOn(nameof(ResolutionWidth))]
+        public string KeepResolutionWidthConstantMessage => $"Keep game world width at {ResolutionWidth}";
+
+        [DependsOn(nameof(AspectRatioBehavior))]
+        public string WidthHeightSelectionText
+        {
+            get
+            {
+                if(AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
+                {
+                    return "The aspect ratio does not match the calculated resolution aspect ratio";
+                }
+                else if(AspectRatioBehavior == AspectRatioBehavior.RangedAspectRatio)
+                {
+                    return "The aspect ratio may not match the calculated resolution aspect ratio";
+                }
+                else
+                {
+                    return "";
+                }
+            }
+        }
+
+        #endregion
+
+        #region Landscape/Portrait
 
         public bool SupportLandscape
         {
@@ -144,6 +312,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             set => Set(value);
         }
 
+        #endregion
+
         public bool RunInFullScreen
         {
             get => Get<bool>();
@@ -155,6 +325,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get => Get<bool>();
             set => Set(value);
         }
+
+        #region Scale/Zoom
 
         public int Scale
         {
@@ -180,6 +352,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             Visibility.Visible;
             //(ScaleGum != 100).ToVisibility();
 
+
         [DependsOn(nameof(Scale))]
         [DependsOn(nameof(ScaleGum))]
         public string EffectiveFontScaleContent
@@ -190,6 +363,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 return $"Effective Gum Scale:{effectiveScale}%";
             }
         }
+        #endregion
 
         public ResizeBehavior ResizeBehavior
         {
@@ -236,59 +410,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get => DominantInternalCoordinates == WidthOrHeight.Width;
             set { if (value) DominantInternalCoordinates = WidthOrHeight.Width; }
         }
-
-
-        [DependsOn(nameof(FixedAspectRatio))]
-        public Visibility AspectRatioValuesVisibility
-        {
-            get
-            {
-                return FixedAspectRatio.ToVisibility();
-            }
-        }
-
-        [DependsOn(nameof(FixedAspectRatio))]
-        [DependsOn(nameof(AspectRatioWidth))]
-        [DependsOn(nameof(AspectRatioHeight))]
-        [DependsOn(nameof(ResolutionWidth))]
-        [DependsOn(nameof(ResolutionHeight))]
-        public Visibility ShowAspectRatioMismatch
-        {
-            get
-            {
-                Visibility visibility = Visibility.Collapsed;
-                
-                if(FixedAspectRatio  )
-                {
-                    decimal desiredAspectRatio = 1;
-
-                    if (AspectRatioHeight != 0)
-                    {
-                        desiredAspectRatio = AspectRatioWidth / AspectRatioHeight;
-                    }
-
-                    decimal resolutionAspectRatio = 1;
-
-                    if (ResolutionHeight != 0)
-                    {
-                        resolutionAspectRatio = (decimal)ResolutionWidth / (decimal)ResolutionHeight;
-                    }
-
-                    if(desiredAspectRatio != resolutionAspectRatio)
-                    {
-                        visibility = Visibility.Visible;
-                    }
-                }
-
-                return visibility;
-            }
-        }
-
-        [DependsOn(nameof(ResolutionHeight))]
-        public string KeepResolutionHeightConstantMessage => $"Keep game coordinates height at {ResolutionHeight}";
-
-        [DependsOn(nameof(ResolutionWidth))]
-        public string KeepResolutionWidthConstantMessage => $"Keep game coordinates width at {ResolutionWidth}";
 
         [DependsOn(nameof(Is2D))]
         public Visibility OnResizeUiVisibility
@@ -380,6 +501,22 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             get; private set;
         } = new ObservableCollection<DisplaySettings>();
 
+        #endregion
+
+        public DisplaySettingsViewModel()
+        {
+            AspectRatio1 = new AspectRatioViewModel();
+            AspectRatio2 = new AspectRatioViewModel();
+
+            AspectRatio1.ParentViewModel = this;
+            AspectRatio2.ParentViewModel = this;
+
+            RefreshAspectRatioVisibility();
+
+            AspectRatio1.PropertyChanged += (_, _) => NotifyPropertyChanged(nameof(AspectRatio1));
+            AspectRatio2.PropertyChanged += (_, _) => NotifyPropertyChanged(nameof(AspectRatio2));
+        }
+
         public void SetFrom(DisplaySettings displaySettings)
         {
             this.Name = displaySettings.Name;
@@ -393,11 +530,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             this.ResolutionHeight = displaySettings.ResolutionHeight;
 
-            this.FixedAspectRatio = displaySettings.FixedAspectRatio;
+            // todo- handle different types here:
+            //this.IsFixedAspectRatio = displaySettings.FixedAspectRatio;
+            this.AspectRatioBehavior = displaySettings.AspectRatioBehavior;
 
-            this.AspectRatioWidth = displaySettings.AspectRatioWidth;
+            this.AspectRatio1.AspectRatioWidth = displaySettings.AspectRatioWidth;
+            this.AspectRatio1.AspectRatioHeight = displaySettings.AspectRatioHeight;
 
-            this.AspectRatioHeight = displaySettings.AspectRatioHeight;
+            this.AspectRatio2.AspectRatioWidth = displaySettings.AspectRatioWidth2;
+            this.AspectRatio2.AspectRatioHeight = displaySettings.AspectRatioHeight2;
 
             this.SupportLandscape = displaySettings.SupportLandscape;
 
@@ -434,11 +575,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             toReturn.ResolutionHeight = this.ResolutionHeight;
 
-            toReturn.FixedAspectRatio = this.FixedAspectRatio;
+            toReturn.AspectRatioBehavior = this.AspectRatioBehavior;
 
-            toReturn.AspectRatioWidth = this.AspectRatioWidth;
+            toReturn.AspectRatioWidth = this.AspectRatio1.AspectRatioWidth;
+            toReturn.AspectRatioHeight = this.AspectRatio1.AspectRatioHeight;
 
-            toReturn.AspectRatioHeight = this.AspectRatioHeight;
+            toReturn.AspectRatioWidth2 = this.AspectRatio2.AspectRatioWidth;
+            toReturn.AspectRatioHeight2 = this.AspectRatio2.AspectRatioHeight;
 
             toReturn.SupportLandscape = this.SupportLandscape;
 

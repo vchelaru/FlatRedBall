@@ -2,8 +2,10 @@
 
 namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
+
     public class CodeBlockProperty : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockProperty(ICodeBlock pParent, string pPre, string pName) : base(pParent)
         {
             PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre, pName)));
@@ -14,6 +16,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockGet : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockGet(ICodeBlock pParent, string pPre) : base(pParent)
         {
             PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre,"get")));
@@ -32,6 +35,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockSet : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockSet(ICodeBlock pParent, string pPre)
             : base(pParent)
         {

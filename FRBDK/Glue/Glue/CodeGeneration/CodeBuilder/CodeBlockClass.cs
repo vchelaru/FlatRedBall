@@ -2,6 +2,8 @@
 {
     public class CodeBlockClass : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockClass(ICodeBlock pParent, string pPre, string pName, string pPost) : base(pParent)
         {
             PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre, "class", pName, pPost)));
@@ -12,6 +14,8 @@
 
     public class CodeBlockStruct : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockStruct(ICodeBlock pParent, string pPre, string pName)
             : base(pParent)
         {
@@ -23,6 +27,8 @@
 
     public class CodeBlockEnum : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockEnum(ICodeBlock pParent, string pPre, string pName)
             : base(pParent)
         {

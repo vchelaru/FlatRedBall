@@ -11,6 +11,8 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
         private readonly List<ICode> _postCodeLines = new List<ICode>();
         private readonly List<ICode> _postBodyCodeLines = new List<ICode>();
 
+        protected virtual bool IndentBody => false;
+
         public CodeBlockBase(ICodeBlock parent = null)
         {
             TabCharacter = CodeBuilderDefaults.TabCharacter;
@@ -53,7 +55,10 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
                 codeLine.AddToStringBuilder(builder, tabCount, tabCharacter);
             }
 
-            tabCount++;
+            if(IndentBody)
+            {
+                tabCount++;
+            }
 
             foreach (var codeLine in BodyCodeLines)
             {
@@ -65,7 +70,10 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
                 codeLine.AddToStringBuilder(builder, tabCount, tabCharacter);
             }
 
-            tabCount--;
+            if(IndentBody)
+            {
+                tabCount--;
+            }
 
             foreach (var codeLine in PostCodeLines)
             {

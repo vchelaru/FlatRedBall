@@ -2,6 +2,8 @@
 {
     public class CodeBlockInterface : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockInterface(ICodeBlock pParent, string pPre, string pName, string pPost) : base(pParent)
         {
             PreCodeLines.Add(new CodeLine(StringHelper.SpaceStrings(pPre, "interface", pName, pPost)));

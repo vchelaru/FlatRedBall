@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin"
+             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin" xmlns:views="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin.Views"
              mc:Ignorable="d" 
              
              d:Width="250">
@@ -55,32 +55,21 @@
                             </MenuItem>
                             
                         </WrapPanel>
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>
-                        <StackPanel Orientation="Horizontal" Margin="19,0,0,0" Visibility="{Binding AspectRatioValuesVisibility}">
-                            <TextBox Height="18" Width="40" Text="{Binding AspectRatioWidth}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
-                            <TextBlock Margin="3,0,3,0"><Run Text=":"/></TextBlock>
-                            <TextBox Height="18" Width="40" Text="{Binding AspectRatioHeight}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"/>
-                            <MenuItem Width="19" Height="22" Padding="0" Margin="3, 0, 0, 0">
-                                <MenuItem.Icon>
-                                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                        <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,-3,0,-3" Click="AspectRatioDropdownClick">
-                                            <Polygon HorizontalAlignment="Center" VerticalAlignment="Center" Points="0,0 10,0, 5,6" Stroke="Black" Fill="Black" />
-
-                                        </Button>
-                                    </Grid>
-                                </MenuItem.Icon>
-                                <MenuItem.ContextMenu>
-                                    <ContextMenu x:Name="AspectRatioDropDown">
-
-                                    </ContextMenu>
-                                </MenuItem.ContextMenu>
-                            </MenuItem>
-                        </StackPanel>
+                        <RadioButton IsChecked="{Binding IsVariableAspectRatio}">Variable Aspect Ratio</RadioButton>
+                        <RadioButton IsChecked="{Binding IsFixedAspectRatio}">Fixed Aspect Ratio</RadioButton>
+                        <RadioButton IsChecked="{Binding IsRangedAspectRatio}">Ranged Aspect Ratio</RadioButton>
+                        <!--<CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>-->
+                        <StackPanel Orientation="Horizontal">
+                            <views:AspectRatioSelectionView DataContext="{Binding AspectRatio1}"></views:AspectRatioSelectionView>
+                            <TextBlock Margin="5,0,5,0" Visibility="{Binding DashVisibility}">-</TextBlock>
+                            <views:AspectRatioSelectionView  DataContext="{Binding AspectRatio2}"></views:AspectRatioSelectionView>
+                            <!--<CheckBox>Aspect Ratio Range</CheckBox>-->
                             
+                        </StackPanel>
                         <!--This only shows if the user's aspect ratio doesn't match the entered resolution aspect ratio-->
                         <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding ShowAspectRatioMismatch}">
                             <StackPanel>
-                                <TextBlock TextWrapping="Wrap">The aspect ratio does not match the calculated resolution aspect ratio</TextBlock>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding WidthHeightSelectionText}"></TextBlock>
                                 <RadioButton IsChecked="{Binding UseWidthInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionWidthConstantMessage}"></RadioButton>
                                 <RadioButton IsChecked="{Binding UseHeightInternalCoordinates}" VerticalContentAlignment="Center" Content="{Binding KeepResolutionHeightConstantMessage}"></RadioButton>
                             </StackPanel>

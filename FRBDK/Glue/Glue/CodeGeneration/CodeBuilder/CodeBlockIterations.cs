@@ -2,6 +2,8 @@
 {
     public class CodeBlockWhile : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockWhile(ICodeBlock pParent, string pCondition) : base(pParent)
         {
             PreCodeLines.Add(new CodeLine("while (" + (string.IsNullOrEmpty(pCondition) ? "" : pCondition) + ")"));
@@ -12,6 +14,8 @@
 
     public class CodeBlockDoWhile : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockDoWhile(ICodeBlock pParent, string pCondition)
             : base(pParent)
         {
@@ -24,6 +28,8 @@
 
     public class CodeBlockFor : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockFor(ICodeBlock pParent, string pCondition)
             : base(pParent)
         {
@@ -35,6 +41,8 @@
 
     public class CodeBlockForEach : CodeBlockBase
     {
+        protected override bool IndentBody => true;
+
         public CodeBlockForEach(ICodeBlock pParent, string pCondition)
             : base(pParent)
         {

@@ -3,6 +3,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 {
     public class CodeBlockSwitch : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockSwitch(ICodeBlock parent, string condition) : base(parent)
         {
             PreCodeLines.Add(new CodeLine("switch(" + condition + ")"));
@@ -13,6 +14,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockCase : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockCase(ICodeBlock parent, string condition)
             : base(parent)
         {
@@ -23,6 +25,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockCaseNoBreak : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockCaseNoBreak(ICodeBlock parent, string condition)
             : base(parent)
         {
@@ -32,6 +35,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
 
     public class CodeBlockDefault : CodeBlockBase
     {
+        protected override bool IndentBody => true;
         public CodeBlockDefault(ICodeBlock parent)
             : base(parent)
         {

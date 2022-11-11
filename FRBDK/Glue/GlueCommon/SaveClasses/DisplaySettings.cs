@@ -21,6 +21,13 @@ namespace FlatRedBall.Glue.SaveClasses
         Height
     }
 
+    public enum AspectRatioBehavior
+    {
+        NoAspectRatio,
+        FixedAspectRatio,
+        RangedAspectRatio
+    }
+
     #endregion
 
     public class DisplaySettings
@@ -34,9 +41,25 @@ namespace FlatRedBall.Glue.SaveClasses
         public int ResolutionWidth { get; set; }
         public int ResolutionHeight { get; set; }
 
-        public bool FixedAspectRatio { get; set; }
+        [Obsolete("Use AspectRatioBehavior")]
+        public bool FixedAspectRatio
+        {
+            get => AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio;
+            set
+            {
+                if(value)
+                {
+                    AspectRatioBehavior = AspectRatioBehavior.FixedAspectRatio;
+                }
+            }
+        }
+        public AspectRatioBehavior AspectRatioBehavior { get; set; }
+
         public decimal AspectRatioWidth { get; set; }
         public decimal AspectRatioHeight { get; set; }
+
+        public decimal AspectRatioWidth2 { get; set; }
+        public decimal AspectRatioHeight2 { get; set; }
 
         public bool SupportLandscape { get; set; }
         public bool SupportPortrait { get; set; }
