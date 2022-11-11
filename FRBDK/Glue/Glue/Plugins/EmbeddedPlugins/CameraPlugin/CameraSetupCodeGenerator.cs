@@ -231,12 +231,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     if(Data.DominantInternalCoordinates == WidthOrHeight.Height)
                     {
                         Gum.Wireframe.GraphicalUiElement.CanvasHeight = Data.ResolutionHeight / (Data.ScaleGum / 100.0f);
-                        Gum.Wireframe.GraphicalUiElement.CanvasWidth = MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight * Data.EffectiveAspectRatio.Value);
+                        Gum.Wireframe.GraphicalUiElement.CanvasWidth = FlatRedBall.Math.MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight * Data.EffectiveAspectRatio.Value);
                     }
                     else
                     {
                         Gum.Wireframe.GraphicalUiElement.CanvasWidth = Data.ResolutionWidth / (Data.ScaleGum/100.0f);
-                        Gum.Wireframe.GraphicalUiElement.CanvasHeight = MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight / Data.EffectiveAspectRatio.Value);
+                        Gum.Wireframe.GraphicalUiElement.CanvasHeight = FlatRedBall.Math.MathFunctions.RoundToInt((decimal)Gum.Wireframe.GraphicalUiElement.CanvasHeight / Data.EffectiveAspectRatio.Value);
                     }                    
 
                     var resolutionAspectRatio = FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionWidth / (decimal)FlatRedBall.FlatRedBallServices.GraphicsOptions.ResolutionHeight;
