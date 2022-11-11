@@ -53,7 +53,7 @@ namespace GameCommunicationPlugin.CodeGeneration
                 codeBlock.Line("{");
                 codeBlock.Line("    if (packet.Packet.PacketType == \"OldDTO\")");
                 codeBlock.Line("    {");
-                codeBlock.Line("        var returnValue = await glueControlManager.ProcessMessage(packet.Packet.Payload);");
+                codeBlock.Line("        var returnValue = await glueControlManager?.ProcessMessage(packet.Packet.Payload);");
                 codeBlock.Line("");
                 codeBlock.Line("        gameConnectionManager.SendItem(new GlueCommunication.GameConnectionManager.Packet");
                 codeBlock.Line("        {");
