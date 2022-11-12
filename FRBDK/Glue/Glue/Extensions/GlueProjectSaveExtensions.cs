@@ -10,6 +10,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
+using Gum.DataTypes;
 using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
@@ -79,7 +80,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 try
                 {
-                    glueProjectSave.SaveToFile(fileName, tag);
+                    glueProjectSave.SaveMainAndElementsToFile(fileName, tag);
 
                     succeeded = true;
                     break;
@@ -101,7 +102,34 @@ namespace FlatRedBall.Glue.SaveClasses
             return succeeded;
         }
 
-        private static void SaveToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag)
+        public static void SaveGlujFile(this GlueProjectSave glueProjectSave, string tag, FilePath filePath)
+        {
+            if(glueProjectSave.FileVersion < (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+            {
+                throw new ArgumentException("The GlueProjectSave must have SeparateJsonFilesForElements version or greater");
+            }
+
+            GlueProjectSave clone = null;
+
+            GlueCommands.Self.TryMultipleTimes(() => clone = glueProjectSave.ConvertToPartial(tag));
+
+            PrepareWildcardsForSaving(filePath, clone);
+
+            clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+            clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
+
+            clone.Entities.Clear();
+            clone.Screens.Clear();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+            settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
+            var serialized = JsonConvert.SerializeObject(clone, Formatting.Indented, settings);
+            PluginManager.ReactToGlueJsonSaveAsync(serialized);
+            FileManager.SaveText(serialized, filePath.FullPath);
+        }
+
+        public static void SaveMainAndElementsToFile(this GlueProjectSave glueProjectSave, FilePath filePath, string tag)
         {
             GlueProjectSave clone = null;
             
@@ -109,7 +137,9 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                PrepareReferencesAndWildcardsForSaving(filePath, clone);
+                PrepareWildcardsForSaving(filePath, clone);
+                
+                SaveAndRemoveElements(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -131,7 +161,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void PrepareReferencesAndWildcardsForSaving(FilePath filePath, GlueProjectSave clone)
+        private static void PrepareWildcardsForSaving(FilePath filePath, GlueProjectSave clone)
         {
             clone.GlobalFiles.RemoveAll(item => item.IsCreatedByWildcard);
             clone.GlobalFiles.AddRange(clone.GlobalFileWildcards);
@@ -143,12 +173,14 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 // add wildcards here...
             }
-            foreach(var entity in clone.Entities)
+            foreach (var entity in clone.Entities)
             {
                 // add wildcards here...
             }
+        }
 
-
+        private static void SaveAndRemoveElements(FilePath filePath, GlueProjectSave clone)
+        {
             clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
             clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
 
@@ -182,8 +214,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
             clone.Entities.Clear();
             clone.Screens.Clear();
-
-
         }
 
         private static GlueProjectSave ConvertToPartial(this GlueProjectSave glueProjectSave, string tag)
@@ -328,7 +358,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void Save(this GlueProjectSave glueprojectsave, string tag, string fileName)
         {
-            glueprojectsave.SaveToFile(fileName, tag);
+            glueprojectsave.SaveMainAndElementsToFile(fileName, tag);
         }
 
         private static GlueProjectSave Clone(this GlueProjectSave obj)

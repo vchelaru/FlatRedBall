@@ -49,6 +49,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void SaveSettings();
 
+        void SaveGlujFile(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
+
+
         #endregion
 
         #region CustomClass

@@ -145,7 +145,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
 
-            }, "Generating camera setup code", TaskExecutionPreference.Fifo);
+            }, "Generating camera setup code", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         private static string GetCameraSetupCsContents()

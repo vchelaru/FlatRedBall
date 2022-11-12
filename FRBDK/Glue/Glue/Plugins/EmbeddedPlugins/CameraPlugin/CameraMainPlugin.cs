@@ -69,7 +69,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 {
                     glueProject.DisplaySettings = viewModel.ToDisplaySettings();
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    // This should only modify gluj, this will be faster.
+
+                    //GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveGlujFile(Managers.TaskExecutionPreference.AddOrMoveToEnd);
 
                     if(CameraSetupCodeGenerator.ShouldGenerateCodeWhenPropertyChanged(e.PropertyName))
                     {

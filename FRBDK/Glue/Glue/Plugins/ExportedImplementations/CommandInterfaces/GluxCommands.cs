@@ -148,7 +148,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #region Save Glux Methods
 
         /// <summary>
-        /// Saves the glux if already in a task. Adds a glulx save task if not.
+        /// Saves the glux/gluj (and all elements) if already in a task. Adds a save task if not.
         /// </summary>
         public void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
         {
@@ -195,6 +195,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 FileManager.SaveText(serialized, locationToSave);
 
             }, $"{nameof(SaveElementAsync)} {element}");
+        }
+
+        /// <summary>
+        /// Saves only the .gluj file and not the other elements. If the Glue project is using
+        /// an old version, then the entire .glux is saved.
+        /// </summary>
+        /// <returns>An awaitable task which completes once the task is finished</returns>
+        public async void SaveGlujFile(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
+        {
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+            {
+                await TaskManager.Self.AddAsync(
+                    () => GlueState.Self.CurrentGlueProject.SaveGlujFile("GLUE", GlueState.Self.GlueProjectFileName.FullPath),
+                    nameof(SaveGlujFile),
+                    taskExecutionPreference);
+            }
+            else
+            {
+                SaveGlux(taskExecutionPreference);
+            }
         }
 
         /// <summary>
