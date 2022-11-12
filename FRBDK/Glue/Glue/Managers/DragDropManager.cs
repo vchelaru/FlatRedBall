@@ -770,7 +770,7 @@ namespace FlatRedBall.Glue.Managers
             return newTreeNode;
         }
 
-        static void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
+        static async void MoveEntityToDirectory(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
             bool succeeded = true;
 
@@ -783,21 +783,16 @@ namespace FlatRedBall.Glue.Managers
             // modify data and files
             succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entitySave, newRelativeDirectory);
 
-            //// adjust the UI
-            // Update November 14, 2021 - RefreshTreeNodeFor should handle this
-            //if (succeeded)
-            //{
-            //    treeNodeMoving.Parent.Remove(treeNodeMoving);
-            //    targetNode.Add(treeNodeMoving);
-            //}
-
             // Generate and save
             if (succeeded)
             {
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entitySave);
 
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
-                CodeWriter.GenerateCode(entitySave);
+
+                //var intentionallyNotAwaiting = CodeWriter.GenerateCode(entitySave);
+                var intentionallyNotAwaiting = 
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
 
                 GluxCommands.Self.SaveGlux();
                 GlueCommands.Self.ProjectCommands.SaveProjects();

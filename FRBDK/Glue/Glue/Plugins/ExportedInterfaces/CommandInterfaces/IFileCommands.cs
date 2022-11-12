@@ -33,6 +33,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void ClearFileCache(FilePath absoluteName);
 
+        FilePath GetJsonFilePath(GlueElement element);
+
+
         string GetContentFolder(IElement element);
         FilePath GetGlobalContentFolder();
 

@@ -39,6 +39,7 @@ using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 //using Gum.DataTypes;
 using Newtonsoft.Json;
 using FlatRedBall.Entities;
+using System.Windows.Forms.Design;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -2512,6 +2513,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory)
         {
             bool succeeded = true;
+            var fileNameBeforeMove = GlueCommands.Self.FileCommands.GetJsonFilePath(entitySave);
 
             string targetDirectory = GlueState.Self.CurrentGlueProjectDirectory + newRelativeDirectory;
             string oldName = entitySave.Name;
@@ -2547,6 +2549,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     // Vic says: I'm tired.  For now just ignore the directory.  Fix this when it becomes a problem.
                     FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                }
+
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                {
+                    // delete the old file (put it in recycle bin)
+                    // From https://stackoverflow.com/questions/2342628/deleting-file-to-recycle-bin-on-windows-x64-in-c-sharp
+
+
+                    if(fileNameBeforeMove?.Exists()== true)
+                    {
+                        try
+                        {
+                            Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
+                                fileNameBeforeMove.FullPath, 
+                                Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                                Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+
+                        }
+                        catch(Exception e)
+                        {
+                            GlueCommands.Self.PrintError(e.ToString());
+                        }
+                    }
                 }
 
                 List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldName);

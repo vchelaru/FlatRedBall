@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.IO;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -219,7 +220,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return GlueState.ContentDirectory + rfs.Name;
         }
 
-        public FilePath GetFilePath(ReferencedFileSave rfs)
+        public FilePath GetJsonFilePath(GlueElement element)
+        {
+            var glueDirectory = GlueState.CurrentGlueProjectDirectory;
+
+            if (element is ScreenSave screenSave)
+            {
+                return new FilePath(glueDirectory + screenSave.Name + "." + GlueProjectSave.ScreenExtension);
+            }
+            else if (element is EntitySave entitySave)
+            {
+                return new FilePath(glueDirectory + entitySave.Name + "." + GlueProjectSave.EntityExtension);
+            }
+            return null;
+        }
+            public FilePath GetFilePath(ReferencedFileSave rfs)
         {
             return GlueState.ContentDirectory + rfs.Name;
         }
