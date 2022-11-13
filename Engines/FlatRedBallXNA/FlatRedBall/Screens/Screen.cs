@@ -15,6 +15,7 @@ using FlatRedBall.Input;
 using FlatRedBall.IO;
 using System.Collections;
 using System.Linq;
+using System.Diagnostics;
 
 namespace FlatRedBall.Screens
 {
@@ -167,8 +168,8 @@ namespace FlatRedBall.Screens
         {
             get { return mIsActivityFinished; }
             set 
-			{ 
-				mIsActivityFinished = value; 
+			{
+                mIsActivityFinished = value; 
 			}
 
         }
@@ -191,7 +192,6 @@ namespace FlatRedBall.Screens
             set { mManageSpriteGrids = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The name of the Screen-inheriting to load next. This can be fully qualified "Namespace.Screens.ScreenName" or 
         /// just the screen name. If just a screen name is specified then current screen's namespace will be prepended.
@@ -202,7 +202,6 @@ namespace FlatRedBall.Screens
         /// set to true.  Therefore, this must always be set to some value before
         /// or in the same frame as when IsActivityFinished is set to true.
         /// </remarks>
-        #endregion
         public string NextScreen
         {
             get { return mNextScreen; }
@@ -254,7 +253,7 @@ namespace FlatRedBall.Screens
 
             StateManager.Current.Activating += ActivatingAction;
             StateManager.Current.Deactivating += DeactivatingAction;
-			
+
 			if (ScreenManager.ShouldActivateScreen)
             {
                 Activating();

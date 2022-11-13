@@ -444,6 +444,9 @@ namespace CompilerPlugin.Managers
                 startInfo.FileName = exeLocation;
                 startInfo.WorkingDirectory = FileManager.GetDirectory(exeLocation);
                 startInfo.Arguments = runArguments;
+
+                OutputReceived?.Invoke($"{exeLocation} WorkingDirectory:{startInfo.WorkingDirectory} Args:{runArguments}");
+
                 var process = System.Diagnostics.Process.Start(startInfo);
 
                 // December 30, 2021

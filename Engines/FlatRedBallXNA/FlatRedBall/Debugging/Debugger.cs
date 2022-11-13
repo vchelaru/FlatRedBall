@@ -58,6 +58,7 @@ namespace FlatRedBall.Debugging
         static long mLastMemoryUse = -1;
 #endif
 
+        public static StringBuilder LogStringBuilder = new StringBuilder();
 
         static double mMemoryUpdateFrequency = .25;
         #endregion
@@ -560,6 +561,10 @@ namespace FlatRedBall.Debugging
             return stringBuilder;
         }
 
+        public static void Log(string message)
+        {
+            LogStringBuilder.AppendLine(message);
+        }
 
         public static void Update()
         {
