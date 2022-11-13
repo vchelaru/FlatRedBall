@@ -696,7 +696,16 @@ namespace GumPlugin
             var behavior = FileAdditionBehavior.EmbedCodeFiles;
             if (gumRfs != null)
             {
-                behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
+                // At some point Glue no longer shows this UI. Therefore, new Gum projects cannot have this value modified
+                // If we are on a newer version, then don't embed files:
+                if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumGueHasGetAnimation)
+                {
+                    behavior = FileAdditionBehavior.IncludeNoFiles;
+                }
+                else
+                {
+                    behavior = (FileAdditionBehavior)gumRfs.Properties.GetValue<int>(nameof(FileAdditionBehavior));
+                }
             }
 
             return behavior;

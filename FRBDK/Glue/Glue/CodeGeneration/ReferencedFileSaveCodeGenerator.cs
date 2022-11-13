@@ -1644,14 +1644,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                 //                curBlock.If("registerUnload && ScreenManager.CurrentScreen != null && FlatRedBall.FlatRedBallServices.IsThreadPrimary()" +
                 // Update:  If this requires primary thread loading then we'll actually be doing
                 // the "async" loading on the primary thread, so we shouldn't throw an exception.
-                curBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
+                // Update November 13, 2022 - What is the async loading? MonoGame requires primary thread
+                // loading so all versions of FRB now use this. Therefore, we can't have this #if check
+                //curBlock.Line("#if !REQUIRES_PRIMARY_THREAD_LOADING");
 
                 curBlock.If("FlatRedBall.Screens.ScreenManager.CurrentScreen != null && FlatRedBall.FlatRedBallServices.IsThreadPrimary()" +
                     " && FlatRedBall.Screens.ScreenManager.CurrentScreen.ActivityCallCount > 0 && !FlatRedBall.Screens.ScreenManager.CurrentScreen.IsActivityFinished")
                             .Line("throw new System.InvalidOperationException(\"Content is being loaded after the current Screen is initialized.  " + 
                             "This exception is being thrown because of a setting in Glue.\");")
                             .End();
-                curBlock.Line("#endif");
+                //curBlock.Line("#endif");
             }
         }
 
