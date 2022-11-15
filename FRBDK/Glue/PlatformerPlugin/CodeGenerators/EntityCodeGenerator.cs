@@ -69,12 +69,19 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             codeBlock.Line("/// </summary>");
             codeBlock.Line("float currentSlope = 0;");
 
+            codeBlock.Line("bool mHasDoubleJumped = false;");
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Whether the character is in the air and has double-jumped.");
             codeBlock.Line("/// This is used to determine which movement variables are active,");
             codeBlock.Line("/// effectively preventing multiple double-jumps.");
             codeBlock.Line("/// </summary>");
-            codeBlock.Line("bool mHasDoubleJumped = false;");
+            codeBlock.Line("public bool HasDoubleJumped");
+            codeBlock.Line("{");
+            codeBlock.Line("    get => mHasDoubleJumped;");
+            codeBlock.Line("    set { mHasDoubleJumped = value; DetermineMovementValues(); }");
+            codeBlock.Line("}");
+
+
 
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// The time when the jump button was last pushed. This is used to");
@@ -696,8 +703,11 @@ namespace FlatRedBall.PlatformerPlugin.Generators
             {
                 CurrentMovementType = MovementType.AfterDoubleJump;
             }
-
-
+            // User may have set HasDoubleJumped to false
+            else if (CurrentMovementType == MovementType.AfterDoubleJump && !mHasDoubleJumped)
+            {
+                CurrentMovementType = MovementType.Air;
+            }
 
         }
 

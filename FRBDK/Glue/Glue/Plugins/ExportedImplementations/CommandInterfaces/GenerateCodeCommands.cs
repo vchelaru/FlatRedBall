@@ -92,10 +92,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        /// <summary>
+        /// Generates global content code in a task, or runs immediately if already in a task.
+        /// </summary>
         public void GenerateGlobalContentCode()
         {
             TaskManager.Self.AddOrRunIfTasked(GlobalContentCodeGenerator.UpdateLoadGlobalContentCode, nameof(GenerateGlobalContentCode), TaskExecutionPreference.AddOrMoveToEnd);
         }
+
 
         public void GenerateGlobalContentCodeTask()
         {

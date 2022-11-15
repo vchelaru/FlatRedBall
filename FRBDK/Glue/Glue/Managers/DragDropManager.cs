@@ -1014,7 +1014,7 @@ namespace FlatRedBall.Glue.Managers
 
                 if (targetNode.IsGlobalContentContainerNode())
                 {
-                    if (targetNode.GetContainingElementTreeNode() == null)
+                    if (treeNodeMoving.GetContainingElementTreeNode() == null)
                     {
                         if(referencedFileSave.IsCreatedByWildcard)
                         {
@@ -1228,7 +1228,8 @@ namespace FlatRedBall.Glue.Managers
                     bool useFullPathAsName = true;
                     GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
 
-                    GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                    //GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                     GluxCommands.Self.SaveGlux();
