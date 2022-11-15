@@ -76,6 +76,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// in the name of the newly-created file.</param>
         /// <returns>The new ReferencedFileSave.</returns>
         ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
+
+        /// <summary>
+        /// Adds an entry to GlobalContent for a ReferencedFileSave which is already referenced in a different element.
+        /// </summary>
+        /// <param name="referencedFileSave">The existing RFS already referenced by an element</param>
+        /// <param name="includeDirectoryInGlobalContentInName">Whether to include directory in the name of the new RFS.</param>
+        /// <returns>Awaitable task which has the new RFS as its Result.</returns>
+        Task<ReferencedFileSave> AddExistingReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool includeDirectoryInGlobalContentInName);
+
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 

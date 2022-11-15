@@ -498,6 +498,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return referencedFileSave;
         }
 
+        public async Task<ReferencedFileSave> AddExistingReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool includeDirectoryInGlobalContentInName)
+        {
+
+            ReferencedFileSave newRfs = null;
+
+            await TaskManager.Self.AddAsync(() =>
+            {
+                newRfs = AddReferencedFileToGlobalContent(referencedFileSave.Name, includeDirectoryInGlobalContentInName);
+
+                // copy the properties from the old RFS to the new one:
+                // Nov 15, 2022
+                // Not sure if all properties should be used or if we should
+                // explicitly assign properties. For now I'm going to address
+                // the issues I'm aware of and this can be added to later. The
+                // main issue I'm solving is that Gum screens added to global content
+                // are not using the correct type when being loaded:
+                newRfs.RuntimeType = referencedFileSave.RuntimeType;
+            }, nameof(AddExistingReferencedFileToGlobalContent));
+
+            return newRfs;
+        }
+
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
             AddReferencedFileToGlobalContent(referencedFileSave, generateAndSave: true, updateUi: true);
@@ -505,10 +527,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool generateAndSave, bool updateUi)
         {
-            if (TaskManager.Self.IsInTask() == false)
-            {
-                int m = 3;
-            }
+            TaskManager.Self.WarnIfNotInTask();
             var project = GlueState.Self.CurrentGlueProject;
             project.GlobalFiles.Add(referencedFileSave);
             project.GlobalContentHasChanged = true;

@@ -1028,7 +1028,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        DragAddFileToGlobalContent(referencedFileSave);
+                        await DragAddFileToGlobalContent(referencedFileSave);
                         // This means the user wants to add the file
                         // to global content.
                     }
@@ -1167,7 +1167,7 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        private static void DragAddFileToGlobalContent(ReferencedFileSave referencedFileSave)
+        private static async Task DragAddFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
             if (referencedFileSave.GetContainerType() == ContainerType.None)
             {
@@ -1226,10 +1226,12 @@ namespace FlatRedBall.Glue.Managers
                     }
 
                     bool useFullPathAsName = true;
-                    GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
+
+                    // Use the AddExisting version so the properties get copied
+                    //GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(referencedFileSave.Name, useFullPathAsName);
+                    await GlueCommands.Self.GluxCommands.AddExistingReferencedFileToGlobalContent(referencedFileSave, useFullPathAsName);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                    //GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                     GluxCommands.Self.SaveGlux();

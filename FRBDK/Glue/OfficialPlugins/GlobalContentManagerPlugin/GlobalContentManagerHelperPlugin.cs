@@ -71,7 +71,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             ToolStripMenuItem itemToAddTo = GetItem("Content");
 
             itemToAddTo.DropDownItems.Add(mMenuItem);
-            mMenuItem.Click += new EventHandler(mMenuItem_Click);
+            mMenuItem.Click += mMenuItem_Click;
         }
 
         void mMenuItem_Click(object sender, EventArgs e)

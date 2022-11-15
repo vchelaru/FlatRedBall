@@ -106,7 +106,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
                             if (!alreadyExists)
                             {
-                                GlueCommands.GluxCommands.AddReferencedFileToGlobalContent(rfs.Name, true);
+                                //GlueCommands.GluxCommands.AddReferencedFileToGlobalContent(rfs.Name, true);
+                                GlueCommands.GluxCommands.AddExistingReferencedFileToGlobalContent(rfs, true);
                             }
                         }
                     }
