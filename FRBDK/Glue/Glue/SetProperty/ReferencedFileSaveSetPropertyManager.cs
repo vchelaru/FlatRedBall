@@ -214,7 +214,9 @@ namespace FlatRedBall.Glue.SetVariable
 
                     if (container != null)
                     {
-                        CodeWriter.GenerateCode(container);
+                        //CodeWriter.GenerateCode(container);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(container);
+                        //CodeWriter.GenerateCode(container);
                     }
                     else
                     {

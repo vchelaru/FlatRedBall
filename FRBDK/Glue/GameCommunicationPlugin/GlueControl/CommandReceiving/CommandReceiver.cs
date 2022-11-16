@@ -202,7 +202,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         private async Task HandleSetVariable(SetVariableDto setVariableDto, bool regenerateAndSave = true, bool sendBackToGame = true)
         {
 
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 var type = string.Join('\\', setVariableDto.InstanceOwner.Split('.').Skip(1));
 
@@ -249,7 +249,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                         GlueCommands.Self.GluxCommands.SaveGlux();
                         GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
+                        await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(nosParent);
                     }
 
                 }
