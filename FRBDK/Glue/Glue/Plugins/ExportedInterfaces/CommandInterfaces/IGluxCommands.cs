@@ -49,6 +49,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void SaveSettings();
 
+        /// <summary>
+        /// If the Glue version uses separate .gluj files, then this operation saves only
+        /// the .gluj file and not all of the individual elements. This can be called when 
+        /// a change is made only on the main .gluj file since it is much faster than saving
+        /// all other files.
+        /// </summary>
+        /// <param name="taskExecutionPreference">When to execute the gluj saving task.</param>
         void SaveGlujFile(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap);
 
 

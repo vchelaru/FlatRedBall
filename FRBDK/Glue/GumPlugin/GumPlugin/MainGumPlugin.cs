@@ -332,6 +332,7 @@ namespace GumPlugin
             AddErrorReporter(error);
 
             viewModel = new GumViewModel();
+            GumPluginCommands.Self.GumViewModel = viewModel;
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
         }
 
@@ -341,38 +342,55 @@ namespace GumPlugin
 
             this.AdjustDisplayedEntity += GumCollidableManager.HandleDisplayedEntity;
 
+            #region File-related
+
             this.CanFileReferenceContent += FileReferenceTracker.CanTrackDependenciesOn;
 
             this.FillWithReferencedFiles += FileReferenceTracker.Self.HandleFillWithReferencedFiles;
 
             this.ReactToFileChange += FileChangeManager.Self.HandleFileChange;
 
+            this.ReactToNewFileHandler += HandleNewFile;
+
+            this.ReactToFileRemoved += HandleFileRemoved;
+
+            #endregion
+
+            #region Glux-related
+
             this.ReactToLoadedGlux += HandleGluxLoad;
 
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
 
-            this.ReactToNewFileHandler += HandleNewFile;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
+
+            #endregion
+
+            #region Tree node/selection
 
             this.ReactToTreeViewRightClickHandler += RightClickManager.Self.HandleTreeViewRightClick;
 
-            this.ReactToUnloadedGlux += HandleUnloadedGlux;
-
-            this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
-
             this.ReactToItemSelectHandler += HandleItemSelected;
 
+            this.TryHandleTreeNodeDoubleClicked += HandleTreeNodeDoubleClicked;
+
+            #endregion
+
+            #region Add/Remove Glue Screen
+
             this.NewScreenCreated += HandleNewScreen;
+
+
             this.ReactToScreenRemoved += HandleScreenRemoved;
+            #endregion
+
+            this.TryAddContainedObjects += ContainedObjectsManager.Self.HandleTryAddContainedObjects;
 
             this.GetEventSignatureArgs += HandleGetEventSignatureArgs;
 
             this.GetUsedTypes = HandleGetUsedTypes;
 
             this.GetAvailableAssetTypes = HandleGetAvailableAssetTypes;
-
-            this.ReactToFileRemoved += HandleFileRemoved;
-
-            this.TryHandleTreeNodeDoubleClicked += HandleTreeNodeDoubleClicked;
 
             this.ResolutionChanged += HandleResolutionChanged;
         }
@@ -646,17 +664,38 @@ namespace GumPlugin
                 }
                 else
                 {
-                    // in global content, so generate the code files
+                    GumProjectManager.Self.ReloadGumProject();
+
+                    // in global content, so proceed with logic
+
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
-                    var behavior = GetBehavior(gumRfs);
+
+                    // Gum RFS should be first so that it loads before any global content Gum screens:
+                    if(gumRfs != null)
+                    {
+                        var project = GlueState.Self.CurrentGlueProject;
+                        var globalFiles = project.GlobalFiles;
+
+                        TaskManager.Self.AddAsync(() =>
+                        {
+                            if (globalFiles[0] != gumRfs)
+                            {
+                                globalFiles.Remove(gumRfs);
+                                globalFiles.Insert(0, gumRfs);
+                            }
+                        }, "Reordering .gumx");
+                    }
 
                     // only do this if the property reactor is reacting to changes - if it's not, then we're still
                     // setting up the new file:
                     if (this.propertiesManager.IsReactingToProperyChanges)
                     {
+                        var behavior = GetBehavior(gumRfs);
                         EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
                         GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
+
+                    GumProjectManager.SetGumxReferencedFileSaveDefaults(gumRfs);
                 }
 
             }
@@ -809,6 +848,7 @@ namespace GumPlugin
         private void CreateGumControl()
         {
             control = new GumControl();
+            GumPluginCommands.Self.GumControl = control;
             control.DataContext = viewModel;
 
             control.RebuildFontsClicked += async () => await HandleRebuildFonts();
@@ -899,15 +939,7 @@ namespace GumPlugin
 
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
 
-            if (AppState.Self.GumProjectSave != null)
-            {
-                var rfs = GumProjectManager.Self.GetRfsForGumProject();
-                var wasUpdating = viewModel.IsUpdatingFromGlueObject;
-                viewModel.IsUpdatingFromGlueObject = true;
-                viewModel.SetFrom(AppState.Self.GumProjectSave, rfs);
-                viewModel.IsUpdatingFromGlueObject = wasUpdating;
-
-            }
+            GumPluginCommands.Self.RefreshGumViewModel();
 
             StateCodeGenerator.Self.RefreshVariableNamesToSkipBasedOnGlueVersion();
         }

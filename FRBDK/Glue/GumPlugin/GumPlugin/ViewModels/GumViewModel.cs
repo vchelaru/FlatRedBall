@@ -24,7 +24,7 @@ namespace GumPlugin.ViewModels
     #endregion
 
     // This got converted to a PropertyListContainerViewModel i nMarch 2021. Properties here could get updated 
-    class GumViewModel : PropertyListContainerViewModel
+    public class GumViewModel : PropertyListContainerViewModel
     {
         GumProjectSave backingGumProject;
         ReferencedFileSave backingRfs;

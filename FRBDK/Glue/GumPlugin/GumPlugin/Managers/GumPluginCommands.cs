@@ -11,11 +11,15 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.IO;
 using Gum.Managers;
 using Polenter.Serialization;
+using GumPlugin.ViewModels;
+using GumPlugin.Controls;
 
 namespace GumPlugin.Managers
 {
     public class GumPluginCommands : Singleton<GumPluginCommands>
     {
+        public GumViewModel GumViewModel { get; set; }
+        public GumControl GumControl { get; set; }
         #region File Commands
 
         public async Task SaveGumxAsync(bool saveAllElements = false)
@@ -252,6 +256,27 @@ namespace GumPlugin.Managers
         }
 
         #endregion
+
+        public void RefreshGumViewModel()
+        {
+
+            if (AppState.Self.GumProjectSave != null)
+            {
+                var rfs = GumProjectManager.Self.GetRfsForGumProject();
+                var wasUpdating = GumViewModel.IsUpdatingFromGlueObject;
+                GumViewModel.IsUpdatingFromGlueObject = true;
+                GumViewModel.SetFrom(AppState.Self.GumProjectSave, rfs);
+                GumViewModel.IsUpdatingFromGlueObject = wasUpdating;
+
+                // This doesn't update. Not sure why....
+                if(GumControl != null)
+                {
+                    GumControl.DataContext = null;
+                    GumControl.DataContext = GumViewModel;
+                }
+
+            }
+        }
 
         internal void SaveStandardElement(StandardElementSave gumStandardElement)
         {

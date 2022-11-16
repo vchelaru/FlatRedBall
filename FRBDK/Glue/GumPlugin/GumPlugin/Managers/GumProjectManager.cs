@@ -100,9 +100,34 @@ namespace GumPlugin.Managers
                 var rfs = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(
                     relativeFile,
                     false);
+                SetGumxReferencedFileSaveDefaults(rfs);
 
+                added = !userCancelled;
+
+                if (added)
+                {
+                    GlueState.Self.CurrentReferencedFileSave = rfs;
+                    ReloadGumProject();
+
+                    GumPluginCommands.Self.UpdateGumToGlueResolution();
+
+                }
+            }
+
+            return added;
+        }
+
+        /// <summary>
+        /// Modifies the properties on the Gumx ReferencedFileSave to have the common
+        /// defaults needed for most games.
+        /// </summary>
+        /// <param name="rfs">The gum project (.gumx) ReferencedFileSave.</param>
+        public static void SetGumxReferencedFileSaveDefaults(ReferencedFileSave rfs)
+        {
+            TaskManager.Self.AddAsync(() =>
+            {
                 rfs.Properties.SetValue(
-                    nameof(FileAdditionBehavior), 
+                    nameof(FileAdditionBehavior),
                     (int)FileAdditionBehavior.IncludeNoFiles);
 
 
@@ -123,19 +148,11 @@ namespace GumPlugin.Managers
                     nameof(GumViewModel.IsMatchGameResolutionInGumChecked),
                     true);
 
-                added = !userCancelled;
+                GlueCommands.Self.DoOnUiThread(() => GumPluginCommands.Self.RefreshGumViewModel());
 
-                if(added)
-                {
-                    GlueState.Self.CurrentReferencedFileSave = rfs;
-                    ReloadGumProject();
+                GlueCommands.Self.GluxCommands.SaveGlujFile(TaskExecutionPreference.AddOrMoveToEnd);
 
-                    GumPluginCommands.Self.UpdateGumToGlueResolution();
-
-                }
-            }
-
-            return added;
+            }, nameof(SetGumxReferencedFileSaveDefaults));
         }
     }
 }
