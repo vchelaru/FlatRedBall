@@ -546,7 +546,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (generateAndSave)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
             }
 

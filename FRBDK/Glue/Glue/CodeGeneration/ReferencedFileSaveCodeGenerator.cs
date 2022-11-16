@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 try
                 {
-                    GlobalContentFilesDictionary.Add(rfs.Name, rfs);
+                    GlobalContentFilesDictionary[rfs.Name] = rfs;
                 }
                 catch(Exception exception)
                 {

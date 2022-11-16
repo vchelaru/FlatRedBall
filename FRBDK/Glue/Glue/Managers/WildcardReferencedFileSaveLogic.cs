@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Managers
             {
                 var filePath = GetAbsoluteFilePathFor(contentFolder, file);
 
-                rfsDictionary.Add(filePath, file);
+                rfsDictionary[filePath] = file;
             }
             foreach (var screen in mainGlueProjectSave.Screens)
             {

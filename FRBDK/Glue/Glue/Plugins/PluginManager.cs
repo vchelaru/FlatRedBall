@@ -1746,7 +1746,7 @@ namespace FlatRedBall.Glue.Plugins
 
 
 
-        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null)
+        static void CallMethodOnPlugin(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null, bool doOnUiThread = true)
         {
             var instances = mInstances.ToArray();
             foreach (PluginManager manager in instances)
@@ -1770,7 +1770,7 @@ namespace FlatRedBall.Glue.Plugins
                         PluginCommand(() =>
                             {
                                 methodToCall(plugin);
-                            },container, "Failed in " + methodName);
+                            },container, "Failed in " + methodName, doOnUiThread);
                     }
                 }
             }
@@ -1870,11 +1870,16 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
-        private static void PluginCommand(Action action, PluginContainer container, string message)
+        private static void PluginCommand(Action action, PluginContainer container, string message, bool doOnUiThread = true)
         {
             if (HandleExceptions)
             {
-                if (mMenuStrip.IsDisposed)
+                // November 16, 2022
+                // Before today, PluginCommand
+                // always ran on a UI thread (if
+                // possible). However, some commands
+                // do not require UI thread, and they can 
+                if (mMenuStrip.IsDisposed || !doOnUiThread)
                 {
                     try
                     {
@@ -1895,7 +1900,6 @@ namespace FlatRedBall.Glue.Plugins
                 }
                 else
                 {
-                        // Do this on a UI thread
                     mMenuStrip.Invoke((MethodInvoker)delegate
                     {
                         try
@@ -1977,7 +1981,9 @@ namespace FlatRedBall.Glue.Plugins
 
             CallMethodOnPlugin(
                 plugin => toReturn = plugin.GetIfUsesContentPipeline(fileAbsolute),
-                plugin => plugin.GetIfUsesContentPipeline != null);
+                plugin => plugin.GetIfUsesContentPipeline != null,
+                // no need for UI thread on this call:
+                doOnUiThread:false);
 
             return toReturn;
         }
