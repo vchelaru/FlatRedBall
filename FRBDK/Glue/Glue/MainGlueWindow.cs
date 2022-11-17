@@ -590,11 +590,6 @@ namespace Glue
             }
         }
 
-        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-
-        }
-
         static bool WantsToExit = false;
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {

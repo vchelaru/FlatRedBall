@@ -74,7 +74,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             mPropertyGrid = propertyGrid;
             mTileMapInfoWindow = tileMapInfoWindow;
-            mPropertyGrid.PropertyValueChanged += new PropertyValueChangedEventHandler(HandleChangedProperty);
+            mPropertyGrid.PropertyValueChanged += HandleChangedProperty;
 
             tileMapInfoWindow.ValueChanged += HandleChangedPropertyEventHandler;
         }
@@ -84,14 +84,16 @@ namespace FlatRedBall.AnimationEditorForms
             WireframeManager.Self.RefreshAll();
             
             // The name could have changed, so let's refresh the node if the selected
-            // item is an AnimationChain:
-            if (SelectedState.Self.SelectedFrame == null)
+            // item is an AnimationChain (not a frame):
+            if (SelectedState.Self.SelectedChain != null && SelectedState.Self.SelectedFrame == null)
             {
                 AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
             }
             // actually even in this case the name of a shape could have changed
-            else if(SelectedState.Self.SelectedAxisAlignedRectangle != null)
+            else if(SelectedState.Self.SelectedAxisAlignedRectangle != null ||
+                SelectedState.Self.SelectedCircle != null)
             {
+                // Update the entire frame, which updates the shape:
                 AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedFrame);
             }
 
