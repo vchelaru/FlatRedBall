@@ -247,6 +247,8 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        public object SelectedShape => (object)SelectedRectangle ?? SelectedCircle;
+
         public AxisAlignedRectangleSave SelectedRectangle
         {
             get => SelectedNode?.Tag as AxisAlignedRectangleSave;

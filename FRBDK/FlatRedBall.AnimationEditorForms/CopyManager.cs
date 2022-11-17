@@ -14,6 +14,8 @@ namespace FlatRedBall.AnimationEditorForms
 {
     public class CopyManager
     {
+        #region Fields/Properties
+
         static CopyManager mSelf;
         object mCopiedObject;
 
@@ -38,12 +40,22 @@ namespace FlatRedBall.AnimationEditorForms
             }
         }
 
+        #endregion
 
         internal void HandleCopy()
         {
-            if (SelectedState.Self.SelectedRectangle != null)
+            // XML Serialization requires a typed call, so we can't pass an object
+            //if (SelectedState.Self.SelectedShape != null)
+            //{
+            //    PutInClipboard(SelectedState.Self.SelectedShape);
+            //}
+            if (SelectedState.Self.SelectedAxisAlignedRectangle != null)
             {
-                PutInClipboard(SelectedState.Self.SelectedRectangle);
+                PutInClipboard(SelectedState.Self.SelectedAxisAlignedRectangle);
+            }
+            else if (SelectedState.Self.SelectedCircle != null)
+            {
+                PutInClipboard(SelectedState.Self.SelectedCircle);
             }
             else if (SelectedState.Self.SelectedFrame != null)
             {
@@ -83,12 +95,13 @@ namespace FlatRedBall.AnimationEditorForms
             AnimationFrameSave pastedFrame = null;
             AnimationChainSave pastedChain = null;
             AxisAlignedRectangleSave pastedRectangle = null;
-            if(text?.Contains(":") == true)
+            CircleSave pastedCircle = null;
+            if (text?.Contains(":") == true)
             {
-                var before = text.Substring(0, text.IndexOf(":"));
+                var typeName = text.Substring(0, text.IndexOf(":"));
                 var after = text.Substring(text.IndexOf(":") + 1);
 
-                if(before == "AnimationFrameSave")
+                if(typeName == nameof(AnimationFrameSave))
                 {
                     try
                     {
@@ -96,7 +109,7 @@ namespace FlatRedBall.AnimationEditorForms
                     }
                     catch { } // no biggie
                 }
-                else if(before == "AnimationChainSave")
+                else if(typeName == nameof(AnimationChainSave))
                 {
                     try
                     {
@@ -104,12 +117,30 @@ namespace FlatRedBall.AnimationEditorForms
                     }
                     catch { } // no biggie
                 }
-                else if(before == nameof(AxisAlignedRectangleSave))
+                else if(typeName == nameof(AxisAlignedRectangleSave))
                 {
                     try { pastedRectangle = FileManager.XmlDeserializeFromString<AxisAlignedRectangleSave>(after); }
                     catch { }
                 }
+                else if(typeName == nameof(CircleSave))
+                {
+                    try { pastedCircle = FileManager.XmlDeserializeFromString<CircleSave>(after); }
+                    catch { }
+                }
             }
+
+            string GetUniqueShapeName(string originalName, AnimationFrameSave frame)
+            {
+                var rectangleNames = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                                .Select(item => item.Name);
+                var circleNames = frame.ShapeCollectionSave.CircleSaves
+                                .Select(item => item.Name);
+
+                var allNames = rectangleNames.Concat(circleNames).ToList();
+
+                return StringFunctions.MakeStringUnique(originalName,allNames);
+            }
+
             if (ProjectManager.Self.AnimationChainListSave != null)
             {
                 if(pastedRectangle != null && SelectedState.Self.SelectedFrame != null)
@@ -121,10 +152,7 @@ namespace FlatRedBall.AnimationEditorForms
                         var rectangleToPaste = FileManager.CloneObject(pastedRectangle);
 
                         // do this before adding it to the list:
-                        rectangleToPaste.Name = StringFunctions.MakeStringUnique(originalName,
-                            frame.ShapeCollectionSave.AxisAlignedRectangleSaves
-                                .Select(item => item.Name).ToList()
-                            );
+                        rectangleToPaste.Name = GetUniqueShapeName(originalName, frame);
 
                         frame.ShapeCollectionSave.AxisAlignedRectangleSaves.Add(rectangleToPaste);
                         newRectangles.Add(rectangleToPaste);
@@ -132,6 +160,25 @@ namespace FlatRedBall.AnimationEditorForms
                     }
                     AppCommands.Self.RefreshAnimationFrameDisplay();
                     SelectedState.Self.SelectedRectangles = newRectangles;
+                    AppCommands.Self.SaveCurrentAnimationChainList();
+                }
+                else if(pastedCircle != null && SelectedState.Self.SelectedFrame != null)
+                {
+                    var originalName = pastedCircle.Name;
+                    var newCircles = new List<CircleSave>();
+                    foreach(var frame in SelectedState.Self.SelectedFrames)
+                    {
+                        var circleToPaste = FileManager.CloneObject(pastedCircle);
+
+                        // do this before adding it to the list:
+                        circleToPaste.Name = GetUniqueShapeName(originalName, frame);
+
+                        frame.ShapeCollectionSave.CircleSaves.Add(circleToPaste);
+                        newCircles.Add(circleToPaste);
+                        AppCommands.Self.RefreshTreeNode(frame);
+                    }
+                    AppCommands.Self.RefreshAnimationFrameDisplay();
+                    SelectedState.Self.SelectedCircles = newCircles;
                     AppCommands.Self.SaveCurrentAnimationChainList();
                 }
                 else if (pastedFrame != null && SelectedState.Self.SelectedChain != null)
