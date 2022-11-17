@@ -20,6 +20,8 @@ The fastest way to get help is to ask in our discord chat: https://discord.gg/tG
 
 If you prefer, you can also file issues on Github: https://github.com/vchelaru/FlatRedBall/issues
 
+Of course, FlatRedBall has the best documentation: https://flatredball.com/documentation/
+
 ## FlatRedBall Games
 
 FlatRedBall has been used to build dozens of commercial games. Here are some of our favorites:
