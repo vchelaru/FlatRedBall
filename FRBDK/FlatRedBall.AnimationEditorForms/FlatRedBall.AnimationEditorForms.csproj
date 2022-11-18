@@ -196,6 +196,7 @@
     <Compile Include="Plugins\PluginBase.cs" />
     <Compile Include="Preview\CameraController.cs" />
     <Compile Include="Preview\PreviewManager.cs" />
+    <Compile Include="Preview\ShapePreviewManager.cs" />
     <Compile Include="PropertyGrids\AnimationChainDisplayer.cs" />
     <Compile Include="PropertyGrids\AnimationFrameDisplayer.cs" />
     <Compile Include="Controls\TileMapInfoWindow.cs">

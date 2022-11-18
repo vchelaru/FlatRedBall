@@ -30,6 +30,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         CameraController cameraController;
 
+        ShapePreviewManager shapePreviewManager;
         SystemManagers mManagers;
 
         GraphicsDeviceControl mControl;
@@ -134,7 +135,6 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mPreviewControls.OnionSkinVisibleChange += new EventHandler(HandleOnionSkinChange);
             mPreviewControls.SpriteAlignmentChange += new EventHandler(HandleSpriteAlignmentChange);
             mControl = graphicsDeviceControl;
-            mControl.XnaDraw += new Action(HandleXnaDraw);
             mControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(HandleMouseWheel);
             HandleXnaInitialize();
 
@@ -237,6 +237,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             mManagers.SpriteManager.Add(mSprite);
 
             mControl.Resize += new EventHandler(HandleResize);
+            mControl.XnaDraw += new Action(HandleXnaDraw);
             mControl.XnaUpdate += new Action(HandleXnaUpdate);
             MoveCameraToProperLocation();
 
@@ -260,6 +261,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
             cameraController = new CameraController(Camera, mManagers, mCursor, mKeyboard, mControl, mTopRuler, mLeftRuler);
 
+            shapePreviewManager = new ShapePreviewManager(mCursor, mKeyboard, mManagers);
         }
 
         void HandlePanning()
@@ -301,6 +303,13 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                 StatusBarManager.Self.SetCursorPosition(
                     mCursor.GetWorldX(mManagers),
                     mCursor.GetWorldY(mManagers));
+
+                var shouldUpdate = shapePreviewManager.Update();
+
+                if(shouldUpdate)
+                {
+                    UpdateShapes();
+                }
             }
         }
 

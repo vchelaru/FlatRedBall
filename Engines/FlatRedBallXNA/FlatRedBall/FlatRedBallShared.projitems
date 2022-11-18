@@ -286,7 +286,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\Screen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Screens\ScreenManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Sprite.Common.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Sprite.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SpriteList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SpriteManager.cs" />

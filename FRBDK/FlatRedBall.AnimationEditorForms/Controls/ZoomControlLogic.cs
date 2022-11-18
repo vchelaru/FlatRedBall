@@ -40,6 +40,10 @@ namespace FlatRedBall.AnimationEditorForms.Controls
         }
         private void InitializeComboBox()
         {
+            // 1600% is good, but good enough for really fine controls
+            // Let's go to 3200%
+            mAvailableZoomLevels.Add(3200);
+            mAvailableZoomLevels.Add(2400);
             mAvailableZoomLevels.Add(1600);
             mAvailableZoomLevels.Add(1200);
             mAvailableZoomLevels.Add(800);
