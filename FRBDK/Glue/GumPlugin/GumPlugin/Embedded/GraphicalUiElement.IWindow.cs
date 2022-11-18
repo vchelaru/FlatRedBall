@@ -964,7 +964,8 @@ namespace Gum.Wireframe
                     }
                     else
                     {
-                        PropertyInfo uiProperty = this.GetType().GetProperty(vmPropsToUiProps[vmPropertyName]);
+                        var uiPropertyName = vmPropsToUiProps[vmPropertyName];
+                        PropertyInfo uiProperty = this.GetType().GetProperty(uiPropertyName);
 
                         if (uiProperty == null)
                         {
