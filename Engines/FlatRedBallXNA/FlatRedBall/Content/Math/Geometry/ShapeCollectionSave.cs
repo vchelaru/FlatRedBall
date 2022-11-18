@@ -12,12 +12,15 @@ using Microsoft.Xna.Framework;
 namespace FlatRedBall.Content.Math.Geometry
 {
     /// <summary>
-    /// A serializable class storing shape collection data. If saves as XML using the .schx file format, it 
+    /// A serializable class storing shape collection data. If saved as XML using the .schx file format, it 
     /// can be used by FlatRedBall tools.
     /// </summary>
     public class ShapeCollectionSave
     {
         #region Fields
+        /// <summary>
+        /// All contained AxisAlignedRectangleSaves.
+        /// </summary>
         public List<AxisAlignedRectangleSave> AxisAlignedRectangleSaves = new List<AxisAlignedRectangleSave>();
 
         public List<AxisAlignedCubeSave> AxisAlignedCubeSaves = new List<AxisAlignedCubeSave>();

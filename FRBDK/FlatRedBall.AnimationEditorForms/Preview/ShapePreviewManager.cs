@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Content.Math.Geometry;
+﻿using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.Content.Math.Geometry;
 using InputLibrary;
 using Microsoft.Xna.Framework;
 using RenderingLibrary;
@@ -181,6 +182,16 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         {
             ShapesGrabbed.Circle = ShapesOver.Circle;
             ShapesGrabbed.Rectangle = ShapesOver.Rectangle;
+
+            if (ShapesGrabbed.Circle != null)
+            {
+                SelectedState.Self.SelectedCircle = ShapesGrabbed.Circle;
+            }
+            
+            if (ShapesGrabbed.Rectangle != null)
+            {
+                SelectedState.Self.SelectedRectangle = ShapesGrabbed.Rectangle;
+            }
         }
 
         private void DoDownLogic()
