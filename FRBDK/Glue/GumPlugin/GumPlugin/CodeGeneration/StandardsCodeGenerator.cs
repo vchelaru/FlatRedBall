@@ -221,7 +221,7 @@ namespace GumPlugin.CodeGeneration
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
         {
             codeBlock.Line(@"
-    public class ContainerRuntime<T> : ContainerRuntime where T : Gum.Wireframe.GraphicalUiElement
+    public class ContainerRuntime<T> : ContainerRuntime where T : Gum.Wireframe.GraphicalUiElement, new()
     {
         public new System.Collections.Generic.IEnumerable<T> Children
         {
@@ -246,6 +246,18 @@ namespace GumPlugin.CodeGeneration
         public void RemoveChild(T childToRemove)
         {
             base.Children.Remove(childToRemove);
+        }
+
+        public void ClearChildren() => base.Children.Clear();
+
+
+        public T AddChild()
+        {
+            var child = new T();
+
+            AddChild(child);
+
+            return child;
         }
     }
 ");
