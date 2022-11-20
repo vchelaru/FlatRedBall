@@ -216,6 +216,12 @@ namespace GumPlugin.CodeGeneration
                 var sourceFileNameProperty = classBodyBlock.Property("public string", "SourceFileName");
                 sourceFileNameProperty.Line("set => base.SetProperty(\"SourceFile\", value);");
             }
+            else if(standardElementSave.Name == "Text")
+            {
+                var overrideTextRenderingPositionModeProperty = classBodyBlock.Property("public RenderingLibrary.Graphics.TextRenderingPositionMode?", "OverrideTextRenderingPositionMode");
+                overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
+                overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
+            }
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
