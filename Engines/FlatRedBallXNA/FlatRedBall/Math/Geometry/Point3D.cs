@@ -43,6 +43,13 @@ namespace FlatRedBall.Math.Geometry
 
         #region Constructors
 
+        public Point3D(Vector2 vector)
+        {
+            X = vector.X;
+            Y = vector.Y;
+            Z = 0;
+        }
+
         public Point3D(Vector3 vector3)
         {
             X = vector3.X;

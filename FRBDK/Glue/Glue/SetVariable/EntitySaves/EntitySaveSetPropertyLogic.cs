@@ -15,6 +15,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.EntitySaves;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -290,24 +291,27 @@ namespace FlatRedBall.Glue.SetVariable
             #endregion
         }
 
-        private static void RegenerateAllContainersForNamedObjectsThatUseEntity(EntitySave entitySave)
+        private static async void RegenerateAllContainersForNamedObjectsThatUseEntity(EntitySave entitySave)
         {
-            var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(entitySave);
-            var elementsToGenerate = new List<GlueElement>();
-            foreach (NamedObjectSave nos in namedObjects)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                var element = nos.GetContainer();
-
-                if (!elementsToGenerate.Contains(element))
+                var namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseElement(entitySave);
+                var elementsToGenerate = new List<GlueElement>();
+                foreach (NamedObjectSave nos in namedObjects)
                 {
-                    elementsToGenerate.Add(element);
-                }
-            }
+                    var element = nos.GetContainer();
 
-            foreach (var element in elementsToGenerate)
-            {
-                CodeWriter.GenerateCode(element);
-            }
+                    if (!elementsToGenerate.Contains(element))
+                    {
+                        elementsToGenerate.Add(element);
+                    }
+                }
+
+                foreach (var element in elementsToGenerate)
+                {
+                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                }
+            }, nameof(RegenerateAllContainersForNamedObjectsThatUseEntity));
         }
 
     }
