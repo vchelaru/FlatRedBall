@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels
 {
@@ -20,5 +21,35 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewMod
         public string StrippedName => !string.IsNullOrEmpty(FullPath)
             ? FileManager.RemovePath(FullPath)
             : "";
+
+        public bool IsFavorite
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsFavorite))]
+        public BitmapImage FavoriteImage
+        {
+            get
+            {
+                string sourceName;
+                if(IsFavorite)
+                {
+                    sourceName = "/Content/Icons/StarFilled.png";
+                }
+                else
+                {
+                    sourceName = "/Content/Icons/StarOutline.png";
+                }
+
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
+                bitmapImage.EndInit();
+
+                return bitmapImage;
+            }
+        }
     }
 }

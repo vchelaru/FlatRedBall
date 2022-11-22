@@ -33,11 +33,20 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         private async void HandleLoadRecentClicked(object sender, EventArgs e)
         {
             var viewModel = new LoadRecentViewModel();
-            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFiles;
+            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFileList;
             viewModel.AllItems.Clear();
             if (recentFiles != null)
             {
-                viewModel.AllItems.AddRange(recentFiles);
+                foreach(var recentFile in recentFiles)
+                {
+                    var vm = new RecentItemViewModel()
+                    {
+                        FullPath = recentFile.FileName,
+                        IsFavorite = recentFile.IsFavorite
+                    };
+                    viewModel.AllItems.Add(vm);
+
+                }
             }
 
             viewModel.RefreshFilteredItems();
@@ -55,6 +64,21 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 await GlueCommands.Self.LoadProjectAsync(fileToLoad);
                 
             }
+
+            if (recentFiles != null)
+            {
+                foreach(var item in viewModel.FilteredItems)
+                {
+                    var matching = recentFiles.FirstOrDefault(candidate => candidate.FileName == item.FullPath);
+
+                    if(matching != null)
+                    {
+                        matching.IsFavorite = item.IsFavorite;
+                    }
+                }
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
+
         }
 
         private void HandleGluxLoaded()
@@ -66,24 +90,24 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
-            if(GlueSettings.RecentFiles == null)
+            if(GlueSettings.RecentFileList == null)
             {
-                GlueSettings.RecentFiles = new List<string>();
+                GlueSettings.RecentFileList = new List<RecentFileSave>();
             }
 
-            GlueSettings.RecentFiles.RemoveAll(item =>
-                string.IsNullOrEmpty(item) ||
-                item == currentFile);
+            GlueSettings.RecentFileList.RemoveAll(item =>
+                string.IsNullOrEmpty(item.FileName) ||
+                item.FileName == currentFile);
             // newest first
-            GlueSettings.RecentFiles.Insert(0, currentFile.FullPath);
+            GlueSettings.RecentFileList.Insert(0, new RecentFileSave { FileName = currentFile.FullPath });
 
             // Vic bounces around projects enough that sometimes he needs more...
             // Increase from 30 up now that we have a dedicated window
             const int maxItemCount = 60;
 
-            if (GlueSettings.RecentFiles.Count > maxItemCount)
+            if (GlueSettings.RecentFileList.Count > maxItemCount)
             {
-                GlueSettings.RecentFiles.RemoveAt(GlueSettings.RecentFiles.Count - 1);
+                GlueSettings.RecentFileList.RemoveAt(GlueSettings.RecentFileList.Count - 1);
             }
 
 

@@ -102,6 +102,8 @@
 		<None Remove="Content\Icons\object.png" />
 		<None Remove="Content\Icons\SaveIcon.png" />
 		<None Remove="Content\Icons\screen.png" />
+		<None Remove="Content\Icons\StarFilled.png" />
+		<None Remove="Content\Icons\StarOutline.png" />
 		<None Remove="Content\Icons\states.png" />
 		<None Remove="Content\Icons\StretchArea.agif" />
 		<None Remove="Content\Icons\StretchArea.gif" />
@@ -211,6 +213,8 @@
 		<Resource Include="Content\Icons\NeedsInterpolateVariable.bmp" />
 		<Resource Include="Content\Icons\object.png" />
 		<Resource Include="Content\Icons\screen.png" />
+		<Resource Include="Content\Icons\StarFilled.png" />
+		<Resource Include="Content\Icons\StarOutline.png" />
 		<Resource Include="Content\Icons\states.png" />
 		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.agif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

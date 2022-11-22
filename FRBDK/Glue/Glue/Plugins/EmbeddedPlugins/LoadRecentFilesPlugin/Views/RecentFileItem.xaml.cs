@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,23 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
     /// </summary>
     public partial class RecentFileItem : UserControl
     {
+        RecentItemViewModel ViewModel => DataContext as RecentItemViewModel;
+
         public RecentFileItem()
         {
             InitializeComponent();
+        }
+
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            //ViewModel.IsFavorite = !ViewModel.IsFavorite;
+            //e.Handled = true;
+        }
+
+        private void Image_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ViewModel.IsFavorite = !ViewModel.IsFavorite;
+            e.Handled = true;
         }
     }
 }

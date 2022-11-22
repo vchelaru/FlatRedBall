@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.ViewModels;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +14,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewMod
 {
     internal class LoadRecentViewModel : ViewModel, ISearchBarViewModel
     {
-        public List<string> AllItems
+        public List<RecentItemViewModel> AllItems
         {
             get; private set;
-        } = new List<string>();
+        } = new List<RecentItemViewModel>();
 
         public ObservableCollection<RecentItemViewModel> FilteredItems
         {
@@ -73,11 +74,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewMod
             var itemBefore = SelectedItem;
             FilteredItems.Clear();
 
-            foreach(var item in AllItems)
+            var sortedItems = AllItems.OrderBy(item => item.IsFavorite == false);
+            // No keep it based on date
+                // .ThenBy(item => FileManager.RemovePath( item.FullPath));
+
+            foreach(var item in sortedItems)
             {
                 if(IsMatch(item))
                 {
-                    FilteredItems.Add(new RecentItemViewModel() { FullPath= item });
+                    FilteredItems.Add(item);
                 }
             }
 
@@ -91,10 +96,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewMod
             }
         }
 
-        private bool IsMatch(string item)
+        private bool IsMatch(RecentItemViewModel item)
         {
             return string.IsNullOrEmpty(SearchBoxText) ||
-                item.ToLowerInvariant().Contains(SearchBoxText.ToLowerInvariant());
+                item.FullPath.ToLowerInvariant().Contains(SearchBoxText.ToLowerInvariant());
         }
     }
 }

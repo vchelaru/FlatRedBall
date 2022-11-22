@@ -8,6 +8,7 @@ using FlatRedBall.IO;
 using System.IO;
 using EditorObjects.Collections;
 using FlatRedBall.IO.Csv;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -32,6 +33,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    public class RecentFileSave
+    {
+        public string FileName { get; set; }
+        public bool IsFavorite { get; set; }
+    }
 
     /// <summary>
     /// Global glue settings for the current user, not tied to any particular project.
@@ -49,7 +55,18 @@ namespace FlatRedBall.Glue.SaveClasses
         // to manually set them up.
         [XmlElementAttribute("Association")]
         public ExternalSeparatingList<FileProgramAssociations> Associations = new ExternalSeparatingList<FileProgramAssociations>();
+
+        // November 22, 2022
+        // DO NOT mark this as obsolete yet.
+        // Doing so will make the XmlSerializer
+        // ignore this property which will make old paths get lost.
+        // Annoying. Can mark this as obsolete when enough time has
+        // passed. Perhaps 1 year? Doing so will at worst wipe some recent
+        // files for users, but the 1 year period gives enough time to migrate.
+        //[Obsolete("Use RecentFileList")]
         public List<string> RecentFiles = new List<string>();
+
+        public List<RecentFileSave> RecentFileList { get; set; } = new List<RecentFileSave>();
 
         public List<string> BuildTools = new List<string>();
 
@@ -131,6 +148,16 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 FixAllTypes(property);
             }
+
+            foreach(var recentFileName in RecentFiles)
+            {
+                RecentFileList.Add(new RecentFileSave
+                {
+                    FileName = recentFileName,
+                });
+            }
+
+            RecentFiles.Clear();
         }
 
         private static void FixAllTypes(PropertySave property)

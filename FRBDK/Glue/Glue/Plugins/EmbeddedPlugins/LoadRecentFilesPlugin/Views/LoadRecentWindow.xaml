@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views" xmlns:controls="clr-namespace:GlueFormsCore.Controls"
         mc:Ignorable="d"
-        Title="LoadRecentWindow" Height="450" Width="650">
+        Title="Recent FlatRedBall Projects" Height="450" Width="660">
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
