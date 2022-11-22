@@ -171,7 +171,7 @@ namespace CompilerPlugin.Managers
                     string msBuildPath;
                     string additionalArgumentPrefix = "";
 
-                    if (MsBuildLocation != null)
+                    if (MsBuildLocation != null && GlueState.Self.CurrentMainProject.DotNetVersion != "v6.0")
                     {
                         msBuildPath = MsBuildLocation.FullPath;
                     }
