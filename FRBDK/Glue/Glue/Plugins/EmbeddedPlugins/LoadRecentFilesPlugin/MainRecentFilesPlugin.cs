@@ -95,11 +95,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueSettings.RecentFileList = new List<RecentFileSave>();
             }
 
-            GlueSettings.RecentFileList.RemoveAll(item =>
-                string.IsNullOrEmpty(item.FileName) ||
-                item.FileName == currentFile);
-            // newest first
-            GlueSettings.RecentFileList.Insert(0, new RecentFileSave { FileName = currentFile.FullPath });
+            var existing = GlueSettings.RecentFileList.FirstOrDefault(item => item.FileName == currentFile);
+
+            if(existing != null)
+            {
+                GlueSettings.RecentFileList.Remove(existing);
+                GlueSettings.RecentFileList.Insert(0, existing);
+            }
 
             // Vic bounces around projects enough that sometimes he needs more...
             // Increase from 30 up now that we have a dedicated window
