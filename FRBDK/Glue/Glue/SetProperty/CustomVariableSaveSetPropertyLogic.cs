@@ -574,7 +574,7 @@ namespace FlatRedBall.Glue.SetVariable
                             var oldDerivedValue = derived.DefaultValue;
                             var oldDerivedType = derived.Type;
                             derived.Type = customVariable.Type;
-                            ConvertVariableValueToCurrentType(derived, currentValue, oldType);
+                            ConvertVariableValueToCurrentType(derived, oldDerivedValue, oldDerivedType);
                         }
                     }
                 }, "Converting variables according to type change");
@@ -608,6 +608,7 @@ namespace FlatRedBall.Glue.SetVariable
                     switch (customVariable.Type)
                     {
                         case "float":
+                        case "float?":
                             customVariable.DefaultValue = (float)valueAsInt;
                             wasAbleToConvert = true;
                             break;
