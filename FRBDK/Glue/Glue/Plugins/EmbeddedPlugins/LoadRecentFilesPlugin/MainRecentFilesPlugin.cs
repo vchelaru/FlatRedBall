@@ -1,5 +1,8 @@
 ﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -15,24 +18,42 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
     public class MainRecentFilesPlugin : EmbeddedPlugin
     {
         ToolStripMenuItem recentFilesMenuItem;
+        GlueSettingsSave GlueSettings => GlueState.Self.GlueSettingsSave;
 
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", null, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", HandleLoadRecentClicked, "File", preferredIndex:2);
 
-            RefreshMenuItems();
+            //RefreshMenuItems();
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
         }
 
-        private void RefreshMenuItems()
+        private async void HandleLoadRecentClicked(object sender, EventArgs e)
         {
-            recentFilesMenuItem.DropDownItems.Clear();
-            var recentFiles = ProjectManager.GlueSettingsSave.RecentFiles;
-            foreach (var file in recentFiles)
+            var viewModel = new LoadRecentViewModel();
+            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFiles;
+            viewModel.AllItems.Clear();
+            if (recentFiles != null)
             {
-                recentFilesMenuItem.DropDownItems.Add(file, null, HandleRecentFileClicked);
+                viewModel.AllItems.AddRange(recentFiles);
+            }
+
+            viewModel.RefreshFilteredItems();
+
+            var window = new LoadRecentWindow();
+
+            window.DataContext = viewModel;
+
+            var result = window.ShowDialog();
+
+            if(result == true)
+            {
+                var fileToLoad = viewModel.SelectedItem.FullPath;
+
+                await GlueCommands.Self.LoadProjectAsync(fileToLoad);
+                
             }
         }
 
@@ -45,26 +66,26 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
-            if(ProjectManager.GlueSettingsSave.RecentFiles == null)
+            if(GlueSettings.RecentFiles == null)
             {
-                ProjectManager.GlueSettingsSave.RecentFiles = new List<string>();
+                GlueSettings.RecentFiles = new List<string>();
             }
 
-            ProjectManager.GlueSettingsSave.RecentFiles.RemoveAll(item =>
+            GlueSettings.RecentFiles.RemoveAll(item =>
                 string.IsNullOrEmpty(item) ||
                 item == currentFile);
             // newest first
-            ProjectManager.GlueSettingsSave.RecentFiles.Insert(0, currentFile.FullPath);
+            GlueSettings.RecentFiles.Insert(0, currentFile.FullPath);
 
             // Vic bounces around projects enough that sometimes he needs more...
-            const int maxItemCount = 30;
+            // Increase from 30 up now that we have a dedicated window
+            const int maxItemCount = 60;
 
-            if (ProjectManager.GlueSettingsSave.RecentFiles.Count > maxItemCount)
+            if (GlueSettings.RecentFiles.Count > maxItemCount)
             {
-                ProjectManager.GlueSettingsSave.RecentFiles.RemoveAt(ProjectManager.GlueSettingsSave.RecentFiles.Count - 1);
+                GlueSettings.RecentFiles.RemoveAt(GlueSettings.RecentFiles.Count - 1);
             }
 
-            RefreshMenuItems();
 
             GlueCommands.Self.GluxCommands.SaveSettings();
         }
