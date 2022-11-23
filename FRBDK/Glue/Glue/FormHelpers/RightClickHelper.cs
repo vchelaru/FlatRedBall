@@ -1378,6 +1378,7 @@ namespace FlatRedBall.Glue.FormHelpers
             viewModel.DelegateType = addEventWindow.ResultDelegateType;
 
             GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
+
         }
 
 

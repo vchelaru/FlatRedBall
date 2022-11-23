@@ -782,6 +782,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         public static string GetAutoName(NamedObjectSave namedObject)
         {
+            var element = ObjectFinder.Self.GetElementContaining(namedObject);
 
             var firstName = namedObject.Properties.GetValue<string>(
                 nameof(CollisionRelationshipViewModel.FirstCollisionName));
@@ -801,14 +802,32 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 secondSub = null;
             }
 
+            var isFirstList = element?.GetNamedObjectRecursively(firstName)?.IsList == true;
+            var isSecondList = element?.GetNamedObjectRecursively(secondName)?.IsList == true;
+
+            var firstEffectiveName = firstName;
+            var secondEffectiveName = secondName;
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.AutoNameCollisionListsAsSingle)
+            {
+                if(isFirstList && firstEffectiveName.EndsWith("List"))
+                {
+                    firstEffectiveName = firstEffectiveName.Substring(0, firstEffectiveName.Length - "List".Length);
+                }
+                if(isSecondList && secondEffectiveName.EndsWith("List"))
+                {
+                    secondEffectiveName = secondEffectiveName.Substring(0, secondEffectiveName.Length - "List".Length);
+                }
+            }
+
             // special case - always colliding
             if(secondName == null)
             {
-                return $"{firstName}AlwaysColliding";
+                return $"{firstEffectiveName}AlwaysColliding";
             }
             else
             {
-                return $"{firstName}{firstSub}Vs{secondName}{secondSub}";
+                return $"{firstEffectiveName}{firstSub}Vs{secondEffectiveName}{secondSub}";
             }
         }
     }

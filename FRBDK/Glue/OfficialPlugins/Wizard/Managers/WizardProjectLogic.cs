@@ -814,7 +814,9 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
                     await PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, cloudCollisionNos);
 
-                    var nos = gameScreen.GetNamedObject("PlayerListVsCloudCollision");
+                    var nos =
+                        gameScreen.GetNamedObject("PlayerVsCloudCollision") ??
+                        gameScreen.GetNamedObject("PlayerListVsCloudCollision");
 
                     if (isPlatformer)
                     {
@@ -832,7 +834,9 @@ namespace OfficialPluginsCore.Wizard.Managers
                     }
                     await PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
 
-                    var nos = gameScreen.GetNamedObject("PlayerListVsSolidCollision");
+                    var nos =
+                        gameScreen.GetNamedObject("PlayerVsCloudCollision") ??
+                        gameScreen.GetNamedObject("PlayerListVsSolidCollision");
 
                     // move is 1
                     // bounce is 2

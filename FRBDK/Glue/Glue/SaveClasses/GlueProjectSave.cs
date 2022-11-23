@@ -90,7 +90,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GumSupportsStackSpacing = 24,
             CollisionRelationshipsSupportMoveSoft = 25,
             GeneratedCameraSetupFile = 26,
-            ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27
+            ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
+            AutoNameCollisionListsAsSingle = 28
         }
 
         #endregion
@@ -99,7 +100,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX;
+        public const int LatestVersion = (int)GluxVersions.AutoNameCollisionListsAsSingle;
 
         public int FileVersion { get; set; }
 

@@ -26,22 +26,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
             if(exists)
             {
-                // was it added?
-                foreach(var wildcardFile in project.GlobalFileWildcards)
+                if(project != null)
                 {
-                    if(IsFileRelativeToWildcard(filePath, wildcardFile))
+                    // was it added?
+                    foreach(var wildcardFile in project.GlobalFileWildcards)
                     {
-                        var newRfsName = filePath.RelativeTo(GlueState.Self.ContentDirectory);
-                        var alreadyExists = project.GlobalFiles.Any(item => item.Name == newRfsName);
-                        if(!alreadyExists)
+                        if(IsFileRelativeToWildcard(filePath, wildcardFile))
                         {
-                            // clone it, add it here
-                            var clone = wildcardFile.Clone();
-                            clone.Name = newRfsName;
-                            clone.IsCreatedByWildcard = true;
-                            GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(clone);
+                            var newRfsName = filePath.RelativeTo(GlueState.Self.ContentDirectory);
+                            var alreadyExists = project.GlobalFiles.Any(item => item.Name == newRfsName);
+                            if(!alreadyExists)
+                            {
+                                // clone it, add it here
+                                var clone = wildcardFile.Clone();
+                                clone.Name = newRfsName;
+                                clone.IsCreatedByWildcard = true;
+                                GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(clone);
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }

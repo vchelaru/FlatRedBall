@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.ViewModels;
 using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
@@ -40,7 +41,21 @@ namespace OfficialPlugins.CollisionPlugin.Views
             viewModel.TunnelingObject = namedObject.InstanceName;
             viewModel.TunnelingEvent = "CollisionOccurred";
 
-            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(viewModel);
+            //GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(viewModel);
+
+            viewModel.EventName = namedObject.InstanceName + "Collided";
+            //viewModel.TunnelingObject = addEventWindow.TunnelingObject;
+            //viewModel.TunnelingEvent = addEventWindow.TunnelingEvent;
+
+            //viewModel.SourceVariable = addEventWindow.SourceVariable;
+            //viewModel.BeforeOrAfter = addEventWindow.BeforeOrAfter;
+
+            //viewModel.DelegateType = addEventWindow.ResultDelegateType;
+
+            GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
+
+
+
         }
 
         private void FirstObjectCollisionPartitioningButtonClicked(object sender, RoutedEventArgs e)
