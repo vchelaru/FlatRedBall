@@ -342,13 +342,26 @@ namespace TopDownPlugin.CodeGenerators
                 else
                 {
                     float accelerationMagnitude;
-                    if(this.Velocity.Length() > mCurrentMovement.MaxSpeed && mCurrentMovement.IsUsingCustomDeceleration)
+                    if(this.Velocity.Length() > mCurrentMovement.MaxSpeed * TopDownSpeedMultiplier && mCurrentMovement.IsUsingCustomDeceleration)
                     {
                         accelerationMagnitude = mCurrentMovement.CustomDecelerationValue;
                     }
                     else
                     {
-                        accelerationMagnitude = TopDownSpeedMultiplier * mCurrentMovement.MaxSpeed / secondsToTake;
+                        // If the TopDownSpeedMultiplier is really small, then this makes acceleration go slower
+                        // so it reaches the max speed in the same amount of time. However, if the player is moving
+                        // faster than the multiplier, we want to slow down at normal speed rather than multiplied by
+                        // TopDownSpeedMulitplier. An extreme case is where TopDownSpeedMultiplier is 0, In that case, the
+                        // character would never slow down, which is bad.
+                        if(this.Velocity.Length() > mCurrentMovement.MaxSpeed * TopDownSpeedMultiplier)
+                        {
+                            // This may not give perfect control over deceleration, but that's why CustomDecelerationValue exists
+                            accelerationMagnitude = mCurrentMovement.MaxSpeed / secondsToTake;
+                        }
+                        else
+                        {
+                            accelerationMagnitude = TopDownSpeedMultiplier * mCurrentMovement.MaxSpeed / secondsToTake;
+                        }
                     }
                 
                     var nonNormalizedDifference = difference;
@@ -366,8 +379,6 @@ namespace TopDownPlugin.CodeGenerators
                     }
                     else
                         this.Acceleration = accelerationToSet;
-                    }
-                    {
                 }
 
 
