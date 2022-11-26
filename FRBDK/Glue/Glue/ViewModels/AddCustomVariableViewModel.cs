@@ -291,6 +291,12 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public bool SetByDerived
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
 
         [DependsOn(nameof(SelectedNewType))]
         public bool CanBeList => SelectedNewType == "string";
@@ -298,7 +304,8 @@ namespace GlueFormsCore.ViewModels
         [DependsOn(nameof(CanBeList))]
         public Visibility ListCheckBoxVisibility => CanBeList
             ? Visibility.Visible
-            // so we don't have the list box shifting around...
+            // If we pass Collapsed, the list box will shift around when we make changes to the selection.
+            // So we use Hidden
             : Visibility.Hidden;
 
         public bool IsList

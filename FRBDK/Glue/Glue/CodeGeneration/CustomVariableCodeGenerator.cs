@@ -191,12 +191,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string scopeValue = customVariable.Scope.ToString().ToLower();
 
-            if(!string.IsNullOrWhiteSpace(customVariable.Summary))
-            {
-                codeBlock.Line("/// <summary>");
-                codeBlock.Line($"/// {customVariable.Summary}");
-                codeBlock.Line("/// </summary>");
-            }
+
 
             if (needsToBeProperty)
             {
@@ -245,6 +240,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         propertyHeader = $"{scopeValue} {memberType} {customVariable.Name}";
                     }
 
+                    if (!string.IsNullOrWhiteSpace(customVariable.Summary))
+                    {
+                        GenerateVariableSummary(codeBlock, customVariable);
+                    }
+
                     ICodeBlock set = codeBlock.Property(propertyHeader, Static:customVariable.IsShared)
                         .Set();
 
@@ -277,6 +277,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
+                if (!string.IsNullOrWhiteSpace(customVariable.Summary))
+                {
+                    GenerateVariableSummary(codeBlock, customVariable);
+                }
                 if (!customVariable.GetIsVariableState())
                 {
 
@@ -325,6 +329,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                 }
             }
+        }
+
+        private static void GenerateVariableSummary(ICodeBlock codeBlock, CustomVariable customVariable)
+        {
+            codeBlock.Line("/// <summary>");
+            codeBlock.Line($"/// {customVariable.Summary}");
+            codeBlock.Line("/// </summary>");
         }
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)

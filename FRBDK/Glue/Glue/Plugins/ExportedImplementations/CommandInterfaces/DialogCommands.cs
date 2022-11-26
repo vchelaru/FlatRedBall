@@ -585,6 +585,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             container = container ?? GlueState.Self.CurrentElement;
 
             var viewModel = new AddCustomVariableViewModel(container);
+            viewModel.SetByDerived = true;
             viewModel.SelectedTunneledObject = tunnelingObject;
             viewModel.SelectedTunneledVariableName = tunneledVariableName;
             viewModel.DesiredVariableType = variableType;
@@ -592,6 +593,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if(variableType == CustomVariableType.New)
             {
                 viewModel.SelectedNewType = viewModel.AvailableNewVariableTypes.FirstOrDefault();
+            }
+
+            var xyzVariables = container.CustomVariables.Where(item =>
+                item.Name == "X" || item.Name == "Y" || item.Name == "Z");
+
+            var areAllStatic = container.CustomVariables.Count > 0 &&
+                container.CustomVariables.Except(xyzVariables).All(item => item.IsShared);
+
+            if(areAllStatic)
+            {
+                viewModel.IsStatic = true;
             }
 
             var window = new AddVariableWindowWpf();
@@ -699,6 +711,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.SourceObjectProperty = sourceObjectProperty;
 
                         newVariable.IsShared = viewModel.IsStatic;
+                        newVariable.SetByDerived = viewModel.SetByDerived;
                         newVariable.DefinedByBase = isDefinedByBase;
 
 

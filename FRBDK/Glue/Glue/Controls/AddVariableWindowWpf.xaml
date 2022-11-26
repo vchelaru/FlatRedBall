@@ -102,6 +102,9 @@
                 <CheckBox 
                     IsChecked="{Binding IsStatic}"
                     >Static (all objects share one copy of the same variable)</CheckBox>
+                <CheckBox
+                    IsChecked="{Binding SetByDerived}"
+                    >Can Be Set By Derived</CheckBox>
             </StackPanel>
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Right">
