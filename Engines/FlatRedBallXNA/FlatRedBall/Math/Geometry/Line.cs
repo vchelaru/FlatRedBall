@@ -348,15 +348,77 @@ namespace FlatRedBall.Math.Geometry
                 rectangle.Position.Y - rectangle.ScaleY);
 
             Point tempPoint;
-            // Test if any of the edges intersect the segment
-            // (this will short-circuit on the first true test)
-            if (a.Intersects(new Segment(tl, tr), out tempPoint) ||
-                a.Intersects(new Segment(tl, bl), out tempPoint) ||
-                a.Intersects(new Segment(bl, br), out tempPoint) ||
-                a.Intersects(new Segment(tr, br), out tempPoint))
+
+
+            // Update November 27
+            // When a line collides
+            // with a rectangle, we often
+            // want to know the collision point
+            // which should be the "closest". Previously,
+            // The order was Top, Left, Bottom, Right. But
+            // if the line is below the rectangle, then the
+            // top segment gets tested before the bottom segment.
+            // To make this slightly better we'll do some simple position
+            // checks. This won't solve everything but it's a good middle-ground
+            if(rectangle.Position.Y > this.Position.Y)
             {
-                mLastCollisionPoint = tempPoint;
-                return true;
+                // Rectangle is above, so test bottom rectangle edges first
+                if(rectangle.Position.X > this.Position.X)
+                {
+                    if (
+                        a.Intersects(new Segment(bl, br), out tempPoint) ||
+                        a.Intersects(new Segment(tl, bl), out tempPoint) ||
+                        a.Intersects(new Segment(tr, br), out tempPoint) ||
+                        a.Intersects(new Segment(tl, tr), out tempPoint) 
+                        )
+                    {
+                        mLastCollisionPoint = tempPoint;
+                        return true;
+                    }
+
+                }
+                else
+                {
+                    if (
+                        a.Intersects(new Segment(bl, br), out tempPoint) ||
+                        a.Intersects(new Segment(tr, br), out tempPoint) ||
+                        a.Intersects(new Segment(tl, bl), out tempPoint) ||
+                        a.Intersects(new Segment(tl, tr), out tempPoint)
+                        )
+                    {
+                        mLastCollisionPoint = tempPoint;
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                // Rectangle is below, so test top rectangle edges first
+
+                if (rectangle.Position.X > this.Position.X)
+                {
+                    if (a.Intersects(new Segment(tl, tr), out tempPoint) ||
+                        a.Intersects(new Segment(tl, bl), out tempPoint) ||
+                        a.Intersects(new Segment(tr, br), out tempPoint) ||
+                        a.Intersects(new Segment(bl, br), out tempPoint)
+                    )
+                    {
+                        mLastCollisionPoint = tempPoint;
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (a.Intersects(new Segment(tl, tr), out tempPoint) ||
+                        a.Intersects(new Segment(tr, br), out tempPoint) ||
+                        a.Intersects(new Segment(tl, bl), out tempPoint) ||
+                        a.Intersects(new Segment(bl, br), out tempPoint)
+                    )
+                    {
+                        mLastCollisionPoint = tempPoint;
+                        return true;
+                    }
+                }
             }
 
             // No collision
