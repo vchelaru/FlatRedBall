@@ -38,6 +38,11 @@ namespace FlatRedBall.Input
             "Controller (HORIPAD S)"
         };
 
+        static HashSet<string> GamecubeControllerIds = new HashSet<string>
+        {
+            "00000003-0e6f-0000-8501-000077006800" // PDF Wired Fightpad Pro 
+        };
+
         static HashSet<string> XboxControllerNames = new HashSet<string>
         {
             "Controller (Xbox One For Windows)"
@@ -1166,10 +1171,19 @@ namespace FlatRedBall.Input
         {
 #if MONOGAME_381
             var name = mCapabilities.DisplayName;
+            var id = mCapabilities.Identifier;
+
 #else
             var name = "Xbox";
+            var id = "";
 #endif
-            if(string.IsNullOrEmpty(name))
+
+            if(GamecubeControllerIds.Contains(id))
+            {
+                ButtonLayout = ButtonLayout.GameCube;
+            }
+
+            else if(string.IsNullOrEmpty(name))
             {
                 ButtonLayout = ButtonLayout.Unknown;
             }
