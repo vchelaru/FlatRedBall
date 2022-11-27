@@ -1106,7 +1106,7 @@ namespace FlatRedBall.Glue.Elements
                         }
                         else
                         {
-                            category = containingElement.GetStateCategory(customVariable.Type);
+                            category = containingElement.GetStateCategoryRecursively(customVariable.Type);
                             isState = category != null;
                         }
                     }
