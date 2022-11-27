@@ -232,6 +232,26 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        public void FillNodesOverlapping(AxisAlignedRectangle rectangle)
+        {
+            WorldToIndex(rectangle.Left, rectangle.Bottom, out int startX, out int startY);
+            WorldToIndex(rectangle.Right, rectangle.Top, out int endXInclusive, out int endYInclusive);
+
+            for (int y = startY; y <= endYInclusive; y++)
+            {
+                for (int x = startX; x <= endXInclusive; x++)
+                {
+                    var node = mTiledNodes[x][y];
+
+                    if(node == null)
+                    {
+                        AddAndLinkTiledNode(x, y);
+                    }
+
+                }
+            }
+        }
+
         public void EliminateCutCorners()
         {
             for (int x = 0; x < this.mNumberOfXTiles; x++)
@@ -565,6 +585,26 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        public void RemoveNodesOverlapping(AxisAlignedRectangle rectangle)
+        {
+            WorldToIndex(rectangle.Left, rectangle.Bottom, out int startX, out int startY);
+            WorldToIndex(rectangle.Right, rectangle.Top, out int endXInclusive, out int endYInclusive);
+
+            for(int y = startY; y <= endYInclusive; y++)
+            {
+                for(int x = startX; x <= endXInclusive; x++)
+                {
+                    var node = mTiledNodes[x][y];
+                    if(node != null)
+                    {
+                        Remove(node);
+                    }
+                }
+            }
+        }
+
+
+
         public void SetCosts(params float[] costs)
         {
             for (int i = 0; i < costs.Length; i++)
@@ -795,6 +835,13 @@ namespace FlatRedBall.AI.Pathfinding
             yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
         }
 
+        /// <summary>
+        /// Attaches the argument node to the node at the index x,y. If the node at x,y is null or
+        /// if the node is already linked, this operation does not perform any logic.
+        /// </summary>
+        /// <param name="node">The node to link to the node at x,y</param>
+        /// <param name="x">The x index of the taget node.</param>
+        /// <param name="y">The y index of the target node.</param>
         public void AttachNodeToNodeAtIndex(PositionedNode node, int x, int y)
         {
             PositionedNode nodeToLinkTo = TiledNodeAt(x, y);

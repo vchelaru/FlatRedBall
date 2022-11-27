@@ -153,6 +153,12 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        public bool IsIDamageableChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool IsICollidableEnabled
         {
             get => Get<bool>();
