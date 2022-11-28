@@ -32,7 +32,7 @@ namespace GumPlugin.CodeGeneration
         #region Methods
 
         private void GenerateInterpolateBetween(ElementSave elementSave, ICodeBlock currentBlock,
-            string enumType, IEnumerable<StateSave> states)
+            string enumType, IEnumerable<StateSave> states, StateSaveCategory category)
         {
             // We used to only generate these if there was were any states in this category, but
             // since Gum generated code supports dynamic states, there could be states in a category
@@ -63,7 +63,61 @@ namespace GumPlugin.CodeGeneration
                 if (suspendLayout)
                 {
                     currentBlock.Line("var wasSuppressed = mIsLayoutSuspended;");
-                    currentBlock.If("wasSuppressed == false")
+                    currentBlock.Line("var shouldSuspend = wasSuppressed == false;");
+
+                    // Although suspending/Resuming is much faster than a full layout, even that can
+                    // cost performance, especially if suspending a very complex object, like a list box 
+                    // where each item is expensive.
+                    // Animations may only change X and Y. If so, then we can do a special case which is
+                    // far more efficient.
+                    if(category != null)
+                    {
+                        HashSet<string> allVariables = new HashSet<string>();
+                        HashSet<string> allVariableOwners = new HashSet<string>();
+                        foreach(var state in states)
+                        {
+                            var variablesInState = state.Variables.Select(item => item.GetRootName());
+                            allVariables.AddRange(variablesInState);
+
+                            var owners = state.Variables.Select(item =>
+                            {
+                                var sourceObject = item.SourceObject;
+                                if(string.IsNullOrEmpty(sourceObject))
+                                {
+                                    sourceObject = "this";
+                                }
+                                return sourceObject;
+                            });
+                            allVariableOwners.AddRange(owners);
+                        }
+
+
+
+                        var areAllSafe = allVariables.All(item => 
+                            item == "X" || 
+                            item == "Y" || 
+                            item == "Red" || 
+                            item == "Green" || 
+                            item == "Blue" ||
+                            item == "Alpha");
+
+                        if(areAllSafe)
+                        {
+                            currentBlock.Line("var isSafeToInterpolateWithoutSuppression = true;");
+                            foreach(var owner in allVariableOwners)
+                            {
+                                currentBlock.Line($"isSafeToInterpolateWithoutSuppression &= " +
+                                    $"{owner}.Parent as Gum.Wireframe.GraphicalUiElement == null && " +
+                                    $"{owner}.XUnits == Gum.Converters.GeneralUnitType.PixelsFromSmall && " +
+                                    $"{owner}.XOrigin == RenderingLibrary.Graphics.HorizontalAlignment.Left;");
+                            }
+
+                            currentBlock.Line("if(isSafeToInterpolateWithoutSuppression) shouldSuspend = false;");
+                        }
+                    }
+
+
+                    currentBlock.If("shouldSuspend")
                         .Line("SuspendLayout(true);");
                 }
 
@@ -88,7 +142,7 @@ namespace GumPlugin.CodeGeneration
 
                 if(suspendLayout)
                 {
-                    currentBlock.If("!wasSuppressed")
+                    currentBlock.If("shouldSuspend")
                         .Line("ResumeLayout(true);");
                 }
             }
@@ -100,13 +154,13 @@ namespace GumPlugin.CodeGeneration
 
             string enumType = "VariableState";
             IEnumerable<StateSave> states = elementSave.States;
-            GenerateInterpolateBetween(elementSave, currentBlock, enumType, states);
+            GenerateInterpolateBetween(elementSave, currentBlock, enumType, states, null);
 
             foreach (var category in elementSave.Categories)
             {
                 enumType = category.Name;
                 states = category.States;
-                GenerateInterpolateBetween(elementSave, currentBlock, enumType, states);
+                GenerateInterpolateBetween(elementSave, currentBlock, enumType, states, category);
 
             }
 
