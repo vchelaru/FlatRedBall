@@ -65,6 +65,7 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line("var wasSuppressed = mIsLayoutSuspended;");
                     currentBlock.Line("var shouldSuspend = wasSuppressed == false;");
 
+                    currentBlock.Line("var suspendRecursively = true;");
                     // Although suspending/Resuming is much faster than a full layout, even that can
                     // cost performance, especially if suspending a very complex object, like a list box 
                     // where each item is expensive.
@@ -104,8 +105,12 @@ namespace GumPlugin.CodeGeneration
 
                             );
 
+
                         if(areAllSafe)
                         {
+                            currentBlock.Line("// all values assigned in this state do not require recursive updates:");
+                            currentBlock.Line("suspendRecursively = false;");
+
                             currentBlock.Line("var isSafeToInterpolateWithoutSuppression = true;");
                             foreach(var owner in allVariableOwners)
                             {
@@ -121,7 +126,7 @@ namespace GumPlugin.CodeGeneration
 
 
                     currentBlock.If("shouldSuspend")
-                        .Line("SuspendLayout(true);");
+                        .Line("SuspendLayout(suspendRecursively);");
                 }
 
                 currentBlock = AssignValuesUsingStartingValues(elementSave, currentBlock, interpolationCharacteristics);
@@ -146,7 +151,7 @@ namespace GumPlugin.CodeGeneration
                 if(suspendLayout)
                 {
                     currentBlock.If("shouldSuspend")
-                        .Line("ResumeLayout(true);");
+                        .Line("ResumeLayout(suspendRecursively);");
                 }
             }
         }
