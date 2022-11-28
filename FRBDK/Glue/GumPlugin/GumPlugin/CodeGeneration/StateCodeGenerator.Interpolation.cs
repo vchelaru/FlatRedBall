@@ -99,7 +99,10 @@ namespace GumPlugin.CodeGeneration
                             item == "Red" || 
                             item == "Green" || 
                             item == "Blue" ||
-                            item == "Alpha");
+                            item == "Alpha" ||
+                            item == "Visible" 
+
+                            );
 
                         if(areAllSafe)
                         {
