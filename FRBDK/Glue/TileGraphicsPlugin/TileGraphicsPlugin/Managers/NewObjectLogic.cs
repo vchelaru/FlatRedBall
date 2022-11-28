@@ -22,10 +22,13 @@ namespace TiledPluginCore.Managers
                 var owner = newNamedObject.GetContainer();
 
                 var isGameScreen =
-                    owner is ScreenSave && owner.Name == "Screens\\GameScreen";
+                    owner is ScreenSave && owner.GetStrippedName() == "GameScreen";
                 if (isGameScreen)
                 {
                     newNamedObject.SetByDerived = true;
+                    // Added Nov 28, 2022 since these are often
+                    // referenced outside of game screen
+                    newNamedObject.HasPublicProperty = true;
 
                     var allDerived = ObjectFinder.Self.GetAllDerivedElementsRecursive(owner);
                     foreach(var derived in allDerived)
