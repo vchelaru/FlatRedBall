@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,8 +54,44 @@ namespace GumPlugin.CodeGeneration
 
             mStandardSetterReplacements.Add("Texture", (codeBlock) =>
             {
+                //codeBlock.Line("ContainedSprite.Texture = value;");
+                //codeBlock.Line("UpdateLayout();");
+
+                // This allows the object to prevent unnecessary layouts when texture changes:
+
+
+                codeBlock.Line("var shouldUpdateLayout = true;");
+
+                codeBlock.Line("int widthBefore = -1;");
+                codeBlock.Line("int heightBefore = -1;");
+
+                codeBlock.Line("var isUsingPercentageWidthAndHeight = WidthUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile && HeightUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;");
+                codeBlock.Line("if (isUsingPercentageWidthAndHeight)");
+                codeBlock.Line("{");
+                codeBlock.Line("    if (ContainedSprite.Texture != null)");
+                codeBlock.Line("    {");
+                codeBlock.Line("        widthBefore = ContainedSprite.Texture.Width;");
+                codeBlock.Line("        heightBefore = ContainedSprite.Texture.Height;");
+                codeBlock.Line("    }");
+                codeBlock.Line("}");
                 codeBlock.Line("ContainedSprite.Texture = value;");
-                codeBlock.Line("UpdateLayout();");
+
+                codeBlock.Line("if (isUsingPercentageWidthAndHeight)");
+                codeBlock.Line("{");
+                codeBlock.Line("    int widthAfter = -1;");
+                codeBlock.Line("    int heightAfter = -1;");
+                codeBlock.Line("    if (ContainedSprite.Texture != null)");
+                codeBlock.Line("    {");
+                codeBlock.Line("        widthAfter = ContainedSprite.Texture.Width;");
+                codeBlock.Line("        heightAfter = ContainedSprite.Texture.Height;");
+                codeBlock.Line("    }");
+                codeBlock.Line("    shouldUpdateLayout = widthBefore == widthAfter && heightBefore == heightAfter;");
+                codeBlock.Line("}");
+
+                codeBlock.Line("if (shouldUpdateLayout)");
+                codeBlock.Line("{");
+                codeBlock.Line("    UpdateLayout();");
+                codeBlock.Line("}");
             });
 
             // This says what the property name is and what the contained variable name is.
