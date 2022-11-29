@@ -38,12 +38,31 @@ namespace GumPlugin.CodeGeneration
         {
             mStandardSetterReplacements.Add("Text", (codeBlock) =>
             {
-                codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
-                    .Line("// make it have no line wrap width before assignign the text:")
-                    .Line("ContainedText.Width = 0;");
+                //codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
+                //    .Line("// make it have no line wrap width before assignign the text:")
+                //    .Line("ContainedText.Width = 0;");
+
+                //codeBlock.Line("ContainedText.RawText = value;");
+                //codeBlock.Line("UpdateLayout();");
+
+                codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
+                codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
+
+                codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
+                codeBlock.Line("{");
+                codeBlock.Line("    // make it have no line wrap width before assignign the text:");
+                codeBlock.Line("    ContainedText.Width = 0;");
+                codeBlock.Line("}");
+
 
                 codeBlock.Line("ContainedText.RawText = value;");
-                codeBlock.Line("UpdateLayout();");
+
+                codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
+
+                codeBlock.Line("if (shouldUpdate)");
+                codeBlock.Line("{");
+                codeBlock.Line("    UpdateLayout();");
+                codeBlock.Line("}");
             });
 
             mStandardSetterReplacements.Add("FontScale", (codeBlock) =>
