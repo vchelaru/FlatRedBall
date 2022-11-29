@@ -85,7 +85,7 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("        widthAfter = ContainedSprite.Texture.Width;");
                 codeBlock.Line("        heightAfter = ContainedSprite.Texture.Height;");
                 codeBlock.Line("    }");
-                codeBlock.Line("    shouldUpdateLayout = widthBefore == widthAfter && heightBefore == heightAfter;");
+                codeBlock.Line("    shouldUpdateLayout = widthBefore != widthAfter || heightBefore != heightAfter;");
                 codeBlock.Line("}");
 
                 codeBlock.Line("if (shouldUpdateLayout)");
