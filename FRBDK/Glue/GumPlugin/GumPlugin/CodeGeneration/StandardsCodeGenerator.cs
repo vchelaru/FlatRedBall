@@ -154,6 +154,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("X Units");
             mVariableNamesToSkipForProperties.Add("Y Origin");
             mVariableNamesToSkipForProperties.Add("Y Units");
+            mVariableNamesToSkipForProperties.Add("IgnoredByParentSize");
 
             mVariableNamesToSkipForProperties.Add("FlipHorizontal");
 
