@@ -61,7 +61,7 @@ namespace GumPlugin.CodeGeneration
 
                 codeBlock.Line("if (shouldUpdate)");
                 codeBlock.Line("{");
-                codeBlock.Line("    UpdateLayout(Gum.Wireframe.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
+                codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
                 codeBlock.Line("}");
             });
 
