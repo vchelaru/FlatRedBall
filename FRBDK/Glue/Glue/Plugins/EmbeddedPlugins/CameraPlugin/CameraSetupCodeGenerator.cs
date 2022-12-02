@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             var classContents = namespaceContents.Class("internal static", "CameraSetup");
 
-            classContents.Line("static Microsoft.Xna.Framework.GraphicsDeviceManager graphicsDeviceManager;");
+            classContents.Line("public static Microsoft.Xna.Framework.GraphicsDeviceManager GraphicsDeviceManager { get; private set; }");
 
             GenerateStaticCameraSetupDefaults(classContents);
 
@@ -694,7 +694,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (generateDisplayCode)
             {
-                methodContents.Line("CameraSetup.graphicsDeviceManager = graphicsDeviceManager;");
+                methodContents.Line("CameraSetup.GraphicsDeviceManager = graphicsDeviceManager;");
                 methodContents.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.TextureFilter = Data.TextureFilter;");
                 methodContents.Line("ResetWindow();");
                 methodContents.Line("ResetCamera(cameraToSetUp);");
@@ -742,7 +742,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         // from here:
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
-                        ifBlock.Line("graphicsDeviceManager.HardwareModeSwitch = false;");
+                        ifBlock.Line("GraphicsDeviceManager.HardwareModeSwitch = false;");
 
                         // // If the window has been moved to the right, it will be partly off screen when fullscreen. To fix this, move it to the left first:
                         ifBlock.Line(
@@ -1004,11 +1004,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 var ifBlock = methodContents.If("height > width");
                 {
-                    ifBlock.Line("graphicsDeviceManager.SupportedOrientations = DisplayOrientation.Portrait;");
+                    ifBlock.Line("GraphicsDeviceManager.SupportedOrientations = DisplayOrientation.Portrait;");
                 }
                 var elseBlock = ifBlock.End().Else();
                 {
-                    elseBlock.Line("graphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;");
+                    elseBlock.Line("GraphicsDeviceManager.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;");
                 }
                 
                 methodContents.Line("#endif");
