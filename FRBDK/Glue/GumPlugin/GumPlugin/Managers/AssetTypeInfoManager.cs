@@ -112,7 +112,7 @@ namespace GumPlugin.Managers
                  "\n Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = wasSuspended;";
 
             toReturn +=
-                 "\n if(!wasSuspended) { Gum.Wireframe.GraphicalUiElement.IsAllLayoutSuspended = wasSuspended; " + thisName + ".UpdateFontRecursive();" + thisName + ".UpdateLayout(); }";
+                 "\n if(!wasSuspended) { " + thisName + ".UpdateFontRecursive();" + thisName + ".UpdateLayout(); }";
 
 
             toReturn +=
