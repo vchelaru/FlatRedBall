@@ -22,7 +22,7 @@ namespace FlatRedBall.AI.Pathfinding
             return nodeNetwork;
         }
 
-        public static void FillAllExceptFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate)
+        public static void FillAllExceptFromPredicate(this TileNodeNetwork nodeNetwork, LayeredTileMap layeredTileMap, Func<List<NamedValue>, bool> predicate, int removalTileRadius = 0)
         {
             var dimensionHalf = layeredTileMap.WidthPerTile.Value / 2.0f;
 
@@ -57,8 +57,50 @@ namespace FlatRedBall.AI.Pathfinding
                                 positionToRemove.Y = bottom + dimensionHalf;
 
                                 nodeNetwork.RemoveAndUnlinkNode(ref positionToRemove);
+
+                                for (int radius = 1; radius <= removalTileRadius; radius++)
+                                {
+                                    RemoveTilesAtRadius(radius, positionToRemove);
+                                }
                             }
                         }
+                    }
+                }
+
+
+                void RemoveTilesAtRadius(int radius, Vector3 positionToRemove)
+                {
+                    var currentPosition = positionToRemove + new Vector3(-radius * layeredTileMap.WidthPerTile.Value, radius * layeredTileMap.WidthPerTile.Value, 0);
+
+                    for (int i = 0; i < radius * 2; i++)
+                    {
+                        currentPosition.X += layeredTileMap.WidthPerTile.Value;
+                        var copy = currentPosition;
+                        nodeNetwork.RemoveAndUnlinkNode(ref copy);
+                    }
+
+                    for (int i = 0; i < radius * 2; i++)
+                    {
+                        currentPosition.Y -= layeredTileMap.WidthPerTile.Value;
+                        var copy = currentPosition;
+
+                        nodeNetwork.RemoveAndUnlinkNode(ref copy);
+                    }
+
+                    for (int i = 0; i < radius * 2; i++)
+                    {
+                        currentPosition.X -= layeredTileMap.WidthPerTile.Value;
+                        var copy = currentPosition;
+
+                        nodeNetwork.RemoveAndUnlinkNode(ref copy);
+                    }
+
+                    for (int i = 0; i < radius * 2; i++)
+                    {
+                        currentPosition.Y += layeredTileMap.WidthPerTile.Value;
+                        var copy = currentPosition;
+
+                        nodeNetwork.RemoveAndUnlinkNode(ref copy);
                     }
                 }
             }
@@ -179,8 +221,11 @@ namespace FlatRedBall.AI.Pathfinding
         public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, params string[] types) =>
             CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types);
 
-        public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types)
-        {
+            public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, int removalTileRadius, params string[] types) =>
+                CreateFromTilesWithoutTypes(layeredTileMap, directionalType, (ICollection<string>)types, removalTileRadius);
+
+            public static TileNodeNetwork CreateFromTilesWithoutTypes(LayeredTileMap layeredTileMap, DirectionalType directionalType, ICollection<string> types, int removalTileRadius = 0)
+            {
             bool CreateFromTypesPredicate(List<NamedValue> list)
             {
                 var toReturn = false;
@@ -206,7 +251,7 @@ namespace FlatRedBall.AI.Pathfinding
 
             TileNodeNetwork nodeNetwork = CreateTileNodeNetwork(layeredTileMap, directionalType);
 
-            FillAllExceptFromPredicate(nodeNetwork, layeredTileMap, CreateFromTypesPredicate);
+            FillAllExceptFromPredicate(nodeNetwork, layeredTileMap, CreateFromTypesPredicate, removalTileRadius);
 
             return nodeNetwork;
         }

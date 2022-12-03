@@ -822,17 +822,19 @@ namespace FlatRedBall.AI.Pathfinding
         }
 
 
-
-        public void WorldToIndex(float worldX, float worldY, out int xIndex, out int yIndex)
+        public void WorldToIndex(float worldX, float worldY, out int xIndex, out int yIndex, bool clampToBounds = true)
         {
             xIndex = MathFunctions.RoundToInt((worldX - mXSeed) / mGridSpacing);
             yIndex = MathFunctions.RoundToInt((worldY - mYSeed) / mGridSpacing);
 
-            xIndex = System.Math.Max(0, xIndex);
-            xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
+            if(clampToBounds)
+            {
+                xIndex = System.Math.Max(0, xIndex);
+                xIndex = System.Math.Min(xIndex, mNumberOfXTiles - 1);
 
-            yIndex = System.Math.Max(0, yIndex);
-            yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
+                yIndex = System.Math.Max(0, yIndex);
+                yIndex = System.Math.Min(yIndex, mNumberOfYTiles - 1);
+            }
         }
 
         /// <summary>
@@ -870,8 +872,22 @@ namespace FlatRedBall.AI.Pathfinding
 
         public void RemoveAndUnlinkNode( ref Microsoft.Xna.Framework.Vector3 positionToRemoveNodeFrom )
         {
-            PositionedNode nodeToRemove = GetClosestNodeTo(ref positionToRemoveNodeFrom);
-            Remove( nodeToRemove );
+            // November 28, 2022
+            // This is passing a position in a tile node network so let's limit it to this tile instead of spreading outward.
+            // This is a breaking change, but I think it was actually broken before and this is matches expectations.
+            //PositionedNode nodeToRemove = GetClosestNodeTo(ref positionToRemoveNodeFrom);
+            WorldToIndex(positionToRemoveNodeFrom.X, positionToRemoveNodeFrom.Y, out int tileX, out int tileY, clampToBounds:false);
+
+            PositionedNode node = null;
+            if(tileX > -1 && tileY > -1 && tileX < mNumberOfXTiles && tileY < NumberOfYTiles)
+            {
+                node = mTiledNodes[tileX][tileY];
+            }
+
+            if (node != null)
+            {
+                Remove(node);
+            }
         }
         #endregion
 
