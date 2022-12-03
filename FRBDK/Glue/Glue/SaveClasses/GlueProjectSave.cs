@@ -91,7 +91,8 @@ namespace FlatRedBall.Glue.SaveClasses
             CollisionRelationshipsSupportMoveSoft = 25,
             GeneratedCameraSetupFile = 26,
             ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
-            AutoNameCollisionListsAsSingle = 28
+            AutoNameCollisionListsAsSingle = 28,
+            GumTextObjectsUpdateTextWith0ChildDepth = 29
         }
 
         #endregion

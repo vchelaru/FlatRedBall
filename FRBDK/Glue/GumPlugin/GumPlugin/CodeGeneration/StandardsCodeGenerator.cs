@@ -61,7 +61,14 @@ namespace GumPlugin.CodeGeneration
 
                 codeBlock.Line("if (shouldUpdate)");
                 codeBlock.Line("{");
-                codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
+                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
+                {
+                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, 0);");
+                }
+                else
+                {
+                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
+                }
                 codeBlock.Line("}");
             });
 
@@ -69,6 +76,11 @@ namespace GumPlugin.CodeGeneration
             {
                 codeBlock.Line("ContainedText.FontScale = value;");
                 codeBlock.Line("UpdateLayout();");
+            });
+
+            mStandardSetterReplacements.Add("SourceFile", codeBlock =>
+            {
+                codeBlock.Line("this.Texture = value;");
             });
 
             mStandardSetterReplacements.Add("Texture", (codeBlock) =>
@@ -79,13 +91,13 @@ namespace GumPlugin.CodeGeneration
                 // This allows the object to prevent unnecessary layouts when texture changes:
 
 
-                codeBlock.Line("var shouldUpdateLayout = true;");
+                codeBlock.Line("var shouldUpdateLayout = false;");
 
                 codeBlock.Line("int widthBefore = -1;");
                 codeBlock.Line("int heightBefore = -1;");
 
-                codeBlock.Line("var isUsingPercentageWidthAndHeight = WidthUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile && HeightUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;");
-                codeBlock.Line("if (isUsingPercentageWidthAndHeight)");
+                codeBlock.Line("var isUsingPercentageWidthOrHeight = WidthUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile || HeightUnits == Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;");
+                codeBlock.Line("if (isUsingPercentageWidthOrHeight)");
                 codeBlock.Line("{");
                 codeBlock.Line("    if (ContainedSprite.Texture != null)");
                 codeBlock.Line("    {");
@@ -95,7 +107,7 @@ namespace GumPlugin.CodeGeneration
                 codeBlock.Line("}");
                 codeBlock.Line("ContainedSprite.Texture = value;");
 
-                codeBlock.Line("if (isUsingPercentageWidthAndHeight)");
+                codeBlock.Line("if (isUsingPercentageWidthOrHeight)");
                 codeBlock.Line("{");
                 codeBlock.Line("    int widthAfter = -1;");
                 codeBlock.Line("    int heightAfter = -1;");
