@@ -118,9 +118,6 @@ namespace FlatRedBall.Input
         AnalogStick mLeftStick;
         AnalogStick mRightStick;
 
-        AnalogButton mLeftTrigger;
-        AnalogButton mRightTrigger;
-
         PlayerIndex mPlayerIndex;
 
         KeyboardButtonMap mButtonMap;
@@ -376,24 +373,37 @@ namespace FlatRedBall.Input
         }
 
         /// <summary>
-        /// Returns the left trigger's current value.  When not pressed this property returns
-        /// 0.0f.  When fully pressed this property returns 1.0f;
+        /// The left trigger values as reported directly by the gamepad, not flipped for Gamecube
         /// </summary>
-        public AnalogButton LeftTrigger
-        {
-            get { return mLeftTrigger; }
-        }
+        AnalogButton mLeftTrigger;
+        AnalogButton mFlippedLeftTrigger;
 
-        #region XML Docs
+        /// <summary>
+        /// Returns the left trigger's current value.  When not pressed this property returns
+        /// 0.0f.  When fully pressed this property returns 1.0f. 
+        /// </summary>
+        /// <remarks>
+        /// This accounts for the Gamecube controller returning inverted shoulder/trigger and inverts internally. Therefore
+        /// this value is always in the trigger position regardless of gamepad.
+        /// </remarks>
+        public AnalogButton LeftTrigger => ButtonLayout != ButtonLayout.GameCube
+            ? mLeftTrigger : mFlippedLeftTrigger;
+
+        /// <summary>
+        /// The right trigger values as reported directly by the gamepad, not flipped for Gamecube
+        /// </summary>
+        AnalogButton mRightTrigger;
+        AnalogButton mFlippedRightTrigger;
         /// <summary>
         /// Returns the right trigger's current value.  When not pressed this property returns
         /// 0.0f.  When fully pressed this property returns 1.0f;
         /// </summary>
-        #endregion
-        public AnalogButton RightTrigger
-        {
-            get { return mRightTrigger; }
-        }
+        /// <remarks>
+        /// This accounts for the Gamecube controller returning inverted shoulder/trigger and inverts internally. Therefore
+        /// this value is always in the trigger position regardless of gamepad.
+        /// </remarks>
+        public AnalogButton RightTrigger => ButtonLayout != ButtonLayout.GameCube
+            ? mRightTrigger : mFlippedRightTrigger;
 
         /// <summary>
         /// Returns whether this game pad was disconnected last frame but is connected this frame.
@@ -433,6 +443,9 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Returns the game pad type as reported by the underlying capabilities.
+        /// </summary>
         public GamePadType GamePadType => mCapabilities.GamePadType;
 
         public GamePadCapabilities Capabilities => mCapabilities;
@@ -589,6 +602,11 @@ namespace FlatRedBall.Input
             #endregion
 
             #region Handle the buttons if there isn't a ButtonMap (this can happen even if there is a ButtonMap)
+
+
+            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
+
+
             switch (button)
             {
                 case Button.A:
@@ -604,10 +622,24 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Pressed;
                     break;
                 case Button.LeftShoulder:
-                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    if(areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    }
                     break;
                 case Button.RightShoulder:
-                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    if(areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    }
                     break;
                 case Button.Back:
                     returnValue |= mGamePadState.Buttons.Back == ButtonState.Pressed;
@@ -634,10 +666,25 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.DPad.Right == ButtonState.Pressed;
                     break;
                 case Button.LeftTrigger:
+                    if(areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
+                    }
                     returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
                     break;
                 case Button.RightTrigger:
-                    returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        returnValue |= mRightTrigger.Position >= AnalogOnThreshold;
+                    }
                     break;
             }
 
@@ -876,6 +923,8 @@ namespace FlatRedBall.Input
                 }
             }
 
+            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
+
             switch (button)
             {
                 case Button.A:
@@ -891,10 +940,24 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.Buttons.Y == ButtonState.Released && mLastGamePadState.Buttons.Y == ButtonState.Pressed;
                     break;
                 case Button.LeftShoulder:
-                    returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Released && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    if(areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mLeftTrigger.Position < AnalogOnThreshold && mLeftTrigger.LastPosition >= AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Released && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    }
                     break;
                 case Button.RightShoulder:
-                    returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Released && mLastGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mRightTrigger.Position < AnalogOnThreshold && mRightTrigger.LastPosition >= AnalogOnThreshold;
+                    }
+                    else
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Released && mLastGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    }
                     break;
                 case Button.Back:
                     returnValue |= mGamePadState.Buttons.Back == ButtonState.Released && mLastGamePadState.Buttons.Back == ButtonState.Pressed;
@@ -921,10 +984,24 @@ namespace FlatRedBall.Input
                     returnValue |= mGamePadState.DPad.Right == ButtonState.Released && mLastGamePadState.DPad.Right == ButtonState.Pressed;
                     break;
                 case Button.LeftTrigger:
-                    returnValue |= mLeftTrigger.Position < AnalogOnThreshold && mLeftTrigger.LastPosition >= AnalogOnThreshold;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.LeftShoulder == ButtonState.Released && mLastGamePadState.Buttons.LeftShoulder == ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        returnValue |= mLeftTrigger.Position < AnalogOnThreshold && mLeftTrigger.LastPosition >= AnalogOnThreshold;
+                    }
                     break;
                 case Button.RightTrigger:
-                    returnValue |= mRightTrigger.Position < AnalogOnThreshold && mRightTrigger.LastPosition >= AnalogOnThreshold;
+                    if (areShouldersAndTriggersFlipped)
+                    {
+                        returnValue |= mGamePadState.Buttons.RightShoulder == ButtonState.Released && mLastGamePadState.Buttons.RightShoulder == ButtonState.Pressed;
+                    }
+                    else
+                    {
+                        returnValue |= mRightTrigger.Position < AnalogOnThreshold && mRightTrigger.LastPosition >= AnalogOnThreshold;
+                    }
                     break;
             }
 
@@ -1013,6 +1090,9 @@ namespace FlatRedBall.Input
 
             mLeftTrigger.Clear();
             mRightTrigger.Clear();
+
+            mFlippedLeftTrigger?.Clear();
+            mFlippedRightTrigger?.Clear();
         }
 
 
@@ -1169,6 +1249,8 @@ namespace FlatRedBall.Input
 
         private void UpdateToGamepadType()
         {
+            var oldLayout = ButtonLayout;
+
 #if MONOGAME_381
             var name = mCapabilities.DisplayName;
             var id = mCapabilities.Identifier;
@@ -1199,6 +1281,20 @@ namespace FlatRedBall.Input
             else if (GamecubeControllerNames.Contains(name))
             {
                 ButtonLayout = ButtonLayout.GameCube;
+            }
+
+            if (oldLayout != ButtonLayout)
+            {
+                if (ButtonLayout == ButtonLayout.GameCube)
+                {
+                    mFlippedLeftTrigger = new AnalogButton();
+                    mFlippedRightTrigger = new AnalogButton();
+                }
+                else
+                {
+                    mFlippedLeftTrigger = null;
+                    mFlippedRightTrigger = null;
+                }
             }
         }
 
@@ -1272,6 +1368,14 @@ namespace FlatRedBall.Input
                 mLeftStick.Update(leftStick);
                 mRightStick.Update(rightStick);
 
+                if(ButtonLayout == ButtonLayout.GameCube)
+                {
+                    mFlippedLeftTrigger.Update((int)mGamePadState.Buttons.LeftShoulder);
+                    mFlippedRightTrigger.Update((int)mGamePadState.Buttons.RightShoulder);
+
+                }
+
+                // Even if using Gamecube, record these values as they are used above in button maps
                 mLeftTrigger.Update(mGamePadState.Triggers.Left);
                 mRightTrigger.Update(mGamePadState.Triggers.Right);
 
