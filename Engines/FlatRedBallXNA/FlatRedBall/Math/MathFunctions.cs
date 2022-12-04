@@ -113,6 +113,16 @@ namespace FlatRedBall.Math
             return angle;
         }
 
+        public static float AngleToAngleDegrees(float endAngleDegrees, float startAngleDegrees)
+        {
+            float angle = NormalizeAngleDegrees(endAngleDegrees) - NormalizeAngleDegrees(startAngleDegrees);
+
+            if (System.Math.Abs(angle) > 180)
+                angle = (float)(angle - 2 * System.Math.Sign(angle) * 180);
+
+            return angle;
+        }
+
         public static double AngleToAngle(double angle1, double angle2)
         {
             double angle = angle2 - angle1;
@@ -1362,6 +1372,14 @@ namespace FlatRedBall.Math
             while (angle >= MathHelper.TwoPi) angle -= MathHelper.TwoPi;
 
             return angle;
+        }
+
+        public static float NormalizeAngleDegrees(float angleDegrees)
+        {
+            while (angleDegrees < 0) angleDegrees += 360;
+            while (angleDegrees > 360) angleDegrees -= 360;
+
+            return angleDegrees;
         }
 
         public static float MoveTowardAngle(float currentAngle, float destinationAngle, float amount)

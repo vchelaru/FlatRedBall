@@ -6,11 +6,6 @@ namespace Microsoft.Xna.Framework
 {
     public static class Vector2ExtensionMethods
     {
-        public static Vector2 FromAngle(float angle)
-        {
-            return new Vector2((float)Math.Cos(angle),
-                (float)Math.Sin(angle));
-        }
 
         /// <summary>
         /// Returns the angle in radians of the argument vector, where 0 is to the right, 
@@ -38,6 +33,24 @@ namespace Microsoft.Xna.Framework
             toReturn.Y = vector2.Y;
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Returns a normalized vector. Throws an exception if the argument vector has a length of 0.
+        /// </summary>
+        /// <param name="vector">The vector to normalize.</param>
+        /// <returns></returns>
+        public static Vector2 Normalized(this Vector2 vector)
+        {
+            if(vector.X != 0 || vector.Y != 0)
+            {
+                vector.Normalize();
+                return vector;
+            }
+            else
+            {
+                throw new InvalidOperationException("This vector is of length 0, so it cannot be normalized");
+            }
         }
 
         /// <summary>
@@ -71,24 +84,6 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        /// <summary>
-        /// Returns a normalized vector. Throws an exception if the argument vector has a length of 0.
-        /// </summary>
-        /// <param name="vector">The vector to normalize.</param>
-        /// <returns></returns>
-        public static Vector2 Normalized(this Vector2 vector)
-        {
-            if(vector.X != 0 || vector.Y != 0)
-            {
-                vector.Normalize();
-                return vector;
-            }
-            else
-            {
-                throw new InvalidOperationException("This vector is of length 0, so it cannot be normalized");
-            }
-        }
-
         public static Vector2 RotatedBy(this Vector2 vector2, float radiansToRotateBy)
         {
             if (vector2.X == 0 && vector2.Y == 0)
@@ -103,6 +98,11 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static Vector2 FromAngle(float angle)
+        {
+            return new Vector2((float)Math.Cos(angle),
+                (float)Math.Sin(angle));
+        }
 
         /// <summary>
         /// Returns a vector in the same direction as the argument vector, but of the length specified by the length argument.
@@ -114,5 +114,11 @@ namespace Microsoft.Xna.Framework
         {
             return vector2.NormalizedOrZero() * length;
         }
+
+        public static Vector2 AtAngle(this Vector2 vector2, float angleRadians)
+        {
+            return Vector2ExtensionMethods.FromAngle(angleRadians) * vector2.Length();
+        }
+
     }
 }
