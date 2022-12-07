@@ -11,29 +11,8 @@ using TMXGlueLib;
 
 namespace TiledPluginCore.Errors
 {
-    class MultipleTilesetPerLayerErrorViewModel : ErrorViewModel
+    class MultipleTilesetPerLayerErrorViewModel : FileErrorViewModel
     {
-        //ReferencedFileSave referencedFileSave;
-        //public ReferencedFileSave ReferencedFileSave 
-        //{
-        //    get => referencedFileSave; 
-        //    set
-        //    {
-        //        referencedFileSave = value;
-
-        //    }
-        //}
-        FilePath filePath;
-        public FilePath FilePath
-        {
-            get => filePath;
-            set
-            {
-                filePath = value;
-                UpdateDetails();
-            }
-        }
-
         string layerName;
         public string LayerName
         {
@@ -45,25 +24,12 @@ namespace TiledPluginCore.Errors
             }
         }
 
-        private void UpdateDetails()
+        public override void UpdateDetails()
         {
             Details = $"Layer {layerName} in {FilePath} references multiple tilesets which is not allowed";
         }
 
-        public override string UniqueId => Details;
-
-
-        public override void HandleDoubleClick()
-        {
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(filePath);
-            GlueState.Self.CurrentReferencedFileSave = rfs;
-        }
-
-        public override bool ReactsToFileChange(FilePath filePath)
-        {
-            return filePath == FilePath;
-        }
-
+        
         public static bool HasMultipleTilesets(TiledMapSave tms, MapLayer layer)
         {
             uint? tilesetForLayer = null;
@@ -101,16 +67,8 @@ namespace TiledPluginCore.Errors
 
         public override bool GetIfIsFixed()
         {
-            // fixed if:
-            // 1. File has been removed from the Glue project
-            var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(FilePath);
-            if(rfs == null)
-            {
-                return true;
-            }
 
-            // 2. TMX doesn't exist anymore
-            if (FilePath.Exists() == false)
+            if(base.GetIfIsFixed())
             {
                 return true;
             }

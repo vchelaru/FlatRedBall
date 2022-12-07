@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO.Csv;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +35,30 @@ namespace FlatRedBall.Glue.Errors
                     errors.Add(error);
                 }
 
-                // See if this has a duplicate 
-                
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
 
+                // See if this has a duplicate 
+                CsvCodeGenerator.DeserializeToRcr(
+                    rfs.CsvDelimiter, 
+                    filePath,
+                    out RuntimeCsvRepresentation rcr, out bool succeeded);
+                
+                if(succeeded)
+                {
+                    var duplicateError = CsvCodeGenerator.GetDuplicateMessageIfDuplicatesFound(
+                        rcr,
+                        rfs.CreatesDictionary,
+                        filePath.FullPath);
+
+                    if(!string.IsNullOrEmpty(duplicateError))
+                    {
+                        var vm = new CsvDuplicateItemInFileViewModel();
+                        vm.FilePath = filePath;
+                        vm.UpdateDetails();
+                        errors.Add(vm);
+                        
+                    }
+                }
             }
 
             return errors.ToArray();

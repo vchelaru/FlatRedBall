@@ -92,7 +92,9 @@ namespace FlatRedBall.Glue
                 // doesn't actually generate
                 // any code because the CSV will
                 // deserialize to an array of primitives.
-                CheckUniformTypeValidity(rfs, fileName, oldDelimiter);
+                // Update December 6 2022 Now handled by error
+                // window.
+                //CheckUniformTypeValidity(rfs, fileName, oldDelimiter);
             }
             else
             {
@@ -105,11 +107,12 @@ namespace FlatRedBall.Glue
                     CsvFileManager.Delimiter = oldDelimiter;
                     
 
-                    string whyIsCsvWrong = GetWhyCsvIsWrong(rcr, rfs.CreatesDictionary, fileName);
+                    string whyIsCsvWrong = GetDuplicateMessageIfDuplicatesFound(rcr, rfs.CreatesDictionary, fileName);
 
                     if (!string.IsNullOrEmpty(whyIsCsvWrong))
                     {
-                        GlueGui.ShowMessageBox(whyIsCsvWrong);
+                        // No need - handled by error view model
+                        //GlueGui.ShowMessageBox(whyIsCsvWrong);
                         succeeded = false;
                     }
                     else
@@ -456,6 +459,11 @@ namespace FlatRedBall.Glue
             return fileName;
         }
 
+        public static void DeserializeToRcr(AvailableDelimiters delimiter, FilePath filePath, out RuntimeCsvRepresentation rcr, out bool succeeded)
+        {
+            DeserializeToRcr(delimiter, filePath.FullPath, out rcr, out succeeded);
+        }
+
         public static void DeserializeToRcr(AvailableDelimiters delimiter, string fileName, out RuntimeCsvRepresentation rcr, out bool succeeded)
         {
             rcr = null;
@@ -720,7 +728,7 @@ namespace FlatRedBall.Glue
             }
         }
 
-        public static string GetWhyCsvIsWrong(RuntimeCsvRepresentation rcr, bool createsDictionary, string fileName)
+        public static string GetDuplicateMessageIfDuplicatesFound(RuntimeCsvRepresentation rcr, bool createsDictionary, string fileName)
         {
             string duplicateHeader = null;
             string duplicateRequiredField = null;
@@ -735,12 +743,12 @@ namespace FlatRedBall.Glue
 
             if (!string.IsNullOrEmpty(duplicateHeader))
             {
-                return "The CSV file " + fileName + "\n\nhas the following duplicate header.\n\n" +
+                return "The CSV file the following duplicate header.\n\n" +
                     duplicateHeader;
             }
             else if (createsDictionary && !string.IsNullOrEmpty(duplicateRequiredField))
             {
-                return "The CSV file " + fileName + "\n\nhas a duplicate required field:" + duplicateRequiredField;
+                return "The CSV file has a duplicate required field:" + duplicateRequiredField;
             }
 
             // WE also have to check for duplicates with different types but the same name
@@ -752,7 +760,7 @@ namespace FlatRedBall.Glue
                 {
                     if (namesFound.Contains(name))
                     {
-                        return "The CSV file " + fileName + " has a duplicate header: " + name;
+                        return "The CSV file has a duplicate header: " + name;
                     }
                     else
                     {
@@ -764,35 +772,6 @@ namespace FlatRedBall.Glue
 
             return null;
         }
-
-        /// <summary>
-        /// Verifies that the CSV is properly set up - this code doesn't generate anything because uniform type CSVs don't actually make
-        /// a new class.  They'll instead deserialize to something like string[]
-        /// </summary>
-        /// <param name="rfs">The file reference to the CSV.</param>
-        /// <param name="fileName">The filename of the CSV</param>
-        /// <param name="oldDelimiter">The old CSV delimiter - what to set the CSV delimiter back to after deserializing this CSV.</param>
-        private static void CheckUniformTypeValidity(ReferencedFileSave rfs, string fileName, char oldDelimiter)
-        {
-            string duplicateHeader;
-
-            RuntimeCsvRepresentation rcr = CsvFileManager.CsvDeserializeToRuntime(
-                fileName);
-            CsvFileManager.Delimiter = oldDelimiter;
-            duplicateHeader = rcr.GetFirstDuplicateHeader;
-
-            if (rfs.CreatesDictionary)
-            {
-                string duplicateRequiredField = rcr.FirstDuplicateRequiredField;
-
-                if (!string.IsNullOrEmpty(duplicateRequiredField))
-                {
-                    System.Windows.Forms.MessageBox.Show("The CSV file " + fileName + "\n\nhas a duplicate required field:" + duplicateRequiredField);
-                }
-            }
-        }
-
-
 
         public static string GetEntireGenericTypeForCsvFile(ReferencedFileSave referencedFileSave)
         {
