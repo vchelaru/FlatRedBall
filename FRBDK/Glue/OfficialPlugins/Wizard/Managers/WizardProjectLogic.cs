@@ -835,7 +835,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     await PluginManager.ReactToCreateCollisionRelationshipsBetween(playerList, solidCollisionNos);
 
                     var nos =
-                        gameScreen.GetNamedObject("PlayerVsCloudCollision") ??
+                        gameScreen.GetNamedObject("PlayerVsSolidCollision") ??
                         gameScreen.GetNamedObject("PlayerListVsSolidCollision");
 
                     // move is 1
