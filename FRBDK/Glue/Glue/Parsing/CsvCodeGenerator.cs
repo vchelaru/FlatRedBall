@@ -456,7 +456,7 @@ namespace FlatRedBall.Glue
             return fileName;
         }
 
-        private static void DeserializeToRcr(AvailableDelimiters delimiter, string fileName, out RuntimeCsvRepresentation rcr, out bool succeeded)
+        public static void DeserializeToRcr(AvailableDelimiters delimiter, string fileName, out RuntimeCsvRepresentation rcr, out bool succeeded)
         {
             rcr = null;
 

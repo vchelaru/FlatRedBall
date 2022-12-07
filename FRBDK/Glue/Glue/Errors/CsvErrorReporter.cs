@@ -33,6 +33,10 @@ namespace FlatRedBall.Glue.Errors
 
                     errors.Add(error);
                 }
+
+                // See if this has a duplicate 
+                
+
             }
 
             return errors.ToArray();

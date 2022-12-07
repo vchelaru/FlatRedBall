@@ -12,11 +12,13 @@ using System.Windows.Controls;
 namespace OfficialPluginsCore.CsvNewFilePlugin
 {
     [Export(typeof(PluginBase))]
-    public class MainCsvNewFilePlugin : EmbeddedPlugin
+    public class MainCsvPlugin : EmbeddedPlugin
     {
         public override void StartUp()
         {
             AssignEvents();
+
+       
         }
 
         private void AssignEvents()
