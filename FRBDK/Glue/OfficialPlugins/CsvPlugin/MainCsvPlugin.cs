@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using System;
@@ -52,18 +53,10 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             newFileWindow.SelectionChanged += (not, used) =>
             {
                 var ati = newFileWindow.SelectedItem;
-
-                if (IsSpreadsheet(ati))
-                {
-                    spreadsheetBox.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    spreadsheetBox.Visibility = Visibility.Collapsed;
-                }
+                spreadsheetBox.Visibility = IsSpreadsheet(ati).ToVisibility();
             };
 
-            newFileWindow.GetCreationOption = () =>
+            newFileWindow.GetCreationOption += () =>
             {
                 var ati = newFileWindow.SelectedItem;
                 if(IsSpreadsheet(ati))

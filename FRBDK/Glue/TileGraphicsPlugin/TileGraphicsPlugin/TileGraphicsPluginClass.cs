@@ -702,7 +702,7 @@ namespace TileGraphicsPlugin
                 }
             };
 
-            newFileWindow.GetCreationOption = () =>
+            newFileWindow.GetCreationOption += () =>
             {
                 var ati = newFileWindow.SelectedItem;
                 if (IsTmx(ati))
