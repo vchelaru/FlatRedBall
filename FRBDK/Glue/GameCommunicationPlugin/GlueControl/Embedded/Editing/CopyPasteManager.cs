@@ -208,6 +208,8 @@ namespace GlueControl.Editing
 
             var newNosToSelect = newNamedObjects.FirstOrDefault();
 
+            // This currently echoes back to cause a double-select here. It's ...okay, we can deal with it later, but 
+            // we want to do this so it selects the tree node
             await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
 
 
