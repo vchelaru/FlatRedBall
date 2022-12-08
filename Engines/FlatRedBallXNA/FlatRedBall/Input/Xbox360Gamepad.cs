@@ -674,7 +674,6 @@ namespace FlatRedBall.Input
                     {
                         returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
                     }
-                    returnValue |= mLeftTrigger.Position >= AnalogOnThreshold;
                     break;
                 case Button.RightTrigger:
                     if (areShouldersAndTriggersFlipped)
