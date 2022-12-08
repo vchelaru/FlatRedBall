@@ -206,12 +206,9 @@ namespace GlueControl.Editing
 
             }
 
-            //await GlueState.Self.SetCurrentNamedObjectSave(newNamedObjects.FirstOrDefault());
+            var newNosToSelect = newNamedObjects.FirstOrDefault();
 
-            //if (newObjectToSelect != null)
-            //{
-            //    await GlueState.Self.SetCurrentNamedObjectSave(newObjectToSelect, currentElement);
-            //}
+            await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
 
 
         }
