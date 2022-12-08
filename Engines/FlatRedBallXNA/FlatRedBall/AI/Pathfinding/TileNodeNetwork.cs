@@ -585,6 +585,12 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
+        /// <summary>
+        /// Removes all nodes which overlap the argument AxisAlignedRectangle. Note that the overlap check tests 
+        /// the entire cell of the TileNodeNetwork rather than strict overlap. Therefore, nodes may be removed even though
+        /// the Position of the node is not inside of the rectangle. 
+        /// </summary>
+        /// <param name="rectangle"></param>
         public void RemoveNodesOverlapping(AxisAlignedRectangle rectangle)
         {
             WorldToIndex(rectangle.Left, rectangle.Bottom, out int startX, out int startY);
