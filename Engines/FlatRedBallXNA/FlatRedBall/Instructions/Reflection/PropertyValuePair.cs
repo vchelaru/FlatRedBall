@@ -730,20 +730,36 @@ namespace FlatRedBall.Instructions.Reflection
                 }
 
 #endif
-#endregion
-
                 #endregion
 
-            // Why do we catch exceptions here?  That seems baaaad
-            //catch (Exception)
-            //{
-            //    //int m = 3;
-            //}
+                #region Check Unqualified types which are not enums
+                else if(mUnqualifiedTypeDictionary.ContainsKey(desiredType))
+                {
+                    var foundType = mUnqualifiedTypeDictionary[desiredType];
+
+                    // See if this has a static here:
+                    var foundStaticField = foundType.GetField(value);
+
+                    var fieldValue = foundStaticField?.GetValue(null);
+                    if (fieldValue != null)
+                    {
+                        handled = true;
+                        return fieldValue;
+                    }
+                }
+                #endregion
+                #endregion
+
+                // Why do we catch exceptions here?  That seems baaaad
+                //catch (Exception)
+                //{
+                //    //int m = 3;
+                //}
 
 
                 if (!handled)
                 {
-                    throw new NotImplementedException("Cannot convert the value " + value + " to the type " +
+                    throw new NotImplementedException("Cannot convert the value " + value + $" ({value?.GetType()}) to the type " +
                         desiredType.ToString());
                 }
             }
