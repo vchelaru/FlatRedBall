@@ -671,6 +671,22 @@ namespace FlatRedBall.Instructions.Reflection
 
                 #endregion
 #endif
+
+                else if(desiredType.StartsWith("System.Nullable`1"))
+                {
+                    if(string.IsNullOrEmpty(value))
+                    {
+                        return null;
+                    }
+                    else if(alreadyKnownType != null)
+                    {
+                        var genericType = alreadyKnownType.GenericTypeArguments[0];
+
+                        // now just return the type using the generic:
+                        return ConvertStringValueToValueOfType(value, genericType.FullName, genericType, contentManagerName, trimQuotes);
+                    }
+                }
+
                 #region enum
                 else if (IsEnum(desiredType))
                 {
