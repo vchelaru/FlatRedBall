@@ -546,7 +546,34 @@ namespace FlatRedBall.Math.Collision
         {
             if (firstSubCollisionCircle != null)
             {
-                throw new NotImplementedException();
+                //return firstSubCollisionCircle(first).CollideAgainstMoveSoft(secondSub)
+                //throw new NotImplementedException();
+                if (secondSubCollisionCircle != null)
+                {
+                    return firstSubCollisionCircle(first).CollideAgainstMoveSoft(secondSubCollisionCircle(second), moveFirstMass, moveSecondMass, softSeparationCoefficient);
+                }
+                else if (secondSubCollisionRectangle != null)
+                {
+                    throw new NotImplementedException();
+                    //return firstSubCollisionCircle(first).CollideAgainstMoveSoft(secondSubCollisionRectangle(second), moveFirstMass, moveSecondMass, softSeparationCoefficient);
+                }
+                else if (secondSubCollisionPolygon != null)
+                {
+                    throw new NotImplementedException();
+                    //return firstSubCollisionCircle(first).CollideAgainstMoveSoft(secondSubCollisionPolygon(second), moveFirstMass, moveSecondMass, softSeparationCoefficient);
+                }
+                else if (secondSubCollisionCollidable != null)
+                {
+                    throw new NotImplementedException();
+                    // invert it since ICollidable has to be the one calling it
+                    //return secondSubCollisionCollidable(second).CollideAgainstMoveSoft(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass, softSeparationCoefficient);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                    //return second.CollideAgainstMoveSoft(firstSubCollisionCircle(first), moveSecondMass, moveFirstMass, softSeparationCoefficient);
+                }
+
             }
             else if (firstSubCollisionRectangle != null)
             {

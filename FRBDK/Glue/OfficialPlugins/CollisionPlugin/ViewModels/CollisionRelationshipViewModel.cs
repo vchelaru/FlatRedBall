@@ -26,6 +26,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         PlatformerCloudCollision = 4,
         DelegateCollision = 5,
         StackingCollision = 6,
+        MoveSoftCollision = 7,
     }
     #endregion
 
@@ -247,17 +248,26 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CollisionType))]
         public Visibility MoveCollisionVisibility
         {
-            get
+            get =>
+                (CollisionType == CollisionType.MoveCollision).ToVisibility();
+        }
+
+        [DependsOn(nameof(CollisionType))]
+        public bool IsMoveSoftCollisionChecked
+        {
+            get => CollisionType == CollisionType.MoveSoftCollision;
+            set
             {
-                if(CollisionType == CollisionType.MoveCollision)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
+                if (value) CollisionType = CollisionType.MoveSoftCollision;
             }
+        }
+
+
+        [DependsOn(nameof(CollisionType))]
+        public Visibility MoveSoftCollisionVisibility
+        {
+            get => 
+                (CollisionType == CollisionType.MoveSoftCollision).ToVisibility();
         }
 
         [DependsOn(nameof(CollisionType))]
@@ -276,17 +286,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(CollisionType))]
         public Visibility BounceCollisionVisibility
         {
-            get
-            {
-                if(CollisionType == CollisionType.BounceCollision)
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
+            get =>
+                (CollisionType == CollisionType.BounceCollision).ToVisibility();
         }
 
         [SyncedProperty]
@@ -509,6 +510,14 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         {
             get => Get<float>(); 
             set => SetAndPersist(value); 
+        }
+
+        [SyncedProperty]
+        [DefaultValue(1.0f)]
+        public float SoftCollisionCoefficient
+        {
+            get => Get<float>();
+            set => SetAndPersist(value);
         }
 
         [SyncedProperty]

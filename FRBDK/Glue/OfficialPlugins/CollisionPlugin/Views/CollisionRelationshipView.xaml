@@ -144,6 +144,36 @@
                                      Text="{Binding SecondCollisionMass}"></TextBox>
                     </Grid>
                     <RadioButton
+                        IsChecked="{Binding IsMoveSoftCollisionChecked}">Move Soft Collision (separate overlapping objects over time)</RadioButton>
+                    <Grid Margin="10,0,0,0"
+                                Visibility="{Binding MoveSoftCollisionVisibility}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" Grid.Column="0"
+                                   Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
+                        <TextBox Margin="10,0,10,0" Grid.Row="1"
+                                    Text="{Binding FirstCollisionMass}"></TextBox>
+
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding SecondMassText, FallbackValue=Second Mass}"></TextBlock>
+                        <TextBox Grid.Column="1" Grid.Row="1" Margin="10,0,10,0"
+                                    Text="{Binding SecondCollisionMass}"></TextBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="2">
+                            <TextBlock>Separation Coefficient</TextBlock>
+                            <TextBox  Width="80" Margin="5,0,0,0"
+                                     Text="{Binding SoftCollisionCoefficient}"></TextBox>
+                        </StackPanel>
+                    </Grid>
+
+
+                    <RadioButton
                         IsChecked="{Binding IsBounceCollisionChecked}">Bounce Collision</RadioButton>
                     <Grid Margin="10,0,0,0"
                                 Visibility="{Binding BounceCollisionVisibility}">

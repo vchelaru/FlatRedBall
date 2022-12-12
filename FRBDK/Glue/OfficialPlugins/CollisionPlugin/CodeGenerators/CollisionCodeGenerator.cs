@@ -60,6 +60,10 @@ namespace OfficialPlugins.CollisionPlugin
                 nameof(CollisionRelationshipViewModel.CollisionElasticity))
                 .ToString(CultureInfo.InvariantCulture) + "f";
 
+            var softCollisionCoefficient = Get<float>(
+                nameof(CollisionRelationshipViewModel.SoftCollisionCoefficient))
+                .ToString(CultureInfo.InvariantCulture) + "f";
+
             var firstSubCollision = Get<string>(
                 nameof(CollisionRelationshipViewModel.FirstSubCollisionSelectedItem));
 
@@ -248,6 +252,18 @@ namespace OfficialPlugins.CollisionPlugin
                 case CollisionType.MoveCollision:
 
                     codeBlock.Line($"{instanceName}.SetMoveCollision({firstMass}, {secondMass});");
+                    break;
+                case CollisionType.MoveSoftCollision:
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipsSupportMoveSoft)
+                    {
+                        codeBlock.Line($"{instanceName}.SetMoveSoftCollision({firstMass}, {secondMass}, {softCollisionCoefficient});");
+                    }
+                    else
+                    {
+                        codeBlock.Line(
+                            $"This project is version {GlueState.Self.CurrentGlueProject.FileVersion} " +
+                            $"but must be of version {(int)GlueProjectSave.GluxVersions.CollisionRelationshipsSupportMoveSoft} to use move soft collision in codegen");
+                    }
                     break;
                 case CollisionType.BounceCollision:
                     //var relationship = new FlatRedBall.Math.Collision.CollisionRelationship();
