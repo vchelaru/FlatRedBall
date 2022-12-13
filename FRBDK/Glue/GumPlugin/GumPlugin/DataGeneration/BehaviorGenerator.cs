@@ -34,6 +34,9 @@ namespace GumPlugin.DataGeneration
 
             Add("PasswordBoxBehavior", "PasswordBox");
 
+            Add("PlayerJoinViewBehavior", "FlatRedBall.Forms.Controls.Games.PlayerJoinView");
+            Add("PlayerJoinViewItemBehavior", "FlatRedBall.Forms.Controls.Games.PlayerJoinViewItem");
+
             Add("RadioButtonBehavior", "RadioButton");
 
             Add("ScrollBarBehavior", "ScrollBar");

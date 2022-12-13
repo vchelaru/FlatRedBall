@@ -23,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", HandleLoadRecentClicked, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo("Load Recent...", HandleLoadRecentClicked, "File", preferredIndex:2);
 
             //RefreshMenuItems();
 

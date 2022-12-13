@@ -94,13 +94,13 @@ namespace FlatRedBall.Forms.Controls
 
         public object SelectedObject
         {
-            get { return listBox.SelectedObject; }
-            set { listBox.SelectedObject = value; }
+            get => listBox.SelectedObject; 
+            set => listBox.SelectedObject = value;
         }
         public int SelectedIndex
         {
-            get { return listBox.SelectedIndex; }
-            set { listBox.SelectedIndex = value; }
+            get => listBox.SelectedIndex; 
+            set => listBox.SelectedIndex = value; 
         }
 
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
