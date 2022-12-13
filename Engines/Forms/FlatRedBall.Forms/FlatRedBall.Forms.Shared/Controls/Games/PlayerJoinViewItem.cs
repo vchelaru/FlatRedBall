@@ -5,12 +5,16 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    #region Enums
+
     public enum ConnectedJoinedState
     {
         NotConnected,
         Connected,
         ConnectedAndJoined
     }
+
+    #endregion
 
     public class PlayerJoinViewItem : FrameworkElement
     {
@@ -33,6 +37,15 @@ namespace FlatRedBall.Forms.Controls.Games
         public PlayerJoinViewItem() : base() { }
 
         public PlayerJoinViewItem(GraphicalUiElement visual) : base(visual) { }
+
+        protected override void ReactToVisualChanged()
+        {
+            UpdateState();
+
+            base.ReactToVisualChanged();
+        }
+
+        internal void ForceUpdateState() => UpdateState();
 
         protected override void UpdateState()
         {

@@ -204,6 +204,13 @@
   <BehaviorReference>
     <Name>PasswordBoxBehavior</Name>
   </BehaviorReference>
+
+  <BehaviorReference>
+    <Name>PlayerJoinViewBehavior</Name>
+  </BehaviorReference>  <BehaviorReference>
+    <Name>PlayerJoinViewItemBehavior</Name>
+  </BehaviorReference>
+  
   <BehaviorReference>
     <Name>RadioButtonBehavior</Name>
   </BehaviorReference>

@@ -11,7 +11,6 @@ namespace FlatRedBall.Gui
     /// <param name="inputReceiver">The current IInputReceiver.</param>
     public delegate void FocusUpdateDelegate(IInputReceiver inputReceiver);
 
-    #region XML Docs
     /// <summary>
 	/// Interface for objects which can receive input from the InputManager.
 	/// </summary>
@@ -23,7 +22,6 @@ namespace FlatRedBall.Gui
 	/// 
 	/// <para>Since this is only used for Gui elements, this interface is rarely used in games.</para>
     /// </remarks>
-    #endregion
     public interface IInputReceiver
     {
         #region Properties
@@ -68,14 +66,12 @@ namespace FlatRedBall.Gui
 
         #region Methods
 
-        #region XML Docs
         /// <summary>
         /// Called by the InputManager automatically every frame.
         /// </summary>
         /// <remarks>
         /// The implementation of this method should raise the FocusUpdate event.
         /// </remarks>
-        #endregion
         void OnFocusUpdate();
 
         /// <summary>
