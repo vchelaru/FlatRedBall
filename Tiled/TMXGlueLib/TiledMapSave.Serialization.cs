@@ -878,6 +878,12 @@ namespace TMXGlueLib
             get; set;
         }
 
+        [XmlAttribute(AttributeName = "class")]
+        public string Class {
+            get { return Type; }
+            set { Type = value; }
+        }
+
         [XmlIgnore]
         public uint? gid { get; set; }
 
