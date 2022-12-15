@@ -145,6 +145,8 @@
     <None Remove="Embedded\GumDefaults2\Components\Controls\ListBox.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\ListBoxItem.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\PasswordBox.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\PlayerJoinView.gucx" />
+    <None Remove="Embedded\GumDefaults2\Components\Controls\PlayerJoinViewItem.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\RadioButton.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\ScrollBar.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\ScrollViewer.gucx" />
@@ -375,6 +377,8 @@
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBox.gucx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBoxItem.gucx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PasswordBox.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PlayerJoinView.gucx" />
+    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PlayerJoinViewItem.gucx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\RadioButton.gucx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollBar.gucx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollViewer.gucx" />

@@ -299,7 +299,8 @@ namespace GumPlugin
             // - Added Gum animation speed
             // 2.4.1
             // - Fixed a variety of bugs where files weren't generated/saved
-            get { return new Version(2, 4, 1); }
+            // We don't actively maintain this version anymore. Sometimes it is incremented for debugging
+            get { return new Version(2, 4, 2); }
         }
 
         #endregion

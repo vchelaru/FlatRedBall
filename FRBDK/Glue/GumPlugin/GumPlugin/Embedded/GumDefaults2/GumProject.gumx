@@ -6,6 +6,9 @@
   <DefaultCanvasWidth>1024</DefaultCanvasWidth>
   <DefaultCanvasHeight>768</DefaultCanvasHeight>
   <ShowOutlines>false</ShowOutlines>
+  <ShowCanvasOutline>true</ShowCanvasOutline>
+  <ShowRuler>true</ShowRuler>
+  <ShowCheckerBackground>true</ShowCheckerBackground>
   <ConvertVariablesOnUnitTypeChange>false</ConvertVariablesOnUnitTypeChange>
   <RestrictToUnitValues>true</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
@@ -110,6 +113,16 @@
   </ComponentReference>
   <ComponentReference>
     <Name>Controls/PasswordBox</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Controls/PlayerJoinView</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
+    <Name>Controls/PlayerJoinViewItem</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
@@ -276,6 +289,12 @@
     <Name>PasswordBoxBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
+    <Name>PlayerJoinViewBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>PlayerJoinViewItemBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
     <Name>RadioButtonBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
@@ -305,4 +324,8 @@
   <BehaviorReference>
     <Name>UserControlBehavior</Name>
   </BehaviorReference>
+  <SinglePixelTextureTop xsi:nil="true" />
+  <SinglePixelTextureLeft xsi:nil="true" />
+  <SinglePixelTextureRight xsi:nil="true" />
+  <SinglePixelTextureBottom xsi:nil="true" />
 </GumProjectSave>

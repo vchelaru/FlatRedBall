@@ -1,3 +1,48 @@
 {
-  "UserEvents": {}
+  "UserEvents": {
+    "vchel": [
+      {
+        "NewName": "MainMenuGum.PlayerJoinViewInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-12-15T14:52:14.1159388Z"
+      },
+      {
+        "NewName": "GamepadNES",
+        "OldName": "Gamepad1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-12-15T14:59:39.7515372Z"
+      },
+      {
+        "NewName": "GamepadSNES",
+        "OldName": "GamepadNES1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-12-15T14:59:50.0773079Z"
+      },
+      {
+        "NewName": "GamepadNintendo64",
+        "OldName": "GamepadSNES1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-12-15T15:00:01.445621Z"
+      },
+      {
+        "NewName": "GamepadPlaystationDualShock",
+        "OldName": "GamepadXbox1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-12-15T15:00:14.164283Z"
+      },
+      {
+        "NewName": "GamepadSegaGenesis",
+        "OldName": "GamepadPlaystationDualShock1",
+        "ElementType": "Components",
+        "EventType": 3,
+        "TimestampUtc": "2022-12-15T15:00:29.6138185Z"
+      }
+    ]
+  }
 }
