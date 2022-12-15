@@ -130,7 +130,8 @@ namespace TileGraphicsPlugin.CodeGeneration
 
                 codeBlock = codeBlock.If($"{gameplayLayerVarName} != null");
                 codeBlock = codeBlock.Line($"{gameplayLayerVarName}.ForceUpdateDependencies();");
-                codeBlock = codeBlock.Line($"{nos.InstanceName}.Z = -{gameplayLayerVarName}.Z;");
+                codeBlock = codeBlock.Line($"// What if the map's Z isn't 0? Add its Z to make up for that");
+                codeBlock = codeBlock.Line($"{nos.InstanceName}.Z = {nos.InstanceName}.Z - {gameplayLayerVarName}.Z;");
             }                   
         }
 

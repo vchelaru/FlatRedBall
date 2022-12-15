@@ -6,7 +6,7 @@ namespace FlatRedBall.Forms
 {
     public enum TextWrapping
     {
-        // todo - support wrap with overfflow
+        // todo - support wrap with overflow
 
         /// <summary>
         /// No line wrapping is performed.

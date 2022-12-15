@@ -300,27 +300,12 @@ namespace FlatRedBall.Gui
 
         #region Constructors
 
-#if FRB_MDX
-        internal static void Initialize(string guiTextureToUse, System.Windows.Forms.Control form)
-		{
-            Initialize(guiTextureToUse, form, new Cursor(SpriteManager.Camera, form));
-        
-        }
-
-
-		internal static void Initialize(string guiTextureToUse, System.Windows.Forms.Control form, Cursor cursor)
-#else
         // made public for unit tests
 		public static void Initialize(Texture2D guiTextureToUse, Cursor cursor)
 
-#endif
 		{
-#if FRB_MDX || XNA3_1
-            RemoveInvisibleDominantWindows = true;
-
-#else
             RemoveInvisibleDominantWindows = false;
-#endif
+
             mPerishableArrayReadOnly = new ReadOnlyCollection<IWindow>(mPerishableArray);
             // Currently make the FRB XNA default to not using the UI, but the FRB MDX to true
             TextHeight = 2;
@@ -347,21 +332,16 @@ namespace FlatRedBall.Gui
 
             BringsClickedWindowsToFront = true;
 
-            try
-            {
 
-                nfi = new System.Globalization.NumberFormatInfo();
-                //replaced the above line with the one below to used streamed images.
+            nfi = new System.Globalization.NumberFormatInfo();
+            //replaced the above line with the one below to used streamed images.
 
 
-                ShowingCursorTextBox = true;
+            ShowingCursorTextBox = true;
 
-                renderingNotes = new List<String>();
-            }
-            catch(Exception e)
-            {
-                throw e;
-            }
+            renderingNotes = new List<String>();
+
+
             
 
             // Let's do some updates because we want to make sure our "last" values are set to the current value
@@ -986,7 +966,4 @@ namespace FlatRedBall.Gui
 
 		#endregion
 	}
-
-    
-
 }

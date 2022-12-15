@@ -167,6 +167,8 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                     codeBlock.Line(";");
                 }
             }
+
+
         }
     }
 }

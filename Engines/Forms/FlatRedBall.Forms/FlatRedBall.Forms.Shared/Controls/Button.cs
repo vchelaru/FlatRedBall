@@ -7,7 +7,6 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
-
     public class Button : ButtonBase
     {
         #region Fields/Properties

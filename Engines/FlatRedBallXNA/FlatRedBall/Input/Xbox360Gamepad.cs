@@ -2,12 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-
+    #region Enums
     public enum DeadzoneType
     {
         Radial= 0,
@@ -23,30 +24,30 @@ namespace FlatRedBall.Input
         GameCube
     }
 
+
+    public enum GamepadLayout
+    {
+        Unknown,
+        Keyboard,
+        NES,
+        SuperNintendo,
+        Nintendo64,
+        GameCube,
+        SwitchPro,
+        Genesis,
+        Xbox360,
+        PlayStationDualShock,
+
+    }
+
+    #endregion
+
     public class Xbox360GamePad : IInputDevice
     {
         #region Static Dictionaries for identifying the gamepad
 
-        static HashSet<string> NintendoProControllerNames = new HashSet<string>
-        {
-            "Nintendo Switch Pro Controller",
-            "Retro Controller"
-        };
-
-        static HashSet<string> GamecubeControllerNames = new HashSet<string>
-        {
-            "Controller (HORIPAD S)"
-        };
-
-        static HashSet<string> GamecubeControllerIds = new HashSet<string>
-        {
-            "00000003-0e6f-0000-8501-000077006800" // PDF Wired Fightpad Pro 
-        };
-
-        static HashSet<string> XboxControllerNames = new HashSet<string>
-        {
-            "Controller (Xbox One For Windows)"
-        };
+        public static Dictionary<GamepadLayout, HashSet<string>> GamepadNameTypeMap = new Dictionary<GamepadLayout, HashSet<string>>();
+        public static Dictionary<GamepadLayout, HashSet<string>> GamepadIdTypeMap = new Dictionary<GamepadLayout, HashSet<string>>();
 
         #endregion
 
@@ -131,7 +132,6 @@ namespace FlatRedBall.Input
 
         Dictionary<Button, Xbox360ButtonReference> cachedButtons = new Dictionary<Button, Xbox360ButtonReference>();
 
-        public ButtonLayout ButtonLayout { get; set; }
 
         #endregion
 
@@ -448,12 +448,91 @@ namespace FlatRedBall.Input
         /// </summary>
         public GamePadType GamePadType => mCapabilities.GamePadType;
 
+        public ButtonLayout ButtonLayout { get; set; }
+
+        public GamepadLayout GamepadLayout { get; set; }
+
         public GamePadCapabilities Capabilities => mCapabilities;
         #endregion
 
         #region Methods
 
         #region Constructor
+
+        static Xbox360GamePad()
+        {
+            GamepadNameTypeMap[GamepadLayout.NES] = new HashSet<string>
+            {
+                
+            };
+            GamepadIdTypeMap[GamepadLayout.NES] = new HashSet<string>
+            {
+
+            };
+
+            GamepadNameTypeMap[GamepadLayout.SuperNintendo] = new HashSet<string>
+            {
+                "Retro Controller"
+            };
+            GamepadIdTypeMap[GamepadLayout.SuperNintendo] = new HashSet<string>
+            {
+            };
+
+            GamepadNameTypeMap[GamepadLayout.Genesis] = new HashSet<string>
+            {
+
+            };
+            GamepadIdTypeMap[GamepadLayout.Genesis] = new HashSet<string>
+            {
+
+            };
+
+            GamepadNameTypeMap[GamepadLayout.Nintendo64] = new HashSet<string>
+            {
+
+            };
+            GamepadIdTypeMap[GamepadLayout.Nintendo64] = new HashSet<string>
+            {
+
+            };
+
+            GamepadNameTypeMap[GamepadLayout.GameCube] = new HashSet<string>
+            {
+                "Controller (HORIPAD S)"
+            };
+            GamepadIdTypeMap[GamepadLayout.GameCube] = new HashSet<string>
+            {
+                "00000003-0e6f-0000-8501-000077006800" // PDF Wired Fightpad Pro 
+            };
+
+
+            GamepadNameTypeMap[GamepadLayout.SwitchPro] = new HashSet<string>
+            {
+                "Nintendo Switch Pro Controller"
+            };
+            GamepadIdTypeMap[GamepadLayout.SwitchPro] = new HashSet<string>
+            {
+                "Nintendo Switch Pro Controller"
+            };
+
+
+            GamepadNameTypeMap[GamepadLayout.Xbox360]  = new HashSet<string>
+            {
+                "Controller (Xbox One For Windows)"
+            };
+            GamepadIdTypeMap[GamepadLayout.Xbox360] = new HashSet<string>
+            {
+            };
+
+            GamepadNameTypeMap[GamepadLayout.PlayStationDualShock] = new HashSet<string>
+            {
+
+            };
+            GamepadIdTypeMap[GamepadLayout.PlayStationDualShock] = new HashSet<string>
+            {
+
+            };
+        }
 
         internal Xbox360GamePad(PlayerIndex playerIndex)
         {
@@ -1259,27 +1338,72 @@ namespace FlatRedBall.Input
             var id = "";
 #endif
 
-            if(GamecubeControllerIds.Contains(id))
+            // default to xbox since that's the most common type of controller (I think?)
+
+            var found = false;
+            GamepadLayout = GamepadLayout.Xbox360;
+
+            foreach (var kvp in GamepadIdTypeMap)
             {
-                ButtonLayout = ButtonLayout.GameCube;
+                if(kvp.Value.Contains(id))
+                {
+                    GamepadLayout = kvp.Key;
+                    found = true;
+                    break;
+                }
             }
 
-            else if(string.IsNullOrEmpty(name))
+            if(!found)
             {
-                ButtonLayout = ButtonLayout.Unknown;
+                foreach(var kvp in GamepadNameTypeMap) 
+                {
+                    if(kvp.Value.Contains(name))
+                    {
+                        GamepadLayout = kvp.Key;
+                        found = true;
+                        break;
+                    }
+                }
             }
-            else if(XboxControllerNames.Contains(name) || name.Contains("Xbox"))
-            {
-                ButtonLayout = ButtonLayout.Xbox;
-            }
-            else if(NintendoProControllerNames.Contains(name) || name.Contains("Nintendo"))
-            {
-                ButtonLayout = ButtonLayout.NintendoPro;
 
-            }
-            else if (GamecubeControllerNames.Contains(name))
+            if(!found)
             {
-                ButtonLayout = ButtonLayout.GameCube;
+                if(name.Contains("Xbox"))
+                {
+                    GamepadLayout = GamepadLayout.Xbox360;
+                }
+                else if(name.Contains("Nintendo"))
+                {
+                    GamepadLayout = GamepadLayout.SwitchPro;
+                }
+            }
+
+            switch(GamepadLayout)
+            {
+                case GamepadLayout.NES:
+                    ButtonLayout = ButtonLayout.Xbox; //?
+                    break;
+                case GamepadLayout.SuperNintendo:
+                    ButtonLayout = ButtonLayout.NintendoPro;
+                    break;
+                case GamepadLayout.Nintendo64:
+                    ButtonLayout = ButtonLayout.Xbox; // ?
+                    break;
+                case GamepadLayout.GameCube:
+                    ButtonLayout = ButtonLayout.GameCube;
+                    break;
+                case GamepadLayout.SwitchPro:
+                    ButtonLayout = ButtonLayout.NintendoPro;
+                    break;
+                case GamepadLayout.Genesis:
+                    ButtonLayout = ButtonLayout.Xbox;
+                    break;
+                case GamepadLayout.Xbox360:
+                    ButtonLayout = ButtonLayout.Xbox;
+                    break;
+                case GamepadLayout.PlayStationDualShock:
+                    ButtonLayout = ButtonLayout.Xbox;
+                    break;
             }
 
             if (oldLayout != ButtonLayout)

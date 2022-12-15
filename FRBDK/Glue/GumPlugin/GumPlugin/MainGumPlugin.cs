@@ -34,6 +34,7 @@ using FlatRedBall.Glue.FormHelpers;
 using System.Threading.Tasks;
 using HQ.Util.Unmanaged;
 using System.IO;
+using GumPluginCore.CodeGeneration;
 
 namespace GumPlugin
 {
@@ -334,6 +335,8 @@ namespace GumPlugin
             viewModel = new GumViewModel();
             GumPluginCommands.Self.GumViewModel = viewModel;
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
+
+            this.RegisterCodeGenerator(new GumGame1CodeGenerator());
         }
 
         private void AssignEvents()

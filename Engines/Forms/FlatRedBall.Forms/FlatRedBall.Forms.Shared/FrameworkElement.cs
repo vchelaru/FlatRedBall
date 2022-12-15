@@ -494,6 +494,14 @@ namespace FlatRedBall.Forms.Controls
             return null;
         }
 
+        /// <summary>
+        /// Every-frame logic. This will automatically be called if this element is added to the FrameworkElementManager
+        /// </summary>
+        public virtual void Activity()
+        {
+
+        }
+
         public void RepositionToKeepInScreen()
         {
 #if DEBUG

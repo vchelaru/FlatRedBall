@@ -92,7 +92,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GeneratedCameraSetupFile = 26,
             ShapeCollectionHasMaxAxisAlignedRectanglesRadiusX = 27,
             AutoNameCollisionListsAsSingle = 28,
-            GumTextObjectsUpdateTextWith0ChildDepth = 29
+            GumTextObjectsUpdateTextWith0ChildDepth = 29,
+            HasFrameworkElementManager = 30,
         }
 
         #endregion
@@ -101,7 +102,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.AutoNameCollisionListsAsSingle;
+        public const int LatestVersion = (int)GluxVersions.HasFrameworkElementManager;
 
         public int FileVersion { get; set; }
 

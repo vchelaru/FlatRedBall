@@ -1,5 +1,7 @@
-﻿using FlatRedBall.Input;
+﻿using FlatRedBall.Forms.Managers;
+using FlatRedBall.Input;
 using Gum.Wireframe;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,8 +12,9 @@ namespace FlatRedBall.Forms.Controls.Games
 {
     public class PlayerJoinView : FrameworkElement
     {
-        // Should we have a FrameworkElementTemplate?
+        #region Fields/Properties
 
+        // Should we have a FrameworkElementTemplate?
         GraphicalUiElement innerPanel;
         public GraphicalUiElement InnerPanel => innerPanel;
 
@@ -29,6 +32,28 @@ namespace FlatRedBall.Forms.Controls.Games
                 return playerJoinViewItemsReadOnly;
             }
         }
+
+        public List<Xbox360GamePad.Button> JoinButtons { get; private set; } = new List<Xbox360GamePad.Button>()
+        {
+            Xbox360GamePad.Button.Start
+        };
+        public List<Xbox360GamePad.Button> UnjoinButtons { get; private set; } = new List<Xbox360GamePad.Button>()
+        {
+            Xbox360GamePad.Button.Back
+        };
+
+        public List<Keys> JoinKeys { get; private set; } = new List<Keys>()
+        {
+            Keys.Enter
+        };
+        public List<Keys> UnjoinKeys { get; private set; } = new List<Keys>()
+        {
+            Keys.Escape
+        };
+
+        public static string KeyboardName { get; set; } = "Keyboard";
+
+        #endregion
 
         public PlayerJoinView() : base() { }
 
@@ -54,7 +79,14 @@ namespace FlatRedBall.Forms.Controls.Games
                 UpdateJoinedStateForIndex(i, true);
             }
 
+            Visual.RemovedFromGuiManager += HandleRemovedFromGuiManager;
+
             base.ReactToVisualChanged();
+        }
+
+        private void HandleRemovedFromGuiManager(object sender, EventArgs e)
+        {
+            FrameworkElementManager.Self.RemoveFrameworkElement(this);
         }
 
         private void HandleInnerPanelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -77,6 +109,8 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 UpdateJoinedStateForIndex(i, true);
             }
+
+            FrameworkElementManager.Self.AddFrameworkElement(this);
         }
 
         private void HandleControllerConnected(object sender, InputManager.ControllerConnectionEventArgs e)
@@ -106,14 +140,26 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 if(isConnected)
                 {
+                    var gamepad = InputManager.Xbox360GamePads[index];
+                    item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
                     item.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                    item.GamepadLayout = gamepad.GamepadLayout;
+                }
+                else if(item.IsUsingKeyboardAsBackup)
+                {
+                    item.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                    item.ControllerDisplayName = KeyboardName; // should it be something else? Localized? Need to think about this...
+
+                    item.GamepadLayout = GamepadLayout.Keyboard;
                 }
                 else
                 {
                     item.ConnectedJoinedState = ConnectedJoinedState.NotConnected;
+                    item.GamepadLayout = GamepadLayout.Unknown;
                 }
 
-                if(force)
+
+                if (force)
                 {
                     item.ForceUpdateState();
                 }
@@ -136,6 +182,89 @@ namespace FlatRedBall.Forms.Controls.Games
                     }
                 }
             }
+        }
+
+        public override void Activity()
+        {
+            var gamepads = InputManager.Xbox360GamePads;
+
+            for(int i = 0; i < gamepads.Length; i++)
+            {
+                var gamepad = gamepads[i];
+
+                if(gamepad.IsConnected && i < PlayerJoinViewItemsInternal.Count && 
+                    // Keyboard is handled down below
+                    PlayerJoinViewItemsInternal[i].GamepadLayout != GamepadLayout.Keyboard)
+                {
+                    TestJoinUnjoin(gamepad, i);
+                }
+            }
+
+            foreach(var item in PlayerJoinViewItemsInternal)
+            {
+                if(item.GamepadLayout == GamepadLayout.Keyboard)
+                {
+                    TestJoinUnjoinWithKeyboard(item);
+                }
+            }
+
+            base.Activity();
+        }
+
+        private void TestJoinUnjoin(Xbox360GamePad gamepad, int index)
+        {
+            var joinItem = PlayerJoinViewItemsInternal[index];
+
+            if(joinItem.ConnectedJoinedState == ConnectedJoinedState.Connected)
+            {
+                foreach(var button in JoinButtons)
+                {
+                    if(gamepad.ButtonPushed(button))
+                    {
+                        joinItem.ConnectedJoinedState = ConnectedJoinedState.ConnectedAndJoined;
+                        break;
+                    }
+                }
+            }
+            else if(joinItem.ConnectedJoinedState == ConnectedJoinedState.ConnectedAndJoined)
+            {
+                foreach (var button in UnjoinButtons)
+                {
+                    if(gamepad.ButtonPushed(button))
+                    {
+                        joinItem.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                    }
+                }
+            }
+
+        }
+
+        private void TestJoinUnjoinWithKeyboard(PlayerJoinViewItem joinItem)
+        {
+            var keyboard = InputManager.Keyboard;
+
+            if (joinItem.ConnectedJoinedState == ConnectedJoinedState.Connected)
+            {
+                foreach (var key in JoinKeys)
+                {
+                    if ( keyboard.KeyPushed(key))
+                    {
+                        joinItem.ConnectedJoinedState = ConnectedJoinedState.ConnectedAndJoined;
+                        break;
+                    }
+                }
+            }
+            else if (joinItem.ConnectedJoinedState == ConnectedJoinedState.ConnectedAndJoined)
+            {
+                foreach (var key in UnjoinKeys)
+                {
+                    if (keyboard.KeyPushed(key))
+                    {
+                        joinItem.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                    }
+                }
+            }
+
         }
     }
 }
