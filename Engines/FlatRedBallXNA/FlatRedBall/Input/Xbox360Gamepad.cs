@@ -461,13 +461,15 @@ namespace FlatRedBall.Input
 
         static Xbox360GamePad()
         {
+            // For info on how IDs work, see this:
+            // https://community.monogame.net/t/support-for-modern-atari-vcs-controllers/15177
             GamepadNameTypeMap[GamepadLayout.NES] = new HashSet<string>
             {
                 
             };
             GamepadIdTypeMap[GamepadLayout.NES] = new HashSet<string>
             {
-
+                // "Retro" controller
             };
 
             GamepadNameTypeMap[GamepadLayout.SuperNintendo] = new HashSet<string>
@@ -1375,6 +1377,10 @@ namespace FlatRedBall.Input
                 else if(name.Contains("Nintendo"))
                 {
                     GamepadLayout = GamepadLayout.SwitchPro;
+                }
+                else if(name.Contains("PS3") || name.Contains("PS4") || name.Contains("PS5"))
+                {
+                    GamepadLayout = GamepadLayout.PlayStationDualShock;
                 }
             }
 
