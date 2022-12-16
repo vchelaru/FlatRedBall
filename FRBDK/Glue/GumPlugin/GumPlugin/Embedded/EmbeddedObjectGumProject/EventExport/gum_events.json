@@ -1,63 +1,6 @@
 {
   "UserEvents": {
-    "vchel": [
-      {
-        "NewName": "DefaultForms/TextBox.TextInstance1",
-        "OldName": null,
-        "ElementType": "Components",
-        "EventType": 5,
-        "TimestampUtc": "2022-05-11T14:03:47.784035Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7495254Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7505252Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7515253Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7545255Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7555273Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7585283Z"
-      },
-      {
-        "NewName": "DefaultForms/TextBox.PlaceholderTextInstance",
-        "OldName": "DefaultForms/TextBox.TextInstance1",
-        "ElementType": "Components",
-        "EventType": 7,
-        "TimestampUtc": "2022-05-11T14:03:54.7585283Z"
-      }
-    ],
+    "vchel": [],
     "Owner": []
   }
 }

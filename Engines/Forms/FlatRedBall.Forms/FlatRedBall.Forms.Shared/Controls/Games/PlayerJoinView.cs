@@ -53,6 +53,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public static string KeyboardName { get; set; } = "Keyboard";
 
+        public bool IsSubscribedToGamepadEvents { get; private set; }
+
         #endregion
 
         public PlayerJoinView() : base() { }
@@ -81,12 +83,29 @@ namespace FlatRedBall.Forms.Controls.Games
 
             Visual.RemovedFromGuiManager += HandleRemovedFromGuiManager;
 
+            SubscribeToGamepadEvents();
+
             base.ReactToVisualChanged();
         }
 
         private void HandleRemovedFromGuiManager(object sender, EventArgs e)
         {
-            FrameworkElementManager.Self.RemoveFrameworkElement(this);
+            UnsubscribeFromGamepadEvents();
+        }
+
+        /// <summary>
+        /// Unsubscribes from controller connection events and join/unjoin logic. This is automatically called
+        /// when the control is removed so it does not need to be called manually unless the control is created
+        /// but never added/removed from managers. <seealso cref="SubscribeToGamepadEvents"/>
+        /// </summary>
+        public void UnsubscribeFromGamepadEvents()
+        {
+            if(IsSubscribedToGamepadEvents)
+            {
+                InputManager.ControllerConnectionEvent -= HandleControllerConnected;
+                IsSubscribedToGamepadEvents = false;
+                FrameworkElementManager.Self.RemoveFrameworkElement(this);
+            }
         }
 
         private void HandleInnerPanelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -99,9 +118,28 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        /// <summary>
+        /// Begins behavior to automatically detect gamepad connect and disconnect events. Also enables
+        /// join and unjoin logic. This is automatically when the Visual is assigned, which is the default behavior when added
+        /// through the FlatRedBall Editor.
+        /// </summary>
+        /// <remarks>
+        /// For convenience, SubscribeToGamepadEvents is called automatically when the visual is assigned. UnsubscribeFromGamepadEvents must 
+        /// be called, but this happens automatically when the control is removed through the visual's RemoveFromManagers being called. This 
+        /// method does not need to be called directly, but can happen as a result of its parent element being removed. Typically this is the
+        /// Gum screen which is automatically removed when the FlatRedBall Screen is destroyed.
+        /// 
+        /// Note that if the PlayerJoinView is constructed with a visual, but is never added to managers, then it will not unsubscribe
+        /// from events. While minor, this does accumulate an event on InputManager.ControllerConnectionEvent.
+        /// </remarks>
         public void SubscribeToGamepadEvents()
         {
-            InputManager.ControllerConnectionEvent += HandleControllerConnected;
+            if(!IsSubscribedToGamepadEvents)
+            {
+                InputManager.ControllerConnectionEvent += HandleControllerConnected;
+                IsSubscribedToGamepadEvents = true;
+                FrameworkElementManager.Self.AddFrameworkElement(this);
+            }
 
             RefreshPlayerJoinViewItemsList();
 
@@ -110,7 +148,6 @@ namespace FlatRedBall.Forms.Controls.Games
                 UpdateJoinedStateForIndex(i, true);
             }
 
-            FrameworkElementManager.Self.AddFrameworkElement(this);
         }
 
         private void HandleControllerConnected(object sender, InputManager.ControllerConnectionEventArgs e)

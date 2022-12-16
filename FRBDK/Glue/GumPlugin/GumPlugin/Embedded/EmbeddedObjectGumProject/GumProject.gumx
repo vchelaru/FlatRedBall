@@ -6,6 +6,9 @@
   <DefaultCanvasWidth>800</DefaultCanvasWidth>
   <DefaultCanvasHeight>600</DefaultCanvasHeight>
   <ShowOutlines>true</ShowOutlines>
+  <ShowCanvasOutline>true</ShowCanvasOutline>
+  <ShowRuler>true</ShowRuler>
+  <ShowCheckerBackground>true</ShowCheckerBackground>
   <ConvertVariablesOnUnitTypeChange>false</ConvertVariablesOnUnitTypeChange>
   <RestrictToUnitValues>true</RestrictToUnitValues>
   <RestrictFileNamesForAndroid>false</RestrictFileNamesForAndroid>
@@ -204,13 +207,12 @@
   <BehaviorReference>
     <Name>PasswordBoxBehavior</Name>
   </BehaviorReference>
-
   <BehaviorReference>
     <Name>PlayerJoinViewBehavior</Name>
-  </BehaviorReference>  <BehaviorReference>
+  </BehaviorReference>
+  <BehaviorReference>
     <Name>PlayerJoinViewItemBehavior</Name>
   </BehaviorReference>
-  
   <BehaviorReference>
     <Name>RadioButtonBehavior</Name>
   </BehaviorReference>
@@ -241,4 +243,8 @@
   <BehaviorReference>
     <Name>UserControlBehavior</Name>
   </BehaviorReference>
+  <SinglePixelTextureTop xsi:nil="true" />
+  <SinglePixelTextureLeft xsi:nil="true" />
+  <SinglePixelTextureRight xsi:nil="true" />
+  <SinglePixelTextureBottom xsi:nil="true" />
 </GumProjectSave>

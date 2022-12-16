@@ -171,7 +171,6 @@
     <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBar.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBarIcon.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\VerticalLines.gucx" />
-    <None Remove="Embedded\GumDefaults2\GumProject.gumx" />
     <None Remove="Embedded\GumDefaults2\Standards\Circle.gutx" />
     <None Remove="Embedded\GumDefaults2\Standards\ColoredRectangle.gutx" />
     <None Remove="Embedded\GumDefaults2\Standards\Component.gutx" />

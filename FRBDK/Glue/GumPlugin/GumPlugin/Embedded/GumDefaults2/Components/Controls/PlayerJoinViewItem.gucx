@@ -49,7 +49,7 @@
     <Variable>
       <Type>float</Type>
       <Name>ControllerDisplayNameTextInstance.Height</Name>
-      <Value xsi:type="xsd:float">5</Value>
+      <Value xsi:type="xsd:float">0</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -120,7 +120,7 @@
     <Variable>
       <Type>float</Type>
       <Name>ControllerDisplayNameTextInstance.Y</Name>
-      <Value xsi:type="xsd:float">-13</Value>
+      <Value xsi:type="xsd:float">-29</Value>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
@@ -242,18 +242,6 @@
         <Value xsi:type="xsd:boolean">false</Value>
         <SetsValue>true</SetsValue>
       </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.X</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.Y</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
     </State>
     <State>
       <Name>Connected</Name>
@@ -269,18 +257,6 @@
         <Value xsi:type="xsd:boolean">true</Value>
         <SetsValue>true</SetsValue>
       </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.X</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.Y</Name>
-        <Value xsi:type="xsd:float">-31</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
     </State>
     <State>
       <Name>ConnectedAndJoined</Name>
@@ -294,18 +270,6 @@
         <Type>bool</Type>
         <Name>ControllerDisplayNameTextInstance.Visible</Name>
         <Value xsi:type="xsd:boolean">true</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.X</Name>
-        <Value xsi:type="xsd:float">0</Value>
-        <SetsValue>true</SetsValue>
-      </Variable>
-      <Variable>
-        <Type>float</Type>
-        <Name>ControllerDisplayNameTextInstance.Y</Name>
-        <Value xsi:type="xsd:float">-22</Value>
         <SetsValue>true</SetsValue>
       </Variable>
     </State>
