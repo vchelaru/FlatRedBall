@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Input;
+﻿using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using Gum.Wireframe;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
     public class PlayerJoinViewItem : FrameworkElement
     {
+
         ConnectedJoinedState connectedJoinedState;
 
         public ConnectedJoinedState ConnectedJoinedState
@@ -75,6 +77,22 @@ namespace FlatRedBall.Forms.Controls.Games
                     isUsingKeyboardAsBackup = value;
 
                     UpdateState();
+                    PushValueToViewModel();
+                }
+            }
+        }
+
+
+        IInputDevice inputDevice;
+        public IInputDevice InputDevice 
+        {
+            get => inputDevice;
+            set
+            {
+                if(value != inputDevice)
+                {
+                    inputDevice = value;
+                    PushValueToViewModel();
                 }
             }
         }
@@ -110,6 +128,7 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 ConnectedJoinedState = ConnectedJoinedState.Connected;
                 ControllerDisplayName = PlayerJoinView.KeyboardName;
+                InputDevice = InputManager.Keyboard;
                 GamepadLayout = GamepadLayout.Keyboard;
             }
 
@@ -134,6 +153,13 @@ namespace FlatRedBall.Forms.Controls.Games
             Visual.SetProperty(gamepadLayoutCategory, gamepadLayout.ToString());
 
             base.UpdateState();
+        }
+
+        public override string ToString()
+        {
+            var toReturn = ConnectedJoinedState.ToString();
+
+            return toReturn;
         }
     }
 }

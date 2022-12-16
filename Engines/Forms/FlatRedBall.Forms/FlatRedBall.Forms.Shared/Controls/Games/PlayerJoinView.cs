@@ -57,9 +57,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+        #region Constructor
         public PlayerJoinView() : base() { }
 
         public PlayerJoinView(GraphicalUiElement visual) : base(visual) { }
+        #endregion
 
         protected override void ReactToVisualChanged()
         {
@@ -78,7 +80,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
             for(int i = 0; i < PlayerJoinViewItems.Count; i++)
             {
-                UpdateJoinedStateForIndex(i, true);
+                UpdateConnectedJoinedStateForIndex(i, true);
             }
 
             Visual.RemovedFromGuiManager += HandleRemovedFromGuiManager;
@@ -86,6 +88,21 @@ namespace FlatRedBall.Forms.Controls.Games
             SubscribeToGamepadEvents();
 
             base.ReactToVisualChanged();
+        }
+
+        protected override void HandleVisualBindingContextChanged(object sender, BindingContextChangedEventArgs args)
+        {
+            if(IsSubscribedToGamepadEvents)
+            {
+                RefreshPlayerJoinViewItemsList();
+
+                for (int i = 0; i < PlayerJoinViewItems.Count; i++)
+                {
+                    UpdateConnectedJoinedStateForIndex(i, true);
+                }
+
+            }
+            base.HandleVisualBindingContextChanged(sender, args);
         }
 
         private void HandleRemovedFromGuiManager(object sender, EventArgs e)
@@ -114,7 +131,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
             for (int i = 0; i < PlayerJoinViewItems.Count; i++)
             {
-                UpdateJoinedStateForIndex(i, true);
+                UpdateConnectedJoinedStateForIndex(i, true);
             }
         }
 
@@ -145,7 +162,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
             for (int i = 0; i < PlayerJoinViewItems.Count; i++)
             {
-                UpdateJoinedStateForIndex(i, true);
+                UpdateConnectedJoinedStateForIndex(i, true);
             }
 
         }
@@ -154,10 +171,10 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             var index = e.PlayerIndex;
 
-            UpdateJoinedStateForIndex(index, true);
+            UpdateConnectedJoinedStateForIndex(index, true);
         }
 
-        private void UpdateJoinedStateForIndex(int index, bool force)
+        private void UpdateConnectedJoinedStateForIndex(int index, bool force)
         {
             // Make this lazy, allowing the user to add and remove items whenever they want. By checking
             // and obtaining references as late as possible we handle the most number of cases of creating
@@ -178,6 +195,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 if(isConnected)
                 {
                     var gamepad = InputManager.Xbox360GamePads[index];
+                    item.InputDevice = gamepad;
                     item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
                     item.ConnectedJoinedState = ConnectedJoinedState.Connected;
                     item.GamepadLayout = gamepad.GamepadLayout;
@@ -185,6 +203,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 else if(item.IsUsingKeyboardAsBackup)
                 {
                     item.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                    item.InputDevice = InputManager.Keyboard;
                     item.ControllerDisplayName = KeyboardName; // should it be something else? Localized? Need to think about this...
 
                     item.GamepadLayout = GamepadLayout.Keyboard;
@@ -192,6 +211,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 else
                 {
                     item.ConnectedJoinedState = ConnectedJoinedState.NotConnected;
+                    item.InputDevice = null;
                     item.GamepadLayout = GamepadLayout.Unknown;
                 }
 
@@ -220,6 +240,8 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
         }
+
+        #region Join/Unjoin
 
         public override void Activity()
         {
@@ -303,5 +325,18 @@ namespace FlatRedBall.Forms.Controls.Games
             }
 
         }
+
+        public void JoinAllConnected()
+        {
+            foreach(var item in this.PlayerJoinViewItems)
+            {
+                if(item.ConnectedJoinedState == ConnectedJoinedState.Connected)
+                {
+                    item.ConnectedJoinedState = ConnectedJoinedState.ConnectedAndJoined;
+                }
+            }
+        }
+
+        #endregion
     }
 }
