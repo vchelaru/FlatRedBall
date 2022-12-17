@@ -272,7 +272,27 @@ namespace FlatRedBall.Math.Geometry
 
             if (distance <= circle.Radius)
             {
-                this.mLastCollisionPoint = connectingSegment.Point2;
+                // Update Decmeber 17, 2022
+                // We are going to do a "closest point" collision
+                // since Lines can be used for laser weapons and we 
+                // don't want the weapon to poke through the enemy and 
+                // hit multiple enemies which overlap:
+                // Is the first point inside the circle?
+                var circleRadiusSquared = circle.Radius * circle.Radius;
+
+                if((this.Position - circle.Position).LengthSquared() < circleRadiusSquared)
+                {
+                    this.mLastCollisionPoint.X = this.Position.X;
+                    this.mLastCollisionPoint.Y = this.Position.Y;
+                }
+                else
+                {
+                    var backAlongLength = (float)System.Math.Sqrt( circleRadiusSquared - (distance * distance)  );
+                    var directionBack = (this.RelativePoint2 - this.RelativePoint1).ToVector3().NormalizedOrZero();
+                    var collisionPoint = connectingSegment.Point2.ToVector3() - (backAlongLength * directionBack);
+                    this.mLastCollisionPoint.X = collisionPoint.X;
+                    this.mLastCollisionPoint.Y = collisionPoint.Y;
+                }
 
                 Vector3 tangent = asSegment.Point1.ToVector3() - circle.Position;
 
