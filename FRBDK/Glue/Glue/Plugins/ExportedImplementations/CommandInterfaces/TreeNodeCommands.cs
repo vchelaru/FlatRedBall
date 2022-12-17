@@ -180,6 +180,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
+                        //Attempt to get relative gum project
+                        var ideGum = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                        if(System.IO.File.Exists(ideGum)) {
+                            Process.Start(new ProcessStartInfo(ideGum, fileName));
+                            return;
+                        }
+
                         var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
                             $"program to associate with this extension to open the file. Set the assocaition now?";
 
