@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.Managers
         public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
         /// <summary>
-        /// Force adds a task to the queue, even if already in a task
+        /// Force adds a task to the queue, even if already in a task. To optionally add if not in a task, see AddAsync.
         /// </summary>
         public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {

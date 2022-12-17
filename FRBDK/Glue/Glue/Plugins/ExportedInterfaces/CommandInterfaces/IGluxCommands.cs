@@ -203,6 +203,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void RemoveCustomVariable(CustomVariable customVariable, List<string> additionalFilesToRemove = null);
 
+        Task DuplicateAsync(CustomVariable customVariable);
+
         #endregion
 
         #region StateSaveCategory

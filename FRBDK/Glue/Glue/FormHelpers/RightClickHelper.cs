@@ -837,7 +837,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 AddItem(mFindAllReferences);
 
                 AddSeparator();
-
+                AddItem(mDuplicate);
+                AddSeparator();
                 AddItem(mMoveToTop);
                 AddItem(mMoveUp);
                 AddItem(mMoveDown);
@@ -1520,9 +1521,13 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static async void DuplicateClick(object sender, EventArgs e)
         {
-            if (GlueState.Self.CurrentNamedObjectSave != null)
+            if(GlueState.Self.CurrentCustomVariable != null)
             {
-                GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(GlueState.Self.CurrentNamedObjectSave, GlueState.Self.CurrentElement);
+                await GlueCommands.Self.GluxCommands.DuplicateAsync(GlueState.Self.CurrentCustomVariable);
+            }
+            else if (GlueState.Self.CurrentNamedObjectSave != null)
+            {
+                await GlueCommands.Self.GluxCommands.CopyNamedObjectIntoElement(GlueState.Self.CurrentNamedObjectSave, GlueState.Self.CurrentElement);
             }
             else if (GlueState.Self.CurrentStateSave != null)
             {

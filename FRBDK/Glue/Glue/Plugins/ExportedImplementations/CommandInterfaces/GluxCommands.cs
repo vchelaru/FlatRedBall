@@ -2403,6 +2403,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             PluginManager.ReactToVariableRemoved(customVariable);
         }
 
+        public async Task DuplicateAsync(CustomVariable customVariable)
+        {
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                var parentElement = ObjectFinder.Self.GetElementContaining(customVariable);
+                if(parentElement != null)
+                {
+                    var duplicate = FileManager.CloneObject(customVariable);
+                    var existingNames = parentElement.CustomVariables.Select(item => item.Name).ToList();
+                    duplicate.Name = StringFunctions.MakeStringUnique(duplicate.Name, existingNames);
+
+                    duplicate.FixAllTypes();
+
+                    await GluxCommands.Self.ElementCommands.AddCustomVariableToElementAsync(duplicate, parentElement);
+                }
+            }, $"Duplicate variable {customVariable}");
+            
+        }
+
         #endregion
 
         #region StateSaveCategory

@@ -49,6 +49,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true);
+        [Obsolete("Use AddCustomVariableToElementAsync")]
         void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true);
         Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
         #endregion
