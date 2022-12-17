@@ -347,7 +347,7 @@ namespace FlatRedBall.Glue.IO
         private static async Task ReloadGlux()
         {
             object selectedObject = null;
-            PluginManager.ReceiveOutput("Reloading Glue Project");
+            PluginManager.ReceiveOutput("Reloading FlatRedBall Project");
 
             var parentElement = GlueState.Self.CurrentNamedObjectSave?.GetContainer();
 

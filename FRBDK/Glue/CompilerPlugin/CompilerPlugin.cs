@@ -41,6 +41,10 @@ namespace CompilerPlugin
             {
                 ReactToPluginEvent("Compiler_Output_Standard", output);
             };
+            _runner.ErrorReceived += output =>
+            {
+                ReactToPluginEvent("Compiler_Output_Error", output);
+            };
 
             CreateBuildControl();
         }
@@ -214,7 +218,7 @@ namespace CompilerPlugin
                     break;
                 case "Compiler_Output_Error":
                     {
-                        MainControl.PrintOutput(payload);
+                        MainControl.PrintError(payload);
 
                     }
                     break;

@@ -183,7 +183,7 @@ namespace Glue
 
             initializationWindow.SubMessage = "Initializing Navigation Stack"; Application.DoEvents();
 
-            initializationWindow.Message = "Loading Glue Settings"; Application.DoEvents();
+            initializationWindow.Message = "Loading Settings"; Application.DoEvents();
             // We need to load the glue settings before loading the plugins so that we can 
             // shut off plugins according to settings
             LoadGlueSettings(initializationWindow);

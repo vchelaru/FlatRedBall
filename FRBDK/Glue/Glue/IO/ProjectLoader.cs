@@ -322,7 +322,7 @@ namespace FlatRedBall.Glue.IO
 
         private void PerformGluxLoad(string projectFileName, string glueProjectFile, InitializationWindowWpf initializationWindow)
         {
-            SetInitWindowText("Loading Glue Project", initializationWindow);
+            SetInitWindowText("Loading FlatRedBall Project", initializationWindow);
 
 
             bool succeeded = true;

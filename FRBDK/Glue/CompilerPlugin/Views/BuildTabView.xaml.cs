@@ -1,4 +1,5 @@
 ﻿using CompilerPlugin.Managers;
+using FlatRedBall.Math.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +93,46 @@ namespace CompilerPlugin.Views
                                 paragraph.Inlines.Add(new Run(line + "\r\n") { Foreground = color});
                             }
                         }
+                    }
+
+                    TextBox.ScrollToEnd();
+                });
+            }
+            catch
+            {
+                // could be exiting the app so tolerate the error, don't show a message to the user
+            }
+        }
+
+        public void PrintError(string text)
+        {
+            //////////////////////////////////// Early out ////////////////////////////////////////////
+            if (string.IsNullOrEmpty(text)) return;
+            //////////////////////////////////End Early Out////////////////////////////////////////////
+
+            // suppress warnings...
+            var split = text.Split('\n');
+
+            try
+            {
+                Glue.MainGlueWindow.Self.Invoke(() =>
+                {
+                    var paragraph = TextBox.Document.Blocks.LastOrDefault() as Paragraph;
+                    if (paragraph == null)
+                    {
+                        paragraph = new Paragraph();
+                        TextBox.Document.Blocks.Add(paragraph);
+                    }
+                    foreach (var line in split)
+                    {
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            paragraph.Inlines.Add(new Run(line) { Foreground = Brushes.Red });
+                        }
+                    }
+                    if(split.Length > 0)
+                    {
+                        paragraph.Inlines.Add(new Run("\r\n") { Foreground = Brushes.Red });
                     }
 
                     TextBox.ScrollToEnd();

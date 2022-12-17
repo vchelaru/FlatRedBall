@@ -150,7 +150,7 @@ namespace CompilerPlugin.Managers
 
         public event Action AfterSuccessfulRun;
         public event Action<string> OutputReceived;
-
+        public event Action<string> ErrorReceived;
         #endregion
 
         public Runner(Action<string, string> eventCaller, CompilerViewModel compilerViewModel)
@@ -558,7 +558,7 @@ namespace CompilerPlugin.Managers
 
                     GlueCommands.Self.DialogCommands.FocusTab("Build");
 
-                    OutputReceived?.Invoke(contents);
+                    ErrorReceived?.Invoke(contents);
                     
                 }
                 else

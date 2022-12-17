@@ -650,7 +650,8 @@ namespace FlatRedBall.Glue.Plugins
 
         private void HandlePluginEvent(IPlugin callingPlugin, string eventName, string payload)
         {
-            Task.Run(() =>
+            // Vic asks - why is this on Task.Run? It kills the call stack and offers no benefit...
+            //Task.Run(() =>
             {
                 if (mPluginContainers.ContainsKey(callingPlugin) && mPluginContainers[callingPlugin].IsEnabled)
                 {
@@ -669,7 +670,8 @@ namespace FlatRedBall.Glue.Plugins
                         }
                     }
                 }
-            });
+            }
+            //);
         }
 
         private void HandlePluginEventWithReturn(IPlugin callingPlugin, string eventName, string payload)
