@@ -181,19 +181,23 @@ namespace OfficialPlugins.SpritePlugin.Managers
                         viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
                         viewModel.LeftTexturePixel = xAnchor - SnappedX(grabbedDifferenceX);
 
-                        //Make sure it's on a snap line
-                        var off = viewModel.LeftTexturePixel % ViewModel.CellWidth;
-                        viewModel.LeftTexturePixel -= off;
-                        viewModel.SelectedWidthPixels += off;
+                        if(viewModel.SnapChecked) {
+                            //Make sure it's on a snap line
+                            var off = viewModel.LeftTexturePixel % ViewModel.CellWidth;
+                            viewModel.LeftTexturePixel -= off;
+                            viewModel.SelectedWidthPixels += off;
+                        }
                     }
                     else if(xSideGrabbed == XSide.Right)
                     {
                         grabbedDifferenceX += xDifference;
                         viewModel.SelectedWidthPixels = SnappedX(grabbedDifferenceX);
 
-                        //Make sure it's on a snap line
-                        var off = viewModel.SelectedWidthPixels % ViewModel.CellWidth;
-                        viewModel.SelectedWidthPixels -= off;
+                        if(viewModel.SnapChecked) {
+                            //Make sure it's on a snap line
+                            var off = viewModel.SelectedWidthPixels % ViewModel.CellWidth;
+                            viewModel.SelectedWidthPixels -= off;
+                        }
                     }
 
                 }
@@ -204,20 +208,24 @@ namespace OfficialPlugins.SpritePlugin.Managers
                         grabbedDifferenceY -= yDifference;
                         viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
                         viewModel.TopTexturePixel = yAnchor - SnappedY(grabbedDifferenceY);
-                        
-                        //Make sure it's on a snap line
-                        var off = viewModel.TopTexturePixel % ViewModel.CellHeight;
-                        viewModel.TopTexturePixel -= off;
-                        viewModel.SelectedHeightPixels += off;
+
+                        if(viewModel.SnapChecked) {
+                            //Make sure it's on a snap line
+                            var off = viewModel.TopTexturePixel % ViewModel.CellHeight;
+                            viewModel.TopTexturePixel -= off;
+                            viewModel.SelectedHeightPixels += off;
+                        }
                     }
                     else if(ySideGrabbed == YSide.Bottom)
                     {
                         grabbedDifferenceY += yDifference;
                         viewModel.SelectedHeightPixels = SnappedY(grabbedDifferenceY);
-                        
-                        //Make sure it's on a snap line
-                        var off = viewModel.SelectedHeightPixels % ViewModel.CellHeight;
-                        viewModel.SelectedHeightPixels -= off;
+
+                        if(viewModel.SnapChecked) {
+                            //Make sure it's on a snap line
+                            var off = viewModel.SelectedHeightPixels % ViewModel.CellHeight;
+                            viewModel.SelectedHeightPixels -= off;
+                        }
                     }
                 }
             }
