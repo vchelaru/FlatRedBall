@@ -598,10 +598,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var xyzVariables = container.CustomVariables.Where(item =>
                 item.Name == "X" || item.Name == "Y" || item.Name == "Z");
 
-            var areAllStatic = container.CustomVariables.Count > 0 &&
+            var areAllStatic = container.CustomVariables.Except(xyzVariables).Count() > 0 &&
                 container.CustomVariables.Except(xyzVariables).All(item => item.IsShared);
 
-            if(areAllStatic)
+            if(areAllStatic && 
+                // If tunneling on an object then it must be an instance, so make sure there is no tunnelingObject if setting this to true:
+                string.IsNullOrEmpty(tunnelingObject))
             {
                 viewModel.IsStatic = true;
             }
@@ -710,7 +712,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         newVariable.SourceObject = sourceObject;
                         newVariable.SourceObjectProperty = sourceObjectProperty;
 
-                        newVariable.IsShared = viewModel.IsStatic;
+                        newVariable.IsShared = viewModel.IsStatic && 
+                            // User could have checked a source object after checking IsStatic 
+                            string.IsNullOrEmpty(sourceObject);
+
                         newVariable.SetByDerived = viewModel.SetByDerived;
                         newVariable.DefinedByBase = isDefinedByBase;
 
