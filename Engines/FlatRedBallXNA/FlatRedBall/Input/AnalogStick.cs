@@ -149,6 +149,8 @@ namespace FlatRedBall.Input
             get { return mVelocity; }
         }
 
+        public DeadzoneType DeadzoneType { get; set; } = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
+        public float Deadzone { get; set; } = .1f;
 
         #endregion
 
@@ -274,11 +276,26 @@ namespace FlatRedBall.Input
         }
 
         /// <summary>
-        /// Updates the internal values (position, DPad simulated values, velocity) according to the argument newPosition.
+        /// Updates the internal values (position, DPad simulated values, velocity) according to the argument newPosition. Values will be adjusted
+        /// according to the AnalogStick's deadzone values.
         /// </summary>
         /// <param name="newPosition">The normalized (-1 to +1) position of the analog stick.</param>
         public void Update(Vector2 newPosition)
         {
+            if (Deadzone > 0)
+            {
+                switch (DeadzoneType)
+                {
+                    case DeadzoneType.Radial:
+                        newPosition = GetRadialDeadzoneValue(newPosition);
+                        break;
+                    case DeadzoneType.Cross:
+                        newPosition = GetCrossDeadzoneValue(newPosition);
+                        break;
+                }
+
+            }
+
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Up] = AsDPadDown(Xbox360GamePad.DPadDirection.Up);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Down] = AsDPadDown(Xbox360GamePad.DPadDirection.Down);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Left] = AsDPadDown(Xbox360GamePad.DPadDirection.Left);
@@ -403,6 +420,37 @@ namespace FlatRedBall.Input
             {
                 Deadzone = deadzone
             };
+        }
+
+        Vector2 GetRadialDeadzoneValue(Vector2 originalValue)
+        {
+            var deadzoneSquared = Deadzone * Deadzone;
+
+            var originalValueLengthSquared =
+                (originalValue.X * originalValue.X) +
+                (originalValue.Y * originalValue.Y);
+
+            if (originalValueLengthSquared < deadzoneSquared)
+            {
+                return Vector2.Zero;
+            }
+            else
+            {
+                return originalValue;
+            }
+        }
+
+        Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
+        {
+            if (originalValue.X < Deadzone && originalValue.X > -Deadzone)
+            {
+                originalValue.X = 0;
+            }
+            if (originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
+            {
+                originalValue.Y = 0;
+            }
+            return originalValue;
         }
     }
 }

@@ -137,13 +137,48 @@ namespace FlatRedBall.Input
 
         #region Properties
 
+        float deadzone = .1f;
         /// <summary>
-        /// The deadzone value. The application of this value depends on the DeadzoneType
+        /// The deadzone value. The application of this value depends on the DeadzoneType. Setting this value applies the deadzone value to all
+        /// AnalogSticks. 
         /// </summary>
-        public float Deadzone { get; set; } = .1f;
+        public float Deadzone
+        {
+            get => // prefer to use analog stick values if they exist:
+                LeftStick?.Deadzone ??
+                    RightStick?.Deadzone ??
+                    deadzone;
+            set
+            {
+                deadzone = value;
+                if (LeftStick != null) LeftStick.Deadzone = value;
+                if (RightStick != null) RightStick.Deadzone = value;
+            }
+        }
 
-        public DeadzoneType DeadzoneType { get; set; } 
-            = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
+        // This is stored here in case there are no analog sticks.
+        DeadzoneType deadzoneType = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
+
+        /// <summary>
+        /// The value determining how deadzones are calculated. Setting this value applies the value to all AnalogSticks.
+        /// </summary>
+        public DeadzoneType DeadzoneType 
+        { 
+            get
+            {
+                // prefer to use analog stick values if they exist:
+                return LeftStick?.DeadzoneType ??
+                    RightStick?.DeadzoneType ??
+                    deadzoneType;
+            }
+            set
+            {
+                deadzoneType = value;
+                if (LeftStick != null) LeftStick.DeadzoneType = value;
+                if (RightStick != null) RightStick.DeadzoneType = value;
+            }
+        } 
+            
 
         public I1DInput DPadHorizontal
         {
@@ -1442,36 +1477,6 @@ namespace FlatRedBall.Input
             }
         }
 
-        Vector2 GetRadialDeadzoneValue(Vector2 originalValue)
-        {
-            var deadzoneSquared = Deadzone * Deadzone;
-
-            var originalValueLengthSquared =
-                (originalValue.X * originalValue.X) +
-                (originalValue.Y * originalValue.Y);
-
-            if (originalValueLengthSquared < deadzoneSquared)
-            {
-                return Vector2.Zero;
-            }
-            else
-            {
-                return originalValue;
-            }
-        }
-
-        Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
-        {
-            if(originalValue.X < Deadzone && originalValue.X > -Deadzone)
-            {
-                originalValue.X = 0;
-            }
-            if(originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
-            {
-                originalValue.Y = 0;
-            }
-            return originalValue;
-        }
         private void UpdateAnalogStickAndTriggerValues()
         {
             if (mButtonMap == null)
@@ -1479,21 +1484,6 @@ namespace FlatRedBall.Input
                 var leftStick = mGamePadState.ThumbSticks.Left;
                 var rightStick = mGamePadState.ThumbSticks.Right;
 
-                if(Deadzone > 0)
-                {
-                    switch(DeadzoneType)
-                    {
-                        case DeadzoneType.Radial:
-                            leftStick = GetRadialDeadzoneValue(leftStick);
-                            rightStick = GetRadialDeadzoneValue(rightStick);
-                            break;
-                        case DeadzoneType.Cross:
-                            leftStick = GetCrossDeadzoneValue(leftStick);
-                            rightStick = GetCrossDeadzoneValue(rightStick);
-                            break;
-                    }
-
-                }
                 mLeftStick.Update(leftStick);
                 mRightStick.Update(rightStick);
 
