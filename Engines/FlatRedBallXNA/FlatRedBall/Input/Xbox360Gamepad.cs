@@ -389,16 +389,16 @@ namespace FlatRedBall.Input
             get;
         }
 
-        public AnalogStick LeftStick
-        {
-            get { return mLeftStick; }
-        }
+        /// <summary>
+        /// Returns a reference to the left analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+        /// </summary>
+        public AnalogStick LeftStick => mLeftStick;
 
 
-        public AnalogStick RightStick
-        {
-            get { return mRightStick; }
-        }
+        /// <summary>
+        /// Returns a reference to the right analog stick. This value will always be non-null even if the gamepad doesn't have a physical analog stick.
+        /// </summary>
+        public AnalogStick RightStick => mRightStick;
 
 
         public KeyboardButtonMap ButtonMap
