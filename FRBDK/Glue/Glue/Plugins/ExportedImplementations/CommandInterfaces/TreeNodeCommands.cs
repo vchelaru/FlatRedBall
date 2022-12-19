@@ -180,10 +180,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
-                        //Attempt to get relative gum project
-                        var ideGum = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                        if(System.IO.File.Exists(ideGum)) {
-                            Process.Start(new ProcessStartInfo(ideGum, fileName));
+                        //Attempt to get relative projects
+                        var relativeExe = "";
+                        if(textExtension == "gusx")
+                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                        if(textExtension == "achx")
+                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
+                        if((relativeExe != "") && (System.IO.File.Exists(relativeExe))) {
+                            Process.Start(new ProcessStartInfo(relativeExe, fileName));
                             return;
                         }
 
