@@ -104,14 +104,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             }
             else
             {
-                GlueSettings.RecentFileList.Add(new RecentFileSave
+                var file = new RecentFileSave
                 {
                     FileName = currentFile.FullPath
-                });
+                };
+                file.LastTimeAccessed = DateTime.Now;
+                GlueSettings.RecentFileList.Add(file);
             }
 
             // Vic bounces around projects enough that sometimes he needs more...
             // Increase from 30 up now that we have a dedicated window
+            // Or why not 60?
             const int maxItemCount = 60;
 
             if (GlueSettings.RecentFileList.Count > maxItemCount)
