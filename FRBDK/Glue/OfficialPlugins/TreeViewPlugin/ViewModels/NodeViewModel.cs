@@ -226,6 +226,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 this.IsExpanded = false;
             }
+            else if((this as ITreeNode).IsFolderForEntities())
+            {
+                this.IsExpanded = true;
+            }
 
             foreach (var child in this.Children)
             {

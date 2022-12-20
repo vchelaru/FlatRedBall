@@ -52,8 +52,8 @@
             <Button Click="CollapseToDefinitionsClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Collapse To Definitions</TextBlock>
-                        <TextBlock>Collapses all Screens and Entities</TextBlock>
+                        <TextBlock FontWeight="Bold">Scope To Definitions</TextBlock>
+                        <TextBlock>Collapses all Screens and Entities, expands the top-level folders</TextBlock>
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_collapse_to_definitions.png">

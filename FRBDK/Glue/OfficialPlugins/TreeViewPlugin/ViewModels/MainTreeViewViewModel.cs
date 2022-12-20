@@ -601,6 +601,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 node.CollapseToDefinitions();
             }
+
+            // make sure the top level tree nodes are expanded
+            ScreenRootNode.IsExpanded = true;
+            EntityRootNode.IsExpanded = true;
+            GlobalContentRootNode.IsExpanded = true;
         }
 
         #region Search for Nodes
