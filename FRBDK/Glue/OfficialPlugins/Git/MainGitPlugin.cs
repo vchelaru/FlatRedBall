@@ -137,7 +137,7 @@ start GlueFormsCore.exe";
             yield return $"{gameName}/{gameName}/obj/";
             yield return $"{gameName}/obj/";
 
-            yield return $"{gameName}/{gameName}Content/obj/";
+            yield return $"{gameName}/Content/obj/";
 
             yield return $"!{gameName}/x64";
             yield return $"!{gameName}/x86";
