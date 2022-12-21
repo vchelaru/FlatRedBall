@@ -31,6 +31,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         {
             InitializeComponent();
 
+            InnerView.Initialize(new Managers.CameraLogic());
             // Intentionally do not move the window to the cursor. Users place this where they want it.
             //this.Loaded += HandleLoaded;
         }

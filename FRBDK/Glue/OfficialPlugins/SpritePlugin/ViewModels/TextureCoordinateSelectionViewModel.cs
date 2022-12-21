@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Math;
+using OfficialPlugins.Common.ViewModels;
 using SkiaGum.Renderables;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Windows;
 
 namespace OfficialPlugins.SpritePlugin.ViewModels
 {
-    public class TextureCoordinateSelectionViewModel : ViewModel
+    public class TextureCoordinateSelectionViewModel : ViewModel, ICameraZoomViewModel
     {
 
         public decimal LeftTexturePixel

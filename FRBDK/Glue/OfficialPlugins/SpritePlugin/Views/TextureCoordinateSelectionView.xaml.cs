@@ -67,7 +67,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public void SelectCell(Point position, out int columnX, out int columnY)
         {
-            GetWorldPosition(position, out double worldX, out double worldY);
+            CameraLogic.GetWorldPosition(position, out double worldX, out double worldY);
             linegrid.LineGridCell(worldX, worldY, out columnX, out columnY);
             if(linegrid.GetCellPosition(columnX, columnY, out float left, out float top, out float right, out float bottom)) {
                 ViewModel.LeftTexturePixel = (decimal)left;
@@ -77,8 +77,9 @@ namespace OfficialPlugins.SpritePlugin.Views
             }
         }
 
-        public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) {
-            GetWorldPosition(MousePoint, out double worldX, out double worldY);
+        public void SelectDragCell(Point MousePoint, int StartDragSelectX, int StartDragSelectY) 
+        {
+            CameraLogic.GetWorldPosition(MousePoint, out double worldX, out double worldY);
             linegrid.LineGridCell(worldX, worldY, out int ColX, out int ColY);
             if((ColX != StartDragSelectX) || (ColY != StartDragSelectY))
             {
@@ -103,32 +104,7 @@ namespace OfficialPlugins.SpritePlugin.Views
 
         public TextureCoordinateRectangle TextureCoordinateRectangle { get; private set; }
 
-        double? windowsScaleFactor = null;
-        public double WindowsScaleFactor
-        {
-            get
-            {
-                if (windowsScaleFactor == null)
-                {
-                    // todo - fix on a computer that has scaling using:
-                    // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
-
-                    // This doesn't seem to work on Windows11:
-                    //var userKey = Microsoft.Win32.Registry.CurrentUser;
-                    //var softKey = userKey.OpenSubKey("Software");
-                    //var micKey = softKey.OpenSubKey("Microsoft");
-                    //var accKey = micKey.OpenSubKey("Accessibility");
-
-                    //var factor = accKey.GetValue("TextScaleFactor");
-                    // this returns text scale, not window scale
-                    //var uiSettings = new Windows.UI.ViewManagement.UISettings();
-                    //windowsScaleFactor = uiSettings.
-                    windowsScaleFactor =
-                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
-                }
-                return windowsScaleFactor.Value;
-            }
-        }
+        CameraLogic CameraLogic;
 
         #endregion
 
@@ -136,6 +112,11 @@ namespace OfficialPlugins.SpritePlugin.Views
         public TextureCoordinateSelectionView()
         {
             InitializeComponent();
+        }
+
+        public void Initialize(CameraLogic cameraLogic)
+        { 
+            this.CameraLogic = cameraLogic;
 
             CreateBackground();
             CreateMainSprite();
@@ -143,8 +124,8 @@ namespace OfficialPlugins.SpritePlugin.Views
 
             // Initialize CameraLogic after initializing the background so the background
             // position can be set
-            CameraLogic.Initialize(this);
-            MouseEditingLogic.Initialize(this);
+            CameraLogic.Initialize(this, this.Canvas, this.Background);
+            MouseEditingLogic.Initialize(this, cameraLogic);
 
             this.Canvas.Children.Add(MainSprite);
 
@@ -278,7 +259,7 @@ namespace OfficialPlugins.SpritePlugin.Views
         internal RoundedRectangleRuntime GetHandleAt(Point lastMousePoint)
         {
             double x, y;
-            GetWorldPosition(lastMousePoint, out x, out y);
+            CameraLogic.GetWorldPosition(lastMousePoint, out x, out y);
 
             foreach (var handle in TextureCoordinateRectangle.Handles)
             {
@@ -294,20 +275,6 @@ namespace OfficialPlugins.SpritePlugin.Views
                 }
             }
             return null;
-        }
-
-
-        public void GetWorldPosition(Point lastMousePoint, out double x, out double y)
-        {
-            var camera = this.Canvas.SystemManagers.Renderer.Camera;
-          
-            x = lastMousePoint.X * WindowsScaleFactor;
-            y = lastMousePoint.Y * WindowsScaleFactor;
-            x /= camera.Zoom;
-            y /= camera.Zoom;
-            // vic says - did I get the zoom right here?
-            x += camera.X;
-            y += camera.Y;
         }
 
         public void ZoomToTexture()

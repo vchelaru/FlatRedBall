@@ -1,45 +1,83 @@
-﻿using OfficialPlugins.SpritePlugin.ViewModels;
+﻿using OfficialPlugins.Common.ViewModels;
+using OfficialPlugins.SpritePlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Views;
 using RenderingLibrary;
+using SkiaGum.GueDeriving;
+using SkiaGum.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace OfficialPlugins.SpritePlugin.Managers
 {
-    internal static class CameraLogic
+    public class CameraLogic
     {
         #region Fields/Properties
 
-        public static Point? LastMiddleMouseButtonPoint { get; private set; }
-        static TextureCoordinateSelectionView View;
+        public Point? LastMiddleMouseButtonPoint { get; private set; }
+        System.Windows.Controls.UserControl View;
 
-        static Camera Camera => View.Canvas.SystemManagers.Renderer.Camera;
+        Camera Camera => Canvas.SystemManagers.Renderer.Camera;
 
-        static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
+        ICameraZoomViewModel ViewModel => View.DataContext as ICameraZoomViewModel;
+
+        GumSKElement Canvas;
+
+        BindableGraphicalUiElement Background;
+
+        static double? windowsScaleFactor = null;
+        public static double WindowsScaleFactor
+        {
+            get
+            {
+                if (windowsScaleFactor == null)
+                {
+                    // todo - fix on a computer that has scaling using:
+                    // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
+
+                    // This doesn't seem to work on Windows11:
+                    //var userKey = Microsoft.Win32.Registry.CurrentUser;
+                    //var softKey = userKey.OpenSubKey("Software");
+                    //var micKey = softKey.OpenSubKey("Microsoft");
+                    //var accKey = micKey.OpenSubKey("Accessibility");
+
+                    //var factor = accKey.GetValue("TextScaleFactor");
+                    // this returns text scale, not window scale
+                    //var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                    //windowsScaleFactor = uiSettings.
+                    windowsScaleFactor =
+                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+                }
+                return windowsScaleFactor.Value;
+            }
+        }
 
         #endregion
 
-        public static void Initialize(TextureCoordinateSelectionView view)
+        public void Initialize(System.Windows.Controls.UserControl view, GumSKElement canvas, BindableGraphicalUiElement background)
         {
+            Canvas = canvas;
             View = view;
+            Background = background;
             Camera.X = -20;
             Camera.Y = -20;
             UpdateBackgroundPosition();
 
-            View.Canvas.InvalidateVisual();
+            Canvas.InvalidateVisual();
         }
 
-        private static void UpdateBackgroundPosition()
+        private void UpdateBackgroundPosition()
         {
-            View.Background.X = Camera.X;
-            View.Background.Y = Camera.Y;
+            Background.X = Camera.X;
+            Background.Y = Camera.Y;
         }
 
-        public static void HandleMousePush(MouseButtonEventArgs args)
+        public void HandleMousePush(MouseButtonEventArgs args)
         {
             if(args.MiddleButton == MouseButtonState.Pressed)
             {
@@ -47,7 +85,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
             }
         }
 
-        public static void HandleMouseMove(MouseEventArgs args)
+        public void HandleMouseMove(MouseEventArgs args)
         {
             var newPosition = args.GetPosition(View);
 
@@ -59,27 +97,27 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 camera.Y -= (float)(newPosition.Y - LastMiddleMouseButtonPoint.Value.Y) / ViewModel.CurrentZoomScale;
                 UpdateBackgroundPosition();
 
-                View.Canvas.InvalidateVisual();
+                Canvas.InvalidateVisual();
 
                 LastMiddleMouseButtonPoint = newPosition;
             }
         }
 
-        public static void HandleMouseWheel(MouseWheelEventArgs args)
+        public void HandleMouseWheel(MouseWheelEventArgs args)
         {
             if(args.Delta != 0)
             {
                 var zoomDirection = args.Delta;
-                var screenPosition = args.GetPosition(View.Canvas);
+                var screenPosition = args.GetPosition(Canvas);
 
                 HandleZoomInDirection(zoomDirection, screenPosition);
             }
         }
 
-        private static void HandleZoomInDirection(int zoomDirection, System.Windows.Point cursorPosition)
+        private void HandleZoomInDirection(int zoomDirection, System.Windows.Point cursorPosition)
         {
 
-            View.GetWorldPosition(cursorPosition, out double worldBeforeX, out double worldBeforeY);
+            GetWorldPosition(cursorPosition, out double worldBeforeX, out double worldBeforeY);
             var newValue = ViewModel.CurrentZoomPercent;
             if (zoomDirection > 0)
             {
@@ -102,21 +140,21 @@ namespace OfficialPlugins.SpritePlugin.Managers
             RefreshCameraZoomToViewModel();
         }
 
-        public static void ResetCamera() {
+        public void ResetCamera() {
             Camera.X = -20;
             Camera.Y = -20;
             UpdateBackgroundPosition();
             RefreshCameraZoomToViewModel();
         }
 
-        public static void RefreshCameraZoomToViewModel()
+        public void RefreshCameraZoomToViewModel()
         {
             Camera.Zoom = ViewModel.CurrentZoomScale;
             UpdateBackgroundPosition();
-            View.Canvas.InvalidateVisual();
+            Canvas.InvalidateVisual();
         }
 
-        internal static void HandleKey(KeyEventArgs e)
+        internal void HandleKey(KeyEventArgs e)
         {
             var moveAmount = 16 / ViewModel.CurrentZoomScale;
             var refresh = false;
@@ -158,8 +196,21 @@ namespace OfficialPlugins.SpritePlugin.Managers
             if (refresh)
             {
                 UpdateBackgroundPosition();
-                View.Canvas.InvalidateVisual();
+                Canvas.InvalidateVisual();
             }
+        }
+
+        public void GetWorldPosition(Point lastMousePoint, out double x, out double y)
+        {
+            var camera = Canvas.SystemManagers.Renderer.Camera;
+
+            x = lastMousePoint.X * WindowsScaleFactor;
+            y = lastMousePoint.Y * WindowsScaleFactor;
+            x /= camera.Zoom;
+            y /= camera.Zoom;
+            // vic says - did I get the zoom right here?
+            x += camera.X;
+            y += camera.Y;
         }
     }
 }

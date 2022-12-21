@@ -51,12 +51,14 @@ namespace OfficialPlugins.SpritePlugin.Managers
         private static int? StartDragSelectY = null;
         private static Stopwatch LeftClickTimer = new Stopwatch();
 
+        private static CameraLogic CameraLogic;
         static TextureCoordinateSelectionViewModel ViewModel => View.ViewModel;
 
         #endregion
 
-        public static void Initialize(TextureCoordinateSelectionView view)
+        public static void Initialize(TextureCoordinateSelectionView view, CameraLogic cameraLogic)
         {
+            CameraLogic = cameraLogic;
             View = view;
             LeftClickTimer.Start();
 
@@ -162,9 +164,9 @@ namespace OfficialPlugins.SpritePlugin.Managers
             ///////////////////End Early Out////////////////////
 
             var xDifference = (decimal)(
-                (newPosition.X - LastGrabbedMousePoint.X) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+                (newPosition.X - LastGrabbedMousePoint.X) * CameraLogic.WindowsScaleFactor / ViewModel.CurrentZoomScale);
             var yDifference = (decimal)(
-                (newPosition.Y - LastGrabbedMousePoint.Y) * View.WindowsScaleFactor / ViewModel.CurrentZoomScale);
+                (newPosition.Y - LastGrabbedMousePoint.Y) * CameraLogic.WindowsScaleFactor / ViewModel.CurrentZoomScale);
 
             decimal SnappedX(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellWidth : 1);
             decimal SnappedY(decimal value) => MathFunctions.RoundDecimal(value, ViewModel.SnapChecked ? (decimal)ViewModel.CellHeight : 1);
@@ -290,7 +292,7 @@ namespace OfficialPlugins.SpritePlugin.Managers
                 RefreshHandleVisuals();
 
                 var textureCoordinateRectangle = View.TextureCoordinateRectangle;
-                View.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
+                CameraLogic.GetWorldPosition(LastGrabbedMousePoint, out double worldX, out double worldY);
                 IsBodyGrabbed = HandleGrabbed == null &&
                     worldX >= textureCoordinateRectangle.GetAbsoluteLeft() &&
                     worldX <= textureCoordinateRectangle.GetAbsoluteRight() &&
