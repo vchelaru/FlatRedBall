@@ -129,14 +129,18 @@ namespace OfficialPluginsCore.CameraControllingEntityPlugin
                 item.IsList ||
                 (item.SourceType == SourceType.Entity && !string.IsNullOrEmpty(item.SourceClassType)));
 
-            return targetObjects.Select(item => item.FieldName).ToList();
+            // why do we do field name? That would result in "mWhatever"
+            //return targetObjects.Select(item => item.FieldName).ToList();
+            return targetObjects.Select(item => item.InstanceName).ToList();
         }
 
         private List<string> GetAvailableMaps(IElement element, NamedObjectSave arg2, ReferencedFileSave arg3)
         {
             var mapObjects = element.AllNamedObjects.Where(item => item.GetAssetTypeInfo()?.Extension == "tmx");
 
-            return mapObjects.Select(item => item.FieldName).ToList();
+            // see above for question about why we use field name
+            //return mapObjects.Select(item => item.FieldName).ToList();
+            return mapObjects.Select(item => item.InstanceName).ToList();
         }
 
         private string GenerateMapCodeGen(IElement arg1, NamedObjectSave nos, ReferencedFileSave arg3, string memberName)

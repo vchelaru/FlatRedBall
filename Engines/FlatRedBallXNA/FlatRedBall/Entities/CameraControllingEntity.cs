@@ -145,11 +145,17 @@ namespace FlatRedBall.Entities
 
         #endregion
 
-        public void EnableAutoZooming(float defaultOrthoWidth, float defaultOrthoHeight, float minZoomPercent, float furthestZoom = 0)
+        /// <summary>
+        /// Enables auto zooming which will zoom the camera (adjust orthogonal values) to attempt to keep all targets in screen.
+        /// </summary>
+        /// <param name="defaultOrthoWidth">The default camera orthogonal width. Usually this will be CameraSetup.Data.ResolutionWidth.</param>
+        /// <param name="defaultOrthoHeight">The default camera orthogonal height. Usually this will be CameraSetup.Data.ResolutionHeight.</param>
+        /// <param name="furthestZoom">The furthest the camera can zoom. A value of 1 prevents any zoom. A value of 2 allows 2 times
+        /// as much to be seen. A value of float.PositiveInfinity allows the camera to zoom indefinitely.</param>
+        public void EnableAutoZooming(float defaultOrthoWidth, float defaultOrthoHeight, float furthestZoom = float.PositiveInfinity)
         {
             this.defaultOrthoWidth = defaultOrthoWidth;
             this.defaultOrthoHeight = defaultOrthoHeight;
-            this.minZoomPercent = minZoomPercent;
             this.isAutoZoomEnabled = true;
             this.furthestZoom = furthestZoom;
         }
@@ -419,7 +425,7 @@ namespace FlatRedBall.Entities
 
             if(currentSeparationDistance > noZoomDistance)
             {
-                var newZoom = System.Math.Max(furthestZoom, currentSeparationDistance / noZoomDistance);
+                var newZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
                 Camera.Main.OrthogonalHeight = defaultOrthoHeight * newZoom;
             }
             else
