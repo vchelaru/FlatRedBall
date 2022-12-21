@@ -49,6 +49,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 var stream = System.IO.File.OpenRead(value.FullPath);
 
                 SoundPlayer = new SoundPlayer(stream);
+
             }
         }
 

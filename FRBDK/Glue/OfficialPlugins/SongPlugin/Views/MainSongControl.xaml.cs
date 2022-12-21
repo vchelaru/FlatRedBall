@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.IO;
 using NAudio.Vorbis;
 using NAudio.Wave;
+using OfficialPlugins.SongPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace OfficialPlugins.SongPlugin.Views
     /// </summary>
     public partial class MainSongControl : UserControl
     {
+        MainSongControlViewModel ViewModel => DataContext as MainSongControlViewModel;
+
         private MediaPlayer mediaPlayer = new MediaPlayer();
 
         VorbisWaveReader nAudioFileReader;
@@ -46,10 +49,25 @@ namespace OfficialPlugins.SongPlugin.Views
                         nAudioOutputDevice = new WaveOutEvent();
                         nAudioFileReader = new VorbisWaveReader(value.FullPath);
                         nAudioOutputDevice.Init(nAudioFileReader);
+
+                        ViewModel.Duration = nAudioFileReader.TotalTime;
                     }
-                    else
+                    else if(value.Extension == "mp3")
                     {
                         mediaPlayer.Open(new Uri(value.FullPath));
+
+                        if(mediaPlayer.NaturalDuration.HasTimeSpan)
+                        {
+                            ViewModel.Duration = mediaPlayer.NaturalDuration.TimeSpan;
+                        }
+                        else
+                        {
+                            // maybe we should fall back to naudio
+                            var tempReader = new Mp3FileReader(value.FullPath);
+                            ViewModel.Duration = tempReader.TotalTime;
+                            tempReader.Dispose();   
+                                
+                        }
                     }
                 }
             }

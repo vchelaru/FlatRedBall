@@ -5,12 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.ContentPreview.Views"
              mc:Ignorable="d" 
+             d:Height="400"
              d:Width="250">
     <Grid>
-        <!--<Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>-->
+        </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="3" VerticalAlignment="Top">
             <Button x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Top">
                 <Image Source="/OfficialPluginsCore;component/Content/Icons/Unpause.png" IsHitTestVisible="False"></Image>
@@ -19,5 +20,6 @@
                 <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
             </Button>
         </StackPanel>
+        <Label Grid.Row="1" Content="{Binding DurationDescription, FallbackValue=0.32 seconds}"></Label>
     </Grid>
 </UserControl>

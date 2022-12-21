@@ -45,6 +45,8 @@
                         <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
                     </Button>
                 </StackPanel>
+                <Label Content="{Binding DurationDescription, FallbackValue=0.32 seconds}"></Label>
+
             </StackPanel>
         </StackPanel>
     </Grid>

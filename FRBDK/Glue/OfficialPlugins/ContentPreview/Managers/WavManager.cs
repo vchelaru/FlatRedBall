@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.IO;
+using NAudio.Wave;
 using OfficialPlugins.ContentPreview.ViewModels;
 using OfficialPlugins.ContentPreview.Views;
 using System;
@@ -24,13 +25,6 @@ namespace OfficialPlugins.ContentPreview.Managers
             Plugin = plugin;
         }
 
-        public static WavPreviewView GetView(FilePath filePath)
-        {
-            CreateViewIfNecessary();
-
-            return View;
-        }
-
         private static void CreateViewIfNecessary()
         {
             if (View == null)
@@ -45,13 +39,21 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         internal static void ShowTab(FilePath filePath)
         {
-            var view = GetView(filePath);
-            var vm = ViewModel;
-            view.WavFilePath = filePath;
-            
+            CreateViewIfNecessary();
+            View.WavFilePath = filePath;
+
+            if(filePath?.Exists() == true)
+            {
+                var wf = new WaveFileReader(filePath.FullPath);
+                ViewModel.Duration = wf.TotalTime;
+            }
+            else
+            {
+                ViewModel.Duration = new TimeSpan();
+            }
             if (Tab == null)
             {
-                Tab = Plugin.CreateTab(view, "WAV Preview", TabLocation.Center);
+                Tab = Plugin.CreateTab(View, "WAV Preview", TabLocation.Center);
             }
 
             Tab.Show();
