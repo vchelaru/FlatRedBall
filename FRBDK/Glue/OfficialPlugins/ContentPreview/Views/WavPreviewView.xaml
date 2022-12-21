@@ -5,17 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.ContentPreview.Views"
              mc:Ignorable="d" 
-             d:Height="250" d:Width="250">
+             d:Width="250">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="30"></RowDefinition>
+        <!--<Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="3">
-            <Button x:Name="PlayButton" Click="PlayButton_Click">
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>-->
+        <StackPanel Orientation="Horizontal" Margin="3" VerticalAlignment="Top">
+            <Button x:Name="PlayButton" Click="PlayButton_Click" VerticalAlignment="Top">
                 <Image Source="/OfficialPluginsCore;component/Content/Icons/Unpause.png" IsHitTestVisible="False"></Image>
             </Button>
-            <Button x:Name="StopButton" Click="StopButton_Click">
+            <Button x:Name="StopButton" Click="StopButton_Click" Margin="3,0,0,0">
                 <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
             </Button>
         </StackPanel>

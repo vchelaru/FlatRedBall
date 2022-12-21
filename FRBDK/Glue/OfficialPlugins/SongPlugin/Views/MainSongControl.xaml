@@ -5,30 +5,47 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.SongPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="400">
+              d:DesignWidth="400">
     <Grid>
         <StackPanel>
-            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding ShouldPlay}">Play Song</CheckBox>
-            <CheckBox VerticalContentAlignment="Center" Margin="0,2,0,0"
-                      IsChecked="{Binding ShouldLoopSong}"
-                      IsEnabled="{Binding IsEnabled}">Loop Song</CheckBox>
-            <GroupBox Header="Volume">
-                <StackPanel>
-                    <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSetVolumeChecked}" >Set Volume</CheckBox>
+            <Label FontSize="18" Margin="0,0,0,-6">In Game</Label>
+            <Separator></Separator>
+            <StackPanel Margin="8,0,0,0">
                 
-                    <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Visibility="{Binding VolumeSliderVisibility}">
-                        <Slider Minimum="0" Maximum="100" Width="150" 
-                                Value="{Binding Volume}"
-                                IsEnabled="{Binding IsEnabled}"></Slider>
-                        <TextBox Margin="4,0,0,0" Width="50" 
-                                 Text="{Binding Volume}"
-                                 IsEnabled="{Binding IsEnabled}"></TextBox>
+                <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding ShouldPlay}">Play Song</CheckBox>
+                <CheckBox VerticalContentAlignment="Center" Margin="0,2,0,0"
+                          IsChecked="{Binding ShouldLoopSong}"
+                          IsEnabled="{Binding IsEnabled}">Loop Song</CheckBox>
+                <GroupBox Header="Volume">
+                    <StackPanel>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSetVolumeChecked}" >Set Volume</CheckBox>
+                
+                        <StackPanel Orientation="Horizontal" Margin="0,5,0,0" Visibility="{Binding VolumeSliderVisibility}">
+                            <Slider Minimum="0" Maximum="100" Width="150" 
+                                    Value="{Binding Volume}"
+                                    IsEnabled="{Binding IsEnabled}"></Slider>
+                            <TextBox Margin="4,0,0,0" Width="50" 
+                                     Text="{Binding Volume}"
+                                     IsEnabled="{Binding IsEnabled}"></TextBox>
+                        </StackPanel>
                     </StackPanel>
+                </GroupBox>
+                <CheckBox VerticalContentAlignment="Center" Margin="0,2,0,0"
+                          IsChecked="{Binding ShouldKeepPlayingAfterLeavingScreen}"
+                          IsEnabled="{Binding IsEnabled}">Keep Playing After Leaving Screen</CheckBox>
+            </StackPanel>
+            <Label FontSize="18" Margin="0,8,0,-6">Preview</Label>
+            <Separator></Separator>
+            <StackPanel Margin="8,0,0,0">
+                <StackPanel Orientation="Horizontal" Margin="3">
+                    <Button x:Name="PlayButton" Click="PlayButton_Click">
+                        <Image Source="/OfficialPluginsCore;component/Content/Icons/Unpause.png" IsHitTestVisible="False"></Image>
+                    </Button>
+                    <Button x:Name="StopButton" Click="StopButton_Click" Margin="3,0,0,0">
+                        <Image Source="/OfficialPluginsCore;component/Content/Icons/stop.png" IsHitTestVisible="False"></Image>
+                    </Button>
                 </StackPanel>
-            </GroupBox>
-            <CheckBox VerticalContentAlignment="Center" Margin="0,2,0,0"
-                      IsChecked="{Binding ShouldKeepPlayingAfterLeavingScreen}"
-                      IsEnabled="{Binding IsEnabled}">Keep Playing After Leaving Screen</CheckBox>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

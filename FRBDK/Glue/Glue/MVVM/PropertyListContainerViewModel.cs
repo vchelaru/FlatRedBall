@@ -65,8 +65,8 @@ namespace FlatRedBall.Glue.MVVM
 
         public IPropertyListContainer GlueObject
         {
-            get { return Get<IPropertyListContainer>(); }
-            set { Set(value); }
+            get => Get<IPropertyListContainer>(); 
+            set => Set(value); 
         }
 
         public bool IsUpdatingFromGlueObject { get; set; }

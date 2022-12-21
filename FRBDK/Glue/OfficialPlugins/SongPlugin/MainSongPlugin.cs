@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using OfficialPlugins.SongPlugin.CodeGenerators;
 using OfficialPlugins.SongPlugin.ViewModels;
 using OfficialPlugins.SongPlugin.Views;
@@ -164,10 +165,14 @@ namespace OfficialPlugins.SongPlugin
                     pluginTab = this.CreateTab(control, "Song");
                     control.DataContext = viewModel;
                 }
+
+                control.FilePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+
                 pluginTab.Show();
             }
             else
             {
+                control?.StopPlaying();
                 pluginTab?.Hide();
             }
         }

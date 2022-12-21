@@ -1,6 +1,10 @@
-﻿using System;
+﻿using FlatRedBall.IO;
+using NAudio.Vorbis;
+using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,9 +24,64 @@ namespace OfficialPlugins.SongPlugin.Views
     /// </summary>
     public partial class MainSongControl : UserControl
     {
+        private MediaPlayer mediaPlayer = new MediaPlayer();
+
+        VorbisWaveReader nAudioFileReader;
+        WaveOutEvent nAudioOutputDevice = new WaveOutEvent();
+
+        FilePath filePath;
+        public FilePath FilePath
+        {
+            set
+            {
+                filePath = value;
+                if (value?.Exists() == true)
+                {
+                    StopPlaying();
+                    if(value.Extension == "ogg")
+                    {
+                        nAudioFileReader?.Dispose();
+                        nAudioOutputDevice?.Dispose();
+
+                        nAudioOutputDevice = new WaveOutEvent();
+                        nAudioFileReader = new VorbisWaveReader(value.FullPath);
+                        nAudioOutputDevice.Init(nAudioFileReader);
+                    }
+                    else
+                    {
+                        mediaPlayer.Open(new Uri(value.FullPath));
+                    }
+                }
+            }
+        }
+
         public MainSongControl()
         {
             InitializeComponent();
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(filePath?.Extension == "ogg")
+            {
+                nAudioOutputDevice.Play();
+            }
+            else
+            {
+                mediaPlayer.Play();
+            }
+        }
+
+        private void StopButton_Click(object sender, RoutedEventArgs e)
+        {
+            nAudioOutputDevice?.Stop();
+            mediaPlayer?.Stop();
+        }
+
+        internal void StopPlaying()
+        {
+            nAudioOutputDevice?.Stop();
+            mediaPlayer?.Stop();
         }
     }
 }

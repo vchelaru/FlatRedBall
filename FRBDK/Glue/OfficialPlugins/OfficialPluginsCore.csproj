@@ -114,7 +114,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+	  <PackageReference Include="NAudio" Version="2.1.0" />
+	  <PackageReference Include="NAudio.Core" Version="2.1.0" />
+	  <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
