@@ -29,6 +29,9 @@
     <None Remove="CollisionPlugin\Icons\NoPartitioning.png" />
     <None Remove="CollisionPlugin\Icons\PartitionEnabled.png" />
     <None Remove="Content\Icons\CopyIcon.png" />
+    <None Remove="Content\Icons\Pause.png" />
+    <None Remove="Content\Icons\stop.png" />
+    <None Remove="Content\Icons\Unpause.png" />
     <None Remove="ErrorPlugin\Icons\CopyAll.png" />
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
@@ -132,6 +135,9 @@
   <ItemGroup>
     <Resource Include="CollisionPlugin\Icons\NoPartitioning.png" />
     <Resource Include="CollisionPlugin\Icons\PartitionEnabled.png" />
+    <Resource Include="Content\Icons\Pause.png" />
+    <Resource Include="Content\Icons\stop.png" />
+    <Resource Include="Content\Icons\Unpause.png" />
     <Resource Include="ErrorPlugin\Icons\CopyAll.png" />
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />

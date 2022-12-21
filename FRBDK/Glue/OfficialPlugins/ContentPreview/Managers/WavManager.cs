@@ -7,25 +7,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace OfficialPlugins.ContentPreview.Managers
 {
-    internal static class PngManager
+    internal static class WavManager
     {
-        static PngPreviewView View;
+        static WavPreviewView View;
 
         static PluginBase Plugin;
         static PluginTab Tab;
 
-        public static PngViewModel ViewModel { get; private set; }
+        public static WavViewModel ViewModel { get; private set; }
 
         public static void Initialize(PluginBase plugin)
         {
             Plugin = plugin;
         }
 
-        public static PngPreviewView GetView(FilePath filePath)
+        public static WavPreviewView GetView(FilePath filePath)
         {
             CreateViewIfNecessary();
 
@@ -34,12 +33,11 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         private static void CreateViewIfNecessary()
         {
-            if(View == null)
+            if (View == null)
             {
-                View = new PngPreviewView();
-                ViewModel = new PngViewModel();
+                View = new WavPreviewView();
+                ViewModel = new WavViewModel();
                 View.DataContext = ViewModel;
-                View.Initialize(new SpritePlugin.Managers.CameraLogic());
             }
         }
 
@@ -47,20 +45,16 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         internal static void ShowTab(FilePath filePath)
         {
-            var view = PngManager.GetView(filePath);
-            view.TextureFilePath = filePath;
-            var vm = PngManager.ViewModel;
-            vm.ResolutionWidth = view.Texture?.Width ?? 0;
-            vm.ResolutionHeight = view.Texture?.Height ?? 0;
-            view.ResetCamera();
-
+            var view = GetView(filePath);
+            var vm = ViewModel;
+            view.WavFilePath = filePath;
+            
             if (Tab == null)
             {
-                Tab = Plugin.CreateTab(view, "PNG Preview", TabLocation.Center);
+                Tab = Plugin.CreateTab(view, "WAV Preview", TabLocation.Center);
             }
 
             Tab.Show();
-            view.GumCanvas.InvalidateVisual();
         }
     }
 }

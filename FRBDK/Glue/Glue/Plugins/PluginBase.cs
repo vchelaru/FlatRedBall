@@ -697,7 +697,7 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Tab Methods
 
-        protected PluginTab CreateTab(System.Windows.FrameworkElement control, string tabName, TabLocation defaultLocation = TabLocation.Right)
+        public PluginTab CreateTab(System.Windows.FrameworkElement control, string tabName, TabLocation defaultLocation = TabLocation.Right)
         {
             //System.Windows.Forms.Integration.ElementHost wpfHost;
             //wpfHost = new System.Windows.Forms.Integration.ElementHost();
@@ -759,7 +759,7 @@ namespace FlatRedBall.Glue.Plugins
 
         }
 
-        protected PluginTab CreateTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
+        public PluginTab CreateTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
             var host = new System.Windows.Forms.Integration.WindowsFormsHost();
 
@@ -768,14 +768,14 @@ namespace FlatRedBall.Glue.Plugins
             return CreateTab(host, tabName, tabLocation);
         }
 
-        protected PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
+        public PluginTab CreateAndAddTab(System.Windows.Forms.Control control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
             var tab = CreateTab(control, tabName, tabLocation);
             tab.Show();
             return tab;
         }
 
-        protected PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Right)
+        public PluginTab CreateAndAddTab(System.Windows.Controls.UserControl control, string tabName, TabLocation tabLocation = TabLocation.Right)
         {
             var tab = CreateTab(control, tabName, tabLocation);
             tab.Show();

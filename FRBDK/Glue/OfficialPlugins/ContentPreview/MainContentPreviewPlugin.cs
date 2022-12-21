@@ -22,7 +22,6 @@ namespace OfficialPlugins.ContentPreview
         public override Version Version => new Version(1,0);
 
 
-        PluginTab PngTab;
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -32,6 +31,9 @@ namespace OfficialPlugins.ContentPreview
         public override void StartUp()
         {
             AssignEvents();
+
+            PngManager.Initialize(this);
+            WavManager.Initialize(this);
         }
 
         private void AssignEvents()
@@ -43,7 +45,8 @@ namespace OfficialPlugins.ContentPreview
         {
             var file = GlueState.Self.CurrentReferencedFileSave;
 
-            PngTab?.Hide();
+            WavManager.HideTab();
+
             /////////////////Early Out///////////////////
             if (file == null)
             {
@@ -59,20 +62,10 @@ namespace OfficialPlugins.ContentPreview
             switch(extension)
             {
                 case "png":
-                    var view = PngManager.GetView(filePath);
-                    view.TextureFilePath = filePath;
-                    var vm = PngManager.ViewModel;
-                    vm.ResolutionWidth = view.Texture?.Width ?? 0;
-                    vm.ResolutionHeight = view.Texture?.Height ?? 0;
-                    view.ResetCamera();
-                    
-                    if (PngTab == null)
-                    {
-                        PngTab = CreateTab(view, "PNG Preview", TabLocation.Center);
-                    }
-
-                    PngTab.Show();
-                    view.GumCanvas.InvalidateVisual();
+                    PngManager.ShowTab(filePath);
+                    break;
+                case "wav":
+                    WavManager.ShowTab(filePath);
                     break;
             }
         }
