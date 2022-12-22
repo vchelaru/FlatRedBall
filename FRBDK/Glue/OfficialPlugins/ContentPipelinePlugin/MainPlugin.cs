@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.FormHelpers;
+using FlatRedBall.Glue.IO;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -116,8 +117,8 @@ namespace OfficialPlugins.MonoGameContent
 
         private void AssignEvents()
         {
-            this.ReactToFileChangeHandler += HandleFileChanged;
-            this.ReactToBuiltFileChangeHandler += HandleFileChanged;
+            this.ReactToFileChange += HandleFileChanged;
+            this.ReactToBuiltFileChangeHandler += (fileName) => HandleFileChanged(fileName, FileChangeType.Modified);
             this.ReactToLoadedGluxEarly += HandleLoadedGlux;
             this.ReactToUnloadedGlux += HandleGluxUnloaded;
             this.ReactToLoadedSyncedProject += HandleLoadedSyncedProject;
@@ -267,13 +268,13 @@ namespace OfficialPlugins.MonoGameContent
             BuildLogic.Self.RefreshBuiltFilesFor((VisualStudioProject)project, viewModel.UseContentPipelineOnPngs, controller);
         }
 
-        private void HandleFileChanged(string fileName)
+        private void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
         {
             aliasCodeGenerator.GenerateFileAliasLogicCode(controller.Settings.UseContentPipelineOnAllPngs);
 
             // See if it's a ReferencedFileSave. If so, we might want to look at that for additional properties
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(
-                fileName);
+                filePath);
 
             if(rfs != null)
             {
@@ -287,17 +288,17 @@ namespace OfficialPlugins.MonoGameContent
                 var contentFolder = Container.Get<IGlueState>().ContentDirectory;
                 var absoluteLowerCase = allFileNames.Select(item => (contentFolder + item).ToLowerInvariant());
 
-                var standardized = FileManager.Standardize(fileName).ToLowerInvariant();
+                var standardized = filePath.Standardized;
 
                 var isReferenced = absoluteLowerCase.Contains(standardized);
 
                 if(isReferenced)
                 {
-                    BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, fileName, viewModel.UseContentPipelineOnPngs);
+                    BuildLogic.Self.TryHandleReferencedFile(GlueState.CurrentMainProject, filePath.FullPath, viewModel.UseContentPipelineOnPngs);
 
                     foreach (VisualStudioProject syncedProject in GlueState.SyncedProjects)
                     {
-                        BuildLogic.Self.TryHandleReferencedFile(syncedProject, fileName, viewModel.UseContentPipelineOnPngs);
+                        BuildLogic.Self.TryHandleReferencedFile(syncedProject, filePath.FullPath, viewModel.UseContentPipelineOnPngs);
                     }
                 }
             }

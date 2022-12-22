@@ -41,7 +41,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                                 var clone = wildcardFile.Clone();
                                 clone.Name = newRfsName;
                                 clone.IsCreatedByWildcard = true;
-                                GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(clone);
+                                var fireAndForget = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContentAsync(clone);
                             }
                             break;
                         }

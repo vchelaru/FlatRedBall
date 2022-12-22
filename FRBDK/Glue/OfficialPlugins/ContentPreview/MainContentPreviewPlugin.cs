@@ -46,6 +46,7 @@ namespace OfficialPlugins.ContentPreview
             var file = GlueState.Self.CurrentReferencedFileSave;
 
             WavManager.HideTab();
+            PngManager.HideTab();
 
             /////////////////Early Out///////////////////
             if (file == null)

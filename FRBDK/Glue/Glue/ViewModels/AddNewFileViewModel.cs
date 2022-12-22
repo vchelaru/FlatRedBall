@@ -106,7 +106,7 @@ namespace GlueFormsCore.ViewModels
             foreach(var item in AllOptions.OrderBy(item => item.FriendlyName))
             {
                 var shouldAdd = string.IsNullOrEmpty(filterTextToLower) ||
-                    item.FriendlyName.ToLowerInvariant().Contains(filterTextToLower) == true;
+                    item.FriendlyName?.ToLowerInvariant().Contains(filterTextToLower) == true;
 
                 if(shouldAdd)
                 {

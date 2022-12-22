@@ -520,11 +520,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newRfs;
         }
 
+        public Task AddReferencedFileToGlobalContentAsync(ReferencedFileSave referencedFileSave, bool generateAndSave = true, bool updateUi = true)
+        {
+            return TaskManager.Self.AddAsync(() =>
+            {
+                AddReferencedFileToGlobalContent(referencedFileSave, generateAndSave, updateUi);
+            }, nameof(AddReferencedFileToGlobalContentAsync) + " " + referencedFileSave.Name);
+        }
+
+
+        [Obsolete("use AddReferencedFileToGlobalContentAsync")]
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave)
         {
             AddReferencedFileToGlobalContent(referencedFileSave, generateAndSave: true, updateUi: true);
         }
 
+        [Obsolete("use AddReferencedFileToGlobalContentAsync")]
         public void AddReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool generateAndSave, bool updateUi)
         {
             TaskManager.Self.WarnIfNotInTask();
@@ -555,6 +566,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshGlobalContent);
             }
 
+            // Dec 22, 2022 - how did we get this far without notifying the plugin system?
+            // Perhaps this is handled elsewhere? It should be here...
+            PluginManager.ReactToNewFile(referencedFileSave);
         }
 
 
