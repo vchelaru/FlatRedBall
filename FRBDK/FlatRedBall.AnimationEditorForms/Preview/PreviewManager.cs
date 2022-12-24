@@ -38,9 +38,6 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         RenderingLibrary.Graphics.Sprite Sprite;
         List<RenderingLibrary.Graphics.Sprite> mOnionSkinSprites = new List<RenderingLibrary.Graphics.Sprite>();
 
-        List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
-        List<RenderingLibrary.Math.Geometry.LineCircle> frameCircles = new List<LineCircle>();
-
         LineRectangle outlineRectangle;
 
 
@@ -250,7 +247,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     }
                 }
 
-                UpdateShapesToFrame(frame);
+                shapePreviewManager.UpdateShapesToFrame(frame);
             }
         }
 
@@ -349,112 +346,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void UpdateShapes()
         {
             var frame = AppState.Self.CurrentFrame;
-            UpdateShapesToFrame(frame);
-        }
-
-        private void UpdateShapesToFrame(AnimationFrameSave frame)
-        {
-            if (frame?.ShapeCollectionSave != null)
-            {
-                foreach (var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
-                {
-                    LineRectangle rectangle = null;
-
-                    rectangle = frameRectangles.FirstOrDefault(possibleRectangle => possibleRectangle.Tag == frameAarectSave);
-
-                    if (rectangle == null)
-                    {
-                        rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(mManagers);
-                        rectangle.IsDotted = false;
-                        rectangle.Tag = frameAarectSave;
-                        mManagers.ShapeManager.Add(rectangle);
-                        frameRectangles.Add(rectangle);
-                    }
-
-                    rectangle.Width = frameAarectSave.ScaleX * 2;
-                    rectangle.Height = frameAarectSave.ScaleY * 2;
-                    rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX;
-                    rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
-                }
-
-                foreach (var frameCircleSave in frame.ShapeCollectionSave.CircleSaves)
-                {
-                    LineCircle circle = null;
-
-                    circle = frameCircles.FirstOrDefault(possibleCircle => possibleCircle.Tag == frameCircleSave);
-
-                    if (circle == null)
-                    {
-                        circle = new LineCircle(mManagers);
-                        circle.Tag = frameCircleSave;
-                        mManagers.ShapeManager.Add(circle);
-                        frameCircles.Add(circle);
-                    }
-
-                    circle.Radius = frameCircleSave.Radius;
-                    circle.X = frameCircleSave.X;// - frameCircleSave.Radius/2.0f;
-                    circle.Y = -frameCircleSave.Y;// - frameCircleSave.Radius / 2.0f;
-                }
-
-                for (int i = frameRectangles.Count - 1; i > -1; i--)
-                {
-                    var frameRectangle = frameRectangles[i];
-
-                    var tag = frameRectangle.Tag;
-
-                    var isReferencedByCurrentFrame = false;
-
-                    if (tag is AxisAlignedRectangleSave tagAsRectangle)
-                    {
-                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
-                            .Contains(tagAsRectangle);
-                    }
-
-                    if (!isReferencedByCurrentFrame)
-                    {
-                        mManagers.ShapeManager.Remove(frameRectangle);
-                        frameRectangles.RemoveAt(i);
-                    }
-                }
-
-                for (int i = frameCircles.Count - 1; i > -1; i--)
-                {
-                    var frameCircle = frameCircles[i];
-
-                    var tag = frameCircle.Tag;
-
-                    var isReferencedByCurrentFrame = false;
-
-                    if(tag is CircleSave tagAsCircle)
-                    {
-                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.CircleSaves
-                            .Contains(tagAsCircle);
-                    }
-
-                    if(!isReferencedByCurrentFrame)
-                    {
-                        mManagers.ShapeManager.Remove(frameCircle);
-                        frameCircles.RemoveAt(i);
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < frameRectangles.Count; i++)
-                {
-                    var rectangle = frameRectangles[i];
-                    mManagers.ShapeManager.Remove(rectangle);
-                }
-
-                for(int i = 0; i < frameCircles.Count; i++)
-                {
-                    var circle = frameCircles[i];
-                    mManagers.ShapeManager.Remove(circle);
-                }
-
-                frameRectangles.Clear();
-                frameCircles.Clear();
-            }
+            shapePreviewManager.UpdateShapesToFrame(frame);
         }
 
         public void ReactToAnimationChainSelected()

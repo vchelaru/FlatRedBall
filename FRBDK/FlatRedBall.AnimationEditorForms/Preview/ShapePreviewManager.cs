@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.AnimationEditorForms.CommandsAndState;
+using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.Content.Math.Geometry;
 using InputLibrary;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.AnimationEditorForms.Preview
 {
+    #region FrbShapes Class
+
     class FrbShapes
     {
         public AxisAlignedRectangleSave Rectangle;
@@ -25,8 +28,12 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         }
     }
 
+    #endregion
+
     class ShapePreviewManager
     {
+        #region Fields/Properties
+
         Cursor Cursor;
         Keyboard Keyboard;
         FrbShapes ShapesOver;
@@ -36,6 +43,11 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         LineCircle HighlightCircle;
         LineRectangle HighlightRectangle;
+
+        List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
+        List<RenderingLibrary.Math.Geometry.LineCircle> frameCircles = new List<LineCircle>();
+
+        #endregion
 
         public ShapePreviewManager(Cursor cursor, Keyboard keyboard, SystemManagers systemManagers)
         {
@@ -100,19 +112,18 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
             ///////////End Early Out////////////////
 
-            // todo - make this Camera based
             var padding = 2 / SystemManagers.Renderer.Camera.Zoom;
-
 
             HighlightRectangle.Visible = ShapesOver.Rectangle != null;
             HighlightCircle.Visible = ShapesOver.Circle != null;
 
             if(ShapesOver.Rectangle != null)
             {
-                HighlightRectangle.X = ShapesOver.Rectangle.X;
-                HighlightRectangle.Y = -ShapesOver.Rectangle.Y;
-                HighlightRectangle.Width = (ShapesOver.Rectangle.ScaleX*2) + padding;
-                HighlightRectangle.Height = (ShapesOver.Rectangle.ScaleY*2) + padding;
+                UpdateVisualRectToAarectSave(HighlightRectangle, ShapesOver.Rectangle);
+                HighlightRectangle.X -= padding;
+                HighlightRectangle.Y -= padding;
+                HighlightRectangle.Width += 2*padding;
+                HighlightRectangle.Height += 2*padding;
             }
             if(ShapesOver.Circle != null)
             {
@@ -121,6 +132,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                 HighlightCircle.Radius = ShapesOver.Circle.Radius + padding;
             }
         }
+
         private void FillShapesOver()
         {
             ShapesOver.Clear();
@@ -169,7 +181,8 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         bool IsOver(AxisAlignedRectangleSave rectangle)
         {
-            var cursorPosition = new Vector2(Cursor.GetWorldX(SystemManagers), -Cursor.GetWorldY(SystemManagers));
+            // Not sure why GetWorldY is positive while going up but...not going to worry about that for now
+            var cursorPosition = new Vector2(Cursor.GetWorldX(SystemManagers), Cursor.GetWorldY(SystemManagers));
 
             return
                 cursorPosition.X <= rectangle.X + rectangle.ScaleX &&
@@ -214,6 +227,116 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void DoClickLogic()
         {
 
+        }
+
+        public void UpdateShapesToFrame(AnimationFrameSave frame)
+        {
+            if (frame?.ShapeCollectionSave != null)
+            {
+                foreach (var frameAarectSave in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    LineRectangle rectangle = null;
+
+                    rectangle = frameRectangles.FirstOrDefault(possibleRectangle => possibleRectangle.Tag == frameAarectSave);
+
+                    if (rectangle == null)
+                    {
+                        rectangle = new RenderingLibrary.Math.Geometry.LineRectangle(SystemManagers);
+                        rectangle.IsDotted = false;
+                        rectangle.Tag = frameAarectSave;
+                        SystemManagers.ShapeManager.Add(rectangle);
+                        frameRectangles.Add(rectangle);
+                    }
+
+                    UpdateVisualRectToAarectSave(rectangle, frameAarectSave);
+                }
+
+                foreach (var frameCircleSave in frame.ShapeCollectionSave.CircleSaves)
+                {
+                    LineCircle circle = null;
+
+                    circle = frameCircles.FirstOrDefault(possibleCircle => possibleCircle.Tag == frameCircleSave);
+
+                    if (circle == null)
+                    {
+                        circle = new LineCircle(SystemManagers);
+                        circle.Tag = frameCircleSave;
+                        SystemManagers.ShapeManager.Add(circle);
+                        frameCircles.Add(circle);
+                    }
+
+                    circle.Radius = frameCircleSave.Radius;
+                    circle.X = frameCircleSave.X;// - frameCircleSave.Radius/2.0f;
+                    circle.Y = -frameCircleSave.Y;// - frameCircleSave.Radius / 2.0f;
+                }
+
+                for (int i = frameRectangles.Count - 1; i > -1; i--)
+                {
+                    var frameRectangle = frameRectangles[i];
+
+                    var tag = frameRectangle.Tag;
+
+                    var isReferencedByCurrentFrame = false;
+
+                    if (tag is AxisAlignedRectangleSave tagAsRectangle)
+                    {
+                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.AxisAlignedRectangleSaves
+                            .Contains(tagAsRectangle);
+                    }
+
+                    if (!isReferencedByCurrentFrame)
+                    {
+                        SystemManagers.ShapeManager.Remove(frameRectangle);
+                        frameRectangles.RemoveAt(i);
+                    }
+                }
+
+                for (int i = frameCircles.Count - 1; i > -1; i--)
+                {
+                    var frameCircle = frameCircles[i];
+
+                    var tag = frameCircle.Tag;
+
+                    var isReferencedByCurrentFrame = false;
+
+                    if (tag is CircleSave tagAsCircle)
+                    {
+                        isReferencedByCurrentFrame = frame.ShapeCollectionSave.CircleSaves
+                            .Contains(tagAsCircle);
+                    }
+
+                    if (!isReferencedByCurrentFrame)
+                    {
+                        SystemManagers.ShapeManager.Remove(frameCircle);
+                        frameCircles.RemoveAt(i);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < frameRectangles.Count; i++)
+                {
+                    var rectangle = frameRectangles[i];
+                    SystemManagers.ShapeManager.Remove(rectangle);
+                }
+
+                for (int i = 0; i < frameCircles.Count; i++)
+                {
+                    var circle = frameCircles[i];
+                    SystemManagers.ShapeManager.Remove(circle);
+                }
+
+                frameRectangles.Clear();
+                frameCircles.Clear();
+            }
+        }
+
+        private static void UpdateVisualRectToAarectSave(LineRectangle rectangle, AxisAlignedRectangleSave frameAarectSave)
+        {
+            rectangle.Width = frameAarectSave.ScaleX * 2;
+            rectangle.Height = frameAarectSave.ScaleY * 2;
+            rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX;
+            rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
         }
     }
 }
