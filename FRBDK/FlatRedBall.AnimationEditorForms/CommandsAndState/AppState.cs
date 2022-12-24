@@ -47,7 +47,8 @@ namespace FlatRedBall.AnimationEditorForms.CommandsAndState
 
         public bool IsSnapToGridChecked
         {
-            get => WireframeManager.Self.WireframeEditControlsViewModel.IsSnapToGridChecked;
+            // View model maybe hasn't been assigned yet...
+            get => WireframeManager.Self.WireframeEditControlsViewModel?.IsSnapToGridChecked == true;
             set => WireframeManager.Self.WireframeEditControlsViewModel.IsSnapToGridChecked = value;
         }
 

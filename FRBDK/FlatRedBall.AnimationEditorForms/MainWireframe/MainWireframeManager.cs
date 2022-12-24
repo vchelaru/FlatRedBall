@@ -46,8 +46,10 @@ namespace FlatRedBall.AnimationEditorForms
         LineGrid mLineGrid;
         WireframeEditControls mWireframeControl;
 
-        public Color OutlineColor = new Microsoft.Xna.Framework.Color(1, 1, 1, .3f);
-        public Color MagicWandPreviewColor = new Color(1, 1, 0, .4f);
+        public Color OutlineColor = new Microsoft.Xna.Framework.Color(1f,1f,1f,1f);
+        // premult:
+        public Color LineGridColor = new Microsoft.Xna.Framework.Color(.3f, .3f, .3f, .3f);
+        public Color MagicWandPreviewColor = new Color(1, 1, 0, 1);
 
         StatusTextController mStatusText;
 
@@ -423,6 +425,7 @@ namespace FlatRedBall.AnimationEditorForms
             keyboard = new Keyboard();
             keyboard.Initialize(control);
 
+
             mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.Center;
 
             mWireframeControl = wireframeControl;
@@ -431,6 +434,7 @@ namespace FlatRedBall.AnimationEditorForms
 
             mControl.MouseWheelZoom += new EventHandler(HandleMouseWheelZoom);
             mControl.AvailableZoomLevels = mWireframeControl.AvailableZoomLevels;
+            mControl.Click += HandleImageRegionSelectionControlClick;
 
             mControl.XnaUpdate += new Action(HandleXnaUpdate);
             mControl.Panning += HandlePanning;
@@ -448,10 +452,11 @@ namespace FlatRedBall.AnimationEditorForms
             selectionPreviewRectangle.Z = 1;
 
             mLineGrid = new LineGrid(managers);
+            mLineGrid.Name = "MainWireframeManager LineGrid";
             managers.ShapeManager.Add(mLineGrid);
             mLineGrid.Visible = false;
-            mLineGrid.Color = OutlineColor;
-
+            mLineGrid.Color = LineGridColor;
+            mLineGrid.Z = -1;
             mControl.Click += new EventHandler(HandleClick);
 
             mStatusText = new StatusTextController(managers);
@@ -459,6 +464,11 @@ namespace FlatRedBall.AnimationEditorForms
 
             WireframeEditControlsViewModel = wireframeEditControlsViewModel;
             WireframeEditControlsViewModel.PropertyChanged += HandleWireframePropertyChanged;
+        }
+
+        void HandleImageRegionSelectionControlClick(object sender, EventArgs e)
+        {
+            mControl.Focus();
         }
 
         private void HandleNewSelectorCreated(RectangleSelector newSelector)
@@ -486,7 +496,9 @@ namespace FlatRedBall.AnimationEditorForms
                     ReactToMagicWandChange(this, null);
                     break;
                 case nameof(WireframeEditControlsViewModel.IsSnapToGridChecked):
+                case nameof(WireframeEditControlsViewModel.GridSize):
                     ReactToSnapToGridChecedChange();
+
                     break;
             }
         }
@@ -543,6 +555,18 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 mControl.Focus();
             }
+
+
+            if (WireframeEditControlsViewModel.IsSnapToGridChecked)
+            {
+                mControl.SnappingGridSize = WireframeEditControlsViewModel.GridSize;
+            }
+            else
+            {
+                mControl.SnappingGridSize = null;
+            }
+
+            UpdateLineGridToTexture(Texture);
         }
 
         void mControl_XnaInitialize()
@@ -556,6 +580,7 @@ namespace FlatRedBall.AnimationEditorForms
             keyboard.Activity();
             mStatusText.AdjustTextSize();
 
+            TimeManager.Self.Activity();
 
             PerformMagicWandPreviewLogic();
 
@@ -1013,23 +1038,31 @@ namespace FlatRedBall.AnimationEditorForms
         {
             float rowWidth = 0;
             float columnWidth = 0;
-            if (SelectedState.Self.SelectedTileMapInformation != null)
+            if(AppState.Self.IsSnapToGridChecked)
+            {
+                rowWidth = AppState.Self.GridSize;
+                columnWidth = AppState.Self.GridSize;
+            }
+            else if (SelectedState.Self.SelectedTileMapInformation != null)
             {
                 TileMapInformation tmi = SelectedState.Self.SelectedTileMapInformation;
                 rowWidth = tmi.TileHeight;
                 columnWidth = tmi.TileWidth;
             }
 
-            if (texture != null && rowWidth != 0 && columnWidth != 0 && PropertyGridManager.Self.UnitType == UnitType.SpriteSheet)
+
+            if (texture != null && rowWidth != 0 && columnWidth != 0)
             {
                 mLineGrid.Visible = true;
                 mLineGrid.ColumnWidth = columnWidth;
                 mLineGrid.RowWidth = rowWidth;
-
+                mLineGrid.Name = "Main wireframe LineGrid";
                 mLineGrid.ColumnCount = (int)(texture.Width / columnWidth);
                 mLineGrid.RowCount = (int)(texture.Height / rowWidth);
                 // This puts it in front of everything - maybe eventually we want to use layers?
-                mLineGrid.Z = 1;
+                //mLineGrid.Z = 1;
+                // no no, go behind
+                mLineGrid.Z = -1;
             }
 
             else

@@ -39,6 +39,8 @@ namespace FlatRedBall.SpecializedXnaControls
         TimeManager mTimeManager;
 
         Sprite mCurrentTextureSprite;
+        //LineGrid lineGrid;
+
 
         public Zooming.ZoomNumbers ZoomNumbers
         {
@@ -160,6 +162,15 @@ namespace FlatRedBall.SpecializedXnaControls
             mCurrentTextureSprite = new Sprite(mCurrentTexture);
             mCurrentTextureSprite.Name = "Image Region Selection Main Sprite";
             mManagers.SpriteManager.Add(mCurrentTextureSprite);
+
+            //lineGrid = new LineGrid(mManagers);
+            //lineGrid.Visible = false;
+            //lineGrid.Name = "Main image region control grid";
+            //// behind the sprite
+            //lineGrid.Z = -1;
+            //mManagers.Renderer.MainLayer.Add(lineGrid);
+
+            UpdateLineGrid();
         }
 
         public InputLibrary.Cursor XnaCursor
@@ -364,12 +375,35 @@ namespace FlatRedBall.SpecializedXnaControls
         {
             
             this.PerformActivity();
+            UpdateLineGrid();
 
             base.Draw();
 
 
 
             mManagers.Renderer.Draw(mManagers);
+        }
+
+        private void UpdateLineGrid()
+        {
+            //if(lineGrid == null)
+            //{
+            //    return;
+            //}
+            //lineGrid.Visible = snappingGridSize != null;
+
+            //if (snappingGridSize != null)
+            //{
+            //    var gridSize = snappingGridSize.Value;
+            //    lineGrid.ColumnWidth = gridSize;
+            //    lineGrid.RowWidth = gridSize;
+
+            //    if (mCurrentTextureSprite.EffectiveWidth != 0 && mCurrentTextureSprite.EffectiveHeight != 0)
+            //    {
+            //        lineGrid.ColumnCount = 1 + (int)(mCurrentTextureSprite.EffectiveWidth / gridSize);
+            //        lineGrid.RowCount = 1 + (int)(mCurrentTextureSprite.EffectiveHeight / gridSize);
+            //    }
+            //}
         }
 
         void MouseWheelRegion(object sender, MouseEventArgs e)

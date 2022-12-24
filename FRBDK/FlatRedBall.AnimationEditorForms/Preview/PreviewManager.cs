@@ -35,13 +35,14 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         GraphicsDeviceControl mControl;
 
-        RenderingLibrary.Graphics.Sprite mSprite;
+        RenderingLibrary.Graphics.Sprite Sprite;
         List<RenderingLibrary.Graphics.Sprite> mOnionSkinSprites = new List<RenderingLibrary.Graphics.Sprite>();
 
         List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
         List<RenderingLibrary.Math.Geometry.LineCircle> frameCircles = new List<LineCircle>();
 
         LineRectangle outlineRectangle;
+
 
         int mMaxWidth;
         int mMaxHeight;
@@ -141,6 +142,54 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         }
 
+        void HandleXnaInitialize()
+        {
+            mManagers = new SystemManagers();
+            mManagers.Initialize(mControl.GraphicsDevice);
+
+            mManagers.Renderer.SamplerState = SamplerState.PointClamp;
+
+            mManagers.Name = "Preview Window Managers";
+            var shapeManager = mManagers.ShapeManager;
+
+            Sprite = new RenderingLibrary.Graphics.Sprite(null);
+            Sprite.Name = "Animation PreviewManager Main Sprite";
+
+            outlineRectangle = new LineRectangle(mManagers);
+            mManagers.ShapeManager.Add(outlineRectangle);
+            // Move it in front of the Sprite
+            outlineRectangle.Z = 1;
+
+            mManagers.SpriteManager.Add(Sprite);
+
+            mControl.Resize += new EventHandler(HandleResize);
+            mControl.XnaDraw += new Action(HandleXnaDraw);
+            mControl.XnaUpdate += new Action(HandleXnaUpdate);
+            MoveCameraToProperLocation();
+
+            // We'll use Cursor.Self which is initialized and updated elsewhere
+            // Actually looks like that's not the case.  We'll make a new one.
+            mCursor = new Cursor();
+            mCursor.Initialize(mControl);
+
+            mKeyboard = new Keyboard();
+            mKeyboard.Initialize(mControl);
+
+            mLeftRuler = new Ruler(mControl, mManagers, mCursor);
+            mLeftRuler.RulerSide = RulerSide.Left;
+
+            mTopRuler = new Ruler(mControl, mManagers, mCursor);
+            mTopRuler.RulerSide = RulerSide.Top;
+
+            mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
+            mManagers.Renderer.Camera.X = -50;
+            mManagers.Renderer.Camera.Y = -50;
+
+            cameraController = new CameraController(Camera, mManagers, mCursor, mKeyboard, mControl, mTopRuler, mLeftRuler);
+
+            shapePreviewManager = new ShapePreviewManager(mCursor, mKeyboard, mManagers);
+        }
+
         #endregion
 
         #region Methods
@@ -170,7 +219,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         void HandleXnaDraw()
         {
             mManagers.SpriteManager.Activity(TimeManager.Self.CurrentTime);
-            MoveSpriteAccordingToAlignmentAndOffset(mSprite, SelectedState.Self.SelectedFrame);
+            MoveSpriteAccordingToAlignmentAndOffset(Sprite, SelectedState.Self.SelectedFrame);
             UpdateOutlineRectangleToSprite();
             DoShapeUpdateActivity();
             mManagers.Renderer.Draw(mManagers);
@@ -178,14 +227,16 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         }
 
+
+
         private void DoShapeUpdateActivity()
         {
             // Event though we may not be rendering the main Sprite, we want to use the main Sprite's animation:
-            var animation = mSprite.Animation;
+            var animation = Sprite.Animation;
 
-            if (animation != null && mSprite.Animate)
+            if (animation != null && Sprite.Animate)
             {
-                int index = mSprite.Animation.CurrentFrameIndex;
+                int index = Sprite.Animation.CurrentFrameIndex;
 
                 AnimationChainSave chain = SelectedState.Self.SelectedChain;
 
@@ -206,62 +257,14 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void UpdateOutlineRectangleToSprite()
         {
             
-            outlineRectangle.Width = mSprite.EffectiveWidth;
-            outlineRectangle.Height = mSprite.EffectiveHeight;
+            outlineRectangle.Width = Sprite.EffectiveWidth;
+            outlineRectangle.Height = Sprite.EffectiveHeight;
             outlineRectangle.Color = WireframeManager.Self.OutlineColor;
-            outlineRectangle.Visible = mSprite.Visible;
+            outlineRectangle.Visible = Sprite.Visible;
 
-            outlineRectangle.X = mSprite.X;
+            outlineRectangle.X = Sprite.X;
 
-            outlineRectangle.Y = mSprite.Y;
-        }
-
-        void HandleXnaInitialize()
-        {
-            mManagers = new SystemManagers();
-            mManagers.Initialize(mControl.GraphicsDevice);
-
-            mManagers.Renderer.SamplerState = SamplerState.PointClamp;
-
-            mManagers.Name = "Preview Window Managers";
-            var shapeManager = mManagers.ShapeManager;
-
-            mSprite = new RenderingLibrary.Graphics.Sprite(null);
-            mSprite.Name = "Animation PreviewManager Main Sprite";
-
-            outlineRectangle = new LineRectangle(mManagers);
-            mManagers.ShapeManager.Add(outlineRectangle);
-            // Move it in front of the Sprite
-            outlineRectangle.Z = 1;
-
-            mManagers.SpriteManager.Add(mSprite);
-
-            mControl.Resize += new EventHandler(HandleResize);
-            mControl.XnaDraw += new Action(HandleXnaDraw);
-            mControl.XnaUpdate += new Action(HandleXnaUpdate);
-            MoveCameraToProperLocation();
-
-            // We'll use Cursor.Self which is initialized and updated elsewhere
-            // Actually looks like that's not the case.  We'll make a new one.
-            mCursor = new Cursor();
-            mCursor.Initialize(mControl);
-
-            mKeyboard = new Keyboard();
-            mKeyboard.Initialize(mControl);
-
-            mLeftRuler = new Ruler(mControl, mManagers, mCursor);
-            mLeftRuler.RulerSide = RulerSide.Left;
-
-            mTopRuler = new Ruler(mControl, mManagers, mCursor);
-            mTopRuler.RulerSide = RulerSide.Top;
-
-            mManagers.Renderer.Camera.CameraCenterOnScreen = CameraCenterOnScreen.TopLeft;
-            mManagers.Renderer.Camera.X = -50;
-            mManagers.Renderer.Camera.Y = -50;
-
-            cameraController = new CameraController(Camera, mManagers, mCursor, mKeyboard, mControl, mTopRuler, mLeftRuler);
-
-            shapePreviewManager = new ShapePreviewManager(mCursor, mKeyboard, mManagers);
+            outlineRectangle.Y = Sprite.Y;
         }
 
         void HandlePanning()
@@ -460,15 +463,15 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
             if (SelectedState.Self.SelectedChain != null && SelectedState.Self.SelectedChain.Frames.Count != 0)
             {
-                mSprite.Visible = true;
-                mSprite.Animate = true;
-                mSprite.Animation = GetTextureFlipAnimationForAnimationChain();
+                Sprite.Visible = true;
+                Sprite.Animate = true;
+                Sprite.Animation = GetTextureFlipAnimationForAnimationChain();
 
 
             }
             else
             {
-                mSprite.Visible = false;
+                Sprite.Visible = false;
             }
 
             UpdateOnionSkinSprites();
@@ -556,7 +559,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             AnimationFrameSave afs = SelectedState.Self.SelectedFrame;
             if (afs != null)
             {
-                RenderingLibrary.Graphics.Sprite sprite = mSprite;
+                RenderingLibrary.Graphics.Sprite sprite = Sprite;
                 sprite.Visible = true;
                 UpdateSpriteToAnimationFrame(afs, sprite);
             }
@@ -581,7 +584,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
             sprite.FlipHorizontal = afs.FlipHorizontal;
             sprite.FlipVertical = afs.FlipVertical;
-            sprite.Animation = mSprite.Animation;
+            sprite.Animation = Sprite.Animation;
 
             MoveSpriteAccordingToAlignmentAndOffset(sprite, afs);
         }
@@ -652,9 +655,9 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void MoveSpriteAccordingToAlignmentAndOffset(RenderingLibrary.Graphics.Sprite sprite, AnimationFrameSave frame)
         {
             // Event though we may not be rendering the main Sprite, we want to use the main Sprite's animation:
-            IAnimation animation = mSprite.Animation;
+            IAnimation animation = Sprite.Animation;
 
-            if (sprite != null && sprite.Visible && mSprite.Animation != null)
+            if (sprite != null && sprite.Visible && Sprite.Animation != null)
             {
                 int index = sprite.Animation.CurrentFrameIndex;
 

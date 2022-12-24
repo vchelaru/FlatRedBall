@@ -26,6 +26,7 @@ using FilePath = ToolsUtilities.FilePath;
 using System.Threading.Tasks;
 using FlatRedBall.AnimationEditorForms.Plugins.FrameShapePlugin;
 using FlatRedBall.AnimationEditorForms.Plugins;
+using FlatRedBall.AnimationEditorForms.Managers;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -98,6 +99,7 @@ namespace FlatRedBall.AnimationEditorForms
             this.animationsListToolBar1.ExpandAllClick += TreeViewManager.Self.HandleExpandAllTreeView;
             this.animationsListToolBar1.CollapseAllClick += TreeViewManager.Self.HandleCollapseAllTreeView;
 
+            // Create view model before it is used in initializing the MainTextureCoordinateSelectionWindowManager
             CreateViewModel();
 
             this.imageRegionSelectionControl1 = new FlatRedBall.SpecializedXnaControls.ImageRegionSelectionControl();
@@ -111,7 +113,6 @@ namespace FlatRedBall.AnimationEditorForms
                 mScrollBarControlLogic.UpdateScrollBars();
             };
 
-            imageRegionSelectionControl1.Click += new EventHandler(HandleImageRegionSelectionControlClick);
             this.PreviewSplitContainer.Panel1.Controls.Add(this.imageRegionSelectionControl1);
 
             // 
@@ -138,7 +139,6 @@ namespace FlatRedBall.AnimationEditorForms
             if (this.DesignMode == false)
             {
                 HandleRegionXnaInitialize();
-                this.imageRegionSelectionControl1.XnaUpdate += new Action(HandleXnaUpdate);
             }
             PropertyGridManager.Self.Initialize(SelectedItemPropertyGrid, this.tileMapInfoWindow1);
             PropertyGridManager.Self.AnimationChainChange += (not, used) =>
@@ -178,35 +178,13 @@ namespace FlatRedBall.AnimationEditorForms
 
             // move this out :
             WireframeEditControlsViewModel = new WireframeEditControlsViewModel();
-            WireframeEditControlsViewModel.PropertyChanged += HandleViewModelPropertyChanged;
 
             this.WireframeTopUiControl.DataContext = WireframeEditControlsViewModel;
         }
 
-        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch(e.PropertyName)
-            {
-                case nameof(WireframeEditControlsViewModel.IsSnapToGridChecked):
-                case nameof(WireframeEditControlsViewModel.GridSize):
-                    RefreshSnappingValues();
 
 
-                    break;
-            }
-        }
 
-        private void RefreshSnappingValues()
-        {
-            if (WireframeEditControlsViewModel.IsSnapToGridChecked)
-            {
-                imageRegionSelectionControl1.SnappingGridSize = WireframeEditControlsViewModel.GridSize;
-            }
-            else
-            {
-                imageRegionSelectionControl1.SnappingGridSize = null;
-            }
-        }
 
         private void HandleEditorControlsPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -249,17 +227,6 @@ namespace FlatRedBall.AnimationEditorForms
             parentItem.DropDownItems.Add(item);
 
 
-        }
-
-        void HandleImageRegionSelectionControlClick(object sender, EventArgs e)
-        {
-            int m = 3;
-            imageRegionSelectionControl1.Focus();
-        }
-
-        void HandleXnaUpdate()
-        {
-            TimeManager.Self.Activity();
         }
 
         private void PopulateUnitTypeComboBox()

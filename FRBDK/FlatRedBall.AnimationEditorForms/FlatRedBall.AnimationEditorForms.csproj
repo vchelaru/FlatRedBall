@@ -235,10 +235,10 @@
     <Compile Include="ViewModels\AdjustOffsetViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="ViewModels\WireframeEditControlsViewModel.cs" />
-    <Compile Include="Wireframe\Ruler.cs" />
-    <Compile Include="Wireframe\StatusTextController.cs" />
-    <Compile Include="Wireframe\WireframeManager.cs" />
-    <Compile Include="Wireframe\ZoomNumbers.cs" />
+    <Compile Include="MainWireframe\Ruler.cs" />
+    <Compile Include="MainWireframe\StatusTextController.cs" />
+    <Compile Include="MainWireframe\MainWireframeManager.cs" />
+    <Compile Include="MainWireframe\ZoomNumbers.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\Glue\Glue\Controls\MultiButtonMessageBox.resx">
