@@ -23,6 +23,9 @@ namespace NAudioPlugin.Managers
                     {
                         QualifiedType = "FlatRedBall.NAudio.NAudio_Song"
                     };
+
+                    nAudioSongAti.FriendlyName = "NAudio Song (.ogg)";
+
                     nAudioSongAti.DestroyMethod = null; // handled by codegen
 
                     nAudioSongAti.CustomLoadFunc = GetLoadSongCode;
