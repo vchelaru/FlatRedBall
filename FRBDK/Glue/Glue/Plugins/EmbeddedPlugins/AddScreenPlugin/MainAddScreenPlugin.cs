@@ -68,12 +68,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                     .Select(item => item.GetStrippedName())
                     .ToList();
 
+
                 levelName = StringFunctions.MakeStringUnique(levelName,
                     allScreenNames, 2);
 
                 window.Result = levelName;
 
                 var allLevelScreens = ObjectFinder.Self.GetAllDerivedElementsRecursive(gameScreen);
+                allLevelScreens.Sort((first, second) => GlueCommands.Self.CompareFileSort(first.Name, second.Name));
 
                 foreach(var existingLevelScreen in allLevelScreens)
                 {
@@ -90,9 +92,18 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
             var allTmxFiles = ObjectFinder.Self.GetAllReferencedFiles()
                 .Where(item => FileManager.GetExtension(item.Name) == "tmx")
                 .Select(item => item.Name)
-                .ToArray();
+                .ToList();
+
+            allTmxFiles.Sort(GlueCommands.Self.CompareFileSort);
 
             viewModel.AvailableTmxFiles.AddRange(allTmxFiles);
+
+            if(viewModel.IsCopyEntitiesFromOtherLevelChecked)
+            {
+                // If they're copying entities, let's also default to copying TMX's
+                viewModel.IsCopyTmxFromOtherLevelChecked = true;
+            }
+
             viewModel.SelectedTmxFile = allTmxFiles.FirstOrDefault();
 
             optionsView.DataContext = viewModel;

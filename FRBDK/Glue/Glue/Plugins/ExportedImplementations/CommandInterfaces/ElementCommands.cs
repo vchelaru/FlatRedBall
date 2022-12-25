@@ -375,7 +375,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
+            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
 
             await PluginManager.ReactToNewScreenCreated(screenSave);
 

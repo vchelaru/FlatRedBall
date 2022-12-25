@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers.Projects;
+using System.Runtime.InteropServices;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -296,5 +297,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 GlueCommands.Self.GluxCommands.SaveSettings();
             }
         }
+
+        [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+        private static extern int StrCmpLogicalW(string x, string y);
+        public int CompareFileSort(string first, string second) => StrCmpLogicalW(first, second);
     }
 }

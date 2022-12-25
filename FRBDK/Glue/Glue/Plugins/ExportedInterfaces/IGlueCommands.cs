@@ -28,6 +28,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         void PrintOutput(string output);
         void PrintError(string output);
 
+        int CompareFileSort(string first, string second);
 
         string GetAbsoluteFileName(SaveClasses.ReferencedFileSave rfs);
         FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs);
