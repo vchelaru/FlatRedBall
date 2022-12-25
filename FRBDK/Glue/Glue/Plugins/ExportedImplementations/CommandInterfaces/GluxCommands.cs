@@ -1190,6 +1190,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return null;
         }
 
+        [Obsolete("Use AddReferencedFileToElementAsync")]
         public void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element)
         {
             element.ReferencedFiles.Add(rfs);
@@ -1200,9 +1201,36 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 
+        public async Task AddReferencedFileToElementAsync(ReferencedFileSave rfs, GlueElement element, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        {
+            element.ReferencedFiles.Add(rfs);
+            element.HasChanged = true;
+
+            GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+
+            if(updateUi)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+                await GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+            }
+
+            if(performSaveAndGenerateCode)
+            {
+                await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+
+            }
+        }
+
+            //}
+
+            //if(performSaveAndGenerateCode)
+            //{
+            //}
+
         public async Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 var file = GlueCommands.Self.GetAbsoluteFileName(rfs);
 
@@ -1229,20 +1257,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 System.IO.File.Copy(file, destinationFile);
 
-                if (container != null)
-                {
-                    GlueCommands.Self.GluxCommands.AddReferencedFileToElement(newRfs, container);
-                }
-                else
-                {
-                    GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(newRfs);
-                }
 
                 var customClass = GlueState.Self.CurrentGlueProject.GetCustomClassReferencingFile(rfs.Name);
 
                 if (customClass != null)
                 {
                     customClass.CsvFilesUsingThis.Add(newRfs.Name);
+                }
+                if (container != null)
+                {
+                    await GlueCommands.Self.GluxCommands.AddReferencedFileToElementAsync(newRfs, container);
+                }
+                else
+                {
+                    await GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContentAsync(newRfs);
                 }
 
                 GlueCommands.Self.GluxCommands.SaveGlux();

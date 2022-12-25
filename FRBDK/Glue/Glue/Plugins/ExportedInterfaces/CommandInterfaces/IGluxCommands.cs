@@ -93,10 +93,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task<ReferencedFileSave> AddExistingReferencedFileToGlobalContent(ReferencedFileSave referencedFileSave, bool includeDirectoryInGlobalContentInName);
 
         Task AddReferencedFileToGlobalContentAsync(ReferencedFileSave rfs, bool generateAndSave = true, bool updateUi = true);
+        Task AddReferencedFileToElementAsync(ReferencedFileSave rfs, GlueElement element, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         [Obsolete("use AddReferencedFileToGlobalContentAsync")]
         void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
+        [Obsolete("use AddReferencedFileToElementAsync")]
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
+
 
 
         [Obsolete("Use CreateReferencedFileSaveForExistingFileAsync")]
