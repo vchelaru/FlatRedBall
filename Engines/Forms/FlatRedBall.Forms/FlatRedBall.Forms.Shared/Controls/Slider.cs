@@ -26,6 +26,8 @@ namespace FlatRedBall.Forms.Controls
 
         public IInputReceiver NextInTabSequence { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        double ValueOnThumbPush;
+
         #endregion
 
         #region Events
@@ -60,7 +62,7 @@ namespace FlatRedBall.Forms.Controls
             base.ReactToVisualChanged();
 
             Track.Push += HandleTrackPush;
-
+            base.thumb.Visual.RemovedAsPushedWindow += HandleRemovedAsPushedWindow;
             UpdateState();
         }
 
@@ -90,6 +92,16 @@ namespace FlatRedBall.Forms.Controls
             var cursorScreen = GuiManager.Cursor.GumX();
 
             cursorGrabOffsetRelativeToThumb = cursorScreen - leftOfThumb;
+
+            ValueOnThumbPush = Value;
+        }
+
+        private void HandleRemovedAsPushedWindow(IWindow window)
+        {
+            if(ValueOnThumbPush != Value)
+            {
+                RaiseValueChangeCompleted();
+            }
         }
 
         protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
@@ -220,11 +232,22 @@ namespace FlatRedBall.Forms.Controls
                 ratioOver = 0;
             }
 
-            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
 
-            thumb.X = Microsoft.Xna.Framework.MathHelper.Lerp(0, Track.GetAbsoluteWidth(),
-                (float)ratioOver);
+            // Update December 26, 2022
+            // If the thumb uses XUnits of
+            // absolute, then if the slider
+            // changes, the thumb will be in
+            // the old position. By using an X
+            // value of percentage, then changes
+            // in width won't cause thumb positioning
+            // problems:
 
+            //thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            //thumb.X = Microsoft.Xna.Framework.MathHelper.Lerp(0, Track.GetAbsoluteWidth(),
+            //    (float)ratioOver);
+
+            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.Percentage;
+            thumb.X = 100 * (float)ratioOver;
         }
 
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
@@ -233,16 +256,29 @@ namespace FlatRedBall.Forms.Controls
 
             var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
 
-            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            // See UpdateThumbPositionAccordingToValue for an explanation of why we use
+            // Percentage rather than PixelsFromSmall:
+            //thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.PixelsFromSmall;
+            //thumb.X = cursorXRelativeToTrack - cursorGrabOffsetRelativeToThumb;
 
-            thumb.X = cursorXRelativeToTrack - cursorGrabOffsetRelativeToThumb;
+            thumb.Visual.XUnits = global::Gum.Converters.GeneralUnitType.Percentage;
+
+            var pixelOffset = cursorXRelativeToTrack - cursorGrabOffsetRelativeToThumb;
+            var width = Track.GetAbsoluteWidth();
+            if(width == 0)
+            {
+                // prevent divide by 0's
+                width = 1;
+            }
+
+            thumb.X = 100 * pixelOffset / width;
 
             float range = Track.GetAbsoluteWidth() ;
 
             
             if(range != 0)
             {
-                var ratio = (thumb.X) / range;
+                var ratio = (thumb.X) / 100;
                 ratio = System.Math.Max(0, ratio);
                 ratio = System.Math.Min(1, ratio);
 

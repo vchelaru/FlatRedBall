@@ -88,6 +88,12 @@ namespace FlatRedBall.Forms.Controls.Primitives
 
                     ValueChanged?.Invoke(this, null);
 
+                    if(GuiManager.Cursor.WindowPushed != thumb.Visual)
+                    {
+                        // Make sure the user isn't currently grabbing the thumb
+                        ValueChangeCompleted?.Invoke(this, null);
+                    }
+
                     PushValueToViewModel();
                 }
             }
@@ -98,6 +104,8 @@ namespace FlatRedBall.Forms.Controls.Primitives
         #region Events
 
         public event EventHandler ValueChanged;
+
+        public event EventHandler ValueChangeCompleted;
 
         #endregion
 
@@ -205,6 +213,10 @@ namespace FlatRedBall.Forms.Controls.Primitives
         }
 
         protected virtual void OnValueChanged(double oldValue, double newValue) { }
+        protected void RaiseValueChangeCompleted()
+        {
+            ValueChangeCompleted?.Invoke(this, null);
+        }
 
         protected abstract void UpdateThumbPositionToCursorDrag(Cursor cursor);
 

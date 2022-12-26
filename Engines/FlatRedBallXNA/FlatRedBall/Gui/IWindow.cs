@@ -59,6 +59,10 @@ namespace FlatRedBall.Gui
         /// </summary>
         event WindowEvent EnabledChange;
 
+        /// <summary>
+        /// Event raised when this Window is pushed, then is no longer the pushed window due to a cursor releasing the primary button.
+        /// </summary>
+        event WindowEvent RemovedAsPushedWindow;
         #endregion
 
         ReadOnlyCollection<IWindow> Children
@@ -165,6 +169,8 @@ namespace FlatRedBall.Gui
         void CallRollOver();
 
         void CallClick();
+
+        void CallRemovedAsPushedWindow();
 
         void CloseWindow();
 

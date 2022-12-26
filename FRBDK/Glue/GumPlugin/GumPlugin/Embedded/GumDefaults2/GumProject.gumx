@@ -142,6 +142,11 @@
     <LinkType>ReferenceOriginal</LinkType>
   </ComponentReference>
   <ComponentReference>
+    <Name>Controls/SettingsView</Name>
+    <ElementType>Component</ElementType>
+    <LinkType>ReferenceOriginal</LinkType>
+  </ComponentReference>
+  <ComponentReference>
     <Name>Controls/Slider</Name>
     <ElementType>Component</ElementType>
     <LinkType>ReferenceOriginal</LinkType>
@@ -302,6 +307,9 @@
   </BehaviorReference>
   <BehaviorReference>
     <Name>ScrollViewerBehavior</Name>
+  </BehaviorReference>
+  <BehaviorReference>
+    <Name>SettingsViewBehavior</Name>
   </BehaviorReference>
   <BehaviorReference>
     <Name>SliderBehavior</Name>

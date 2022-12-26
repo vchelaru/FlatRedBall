@@ -128,6 +128,7 @@
     <None Remove="Embedded\GumDefaults2\Behaviors\TreeViewBehavior.behx" />
     <None Remove="Embedded\GumDefaults2\Behaviors\TreeViewItemBehavior.behx" />
     <None Remove="Embedded\GumDefaults2\Behaviors\UserControlBehavior.behx" />
+	  
     <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonClose.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonConfirm.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\ButtonDeny.gucx" />
@@ -159,6 +160,8 @@
     <None Remove="Embedded\GumDefaults2\Components\Controls\TreeViewToggle.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\TreeViewToggleAnimations.ganx" />
     <None Remove="Embedded\GumDefaults2\Components\Controls\UserControl.gucx" />
+	  
+	  
     <None Remove="Embedded\GumDefaults2\Components\Elements\CautionLines.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\Divider.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\DividerHorizontal.gucx" />
@@ -171,6 +174,8 @@
     <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBar.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\PercentBarIcon.gucx" />
     <None Remove="Embedded\GumDefaults2\Components\Elements\VerticalLines.gucx" />
+	  
+	  
     <None Remove="Embedded\GumDefaults2\Standards\Circle.gutx" />
     <None Remove="Embedded\GumDefaults2\Standards\ColoredRectangle.gutx" />
     <None Remove="Embedded\GumDefaults2\Standards\Component.gutx" />
@@ -291,6 +296,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Embedded\ContentManagerWrapper.cs" />
+	  
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\Button.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\CheckBox.gucx" />
     <EmbeddedResource Include="Embedded\EmbeddedObjectGumProject\Components\DefaultForms\ColoredFrame.gucx" />
@@ -340,68 +346,10 @@
     <EmbeddedResource Include="Embedded\GraphicalUiElement.IWindow.cs" />
     <EmbeddedResource Include="Embedded\GumAnimation.cs" />
     <EmbeddedResource Include="Embedded\GumCollidableExtensions.cs" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ButtonBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\CheckBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ComboBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\DialogBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\LabelBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ListBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ListBoxItemBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\OnScreenKeyboardBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\PasswordBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\RadioButtonBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ScrollBarBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ScrollViewerBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\SliderBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TextBoxBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ToastBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\ToggleBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TreeViewBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\TreeViewItemBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\UserControlBehavior.behx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonClose.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonConfirm.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonDeny.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonIcon.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonStandard.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonStandardIcon.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ButtonTab.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\CheckBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ComboBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\DialogBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Keyboard.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardKey.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\KeyboardKeyAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ListBoxItem.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PasswordBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PlayerJoinView.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\PlayerJoinViewItem.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\RadioButton.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollBar.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\ScrollViewer.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Slider.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TextBox.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TextBoxAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\Toast.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeView.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewItem.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewToggle.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\TreeViewToggleAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Controls\UserControl.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\CautionLines.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Divider.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerHorizontal.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerHorizontalAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerVertical.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\DividerVerticalAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Icon.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\IconAnimations.ganx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\Label.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\PercentBar.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\PercentBarIcon.gucx" />
-    <EmbeddedResource Include="Embedded\GumDefaults2\Components\Elements\VerticalLines.gucx" />
+	  
+	  <EmbeddedResource Include="Embedded\GumDefaults2\Behaviors\*.behx" />
+	  <EmbeddedResource Include="Embedded\GumDefaults2\Components\**\*.gucx" />
+	  
     <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Circle.gutx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Standards\ColoredRectangle.gutx" />
     <EmbeddedResource Include="Embedded\GumDefaults2\Standards\Component.gutx" />

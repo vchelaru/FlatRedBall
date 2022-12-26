@@ -45,6 +45,15 @@ namespace FlatRedBall.Audio
 
 		static bool? mDoesUserWantCustomSoundtrack = null;
 
+        /// <summary>
+        /// The default volume for playing sounds, applied when calling Play(SoundEffect). Ranges between 0 and 1.
+        /// </summary>
+        public static float MasterSoundVolume
+        {
+            get;
+            set;
+        } = 1.0f;
+
 #if MONODROID
         //This is for a performance issue with SoundPool
         private static SoundEffect _droidLoop;
@@ -165,7 +174,6 @@ namespace FlatRedBall.Audio
 
         #region Event Handlers
 
-
         static void OnUnsuspending(object sender, EventArgs e)
         {
             if (mCurrentSong != null)
@@ -229,7 +237,7 @@ namespace FlatRedBall.Audio
         /// <param name="soundEffect"></param>
         public static void Play(SoundEffect soundEffect)
         {
-            Play(soundEffect, 1);
+            Play(soundEffect, MasterSoundVolume);
         }
 
         /// <summary>

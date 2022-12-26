@@ -29,6 +29,8 @@ namespace Gum.Wireframe
         public event WindowEvent ClickNoSlide;
         public event WindowEvent SlideOnClick;
         public event WindowEvent Push;
+        public event WindowEvent RemovedAsPushedWindow;
+
 
         /// <summary>
         /// Obsolete - this does not work. Use RollOn, RollOf, or RollOver
@@ -49,7 +51,7 @@ namespace Gum.Wireframe
 
         /// <summary>
         /// Event which is raised whenever this loses a push. A push occurs when the
-        /// cursor is over this window and the left moue button is pushed. A push is lost
+        /// cursor is over this window and the left mouse button is pushed. A push is lost
         /// if the left mouse button is released or if the user moves the cursor so that it
         /// is no longer over this while the mouse button is pressed. 
         /// </summary>
@@ -164,7 +166,7 @@ namespace Gum.Wireframe
         }
 
         public void CallClick() => Click?.Invoke(this);
-
+        public void CallRemovedAsPushedWindow() => RemovedAsPushedWindow?.Invoke(this);
         public void CallRollOff() => RollOff?.Invoke(this);
         
 

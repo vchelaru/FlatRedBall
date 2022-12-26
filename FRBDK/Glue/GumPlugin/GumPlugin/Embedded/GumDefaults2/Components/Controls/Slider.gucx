@@ -142,9 +142,8 @@
     <Variable>
       <Type>float</Type>
       <Name>ThumbInstance.X</Name>
-      <Value xsi:type="xsd:float">0</Value>
       <ExposedAsName>SliderPercent</ExposedAsName>
-      <SetsValue>true</SetsValue>
+      <SetsValue>false</SetsValue>
     </Variable>
     <Variable>
       <Type>HorizontalAlignment</Type>

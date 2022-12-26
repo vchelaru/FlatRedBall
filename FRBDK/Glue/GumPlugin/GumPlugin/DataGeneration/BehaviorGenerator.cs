@@ -17,6 +17,11 @@ namespace GumPlugin.DataGeneration
         static FormsControlInfo()
         {
             List<FormsControlInfo> tempList = new List<FormsControlInfo>();
+
+            // ******************* STOP! ************************
+            // Also look in the GueRuntimeTypeAssociationGenerator.GetIfIsCompleteFulfillment and add an entry
+            // there if adding anything here.
+            // **************************************************
             Add("ButtonBehavior", "Button");
 
             Add("CheckBoxBehavior", "CheckBox");
@@ -43,6 +48,8 @@ namespace GumPlugin.DataGeneration
 
             Add("ScrollViewerBehavior", "ScrollViewer");
 
+            Add("SettingsViewBehavior", "FlatRedBall.Forms.Controls.Games.SettingsView");
+
             Add("SliderBehavior", "Slider");
 
             Add("TextBoxBehavior", "TextBox");
@@ -68,7 +75,6 @@ namespace GumPlugin.DataGeneration
             }
 
             AllControls = tempList.ToArray();
-        // Also look in the GueRuntimeTypeAssociationGenerator
         }
         public static FormsControlInfo[] AllControls;
 

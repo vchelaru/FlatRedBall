@@ -208,6 +208,7 @@ namespace GumPlugin.CodeGeneration
                 case "FlatRedBall.Forms.Controls.Games.OnScreenKeyboard":
                 case "FlatRedBall.Forms.Controls.Games.PlayerJoinView":
                 case "FlatRedBall.Forms.Controls.Games.PlayerJoinViewItem":
+                case "FlatRedBall.Forms.Controls.Games.SettingsView":
                     return true;
                     // These require a Text object
                 case "Button": 

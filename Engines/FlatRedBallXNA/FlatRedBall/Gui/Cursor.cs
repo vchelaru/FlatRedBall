@@ -611,7 +611,6 @@ namespace FlatRedBall.Gui
 
         public Vector2 WorldPosition => new Vector2(WorldX, WorldY);
 
-        #region XML Docs
         /// <summary>
         /// The window that the cursor was over when the mouse button was pressed.
         /// </summary>
@@ -626,7 +625,6 @@ namespace FlatRedBall.Gui
         /// pushed and without accidentally clicking on other Buttons.  This is also used
         /// with ToggleButtons to control when they are pressed and unpressed.
         /// </remarks>
-        #endregion
         public IWindow WindowPushed
         {
             get { return mWindowPushed; }
@@ -644,7 +642,12 @@ namespace FlatRedBall.Gui
                     FlatRedBall.Debugging.Debugger.CommandLineWrite("Cursor.WindowPushed set to " + whatToPrint);
                 }
 #endif
-                mWindowPushed = value;
+                if(value != mWindowPushed)
+                {
+                    mWindowPushed?.CallRemovedAsPushedWindow();
+                    mWindowPushed = value;
+                }
+
             }
         }
 

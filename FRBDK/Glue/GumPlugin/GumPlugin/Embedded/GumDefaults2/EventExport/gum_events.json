@@ -2,46 +2,32 @@
   "UserEvents": {
     "vchel": [
       {
-        "NewName": "MainMenuGum.PlayerJoinViewInstance",
+        "NewName": "SettingsScreenGum.SettingsViewInstance",
         "OldName": null,
         "ElementType": "Screens",
         "EventType": 5,
-        "TimestampUtc": "2022-12-15T14:52:14.1159388Z"
+        "TimestampUtc": "2022-12-26T17:44:52.933435Z"
       },
       {
-        "NewName": "GamepadNES",
-        "OldName": "Gamepad1",
+        "NewName": "Controls/SettingsView (Container).FullscreenCheckboxInstance",
+        "OldName": "Controls/SettingsView (Container).CheckBoxInstance",
         "ElementType": "Components",
-        "EventType": 3,
-        "TimestampUtc": "2022-12-15T14:59:39.7515372Z"
+        "EventType": 7,
+        "TimestampUtc": "2022-12-26T17:48:13.6283949Z"
       },
       {
-        "NewName": "GamepadSNES",
-        "OldName": "GamepadNES1",
+        "NewName": "Controls/SettingsView (Container).FullscreenCheckboxInstance",
+        "OldName": "Controls/SettingsView (Container).CheckBoxInstance",
         "ElementType": "Components",
-        "EventType": 3,
-        "TimestampUtc": "2022-12-15T14:59:50.0773079Z"
+        "EventType": 7,
+        "TimestampUtc": "2022-12-26T17:48:41.6574447Z"
       },
       {
-        "NewName": "GamepadNintendo64",
-        "OldName": "GamepadSNES1",
-        "ElementType": "Components",
-        "EventType": 3,
-        "TimestampUtc": "2022-12-15T15:00:01.445621Z"
-      },
-      {
-        "NewName": "GamepadPlaystationDualShock",
-        "OldName": "GamepadXbox1",
-        "ElementType": "Components",
-        "EventType": 3,
-        "TimestampUtc": "2022-12-15T15:00:14.164283Z"
-      },
-      {
-        "NewName": "GamepadSegaGenesis",
-        "OldName": "GamepadPlaystationDualShock1",
-        "ElementType": "Components",
-        "EventType": 3,
-        "TimestampUtc": "2022-12-15T15:00:29.6138185Z"
+        "NewName": "SettingsScreenGum.ButtonStandardInstance",
+        "OldName": null,
+        "ElementType": "Screens",
+        "EventType": 5,
+        "TimestampUtc": "2022-12-26T17:56:23.8084153Z"
       }
     ]
   }

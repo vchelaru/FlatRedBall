@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\OnScreenKeyboard.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\PlayerJoinViewItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Games\SettingsView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ItemsControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Label.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ListBox.cs" />

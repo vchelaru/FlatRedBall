@@ -52,8 +52,12 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
         /// <summary>
-        /// Event raised when the IsChecked value is set to true.
+        /// Event raised when the IsChecked value is set to true. Seperate events exist for Indeterminate and Unchecked.
         /// </summary>
+        /// <remarks>
+        /// The Checked/Indeterminate/Unchecked event pattern follows wpf. For more info, see:
+        /// https://stackoverflow.com/questions/5574613/separate-events-for-checked-and-unchecked-state-of-wpf-checkbox-why
+        /// </remarks>
         public event EventHandler Checked;
 
         /// <summary>

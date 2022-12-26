@@ -9,8 +9,6 @@ using FlatRedBall.Forms.Controls.Primitives;
 
 namespace FlatRedBall.Forms.Controls
 {
-
-
     public class ScrollBar : RangeBase
     {
         #region Fields/Properties
