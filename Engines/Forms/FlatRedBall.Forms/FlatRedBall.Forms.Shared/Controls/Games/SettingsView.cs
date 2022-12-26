@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Audio;
 using Gum.Wireframe;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 using System;
@@ -12,9 +13,10 @@ namespace FlatRedBall.Forms.Controls.Games
 {
     public class SettingsView : FrameworkElement
     {
-
         Slider MusicVolumeSlider;
+
         Slider SoundVolumeSlider;
+
         CheckBox FullscreenCheckBox;
 
         public SoundEffect SoundEffectToPlayOnRelease { get; set; }
@@ -31,7 +33,6 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
         }
-
 
         public double SoundVolumePercentage 
         { 
@@ -59,6 +60,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 }
             }
         }
+
+        // The Window's rectangle position when it was changed from windowed to fullscreen
+        static Rectangle? windowedRectanglePosition;
+
 
         public event Action<bool> FullscreenSet;
 
@@ -143,6 +148,10 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             if (IsAutoApplyingChangesToEngine)
             {
+                if(IsFullscreen)
+                {
+                    windowedRectanglePosition = FlatRedBallServices.Game.Window.ClientBounds;
+                }
                 // toggling between fullscreen/windowed is done through the CameraSetup
 
                 // CameraSetup should be moved into the engine, or at least CameraData and ResetWindow, but
@@ -152,6 +161,11 @@ namespace FlatRedBall.Forms.Controls.Games
                 // we need to have a setting which can be changed on the setup object in Glue. But that's a lot of work and I don't
                 // want to do that yet, so let's just call the event for now...
                 FullscreenSet?.Invoke(IsFullscreen);
+
+                if (!IsFullscreen && windowedRectanglePosition != null)
+                {
+                    FlatRedBallServices.Game.Window.Position = new Point(windowedRectanglePosition.Value.X, windowedRectanglePosition.Value.Y);
+                }
             }
 
             PushValueToViewModel(nameof(IsFullscreen));
