@@ -192,6 +192,7 @@ namespace GumPlugin.DataGeneration
                     var project = AppState.Self.GumProjectSave;
 
                     project.Behaviors.RemoveAll(item => item.Name == behaviorSave.Name);
+                    project.BehaviorReferences.RemoveAll(item => item.Name == behaviorSave.Name);
                     GumPluginCommands.Self.AddBehavior(behaviorSave);
                 }
             }
