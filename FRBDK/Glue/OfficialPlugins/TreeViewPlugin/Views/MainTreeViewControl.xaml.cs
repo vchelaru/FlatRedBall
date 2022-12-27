@@ -465,6 +465,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             else if (searchNodePushed?.Tag is StateSave stateSave) GlueState.Self.CurrentStateSave = stateSave;
             else if (searchNodePushed?.Tag is CustomVariable variable) GlueState.Self.CurrentCustomVariable = variable;
             else if (searchNodePushed?.Tag is EventResponseSave eventResponse) GlueState.Self.CurrentEventResponseSave = eventResponse;
+            else if (searchNodePushed?.Tag is NodeViewModel nodeViewModel) GlueState.Self.CurrentTreeNode = nodeViewModel;
             else foundSomething = false;
 
             if (foundSomething)

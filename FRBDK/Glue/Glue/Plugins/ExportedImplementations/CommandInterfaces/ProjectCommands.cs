@@ -621,7 +621,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 //    tiw.Result;
                 // Update October 16, 2011
                 // An Enity has both folders
-                // in the code folder (representedb
+                // in the code folder (represented
                 // by RelativeDirectory) as well as
                 // in the Content project.  An Entity
                 // may not have files in the Content folder,
@@ -655,12 +655,27 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // folder, and we should respect that here too. We must tolerate empty folders
                 // but unless the .glux were to have explicit folder add/removes like .csproj, this
                 // is just something we'll have to deal with.
+                // Update December 27, 2022
+                // Actually, we are going to use the code folder if we're dealing with a folder in an
+                // entity, and content folder if we're dealing with a folder in global content. I think 
+                // the confusion above may have originated from the fact that we treat folders differently
+                // in global content (use the Content directory) vs screens/entities (use the code folder directory);
                 string directory;
 
-                //directory = GlueState.Self.ContentDirectory +
-                directory = GlueState.Self.CurrentGlueProjectDirectory +
+                var isGlobalContentDirectory = treeNodeToAddTo.IsFolderForGlobalContentFiles();
+                if(isGlobalContentDirectory)
+                {
+                    directory = GlueState.Self.ContentDirectory +
                         treeNodeToAddTo.GetRelativeFilePath() +
                         folderName;
+                }
+                else
+                {
+
+                    directory = GlueState.Self.CurrentGlueProjectDirectory +
+                            treeNodeToAddTo.GetRelativeFilePath() +
+                            folderName;
+                }
                 directory = GlueCommands.Self.GetAbsoluteFileName(directory, true);
 
                 Directory.CreateDirectory(directory);
