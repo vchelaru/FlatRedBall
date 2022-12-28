@@ -21,7 +21,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
     public class ProjectReference
     {
-        public FrbOrGum FrbOrGum;
+        public FrbOrGum ProjectRootType;
         public string RelativeProjectFilePath;
         public Guid ProjectTypeId;
         public Guid ProjectId;
@@ -37,17 +37,17 @@ namespace PluginTestbed.GlobalContentManagerPlugins
     {
         public List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
         {
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", FrbOrGum = FrbOrGum.Gum},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", ProjectRootType = FrbOrGum.Gum},
 
             new ProjectReference()
             {
                 RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallShared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("0BB8CBE3-8503-46C1-9272-D98E153A230E"),
-                FrbOrGum = FrbOrGum.Frb
+                ProjectRootType = FrbOrGum.Frb
             },
 
             new ProjectReference()
@@ -55,7 +55,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("728151F0-03E0-4253-94FE-46B9C77EDEA6"),
-                FrbOrGum = FrbOrGum.Frb
+                ProjectRootType = FrbOrGum.Frb
             },
 
             new ProjectReference()
@@ -63,24 +63,32 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 RelativeProjectFilePath = $"GumCoreShared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("F919C045-EAC7-4806-9A1F-CE421F923E97"),
-                FrbOrGum = FrbOrGum.Gum
+                ProjectRootType = FrbOrGum.Gum
 
+            },
+
+            new ProjectReference()
+            {
+                RelativeProjectFilePath = $"FRBDK\\Glue\\GumPlugin\\GumPlugin\\GumCoreShared.FlatRedBall.shproj",
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
+                ProjectId = Guid.Parse("0ee8a96c-a754-453d-9e65-19a24e9a5e76"),
+                ProjectRootType = FrbOrGum.Frb
             },
         };
 
         public List<ProjectReference> DesktopGlNet6 = new List<ProjectReference>
         {
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGlNet6\\StateInterpolation.DesktopNet6.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBallDesktopGLNet6\\FlatRedBallDesktopGLNet6.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGlNet6\\FlatRedBall.Forms.DesktopGlNet6.csproj", FrbOrGum = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.DesktopGlNet6\\GumCore.DesktopGlNet6.csproj", FrbOrGum = FrbOrGum.Gum},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGlNet6\\StateInterpolation.DesktopNet6.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBallDesktopGLNet6\\FlatRedBallDesktopGLNet6.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGlNet6\\FlatRedBall.Forms.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.DesktopGlNet6\\GumCore.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Gum},
 
             new ProjectReference()
             {
                 RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallShared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("0BB8CBE3-8503-46C1-9272-D98E153A230E"),
-                FrbOrGum = FrbOrGum.Frb
+                ProjectRootType = FrbOrGum.Frb
             },
 
             new ProjectReference()
@@ -88,7 +96,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("728151F0-03E0-4253-94FE-46B9C77EDEA6"),
-                FrbOrGum = FrbOrGum.Frb
+                ProjectRootType = FrbOrGum.Frb
             },
 
             new ProjectReference()
@@ -96,8 +104,16 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 RelativeProjectFilePath = $"GumCoreShared.shproj",
                 ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
                 ProjectId = Guid.Parse("F919C045-EAC7-4806-9A1F-CE421F923E97"),
-                FrbOrGum = FrbOrGum.Gum
+                ProjectRootType = FrbOrGum.Gum
 
+            },
+
+            new ProjectReference()
+            {
+                RelativeProjectFilePath = $"FRBDK\\Glue\\GumPlugin\\GumPlugin\\GumCoreShared.FlatRedBall.shproj",
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
+                ProjectId = Guid.Parse("0ee8a96c-a754-453d-9e65-19a24e9a5e76"),
+                ProjectRootType = FrbOrGum.Frb
             },
         };
 
@@ -146,7 +162,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             var projectReferences = GetProjectReferencesForCurrentProject();
 
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            var fbd = new FolderBrowserDialog();
             fbd.UseDescriptionForTitle = true;
 
             //Get FRB Source Folder and Validate
@@ -198,7 +214,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
                 foreach (var reference in projectReferences)
                 {
-                    var prefix = reference.FrbOrGum == FrbOrGum.Frb
+                    var prefix = reference.ProjectRootType == FrbOrGum.Frb
                         ? frbSourceFolder + "\\"
                         : gumSourceFolder + "\\";
 
@@ -298,7 +314,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 return false;
             }
 
-            foreach (var project in projectReferences.Where(item => item.FrbOrGum == FrbOrGum.Frb))
+            foreach (var project in projectReferences.Where(item => item.ProjectRootType == FrbOrGum.Frb))
             {
                 if (!CheckFileExists($"{path}\\{project.RelativeProjectFilePath}", out error))
                     return false;
@@ -316,7 +332,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 return false;
             }
 
-            foreach (var project in projectReferences.Where(item => item.FrbOrGum == FrbOrGum.Gum))
+            foreach (var project in projectReferences.Where(item => item.ProjectRootType == FrbOrGum.Gum))
             {
 
                 if (!CheckFileExists($"{path}\\{project.RelativeProjectFilePath}", out error))
