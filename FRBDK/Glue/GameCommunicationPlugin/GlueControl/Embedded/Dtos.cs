@@ -263,7 +263,8 @@ namespace GlueControl.Dtos
     #region MoveObjectToContainerDtoResponse
     public class MoveObjectToContainerDtoResponse
     {
-        public bool WasObjectMoved { get; set; }
+        public int NumberSuccessfullyMoved { get; set; }
+        public int NumberFailedToMoved { get; set; }
     }
     #endregion
 

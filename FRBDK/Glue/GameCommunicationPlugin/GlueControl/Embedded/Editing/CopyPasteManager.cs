@@ -136,20 +136,20 @@ namespace GlueControl.Editing
                 $" with offset {offsetX}, {offsetY}");
 
             List<Vector3> newPositionedOrdered = new List<Vector3>();
-            var positionables = CopiedObjects
+            var oldPositionables = CopiedObjects
                 .Select(item => item as IStaticPositionable)
                 .ToArray();
 
-            if (positionables.Length > 0)
+            if (oldPositionables.Length > 0)
             {
 
-                var minX = positionables.Min(item => item.X);
-                var minY = positionables.Min(item => item.Y);
-                var maxX = positionables.Max(item => item.X);
-                var maxY = positionables.Max(item => item.Y);
+                var minX = oldPositionables.Min(item => item.X);
+                var minY = oldPositionables.Min(item => item.Y);
+                var maxX = oldPositionables.Max(item => item.X);
+                var maxY = oldPositionables.Max(item => item.Y);
 
-                var offsetForCenteringX = -1 * (maxX - minX) / 2.0f;
-                var offsetForCenteringY = -1 * (maxY - minY) / 2.0f;
+                var offsetForCenteringX = 1 * (maxX - minX) / 2.0f;
+                var offsetForCenteringY = 1 * (maxY - minY) / 2.0f;
 
                 // Start with the cursor position, subtract the offset to get the bottom-left most position...
                 var snappedLeft = positionOnPaste.X - offsetForCenteringX;
@@ -170,8 +170,8 @@ namespace GlueControl.Editing
                     var newNos = newNamedObjects[i];
 
                     // Add the position of this object relative to its group's bototm left
-                    var offsetFromMinX = minX - positionables[i].X;
-                    var offsetFromMinY = minY - positionables[i].Y;
+                    var offsetFromMinX = minX - oldPositionables[i].X;
+                    var offsetFromMinY = minY - oldPositionables[i].Y;
                     var x = snappedLeft + offsetFromMinX;
                     var y = snappedBottom + offsetFromMinY;
 
@@ -210,8 +210,11 @@ namespace GlueControl.Editing
 
             // This currently echoes back to cause a double-select here. It's ...okay, we can deal with it later, but 
             // we want to do this so it selects the tree node
-            await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
-
+            if (newNosToSelect != null)
+            {
+                // It is possible for a paste to contain 0 items
+                await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
+            }
 
         }
 

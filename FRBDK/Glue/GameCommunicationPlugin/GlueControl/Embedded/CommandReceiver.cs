@@ -836,21 +836,14 @@ namespace GlueControl
 
         private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerListDto dto)
         {
-            MoveObjectToContainerDtoResponse toReturn = null;
+            MoveObjectToContainerDtoResponse toReturn = new MoveObjectToContainerDtoResponse();
 
             foreach (var item in dto.Changes)
             {
-                var result = HandleDto(item);
+                var innerResult = HandleDto(item);
 
-                if (toReturn == null)
-                {
-                    toReturn = result;
-                }
-
-                if (result.WasObjectMoved == false)
-                {
-                    toReturn = result;
-                }
+                toReturn.NumberSuccessfullyMoved += innerResult.NumberSuccessfullyMoved;
+                toReturn.NumberFailedToMoved += innerResult.NumberFailedToMoved;
             }
 
 
@@ -864,9 +857,10 @@ namespace GlueControl
 
             var matchesCurrentScreen = GetIfMatchesCurrentScreen(
                 dto.ElementName, out System.Type ownerType, out Screen currentScreen);
+            bool wasMoved = false;
             if (matchesCurrentScreen)
             {
-                toReturn.WasObjectMoved = GlueControl.Editing.MoveObjectToContainerLogic.TryMoveObjectToContainer(
+                wasMoved = GlueControl.Editing.MoveObjectToContainerLogic.TryMoveObjectToContainer(
                     dto.ObjectName, dto.ContainerName, EditingManager.Self.ElementEditingMode);
             }
             else
@@ -882,7 +876,16 @@ namespace GlueControl
                 // to GameScreen" option in Quick Actions. In
                 // this case, we assume all is okay, so let's return
                 // that the object was in fact moved.
-                toReturn.WasObjectMoved = true;
+                wasMoved = true;
+            }
+
+            if (wasMoved)
+            {
+                toReturn.NumberSuccessfullyMoved++;
+            }
+            else
+            {
+                toReturn.NumberFailedToMoved++;
             }
 
             CommandReceiver.GlobalGlueToGameCommands.Add(dto);

@@ -910,13 +910,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     try
                     {
                         var response = JsonConvert.DeserializeObject<MoveObjectToContainerDtoResponse>(responseAsString);
-                        if (response.WasObjectMoved)
+                        if (response.NumberFailedToMoved == 0)
                         {
+                            // This could happen if there were no failures, or an empty list was sent to move. Do we care? For now, no
                             generalResponse = GeneralResponse.SuccessfulResponse;
                         }
                         else
                         {
-                            generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to move object to game. No extra info provided by game.");
+                            generalResponse = GeneralResponse.UnsuccessfulWith($"Failed to move {response.NumberFailedToMoved} game objects to a list. " +
+                                $"Successfully moved {response.NumberSuccessfullyMoved} game objects.");
                         }
                     }
                     catch (Exception e)
