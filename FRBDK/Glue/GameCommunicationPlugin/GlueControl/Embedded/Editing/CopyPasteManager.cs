@@ -170,8 +170,8 @@ namespace GlueControl.Editing
                     var newNos = newNamedObjects[i];
 
                     // Add the position of this object relative to its group's bototm left
-                    var offsetFromMinX = minX - oldPositionables[i].X;
-                    var offsetFromMinY = minY - oldPositionables[i].Y;
+                    var offsetFromMinX = oldPositionables[i].X - minX;
+                    var offsetFromMinY = oldPositionables[i].Y - minY;
                     var x = snappedLeft + offsetFromMinX;
                     var y = snappedBottom + offsetFromMinY;
 
