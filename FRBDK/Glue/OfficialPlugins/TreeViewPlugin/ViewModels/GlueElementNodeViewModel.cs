@@ -53,7 +53,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else if(glueElement is EntitySave)
             {
-                ImageSource = EntityIcon;
+                if(string.IsNullOrEmpty(glueElement.BaseElement))
+                {
+                    ImageSource = EntityIcon;
+                }
+                else
+                {
+                    ImageSource = EntityDerivedIcon;
+                }
             }
 
             Text = glueElement.GetStrippedName();

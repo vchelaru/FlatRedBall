@@ -47,6 +47,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static ImageSource CollisionsIcon;
         public static ImageSource CollisionIcon;
         public static ImageSource EntityIcon;
+        public static ImageSource EntityDerivedIcon;
         public static ImageSource EntityInstanceIcon;
         public static ImageSource EntityInstanceListIcon;
         public static ImageSource EventIcon;
@@ -167,6 +168,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             CollisionIcon = LoadIcon("icon_collision");
             CollisionsIcon = LoadIcon("icon_collisions");
             EntityIcon = LoadIcon("icon_entity");
+            EntityDerivedIcon = LoadIcon("icon_entity_derived");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
             EventIcon = LoadIcon("icon_event");

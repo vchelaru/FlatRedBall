@@ -71,6 +71,7 @@
     <None Remove="TreeViewPlugin\Content\icon_collisions.png" />
     <None Remove="TreeViewPlugin\Content\icon_contract.png" />
     <None Remove="TreeViewPlugin\Content\icon_entity.png" />
+    <None Remove="TreeViewPlugin\Content\icon_entity_derived.png" />
     <None Remove="TreeViewPlugin\Content\icon_entity_instance.png" />
     <None Remove="TreeViewPlugin\Content\icon_entity_list.png" />
     <None Remove="TreeViewPlugin\Content\icon_event.png" />
@@ -181,6 +182,7 @@
     <Resource Include="TreeViewPlugin\Content\icon_collisions.png" />
     <Resource Include="TreeViewPlugin\Content\icon_contract.png" />
     <Resource Include="TreeViewPlugin\Content\icon_entity.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_entity_derived.png" />
     <Resource Include="TreeViewPlugin\Content\icon_entity_instance.png" />
     <Resource Include="TreeViewPlugin\Content\icon_entity_list.png" />
     <Resource Include="TreeViewPlugin\Content\icon_event.png" />
