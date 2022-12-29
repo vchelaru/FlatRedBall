@@ -327,6 +327,8 @@ namespace GumPlugin
             FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Add(globalContentCodeGenerator);
 
             Gum.Managers.StandardElementsManager.Self.Initialize();
+            SkiaStandardElementsManager.AddSkiaStandards();
+
 
             //EditorObjects.IoC.Container.Get<IErrorContainer>().
             var error = new GumPluginCore.ErrorReporting.ErrorReporter();

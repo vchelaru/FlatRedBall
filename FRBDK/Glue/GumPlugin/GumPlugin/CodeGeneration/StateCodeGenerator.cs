@@ -346,8 +346,21 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-
-
+            // special case (for now)
+            if(container.Name == "Svg")
+            {
+                if(variable.Name == "SourceFile")
+                {
+                    toReturn = false;
+                }
+            }
+            if(container.Name == "LottieAnimation")
+            {
+                if(variable.Name == "SourceFile")
+                {
+                    toReturn = false;
+                }
+            }
             return toReturn;
         }
 

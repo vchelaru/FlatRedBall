@@ -150,6 +150,12 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("Rectangle", "RenderingLibrary.Math.Geometry.LineRectangle");
             mStandardElementToQualifiedTypes.Add("Polygon", "RenderingLibrary.Math.Geometry.LinePolygon");
 
+            mStandardElementToQualifiedTypes.Add("Arc", "SkiaPlugin.Renderables.RenderableArc");
+            mStandardElementToQualifiedTypes.Add("ColoredCircle", "SkiaPlugin.Renderables.RenderableCircle");
+            mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaPlugin.Renderables.RenderableLottieAnimation");
+            mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaPlugin.Renderables.RenderableRoundedRectangle");
+            mStandardElementToQualifiedTypes.Add("Svg", "SkiaPlugin.Renderables.RenderableSvg");
+
 
             // What we will never support (as is)
 
@@ -418,7 +424,7 @@ namespace GumPlugin.CodeGeneration
             if(mStandardElementToQualifiedTypes.ContainsKey(standardElementSave.Name) == false)
             {
                 throw new InvalidOperationException($"The {nameof(mStandardElementToQualifiedTypes)} " +
-                    $"does not contain the key {standardElementSave.Name}");
+                    $"does not contain the key {standardElementSave.Name}. Look at the StandardsCodeGenerator constructor and add an entry there.");
             }
             string qualifiedBaseType = mStandardElementToQualifiedTypes[standardElementSave.Name];
 
@@ -471,7 +477,20 @@ namespace GumPlugin.CodeGeneration
             {
                 return false;
             }
-
+            if(standardElementSave.Name == "Svg")
+            {
+                if ( variable.Name == "Animate" || variable.Name == "SourceFile")
+                {
+                    return false;
+                }
+            }
+            if(standardElementSave.Name == "LottieAnimation")
+            {
+                if (variable.Name == "SourceFile")
+                {
+                    return false;
+                }
+            }
             return true;
         }
 

@@ -47,6 +47,7 @@ namespace GumPlugin.CodeGeneration
             mTypeToQualifiedTypes.Add("TextureAddress", "Gum.Managers.TextureAddress");
             mTypeToQualifiedTypes.Add("DimensionUnitType", "Gum.DataTypes.DimensionUnitType");
             mTypeToQualifiedTypes.Add("ChildrenLayout", "Gum.Managers.ChildrenLayout");
+            mTypeToQualifiedTypes.Add("GradientType", "SkiaPlugin.Renderables.GradientType");
 
             AddGetterReplacements();
 
@@ -944,13 +945,53 @@ namespace GumPlugin.CodeGeneration
                 string rootName = variableSave.GetRootName();
 
                 // convert from PositionUnitType to GeneralUnitType
+                // Update December 28, 2022
+                // The SkiaGums use different
+                // unit types for gradients, so
+                // let's special case this:
+                var shouldConvert = true;
+                if(element.Name == "Arc")
+                {
+                    if(variableSave.Name == "GradientX1Units" ||
+                        variableSave.Name == "GradientX2Units" ||
+                        variableSave.Name == "GradientY1Units" ||
+                        variableSave.Name == "GradientY2Units")
+                    {
+                        shouldConvert = false;
+                    }
+                }
 
-                GeneralUnitType convertedValue =
-                    UnitConverter.ConvertToGeneralUnit((PositionUnitType)variableSave.Value);
+                if (element.Name == "ColoredCircle")
+                {
+                    if (variableSave.Name == "GradientX1Units" ||
+                        variableSave.Name == "GradientX2Units" ||
+                        variableSave.Name == "GradientY1Units" ||
+                        variableSave.Name == "GradientY2Units")
+                    {
+                        shouldConvert = false;
+                    }
+                }
 
-                variableValue = convertedValue.ToString();
+                if (element.Name == "RoundedRectangle")
+                {
+                    if (variableSave.Name == "GradientX1Units" ||
+                        variableSave.Name == "GradientX2Units" ||
+                        variableSave.Name == "GradientY1Units" ||
+                        variableSave.Name == "GradientY2Units")
+                    {
+                        shouldConvert = false;
+                    }
+                }
 
-                variableType = "Gum.Converters.GeneralUnitType";
+                if (shouldConvert)
+                {
+                    GeneralUnitType convertedValue =
+                        UnitConverter.ConvertToGeneralUnit((PositionUnitType)variableSave.Value);
+
+                    variableValue = convertedValue.ToString();
+
+                    variableType = "Gum.Converters.GeneralUnitType";
+                }
             }
 
             string prefix = variableType;
