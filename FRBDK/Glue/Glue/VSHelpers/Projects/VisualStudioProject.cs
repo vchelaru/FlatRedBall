@@ -312,15 +312,20 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             var csprojFolder = this.FullFileName.GetDirectoryContainingThis();
             var newProjectPathRelative = new FilePath(projectPath).RelativeTo(csprojFolder);
+
+            var projectValue = $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}";
+
             var metadata = new Dictionary<string, string>
             { 
-                { 
-                    "Project", $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}" 
-                }, 
                 { 
                     "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() 
                 }
             };
+
+            if(!string.IsNullOrEmpty(projectValue))
+            {
+                metadata["Project"] = $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}";
+            }
 
             Project.AddItem(
                 "ProjectReference", 
