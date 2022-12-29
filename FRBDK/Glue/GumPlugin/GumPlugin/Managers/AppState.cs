@@ -152,5 +152,13 @@ namespace GumPlugin.Managers
             return null;
         }
 
+        public bool HasAddedGumSkiaElements
+        {
+            get
+            {
+                return GumProjectSave != null &&
+                    GumProjectSave.StandardElements.Any(item => item.Name == "Arc");
+            }
+        }
     }
 }

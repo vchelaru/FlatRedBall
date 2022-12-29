@@ -321,7 +321,7 @@ namespace GumPlugin
 
             CreateToolbar();
 
-            CodeGeneratorManager.Self.CreateElementComponentCodeGenerators();
+            CodeGeneratorManager.Self.CreateCodeGenerators(this);
 
             globalContentCodeGenerator = new GlobalContentCodeGenerator();
             FlatRedBall.Glue.Parsing.CodeWriter.GlobalContentCodeGenerators.Add(globalContentCodeGenerator);
@@ -338,8 +338,6 @@ namespace GumPlugin
             viewModel = new GumViewModel();
             GumPluginCommands.Self.GumViewModel = viewModel;
             viewModel.PropertyChanged += HandleViewModelPropertyChanged;
-
-            this.RegisterCodeGenerator(new GumGame1CodeGenerator());
         }
 
         private void AssignEvents()

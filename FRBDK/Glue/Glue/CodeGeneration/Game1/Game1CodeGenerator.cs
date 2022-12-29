@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,9 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 {
     public class Game1CodeGenerator
     {
+
+        public virtual CodeLocation CodeLocation { get; set; } = CodeLocation.StandardGenerated;
+
         public virtual void GenerateClassScope(ICodeBlock codeBlock)
         {
 

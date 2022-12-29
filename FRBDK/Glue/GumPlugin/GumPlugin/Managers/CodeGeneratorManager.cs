@@ -14,6 +14,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.IO;
 using GumPluginCore.CodeGeneration;
+using FlatRedBall.Glue.Plugins;
 
 namespace GumPlugin.Managers
 {
@@ -539,28 +540,32 @@ namespace GumPlugin.Managers
             return wasAdded;
         }
 
-        public void CreateElementComponentCodeGenerators()
+        public void CreateCodeGenerators(PluginBase plugin)
         {
             mIWindowCodeGenerator = new CodeGeneration.IWindowCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(mIWindowCodeGenerator);
+            plugin.RegisterCodeGenerator(mIWindowCodeGenerator);
 
             mGumPluginCodeGenerator = new GumPluginCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(mGumPluginCodeGenerator);
+            plugin.RegisterCodeGenerator(mGumPluginCodeGenerator);
 
             formsObjectCodeGenerator = new FormsObjectCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(formsObjectCodeGenerator);
+            plugin.RegisterCodeGenerator(formsObjectCodeGenerator);
 
             mGumLayerCodeGenerator = new GumLayerCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(mGumLayerCodeGenerator);
+            plugin.RegisterCodeGenerator(mGumLayerCodeGenerator);
 
             gumLayerAssociationCodeGenerator = new GumLayerAssociationCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumLayerAssociationCodeGenerator);
+            plugin.RegisterCodeGenerator(gumLayerAssociationCodeGenerator);
 
             gumCollidableCodeGenerator = new GumCollidableCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumCollidableCodeGenerator);
+            plugin.RegisterCodeGenerator(gumCollidableCodeGenerator);
 
             gumToFlatRedBallAttachmentCodeGenerator = new GumToFlatRedBallAttachmentCodeGenerator();
-            FlatRedBall.Glue.Parsing.CodeWriter.CodeGenerators.Add(gumToFlatRedBallAttachmentCodeGenerator);
+            plugin.RegisterCodeGenerator(gumToFlatRedBallAttachmentCodeGenerator);
+
+            plugin.RegisterCodeGenerator(new GumGame1CodeGeneratorEarly());
+            plugin.RegisterCodeGenerator(new GumGame1CodeGenerator());
+
         }
 
         internal void RemoveCodeGenerators()

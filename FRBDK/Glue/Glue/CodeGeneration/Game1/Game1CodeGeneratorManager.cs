@@ -42,7 +42,17 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         {
             var method = codeBlock.Function("partial void", "GeneratedInitialize", null);
 
-            foreach(var generator in Generators)
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.BeforeStandardGenerated))
+            {
+                generator.GenerateInitialize(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))
+            {
+                generator.GenerateInitialize(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.AfterStandardGenerated))
             {
                 generator.GenerateInitialize(method);
             }
@@ -53,7 +63,17 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         {
             var method = codeBlock.Function("partial void", "GeneratedUpdate", "Microsoft.Xna.Framework.GameTime gameTime");
 
-            foreach(var generator in Generators)
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.BeforeStandardGenerated))
+            {
+                generator.GenerateUpdate(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))
+            {
+                generator.GenerateUpdate(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.AfterStandardGenerated))
             {
                 generator.GenerateUpdate(method);
             }
@@ -63,7 +83,17 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
         {
             var method = codeBlock.Function("partial void", "GeneratedDraw", "Microsoft.Xna.Framework.GameTime gameTime");
 
-            foreach(var generator in Generators)
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.BeforeStandardGenerated))
+            {
+                generator.GenerateDraw(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))
+            {
+                generator.GenerateDraw(method);
+            }
+
+            foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.AfterStandardGenerated))
             {
                 generator.GenerateDraw(method);
             }
