@@ -47,7 +47,7 @@ namespace GumPlugin.CodeGeneration
             mTypeToQualifiedTypes.Add("TextureAddress", "Gum.Managers.TextureAddress");
             mTypeToQualifiedTypes.Add("DimensionUnitType", "Gum.DataTypes.DimensionUnitType");
             mTypeToQualifiedTypes.Add("ChildrenLayout", "Gum.Managers.ChildrenLayout");
-            mTypeToQualifiedTypes.Add("GradientType", "SkiaPlugin.Renderables.GradientType");
+            mTypeToQualifiedTypes.Add("GradientType", "global::RenderingLibrary.Graphics.GradientType");
 
             AddGetterReplacements();
 
