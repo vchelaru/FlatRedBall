@@ -171,7 +171,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var flatRedBallTypes = addableTypes.Except(gumTypes).ToArray();
 
                 addObjectViewModel.FlatRedBallAndCustomTypes.AddRange(flatRedBallTypes);
-                addObjectViewModel.GumTypes.AddRange(gumTypes);
+
+                // for new objects, don't allow screens
+                var filteredGumTypes = gumTypes
+                    .Where(item => item.Tag is Gum.DataTypes.ScreenSave == false);
+
+                addObjectViewModel.GumTypes.AddRange(filteredGumTypes);
             }
             addObjectViewModel.AvailableEntities =
                 ObjectFinder.Self.GlueProject.Entities.ToList();
