@@ -110,7 +110,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 FullscreenCheckBox.IsChecked = FlatRedBallServices.GraphicsOptions.IsFullScreen;
                 SoundVolumePercentage = 100 * AudioManager.MasterSoundVolume;
+
+#if !__IOS__
                 MusicVolumePercentage = 100 * MediaPlayer.Volume;
+#endif
             }
         }
 
@@ -120,7 +123,10 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             if(IsAutoApplyingChangesToEngine)
             {
+#if !__IOS__
+
                 MediaPlayer.Volume = (float)MusicVolumePercentage / 100;
+#endif
             }
 
             PushValueToViewModel(nameof(MusicVolumePercentage));
@@ -164,7 +170,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 if (!IsFullscreen && windowedRectanglePosition != null)
                 {
-#if !UWP
+#if !UWP && !__IOS__ && !ANDROID
                     FlatRedBallServices.Game.Window.Position = new Point(windowedRectanglePosition.Value.X, windowedRectanglePosition.Value.Y);
 #endif
                 }
