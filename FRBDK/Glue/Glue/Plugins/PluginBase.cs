@@ -124,6 +124,9 @@ namespace FlatRedBall.Glue.Plugins
             }
         }
 
+        /// <summary>
+        /// Selects this tab so it is visible in its tab group.
+        /// </summary>
         public void Focus()
         {
             GlueCommands.Self.DoOnUiThread(() => Page.Focus());

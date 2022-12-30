@@ -950,34 +950,42 @@ namespace GumPlugin.CodeGeneration
                 // unit types for gradients, so
                 // let's special case this:
                 var shouldConvert = true;
-                if(element.Name == "Arc")
+
+                var typeOfVariableOwner = element.Name;
+                if(!string.IsNullOrEmpty(variableSave.SourceObject))
                 {
-                    if(variableSave.Name == "GradientX1Units" ||
-                        variableSave.Name == "GradientX2Units" ||
-                        variableSave.Name == "GradientY1Units" ||
-                        variableSave.Name == "GradientY2Units")
+                    var instance = element.GetInstance(variableSave.SourceObject);
+                    typeOfVariableOwner = instance.BaseType;
+                }
+
+                if(typeOfVariableOwner == "Arc")
+                {
+                    if(rootName == "GradientX1Units" ||
+                       rootName == "GradientX2Units" ||
+                       rootName == "GradientY1Units" ||
+                       rootName == "GradientY2Units")
                     {
                         shouldConvert = false;
                     }
                 }
 
-                if (element.Name == "ColoredCircle")
+                if (typeOfVariableOwner == "ColoredCircle")
                 {
-                    if (variableSave.Name == "GradientX1Units" ||
-                        variableSave.Name == "GradientX2Units" ||
-                        variableSave.Name == "GradientY1Units" ||
-                        variableSave.Name == "GradientY2Units")
+                    if (rootName == "GradientX1Units" ||
+                       rootName == "GradientX2Units" ||
+                       rootName == "GradientY1Units" ||
+                       rootName == "GradientY2Units")
                     {
                         shouldConvert = false;
                     }
                 }
 
-                if (element.Name == "RoundedRectangle")
+                if (typeOfVariableOwner == "RoundedRectangle")
                 {
-                    if (variableSave.Name == "GradientX1Units" ||
-                        variableSave.Name == "GradientX2Units" ||
-                        variableSave.Name == "GradientY1Units" ||
-                        variableSave.Name == "GradientY2Units")
+                    if (rootName == "GradientX1Units" ||
+                        rootName == "GradientX2Units" ||
+                        rootName == "GradientY1Units" ||
+                        rootName == "GradientY2Units")
                     {
                         shouldConvert = false;
                     }

@@ -120,6 +120,11 @@ namespace Gum.Wireframe
             {
                 GuiManager.AddWindow(this);
             }
+
+            if(mContainedObjectAsIpso is IManagedObject containedAsManaged)
+            {
+                containedAsManaged.AddToManagers();
+            }
         }
 
         partial void CustomRemoveFromManagers()
@@ -132,6 +137,7 @@ namespace Gum.Wireframe
             GuiManager.RemoveWindow(this);
 
             RemovedFromGuiManager?.Invoke(this, null);
+
         }
 
         private void RemoveBindingContextRecursively()

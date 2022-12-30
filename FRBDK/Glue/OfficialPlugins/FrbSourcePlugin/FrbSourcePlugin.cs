@@ -10,14 +10,25 @@ using System.Collections.Generic;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.IO;
 using System.Linq;
+using OfficialPlugins.FrbSourcePlugin.Views;
+using OfficialPlugins.FrbSourcePlugin.ViewModels;
+using FlatRedBall.Glue.MVVM;
+using GeneralResponse = ToolsUtilities.GeneralResponse;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
+    #region FrbOrGum enum
+
     public enum FrbOrGum
     {
         Frb,
         Gum
     }
+
+    #endregion
+
+    #region ProjectReference Class
 
     public class ProjectReference
     {
@@ -31,10 +42,13 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public List<string> SolutionConfigurations;
     }
 
+    #endregion
 
     [Export(typeof(PluginBase))]
     public class FrbSourcePlugin : PluginBase
     {
+        #region DesktopGlNetFramework Projects
+
         public List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
         {
             new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
@@ -75,6 +89,10 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 ProjectRootType = FrbOrGum.Frb
             },
         };
+
+        #endregion
+
+        #region DesktopGlNet6 Projects
 
         public List<ProjectReference> DesktopGlNet6 = new List<ProjectReference>
         {
@@ -117,13 +135,22 @@ namespace PluginTestbed.GlobalContentManagerPlugins
             },
         };
 
+        ProjectReference GumSkia = new ProjectReference
+        {
+            RelativeProjectFilePath = $"SvgPlugin\\SkiaInGumShared\\SkiaInGum.csproj",
+            ProjectRootType = FrbOrGum.Gum
+        };
+
+        #endregion
+
+        private PluginTab Tab;
+        private AddFrbSourceView control;
+
         private ToolStripMenuItem miLinkSource;
 
         public override string FriendlyName => "FRB Source";
 
         public override Version Version => new Version(1, 0);
-
-
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -160,50 +187,62 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void LinkGameToGlueSource()
         {
+            CreateTabIfNecessary();
+
+            Tab.Show();
+            Tab.Focus();
+        }
+
+        private void CreateTabIfNecessary()
+        {
+            if(Tab == null)
+            {
+                control = new AddFrbSourceView();
+                control.LinkToSourceClicked += HandleLinkToSourceClicked;
+                Tab = CreateTab(control, "Add FRB Source");
+            }
+        }
+
+        private void HandleLinkToSourceClicked()
+        {
             var projectReferences = GetProjectReferencesForCurrentProject();
 
-            var fbd = new FolderBrowserDialog();
-            fbd.UseDescriptionForTitle = true;
+            string outerError = null;
+            string innerError;
 
-            //Get FRB Source Folder and Validate
-            fbd.Description = "Select FlatRedBall Repository Root";
-            System.Windows.Forms.DialogResult result = fbd.ShowDialog();
-
-            string frbSourceFolder = null;
-            string gumSourceFolder = null;
-
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (!ValidateSourceFRB(control.ViewModel.FrbRootFolder, projectReferences, out innerError))
             {
-                frbSourceFolder = fbd.SelectedPath;
+                outerError = $"Selected FlatRedBall path is not valid.  Error: {innerError}";
+            }
 
-                if (!ValidateSourceFRB(frbSourceFolder, projectReferences, out var error))
+            if (!ValidateSourceGum(control.ViewModel.GumRootFolder, projectReferences, out innerError))
+            {
+                outerError = $"Selected Gum path is not valid.  Error: {innerError}";
+                return;
+            }
+
+            if(control.ViewModel.IncludeGumSkia)
+            {
+                if ( GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6 == false)
                 {
-                    MessageBox.Show($"Selected source path is not valid.  Error: {error}", "Source Not Valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    outerError = "GumSkia can only be added to .NET 6 and greater projects";
+                }
+                else if(GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.HasGumSkiaElements)
+                {
+                    outerError = $"GumSkia can only be added to FlatRedBall projects (.gluj) which are version {(int)GlueProjectSave.GluxVersions.HasGumSkiaElements} or newer";
                 }
             }
 
-            if (!string.IsNullOrEmpty(frbSourceFolder))
+            if(!string.IsNullOrEmpty(outerError))
             {
-                //Get Gum Source Folder and Validate
-                fbd.Description = "Select Gum Repository Root";
-                result = fbd.ShowDialog();
-
-                if (result == System.Windows.Forms.DialogResult.OK)
-                {
-                    gumSourceFolder = fbd.SelectedPath;
-
-                    if (!ValidateSourceGum(gumSourceFolder, projectReferences, out var error))
-                    {
-                        MessageBox.Show($"Selected source path is not valid.  Error: {error}", "Source Not Valid", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
+                GlueCommands.Self.DialogCommands.ShowMessageBox(outerError);
+                return;
             }
 
-            if (!string.IsNullOrEmpty(frbSourceFolder) && !string.IsNullOrEmpty(gumSourceFolder))
+
+            if (!string.IsNullOrEmpty(control.ViewModel.FrbRootFolder) && !string.IsNullOrEmpty(control.ViewModel.GumRootFolder))
             {
+
 
                 //Update project references
                 var sln = VSSolution.FromFile(GlueState.Self.CurrentSlnFileName);
@@ -212,43 +251,64 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
                 var proj = GlueState.Self.CurrentMainProject;
 
-                foreach (var reference in projectReferences)
+                GeneralResponse addGeneralResponse = GeneralResponse.SuccessfulResponse;
+
+                foreach (var projectReference in projectReferences)
                 {
-                    var prefix = reference.ProjectRootType == FrbOrGum.Frb
-                        ? frbSourceFolder + "\\"
-                        : gumSourceFolder + "\\";
-
-                    FilePath fullPath = prefix + reference.RelativeProjectFilePath;
-
-                    var extension = fullPath.Extension;
-
-                    if (extension == "csproj")
-                    {
-                        if (!AddProject(referencedProject, sln.FullFileName, fullPath))
-                            return;
-                    }
-                    else if (extension == "shproj")
-                    {
-                        if (!AddSharedProject(referencedProject, sln.FullFileName, fullPath, reference.ProjectTypeId, reference.ProjectId, fullPath.NoPathNoExtension))
-                        {
-                            //ToDo Handle output and errors
-                            return;
-                        }
-                    }
-
-                    if (!proj.HasProjectReference(fullPath.NoPathNoExtension) && fullPath.Extension == "csproj")
-                    {
-                        proj.AddProjectReference(fullPath.FullPath);
-
-                    }
+                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, projectReference);
                 }
 
-                RemoveReference(proj, "FlatRedBall.Forms");
-                RemoveReference(proj, "FlatRedBallDesktopGL");
-                RemoveReference(proj, "GumCoreXnaPc");
-                RemoveReference(proj, "StateInterpolation");
+                if(control.ViewModel.IncludeGumSkia)
+                {
+                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, GumSkia);
+                }
 
-                proj.Save(proj.FullFileName.FullPath);
+                if (addGeneralResponse.Succeeded)
+                {
+                    RemoveReference(proj, "FlatRedBall.Forms");
+                    RemoveReference(proj, "FlatRedBallDesktopGL");
+                    RemoveReference(proj, "GumCoreXnaPc");
+                    RemoveReference(proj, "StateInterpolation");
+
+                    proj.Save(proj.FullFileName.FullPath);
+                }
+            }
+
+            Tab.Hide();
+        }
+
+        private void AddProjectReference(VSSolution sln, List<string> referencedProject, VisualStudioProject proj, GeneralResponse addGeneralResponse, ProjectReference reference)
+        {
+            var prefix = reference.ProjectRootType == FrbOrGum.Frb
+                                    ? control.ViewModel.FrbRootFolder + "\\"
+                                    : control.ViewModel.GumRootFolder + "\\";
+
+            FilePath fullPath = prefix + reference.RelativeProjectFilePath;
+
+            var extension = fullPath.Extension;
+
+            if (extension == "csproj")
+            {
+                if (!AddProject(referencedProject, sln.FullFileName, fullPath))
+                {
+                    addGeneralResponse.Succeeded = false;
+                    addGeneralResponse.Message = $"Failed to add {fullPath}";
+                }
+
+
+            }
+            else if (extension == "shproj")
+            {
+                if (!AddSharedProject(referencedProject, sln.FullFileName, fullPath, reference.ProjectTypeId, reference.ProjectId, fullPath.NoPathNoExtension))
+                {
+                    addGeneralResponse.Succeeded = false;
+                    addGeneralResponse.Message = $"Failed to add {fullPath}";
+                }
+            }
+
+            if (addGeneralResponse.Succeeded && !proj.HasProjectReference(fullPath.NoPathNoExtension) && fullPath.Extension == "csproj")
+            {
+                proj.AddProjectReference(fullPath.FullPath);
             }
         }
 

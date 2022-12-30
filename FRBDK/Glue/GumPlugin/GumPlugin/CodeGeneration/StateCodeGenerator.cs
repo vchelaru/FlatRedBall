@@ -23,7 +23,6 @@ namespace GumPlugin.CodeGeneration
         
         #endregion
 
-        #region Methods
 
         #region Constructor/Init
 
@@ -176,6 +175,8 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
+        #region Generate Enums
+
         public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
         {
             bool hasUncategorized = (stateContainer is BehaviorSave) == false;
@@ -217,7 +218,138 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
+        #endregion
 
+        #region Fields (aka StateType mCurrentStateTypeState)
+        private void GenerateCurrentStateFields(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock.Line("#region State Fields");
+            string propertyName = "CurrentVariableState";
+            string propertyType = "VariableState";
+            currentBlock.Line(propertyType + " m" + propertyName + ";");
+
+
+            foreach (var category in elementSave.Categories)
+            {
+                propertyName = "Current" + category.Name + "State";
+                propertyType = category.Name;
+
+                // Make these nullable because categorized states may not be set at all
+                currentBlock.Line($"{propertyType}? m{propertyName};");
+            }
+            currentBlock.Line("#endregion");
+        }
+        #endregion
+
+        #region Properties (which contain all the individual setters
+
+        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, 
+            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable)
+        {
+            string propertyPrefix;
+            if(isNullable)
+            {
+                propertyPrefix = $"public {propertyType}?";
+            }
+            else
+            {
+                propertyPrefix = $"public {propertyType}";
+            }
+            var property = currentBlock.Property(propertyPrefix, propertyName);
+
+            property.Get().Line("return m" + propertyName + ";");
+
+            var setter = property.Set();
+            {
+                setter = GenerateSetterForCurrentState(propertyType, propertyName, states, container, isNullable, setter);
+            }
+        }
+
+        private ICodeBlock GenerateSetterForCurrentState(string propertyType, string propertyName, List<StateSave> states, ElementSave container, bool isNullable, ICodeBlock setter)
+        {
+            if (isNullable)
+            {
+                setter = setter.If("value != null");
+            }
+            setter.Line("m" + propertyName + " = value;");
+
+            var switchBlock = setter.Switch("m" + propertyName);
+
+            foreach (var state in states)
+            {
+                var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
+                {
+                    // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
+                    // If they're attached in the wrong order, then stacking won't work properly:
+                    var instanceNames = container.Instances.Select(item => item.Name).ToList();
+
+                    var orderedVariables = state.Variables
+                        .OrderByDescending(variable => variable.GetRootName() == "Parent")
+                        .ThenByDescending(variable => variable.IsState(container))
+                        .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
+                        .ToList();
+
+                    foreach (var variable in orderedVariables)
+                    {
+                        var shouldGenerate = false;
+                        try
+                        {
+                            shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
+                        }
+                        catch (Exception e)
+                        {
+                            GlueCommands.Self.PrintError(e.ToString());
+                        }
+                        // where block doesn't debug well for some reason, so I unrolled it...
+                        if (shouldGenerate)
+                        {
+                            // Note that this could return values like "1,2" instead of "1.2" depending
+                            // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
+                            string variableValue = variable.Value.ToString();
+                            bool isEntireAssignment;
+
+                            GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
+                            if (isEntireAssignment)
+                            {
+                                caseBlock.Line(variableValue);
+                            }
+                            else
+                            {
+                                string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
+                                caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
+                            }
+                        }
+                    }
+                }
+            }
+
+            return setter;
+        }
+
+        private void GenerateCurrentStateProperties(ElementSave elementSave, ICodeBlock currentBlock)
+        {
+            currentBlock.Line("#region State Properties");
+
+            string propertyName = "CurrentVariableState";
+            string propertyType = "VariableState";
+            var states = elementSave.States;
+
+            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:false);
+
+            foreach (var category in elementSave.Categories)
+            {
+                propertyName = "Current" + category.Name + "State";
+                propertyType = category.Name;
+                states = category.States;
+
+                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
+            }
+
+            currentBlock.Line("#endregion");
+        }
+
+        #endregion
+        
         private bool GetIfShouldGenerateStateVariable(Gum.DataTypes.Variables.VariableSave variable, ElementSave container)
         {
             bool toReturn = true;
@@ -364,173 +496,6 @@ namespace GumPlugin.CodeGeneration
             return toReturn;
         }
 
-        private void GenerateCurrentStateFields(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock.Line("#region State Fields");
-            string propertyName = "CurrentVariableState";
-            string propertyType = "VariableState";
-            currentBlock.Line(propertyType + " m" + propertyName + ";");
-
-
-            foreach (var category in elementSave.Categories)
-            {
-                propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
-
-                // Make these nullable because categorized states may not be set at all
-                currentBlock.Line($"{propertyType}? m{propertyName};");
-            }
-            currentBlock.Line("#endregion");
-        }
-
-        private void GenerateCurrentStateProperties(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock.Line("#region State Properties");
-
-            string propertyName = "CurrentVariableState";
-            string propertyType = "VariableState";
-            var states = elementSave.States;
-
-
-
-            GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:false);
-
-            foreach (var category in elementSave.Categories)
-            {
-
-
-                propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
-                states = category.States;
-
-
-
-                GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
-            }
-
-            //GenerateBehaviorStateProperties(currentBlock, elementSave);
-
-            currentBlock.Line("#endregion");
-
-        }
-
-        private void GenerateBehaviorStateProperties(ICodeBlock currentBlock, ElementSave elementSave)
-        {
-            var asComponentSave = elementSave as ComponentSave;
-
-            if(asComponentSave != null)
-            {
-                foreach(var elementBehavior in asComponentSave.Behaviors)
-                {
-                    var behavior = Managers.AppState.Self.GumProjectSave.Behaviors
-                        .FirstOrDefault(item => item.Name == elementBehavior.BehaviorName);
-
-                    if(behavior == null)
-                    {
-                        // user set a behavior, then deleted the behavior. We don't want to generate code for it
-                        currentBlock.Line("// No properties generated for behavior because it's not part of the Gum project: " + elementBehavior.BehaviorName);
-                    }
-                    else
-                    {
-
-                        string interfaceType = $"I{behavior.Name}";
-
-                        foreach(var behaviorCategory in behavior.Categories)
-                        {
-                            string propertyType = $"{behavior.Name}{behaviorCategory.Name}";
-
-                            var propertyBlock = currentBlock.Property($"{propertyType}", $"{interfaceType}.Current{propertyType}State");
-                            var setBlock = propertyBlock.Set();
-                            var switchBlock = setBlock.Switch("value");
-                            foreach(var behaviorState in behaviorCategory.States)
-                            {
-                                var caseBlock = switchBlock.Case($"{behavior.Name}{behaviorCategory.Name}.{behaviorState.Name}");
-
-                                caseBlock.Line($"this.Current{behaviorCategory.Name}State = {behaviorCategory.Name}.{behaviorState.Name};");
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void GeneratePropertyForCurrentState(ICodeBlock currentBlock, string propertyType, string propertyName, 
-            List<Gum.DataTypes.Variables.StateSave> states, ElementSave container, bool isNullable)
-        {
-            string propertyPrefix;
-            if(isNullable)
-            {
-                propertyPrefix = $"public {propertyType}?";
-            }
-            else
-            {
-                propertyPrefix = $"public {propertyType}";
-            }
-            var property = currentBlock.Property(propertyPrefix, propertyName);
-
-            property.Get().Line("return m" + propertyName + ";");
-
-            var setter = property.Set();
-            {
-                if(isNullable)
-                {
-                    setter = setter.If("value != null");
-                }
-                setter.Line("m" + propertyName + " = value;");
-
-                var switchBlock = setter.Switch("m" + propertyName);
-
-                foreach (var state in states)
-                {
-                    var caseBlock = switchBlock.Case(propertyType + "." + state.MemberNameInCode());
-                    {
-                        // Parent variables need to be assigned in the order of the objects in the component so that they're attached in the right order.
-                        // If they're attached in the wrong order, then stacking won't work properly:
-                        var instanceNames = container.Instances.Select(item => item.Name).ToList();
-
-                        var orderedVariables = state.Variables
-                            .OrderByDescending(variable => variable.GetRootName() == "Parent")
-                            .ThenByDescending(variable => variable.IsState(container))
-                            .ThenBy(variable => instanceNames.IndexOf(variable.SourceObject))
-                            .ToList();
-
-                        foreach (var variable in orderedVariables)
-                        {
-                            var shouldGenerate = false;
-                            try
-                            {
-                                shouldGenerate = GetIfShouldGenerateStateVariable(variable, container);
-                            }
-                            catch(Exception e)
-                            {
-                                GlueCommands.Self.PrintError(e.ToString());
-                            }
-                            // where block doesn't debug well for some reason, so I unrolled it...
-                            if (shouldGenerate)
-                            {
-                                // Note that this could return values like "1,2" instead of "1.2" depending
-                                // on the current language, so the AdjustVariableValueIfNecessary needs to account for that.
-                                string variableValue = variable.Value.ToString();
-                                bool isEntireAssignment;
-
-                                GueDerivingClassCodeGenerator.Self.AdjustVariableValueIfNecessary(variable, container, ref variableValue, out isEntireAssignment);
-                                if (isEntireAssignment)
-                                {
-                                    caseBlock.Line(variableValue);
-                                }
-                                else
-                                {
-                                    string memberNameInCode = variable.MemberNameInCode(container, VariableNamesToReplaceForStates);
-                                    caseBlock.Line(memberNameInCode + " = " + variableValue + ";");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         private void GenerateGetCurrentValuesOnState(ElementSave elementSave, ICodeBlock currentBlock)
         {
             currentBlock.Line("#region Get Current Values on State");
@@ -634,10 +599,6 @@ namespace GumPlugin.CodeGeneration
                 type == "decimal" ||
                 type == "long";
         }
-
-        #endregion
-
-
 
     }
 }

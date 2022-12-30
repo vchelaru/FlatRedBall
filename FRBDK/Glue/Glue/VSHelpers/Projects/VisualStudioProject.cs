@@ -39,7 +39,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public IEnumerable<ProjectItem> EvaluatedItems
         {
-            get 
+            get
             {
                 // This makes it thread safe:
                 var clone = new List<ProjectItem>();
@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             get
             {
-                return 
+                return
                     mProject.ProjectFileLocation.File;
             }
         }
@@ -100,8 +100,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public virtual string DefaultContentAction { get { return "None"; } }
 
-        public virtual BuildItemMembershipType DefaultContentBuildType 
-        { get { return BuildItemMembershipType.CopyIfNewer; } }
+        public virtual BuildItemMembershipType DefaultContentBuildType
+        { get => BuildItemMembershipType.CopyIfNewer; }
 
         protected virtual bool NeedCopyToOutput { get { return true; } }
 
@@ -109,6 +109,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public string DotNetVersion { get; private set; }
 
+        public decimal? DotNetVersionNumber { get; private set; }
         #endregion
 
         #region Methods
@@ -135,6 +136,17 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var property = mProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
             DotNetVersion = property?.EvaluatedValue ?? "Unknown";
+
+            if(DotNetVersion?.StartsWith("v") == true)
+            {
+                var afterV = DotNetVersion.Substring(1);
+
+                try
+                {
+                    DotNetVersionNumber = Decimal.Parse(afterV);
+                }
+                catch { }
+            }
         }
 
         #endregion
@@ -189,14 +201,14 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 //{
                 //    return;
                 //}
-                
+
 
                 string itemInclude = FileManager.MakeRelative(absoluteFile, this.Directory);
 
                 itemInclude = ProcessInclude(itemInclude);
 
 
-            #region If added to content pipeline
+                #region If added to content pipeline
 
                 if (addToContentPipeline && AllowContentCompile)
                 {
@@ -215,9 +227,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
                 }
 
-            #endregion
+                #endregion
 
-            #region else, just copy the file
+                #region else, just copy the file
 
                 else
                 {
@@ -229,7 +241,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         {
                             buildItem.SetMetadataValue("CopyToOutputDirectory", "PreserveNewest");
                         }
-                        catch(Exception exception)
+                        catch (Exception exception)
                         {
                             throw new Exception("Error trying to add build item " + buildItem + " to project: " + exception.ToString());
                         }
@@ -237,7 +249,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     }
                 }
 
-            #endregion
+                #endregion
                 try
                 {
                     // The items in the dictionary must be to-lower on some
@@ -278,7 +290,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         path = OriginalProjectBaseIfSynced.ContentProject.FullContentPath;
                     }
 
-                    if(path != null)
+                    if (path != null)
                     {
                         linkValue = ContentDirectory + FileManager.MakeRelative(absoluteFile, path);
                         linkValue = FileManager.RemoveDotDotSlash(linkValue);
@@ -316,19 +328,19 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             var projectValue = $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}";
 
             var metadata = new Dictionary<string, string>
-            { 
-                { 
-                    "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault() 
+            {
+                {
+                    "Name", tempProj.Properties.Where(item => item.Name == "AssemblyName").Select(item => item.EvaluatedValue).FirstOrDefault()
                 }
             };
 
-            if(!string.IsNullOrEmpty(projectValue))
+            if (!string.IsNullOrEmpty(projectValue))
             {
                 metadata["Project"] = $"{tempProj.Properties.Where(item => item.Name == "ProjectGuid").Select(item => item.EvaluatedValue).FirstOrDefault()}";
             }
 
             Project.AddItem(
-                "ProjectReference", 
+                "ProjectReference",
                 newProjectPathRelative,
                 metadata);
         }
@@ -421,7 +433,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     return true;
                 }
-                else if(membershipType.ToString() == buildItem.ItemType)
+                else if (membershipType.ToString() == buildItem.ItemType)
                 {
                     return true;
                 }
@@ -527,7 +539,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             bool wasChanged = false;
 
-#region Build the mBuildItemDictionary to make accessing items faster
+            #region Build the mBuildItemDictionary to make accessing items faster
             for (int i = mProject.AllEvaluatedItems.Count - 1; i > -1; i--)
             {
                 ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
@@ -555,7 +567,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                         buildItem);
                 }
             }
-#endregion
+            #endregion
 
             FindRootNamespace();
 
@@ -574,7 +586,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             Project.ProjectCollection.UnloadProject(Project);
 
 
-            if(this.ContentProject != this && this.ContentProject != null && this.ContentProject is VisualStudioProject)
+            if (this.ContentProject != this && this.ContentProject != null && this.ContentProject is VisualStudioProject)
             {
                 var contentAsVsProject = this.ContentProject as VisualStudioProject;
 
@@ -598,7 +610,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             DialogResult result = DialogResult.Cancel;
 
-            if(mbmb.ShowDialog() == true)
+            if (mbmb.ShowDialog() == true)
             {
                 result = (DialogResult)mbmb.ClickedResult;
                 switch (result)
@@ -768,7 +780,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             if (IsFilePartOfProject(fullPathParent + parent, BuildItemMembershipType.CompileOrContentPipeline))
             {
 
-                if (!item.Metadata.Any(metadata=>metadata.ItemType == "DependentUpon"))
+                if (!item.Metadata.Any(metadata => metadata.ItemType == "DependentUpon"))
                 {
                     item.SetMetadataValue("DependentUpon", parent);
                 }
@@ -778,7 +790,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         protected virtual void AddCodeBuildItems(ProjectBase sourceProjectBase)
         {
 
-            var sourceCodeFiles = ((VisualStudioProject) sourceProjectBase).EvaluatedItems
+            var sourceCodeFiles = ((VisualStudioProject)sourceProjectBase).EvaluatedItems
                 .Where(item => item.UnevaluatedInclude.EndsWith(".cs") && !ShouldIgnoreFile(item.UnevaluatedInclude))
                 .ToList();
 
@@ -793,7 +805,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 else if (SaveAsRelativeSyncedProject)
                 {
                     fileName = FileManager.MakeRelative(
-                        sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath, 
+                        sourceProjectBase.FullFileName.GetDirectoryContainingThis().FullPath,
                         FullFileName.GetDirectoryContainingThis().FullPath) + bi.UnevaluatedInclude;
                 }
                 else
@@ -845,7 +857,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // all text.
 
             bool shouldSave = false;
-            
+
             // April 14, 2017:
             // I used to use a Unicode
             // StringWriter, but it saved
@@ -942,16 +954,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 return item;
             }
         }
-        
+
         public bool HasPackage(string packageName)
         {
             return GetNugetPackageReference(packageName) != null;
         }
-        
+
         public string GetNugetPackageVersion(string packageName)
         {
             HasPackage(packageName, out var existingVersionNumber);
-            
+
             return existingVersionNumber;
         }
 
@@ -959,16 +971,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var packageNameToLower = packageName.ToLowerInvariant();
 
-            if(mBuildItemDictionaries.TryGetValue(packageNameToLower, out var buildItem))
+            if (mBuildItemDictionaries.TryGetValue(packageNameToLower, out var buildItem))
             {
-                if(buildItem.ItemType == "PackageReference" && buildItem.HasMetadata("Version"))
+                if (buildItem.ItemType == "PackageReference" && buildItem.HasMetadata("Version"))
                 {
                     existingVersionNumber = buildItem.Metadata.Where(item => item.Name == "Version").Select(item => item.EvaluatedValue).FirstOrDefault();
                     return true;
                 }
             }
 
-            existingVersionNumber=null;
+            existingVersionNumber = null;
             return false;
         }
 
@@ -996,7 +1008,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 return false;
             }
-            
+
             if (!csprojName.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
             {
                 csprojName += ".csproj";
@@ -1010,7 +1022,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public void AddNugetPackage(string packageName, string versionNumber)
         {
-            lock(this)
+            lock (this)
             {
                 ProjectItem projectItem = this.Project.AddItem("PackageReference", packageName).First();
                 projectItem.SetMetadataValue("Version", versionNumber);
@@ -1105,7 +1117,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         #endregion
 
 
-#endregion
+        #endregion
     }
 
     #region Extensions
