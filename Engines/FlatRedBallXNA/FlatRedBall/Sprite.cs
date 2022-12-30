@@ -561,7 +561,7 @@ namespace FlatRedBall
 
         /// <summary>
         /// The top coordinate in texture coordinates on the sprite. Default is 0.
-        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom-side of the texture.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom side of the texture.
         /// </summary>
         [ExportOrder(2)]
         public float TopTextureCoordinate
@@ -607,7 +607,10 @@ namespace FlatRedBall
             }
         }
 
-
+        /// <summary>
+        /// The bottom coordinate in texture coordinates on the sprite. Default is 1.
+        /// This value is in texture coordinates, not pixels. A value of 1 represents the bottom side of the texture.
+        /// </summary>
         [ExportOrder(2)]
         public float BottomTextureCoordinate
         {
