@@ -20,6 +20,7 @@ namespace FlatRedBall.Glue.CodeGeneration
     {
 
         #region Write Fields/Properties for CustomVariables
+
         private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
             VariableDefinition variableDefinition)
         {
@@ -31,12 +32,17 @@ namespace FlatRedBall.Glue.CodeGeneration
             var shouldGenerate = !customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.IsShared || customVariable.CreatesEvent;
             if(variableDefinition != null)
             {
+                // June 14, 2022
                 // This is tricky - if a variable uses custom code generation it may...
                 // * not be a generated variable at all, only used in the editor
                 // * be generated, but have custom get/set properties
                 // It's hard to know which, so for now we'll just exclude generation completely, and see
                 // if this causes problems...
-                shouldGenerate = variableDefinition.UsesCustomCodeGeneration == false;
+                shouldGenerate = variableDefinition.UsesCustomCodeGeneration == false 
+                    // Update December 30, 2022
+                    // Actually we can check if it has a custom setter. If it does, then we know that it is going
+                    // to be generated with custom sets:
+                    || variableDefinition.CustomPropertySetFunc != null;
             }
             if (shouldGenerate)
             {
@@ -83,6 +89,66 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
 
             return codeBlock;
+        }
+
+        private static void AppendPropertyForTunneledVariable(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, VariableDefinition variableDefinition)
+        {
+            NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
+
+            if (referencedNos != null)
+            {
+                NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, referencedNos); 
+
+                string customVariableType = GetMemberTypeFor(customVariable, saveObject);
+
+                if (customVariable.CreatesEvent)
+                {
+                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariable.Type);
+                }
+
+                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                {
+                    customVariableType = customVariable.OverridingPropertyType;
+                }
+
+                ICodeBlock prop = WritePropertyHeader(codeBlock, customVariable, customVariableType);
+
+                bool hasGetter = true;
+
+                string propertyToAssign = customVariable.SourceObjectProperty;
+
+
+                // later we will want to make this data driven
+                if (referencedNos.SourceType == SourceType.File &&
+                    FileManager.GetExtension(referencedNos.SourceFile) == "scnx" &&
+                    referencedNos.SourceName.StartsWith("Entire File") &&
+                    customVariable.SourceObjectProperty == "Visible" ||
+                    variableDefinition?.HasGetter == false)
+                {
+                    hasGetter = false;
+                }
+
+
+
+
+
+                bool isVisibleSetterOnList = referencedNos.IsList &&
+                    customVariable.SourceObjectProperty == "Visible";
+
+                if (isVisibleSetterOnList)
+                {
+                    hasGetter = false;
+                }
+                if (hasGetter)
+                {
+                    WriteGetterForProperty(customVariable, saveObject, prop);
+                }
+
+                WriteSetterForProperty(saveObject, customVariable, prop, isVisibleSetterOnList, variableDefinition);
+
+                NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, referencedNos);
+
+            }
         }
 
         private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)
@@ -360,9 +426,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-
-
         #endregion
+
+        #region Initialize
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -392,6 +458,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             // UPDATE5:  This has been moved out of BaseElementTreeNode int CustomVariableCodeGenerator.
             return codeBlock;
         }
+
+        #endregion
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -514,65 +582,6 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void AppendPropertyForTunneledVariable(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, VariableDefinition variableDefinition)
-        {
-            NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
-
-            if (referencedNos != null)
-            {
-                NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, referencedNos); 
-
-                string customVariableType = GetMemberTypeFor(customVariable, saveObject);
-
-                if (customVariable.CreatesEvent)
-                {
-                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariable.Type);
-                }
-
-                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                {
-                    customVariableType = customVariable.OverridingPropertyType;
-                }
-
-                ICodeBlock prop = WritePropertyHeader(codeBlock, customVariable, customVariableType);
-
-                bool hasGetter = true;
-
-                string propertyToAssign = customVariable.SourceObjectProperty;
-
-
-                // later we will want to make this data driven
-                if (referencedNos.SourceType == SourceType.File &&
-                    FileManager.GetExtension(referencedNos.SourceFile) == "scnx" &&
-                    referencedNos.SourceName.StartsWith("Entire File") &&
-                    customVariable.SourceObjectProperty == "Visible" ||
-                    variableDefinition?.HasGetter == false)
-                {
-                    hasGetter = false;
-                }
-
-
-
-
-
-                bool isVisibleSetterOnList = referencedNos.IsList &&
-                    customVariable.SourceObjectProperty == "Visible";
-
-                if (isVisibleSetterOnList)
-                {
-                    hasGetter = false;
-                }
-                if (hasGetter)
-                {
-                    WriteGetterForProperty(customVariable, saveObject, prop);
-                }
-
-                WriteSetterForProperty(saveObject, customVariable, prop, isVisibleSetterOnList, variableDefinition);
-
-                NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, referencedNos);
-
-            }
-        }
 
         private static void WriteSetterForProperty(IElement saveObject, CustomVariable customVariable, ICodeBlock prop, 
             bool isVisibleSetterOnList, VariableDefinition variableDefinition)

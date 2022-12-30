@@ -40,20 +40,6 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Fields
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            codeBlock.Line("");
-
-            for (int i = 0; i < element.NamedObjects.Count; i++)
-            {
-                var namedObject = element.NamedObjects[i];
-
-                GenerateFieldAndPropertyForNamedObject(namedObject, codeBlock);
-            }
-
-            return codeBlock;
-        }
-
         public static void GenerateFieldAndPropertyForNamedObject(NamedObjectSave namedObjectSave, ICodeBlock codeBlock)
         {
 
@@ -154,6 +140,21 @@ namespace FlatRedBall.Glue.CodeGeneration
                 AddEndIfIfNecessary(codeBlock, namedObjectSave);
             }
         }
+
+        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            codeBlock.Line("");
+
+            for (int i = 0; i < element.NamedObjects.Count; i++)
+            {
+                var namedObject = element.NamedObjects[i];
+
+                GenerateFieldAndPropertyForNamedObject(namedObject, codeBlock);
+            }
+
+            return codeBlock;
+        }
+
 
         #endregion
 
@@ -376,6 +377,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #endregion
 
+        #region Remove from Managers
         public override void GenerateRemoveFromManagers(ICodeBlock codeBlock, IElement element)
         {
             for (int i = 0; i < element.NamedObjects.Count; i++)
@@ -391,6 +393,10 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
         }
+
+        #endregion
+
+        #region Destroy
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
@@ -452,6 +458,8 @@ namespace FlatRedBall.Glue.CodeGeneration
             // right now we'll make all lists one-way - do we want to make them two way later?
             return nos.IsFullyDefined && !nos.SetByContainer && !nos.SetByDerived && nos.IsList && !nos.IsDisabled;
         }
+
+        #endregion
 
         public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
