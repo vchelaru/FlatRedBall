@@ -59,6 +59,8 @@ namespace GumPluginCore.Managers
                         Gum.Managers.ObjectFinder.Self.GumProjectSave == null)
                     {
                         GumProjectManager.Self.ReloadGumProject();
+
+                        GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
                     }
                     else
                     {
