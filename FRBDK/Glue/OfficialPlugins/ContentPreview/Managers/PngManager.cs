@@ -48,11 +48,17 @@ namespace OfficialPlugins.ContentPreview.Managers
         internal static void ShowTab(FilePath filePath)
         {
             var view = PngManager.GetView(filePath);
+            var changedFilePath = view.TextureFilePath != filePath;
+
+
             view.TextureFilePath = filePath;
             var vm = PngManager.ViewModel;
             vm.ResolutionWidth = view.Texture?.Width ?? 0;
             vm.ResolutionHeight = view.Texture?.Height ?? 0;
-            view.ResetCamera();
+            if(changedFilePath)
+            {
+                view.ResetCamera();
+            }
 
             if (Tab == null)
             {

@@ -68,6 +68,13 @@ namespace OfficialPlugins.ContentPreview.Views
         public PngPreviewView()
         {
             InitializeComponent();
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void HandleLoaded(object sender, RoutedEventArgs e)
+        {
+            FillSpriteToView();
         }
 
         public void Initialize(CameraLogic cameraLogic)
@@ -79,7 +86,9 @@ namespace OfficialPlugins.ContentPreview.Views
 
             // do this after creating the background so that it can be passed here:
             CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
+
         }
+
 
         private void CreateMainSprite()
         {
@@ -126,12 +135,34 @@ namespace OfficialPlugins.ContentPreview.Views
 
         internal void ResetCamera()
         {
-            ViewModel.CurrentZoomPercent = 100;
             GumCanvas.SystemManagers.Renderer.Camera.X = 0;
             GumCanvas.SystemManagers.Renderer.Camera.Y = 0;
             GumBackground.X = 0;
             GumBackground.Y = 0;
 
+            FillSpriteToView();
+
+        }
+
+        private void FillSpriteToView()
+        {
+            if (MainSprite.Texture == null || GumCanvas.ActualWidth == 0 || GumCanvas.ActualHeight == 0)
+            {
+                ViewModel.CurrentZoomPercent = 100;
+            }
+            else
+            {
+                var zoomToFitWidth = GumCanvas.ActualWidth / MainSprite.Texture.Width;
+                var zoomToFitHeight = GumCanvas.ActualHeight / MainSprite.Texture.Height;
+
+                var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
+
+                ViewModel.CurrentZoomPercent = (float)minZoom * 100;
+            }
+
+
+
+            CameraLogic.RefreshCameraZoomToViewModel();
         }
     }
 }

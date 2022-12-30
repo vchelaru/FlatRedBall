@@ -8,15 +8,18 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <wpf1:GumSKElement x:Name="GumCanvas" 
+        <StackPanel>
+        </StackPanel>
+        <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="1"
                 MouseDown="GumCanvas_MouseDown"
                 MouseMove="GumCanvas_MouseMove"
                 MouseWheel="GumCanvas_MouseWheel"
                            ></wpf1:GumSKElement>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
         </StackPanel>
     </Grid>
