@@ -196,7 +196,9 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     var gamepad = InputManager.Xbox360GamePads[index];
                     item.InputDevice = gamepad;
+#if !UWP
                     item.ControllerDisplayName = gamepad.Capabilities.DisplayName;
+#endif
                     item.ConnectedJoinedState = ConnectedJoinedState.Connected;
                     item.GamepadLayout = gamepad.GamepadLayout;
                 }
@@ -241,7 +243,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        #region Join/Unjoin
+#region Join/Unjoin
 
         public override void Activity()
         {
@@ -337,6 +339,6 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        #endregion
+#endregion
     }
 }

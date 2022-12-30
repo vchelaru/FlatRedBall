@@ -164,7 +164,9 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 if (!IsFullscreen && windowedRectanglePosition != null)
                 {
+#if !UWP
                     FlatRedBallServices.Game.Window.Position = new Point(windowedRectanglePosition.Value.X, windowedRectanglePosition.Value.Y);
+#endif
                 }
             }
 
@@ -173,6 +175,6 @@ namespace FlatRedBall.Forms.Controls.Games
 
 
 
-        #endregion
+#endregion
     }
 }
