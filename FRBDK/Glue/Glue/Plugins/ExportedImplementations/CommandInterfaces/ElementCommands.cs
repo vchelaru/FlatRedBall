@@ -558,6 +558,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
                 }
+
             }
 
             // even derived entities can have factories

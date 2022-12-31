@@ -200,6 +200,7 @@ namespace FlatRedBallAddOns.Entities
             CodeGenerators.Add(new PooledCodeGenerator());
             CodeGenerators.Add(new IVisibleCodeGenerator());
             CodeGenerators.Add(new IWindowCodeGenerator());
+            CodeGenerators.Add(new ITiledTileMetadataCodeGenerator());
             CodeGenerators.Add(new PauseCodeGenerator());
             CodeGenerators.Add(new LoadingScreenCodeGenerator());
         }

@@ -124,6 +124,15 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        [CategoryAttribute("Inheritance and Interfaces")]
+        public bool ImplementsITiledTileMetadata {
+            get;
+            set;
+        }
+        public bool ShouldSerializeImplementsITiledTileSprite() {
+            return ImplementsITiledTileMetadata == true;
+        }
+
         //[Browsable(false)]
         //public List<BehaviorSave> Behaviors
         //{

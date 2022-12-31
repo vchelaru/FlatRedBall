@@ -51,6 +51,11 @@ namespace FlatRedBall.Glue.SaveClasses
             return instance.ImplementsIClickable || instance.GetInheritsFromIClickable();
         }
 
+        public static bool GetImplementsITiledTileMetadataRecursively(this EntitySave instance)
+        {
+            return instance.ImplementsITiledTileMetadata || instance.GetInheritsFromITiledTileMetadata();
+        }
+
         /// <summary>
         /// Returns whether the calling Entity inherits from another Entity that implements IWindow
         /// </summary>
@@ -71,6 +76,14 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static bool GetInheritsFromITiledTileMetadata(this EntitySave instance) {
+            if(string.IsNullOrEmpty(instance.BaseEntity)) {
+                return false;
+            } else {
+                EntitySave entitySave = ObjectFinder.Self.GetEntitySave(instance.BaseEntity);
+                return entitySave != null && (entitySave.ImplementsITiledTileMetadata || entitySave.GetInheritsFromITiledTileMetadata());
+            }
+        }
         /// <summary>
         /// Returns whether the calling Entity inherits from another class that implements ICollidable.
         /// Whether the calling Entity itself implements ICollidable doesn't matter.

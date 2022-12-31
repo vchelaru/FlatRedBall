@@ -1,4 +1,6 @@
-﻿using $PROJECT_NAMESPACE$.DataTypes;
+﻿$GLUE_VERSIONS$
+
+using $PROJECT_NAMESPACE$.DataTypes;
 using FlatRedBall.TileGraphics;
 using System;
 using System.Collections.Generic;
@@ -340,6 +342,14 @@ namespace FlatRedBall.TileEntities
                                     {
                                         ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
                                         createdEntityOfThisType = true;
+
+#if ITiledTileMetadataInFrb
+                                        if(entity is FlatRedBall.Entities.ITiledTileMetadata asEntity) {
+                                            float tx, ty;
+                                            layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
+                                            asEntity.SetTileTextureCoordinates(tx, ty, tx + (tileSize / layer.Texture.Width), ty + (tileSize / layer.Texture.Height));
+                                        }
+#endif
                                     }
                                 }
                             }
