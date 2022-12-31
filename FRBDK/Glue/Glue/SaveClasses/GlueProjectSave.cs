@@ -95,6 +95,7 @@ namespace FlatRedBall.Glue.SaveClasses
             GumTextObjectsUpdateTextWith0ChildDepth = 29,
             HasFrameworkElementManager = 30,
             HasGumSkiaElements = 31,
+            ITiledTileMetadataInFrb = 32,
         }
 
         #endregion
