@@ -101,6 +101,31 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
+        public bool SupportsEditing { get; set; } = false;
+
+        string textBeforeEditing;
+        public bool IsEditing
+        {
+            get => Get<bool>();
+            set
+            {
+                if(value != IsEditing)
+                {
+                    if(value)
+                    {
+                        textBeforeEditing = Text;
+                    }
+                    Set(value);
+
+                    if(!value)
+                    {
+                        HandleRenameThroughEdit();
+                    }
+                }
+            }
+        }
+
+
         public Visibility Visibility
         {
             get => Get<Visibility>();
@@ -193,7 +218,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         }
 
 
-        public NodeViewModel(NodeViewModel parent)
+        public NodeViewModel(NodeViewModel parent = null)
         {
             Visibility = Visibility.Visible;
             //this.Node = Node;
@@ -468,6 +493,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #endregion
 
+
+        private async void HandleRenameThroughEdit()
+        {
+            if(Tag is GlueElement element)
+            {
+                await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, Text);
+
+                // This updates the tree node back in case RenameElement doesn't allow the rename to happen.
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            }
+        }
 
         public override string ToString()
         {

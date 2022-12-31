@@ -26,6 +26,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             Tag = glueElement;
             this.glueElement = glueElement;
 
+            this.SupportsEditing = true;
+
             if(createChildrenNodes)
             {
                 FilesNode = new ReferencedFilesRootNodeViewModel(this, glueElement) { Text = "Files" };

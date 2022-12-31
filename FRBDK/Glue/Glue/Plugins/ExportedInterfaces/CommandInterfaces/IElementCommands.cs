@@ -40,6 +40,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region GlueElement
 
+        /// <summary>
+        /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
+        /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
+        /// </summary>
+        /// <param name="elementToRename">The element to rename.</param>
+        /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
+        /// "Entities\\Subfolder\\NewName".</param>
+        /// <returns>A task which completes when all logic and UI are finished.</returns>
         Task RenameElement(GlueElement elementToRename, string value);
 
         #endregion

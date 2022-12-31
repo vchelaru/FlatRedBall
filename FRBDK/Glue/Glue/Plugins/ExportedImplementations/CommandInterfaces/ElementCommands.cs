@@ -54,11 +54,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         #region GlueElement (both screens and entities)
 
         /// <summary>
-        /// Renames the argument elementToRename. The value (name) should not include
-        /// the "Screens\" or "Entities\" prefix.
+        /// Performs all logic related to renaming an element. The name should not have the "Screens\\" or "Entities\\" prefix, nor any prefixes
+        /// for the entity's folder. In other words, GameScreen would be "GameScreen" rather than "Screens\\GameScreen".
         /// </summary>
         /// <param name="elementToRename">The element to rename.</param>
-        /// <param name="value">The desired name without the type prefix.</param>
+        /// <param name="value">The new name without any prefixes. For example, even an entity in a folder should pass "NewName" rather than 
+        /// "Entities\\Subfolder\\NewName".</param>
+        /// <returns>A task which completes when all logic and UI are finished.</returns>
         public async Task RenameElement(GlueElement elementToRename, string value)
         {
             await TaskManager.Self.AddAsync(() =>
@@ -95,6 +97,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         elementToRename.Name = newNameFull;
 
                         var elementsToRegenerate = new HashSet<GlueElement>();
+
+                        // regenerate *this*:
+                        elementsToRegenerate.Add(elementToRename);
 
                         if (elementToRename is EntitySave entityToRename)
                         {
@@ -171,7 +176,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         foreach (var element in elementsToRegenerate)
                         {
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
                         }
 
                         GlueCommands.Self.GenerateCodeCommands.GenerateGame1();

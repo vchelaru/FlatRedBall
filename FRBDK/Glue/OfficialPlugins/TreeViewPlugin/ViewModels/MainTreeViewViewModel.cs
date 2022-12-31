@@ -699,7 +699,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(nos.InstanceName);
                 if (matchWeight > 0)
                 {
-                    var node = new NodeViewModel(null);
+                    var node = new NodeViewModel();
                     if (nos.IsLayer)
                     {
                         node.ImageSource = NodeViewModel.LayerIcon;
@@ -735,7 +735,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 var matchWeight = GetMatchWeight(category.Name);
                 if (matchWeight > 0)
                 {
-                    var treeNode = new NodeViewModel(null);
+                    var treeNode = new NodeViewModel();
                     treeNode.ImageSource = NodeViewModel.FolderClosedIcon;
                     treeNode.Text = category.ToString();
                     treeNode.Tag = category;

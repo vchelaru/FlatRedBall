@@ -334,6 +334,12 @@ namespace TopDownPlugin.Controllers
 
         private void RefreshAnimationValues(EntitySave currentEntitySave)
         {
+            ////////////////////early out/////////////////////////////
+            if(viewModel.IsTopDown == false && GetIfInheritsFromTopDown(currentEntitySave) == false)
+            {
+                return;
+            }
+            ///////////////End Early Out/////////////////////////////
             LoadAnimationData(currentEntitySave);
 
             AddNecessaryAnimationMovementValuesFor(currentEntitySave, viewModel.TopDownValues);
@@ -422,7 +428,12 @@ namespace TopDownPlugin.Controllers
 
         private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)
         {
-
+            //////////////////////////////////Early Out////////////////////////////////////////
+            if(viewModel.IsTopDown == false && !GetIfInheritsFromTopDown(currentEntitySave))
+            {
+                return;
+            }
+            /////////////////////////////End Early Out//////////////////////////////////////
             if (topDownAnimationData.Animations.Any(item => item.MovementValuesName == baseAnimationsName) == false)
             {
                 var newAnimation = new MovementValueAnimations();
@@ -561,24 +572,27 @@ namespace TopDownPlugin.Controllers
 
             topDownAnimationData = null;
 
-            if (fileToLoad.Exists())
+            if (viewModel.IsTopDown || GetIfInheritsFromTopDown(currentEntitySave))
             {
-                try
+                if (fileToLoad.Exists())
                 {
-                    var fileContents = System.IO.File.ReadAllText(fileToLoad.FullPath);
+                    try
+                    {
+                        var fileContents = System.IO.File.ReadAllText(fileToLoad.FullPath);
 
-                    topDownAnimationData = JsonConvert.DeserializeObject<TopDownAnimationData>(fileContents);
+                        topDownAnimationData = JsonConvert.DeserializeObject<TopDownAnimationData>(fileContents);
+                    }
+                    catch
+                    {
+                        // do nothing
+                    }
                 }
-                catch
+
+                if (topDownAnimationData == null)
                 {
-                    // do nothing
+                    // if it's null then the file wasn't there or there was some unrecoverable failure, so just make a new one:
+                    topDownAnimationData = new TopDownAnimationData();
                 }
-            }
-
-            if (topDownAnimationData == null)
-            {
-                // if it's null then the file wasn't there or there was some unrecoverable failure, so just make a new one:
-                topDownAnimationData = new TopDownAnimationData();
             }
         }
 
