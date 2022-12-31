@@ -115,7 +115,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
             else if(e.Key == Key.F2)
             {
-                if(SelectionLogic.CurrentNode?.SupportsEditing == true)
+                if(SelectionLogic.CurrentNode?.IsEditable == true)
                 {
                     SelectionLogic.CurrentNode.IsEditing = true;
                 }

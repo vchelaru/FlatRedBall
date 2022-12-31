@@ -386,7 +386,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                 string textToSet = FileManager.RemovePath(rfs.Name);
                 nodeForFile.Text = textToSet;
-                nodeForFile.SupportsEditing = true;
+                nodeForFile.IsEditable = true;
                 nodeForFile.ImageSource =
                     rfs.IsCreatedByWildcard
                     ? NodeViewModel.FileIconWildcard
@@ -540,7 +540,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         {
                             treeNode = new NodeViewModel(parentTreeNode);
 
-                            treeNode.SupportsEditing = true;
+                            treeNode.IsEditable = true;
 
                             treeNode.Text = FileManager.RemovePath(directory);
                             parentTreeNode.Children.Add(treeNode);
