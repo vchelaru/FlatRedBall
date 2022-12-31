@@ -338,24 +338,16 @@ namespace FlatRedBall.TileEntities
 
                                     if (entity != null)
                                     {
-                                        if(entity is FlatRedBall.Entities.ITiledTileMetadata) {
-                                            float tx, ty;
-                                            layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
-                                            propertyList.AddRange(
-                                                new List<NamedValue>() {
-                                                new NamedValue() { Name = "TileLeftTexturePixel", Type = "int", Value = (System.Math.Truncate(tx * layer.Texture.Width)).ToString() },
-                                                new NamedValue() { Name = "TileTopTexturePixel", Type = "int", Value = (System.Math.Truncate(ty * layer.Texture.Height)).ToString() },
-                                                new NamedValue() { Name = "TileTexturePixelSize", Type = "int", Value = tileSize.ToString()}
-                                            });
-                                        }
-
                                         ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
                                         createdEntityOfThisType = true;
 
                                         if(entity is FlatRedBall.Entities.ITiledTileMetadata) {
                                             var method = entity.GetType().GetMethod("TileTexturePixelsSet");
-                                            if(method != null)
-                                                method.Invoke(entity, null);
+                                            if(method != null) {
+                                                float tx, ty;
+                                                layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
+                                                method.Invoke(entity, new object[] { tx, ty, tx + (tileSize / layer.Texture.Width), ty + (tileSize / layer.Texture.Height) });
+                                            }
                                         }
                                     }
                                 }

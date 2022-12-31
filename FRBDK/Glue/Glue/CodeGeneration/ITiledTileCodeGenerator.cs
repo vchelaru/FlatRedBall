@@ -21,22 +21,6 @@ namespace FlatRedBall.Glue.CodeGeneration {
             }
         }
 
-        public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element) {
-            if(GlueState.Self.CurrentGlueProject.FileVersion < (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.ITiledTileMetadataInFrb)
-                return codeBlock;
-
-            EntitySave entitySave = element as EntitySave;
-
-            if(entitySave != null && entitySave.ImplementsITiledTileMetadata) {
-                bool inheritesFromITiledTileMetadata = entitySave.GetInheritsFromITiledTileMetadata();
-
-                codeBlock.AutoProperty("public int", "TileLeftTexturePixel");
-                codeBlock.AutoProperty("public int", "TileTopTexturePixel");
-                codeBlock.AutoProperty("public int", "TileTexturePixelSize");
-            }
-
-            return codeBlock;
-        }
     }
 
 }
