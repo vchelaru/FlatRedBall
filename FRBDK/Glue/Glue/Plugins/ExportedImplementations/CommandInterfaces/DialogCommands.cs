@@ -290,9 +290,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 var definingNos = ObjectFinder.Self.GetRootDefiningObject(namedObjectToRemove);
 
-                if (definingNos?.ExposedInDerived == true)
+                // December 31, 2022
+                // It's possible to set
+                // ExposedInDerived and SetByDerived
+                // indepdently, but conceptually SetByDerived
+                // requires the property to be protected so it
+                // can be set. SetByDerived is a "stronger" form
+                // of ExposedInDerived, so we still want to keep the
+                // relationship in tact.
+                if (definingNos?.ExposedInDerived == true || definingNos?.SetByDerived == true)
                 {
-                    var message = $"The object {namedObjectToRemove} cannot be deleted because a base object has it marked as ExposedInDerived";
+                    var message = $"The object {namedObjectToRemove} cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived";
 
                     GlueCommands.Self.DialogCommands.ShowMessageBox(message);
 
