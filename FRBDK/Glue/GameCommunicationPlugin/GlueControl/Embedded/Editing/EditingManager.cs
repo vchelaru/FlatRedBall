@@ -417,10 +417,12 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
-                    CameraLogic.DoActivity();
+                    CameraLogic.DoCursorCameraControllingLogic();
 
                     DoForwardBackActivity();
                 }
+
+                CameraLogic.DoBackgroundLogic();
 
                 UpdateMarkers(didChangeItemOver);
 

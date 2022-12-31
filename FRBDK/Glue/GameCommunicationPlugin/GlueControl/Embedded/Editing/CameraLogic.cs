@@ -69,14 +69,7 @@ namespace GlueControl.Editing
             currentZoomLevelIndex = Array.IndexOf(zoomLevels, 100);
         }
 
-        public static void DoActivity()
-        {
-            DoCursorCameraControllingLogic();
-
-            DoBackgroundLogic();
-        }
-
-        private static void DoBackgroundLogic()
+        public static void DoBackgroundLogic()
         {
             if (BackgroundBlue != null)
             {
@@ -102,7 +95,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private static void DoCursorCameraControllingLogic()
+        public static void DoCursorCameraControllingLogic()
         {
             if (!FlatRedBallServices.Game.IsActive)
             {
