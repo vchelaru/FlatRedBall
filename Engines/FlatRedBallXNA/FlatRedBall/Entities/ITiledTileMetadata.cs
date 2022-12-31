@@ -5,10 +5,10 @@ using System.Text;
 namespace FlatRedBall.Entities {
     
     public interface ITiledTileMetadata {
-        int Tile_LeftTexturePixel { get; set; }
-        int Tile_TopTexturePixel { get; set; }
-        int Tile_TexturePixelSize { get; set; }
-        //public void Tile_TexturePixelsSet();
+        int TileLeftTexturePixel { get; set; }
+        int TileTopTexturePixel { get; set; }
+        int TileTexturePixelSize { get; set; }
+        void TileTexturePixelsSet();
     }
 
 }

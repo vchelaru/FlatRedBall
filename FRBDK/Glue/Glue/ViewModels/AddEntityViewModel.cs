@@ -159,11 +159,6 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
-        public bool IsITiledTileMetadataChecked {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool IsICollidableEnabled
         {
             get => Get<bool>();

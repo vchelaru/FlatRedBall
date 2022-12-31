@@ -343,9 +343,9 @@ namespace FlatRedBall.TileEntities
                                             layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
                                             propertyList.AddRange(
                                                 new List<NamedValue>() {
-                                                new NamedValue() { Name = "Tile_LeftTexturePixel", Type = "int", Value = (System.Math.Truncate(tx * layer.Texture.Width)).ToString() },
-                                                new NamedValue() { Name = "Tile_TopTexturePixel", Type = "int", Value = (System.Math.Truncate(ty * layer.Texture.Height)).ToString() },
-                                                new NamedValue() { Name = "Tile_TexturePixelSize", Type = "int", Value = tileSize.ToString()}
+                                                new NamedValue() { Name = "TileLeftTexturePixel", Type = "int", Value = (System.Math.Truncate(tx * layer.Texture.Width)).ToString() },
+                                                new NamedValue() { Name = "TileTopTexturePixel", Type = "int", Value = (System.Math.Truncate(ty * layer.Texture.Height)).ToString() },
+                                                new NamedValue() { Name = "TileTexturePixelSize", Type = "int", Value = tileSize.ToString()}
                                             });
                                         }
 
@@ -353,8 +353,7 @@ namespace FlatRedBall.TileEntities
                                         createdEntityOfThisType = true;
 
                                         if(entity is FlatRedBall.Entities.ITiledTileMetadata) {
-                                            //(entity as FlatRedBall.Entities.ITiledTileMetadata).Tile_TexturePixelsSet();
-                                            var method = entity.GetType().GetMethod("Tile_TexturePixelsSet");
+                                            var method = entity.GetType().GetMethod("TileTexturePixelsSet");
                                             if(method != null)
                                                 method.Invoke(entity, null);
                                         }

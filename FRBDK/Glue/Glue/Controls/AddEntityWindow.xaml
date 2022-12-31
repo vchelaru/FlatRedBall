@@ -42,7 +42,6 @@
                 <CheckBox x:Name="IVisibleCheckBox" IsChecked="{Binding IsIVisibleChecked}">IVisible</CheckBox>
                 <CheckBox x:Name="IClickableCheckBox" IsChecked="{Binding IsIClickableChecked}">IClickable</CheckBox>
                 <CheckBox x:Name="IWindowCheckBox" IsChecked="{Binding IsIWindowChecked}">IWindow</CheckBox>
-                <CheckBox x:Name="ITiledTileMetadataCheckBox" IsChecked="{Binding IsITiledTileMetadata}">ITiledTileMetadata</CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Creation">

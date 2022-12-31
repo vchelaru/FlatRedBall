@@ -23,10 +23,9 @@ namespace FlatRedBall.Glue.CodeGeneration {
             if(entitySave != null && entitySave.ImplementsITiledTileMetadata) {
                 bool inheritesFromITiledTileMetadata = entitySave.GetInheritsFromITiledTileMetadata();
 
-                codeBlock.Line("//partial void Tile_TexturePixelsSet();");
-                codeBlock.AutoProperty("public int", "Tile_LeftTexturePixel");
-                codeBlock.AutoProperty("public int", "Tile_TopTexturePixel");
-                codeBlock.AutoProperty("public int", "Tile_TexturePixelSize");
+                codeBlock.AutoProperty("public int", "TileLeftTexturePixel");
+                codeBlock.AutoProperty("public int", "TileTopTexturePixel");
+                codeBlock.AutoProperty("public int", "TileTexturePixelSize");
             }
 
             return codeBlock;
