@@ -20,7 +20,12 @@ It is shared between "legacy" binding projects and .NET 5 projects.
     <GeneratedOutputPath        Condition=" '$(GeneratedOutputPath)' == '' ">$(IntermediateOutputPath)generated\</GeneratedOutputPath>
     <AndroidJavadocVerbosity    Condition=" '$(AndroidJavadocVerbosity)' == '' ">intellisense</AndroidJavadocVerbosity>
     <ApiOutputFile              Condition=" '$(ApiOutputFile)' == '' ">$(IntermediateOutputPath)api.xml</ApiOutputFile>
-    <_GeneratorStampFile>$(IntermediateOutputPath)generator.stamp</_GeneratorStampFile>
+    <ClassParseToolExe          Condition=" '$(UsingAndroidNETSdk)' == 'true' ">class-parse.dll</ClassParseToolExe>
+    <ClassParseToolExe          Condition=" '$(ClassParseToolExe)' == '' ">class-parse.exe</ClassParseToolExe>
+    <BindingsGeneratorToolExe   Condition=" '$(UsingAndroidNETSdk)' == 'true' ">generator.dll</BindingsGeneratorToolExe>
+    <BindingsGeneratorToolExe   Condition=" '$(BindingsGeneratorToolExe)' == '' ">generator.exe</BindingsGeneratorToolExe>
+    <JavadocToMdocToolExe       Condition=" '$(JavadocToMdocToolExe)' == '' ">javadoc-to-mdoc.exe</JavadocToMdocToolExe>
+    <_GeneratorStampFile>$(_AndroidStampDirectory)generator.stamp</_GeneratorStampFile>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(_UseLegacyJavadocImport)' != 'true' ">
@@ -28,16 +33,24 @@ It is shared between "legacy" binding projects and .NET 5 projects.
     <NoWarn Condition=" '$(DocumentationFile)' != '' ">$(NoWarn);CS1573;CS1591</NoWarn>
   </PropertyGroup>
 
+  <Target Name="_SetAndroidGenerateManagedBindings"
+      Condition=" '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' Or '@(_JavaBindingSource->Count())' != '0' ">
+    <PropertyGroup>
+      <!-- Used throughout to determine if C# binding-related targets should skip -->
+      <_AndroidGenerateManagedBindings>true</_AndroidGenerateManagedBindings>
+    </PropertyGroup>
+  </Target>
+
   <Target Name="ExportJarToXml"
-      DependsOnTargets="$(ExportJarToXmlDependsOnTargets)"
-      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' ">
+      Condition=" '$(_AndroidGenerateManagedBindings)' == 'true' "
+      DependsOnTargets="$(ExportJarToXmlDependsOnTargets)">
     <PropertyGroup>
       <AllowUnsafeBlocks Condition=" '$(AllowUnsafeBlocks)' != 'true' ">true</AllowUnsafeBlocks>
     </PropertyGroup>
   </Target>
 
   <Target Name="GenerateBindings"
-      Condition=" '$(UsingAndroidNETSdk)' != 'true' Or '@(InputJar->Count())' != '0' Or '@(EmbeddedJar->Count())' != '0' Or '@(LibraryProjectZip->Count())' != '0' "
+      Condition=" '$(_AndroidGenerateManagedBindings)' == 'true' "
       DependsOnTargets="ExportJarToXml;_ResolveMonoAndroidSdks"
       Inputs="$(ApiOutputFile);@(TransformFile);@(ReferencePath);@(ReferenceDependencyPaths);@(_AndroidMSBuildAllProjects)"
       Outputs="$(_GeneratorStampFile)">
@@ -47,6 +60,14 @@ It is shared between "legacy" binding projects and .NET 5 projects.
 
     <ItemGroup>
       <AnnotationsZip Include="$(IntermediateOutputPath)library_project_annotations\**\*.zip" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_JavadocXml Include="@(_JavaSourceJavadocXml)" />
+      <_JavadocXml
+          Condition=" Exists('$(_AndroidIntermediateBindingClassesDocs)') "
+          Include="$(_AndroidIntermediateBindingClassesDocs)"
+      />
     </ItemGroup>
 
     <!-- Create the .cs binding source files -->
@@ -60,16 +81,21 @@ It is shared between "legacy" binding projects and .NET 5 projects.
         AnnotationsZipFiles="@(AnnotationsZip)"
         AssemblyName="$(AssemblyName)"
         JavadocVerbosity="$(AndroidJavadocVerbosity)"
-        JavadocXml="@(_JavaSourceJavadocXml)"
+        JavadocXml="@(_JavadocXml)"
         TransformFiles="@(TransformFile)"
         ReferencedManagedLibraries="@(ReferencePath);@(ReferenceDependencyPaths)"
         MonoAndroidFrameworkDirectories="$(_XATargetFrameworkDirectories)"
         TypeMappingReportFile="$(GeneratedOutputPath)type-mapping.txt"
+        NetCoreRoot="$(NetCoreRoot)"
         ToolPath="$(MonoAndroidToolsDirectory)"
         ToolExe="$(BindingsGeneratorToolExe)"
         LangVersion="$(LangVersion)"
-        EnableInterfaceMembersPreview="$(_EnableInterfaceMembers)"
+        EnableBindingStaticAndDefaultInterfaceMethods="$(AndroidBoundInterfacesContainStaticAndDefaultInterfaceMethods)"
+        EnableBindingNestedInterfaceTypes="$(AndroidBoundInterfacesContainTypes)"
+        EnableBindingInterfaceConstants="$(AndroidBoundInterfacesContainConstants)"
         Nullable="$(Nullable)"
+        UseJavaLegacyResolver="$(_AndroidUseJavaLegacyResolver)"
+        NamespaceTransforms="@(AndroidNamespaceReplacement)"
     />
 
     <!-- Write a flag so we won't redo this target if nothing changed -->
@@ -77,7 +103,9 @@ It is shared between "legacy" binding projects and .NET 5 projects.
 
   </Target>
 
-  <Target Name="AddBindingsToCompile" DependsOnTargets="GenerateBindings">
+  <Target Name="AddBindingsToCompile"
+      Condition=" '$(_AndroidGenerateManagedBindings)' == 'true' "
+      DependsOnTargets="GenerateBindings">
     <!-- Add the files to list of things to be compiled -->
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)generated\*\*.cs" />
@@ -101,15 +129,17 @@ It is shared between "legacy" binding projects and .NET 5 projects.
     <Delete Files="$(_GeneratorStampFile)" />
     <Delete Files="@(IntermediateAssembly->'$(OutputPath)%(filename).xml')" />
     <Delete Files="@(IntermediateAssembly->'$(IntermediateOutputPath)%(filename).xml')" />
+    <Delete Files="$(_AndroidIntermediateBindingClassesZip)" />
     <RemoveDirFixed Directories="$(GeneratedOutputPath)" />
-    <RemoveDirFixed Directories="$(_AndroidStampDirectory)" />
     <RemoveDirFixed Directories="$(IntermediateOutputPath)docs" />
     <RemoveDirFixed Directories="$(IntermediateOutputPath)javadocs" />
     <RemoveDirFixed Directories="$(IntermediateOutputPath)javasources" />
+    <RemoveDirFixed Directories="$(_AndroidIntermediateBindingJavaClassDirectory)" />
   </Target>
-  
+
   <Target Name="CleanLibraryProjectIntermediaries">
     <Delete Files="$(IntermediateOutputPath)__AndroidLibraryProjects__.zip" />
+    <Delete Files="$(_AndroidStampDirectory)_ResolveLibraryProjectImports.stamp" />
     <Delete Files="$(_AndroidLibraryImportsCache)" />
     <Delete Files="$(_AndroidLibraryProjectImportsCache)" />
     <Delete Files="$(_AndroidLibrayProjectAssemblyMapFile)" />

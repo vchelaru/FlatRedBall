@@ -260,7 +260,11 @@ Copyright (C) 2016 Xamarin. All rights reserved.
 			LibraryProjectJars="@(ExtractedJarImports)"
 			TlsProvider="$(AndroidTlsProvider)"
 			UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
-			ProjectFullPath="$(MSBuildProjectFullPath)">
+			ProjectFullPath="$(MSBuildProjectFullPath)"
+			IncludeWrapSh="$(AndroidIncludeWrapSh)"
+			CheckedBuild="$(_AndroidCheckedBuild)"
+			RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)"
+			ExcludeFiles="@(AndroidPackagingOptionsExclude)">
 		<Output TaskParameter="OutputFiles" ItemName="ApkFiles" />
 	</BuildApk>
 	<BuildBaseAppBundle
@@ -290,7 +294,11 @@ Copyright (C) 2016 Xamarin. All rights reserved.
 			LibraryProjectJars="@(ExtractedJarImports)"
 			TlsProvider="$(AndroidTlsProvider)"
 			UncompressedFileExtensions="$(AndroidStoreUncompressedFileExtensions)"
-			ProjectFullPath="$(MSBuildProjectFullPath)">
+			ProjectFullPath="$(MSBuildProjectFullPath)"
+			IncludeWrapSh="$(AndroidIncludeWrapSh)"
+			CheckedBuild="$(_AndroidCheckedBuild)"
+			RuntimeConfigBinFilePath="$(_BinaryRuntimeConfigPath)"
+			ExcludeFiles="@(AndroidPackagingOptionsExclude)">
 		<Output TaskParameter="OutputFiles" ItemName="BaseZipFile" />
 	</BuildBaseAppBundle>
 	<BuildAppBundle
@@ -389,7 +397,7 @@ Copyright (C) 2016 Xamarin. All rights reserved.
 
 <Target Name="_GetPrimaryCpuAbi"
 		DependsOnTargets="_SetupDesignTimeBuildForIntellisense;_ResolveXamarinAndroidTools;_ValidateAndroidPackageProperties"
-		Condition=" '$(AndroidApplication)' == 'true' ">
+		Condition=" '$(AndroidApplication)' == 'true' and '$(EmbedAssembliesIntoApk)' == 'false' ">
 	<GetPrimaryCpuAbi
 			AndroidPackage="$(_AndroidPackage)"
 			AdbTarget="$(AdbTarget)"
@@ -398,6 +406,7 @@ Copyright (C) 2016 Xamarin. All rights reserved.
 			RuntimeIdentifiers="$(RuntimeIdentifier);$(RuntimeIdentifiers)"
 			Condition=" '$(DesignTimeBuild)' != 'true' and '$(_ComputeFilesToPublishForRuntimeIdentifiers)' != 'true' ">
 		<Output TaskParameter="ResultingAbi" PropertyName="_PrimaryCpuAbi" />
+		<Output TaskParameter="ToolsAbi" PropertyName="_FastDevToolsAbi" />
 		<Output TaskParameter="RuntimeIdentifier" PropertyName="_PrimaryRuntimeIdentifier" />
 		<Output TaskParameter="SdkVersion" PropertyName="_DeviceSdkVersion" />
 	</GetPrimaryCpuAbi>
@@ -610,6 +619,7 @@ Copyright (C) 2016 Xamarin. All rights reserved.
       FastDevToolPath="$(MSBuildThisFileDirectory)\lib"
       EmbedAssembliesIntoApk="$(EmbedAssembliesIntoApk)"
       PrimaryCpuAbi="$(_PrimaryCpuAbi)"
+      ToolsAbi="$(_FastDevToolsAbi)"
       PreserveUserData="$(AndroidPreserveUserData)"
       PackageName="$(_AndroidPackage)"
       PackageFile="$(_ApkToInstall)"

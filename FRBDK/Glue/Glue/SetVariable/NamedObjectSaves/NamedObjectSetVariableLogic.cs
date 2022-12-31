@@ -656,6 +656,24 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     namedObjectSave.AddToManagers = true;
                 }
+
+                if(namedObjectSave.SetByDerived || namedObjectSave.ExposedInDerived)
+                {
+                    var nosContainer = ObjectFinder.Self.GetElementContaining(namedObjectSave);
+                    var derivedList = ObjectFinder.Self.GetAllDerivedElementsRecursive(nosContainer);
+
+                    foreach(var derived in derivedList)
+                    {
+                        var derivedInstance = derived.GetNamedObject(namedObjectSave.InstanceName);
+
+                        if(derivedInstance?.DefinedByBase == true)
+                        {
+                            derivedInstance.SourceClassType = namedObjectSave.SourceClassType;
+                            // Don't run any code on the derived. In the future the object may not even be listed explicitly but may be implied
+                        }
+                    }
+                }
+
             }
             // else, we should probably do something here to revert to defaults.  What a pain
 

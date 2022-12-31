@@ -26,6 +26,10 @@ namespace OfficialPlugins.Git
 
         public void AddGitIgnore()
         {
+            if(GlueState.Self.CurrentSlnFileName == null)
+            {
+                return;
+            }
             // Vic asks - does gitignore sit in the root? I think so...
             var gitIgnoreFolder = GlueState.Self.CurrentSlnFileName.GetDirectoryContainingThis();
 

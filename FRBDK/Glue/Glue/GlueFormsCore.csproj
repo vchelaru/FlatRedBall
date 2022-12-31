@@ -358,6 +358,12 @@
 		<None Update="Xamarin\Android\Xamarin.Analysis.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Analysis.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Aapt.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -394,14 +400,47 @@
 		<None Update="Xamarin\Android\Xamarin.Android.Bindings.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.BuildInfo.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Cecil.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Common.After.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Common.Before.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Common.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Common.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -430,8 +469,14 @@
 		<None Update="Xamarin\Android\Xamarin.Android.FSharp.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Javac.targets">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Legacy.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.PCLSupport.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.PCLSupport.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -441,6 +486,45 @@
 		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.Tooling.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.dll">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.pdb">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Xamarin\Android\Xamarin.Android.Tools.Versions.props">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Xamarin\Android\Xamarin.Android.VisualBasic.targets">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
