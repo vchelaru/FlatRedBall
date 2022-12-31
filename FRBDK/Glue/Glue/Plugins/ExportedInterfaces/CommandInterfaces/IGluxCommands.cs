@@ -101,6 +101,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         [Obsolete("use AddReferencedFileToElementAsync")]
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
+        Task RenameNamedObjectSave(NamedObjectSave namedObjectSave, string newName, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
 
         [Obsolete("Use CreateReferencedFileSaveForExistingFileAsync")]

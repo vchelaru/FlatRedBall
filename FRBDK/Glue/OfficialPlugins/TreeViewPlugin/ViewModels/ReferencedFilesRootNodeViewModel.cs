@@ -61,7 +61,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     nodeForFile.ImageSource = file.IsCreatedByWildcard
                         ? NodeViewModel.FileIconWildcard
                         : NodeViewModel.FileIcon;
-                    nodeForFile.SupportsEditing = true;
+                    nodeForFile.IsEditable = true;
 
                     nodeForFile.Tag = file;
                     nodeForFile.Text = FileManager.RemovePath(file.Name);
@@ -226,7 +226,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         {
                             var newNode = new NodeViewModel(treeNode);
                             // We don't support this...yet
-                            newNode.SupportsEditing = false;
+                            newNode.IsEditable = false;
                             newNode.Text = (FileManager.RemovePath(directory));
 
                             //newNode.ForeColor = ElementViewWindow.FolderColor;

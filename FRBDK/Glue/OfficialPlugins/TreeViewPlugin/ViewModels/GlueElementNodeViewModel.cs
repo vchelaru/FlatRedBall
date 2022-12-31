@@ -26,7 +26,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             Tag = glueElement;
             this.glueElement = glueElement;
 
-            this.SupportsEditing = true;
+            this.IsEditable = true;
 
             if(createChildrenNodes)
             {

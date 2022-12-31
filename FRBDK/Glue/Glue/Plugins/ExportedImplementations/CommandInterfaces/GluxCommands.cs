@@ -908,6 +908,40 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 $"Removing referenced file {referencedFileToRemove}");
         }
 
+        public async Task RenameNamedObjectSave(NamedObjectSave namedObjectSave, string newName, bool performSaveAndGenerateCode = true, bool updateUi = true)
+        {
+            // This function wraps old functionality of handling renaming of NOS's. The old functionality is a reactive system, where you set the name
+            // and then see if it works. If not, it gets undone. This is a little crappy but...for now we're at least going to wrap the functionality so
+            // the caller is not exposed to the crappiness. Then, in the future we can adjust this.
+
+            var canProceed = true;
+            if(namedObjectSave.DefinedByBase)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox($"{namedObjectSave} can not be renamed because it is defined by base");
+                canProceed = false;
+            }
+
+            if(canProceed)
+            {
+                var oldName = namedObjectSave.InstanceName;
+                namedObjectSave.InstanceName = newName;
+                await EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedInstanceName(namedObjectSave, oldName);
+
+                if(performSaveAndGenerateCode)
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                }
+
+                if(updateUi)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                    GlueCommands.Self.RefreshCommands.RefreshVariables();
+                }
+
+            }
+        }
+
+
         public async Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         {
             await TaskManager.Self.AddAsync(() =>

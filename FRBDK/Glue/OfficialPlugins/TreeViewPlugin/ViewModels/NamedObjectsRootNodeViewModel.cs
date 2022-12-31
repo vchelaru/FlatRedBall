@@ -254,6 +254,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             var treeNode = new NodeViewModel(parentNode);
             treeNode.Tag = namedObject;
+            treeNode.IsEditable = true;
+
             treeNode.Text = namedObject.InstanceName;
 
             if(namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)

@@ -21,6 +21,7 @@ using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.NamedObjectSaves;
 using FlatRedBall.Glue.Managers;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -136,7 +137,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             else if (changedMember == nameof(NamedObjectSave.InstanceName))
             {
-                ReactToNamedObjectChangedInstanceName(namedObjectSave, oldValue);
+                await ReactToNamedObjectChangedInstanceName(namedObjectSave, oldValue as string);
             }
 
             #endregion
@@ -695,14 +696,13 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        private void ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, object oldValueAsObject)
+        public async Task ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, string oldValue)
         {
             ///////////////////Early Out//////////////////////////////
             if (namedObjectSave == null)
             {
                 throw new ArgumentNullException(nameof(namedObjectSave));
             }
-            string oldValue = (string)oldValueAsObject;
 
             string whyItIsntValid;
 
@@ -716,7 +716,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
             ///////////////End Early Out//////////////////////////////
 
-            var currentElement = GlueState.Self.CurrentElement;
+            var currentElement = ObjectFinder.Self.GetElementContaining(namedObjectSave);
 
             string baseObject = currentElement?.BaseObject;
             // See if the entity has a base and if the base contains this name
@@ -787,6 +787,8 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
+            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
+
             var changedDerived = false;
             if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)
             {
@@ -801,7 +803,6 @@ namespace FlatRedBall.Glue.SetVariable
                         // new name:
                         nosInDerived.InstanceName = namedObjectSave.InstanceName;
                         changedDerived = true;
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(derivedElement);
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(derivedElement);
                     }
                 }

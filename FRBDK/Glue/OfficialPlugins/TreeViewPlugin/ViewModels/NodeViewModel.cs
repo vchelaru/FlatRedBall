@@ -102,7 +102,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
-        public bool SupportsEditing { get; set; } = false;
+        public bool IsEditable { get; set; } = false;
 
         string textBeforeEditing;
         public bool IsEditing
@@ -512,6 +512,15 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
                 }
 
+
+            }
+            else if(Tag is NamedObjectSave nos)
+            {
+                var nosElement = ObjectFinder.Self.GetElementContaining(nos);
+
+                await GlueCommands.Self.GluxCommands.RenameNamedObjectSave(nos, Text);
+
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(nosElement);
 
             }
             else if(Tag == null)
