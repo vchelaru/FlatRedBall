@@ -60,7 +60,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     nodeForFile = new NodeViewModel(nodeToAddTo);
                     nodeForFile.ImageSource = file.IsCreatedByWildcard
                         ? NodeViewModel.FileIconWildcard
-                        : NodeViewModel.FileIcon; ;
+                        : NodeViewModel.FileIcon;
+                    nodeForFile.SupportsEditing = true;
+
                     nodeForFile.Tag = file;
                     nodeForFile.Text = FileManager.RemovePath(file.Name);
 
@@ -223,6 +225,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                         if (existingTreeNode == null)
                         {
                             var newNode = new NodeViewModel(treeNode);
+                            // We don't support this...yet
+                            newNode.SupportsEditing = false;
                             newNode.Text = (FileManager.RemovePath(directory));
 
                             //newNode.ForeColor = ElementViewWindow.FolderColor;

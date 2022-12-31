@@ -545,6 +545,8 @@ namespace FlatRedBall.Glue.SetVariable
 
                 if (element.ReferencedFiles.Contains(fileSave))
                 {
+                    await CodeWriter.GenerateCode(element);
+
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
                 }
             }

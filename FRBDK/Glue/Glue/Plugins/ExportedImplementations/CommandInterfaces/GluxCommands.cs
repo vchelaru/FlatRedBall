@@ -3047,6 +3047,98 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region Folders
+
+        public void RenameFolder(ITreeNode treeNode, string newName)
+        {
+            bool shouldPerformMove = false;
+            string directoryRenaming = null;
+            string newDirectoryNameRelative = null;
+            string newDirectoryNameAbsolute = null;
+
+            //if (dialogResult == DialogResult.OK)
+            {
+                // entities use backslash:
+                directoryRenaming = treeNode.GetRelativeFilePath().Replace("/", "\\");
+                newDirectoryNameRelative = FileManager.GetDirectory(directoryRenaming, RelativeType.Relative) + newName + "\\";
+                newDirectoryNameAbsolute = GlueState.Self.CurrentGlueProjectDirectory + newDirectoryNameRelative;
+
+                string whyIsInvalid = null;
+                NameVerifier.IsDirectoryNameValid(newName, out whyIsInvalid);
+
+                if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(newDirectoryNameAbsolute))
+                {
+                    whyIsInvalid = $"The directory {newName} already exists.";
+                }
+
+                if (!string.IsNullOrEmpty(whyIsInvalid))
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(whyIsInvalid);
+                    shouldPerformMove = false;
+                }
+                else
+                {
+                    shouldPerformMove = true;
+                }
+            }
+
+            if (shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute))
+            {
+                try
+                {
+                    Directory.CreateDirectory(newDirectoryNameAbsolute);
+                }
+                catch (Exception ex)
+                {
+                    PluginManager.ReceiveError(ex.ToString());
+                    shouldPerformMove = false;
+                }
+            }
+
+            if (shouldPerformMove)
+            {
+                var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
+                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+
+                newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
+
+                bool didAllSucceed = true;
+
+                foreach (var entity in allContainedEntities)
+                {
+                    bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
+
+                    if (!succeeded)
+                    {
+                        didAllSucceed = false;
+                        break;
+                    }
+                }
+
+                // todo - the old folder is not deleted. It should be right?
+                // Dec 31, 2022 - Vic says
+                // I found this bug when working
+                // on F2 rename of folders. I don't
+                // think I caused during this change 
+                // so I'm not going to worry about it
+                // for now.
+
+
+                if (didAllSucceed)
+                {
+                    treeNode.Text = newName;
+
+                    GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
+
+                    GluxCommands.Self.SaveGlux();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+
+                }
+            }
+        }
+
+        #endregion
 
         public void SaveSettings()
         {

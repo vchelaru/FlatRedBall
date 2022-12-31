@@ -316,9 +316,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var oldName = rfs.Name;
 
-            string oldDirectory = FileManager.GetDirectory(oldName);
-            string newDirectory = FileManager.GetDirectory(newName);
-
             // it's a RFS so it's gotta be content
             // Note - MakeAbsolute will do its best
             // to determine if a file is content. However,
@@ -336,10 +333,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var didRename = false;
 
-            if (oldDirectory != newDirectory)
+            if (oldFilePath.GetDirectoryContainingThis() != newFilePath.GetDirectoryContainingThis())
             {
-                MessageBox.Show("The old file was located in \n" + oldDirectory + "\n" +
-                    "The new file is located in \n" + newDirectory + "\n" +
+                MessageBox.Show("The old file was located in \n" + oldFilePath.GetDirectoryContainingThis() + "\n" +
+                    "The new file is located in \n" + newFilePath.GetDirectoryContainingThis() + "\n" +
                     "Currently Glue does not support changing directories.", "Warning");
 
                 //rfs.SetNameNoCall(oldName);
@@ -356,6 +353,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     oldName, rfs.Name, rfs, container);
                 didRename = true;
             }
+
+
 
             return didRename;
         }

@@ -6,6 +6,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
@@ -223,6 +224,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         Task<GlueElement> ImportScreenOrEntityFromFile(FilePath filePath);
 
+        #endregion
+
+        #region Folders
+        void RenameFolder(ITreeNode treeNode, string newName);
         #endregion
     }
 }

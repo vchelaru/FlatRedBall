@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -301,22 +302,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #region Children-based methods
 
-        public NodeViewModel AddChild()
-        {
-            //var cn = this.Node as CompositeNode;
-            //if (cn == null)
-            //{
-            //    return null;
-            //}
-
-            //var newChild = new CompositeNode() { Name = "New node" };
-            //cn.Children.Add(newChild);
-            var vm = new NodeViewModel(this);
-            this.Children.Add(vm);
-            return vm;
-        }
-
-
         void ITreeNode.SortByTextConsideringDirectories() => this.SortByTextConsideringDirectories();
         public void SortByTextConsideringDirectories(ObservableCollection<NodeViewModel> treeNodeCollection = null, bool recursive = false)
         {
@@ -496,12 +481,48 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         private async void HandleRenameThroughEdit()
         {
+            if(this.Text == textBeforeEditing)
+            {
+                return;
+            }
             if(Tag is GlueElement element)
             {
                 await GlueCommands.Self.GluxCommands.ElementCommands.RenameElement(element, Text);
 
                 // This updates the tree node back in case RenameElement doesn't allow the rename to happen.
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+            }
+            else if(Tag is ReferencedFileSave rfs)
+            {
+                var parentEntity = ObjectFinder.Self.GetElementContaining(rfs);
+
+                // RFS names have the full path (relative to content root). I know, this is different than how
+                // Screens and Entities work but....I dont' want to change that now.
+                var noDirectory = FlatRedBall.IO.FileManager.GetDirectory(rfs.Name, RelativeType.Relative);
+                var newName = noDirectory + Text;
+
+
+                GlueCommands.Self.FileCommands.RenameReferencedFileSave(rfs, newName);
+                if(parentEntity != null)
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(parentEntity);
+                }
+                else
+                {
+                    GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
+                }
+
+
+            }
+            else if(Tag == null)
+            {
+                // it's a folder:
+                // This needs to have the old name before the new name is set:
+                var newName = this.Text;
+                this.Text = textBeforeEditing;
+                GlueCommands.Self.GluxCommands.RenameFolder(this, newName);
+
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodes(); // just do it all? 
             }
         }
 
