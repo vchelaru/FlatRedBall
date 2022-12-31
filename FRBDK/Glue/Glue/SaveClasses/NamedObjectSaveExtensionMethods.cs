@@ -586,6 +586,10 @@ namespace FlatRedBall.Glue.SaveClasses
                     {
                         valuesToBeSet.Add(new PropertyValuePair("ImplementsIWindow", true));
                     }
+                    if(oldEntity.GetImplementsITiledTileMetadataRecursively() && !newEntity.GetImplementsITiledTileMetadataRecursively())
+                    {
+                        valuesToBeSet.Add(new PropertyValuePair("ImplementsITiledTileMetadata", true));
+                    }
                 }
 
                 #endregion
