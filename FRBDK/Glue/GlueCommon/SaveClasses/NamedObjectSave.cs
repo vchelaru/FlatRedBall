@@ -504,14 +504,14 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-        [Browsable(false), DefaultValue(false)]
+        [DefaultValue(false), CategoryAttribute("Access")]
         public bool DefinedByBase
         {
             get;
             set;
         }
 
-        [DefaultValue(false)]
+        [DefaultValue(false), CategoryAttribute("Access")]
         public bool InstantiatedByBase
         {
             get;

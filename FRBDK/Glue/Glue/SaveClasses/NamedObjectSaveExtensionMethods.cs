@@ -982,7 +982,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool ShouldInstantiateInConstructor(this NamedObjectSave namedObjectSave)
         {
             return
-                namedObjectSave.IsList &&
+                (namedObjectSave.IsList || namedObjectSave.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection) &&
                 namedObjectSave.Instantiate &&
                 !namedObjectSave.InstantiatedByBase;
         }

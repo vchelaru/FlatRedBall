@@ -20,6 +20,8 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
             FillWithBadSetByDerived(errors);
 
+            FillWithBadInstantiateByBaseDerived(errors);
+
             // This could eventually be moved to an object file, but for now...
             FillWithBadFileRelatedProperties(errors);
 
@@ -95,6 +97,19 @@ namespace OfficialPlugins.ErrorReportingPlugin
             }
         }
 
+        private void FillWithBadInstantiateByBaseDerived(List<ErrorViewModel> errors)
+        {
+            foreach (var screen in GlueState.Self.CurrentGlueProject.Screens)
+            {
+                FillWithBadInstantiateByBaseDerived(screen, errors);
+            }
+
+            foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
+            {
+                FillWithBadInstantiateByBaseDerived(entity, errors);
+            }
+        }
+
         private void FillWithBadSetByDerived(GlueElement derivedElement, List<ErrorViewModel> errors)
         {
             var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(derivedElement);
@@ -115,6 +130,38 @@ namespace OfficialPlugins.ErrorReportingPlugin
                             var errorVm = new InvalidSetByDerivedErrorViewModel(baseNos, derivedNos);
                             errors.Add(errorVm);
                         }
+                    }
+                }
+            }
+        }
+
+        private void FillWithBadInstantiateByBaseDerived(GlueElement derivedElement, List<ErrorViewModel> errors)
+        {
+            var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(derivedElement);
+            foreach (var derivedNos in derivedElement.AllNamedObjects)
+            {
+                if(derivedNos.InstantiatedByBase)
+                {
+                    // we better find something in the base that has the same name which instantiates. Otherwise, this thing
+                    // never gets instantiated and it can cause runtime errors.
+
+                    var foundInBase = false;
+
+                    foreach(var baseElement in baseElements)
+                    {
+                        var baseNos = baseElement.AllNamedObjects
+                            .FirstOrDefault(item => item.InstanceName == derivedNos.InstanceName);
+
+                        if(baseNos != null && baseNos.SetByDerived == false)
+                        {
+                            // found a match
+                            foundInBase = true;
+                        }
+                    }
+                    if(!foundInBase)
+                    {
+                        var errorVm = new InvalidInstantiateByBaseErrorViewModel(derivedNos);
+                        errors.Add(errorVm);
                     }
                 }
             }

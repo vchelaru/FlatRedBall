@@ -291,6 +291,10 @@ namespace FlatRedBall.Glue.GuiDisplay
             ExcludeMember(nameof(NamedObjectSave.FulfillsRequirement));
             ExcludeMember(nameof(NamedObjectSave.IsNodeHidden));
 
+            ForcedReadOnlyProperties.Add(nameof(NamedObjectSave.DefinedByBase));
+            ForcedReadOnlyProperties.Add(nameof(NamedObjectSave.InstantiatedByBase));
+
+
             var assetTypeInfo = instance.GetAssetTypeInfo();
 
             shouldIncludeIsManuallyUpdated = !string.IsNullOrEmpty(assetTypeInfo?.AddManuallyUpdatedMethod);
@@ -302,10 +306,11 @@ namespace FlatRedBall.Glue.GuiDisplay
             else
             {
 
-                if (DisplayMode != DisplayModes.Debug)
-                {
-                    ExcludeMember(nameof(NamedObjectSave.InstantiatedByBase));
-                }
+                // The property window is now "debug enough" that we should show this.
+                //if (DisplayMode != DisplayModes.Debug)
+                //{
+                //    ExcludeMember(nameof(NamedObjectSave.InstantiatedByBase));
+                //}
 
                 var containerType = instance.GetContainerType();
 
