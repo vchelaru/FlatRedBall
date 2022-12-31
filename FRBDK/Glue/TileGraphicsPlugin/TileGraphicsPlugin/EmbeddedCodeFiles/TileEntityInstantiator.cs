@@ -338,8 +338,26 @@ namespace FlatRedBall.TileEntities
 
                                     if (entity != null)
                                     {
+                                        if(entity is FlatRedBall.Entities.ITiledTileMetadata) {
+                                            float tx, ty;
+                                            layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
+                                            propertyList.AddRange(
+                                                new List<NamedValue>() {
+                                                new NamedValue() { Name = "Tile_LeftTexturePixel", Type = "int", Value = (System.Math.Truncate(tx * layer.Texture.Width)).ToString() },
+                                                new NamedValue() { Name = "Tile_TopTexturePixel", Type = "int", Value = (System.Math.Truncate(ty * layer.Texture.Height)).ToString() },
+                                                new NamedValue() { Name = "Tile_TexturePixelSize", Type = "int", Value = tileSize.ToString()}
+                                            });
+                                        }
+
                                         ApplyPropertiesTo(entity, layer, tileIndex, propertyList);
                                         createdEntityOfThisType = true;
+
+                                        if(entity is FlatRedBall.Entities.ITiledTileMetadata) {
+                                            //(entity as FlatRedBall.Entities.ITiledTileMetadata).Tile_TexturePixelsSet();
+                                            var method = entity.GetType().GetMethod("Tile_TexturePixelsSet");
+                                            if(method != null)
+                                                method.Invoke(entity, null);
+                                        }
                                     }
                                 }
                             }

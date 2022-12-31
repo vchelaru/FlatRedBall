@@ -558,6 +558,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
                 }
+
+                if(viewModel.IsITiledTileMetadataChecked)
+                {
+                    newElement.ImplementsITiledTileMetadata = true;
+                    needsRefreshAndSave = true;
+                }
             }
 
             // even derived entities can have factories
