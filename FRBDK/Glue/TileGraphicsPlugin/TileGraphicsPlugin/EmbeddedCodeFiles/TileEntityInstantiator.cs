@@ -345,9 +345,15 @@ namespace FlatRedBall.TileEntities
 
 #if ITiledTileMetadataInFrb
                                         if(entity is FlatRedBall.Entities.ITiledTileMetadata asEntity) {
-                                            float tx, ty;
+                                            float tx, ty;                                            
                                             layer.GetTextureCoordiantesForOrderedTile(tileIndex, out tx, out ty);
-                                            asEntity.SetTileTextureCoordinates(tx, ty, tx + (tileSize / layer.Texture.Width), ty + (tileSize / layer.Texture.Height));
+                                            var ttm = new FlatRedBall.Entities.TiledTileMetadata() {
+                                                LeftTextureCoordinate = tx,
+                                                TopTextureCoordinate = ty,
+                                                RightTextureCoordinate = tx + (tileSize / layer.Texture.Width),
+                                                BottomTextureCoordinate = ty + (tileSize / layer.Texture.Height)
+                                            };
+                                            asEntity.SetTileTextureCoordinates(ttm);
                                         }
 #endif
                                     }

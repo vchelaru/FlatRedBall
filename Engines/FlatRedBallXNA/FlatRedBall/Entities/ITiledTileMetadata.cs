@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace FlatRedBall.Entities {
-    
+
+    public struct TiledTileMetadata {
+        public float LeftTextureCoordinate, TopTextureCoordinate, RightTextureCoordinate, BottomTextureCoordinate;
+    }
+
     public interface ITiledTileMetadata {
-        void SetTileTextureCoordinates(float LeftTextureCoordinate, float TopTextureCoordinate, float RightTextureCoordinate, float BottomTextureCoordinate);
+        void SetTileTextureCoordinates(TiledTileMetadata TextureCoords);
     }
 
 }
