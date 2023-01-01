@@ -14,16 +14,40 @@ namespace OfficialPlugins.CollisionPlugin.Managers
     {
         public static float GetAutomaticCollisionWidthHeight(NamedObjectSave namedObject, Axis sortAxis)
         {
-            var entity = GetEntityFor(namedObject);
-
-            var allCollisionObjects = entity?.GetAllNamedObjectsRecurisvely().Where(IsCollisionShape);
+            var entityForNos = GetEntityFor(namedObject);
 
             float small = 0;
             float big = 0;
 
-            if(allCollisionObjects != null)
+            if(entityForNos != null)
             {
-                foreach(var item in allCollisionObjects)
+                List<EntitySave> entities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(entityForNos);
+                entities.Add(entityForNos);
+
+                foreach(var entity in entities)
+                {
+                    GetBigSmallForEntity(sortAxis, entity, ref small, ref big);
+                }
+
+            }
+
+            if (Math.Abs(small) > Math.Abs(big))
+            {
+                return Math.Abs(small) * 2;
+            }
+            else
+            {
+                return Math.Abs(big) * 2;
+            }
+        }
+
+        private static void GetBigSmallForEntity(Axis sortAxis, EntitySave entity, ref float small, ref float big)
+        {
+            var allCollisionObjects = entity?.GetAllNamedObjectsRecurisvely().Where(IsCollisionShape);
+
+            if (allCollisionObjects != null)
+            {
+                foreach (var item in allCollisionObjects)
                 {
                     float smallInner;
                     float bigInner;
@@ -32,15 +56,6 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     small = Math.Min(small, smallInner);
                     big = Math.Max(big, bigInner);
                 }
-            }
-
-            if(Math.Abs(small) > Math.Abs(big))
-            {
-                return Math.Abs(small) * 2;
-            }
-            else
-            {
-                return Math.Abs(big) * 2;
             }
         }
 
