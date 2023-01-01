@@ -18,7 +18,9 @@
         /// <returns></returns>
         public static ICodeBlock Block(this ICodeBlock pCodeBlock)
         {
-            return new CodeBlockBlock(pCodeBlock);
+            var block = new CodeBlockBlock(pCodeBlock);
+            block.IndentBody = true;
+            return block;
         }
 
         public static ICodeBlock InsertBlock(this ICodeBlock pCodeBlock, ICodeBlock pChildBlock)

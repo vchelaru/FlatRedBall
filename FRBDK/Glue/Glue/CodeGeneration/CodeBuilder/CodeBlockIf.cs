@@ -2,7 +2,7 @@
 {
     public class CodeBlockIf : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockIf(ICodeBlock pParent, string pCondition) : base(pParent)
         {
@@ -14,7 +14,7 @@
 
     public class CodeBlockElseIf : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockElseIf(ICodeBlock pParent, string pCondition) : base(pParent)
         {
@@ -26,7 +26,7 @@
 
     public class CodeBlockElse : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockElse(ICodeBlock pParent) : base(pParent)
         {

@@ -2,7 +2,7 @@
 {
     public class CodeBlockLock : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockLock(ICodeBlock pParent, string pCondition) : base(pParent)
         {

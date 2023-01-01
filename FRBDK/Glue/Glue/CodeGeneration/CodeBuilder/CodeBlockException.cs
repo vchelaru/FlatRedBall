@@ -2,7 +2,7 @@
 {
     public class CodeBlockTry : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockTry(ICodeBlock pParent) : base(pParent)
         {
@@ -14,7 +14,7 @@
 
     public class CodeBlockCatch : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockCatch(ICodeBlock pParent, string pCondition)
             : base(pParent)
@@ -27,7 +27,7 @@
 
     public class CodeBlockFinally : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockFinally(ICodeBlock pParent)
             : base(pParent)

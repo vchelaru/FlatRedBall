@@ -2,7 +2,7 @@
 {
     public class CodeBlockClass : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockClass(ICodeBlock pParent, string pPre, string pName, string pPost) : base(pParent)
         {
@@ -14,7 +14,7 @@
 
     public class CodeBlockStruct : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockStruct(ICodeBlock pParent, string pPre, string pName)
             : base(pParent)
@@ -27,7 +27,7 @@
 
     public class CodeBlockEnum : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockEnum(ICodeBlock pParent, string pPre, string pName)
             : base(pParent)

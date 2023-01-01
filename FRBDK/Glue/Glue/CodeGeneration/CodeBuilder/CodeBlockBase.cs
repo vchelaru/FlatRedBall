@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
         private readonly List<ICode> _postCodeLines = new List<ICode>();
         private readonly List<ICode> _postBodyCodeLines = new List<ICode>();
 
-        protected virtual bool IndentBody => false;
+        public virtual bool IndentBody { get; set; } = false;
 
         public CodeBlockBase(ICodeBlock parent = null)
         {
@@ -163,7 +163,9 @@ namespace FlatRedBall.Glue.CodeGeneration.CodeBuilder
         /// <returns></returns>
         public static ICodeBlock CodeBlockIndented(this ICodeBlock codeBlock)
         {
-            return new CodeBlockBase(codeBlock);
+            var block = new CodeBlockBase(codeBlock);
+            block.IndentBody = true;
+            return block;
         }
 
         public static ICodeBlock End(this ICodeBlock codeBlock)

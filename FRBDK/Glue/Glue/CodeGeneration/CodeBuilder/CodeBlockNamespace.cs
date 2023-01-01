@@ -2,7 +2,7 @@
 {
     public class CodeBlockNamespace : CodeBlockBase
     {
-        protected override bool IndentBody => true;
+        public override bool IndentBody => true;
 
         public CodeBlockNamespace(ICodeBlock pParent, string value) : base(pParent)
         {

@@ -82,7 +82,7 @@ namespace PlatformerPluginCore.CodeGenerators
 
                 foreach (var entry in animationValues.Values)
                 {
-                    codeBlock = codeBlock.CodeBlockIndented();
+                    codeBlock = codeBlock.Block();
                     {
                         string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 
