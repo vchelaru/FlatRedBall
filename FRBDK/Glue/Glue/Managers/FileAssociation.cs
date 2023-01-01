@@ -51,9 +51,12 @@ namespace HQ.Util.Unmanaged
                 }
             }
 
+            var fileExists = File.Exists(executablePath);
+            if(!fileExists)
+                executablePath = "";
+
             // Ensure to not return the default OpenWith.exe associated executable in Windows 8 or higher
-            if (!string.IsNullOrEmpty(executablePath) && File.Exists(executablePath) &&
-                !executablePath.ToLower().EndsWith(".dll"))
+            if (!string.IsNullOrEmpty(executablePath) && fileExists && !executablePath.ToLower().EndsWith(".dll"))
             {
                 if (executablePath.ToLower().EndsWith("openwith.exe"))
                 {

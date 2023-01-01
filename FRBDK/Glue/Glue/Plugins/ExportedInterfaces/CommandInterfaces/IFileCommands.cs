@@ -57,6 +57,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         void Open(FilePath filePath);
         void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave);
+        void OpenFileInDefaultProgram(string fileName, string OpensWith = null);
 
+        public List<string> GumFileExtensions { get; }
+        public string GetGumExeFilePath();
     }
 }
