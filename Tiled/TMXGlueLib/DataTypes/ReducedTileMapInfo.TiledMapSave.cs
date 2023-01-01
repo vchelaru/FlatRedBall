@@ -328,7 +328,7 @@ namespace TMXGlueLib.DataTypes
                     int topPixelCoord;
                     int rightPixelCoord;
                     int bottomPixelCoord;
-                    TiledMapSave.GetPixelCoordinatesFromGid((uint)objectInstance.gid, tileSet,
+                    TiledMapSave.GetPixelCoordinatesFromGid((uint)valueWithoutFlip, tileSet,
                         out leftPixelCoord, out topPixelCoord, out rightPixelCoord, out bottomPixelCoord);
 
                     quad.LeftTexturePixel = (ushort)Math.Min(leftPixelCoord, rightPixelCoord);
