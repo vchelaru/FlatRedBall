@@ -215,7 +215,7 @@ namespace TMXGlueLib.DataTypes
 
                 else if (tiledLayer is mapObjectgroup)
                 {
-                    AddObjectLayerTiles(reducedLayerInfo, tiledLayer, tileSet, firstGid, tileWidth, tileHeight);
+                    AddObjectLayerTiles(reducedLayerInfo, tiledLayer, tileSet, tileWidth, tileHeight);
                 }
             }
         }
@@ -296,7 +296,7 @@ namespace TMXGlueLib.DataTypes
             }
         }
 
-        private static void AddObjectLayerTiles(ReducedLayerInfo reducedLayerInfo, AbstractMapLayer tiledLayer, Tileset tileSet, uint? gid, int tileWidth, int tileHeight)
+        private static void AddObjectLayerTiles(ReducedLayerInfo reducedLayerInfo, AbstractMapLayer tiledLayer, Tileset tileSet, int tileWidth, int tileHeight)
         {
             var asMapLayer = tiledLayer as mapObjectgroup;
 
@@ -320,15 +320,15 @@ namespace TMXGlueLib.DataTypes
 
                     quad.RotationDegrees = (float)objectInstance.Rotation;
 
-                    quad.FlipFlags = (byte)(gid.Value & 0xf0000000 >> 7);
+                    quad.FlipFlags = (byte)(objectInstance.gid & 0xf0000000 >> 7);
 
-                    var valueWithoutFlip = gid.Value & 0x0fffffff;
+                    var valueWithoutFlip = objectInstance.gid & 0x0fffffff;
 
                     int leftPixelCoord;
                     int topPixelCoord;
                     int rightPixelCoord;
                     int bottomPixelCoord;
-                    TiledMapSave.GetPixelCoordinatesFromGid(gid.Value, tileSet,
+                    TiledMapSave.GetPixelCoordinatesFromGid((uint)objectInstance.gid, tileSet,
                         out leftPixelCoord, out topPixelCoord, out rightPixelCoord, out bottomPixelCoord);
 
                     quad.LeftTexturePixel = (ushort)Math.Min(leftPixelCoord, rightPixelCoord);
