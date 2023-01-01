@@ -445,9 +445,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             System.Diagnostics.Process.Start(startInfo);
         }
 
-        public void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave)
+        public void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave) {
+            OpenReferencedFileInDefaultProgram(GetFileName(currentReferencedFileSave), currentReferencedFileSave.OpensWith);
+        }
+
+        public void OpenReferencedFileInDefaultProgram(string fileName, string OpensWith = null)
         {
-            string textExtension = FileManager.GetExtension(currentReferencedFileSave.Name);
+            string textExtension = FileManager.GetExtension(fileName);
             string sourceExtension = null;
 
             if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
@@ -455,18 +459,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 sourceExtension = FileManager.GetExtension(GlueState.Self.CurrentReferencedFileSave.SourceFile);
             }
 
-            var effectiveExtension = sourceExtension ?? textExtension;
-            string fileName = GetFileName(currentReferencedFileSave);
+            string effectiveExtension = sourceExtension ?? textExtension;
 
-            string applicationSetInGlue = "";
-            if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
-            {
-                applicationSetInGlue = currentReferencedFileSave.OpensWith;
-            }
-            else
-            {
-                applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
-            }
+            string applicationSetInGlue = OpensWith ?? EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
+
             if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
             {
                 try
@@ -477,7 +473,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         //Attempt to get relative projects
                         var relativeExe = "";
-                        if (textExtension == "gusx")
+                        if (GumFileExtensions.Contains(textExtension.ToLower()))
                             relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
                         if (textExtension == "achx")
                             relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
@@ -560,6 +556,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             return fileName;
+        }
+
+        public List<string> GumFileExtensions { get; } = new List<string>() { "gusx", "gucx", "gutx", "gumx" };
+        public string GetGumExeFilePath() {
+            return FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
         }
 
     }
