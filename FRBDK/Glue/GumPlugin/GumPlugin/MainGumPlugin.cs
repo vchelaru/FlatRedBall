@@ -493,7 +493,7 @@ namespace GumPlugin
             }
             else
             {
-                GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(AppState.Self.GumProjectSave.FullFileName);
+                GlueCommands.Self.FileCommands.OpenFileInDefaultProgram(AppState.Self.GumProjectSave.FullFileName);
             }
 
             toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;

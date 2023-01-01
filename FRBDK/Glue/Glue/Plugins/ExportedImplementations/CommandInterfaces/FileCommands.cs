@@ -446,10 +446,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         public void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave) {
-            OpenReferencedFileInDefaultProgram(GetFileName(currentReferencedFileSave), currentReferencedFileSave.OpensWith);
+            OpenFileInDefaultProgram(GetFileName(currentReferencedFileSave), currentReferencedFileSave.OpensWith);
         }
 
-        public void OpenReferencedFileInDefaultProgram(string fileName, string OpensWith = null)
+        public void OpenFileInDefaultProgram(string fileName, string OpensWith = null)
         {
             string textExtension = FileManager.GetExtension(fileName);
             string sourceExtension = null;
