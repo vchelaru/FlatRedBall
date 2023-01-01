@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -7,6 +8,7 @@ using FlatRedBall.IO;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace PlatformerPluginCore.CodeGenerators
@@ -69,12 +71,18 @@ namespace PlatformerPluginCore.CodeGenerators
             if(animationValues != null)
             {
                 codeBlock.Line($"PlatformerAnimationController = new {PlatformerAnimationControllerClassName}(this);");
-                // todo - get the sprite instance name:
-                codeBlock.Line("PlatformerAnimationController.AnimatedObject = SpriteInstance;");
+
+                // This currently assumes not recursive, so it relies on SetByDerived exposing the sprite
+                var firstSprite = element.AllNamedObjects.FirstOrDefault(item => item.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Sprite);
+
+                if(firstSprite != null)
+                {
+                    codeBlock.Line($"PlatformerAnimationController.AnimatedObject = {firstSprite.FieldName};");
+                }
 
                 foreach (var entry in animationValues.Values)
                 {
-                    codeBlock = codeBlock.Block();
+                    codeBlock = codeBlock.CodeBlockIndented();
                     {
                         string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 

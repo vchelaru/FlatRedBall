@@ -266,30 +266,52 @@ namespace PlatformerPluginCore.Controllers
         private static void RefreshMovementValueNames(DataUiGrid dataUiGrid)
         {
             var entity = GlueState.Self.CurrentEntitySave;
-            if (entity == null)
+            List<string> options = GetOptionsForEntityRecursively(entity, listToAddTo:null, includeNull:true);
+
+            if (options != null)
             {
-                return;
+                var member = dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MovementName));
+                member.CustomOptions = options.Select(item => (object)item).ToList();
             }
-            var rfs = entity.GetAllReferencedFileSavesRecursively().FirstOrDefault(item =>
+
+
+        }
+
+        private static List<string> GetOptionsForEntityRecursively(EntitySave entity, List<string> listToAddTo, bool includeNull)
+        {
+            ReferencedFileSave platformerValuesRfs = null;
+            FilePath csvFilePath = null;
+            List<string> options = null;
+
+            platformerValuesRfs = entity?.GetAllReferencedFileSavesRecursively().FirstOrDefault(item =>
                 item.Name.EndsWith("PlatformerValuesStatic.csv") ||
                 // old name:
                 item.Name.EndsWith("PlatformerValues.csv"));
-            if (rfs == null)
+            if (platformerValuesRfs != null)
             {
-                return;
+                csvFilePath = GlueCommands.Self.GetAbsoluteFilePath(platformerValuesRfs);
             }
-            var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
-            if (!filePath.Exists())
+            if (csvFilePath?.Exists() == true)
             {
-                return;
+                if(listToAddTo == null)
+                {
+                    options = AvailableSpreadsheetValueTypeConverter.GetAvailableValues(csvFilePath, false, includeNull);
+                }
+                else
+                {
+                    listToAddTo.AddRange(AvailableSpreadsheetValueTypeConverter.GetAvailableValues(csvFilePath, false, includeNull));
+                    options = listToAddTo;
+                }
             }
 
+            var baseEntity = ObjectFinder.Self.GetBaseElement(entity) as EntitySave;
 
-            var options = AvailableSpreadsheetValueTypeConverter.GetAvailableValues(filePath, false);
+            if(baseEntity != null)
+            {
+                GetOptionsForEntityRecursively(baseEntity, options, includeNull:false);
+            }
 
-            var member = dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MovementName));
-
-            member.CustomOptions = options.Select(item => (object)item).ToList();
+            return options;
         }
 
         #endregion

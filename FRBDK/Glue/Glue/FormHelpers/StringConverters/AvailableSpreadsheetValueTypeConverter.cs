@@ -44,16 +44,19 @@ namespace FlatRedBall.Glue.GuiDisplay
             return true;
         }
 
-        public static List<string> GetAvailableValues(FilePath absoluteFile, bool shouldAppendFileName)
+        public static List<string> GetAvailableValues(FilePath absoluteFile, bool shouldAppendFileName, bool includeNull = true)
         {
-            return GetAvailableValues(new List<FilePath>() { absoluteFile }, shouldAppendFileName);
+            return GetAvailableValues(new List<FilePath>() { absoluteFile }, shouldAppendFileName, includeNull);
         }
 
-        public static List<string> GetAvailableValues(IEnumerable<FilePath> absoluteFiles, bool shouldAppendFileName)
+        public static List<string> GetAvailableValues(IEnumerable<FilePath> absoluteFiles, bool shouldAppendFileName, bool includeNull = true)
         {
             List<string> stringsToReturn = new List<string>();
             stringsToReturn.Clear();
-            stringsToReturn.Add("<NULL>");
+            if(includeNull)
+            {
+                stringsToReturn.Add("<NULL>");
+            }
 
             AddAvailableValuesFromFileToList(absoluteFiles, stringsToReturn, shouldAppendFileName);
 
