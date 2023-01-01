@@ -11,6 +11,11 @@ using System.Windows;
 
 namespace OfficialPlugins.CollisionPlugin.ViewModels
 {
+    public enum PartitioningAutomaticManual
+    {
+        Manual,
+        Automatic
+    }
 
     public class CollidableNamedObjectRelationshipViewModel : PropertyListContainerViewModel
     {
@@ -37,6 +42,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [DependsOn(nameof(PerformCollisionPartitioning))]
         public Visibility PartitioningUiVisibility => PerformCollisionPartitioning.ToVisibility();
+
+        #endregion
+
+        #region Partitioning Sort
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue((int)Axis.X)]
@@ -69,6 +78,64 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
                 }
             }
         }
+
+        #endregion
+
+        #region Partitioning Width/Height
+
+        [SyncedPropertyAttribute]
+        [DefaultValue(PartitioningAutomaticManual.Manual)]
+        public PartitioningAutomaticManual PartitioningAutomaticManual 
+        { 
+            get => Get<PartitioningAutomaticManual>();
+            set => SetAndPersist(value); 
+        }
+
+        [DependsOn(nameof(PartitioningAutomaticManual))]
+        public bool IsAutomaticPartitionSizeChecked
+        {
+            get => PartitioningAutomaticManual == PartitioningAutomaticManual.Automatic;
+            set
+            {
+                if(value)
+                {
+                    PartitioningAutomaticManual = PartitioningAutomaticManual.Automatic;
+                }
+            }
+        }
+
+
+        [DependsOn(nameof(PartitioningAutomaticManual))]
+        [DependsOn(nameof(CalculatedParitioningWidthHeight))]
+        public string AutomaticRadioButtonText
+        {
+            get => $"Automatic ({CalculatedParitioningWidthHeight:0.0})";  
+        }
+
+        [DependsOn(nameof(IsAutomaticPartitionSizeChecked))]
+        public Visibility AutomaticInfoVisibility => IsAutomaticPartitionSizeChecked.ToVisibility();
+
+        public float CalculatedParitioningWidthHeight
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(PartitioningAutomaticManual))]
+        public bool IsManualPartitionSizeChecked
+        {
+            get => PartitioningAutomaticManual == PartitioningAutomaticManual.Manual;
+            set
+            {
+                if (value)
+                {
+                    PartitioningAutomaticManual = PartitioningAutomaticManual.Manual;
+                }
+            }
+        }
+
+        [DependsOn(nameof(PartitioningAutomaticManual))]
+        public bool IsManualTextBoxEnabled => IsManualPartitionSizeChecked;
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue(32f)]

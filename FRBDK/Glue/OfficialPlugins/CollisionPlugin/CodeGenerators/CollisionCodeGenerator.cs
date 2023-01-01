@@ -530,7 +530,18 @@ namespace OfficialPlugins.CollisionPlugin
                     {
                         var sortAxis = Get<Axis>(nameof(CollidableNamedObjectRelationshipViewModel.SortAxis));
                         var sortEveryFrame = Get<bool>(nameof(CollidableNamedObjectRelationshipViewModel.IsSortListEveryFrameChecked));
-                        var partitionWidthHeight = Get<float>(nameof(CollidableNamedObjectRelationshipViewModel.PartitionWidthHeight));
+                        var automaticOrManual = Get<PartitioningAutomaticManual>(nameof(CollidableNamedObjectRelationshipViewModel.PartitioningAutomaticManual));
+
+                        float partitionWidthHeight;
+                        if(automaticOrManual == PartitioningAutomaticManual.Automatic)
+                        {
+                            partitionWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                                nos, sortAxis);
+                        }
+                        else
+                        {
+                            partitionWidthHeight = Get<float>(nameof(CollidableNamedObjectRelationshipViewModel.PartitionWidthHeight));
+                        }
 
                         // fill in this line:
                         codeBlock.Line(
