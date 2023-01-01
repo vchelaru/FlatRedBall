@@ -58,6 +58,30 @@ namespace OfficialPlugins.SongPlugin
             AssignEvents();
         }
 
+        private void AssignEvents()
+        {
+            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
+            this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
+        }
+
+        private bool TryHandleDoubleClick(ITreeNode arg)
+        {
+            var rfs = arg.Tag as ReferencedFileSave;
+
+            if(IsSong(rfs))
+            {
+                pluginTab?.Focus();
+                control.PlaySong();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        #region AssetTypeInfo
+
         AssetTypeInfo[] SongAtis => AvailableAssetTypes.Self.AllAssetTypes
                 .Where(item => item.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song")
                 .ToArray();
@@ -97,17 +121,14 @@ namespace OfficialPlugins.SongPlugin
 
         }
 
+        #endregion
+
         private void CreateCodeGenerator()
         {
             var codeGenerator = new SongPluginCodeGenerator();
             this.RegisterCodeGenerator(codeGenerator);
         }
 
-        private void AssignEvents()
-        {
-            this.ReactToItemSelectHandler += HandleItemSelected;
-            this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
-        }
 
         private void HandleGluxLoadEarly()
         {
@@ -145,13 +166,13 @@ namespace OfficialPlugins.SongPlugin
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
-            var rfs = GlueState.Self.CurrentReferencedFileSave;
+            var rfs = selectedTreeNode.Tag as ReferencedFileSave;
 
             viewModel.GlueObject = rfs;
 
-
             bool shouldShowControl = false;
-            if (rfs != null && rfs.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song")
+
+            if (IsSong(rfs))
             {
                 viewModel.UpdateFromGlueObject();
                 shouldShowControl = true;
@@ -176,5 +197,9 @@ namespace OfficialPlugins.SongPlugin
                 pluginTab?.Hide();
             }
         }
+
+        bool IsSong(ReferencedFileSave rfs) =>
+            // Use the qualified type because there are multiple ATIs this could be, so don't do an == comparison
+            rfs?.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song";
     }
 }

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.ContentPreview.Managers;
 using System;
@@ -17,6 +18,7 @@ namespace OfficialPlugins.ContentPreview
     [Export(typeof(PluginBase))]
     public class MainContentPreviewPlugin : PluginBase
     {
+        #region Plugin Required Methods/Properties
         public override string FriendlyName => "Content Preview Plugin";
 
         public override Version Version => new Version(1,0);
@@ -27,6 +29,8 @@ namespace OfficialPlugins.ContentPreview
         {
             return true;
         }
+
+        #endregion
 
         public override void StartUp()
         {
@@ -39,6 +43,30 @@ namespace OfficialPlugins.ContentPreview
         private void AssignEvents()
         {
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+
+            this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
+        }
+
+        private bool TryHandleDoubleClick(ITreeNode tree)
+        {
+            if(tree.Tag is ReferencedFileSave asRfs)
+            {
+                var extension = FileManager.GetExtension(asRfs.Name);
+
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(asRfs);
+
+                switch (extension)
+                {
+                    case "png":
+                        PngManager.HandleStrongSelect();
+                        return true;
+                    case "wav":
+                        WavManager.HandleStrongSelect();
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         private void HandleTreeViewItemSelected(ITreeNode selectedTreeNode)

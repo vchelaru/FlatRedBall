@@ -56,6 +56,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void ViewInExplorer(FilePath filePath);
 
         void Open(FilePath filePath);
+        void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave);
 
     }
 }

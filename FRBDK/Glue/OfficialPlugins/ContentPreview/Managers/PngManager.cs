@@ -45,6 +45,11 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         public static void HideTab() => Tab?.Hide();
 
+        public static void HandleStrongSelect()
+        {
+            Tab?.Focus();
+        }
+
         internal static void ShowTab(FilePath filePath)
         {
             var view = PngManager.GetView(filePath);

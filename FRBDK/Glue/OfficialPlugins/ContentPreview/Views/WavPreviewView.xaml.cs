@@ -53,14 +53,16 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            SoundPlayer?.Play();
-        }
+        private void PlayButton_Click(object sender, RoutedEventArgs e) => PlaySound();
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             SoundPlayer?.Stop();
+        }
+
+        internal void PlaySound()
+        {
+            SoundPlayer?.Play();
         }
     }
 }

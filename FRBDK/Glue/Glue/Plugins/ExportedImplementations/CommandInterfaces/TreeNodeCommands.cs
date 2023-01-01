@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 
                     if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(extension))
                     {
-                        HandleFileTreeNodeDoubleClick(GlueState.Self.CurrentReferencedFileSave);
+                        GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(GlueState.Self.CurrentReferencedFileSave);
                         handled = true;
                     }
 
@@ -148,122 +148,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     #endregion
                 }
             }
-        }
-
-        private static void HandleFileTreeNodeDoubleClick(ReferencedFileSave currentReferencedFileSave)
-        {
-            string textExtension = FileManager.GetExtension(currentReferencedFileSave.Name);
-            string sourceExtension = null;
-
-            if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
-            {
-                sourceExtension = FileManager.GetExtension(GlueState.Self.CurrentReferencedFileSave.SourceFile);
-            }
-
-            var effectiveExtension = sourceExtension ?? textExtension;
-            string fileName = GetFileName(currentReferencedFileSave);
-
-            string applicationSetInGlue = "";
-            if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
-            {
-                applicationSetInGlue = currentReferencedFileSave.OpensWith;
-            }
-            else
-            {
-                applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
-            }
-            if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
-            {
-                try
-                {
-                    var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension(effectiveExtension);
-
-                    if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
-                    {
-                        //Attempt to get relative projects
-                        var relativeExe = "";
-                        if(textExtension == "gusx")
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                        if(textExtension == "achx")
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                        if((relativeExe != "") && (System.IO.File.Exists(relativeExe))) {
-                            Process.Start(new ProcessStartInfo(relativeExe, fileName));
-                            return;
-                        }
-
-                        var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
-                            $"program to associate with this extension to open the file. Set the assocaition now?";
-
-                        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
-                        if(result == System.Windows.MessageBoxResult.Yes)
-                        {
-                            OpenProcess();
-                        }
-                    }
-                    else
-                    {
-                        OpenProcess();
-                    }
-
-                    void OpenProcess()
-                    {
-                        var startInfo = new ProcessStartInfo();
-                        startInfo.FileName = "\"" + fileName + "\"";
-                        startInfo.UseShellExecute = true;
-
-                        System.Diagnostics.Process.Start(startInfo);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.Forms.MessageBox.Show("Error opening " + fileName + "\nTry navigating to this file and opening it through explorer");
-
-
-                }
-            }
-            else
-            {
-                bool applicationFound = true;
-                try
-                {
-                    applicationSetInGlue = FileManager.Standardize(applicationSetInGlue);
-                }
-                catch
-                {
-                    applicationFound = false;
-                }
-
-                if (!System.IO.File.Exists(applicationSetInGlue) || applicationFound == false)
-                {
-                    string error = "Could not find the application\n\n" + applicationSetInGlue;
-
-                    System.Windows.Forms.MessageBox.Show(error);
-                }
-                else
-                {
-                    MessageBox.Show("This functionality has been removed as of March 7, 2021. If you need it, please talk to Vic on Discord.");
-                    //ProcessManager.OpenProcess(applicationSetInGlue, fileName);
-                }
-            }
-        }
-
-        private static string GetFileName(ReferencedFileSave currentReferencedFileSave)
-        {
-            string fileName = null;
-            if (currentReferencedFileSave != null)
-            {
-                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
-                {
-                    fileName =
-                        GlueCommands.Self.GetAbsoluteFileName(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
-                }
-                else
-                {
-                    fileName = GlueCommands.Self.GetAbsoluteFileName(currentReferencedFileSave);
-                }
-            }
-
-            return fileName;
         }
     }
 }

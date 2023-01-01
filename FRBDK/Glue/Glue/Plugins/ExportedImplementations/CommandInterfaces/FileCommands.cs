@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.IO;
+using HQ.Util.Unmanaged;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -35,14 +36,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     class FileCommands : IFileCommands
     {
 
-        IGlueState GlueState => Container.Get<IGlueState>();
         GlueCommands GlueCommands => GlueCommands.Self;
 
         GlueProjectSave GlueProject
         {
             get
             {
-                return GlueState.CurrentGlueProject;
+                return GlueState.Self.CurrentGlueProject;
             }
         }
 
@@ -127,7 +127,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         private void AddFilesReferenced(FilePath filePath, List<FilePath> allFiles, TopLevelOrRecursive topLevelOrRecursive, ProjectOrDisk projectOrFile)
         {
             // The project may have been unloaded:
-            if (GlueState.CurrentMainContentProject != null)
+            if (GlueState.Self.CurrentMainContentProject != null)
             {
 
                 if (File.Exists(filePath.FullPath))
@@ -199,7 +199,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public string GetContentFolder(IElement element)
         {
-            string contentFolder = GlueState.ContentDirectory;
+            string contentFolder = GlueState.Self.ContentDirectory;
 
             string relativeElementFolder = element.Name + "/";
 
@@ -217,12 +217,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public string GetFullFileName(ReferencedFileSave rfs)
         {
-            return GlueState.ContentDirectory + rfs.Name;
+            return GlueState.Self.ContentDirectory + rfs.Name;
         }
 
         public FilePath GetJsonFilePath(GlueElement element)
         {
-            var glueDirectory = GlueState.CurrentGlueProjectDirectory;
+            var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
 
             if (element is ScreenSave screenSave)
             {
@@ -236,12 +236,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
             public FilePath GetFilePath(ReferencedFileSave rfs)
         {
-            return GlueState.ContentDirectory + rfs.Name;
+            return GlueState.Self.ContentDirectory + rfs.Name;
         }
 
         public FilePath GetCustomCodeFilePath(GlueElement glueElement)
         {
-            FilePath filePath = GlueState.CurrentGlueProjectDirectory +
+            FilePath filePath = GlueState.Self.CurrentGlueProjectDirectory +
                 glueElement.Name + ".cs";
 
             return filePath;
@@ -444,6 +444,124 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             System.Diagnostics.Process.Start(startInfo);
         }
+
+        public void OpenReferencedFileInDefaultProgram(ReferencedFileSave currentReferencedFileSave)
+        {
+            string textExtension = FileManager.GetExtension(currentReferencedFileSave.Name);
+            string sourceExtension = null;
+
+            if (GlueState.Self.CurrentReferencedFileSave != null && !string.IsNullOrEmpty(GlueState.Self.CurrentReferencedFileSave.SourceFile))
+            {
+                sourceExtension = FileManager.GetExtension(GlueState.Self.CurrentReferencedFileSave.SourceFile);
+            }
+
+            var effectiveExtension = sourceExtension ?? textExtension;
+            string fileName = GetFileName(currentReferencedFileSave);
+
+            string applicationSetInGlue = "";
+            if (currentReferencedFileSave != null && currentReferencedFileSave.OpensWith != "<DEFAULT>")
+            {
+                applicationSetInGlue = currentReferencedFileSave.OpensWith;
+            }
+            else
+            {
+                applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
+            }
+            if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
+            {
+                try
+                {
+                    var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension(effectiveExtension);
+
+                    if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
+                    {
+                        //Attempt to get relative projects
+                        var relativeExe = "";
+                        if (textExtension == "gusx")
+                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                        if (textExtension == "achx")
+                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
+                        if ((relativeExe != "") && (System.IO.File.Exists(relativeExe)))
+                        {
+                            Process.Start(new ProcessStartInfo(relativeExe, fileName));
+                            return;
+                        }
+
+                        var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
+                            $"program to associate with this extension to open the file. Set the assocaition now?";
+
+                        var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
+                        if (result == System.Windows.MessageBoxResult.Yes)
+                        {
+                            OpenProcess();
+                        }
+                    }
+                    else
+                    {
+                        OpenProcess();
+                    }
+
+                    void OpenProcess()
+                    {
+                        var startInfo = new ProcessStartInfo();
+                        startInfo.FileName = "\"" + fileName + "\"";
+                        startInfo.UseShellExecute = true;
+
+                        System.Diagnostics.Process.Start(startInfo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.Forms.MessageBox.Show("Error opening " + fileName + "\nTry navigating to this file and opening it through explorer");
+
+
+                }
+            }
+            else
+            {
+                bool applicationFound = true;
+                try
+                {
+                    applicationSetInGlue = FileManager.Standardize(applicationSetInGlue);
+                }
+                catch
+                {
+                    applicationFound = false;
+                }
+
+                if (!System.IO.File.Exists(applicationSetInGlue) || applicationFound == false)
+                {
+                    string error = "Could not find the application\n\n" + applicationSetInGlue;
+
+                    System.Windows.Forms.MessageBox.Show(error);
+                }
+                else
+                {
+                    MessageBox.Show("This functionality has been removed as of March 7, 2021. If you need it, please talk to Vic on Discord.");
+                    //ProcessManager.OpenProcess(applicationSetInGlue, fileName);
+                }
+            }
+        }
+
+        private static string GetFileName(ReferencedFileSave currentReferencedFileSave)
+        {
+            string fileName = null;
+            if (currentReferencedFileSave != null)
+            {
+                if (!string.IsNullOrEmpty(currentReferencedFileSave.SourceFile))
+                {
+                    fileName =
+                        GlueCommands.Self.GetAbsoluteFileName(ProjectManager.ContentDirectoryRelative + currentReferencedFileSave.SourceFile, true);
+                }
+                else
+                {
+                    fileName = GlueCommands.Self.GetAbsoluteFileName(currentReferencedFileSave);
+                }
+            }
+
+            return fileName;
+        }
+
     }
 
 }

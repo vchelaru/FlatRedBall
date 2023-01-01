@@ -425,6 +425,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         #endregion
 
+        #region Collapse
+
         private void CollapseAllClicked(object sender, RoutedEventArgs e)
         {
             ViewModel.CollapseAll();
@@ -434,6 +436,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             ViewModel.CollapseToDefinitions();
         }
+
+        #endregion
 
         #region Searching
 

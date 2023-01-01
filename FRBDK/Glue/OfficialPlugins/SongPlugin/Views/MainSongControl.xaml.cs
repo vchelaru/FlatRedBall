@@ -80,14 +80,7 @@ namespace OfficialPlugins.SongPlugin.Views
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            if(filePath?.Extension == "ogg")
-            {
-                nAudioOutputDevice.Play();
-            }
-            else
-            {
-                mediaPlayer.Play();
-            }
+            PlaySong();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -100,6 +93,18 @@ namespace OfficialPlugins.SongPlugin.Views
         {
             nAudioOutputDevice?.Stop();
             mediaPlayer?.Stop();
+        }
+
+        internal void PlaySong()
+        {
+            if (filePath?.Extension == "ogg")
+            {
+                nAudioOutputDevice.Play();
+            }
+            else
+            {
+                mediaPlayer.Play();
+            }
         }
     }
 }

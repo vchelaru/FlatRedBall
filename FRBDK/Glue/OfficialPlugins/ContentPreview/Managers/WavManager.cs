@@ -37,6 +37,12 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         public static void HideTab() => Tab?.Hide();
 
+        public static void HandleStrongSelect()
+        {
+            Tab?.Focus();
+            View.PlaySound();
+        }
+
         internal static void ShowTab(FilePath filePath)
         {
             CreateViewIfNecessary();

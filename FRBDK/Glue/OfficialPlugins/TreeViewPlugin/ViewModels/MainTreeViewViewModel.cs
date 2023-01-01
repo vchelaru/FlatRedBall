@@ -913,6 +913,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
                 else if (CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
                 {
+                    // Search MGE
+                    // Actual: MachineGunEnemy
                     return 0.65;
                 }
                 else if (itemNameToLower.StartsWith(searchToLower))
