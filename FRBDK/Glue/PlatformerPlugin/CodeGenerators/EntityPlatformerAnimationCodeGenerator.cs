@@ -101,7 +101,12 @@ namespace PlatformerPluginCore.CodeGenerators
                         variableAssignmentBlock.Line($"MaxSpeedXRatioMultiplier={CodeParser.ConvertValueToCodeString(entry.MaxSpeedXRatioMultiplier)} ,");
                         variableAssignmentBlock.Line($"MaxSpeedYRatioMultiplier={CodeParser.ConvertValueToCodeString(entry.MaxSpeedYRatioMultiplier)} ,");
                         variableAssignmentBlock.Line($"OnGroundRequirement={CodeParser.ConvertValueToCodeString(entry.OnGroundRequirement)} ,");
-                        variableAssignmentBlock.Line($"MovementName={CodeParser.ConvertValueToCodeString(entry.MovementName)} ,");
+                        if(entry.MovementName != "<NULL>")
+                        {
+                            // If it's "<NULL>" that's an option in the CSV parser. Let's keep using it, and just omit any line if it's null which will just use the default fallback of null for strings
+                            variableAssignmentBlock.Line($"MovementName={CodeParser.ConvertValueToCodeString(entry.MovementName)} ,");
+                        }
+
                         variableAssignmentBlock.Line($"AnimationSpeedAssignment={animationSpeedAssignment}");
 
 
