@@ -166,7 +166,7 @@ namespace OfficialPlugins.SongPlugin
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
         {
-            var rfs = selectedTreeNode.Tag as ReferencedFileSave;
+            var rfs = selectedTreeNode?.Tag as ReferencedFileSave;
 
             viewModel.GlueObject = rfs;
 
