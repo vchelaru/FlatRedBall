@@ -17,10 +17,21 @@ using System.Threading.Tasks;
 namespace FlatRedBall.Glue.MVVM
 {
     #region SyncedPropertyAttribute Class
+
+    /// <summary>
+    /// Attribute which indicates that this property is automatically synced with the underlying model. This is used
+    /// for ViewModels which represent properties on Glue objects such as NamedObjectSaves. When using this, use SetAndPersist
+    /// on the setter.
+    /// </summary>
     public class SyncedPropertyAttribute : Attribute
     {
         public string OverridingPropertyName { get; set; }
         public Type ConverterType { get; set; }
+        /// <summary>
+        /// Property which should be checked when deciding whether to sync the property. If this is null, then the 
+        /// property is always synced. If not null, then the property is reflected as a bool and checked whether
+        /// to sync this property.
+        /// </summary>
         public string SyncingConditionProperty { get; set; }
     }
     #endregion

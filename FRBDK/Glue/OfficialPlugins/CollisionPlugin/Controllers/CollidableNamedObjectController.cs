@@ -8,6 +8,7 @@ using OfficialPlugins.CollisionPlugin.ViewModels;
 using OfficialPluginsCore.CollisionPlugin.ExtensionMethods;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +22,20 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         public static void RegisterViewModel(CollidableNamedObjectRelationshipViewModel viewModel)
         {
             ViewModel = viewModel;
+            ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+        }
+
+        private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(ViewModel.SortAxis))
+            {
+                var nos = GlueState.Self.CurrentNamedObjectSave;
+                if (nos != null && ViewModel.CanBePartitioned)
+                {
+                    ViewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                        nos, ViewModel.SortAxis);
+                }
+            }
         }
 
         public static string FirstCollidableIn(NamedObjectSave collisionRelationship)
@@ -44,6 +59,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             // don't apply
             viewModel.CanBePartitioned = CollisionCodeGenerator.CanBePartitioned(thisNamedObject);
             viewModel.UpdateFromGlueObject();
+            if(viewModel.CanBePartitioned)
+            {
+                viewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                    thisNamedObject, viewModel.SortAxis);
+            }
 
             viewModel.CollisionRelationshipsTitle =
                 $"{thisNamedObject.InstanceName} Collision Relationships";

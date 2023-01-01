@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="200">
     <Grid>
         <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -14,7 +14,7 @@
         </Grid.RowDefinitions>-->
 
 
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="ScrollViewerInstance">
             <StackPanel>
 
 
@@ -34,9 +34,30 @@
                                 <RadioButton IsChecked="{Binding IsSortYAxisChecked}">Y</RadioButton>
                             </StackPanel>
                         </GroupBox>
+                        <GroupBox Header="Partition Width/Height">
+                            <StackPanel>
+                                <RadioButton IsChecked="{Binding IsAutomaticPartitionSizeChecked}">
+                                    <StackPanel x:Name="AutomaticRadioButtonStack">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding AutomaticRadioButtonText, FallbackValue=Automatic}"></TextBlock>
+                                        </StackPanel>
+                                        <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding AutomaticInfoVisibility}"
+                                            Width="175">
+                                            Automatic partitioning does not consider entity rotation, AnimationChain shape modifications, states, or custom code.
+                                        </TextBlock>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}" VerticalContentAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock>Manual</TextBlock>
+                                            <TextBox Margin="4,0,0,0" Text="{Binding PartitionWidthHeight}" IsEnabled="{Binding IsManualTextBoxEnabled}" 
+                                                     VerticalContentAlignment="Center" Width="48"></TextBox>
+                                        
+                                        </StackPanel>
+                                </RadioButton>
+                            </StackPanel>
+                        </GroupBox>
                         <StackPanel Orientation="Horizontal">
-                            <Label>Partition Width/Height:</Label>
-                            <TextBox Text="{Binding PartitionWidthHeight}" VerticalContentAlignment="Center" Width="48"></TextBox>
                         </StackPanel>
                         <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center">Sort List Every Frame</CheckBox>
                         
@@ -47,8 +68,13 @@
 
 
 
-                <TextBlock 
-                    Text="{Binding CollisionRelationshipsTitle, FallbackValue=XXXX_Collision_Relationships}"
+                <!--Source https://stackoverflow.com/questions/1981137/c-sharp-wpf-scrollviewer-textblock-troubles-->
+                <TextBlock
+                    Text="{Binding CollisionRelationshipsTitle, FallbackValue=XXXX Collision Relationships}"
+                    HorizontalAlignment="Left"
+                    Width="{Binding ElementName=ScrollViewerInstance, Path=ViewportWidth}"
+                    TextWrapping="Wrap"
+                   
                     FontSize="18" FontWeight="SemiBold" Margin="0,10,0,0">
                 </TextBlock>
 
