@@ -135,6 +135,9 @@ namespace CompilerLibrary.ViewModels
             }
         }
 
+        [DependsOn(nameof(IsCompiling))]
+        public Visibility WhileBuildingVisibility => IsCompiling.ToVisibility();
+
         [DependsOn(nameof(WhileStoppedViewVisibility))]
         [DependsOn(nameof(IsGenerateGlueControlManagerInGame1Checked))]
         public Visibility RunInEditModeButtonVisibility =>

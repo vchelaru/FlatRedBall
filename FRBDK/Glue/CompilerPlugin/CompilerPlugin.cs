@@ -137,11 +137,20 @@ namespace CompilerPlugin
         {
             MainControl.BuildClicked += async (not, used) =>
             {
-                var succeeded = await _compiler.Compile((value) => ReactToPluginEvent("Compiler_Output_Standard", value), (value) => ReactToPluginEvent("Compiler_Output_Error", value), _compilerViewModel.Configuration, _compilerViewModel.IsPrintMsBuildCommandChecked);
+                var succeeded = await _compiler.Compile(
+                    (value) => ReactToPluginEvent("Compiler_Output_Standard", value), 
+                    (value) => ReactToPluginEvent("Compiler_Output_Error", value), 
+                    _compilerViewModel.Configuration, 
+                    _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (!succeeded)
                 {
                     GlueCommands.Self.DialogCommands.FocusTab("Build");
                 }
+            };
+
+            MainControl.CancelBuildClicked += (_, _) =>
+            {
+                _compiler.CancelBuild();
             };
 
             MainControl.RunClicked += async (not, used) =>

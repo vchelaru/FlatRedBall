@@ -32,6 +32,7 @@ namespace CompilerPlugin.Views
 
         public event EventHandler BuildClicked;
         public event EventHandler RunClicked;
+        public event EventHandler CancelBuildClicked;
         public event Action MSBuildSettingsClicked;
 
 
@@ -158,5 +159,6 @@ namespace CompilerPlugin.Views
             }
         }
 
+        private void HandleCancelBuildButtonClick(object sender, RoutedEventArgs e) => CancelBuildClicked?.Invoke(this, null);
     }
 }

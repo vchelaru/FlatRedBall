@@ -22,6 +22,11 @@
                 >
             </views:WhileStoppedView>
 
+            <StackPanel x:Name="WhileBuildingView" Visibility="{Binding WhileBuildingVisibility}" Orientation="Horizontal">
+                <Label>Building...</Label>
+                <Button Click="HandleCancelBuildButtonClick">Cancel Build</Button>
+            </StackPanel>
+
         </WrapPanel>
 
         <RichTextBox Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Auto" 

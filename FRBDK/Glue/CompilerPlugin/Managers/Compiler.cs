@@ -132,6 +132,18 @@ namespace CompilerPlugin.Managers
             }
         }
 
+        Process currentMsBuildProcess = null;
+        bool didUserKillProcess = false;
+
+        public void CancelBuild()
+        {
+            didUserKillProcess = true;
+            if(currentMsBuildProcess != null)
+            {
+                currentMsBuildProcess.Kill();
+            }
+        }
+
         internal async Task<bool> Compile(Action<string> printOutput, Action<string> printError,
             string configuration = "Debug", bool printMsBuildCommand = false)
         {
@@ -142,6 +154,7 @@ namespace CompilerPlugin.Managers
                     await Task.Delay(100);
                 }
 
+                didUserKillProcess = false;
                 _compilerViewModel.IsCompiling = true;
 
                 // At one point I was trying to resolve the VS 22 vs 19 issue and I ran MSBuild through a batch
@@ -221,7 +234,7 @@ namespace CompilerPlugin.Managers
 
                         #region Build
 
-                        if (succeeded)
+                        if (succeeded && !didUserKillProcess)
                         {
                             string startOutput = "Build started at " + DateTime.Now.ToLongTimeString();
                             string endOutput = "Build succeeded";
@@ -259,18 +272,26 @@ namespace CompilerPlugin.Managers
                     }
                     if (!succeeded)
                     {
-                        var fileExists = System.IO.File.Exists(msBuildPath);
-                        if (!fileExists)
+                        if(didUserKillProcess)
                         {
-                            string cantFindMsBuildMessage =
-                                $"Could not find msbuild.exe. Looked in the following locations:";
-
-                            foreach (var item in AvailableLocations)
+                            printOutput("Build cancelled by user");
+                        }
+                        else
+                        {
+                            var fileExists = System.IO.File.Exists(msBuildPath);
+                            if (!fileExists && msBuildPath != "dotnet")
                             {
-                                cantFindMsBuildMessage += $"\n{item}";
+                                string cantFindMsBuildMessage =
+                                    $"Could not find msbuild.exe. Looked in the following locations:";
+
+                                foreach (var item in AvailableLocations)
+                                {
+                                    cantFindMsBuildMessage += $"\n{item}";
+                                }
+
+                                printError(cantFindMsBuildMessage);
                             }
 
-                            printError(cantFindMsBuildMessage);
                         }
                     }
                     return succeeded;
@@ -286,13 +307,13 @@ namespace CompilerPlugin.Managers
         private async Task<bool> StartMsBuildWithParameters(Action<string> printOutput, Action<string> printError, string startOutput, string endOutput, string arguments, string msbuildLocation)
         {
             Process process = CreateProcess("\"" + msbuildLocation + "\"", arguments);
-
             printOutput(startOutput);
             // This is noisy and technical. Reducing output window verbosity
             //printOutput(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
 
             StringBuilder outputStringBuilder = new StringBuilder();
             StringBuilder errorStringBuilder = new StringBuilder();
+            
             var errorString = await Task.Run(() => RunProcess(outputStringBuilder, errorStringBuilder, msbuildLocation, process));
 
             if (outputStringBuilder.Length > 0)
@@ -343,15 +364,16 @@ namespace CompilerPlugin.Managers
         //    return whyCantRun;
         //}
 
-        private static string RunProcess(StringBuilder printOutput, StringBuilder printError, string processPath, Process process)
+        private string RunProcess(StringBuilder printOutput, StringBuilder printError, string processPath, Process process)
         {
             string errorString = "";
-            process.Start();
-            
             const int timeToWait = 50;
             bool hasUserTerminatedProcess = false;
 
             StringBuilder outputWhileRunning = new StringBuilder();
+
+            process.Start();
+            currentMsBuildProcess= process;
 
             while (!process.HasExited)
             {
@@ -367,6 +389,9 @@ namespace CompilerPlugin.Managers
                     }
                 }
             }
+
+            currentMsBuildProcess = process;
+
 
             if (process.ExitCode != 0)
             {
