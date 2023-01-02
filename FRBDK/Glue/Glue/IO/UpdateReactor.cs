@@ -417,7 +417,17 @@ namespace FlatRedBall.Glue.IO
                             // Gotta regen this and update the UI and refresh the PropertyGrid if it's selected
                             GlueCommands.Self.UpdateCommands.Update(replacementElement);
 
-                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(oldElement);
+                            // Jan 2, 2023
+                            // Not sure why
+                            // we generate the 
+                            // old one, it should
+                            // be the new one because
+                            // the old one is no longer
+                            // part of the GlueProjectSave
+                            // so finding references during
+                            // codegen will not work correctly.
+                            //GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(oldElement);
+                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(replacementElement);
                         }
 					}
                     else if(oldFile != null && replacementFile != null && fileIndexInOld == fileIndexInNew)
