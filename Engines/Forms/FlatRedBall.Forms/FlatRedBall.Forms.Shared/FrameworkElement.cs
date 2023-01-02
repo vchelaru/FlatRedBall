@@ -4,6 +4,7 @@ using FlatRedBall.Gui;
 using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using Gum.Wireframe;
+using GumCoreShared.FlatRedBall.Embedded;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace FlatRedBall.Forms.Controls
 
     #endregion
 
-    public class FrameworkElement
+    public class FrameworkElement : IFrameworkElement
     {
         #region Fields/Properties
 
@@ -337,7 +338,7 @@ namespace FlatRedBall.Forms.Controls
 
         public event EventHandler GotFocus;
         public event EventHandler LostFocus;
-
+        public event EventHandler Loaded;
         public event KeyEventHandler KeyDown;
 
         #endregion
@@ -382,6 +383,11 @@ namespace FlatRedBall.Forms.Controls
 
             return isOnThisOrChild;
         }
+
+        /// <summary>
+        /// Calls the loaded event. This should not be called in custom code, but instead is called by Gum
+        /// </summary>
+        public virtual void CallLoaded() => Loaded?.Invoke(this, null);
 
         public void Close()
         {

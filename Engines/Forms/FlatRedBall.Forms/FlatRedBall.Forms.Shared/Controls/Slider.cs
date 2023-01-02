@@ -43,13 +43,15 @@ namespace FlatRedBall.Forms.Controls
 
         public Slider() : base()
         {
-            Minimum = 0;
-            Maximum = 100;
-            LargeChange = 25;
-            SmallChange = 5;
+            Initialize();
         }
 
         public Slider(GraphicalUiElement visual) : base(visual)
+        {
+            Initialize();
+        }
+
+        private void Initialize()
         {
             Minimum = 0;
             Maximum = 100;

@@ -18,21 +18,21 @@ namespace GumPluginCore.CodeGeneration
         public static string FormsRuntimeNamespace =>
             FlatRedBall.Glue.ProjectManager.ProjectNamespace + ".FormsControls";
 
-        public string GenerateCodeFor(ElementSave elementSave)
+        public string GenerateCodeFor(ElementSave gumElement)
         {
-            if (elementSave == null)
+            if (gumElement == null)
             {
-                throw new ArgumentNullException(nameof(elementSave));
+                throw new ArgumentNullException(nameof(gumElement));
             }
 
-            var shouldGenerate = GetIfShouldGenerate(elementSave);
+            var shouldGenerate = GetIfShouldGenerate(gumElement);
 
             if (shouldGenerate)
             {
                 var topBlock = new CodeBlockBase();
-                var fullNamespace = GetFullRuntimeNamespaceFor(elementSave);
+                var fullNamespace = GetFullRuntimeNamespaceFor(gumElement);
                 var currentBlock = topBlock.Namespace(fullNamespace);
-                GenerateScreenAndComponentCodeFor(elementSave, currentBlock);
+                GenerateScreenAndComponentCodeFor(gumElement, currentBlock);
                 return topBlock.ToString();
             }
             else
@@ -94,6 +94,7 @@ namespace GumPluginCore.CodeGeneration
 
             return shouldGenerate;
         }
+
 
         private void GenerateScreenAndComponentCodeFor(ElementSave elementSave, ICodeBlock codeBlock)
         {

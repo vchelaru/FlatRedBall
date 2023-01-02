@@ -77,17 +77,23 @@ namespace FlatRedBall.Forms.Controls.Games
         } = true;
 
 
-        public SettingsView() : base() { } 
+        public SettingsView() : base() 
+        {
+            Initialize();
+        }
 
         public SettingsView(GraphicalUiElement visual) : base(visual)
         {
-
+            Initialize();
         }
 
-        protected override void ReactToVisualChanged()
+        void Initialize()
         {
-            base.ReactToVisualChanged();
+            Loaded += HandleLoaded;
+        }
 
+        private void HandleLoaded(object sender, EventArgs e)
+        {
             if(Visual != null)
             { 
                 var musicSliderVisual = Visual.GetGraphicalUiElementByName("MusicSliderInstance");

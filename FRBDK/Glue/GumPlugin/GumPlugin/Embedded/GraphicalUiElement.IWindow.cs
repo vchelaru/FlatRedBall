@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Gui;
 using Gum.Wireframe;
+using GumCoreShared.FlatRedBall.Embedded;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -120,6 +121,8 @@ namespace Gum.Wireframe
             {
                 GuiManager.AddWindow(this);
             }
+
+            (this.FormsControlAsObject as IFrameworkElement)?.CallLoaded();
 
             if(mContainedObjectAsIpso is IManagedObject containedAsManaged)
             {
