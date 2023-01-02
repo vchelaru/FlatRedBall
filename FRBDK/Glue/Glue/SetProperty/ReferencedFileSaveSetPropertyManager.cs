@@ -342,31 +342,42 @@ namespace FlatRedBall.Glue.SetVariable
             }
             else
             {
-                bool shouldMove = true;
                 bool shouldContinue = true;
-
+                bool shouldMove = true;
                 CheckForExistingFileOfSameName(oldName, rfs, newFilePath, ref shouldMove, ref shouldContinue);
-
-                if (shouldContinue)
+                if(shouldContinue)
                 {
-                    if(shouldMove && oldFilePath.Exists())
-                    {
-                        File.Move(oldFilePath.FullPath, newFilePath.FullPath);
-                    }
-
-                    UpdateObjectsUsingFile(container, oldName, rfs);
-
-                    TaskManager.Self.AddAsync(() => RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs), "Generating code due to renamed file");
-
-                    UpdateBuildItemsForRenamedRfs(oldName, newName);
-
-                    AdjustDataFilesIfIsCsv(oldName, rfs);
-
-                    GluxCommands.Self.SaveGlux();
-
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    ForceReactToRenamedReferencedFileAsync(oldName, newName, rfs, container, shouldMove:shouldMove);
                 }
             }
+        }
+
+        public static async Task ForceReactToRenamedReferencedFileAsync(string oldName, string newName, ReferencedFileSave rfs, IElement container, bool shouldMove)
+        {
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                bool forceAsContent = true;
+                var oldFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(oldName, forceAsContent));
+                var newFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(newName, forceAsContent));
+
+
+                if (shouldMove && oldFilePath.Exists())
+                {
+                    File.Move(oldFilePath.FullPath, newFilePath.FullPath);
+                }
+
+                UpdateObjectsUsingFile(container, oldName, rfs);
+
+                await RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
+
+                UpdateBuildItemsForRenamedRfs(oldName, newName);
+
+                AdjustDataFilesIfIsCsv(oldName, rfs);
+
+                GluxCommands.Self.SaveGlux();
+
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+            }, $"ForceReactToRenamedReferencedFileAsync {oldName} -> {newName}");
         }
 
         private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs)

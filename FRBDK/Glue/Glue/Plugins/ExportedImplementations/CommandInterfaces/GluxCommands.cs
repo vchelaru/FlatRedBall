@@ -3083,7 +3083,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Folders
 
-        public void RenameFolder(ITreeNode treeNode, string newName)
+        public async void RenameFolder(ITreeNode treeNode, string newName)
         {
             bool shouldPerformMove = false;
             string directoryRenaming = null;
@@ -3160,7 +3160,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         if(rfs.Name.StartsWith(relativePath))
                         {
                             var suffix = rfs.Name.Substring(relativePath.Length);
+                            var oldName = rfs.Name;
                             rfs.Name = (newDirectoryNameRelative + suffix).Replace("\\", "/");
+                            // dont' move, it's already been moved based on the folder name change
+                            const bool shouldMove = false;
+                            // This is in global content currently
+                            await ReferencedFileSaveSetPropertyManager.ForceReactToRenamedReferencedFileAsync(
+                                oldName, rfs.Name, rfs, container:null, shouldMove:shouldMove);
                         }
                     }
                 }
