@@ -38,6 +38,7 @@
       <Type>StyleCategory</Type>
       <Name>TextInstance.StyleCategoryState</Name>
       <Value xsi:type="xsd:string">Strong</Value>
+      <ExposedAsName>Style</ExposedAsName>
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
