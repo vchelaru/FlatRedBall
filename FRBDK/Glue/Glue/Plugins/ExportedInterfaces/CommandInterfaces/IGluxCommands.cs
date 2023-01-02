@@ -228,7 +228,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region Folders
-        void RenameFolder(ITreeNode treeNode, string newName);
+        Task RenameFolder(ITreeNode treeNode, string newName);
         #endregion
     }
 }

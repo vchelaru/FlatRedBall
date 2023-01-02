@@ -529,7 +529,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 // This needs to have the old name before the new name is set:
                 var newName = this.Text;
                 this.Text = textBeforeEditing;
-                GlueCommands.Self.GluxCommands.RenameFolder(this, newName);
+
+                await GlueCommands.Self.GluxCommands.RenameFolder(this, newName);
+
 
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodes(); // just do it all? 
             }

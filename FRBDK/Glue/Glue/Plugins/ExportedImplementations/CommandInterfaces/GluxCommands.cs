@@ -3083,7 +3083,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Folders
 
-        public async void RenameFolder(ITreeNode treeNode, string newName)
+        public async Task RenameFolder(ITreeNode treeNode, string newName)
         {
             bool shouldPerformMove = false;
             string directoryRenaming = null;
