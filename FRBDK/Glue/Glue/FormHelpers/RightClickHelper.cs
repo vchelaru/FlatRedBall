@@ -619,6 +619,8 @@ namespace FlatRedBall.Glue.FormHelpers
                 Add("Add Folder", () => RightClickHelper.AddFolderClick(targetNode));
                 AddSeparator();
                 Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
+                AddEvent("Copy path to clipboard", (_, _) => HandleCopyToClipboardClick(targetNode));
+                AddSeparator();
                 if (targetNode.IsFolderInFilesContainerNode())
                 {
                     Add("Delete Folder", () => DeleteFolderClick(targetNode));
@@ -780,7 +782,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
                 AddItem(mFindAllReferences);
-                AddEvent("Copy path to clipboard", HandleCopyToClipboardClick);
+                AddEvent("Copy path to clipboard", (_,_) => HandleCopyToClipboardClick(targetNode));
                 AddSeparator();
 
                 AddItem(mCreateZipPackage);
@@ -878,6 +880,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     Add("View code folder", () => ViewCodeFolderInExplorerClick(targetNode));
                 }
+                AddEvent("Copy path to clipboard", (_, _) => HandleCopyToClipboardClick(targetNode));
 
                 AddSeparator();
 
@@ -1318,19 +1321,31 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
-        static void HandleCopyToClipboardClick(object sender, EventArgs e)
+        static void HandleCopyToClipboardClick(ITreeNode node)
         {
-            if (GlueState.Self.CurrentReferencedFileSave != null)
+            if (node.Tag is ReferencedFileSave rfs)
             {
-                var filePath = GlueCommands.Self.GetAbsoluteFilePath(GlueState.Self.CurrentReferencedFileSave);
-                var absolute = filePath.GetDirectoryContainingThis().FullPath;
+                var filePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                var absolute = filePath.FullPath;
+                Clipboard.SetText(absolute);
+            }
+            else if(node.IsFolderInFilesContainerNode() || node.IsFolderForGlobalContentFiles() || node.IsFilesContainerNode())
+            {
+                var filePath = node.GetRelativeFilePath();
+                var absolute = GlueCommands.Self.GetAbsoluteFilePath(filePath, forceAsContent:true).FullPath;
+                Clipboard.SetText(absolute);
+            }
+            else if(node.IsDirectoryNode())
+            {
+                var filePath = node.GetRelativeFilePath();
+                var absolute = GlueCommands.Self.GetAbsoluteFilePath(filePath, forceAsContent: false).FullPath;
                 Clipboard.SetText(absolute);
             }
         }
 
-        static void OnAddEntityListClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
+        static async void OnAddEntityListClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
         {
-            DragDropManager.Self.CreateNewNamedObjectInElement(
+            await DragDropManager.Self.CreateNewNamedObjectInElement(
                 nodeDroppedOn.GetContainingElementTreeNode().Tag as GlueElement,
                 nodeMoving.Tag as EntitySave,
                 true);
@@ -1340,9 +1355,9 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
-        static void OnAddEntityInstanceClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
+        static async void OnAddEntityInstanceClick(ITreeNode nodeDroppedOn, ITreeNode nodeMoving)
         {
-            DragDropManager.DragDropTreeNode(
+            await DragDropManager.DragDropTreeNode(
                  nodeDroppedOn,
                  nodeMoving);
 
