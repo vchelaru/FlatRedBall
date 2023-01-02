@@ -3091,32 +3091,43 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string newDirectoryNameAbsolute = null;
 
             //if (dialogResult == DialogResult.OK)
+            // entities use backslash:
+            directoryRenaming = treeNode.GetRelativeFilePath().Replace("/", "\\");
+            newDirectoryNameRelative = FileManager.GetDirectory(directoryRenaming, RelativeType.Relative) + newName + "\\";
+
+            // This depends on whether it's a content or code folder
+            // January 2, 2023
+            // For now let's just handle global content - eventually files in entities/screens, but we'll worry about one thing at a time
+            var isFileNode = treeNode.IsChildOfGlobalContent();
+            if(isFileNode)
             {
-                // entities use backslash:
-                directoryRenaming = treeNode.GetRelativeFilePath().Replace("/", "\\");
-                newDirectoryNameRelative = FileManager.GetDirectory(directoryRenaming, RelativeType.Relative) + newName + "\\";
+                newDirectoryNameAbsolute = GlueCommands.Self.GetAbsoluteFilePath(newDirectoryNameRelative, forceAsContent:true).FullPath;
+            }
+            else
+            {
                 newDirectoryNameAbsolute = GlueState.Self.CurrentGlueProjectDirectory + newDirectoryNameRelative;
-
-                string whyIsInvalid = null;
-                NameVerifier.IsDirectoryNameValid(newName, out whyIsInvalid);
-
-                if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(newDirectoryNameAbsolute))
-                {
-                    whyIsInvalid = $"The directory {newName} already exists.";
-                }
-
-                if (!string.IsNullOrEmpty(whyIsInvalid))
-                {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox(whyIsInvalid);
-                    shouldPerformMove = false;
-                }
-                else
-                {
-                    shouldPerformMove = true;
-                }
             }
 
-            if (shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute))
+            string whyIsInvalid = null;
+            NameVerifier.IsDirectoryNameValid(newName, out whyIsInvalid);
+
+            if (string.IsNullOrEmpty(whyIsInvalid) && Directory.Exists(newDirectoryNameAbsolute))
+            {
+                whyIsInvalid = $"The directory {newName} already exists.";
+            }
+
+            if (!string.IsNullOrEmpty(whyIsInvalid))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(whyIsInvalid);
+                shouldPerformMove = false;
+            }
+            else
+            {
+                shouldPerformMove = true;
+            }
+
+            // If it's not a file node, we'll just move some of the entities over, but leave the old one around...
+            if (shouldPerformMove && !Directory.Exists(newDirectoryNameAbsolute) && !isFileNode)
             {
                 try
                 {
@@ -3131,21 +3142,45 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (shouldPerformMove)
             {
-                var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
-                    .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
-
-                newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
-
                 bool didAllSucceed = true;
 
-                foreach (var entity in allContainedEntities)
+                if (isFileNode)
                 {
-                    bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
+                    var relativePath = treeNode.GetRelativeFilePath();
+                    var oldDirectoryAbsolute = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isContent: true);
+                    // just do a rename
+                    System.IO.Directory.Move(oldDirectoryAbsolute, newDirectoryNameAbsolute);
 
-                    if (!succeeded)
+                    // update all RFS's:
+                    var allRfses = ObjectFinder.Self.GetAllReferencedFiles();
+
+                    foreach(var rfs in allRfses)
                     {
-                        didAllSucceed = false;
-                        break;
+                        // is this in the old location?
+                        if(rfs.Name.StartsWith(relativePath))
+                        {
+                            var suffix = rfs.Name.Substring(relativePath.Length);
+                            rfs.Name = (newDirectoryNameRelative + suffix).Replace("\\", "/");
+                        }
+                    }
+                }
+                else
+                { 
+                    var allContainedEntities = GlueState.Self.CurrentGlueProject.Entities
+                        .Where(entity => entity.Name.StartsWith(directoryRenaming)).ToList();
+
+                    newDirectoryNameRelative = newDirectoryNameRelative.Replace('/', '\\');
+
+
+                    foreach (var entity in allContainedEntities)
+                    {
+                        bool succeeded = GlueCommands.Self.GluxCommands.MoveEntityToDirectory(entity, newDirectoryNameRelative);
+
+                        if (!succeeded)
+                        {
+                            didAllSucceed = false;
+                            break;
+                        }
                     }
                 }
 
