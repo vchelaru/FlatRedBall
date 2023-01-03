@@ -183,6 +183,7 @@ namespace FlatRedBall.Glue.Parsing
                 else
                 {
                     value = ((decimal)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = value + "m";
                 }
             }
             else if (objectToParse is string || typeof(T) == typeof(string))

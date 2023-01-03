@@ -1354,7 +1354,6 @@ namespace FlatRedBall
             this.AttachTo(newParent, changeRelative: false);
         }
 
-        #region XML Docs
         /// <summary>
         /// Attaches this PositionedObject to the argument newParent.
         /// </summary>
@@ -1378,7 +1377,6 @@ namespace FlatRedBall
         /// </remarks>
         /// <param name="newParent">The PositionedObject to attach to.</param>
         /// <param name="changeRelative">Whether relative values should change so that absolute values stay the same.</param>
-        #endregion
         public virtual void AttachTo(PositionedObject newParent, bool changeRelative)
         {
             // make sure we don't attach this PO to its parent.  Doing this would make the parent
@@ -1444,12 +1442,10 @@ namespace FlatRedBall
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Detaches this PositionedObject from its parent and detaches all of the PositionedObject's 
         /// Children.
         /// </summary>
-        #endregion
         public void ClearRelationships()
         {// first we tell any sprites that this is attached to to let go
             if (mParent != null)
@@ -1528,13 +1524,11 @@ namespace FlatRedBall
             //positionedObject.RelativeRotationZVelocity = positionedObject.RotationZVelocity;
         }
 
-        #region XML Docs
         /// <summary>
         /// Creates a clone of this instance typed as a T.
         /// </summary>
         /// <typeparam name="T">The type of the new object.</typeparam>
         /// <returns>The newly created instance.</returns>
-        #endregion
         public virtual T Clone<T>() where T : PositionedObject, new()
         {
             if (this is T == false)
@@ -1554,7 +1548,6 @@ namespace FlatRedBall
             return newObject;
         }
 
-        #region XML Docs
         /// <summary>
         /// Creates a new Children PositionedObjectList.
         /// </summary>
@@ -1566,13 +1559,11 @@ namespace FlatRedBall
         /// will keep the old Children PositionedObjectList in scope resulting
         /// in a memory leak.
         /// </remarks>
-        #endregion
         public void CreateNewChildrenList()
         {
             mChildren = new AttachableList<PositionedObject>();
         }
 
-        #region XML Docs
         /// <summary>
         /// Creates a new InstructionList.
         /// </summary>
@@ -1583,20 +1574,17 @@ namespace FlatRedBall
         /// as it will create a new instance and get rid fo the old one
         /// resulting in unnecessary garbage collection.
         /// </remarks>
-        #endregion
         public void CreateNewInstructionsList()
         {
             mInstructions = new InstructionList();
         }
 
-        #region XML Docs
         /// <summary>
         /// Detaches the PositionedObject from its parent PositionedObject.
         /// </summary>
         /// <remarks>
         /// This method cleans up the two way relationship between parent and child.
         /// </remarks>
-        #endregion
         public virtual void Detach()
         {
             if (mParent == null)
@@ -1606,19 +1594,16 @@ namespace FlatRedBall
 
         }
 
-        #region XML Docs
         /// <summary>
         /// Executes instructions according to the argument currentTime and cycles and reorders
         /// Instructions as necessary.
         /// </summary>
         /// <param name="currentTime">The current time to compare the instruction's TimeToExecute against.</param>
-        #endregion
         public void ExecuteInstructions(double currentTime)
         {
             InstructionManager.ExecuteInstructionsOnConsideringTime(this, currentTime);
         }
 
-        #region XML Docs
         /// <summary>
         /// Forces an update of the PositionedObject's absolute position and rotation values 
         /// according to its attachment and relative values.
@@ -1636,7 +1621,6 @@ namespace FlatRedBall
         /// <para>This method will recur up the hierarchical PositionedObject struture stopping 
         /// when it hits the top parent.</para>
         /// </remarks>
-        #endregion
         public virtual void ForceUpdateDependencies()
         {
             if (mParent != null)
@@ -1781,12 +1765,10 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Fills the argument list with the instance's parent, grandparent, etc. recursively.
         /// </summary>
         /// <param name="positionedObjects">The list to fill.</param>
-        #endregion
         public void GetAllDescendantsOneWay(AttachableList<PositionedObject> positionedObjects)
         {
             for (int i = 0; i < mChildren.Count; i++)
@@ -1797,22 +1779,18 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Resets all properties to their default values and clears the ListsBelongingTo property.
         /// </summary>
-        #endregion
         public virtual void Initialize()
         {
             Initialize(true);
         }
 
-        #region XML Docs
         /// <summary>
         /// Resets all properties to their default values.
         /// </summary>
         /// <param name="clearListsBelongingTo">Whether the instance should clear its ListsBelongingTo property.</param>
-        #endregion
         public virtual void Initialize(bool clearListsBelongingTo)
         {
             Position.X = 0;
@@ -1885,7 +1863,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Determines whether this is a parent (or grandparent of any level) of the argument
         /// PositionedObject
@@ -1893,7 +1870,6 @@ namespace FlatRedBall
         /// <param name="attachable">The PositionedObject to test whether it is lower 
         /// in the same hiearchical structure.</param>
         /// <returns>Whether the attachable argument is a child of this instance.</returns>
-        #endregion
         public bool IsParentOf(IAttachable attachable)
         {
             if (attachable == this)
@@ -1907,27 +1883,22 @@ namespace FlatRedBall
             return false;
         }
 
-        #region XML Docs
         /// <summary>
         /// Stops all automatic behavior and stores the necessary instructions to 
         /// resume activity in the argument InstructionList.
         /// </summary>
         /// <param name="instructions">The List to store instructions which are executed to
         /// resume activity.</param>
-        #endregion
         public virtual void Pause(InstructionList instructions)
         {
-#if !SILVERLIGHT
             FlatRedBall.Instructions.Pause.PositionedObjectUnpauseInstruction<PositionedObject> instruction =
                 new FlatRedBall.Instructions.Pause.PositionedObjectUnpauseInstruction<PositionedObject>(this);
 
             instruction.Stop(this);
 
             instructions.Add(instruction);
-#endif
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes this instance from all Lists that it shares two-way
         /// relationships with.
@@ -1935,7 +1906,6 @@ namespace FlatRedBall
         /// <remarks>
         /// FlatRedBall managers use this method in Remove methods.
         /// </remarks>
-        #endregion
         public void RemoveSelfFromListsBelongingTo()
         {
             int index = mListsBelongingTo.Count - 1;
@@ -1947,26 +1917,22 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the internal storage of the last frame's position and velocity
         /// so that the next frame's real velocity and acceleration values will be
         /// Vector3.Zero.
         /// </summary>
-        #endregion
         public void ResetRealValues()
         {
             LastPosition = Position;
             LastVelocity = Velocity;
         }
 
-        #region XML Docs
         /// <summary>
         /// Copies all values related to "Real" values from the argument
         /// PositionedObject to this instance.
         /// </summary>
         /// <param name="positionedObject">The PositionedObject to copy Real values from.</param>
-        #endregion
         public void SetRealValuesFrom(PositionedObject positionedObject)
         {
             mKeepTrackOfReal = positionedObject.mKeepTrackOfReal;
@@ -1977,12 +1943,10 @@ namespace FlatRedBall
             LastVelocity = positionedObject.LastVelocity;
         }
 
-        #region XML Docs
         /// <summary>
         /// Uses the object's absolute position and orientation along with its
         /// Parent's orientation and position to update its relative position and orientation.
         /// </summary>
-        #endregion
         public void SetRelativeFromAbsolute()
         {
 #if DEBUG
