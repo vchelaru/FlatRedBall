@@ -400,6 +400,18 @@ namespace FlatRedBall.Input
         /// </summary>
         public AnalogStick RightStick => mRightStick;
 
+        bool AreShoulderAndTriggersFlipped => 
+            // January 3, 2023
+            // Not sure why but
+            // all of a sudden these
+            // are no longer acting flipped
+            // on gamecube. I'm going to keep
+            // this here and use this property
+            // in case something flips back or in
+            // case there's some setting I'm not aware
+            // of.
+            //ButtonLayout == ButtonLayout.GameCube
+            false;
 
         public KeyboardButtonMap ButtonMap
         {
@@ -421,8 +433,9 @@ namespace FlatRedBall.Input
         /// This accounts for the Gamecube controller returning inverted shoulder/trigger and inverts internally. Therefore
         /// this value is always in the trigger position regardless of gamepad.
         /// </remarks>
-        public AnalogButton LeftTrigger => ButtonLayout != ButtonLayout.GameCube
-            ? mLeftTrigger : mFlippedLeftTrigger;
+        public AnalogButton LeftTrigger => AreShoulderAndTriggersFlipped
+            ? mFlippedLeftTrigger
+            : mLeftTrigger ;
 
         /// <summary>
         /// The right trigger values as reported directly by the gamepad, not flipped for Gamecube
@@ -437,8 +450,8 @@ namespace FlatRedBall.Input
         /// This accounts for the Gamecube controller returning inverted shoulder/trigger and inverts internally. Therefore
         /// this value is always in the trigger position regardless of gamepad.
         /// </remarks>
-        public AnalogButton RightTrigger => ButtonLayout != ButtonLayout.GameCube
-            ? mRightTrigger : mFlippedRightTrigger;
+        public AnalogButton RightTrigger => AreShoulderAndTriggersFlipped
+            ? mFlippedRightTrigger : mRightTrigger ;
 
         /// <summary>
         /// Returns whether this game pad was disconnected last frame but is connected this frame.
@@ -584,7 +597,9 @@ namespace FlatRedBall.Input
             mRightStick = new AnalogStick();
 
             mLeftTrigger = new AnalogButton();
+            mLeftTrigger.Name = "Left Trigger";
             mRightTrigger = new AnalogButton();
+            mRightTrigger.Name = "Right Trigger";
         }
 
         #endregion
@@ -720,7 +735,7 @@ namespace FlatRedBall.Input
             #region Handle the buttons if there isn't a ButtonMap (this can happen even if there is a ButtonMap)
 
 
-            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
+            bool areShouldersAndTriggersFlipped = AreShoulderAndTriggersFlipped;
 
 
             switch (button)
@@ -878,7 +893,7 @@ namespace FlatRedBall.Input
                 }
             }
 
-            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
+            bool areShouldersAndTriggersFlipped = AreShoulderAndTriggersFlipped;
 
             switch (button)
             {
@@ -1038,7 +1053,7 @@ namespace FlatRedBall.Input
                 }
             }
 
-            bool areShouldersAndTriggersFlipped = ButtonLayout == ButtonLayout.GameCube;
+            bool areShouldersAndTriggersFlipped = AreShoulderAndTriggersFlipped;
 
             switch (button)
             {
@@ -1449,10 +1464,12 @@ namespace FlatRedBall.Input
 
             if (oldLayout != ButtonLayout)
             {
-                if (ButtonLayout == ButtonLayout.GameCube)
+                if (AreShoulderAndTriggersFlipped)
                 {
                     mFlippedLeftTrigger = new AnalogButton();
                     mFlippedRightTrigger = new AnalogButton();
+                    mFlippedLeftTrigger.Name = "Left Trigger (flipped)";
+                    mFlippedRightTrigger.Name = "Right Trigger (flipped)";
                 }
                 else
                 {
@@ -1487,7 +1504,7 @@ namespace FlatRedBall.Input
                 mLeftStick.Update(leftStick);
                 mRightStick.Update(rightStick);
 
-                if(ButtonLayout == ButtonLayout.GameCube)
+                if(AreShoulderAndTriggersFlipped)
                 {
                     mFlippedLeftTrigger.Update((int)mGamePadState.Buttons.LeftShoulder);
                     mFlippedRightTrigger.Update((int)mGamePadState.Buttons.RightShoulder);
