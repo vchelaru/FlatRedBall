@@ -157,7 +157,7 @@ namespace TileGraphicsPlugin.Managers
 
         private string GetTmxFriendlyType(string type)
         {
-            if(type == "double")
+            if(type == "double" || type == "decimal")
             {
                 return "float";
             }

@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO.Csv;
 using System;
@@ -146,43 +147,16 @@ namespace TopDownPlugin.Logic
 
         private static Type GetTypeFromTypeName(string typeAsString)
         {
-            switch (typeAsString)
-            {
-                case "float":
-                    return typeof(float);
-                case "int":
-                    return typeof(int);
-                case "bool":
-                    return typeof(bool);
-                case "long":
-                    return typeof(long);
-                case "double":
-                    return typeof(double);
-                case "byte":
-                    return typeof(byte);
-            }
-
-            return typeof(string);
+            return TypeManager.GetTypeFromString(typeAsString);
         }
 
         private static object CastValue(string value, string originalText)
         {
             string typeAsString = GetTypeFromFullHeader(originalText);
 
-            switch (typeAsString)
+            if(TypeManager.TryCastValue(typeAsString, value, out var convertedValue))
             {
-                case "float":
-                    return System.Convert.ToSingle(value, CultureInfo.InvariantCulture);
-                case "int":
-                    return System.Convert.ToInt32(value);
-                case "bool":
-                    return System.Convert.ToBoolean(value);
-                case "long":
-                    return System.Convert.ToInt64(value);
-                case "double":
-                    return System.Convert.ToDouble(value, CultureInfo.InvariantCulture);
-                case "byte":
-                    return System.Convert.ToByte(value);
+                return convertedValue;
             }
 
             return value;

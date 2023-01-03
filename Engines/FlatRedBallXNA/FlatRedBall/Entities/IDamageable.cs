@@ -9,6 +9,12 @@ namespace FlatRedBall.Entities
     {
         Dictionary<IDamageArea, double> DamageAreaLastDamage { get; }
         int TeamIndex { get; }
+        decimal CurrentHealth { get; set; }
+        decimal MaxHealth { get; set; }
+
+        event Func<decimal, IDamageArea, decimal> ModifyDamageDealt;
+        event Action<decimal, IDamageArea> ReactToDamageDealt;
+        event Action<decimal, IDamageArea> Died;
     }
 
     public static class DamageableExtensionMethods

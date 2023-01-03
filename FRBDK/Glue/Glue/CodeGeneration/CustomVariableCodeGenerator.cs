@@ -974,7 +974,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // conflicts
                         // If a value is defined inside a class (like the Borders enum in SpriteFrame)
                         // then its type will come out with a +.  We need to replace that with a dot.
-                        customVariableType = TypeManager.ConvertToCommonType(type.FullName).Replace("+", ".");
+                        customVariableType = TypeManager.GetCommonTypeName(type.FullName).Replace("+", ".");
                     }
                 }
             }

@@ -755,6 +755,17 @@ namespace GlueControl
                     variableValue = (float)asDouble;
                 }
             }
+            else if (instruction.Type == "decimal" || instruction.Type == "Decimal")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (decimal)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (decimal)asDouble;
+                }
+            }
             else if (instruction.Type == "float?")
             {
                 if (variableValue is int asInt)

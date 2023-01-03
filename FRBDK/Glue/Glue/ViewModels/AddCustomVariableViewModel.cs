@@ -347,14 +347,14 @@ namespace GlueFormsCore.ViewModels
                     {
                         string type = ExposedVariableManager.GetMemberTypeForEntity(ResultName, asEntitySave);
 
-                        return TypeManager.ConvertToCommonType(type);
+                        return TypeManager.GetCommonTypeName(type);
 
                     }
                     else
                     {
                         string type = ExposedVariableManager.GetMemberTypeForScreen(ResultName, Element as ScreenSave);
 
-                        return TypeManager.ConvertToCommonType(type);
+                        return TypeManager.GetCommonTypeName(type);
                     }
                 }
                 else if (DesiredVariableType == CustomVariableType.Tunneled)
@@ -362,7 +362,7 @@ namespace GlueFormsCore.ViewModels
                     NamedObjectSave nos = Element.GetNamedObjectRecursively(SelectedTunneledObject);
                     string type = ExposedVariableManager.GetMemberTypeForNamedObject(nos, SelectedTunneledVariableName);
 
-                    return TypeManager.ConvertToCommonType(type);
+                    return TypeManager.GetCommonTypeName(type);
                 }
                 else
                 {

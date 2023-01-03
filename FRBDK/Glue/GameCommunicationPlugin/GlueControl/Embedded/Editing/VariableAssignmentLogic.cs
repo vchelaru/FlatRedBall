@@ -1,4 +1,4 @@
-﻿{CompilerDirectives}
+﻿{ CompilerDirectives}
 
 using FlatRedBall;
 using FlatRedBall.Math.Geometry;
@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using FlatRedBall.Math.Collision;
 using System.Collections;
 using GlueControl.Dtos;
-using {ProjectNamespace};
+using { ProjectNamespace};
 using FlatRedBall.Forms.Controls;
 using GlueControl.Models;
 using System.Runtime.CompilerServices;
@@ -1057,7 +1057,7 @@ namespace GlueControl.Editing
                     conversionReport += $"\nFound dictionary from {csvName}";
                     var itemInCsv = variableValue.Substring(0, indexOfIn);
 
-                    if(asDictionary.Contains(itemInCsv))
+                    if (asDictionary.Contains(itemInCsv))
                     {
                         convertedValue = asDictionary[itemInCsv];
                         conversionReport += $"\nFound entry in dictionary {itemInCsv}";
@@ -1087,156 +1087,62 @@ namespace GlueControl.Editing
             }
             else
             {
-                switch (type)
+                // let the type manager give it a shot first:
+                var handled = FlatRedBall.Glue.Parsing.TypeManager.TryConvertStringValue(type, variableValue, out convertedValue);
+
+                if (!handled)
                 {
-                    case "float":
-                    case nameof(Single):
-                    case "System.Single":
-
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = float.Parse(variableValue);
-                        }
-                        else
-                        {
-                            convertedValue = 0f;
-                        }
-                        break;
-                    case "float?":
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = float.Parse(variableValue);
-                        }
-                        else
-                        {
-                            convertedValue = (float?)null;
-                        }
-                        break;
-
-                    case "int":
-                    case nameof(Int32):
-                    case "System.Int32":
-
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = int.Parse(variableValue);
-                        }
-                        else
-                        {
-                            convertedValue = 0;
-                        }
-                        break;
-
-                    case "int?":
-
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = int.Parse(variableValue);
-                        }
-                        else
-                        {
-                            convertedValue = (int?)null;
-                        }
-
-                        break;
-
-                    case "bool":
-                    case nameof(Boolean):
-                    case "System.Boolean":
-
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = bool.Parse(variableValue.ToLowerInvariant());
-                        }
-                        else
-                        {
-                            convertedValue = false;
-                        }
-                        break;
-                    case "double":
-                    case nameof(Double):
-                    case "System.Double":
-
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = double.Parse(variableValue);
-                        }
-                        else
-                        {
-                            convertedValue = 0.0;
-                        }
-                        break;
-                    case "Microsoft.Xna.Framework.Color":
-                    case nameof(Microsoft.Xna.Framework.Color):
-                        if (!string.IsNullOrWhiteSpace(variableValue))
-                        {
-                            convertedValue = typeof(Microsoft.Xna.Framework.Color).GetProperty(variableValue).GetValue(null);
-                        }
-                        else
-                        {
-                            // do we default to white? that's default for shapes
-                            convertedValue = Microsoft.Xna.Framework.Color.White;
-                        }
-                        break;
-                    case "Texture2D":
-                    case "Microsoft.Xna.Framework.Graphics.Texture2D":
-                        if (convertFileNamesToObjects)
-                        {
-                            if (!string.IsNullOrWhiteSpace(variableValue))
+                    switch (type)
+                    {
+                        case "Texture2D":
+                        case "Microsoft.Xna.Framework.Graphics.Texture2D":
+                            if (convertFileNamesToObjects)
                             {
-                                convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                                    variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
-                            }
-                            else
-                            {
-                                convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
-                            }
-                        }
-                        break;
-                    case "FlatRedBall.Graphics.Animation.AnimationChainList":
-                    case "AnimationChainList":
-                        if (convertFileNamesToObjects)
-                        {
-                            if (!string.IsNullOrWhiteSpace(variableValue))
-                            {
-                                // try unqualified first:
-                                convertedValue = GetFileFromUnqualifiedName(variableValue);
-                                if (convertedValue == null)
+                                if (!string.IsNullOrWhiteSpace(variableValue))
                                 {
-                                    convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
+                                    convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
                                         variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
                                 }
+                                else
+                                {
+                                    convertedValue = (Microsoft.Xna.Framework.Graphics.Texture2D)null;
+                                }
                             }
-                            else
+                            break;
+                        case "FlatRedBall.Graphics.Animation.AnimationChainList":
+                        case "AnimationChainList":
+                            if (convertFileNamesToObjects)
                             {
-                                convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                                if (!string.IsNullOrWhiteSpace(variableValue))
+                                {
+                                    // try unqualified first:
+                                    convertedValue = GetFileFromUnqualifiedName(variableValue);
+                                    if (convertedValue == null)
+                                    {
+                                        convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
+                                            variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                    }
+                                }
+                                else
+                                {
+                                    convertedValue = (FlatRedBall.Graphics.Animation.AnimationChainList)null;
+                                }
                             }
-                        }
-                        break;
-                    case nameof(Microsoft.Xna.Framework.Graphics.TextureAddressMode):
-                    case "Microsoft.Xna.Framework.Graphics.TextureAddressMode":
-                        convertedValue = ToEnum<Microsoft.Xna.Framework.Graphics.TextureAddressMode>(variableValue);
-                        break;
-                    case nameof(FlatRedBall.Graphics.ColorOperation):
-                    case "FlatRedBall.Graphics.ColorOperation":
-                        convertedValue = ToEnum<FlatRedBall.Graphics.ColorOperation>(variableValue);
+                            break;
+                        case "HorizontalAlignment":
+                            // assume FRB horizontal alignment. At some point we may have to differentiate:
+                            convertedValue = ToEnum<FlatRedBall.Graphics.HorizontalAlignment>(variableValue);
+                            break;
+                        case "VerticalAlignment":
+                            // assume FRB horizontal alignment. At some point we may have to differentiate:
+                            convertedValue = ToEnum<FlatRedBall.Graphics.VerticalAlignment>(variableValue);
+                            break;
 
-                        break;
-                    case nameof(FlatRedBall.Graphics.BlendOperation):
-                    case "FlatRedBall.Graphics.BlendOperation":
-                        convertedValue = ToEnum<FlatRedBall.Graphics.BlendOperation>(variableValue);
-
-                        break;
-                    case "HorizontalAlignment":
-                        // assume FRB horizontal alignment. At some point we may have to differentiate:
-                        convertedValue = ToEnum<FlatRedBall.Graphics.HorizontalAlignment>(variableValue);
-                        break;
-                    case "VerticalAlignment":
-                        // assume FRB horizontal alignment. At some point we may have to differentiate:
-                        convertedValue = ToEnum<FlatRedBall.Graphics.VerticalAlignment>(variableValue);
-                        break;
+                    }
 
                 }
+
+
                 T ToEnum<T>(string asString)
                 {
                     if (int.TryParse(variableValue, out int parsedInt))

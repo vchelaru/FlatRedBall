@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ToolsUtilities;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.Parsing;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -510,32 +511,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (value == null)
             {
-                switch(type)
-                {
-                    case "float":
-                    case nameof(Single):
-                    case "System.Single":
-
-                    case "int":
-                    case nameof(Int32):
-                    case "System.Int32":
-
-                    case "long":
-                    case nameof(Int64):
-                    case "System.Int64":
-
-                    case "double":
-                    case nameof(Double):
-                    case "System.Double":
-                        value = "0";
-                        break;
-
-                    case "bool":
-                    case nameof(Boolean):
-                    case "System.Boolean":
-                        value = "false";
-                        break;
-                }
+                value = TypeManager.GetDefaultForType(type);
             }
         }
 

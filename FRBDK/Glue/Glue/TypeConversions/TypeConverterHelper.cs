@@ -45,6 +45,8 @@ namespace FlatRedBall.Glue.TypeConversions
             converter.AddConversion("float", "float", "value");
             converter.AddConversion("double", "double", "value");
 
+            converter.AddConversion("decimal", "decimal", "value");
+
             TypeConverters.Add("<default>", converter);
 
 

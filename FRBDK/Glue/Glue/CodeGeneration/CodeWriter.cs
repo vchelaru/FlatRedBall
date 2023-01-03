@@ -1615,7 +1615,7 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
-                memberType = TypeManager.ConvertToCommonType(memberType);
+                memberType = TypeManager.GetCommonTypeName(memberType);
             }
 
             // Fully qualify FRB names to prevent clashes with 
