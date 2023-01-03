@@ -822,23 +822,27 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public NamedObjectSave()
         {
-            GenerateTimedEmit = true;
-            Instantiate = true;
             mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             //Events = new List<EventSave>();
 
+
+
+            ContainedObjects = new List<NamedObjectSave>();
+
+        }
+
+        public void SetDefaults()
+        {
+            GenerateTimedEmit = true;
+            Instantiate = true;
             IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
             CallActivity = true;
-
             AttachToContainer = true;
             AddToManagers = true;
 
             FulfillsRequirement = "<NONE>";
-
-            ContainedObjects = new List<NamedObjectSave>();
-
             // Sept 25, 2020
             // This used to be 
             // true, but this causes
@@ -849,7 +853,6 @@ namespace FlatRedBall.Glue.SaveClasses
             // which probably matches what the user expects
             //IndependentOfCamera = true;
             IndependentOfCamera = false;
-
         }
 
         #endregion

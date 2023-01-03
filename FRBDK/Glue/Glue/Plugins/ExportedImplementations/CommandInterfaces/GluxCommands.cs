@@ -1357,6 +1357,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async Task<NamedObjectSave> AddNewNamedObjectToAsync(AddObjectViewModel addObjectViewModel, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true)
         {
             NamedObjectSave newNos = new NamedObjectSave();
+            newNos.SetDefaults();
+            newNos.AttachToContainer = true;
             await TaskManager.Self.AddAsync(async () =>
             {
                 if (element == null)

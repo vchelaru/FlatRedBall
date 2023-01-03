@@ -675,8 +675,6 @@ namespace FlatRedBall.Glue.Managers
 
         private async Task<ITreeNode> MoveEntityOnNamedObject(ITreeNode treeNodeMoving, ITreeNode targetNode)
         {
-            // todo - this should be in a task
-
             ITreeNode newTreeNode = null;
             var entity = treeNodeMoving.Tag as EntitySave;
 
@@ -716,45 +714,34 @@ namespace FlatRedBall.Glue.Managers
                 }
                 else
                 {
-                    var namedObject = new NamedObjectSave();
-
-                    if (GlueState.Self.CurrentGlueProject.FileVersion >=
-                        (int)GlueProjectSave.GluxVersions.ListsHaveAssociateWithFactoryBool)
-                    {
-                        namedObject.AssociateWithFactory = true;
-                    }
-                    namedObject.InstanceName =
-                        FileManager.RemovePath(entity.Name) + "1";
-
-                    StringFunctions.MakeNameUnique<NamedObjectSave>(
-                        namedObject, targetNamedObjectSave.ContainedObjects);
-
-                    // Not sure if we need to set this or not, but I think 
-                    // any instance added to a list will not be defined by base
-                    namedObject.DefinedByBase = false;
 
                     // make sure that the target list is the current
                     GlueState.Self.CurrentNamedObjectSave = targetNamedObjectSave;
 
                     var currentNosList = GlueState.Self.CurrentNamedObjectSave;
 
-                    NamedObjectSaveExtensionMethodsGlue.AddNamedObjectToList(namedObject,
-                        currentNosList);
+                    AddObjectViewModel viewModel = new AddObjectViewModel();
+                    viewModel.SourceType = SourceType.Entity;
+                    viewModel.SourceClassType = entity.Name;
+                    viewModel.ObjectName =
+                        FileManager.RemovePath(entity.Name) + "1";
+                    viewModel.ObjectName = StringFunctions.MakeStringUnique(
+                        viewModel.ObjectName, targetNamedObjectSave.ContainedObjects.Select(item => item.InstanceName).ToList());
+
+                    var namedObject = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(viewModel, targetElement, currentNosList, selectNewNos: true);
+
+                    // Not sure if we need to set this or not, but I think 
+                    // any instance added to a list will not be defined by base
+                    namedObject.DefinedByBase = false;
 
                     // If the tree node doesn't exist yet, this selection won't work:
                     GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(
                         targetElement);
 
-                    if (namedObject.SourceClassType != entity.Name)
-                    {
-                        namedObject.SourceClassType = entity.Name;
-                        namedObject.UpdateCustomProperties();
-                    }
 
                     // This needs to happen after setting the SourceclassType.
                     GlueState.Self.CurrentNamedObjectSave = namedObject;
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
 
                     // run after generated code so plugins like level editor work off latest code
                     PluginManager.ReactToNewObject(namedObject);
@@ -763,6 +750,8 @@ namespace FlatRedBall.Glue.Managers
                     // Don't save the Glux, the caller of this method will take care of it
                     // GluxCommands.Self.SaveGlux();
                     newTreeNode = GlueState.Self.Find.TreeNodeByTag(namedObject);
+
+                    var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(targetElement);
                 }
 
             }
