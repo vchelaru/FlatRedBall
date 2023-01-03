@@ -825,6 +825,21 @@ namespace FlatRedBall.Glue.SaveClasses
             mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             //Events = new List<EventSave>();
 
+            // These values must match the default property
+            // because I believe the default is excluded from json...
+            Instantiate = true;
+            AddToManagers = true;
+            IncludeInIVisible = true;
+            IncludeInIClickable = true;
+            IncludeInICollidable = true;
+            FulfillsRequirement = "<NONE>";
+            CallActivity = true;
+            AssociateWithFactory = true;
+
+            // Even though this is a good default, do not assign it in the constructor
+            // or it will wipe the "false" value.
+            // Instead, do it in SetDefault
+            //AttachToContainer = true;
 
 
             ContainedObjects = new List<NamedObjectSave>();
@@ -834,15 +849,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public void SetDefaults()
         {
             GenerateTimedEmit = true;
-            Instantiate = true;
-            IncludeInIVisible = true;
-            IncludeInIClickable = true;
-            IncludeInICollidable = true;
-            CallActivity = true;
             AttachToContainer = true;
-            AddToManagers = true;
 
-            FulfillsRequirement = "<NONE>";
             // Sept 25, 2020
             // This used to be 
             // true, but this causes
