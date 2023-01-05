@@ -13,8 +13,8 @@ namespace FlatRedBall.Entities
         int TeamIndex { get; }
 
         decimal DamageToDeal { get; }
-        event Func<decimal, IDamageable, decimal> ModifyDamageDealt;
-        event Action<decimal, IDamageable> ReactToDamageDealt;
-        event Action<decimal, IDamageable> KilledDamageable;
+        Func<decimal, IDamageable, decimal> ModifyDamageDealt { get; set; }
+        Action<decimal, IDamageable> ReactToDamageDealt { get; set; }
+        Action<decimal, IDamageable> KilledDamageable { get; set; }
     }
 }

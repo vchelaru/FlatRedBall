@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using FlatRedBall;
 
@@ -12,9 +13,11 @@ namespace FlatRedBall.Entities
         decimal CurrentHealth { get; set; }
         decimal MaxHealth { get; set; }
 
-        event Func<decimal, IDamageArea, decimal> ModifyDamageDealt;
-        event Action<decimal, IDamageArea> ReactToDamageDealt;
-        event Action<decimal, IDamageArea> Died;
+        Func<decimal, IDamageArea, decimal> ModifyDamageDealt { get; set; }
+        Action<decimal, IDamageArea> ReactToDamageDealt { get; set; }
+        Action<decimal, IDamageArea> Died { get; set; }
+
+
     }
 
     public static class DamageableExtensionMethods
@@ -64,5 +67,67 @@ namespace FlatRedBall.Entities
                 }
             }
         }
+
+        public static void TakeDamage(this IDamageable damageable, IDamageArea damageArea)
+        {
+            // The DamageArea provides the damage, so the order should be:
+            // 1. Damageable modifies
+            // 2. DamageArea modifies
+            // 3. Damageable CurrentHealth -= 
+            // 4. Damageable.ReactToDamageDealt
+            // 5. Damageable.ReactToDamageDealt
+            // --if Damageable.CurrentHealth <= 0
+            // 6. Damageable.Died
+            // 7. DamageArea.KilledDamageable
+
+            // do we destroy? I think ....hm...
+
+            // damageArea could be null, in the case of the player taking damage from something that isn't IDamageArea like a TileShapeCollection, so be sure to do null checks
+
+            var damage = damageArea.DamageToDeal;
+
+            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, damageArea) ?? damage;
+            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+
+            var healthBefore = damageable.CurrentHealth;
+
+            damageable.CurrentHealth -= modifiedByBoth;
+
+            damageable.ReactToDamageDealt?.Invoke(modifiedByBoth, damageArea);
+            damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+            if(healthBefore > 0 && damageable.CurrentHealth <= 0)
+            {
+                damageable?.Died(modifiedByBoth, damageArea);
+                damageArea?.KilledDamageable(modifiedByBoth, damageable);
+            }
+        }
+
+        // There could be situations where an object takes damage from something (like a tile shape collection) which
+        // is not an IDamageDealer.
+        // Vic considered making a version of this method that takes an object parameter, but this requires delegates
+        // that also take object. Then...does the player have to implement both to handle being dealt damage from IDamageable
+        // and object? That's a pain and confusing. So, we'll just keep it on IDamageable for now, and make it easier to create
+        // wrappers for common types like TileShapeCollection.
+        public static void TakeDamage(this IDamageable damageable, decimal damage)
+        {
+            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, null) ?? damage;
+            //var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+
+            var healthBefore = damageable.CurrentHealth;
+
+            damageable.CurrentHealth -= modifiedByDamageable;
+
+            damageable.ReactToDamageDealt?.Invoke(modifiedByDamageable, null);
+            //damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+            if (healthBefore > 0 && damageable.CurrentHealth <= 0)
+            {
+                damageable?.Died(modifiedByDamageable, null);
+                //damageArea?.KilledDamageable(modifiedByBoth, damageable);
+            }
+        }
+
+
     }
 }
