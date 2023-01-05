@@ -65,18 +65,21 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        // Not shown in the UI since this is never really used but we'll keep it here in case that changes in the future
         public bool IsIVisibleChecked
         {
             get => Get<bool>();
             set => Set(value);
         }
 
+        // Not shown in the UI since this is never really used but we'll keep it here in case that changes in the future
         public bool IsIClickableChecked
         {
             get => Get<bool>();
             set => Set(value);
         }
 
+        // Not shown in the UI since this is never really used but we'll keep it here in case that changes in the future
         public bool IsIWindowChecked
         {
             get => Get<bool>();
@@ -154,6 +157,12 @@ namespace GlueFormsCore.ViewModels
         }
 
         public bool IsIDamageableChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsIDamageAreaChecked
         {
             get => Get<bool>();
             set => Set(value);

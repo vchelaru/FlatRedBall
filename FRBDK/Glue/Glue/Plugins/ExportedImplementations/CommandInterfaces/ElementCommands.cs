@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
+using EditorObjects.IoC;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -445,45 +446,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 hasInheritance = true;
             }
 
-            if (viewModel.IsSpriteChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "SpriteInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsTextChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "TextInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsCircleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "CircleInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsAxisAlignedRectangleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
 
             // There are a few important things to note about this function:
             // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
@@ -498,65 +460,117 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //    because we'd have to suppress all the other calls.
             bool needsRefreshAndSave = false;
 
-            if (viewModel.IsPolygonChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "PolygonInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-
-                var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                CustomVariableInNamedObject instructions = null;
-                instructions = nos.GetCustomVariable("Points");
-                if (instructions == null)
-                {
-                    instructions = new CustomVariableInNamedObject();
-                    instructions.Member = "Points";
-                    nos.InstructionSaves.Add(instructions);
-                }
-                var points = new List<Vector2>();
-                points.Add(new Vector2(-16, 16));
-                points.Add(new Vector2(16, 16));
-                points.Add(new Vector2(16, -16));
-                points.Add(new Vector2(-16, -16));
-                points.Add(new Vector2(-16, 16));
-                instructions.Value = points;
-
-
-                needsRefreshAndSave = true;
-
-                GlueState.Self.CurrentElement = newElement;
-            }
-
             if(!hasInheritance)
             {
+                if (viewModel.IsSpriteChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "SpriteInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsTextChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "TextInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsCircleChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "CircleInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsAxisAlignedRectangleChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+                if (viewModel.IsPolygonChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "PolygonInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                    var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    CustomVariableInNamedObject instructions = null;
+                    instructions = nos.GetCustomVariable("Points");
+                    if (instructions == null)
+                    {
+                        instructions = new CustomVariableInNamedObject();
+                        instructions.Member = "Points";
+                        nos.InstructionSaves.Add(instructions);
+                    }
+                    var points = new List<Vector2>();
+                    points.Add(new Vector2(-16, 16));
+                    points.Add(new Vector2(16, 16));
+                    points.Add(new Vector2(16, -16));
+                    points.Add(new Vector2(-16, -16));
+                    points.Add(new Vector2(-16, 16));
+                    instructions.Value = points;
+
+
+                    needsRefreshAndSave = true;
+
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
                 if (viewModel.IsIVisibleChecked)
                 {
                     newElement.ImplementsIVisible = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIVisible), false);
                 }
 
                 if (viewModel.IsIClickableChecked)
                 {
                     newElement.ImplementsIClickable = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIClickable), false);
                 }
 
                 if (viewModel.IsIWindowChecked)
                 {
                     newElement.ImplementsIWindow = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIWindow), false);
                 }
 
                 if (viewModel.IsICollidableChecked)
                 {
                     newElement.ImplementsICollidable = true;
                     needsRefreshAndSave = true;
+
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsICollidable), false);
                 }
 
-                if(viewModel.IsIDamageableChecked)
+                if (viewModel.IsIDamageableChecked)
                 {
                     newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
+                    needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageable", false);
+                }
+                if (viewModel.IsIDamageAreaChecked)
+                {
+                    newElement.Properties.SetValue<bool>("ImplementsIDamageArea", true);
+                    needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageArea", false);
                 }
 
             }
@@ -575,7 +589,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
                 });
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newElement);
+                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
                 GluxCommands.Self.SaveGlux();
             }
 
@@ -1083,6 +1097,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueState.Self.CurrentEventResponseSave = eventResponseSave;
         }
+        #endregion
+
+        #region Property Set
+
+        public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
+        {
+            if(element is EntitySave entitySave)
+            {
+                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(propertyName, oldValue, entitySave);
+            }
+            else if(element is ScreenSave screenSave)
+            {
+                Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
+            }
+        }
+
         #endregion
 
         /// <summary>

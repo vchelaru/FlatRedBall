@@ -73,6 +73,16 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             return codeBlock;
         }
 
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        {
+            if(UsesDamageV2 && ImplementsIDamageable(element as EntitySave))
+            {
+                codeBlock.Line("CurrentHealth = MaxHealth;");
+            }
+
+            return base.GenerateInitialize(codeBlock, element);
+        }
+
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
             if (element is EntitySave entity)
@@ -94,10 +104,10 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
         }
 
         public static bool ImplementsIDamageArea(EntitySave entity) =>
-            entity.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageArea);
+            entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageArea) == true;
 
         public static bool ImplementsIDamageable(EntitySave entity) => 
-            entity.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageable);
+            entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageable) == true;
 
         public static bool SuppressDamagePropertyCodeGeneration(EntitySave entity) =>
             entity.Properties.GetValue<bool>(MainDamageDealingPlugin.SuppressDamagePropertyCodeGeneration);

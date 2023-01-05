@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
+using FlatRedBall.Math.Geometry;
 using FlatRedBall.Utilities;
 using OfficialPlugins.CollisionPlugin.Managers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
@@ -194,7 +195,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             var wasUpdatingFromGlue = ViewModel.IsUpdatingFromGlueObject;
             RefreshFirstAndSecondTypes(ViewModel, collisionRelationship);
-
+            RefreshDamageProperties(currentElement, ViewModel);
             ViewModel.Events.Clear();
             foreach (var eventSave in currentElement.Events)
             {
@@ -226,6 +227,52 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             viewModel.IsFirstList = isFirstList;
             viewModel.IsSecondList = isSecondList;
+        }
+
+        private static void RefreshDamageProperties(GlueElement element, CollisionRelationshipViewModel viewModel)
+        {
+            var firstNos = element.GetNamedObject(viewModel.FirstCollisionName);
+            var secondNos = element.GetNamedObject(viewModel.SecondCollisionName);
+
+            viewModel.IsFirstDamageable = false;
+            viewModel.IsFirstDamageArea = false;
+
+            viewModel.IsSecondDamageable = false;
+            viewModel.IsSecondDamageArea = false;
+
+            if (firstNos != null)
+            {
+                GlueElement firstNosElementType = null;
+                if (firstNos.IsList)
+                {
+                    var genericType = firstNos.SourceClassGenericType;
+                    firstNosElementType = ObjectFinder.Self.GetEntitySave(genericType);
+                }
+                else
+                {
+                    firstNosElementType = firstNos.GetReferencedElement();
+                }
+
+                viewModel.IsFirstDamageable = firstNosElementType?.Properties.GetValue<bool>("ImplementsIDamageable") == true;
+                viewModel.IsFirstDamageArea = firstNosElementType?.Properties.GetValue<bool>("ImplementsIDamageArea") == true;
+            }
+
+            if(secondNos != null)
+            {
+                GlueElement secondNosElementType = null;
+                if(secondNos.IsList)
+                {
+                    var genericType = secondNos.SourceClassGenericType;
+                    secondNosElementType = ObjectFinder.Self.GetEntitySave(genericType);
+                }
+                else
+                {
+                    secondNosElementType = secondNos.GetReferencedElement();
+                }
+
+                viewModel.IsSecondDamageable = secondNosElementType?.Properties.GetValue<bool>("ImplementsIDamageable") == true;
+                viewModel.IsSecondDamageArea = secondNosElementType?.Properties.GetValue<bool>("ImplementsIDamageArea") == true;
+            }
         }
 
         private static void RefreshPartitioningIcons(IElement element, CollisionRelationshipViewModel viewModel)
@@ -553,6 +600,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     RefreshPlatformerMovementValues(viewModel, firstElementType);
 
                     RefreshPartitioningIcons(element, viewModel);
+
+                    RefreshDamageProperties(element, viewModel);
 
                     if (TryFixMassesForTileShapeCollisionRelationship(element, relationshipNos))
                     {

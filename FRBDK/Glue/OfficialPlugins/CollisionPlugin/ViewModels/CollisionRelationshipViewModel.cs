@@ -33,11 +33,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     public class CollisionRelationshipViewModel :
         PropertyListContainerViewModel
     {
-        #region Fields/Properties
-
         public const string EntireObject = "<Entire Object>";
         public const string AlwaysColliding = "<Always Colliding>";
         public const string SelfCollisionSuffix = "(self collision)";
+
+        #region Object and Subcollision Object
 
         [SyncedProperty]
         public string FirstCollisionName
@@ -118,6 +118,36 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         {
             get => Get<string>();
             set => Set(value);
+        }
+
+        [DependsOn(nameof(FirstIndividualType))]
+        public string FirstIndividualStrippedType
+        {
+            get
+            {
+                var firstType = FirstIndividualType;
+                if (firstType?.Contains(".") == true)
+                {
+                    var lastDot = firstType.LastIndexOf('.');
+                    firstType = firstType.Substring(lastDot + 1);
+                }
+                return firstType;
+            }
+        }
+
+        [DependsOn(nameof(SecondIndividualType))]
+        public string SecondIndividualStrippedType
+        {
+            get
+            {
+                var secondType = SecondIndividualType;
+                if(secondType?.Contains(".") == true)
+                {
+                    var lastDot = secondType.LastIndexOf(".");
+                    secondType = secondType.Substring(lastDot + 1);
+                }
+                return secondType;
+            }
         }
 
         public string SecondIndividualType
@@ -217,6 +247,151 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [DependsOn(nameof(CollisionType))]
         public Visibility NoSubcollisionMessageVisibility => (CollisionType == CollisionType.DelegateCollision).ToVisibility();
+
+        #endregion
+
+        #region Warning
+        [DependsOn(nameof(WarningText))]
+        public Visibility WarningVisibility
+        {
+            get
+            {
+                if(!string.IsNullOrEmpty(WarningText))
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+
+        [DependsOn(nameof(GlueObject))]
+        [DependsOn(nameof(FirstCollisionName))]
+        [DependsOn(nameof(SecondCollisionName))]
+        public string WarningText
+        {
+            get
+            {
+                var nos = GlueObject as NamedObjectSave;
+
+                if(nos != null)
+                {
+                    bool isFirstList;
+                    bool isSecondList;
+
+                    var firstType = AssetTypeInfoManager.GetFirstGenericType(
+                        nos, out isFirstList);
+                    var secondType = AssetTypeInfoManager.GetSecondGenericType(
+                        nos, out isSecondList);
+
+                    var isFirstTileShapeCollection = firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
+                    var isSecondTileShapeCollection = secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
+
+                    var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
+                    var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
+
+                    var isFirstCollidable = !string.IsNullOrEmpty(FirstCollisionName) &&
+                        !isFirstList &&
+                        !isFirstTileShapeCollection &&
+                        !isFirstShapeCollection;
+
+                    var isSecondCollidable = !string.IsNullOrEmpty(SecondCollisionName) &&
+                        !isSecondList &&
+                        !isSecondTileShapeCollection &&
+                        !isSecondShapeCollection;
+
+                    if(isFirstTileShapeCollection)
+                    {
+                        return "First object cannot be a TileShapeCollection - " +
+                            "only the second";
+                    }
+                    if(isFirstShapeCollection)
+                    {
+                        return "First object cannot be a ShapeCollection - " +
+                            "only the second";
+                    }
+
+                    if (!string.IsNullOrEmpty(FirstCollisionName) &&
+                        FirstCollisionName == SecondCollisionName)
+                    {
+                        if(isFirstCollidable && isSecondCollidable)
+                        {
+                            return $"Cannot create relationship for collidable " +
+                                $"{FirstCollisionName} against itself";
+                        }
+                    }
+                }
+                return null;
+            }
+        }
+
+        #endregion
+
+        [SyncedProperty]
+        public bool IsAutoNameEnabled
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        #region Active/Inactive
+
+        [SyncedProperty]
+        [DefaultValue(true)]
+        public bool IsCollisionActive
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(IsCollisionActive))]
+        public Visibility InactiveMessageVisibility => IsCollisionActive ?
+            Visibility.Collapsed : Visibility.Visible;
+
+        #endregion
+
+        #region Collision Limit
+
+        [DependsOn(nameof(IsFirstList))]
+        [DependsOn(nameof(IsSecondList))]
+        public Visibility CollisionLimitUiVisibility => (IsFirstList && IsSecondList).ToVisibility();
+
+        [DependsOn(nameof(IsFirstList))]
+        [DependsOn(nameof(IsSecondList))]
+        public Visibility ListVsListDuplicateVisibility => (IsFirstList && IsSecondList).ToVisibility();
+
+        [SyncedProperty]
+        public ListVsListLoopingMode ListVsListLoopingMode
+        {
+            get => (ListVsListLoopingMode)Get<int>();
+            set => SetAndPersist((int)value);
+        }
+
+        [DependsOn(nameof(ListVsListLoopingMode))]
+        public bool IsPreventDoubleChecksChecked
+        {
+            get => ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame;
+            set
+            {
+                if (value) ListVsListLoopingMode = ListVsListLoopingMode.PreventDoubleChecksPerFrame;
+            }
+        }
+
+        [DependsOn(nameof(ListVsListLoopingMode))]
+        public bool IsAllowDoubleChecksChecked
+        {
+            get => ListVsListLoopingMode == ListVsListLoopingMode.AllowDoubleChecksPerFrame;
+            set
+            {
+                if (value) ListVsListLoopingMode = ListVsListLoopingMode.AllowDoubleChecksPerFrame;
+            }
+        }
+
+        #endregion
+
+        #region Physics
 
         [SyncedProperty]
         public CollisionType CollisionType
@@ -324,86 +499,27 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         }
 
         [DependsOn(nameof(CollisionLimit))]
-        [DependsOn(nameof(FirstIndividualType))]
-        [DependsOn(nameof(SecondIndividualType))]
+        [DependsOn(nameof(FirstIndividualStrippedType))]
+        [DependsOn(nameof(SecondIndividualStrippedType))]
         public string CollisionLimitExplanationText
         {
             get
             {
-                var firstType = FirstIndividualType;
-                if(firstType?.Contains(".") == true)
-                {
-                    var lastDot = firstType.LastIndexOf('.');
-                    firstType = firstType.Substring(lastDot + 1);
-                }
-                var secondType = SecondIndividualType;
-                if(secondType?.Contains(".") == true)
-                {
-                    var lastDot = secondType.LastIndexOf('.');
-                    secondType = secondType.Substring(lastDot + 1);
-                }
-
                 switch (CollisionLimit)
                 {
                     case CollisionLimit.All:
-                        return $"Each {secondType} will attempt to collide against each {firstType} each frame";
+                        return $"Each {SecondIndividualStrippedType} will attempt to collide against each {FirstIndividualStrippedType} each frame";
                     case CollisionLimit.First:
-                        return $"Each {secondType} will only collide at most with one {firstType} each frame";
+                        return $"Each {SecondIndividualStrippedType} will only collide at most with one {FirstIndividualStrippedType} each frame";
 
                 }
                 return "";
             }
         }
 
-        [DependsOn(nameof(IsFirstList))]
-        [DependsOn(nameof(IsSecondList))]
-        public Visibility CollisionLimitUiVisibility => (IsFirstList && IsSecondList).ToVisibility();
-
         [DependsOn(nameof(IsFirstAlwaysColliding))]
         public Visibility CollisionPhysicsUiVisibility => (IsFirstAlwaysColliding == false).ToVisibility();
 
-        [DependsOn(nameof(IsFirstList))]
-        [DependsOn(nameof(IsSecondList))]
-        public Visibility ListVsListDuplicateVisibility => (IsFirstList && IsSecondList).ToVisibility();
-
-        [SyncedProperty]
-        public ListVsListLoopingMode ListVsListLoopingMode
-        {
-            get => (ListVsListLoopingMode)Get<int>();
-            set => SetAndPersist((int)value);
-        }
-
-        [DependsOn(nameof(ListVsListLoopingMode))]
-        public bool IsPreventDoubleChecksChecked
-        {
-            get => ListVsListLoopingMode == ListVsListLoopingMode.PreventDoubleChecksPerFrame;
-            set
-            {
-                if (value) ListVsListLoopingMode = ListVsListLoopingMode.PreventDoubleChecksPerFrame;
-            }
-        }
-
-        [DependsOn(nameof(ListVsListLoopingMode))]
-        public bool IsAllowDoubleChecksChecked
-        {
-            get => ListVsListLoopingMode == ListVsListLoopingMode.AllowDoubleChecksPerFrame;
-            set
-            {
-                if (value) ListVsListLoopingMode = ListVsListLoopingMode.AllowDoubleChecksPerFrame;
-            }
-        }
-
-
-        public bool IsFirstPlatformer
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        public bool IsFirstStackable
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
 
         public bool IsSecondStackable
         {
@@ -481,6 +597,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(SupportsManualPhysics))]
         public Visibility AutomaticallyApplyPhysicsVisibility => SupportsManualPhysics.ToVisibility();
 
+
+
         [SyncedProperty]
         [DefaultValue(true)]
         public bool IsAutomaticallyApplyPhysicsChecked
@@ -528,112 +646,20 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value); 
         }
 
-        [DependsOn(nameof(WarningText))]
-        public Visibility WarningVisibility
-        {
-            get
-            {
-                if(!string.IsNullOrEmpty(WarningText))
-                {
-                    return Visibility.Visible;
-                }
-                else
-                {
-                    return Visibility.Collapsed;
-                }
-            }
-        }
 
-        [SyncedProperty]
-        public bool IsAutoNameEnabled
+        #endregion
+
+        #region Platformer
+
+        public bool IsFirstPlatformer
         {
             get => Get<bool>();
-            set => SetAndPersist(value);
+            set => Set(value);
         }
-
-
-        [SyncedProperty]
-        [DefaultValue(true)]
-        public bool IsCollisionActive
+        public bool IsFirstStackable
         {
             get => Get<bool>();
-            set => SetAndPersist(value);
-        }
-
-        [DependsOn(nameof(IsCollisionActive))]
-        public Visibility InactiveMessageVisibility => IsCollisionActive ?
-            Visibility.Collapsed : Visibility.Visible;
-
-        [DependsOn(nameof(GlueObject))]
-        [DependsOn(nameof(FirstCollisionName))]
-        [DependsOn(nameof(SecondCollisionName))]
-        public string WarningText
-        {
-            get
-            {
-                var nos = GlueObject as NamedObjectSave;
-
-                if(nos != null)
-                {
-                    bool isFirstList;
-                    bool isSecondList;
-
-                    var firstType = AssetTypeInfoManager.GetFirstGenericType(
-                        nos, out isFirstList);
-                    var secondType = AssetTypeInfoManager.GetSecondGenericType(
-                        nos, out isSecondList);
-
-                    var isFirstTileShapeCollection = firstType == "FlatRedBall.TileCollisions.TileShapeCollection";
-                    var isSecondTileShapeCollection = secondType == "FlatRedBall.TileCollisions.TileShapeCollection";
-
-                    var isFirstShapeCollection = firstType == "FlatRedBall.Math.Geometry.ShapeCollection";
-                    var isSecondShapeCollection = secondType == "FlatRedBall.Math.Geometry.ShapeCollection";
-
-                    var isFirstCollidable = !string.IsNullOrEmpty(FirstCollisionName) &&
-                        !isFirstList &&
-                        !isFirstTileShapeCollection &&
-                        !isFirstShapeCollection;
-
-                    var isSecondCollidable = !string.IsNullOrEmpty(SecondCollisionName) &&
-                        !isSecondList &&
-                        !isSecondTileShapeCollection &&
-                        !isSecondShapeCollection;
-
-                    if(isFirstTileShapeCollection)
-                    {
-                        return "First object cannot be a TileShapeCollection - " +
-                            "only the second";
-                    }
-                    if(isFirstShapeCollection)
-                    {
-                        return "First object cannot be a ShapeCollection - " +
-                            "only the second";
-                    }
-
-                    if (!string.IsNullOrEmpty(FirstCollisionName) &&
-                        FirstCollisionName == SecondCollisionName)
-                    {
-                        if(isFirstCollidable && isSecondCollidable)
-                        {
-                            return $"Cannot create relationship for collidable " +
-                                $"{FirstCollisionName} against itself";
-                        }
-                    }
-                }
-                return null;
-            }
-        }
-
-        public ObservableCollection<EventResponseSave> Events
-        {
-            get => Get<ObservableCollection<EventResponseSave>>();
-            private set => Set(value);
-        }
-
-        public Visibility AddEventButtonVisibility
-        {
-            get => Events.Count == 0 ? Visibility.Visible
-                : Visibility.Collapsed;
+            set => Set(value);
         }
 
         public ObservableCollection<string> AvailablePlatformerVariableNames
@@ -675,6 +701,91 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => Get<string>();
             set => SetAndPersist(value);
         }
+
+        #endregion
+
+        #region Damage
+
+        public bool IsFirstDamageable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondDamageable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsFirstDamageArea
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSecondDamageArea
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(IsFirstDamageable))]
+        [DependsOn(nameof(IsSecondDamageable))]
+        [DependsOn(nameof(IsFirstDamageArea))]
+        [DependsOn(nameof(IsSecondDamageArea))]
+        public Visibility DamageValuesVisibility =>
+            ((IsFirstDamageable && IsSecondDamageArea) ||
+            (IsSecondDamageable && IsFirstDamageArea)).ToVisibility();
+
+        [SyncedProperty]
+        public bool IsDealDamageChecked
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(IsFirstDamageArea))]
+        public Visibility DestroyFirstOnDamageVisibility => IsFirstDamageArea.ToVisibility();
+        [DependsOn(nameof(IsSecondDamageArea))]
+        public Visibility DestroySecondOnDamageVisibility => IsSecondDamageArea.ToVisibility();
+
+        [SyncedProperty]
+        public bool IsDestroyFirstOnDamageChecked
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [SyncedProperty]
+        public bool IsDestroySecondOnDamageChecked
+        {
+            get => Get<bool>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(FirstIndividualStrippedType))]
+        public string DestroyFirstOnDamageText => $"Destroy {FirstIndividualStrippedType} on Damage";
+
+        [DependsOn(nameof(SecondIndividualStrippedType))]
+        public string DestroySecondOnDamageText => $"Destroy {SecondIndividualStrippedType} on Damage";
+
+        #endregion
+
+        #region Events
+
+        public ObservableCollection<EventResponseSave> Events
+        {
+            get => Get<ObservableCollection<EventResponseSave>>();
+            private set => Set(value);
+        }
+
+        public Visibility AddEventButtonVisibility
+        {
+            get => Events.Count == 0 ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
         #endregion
 
         public CollisionRelationshipViewModel()

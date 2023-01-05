@@ -24,15 +24,15 @@ namespace FlatRedBall.Entities
     {
         /// <summary>
         /// Returns whether the argument IDamageable should take damage from the argument IDamageArea.
-        /// This returns true if the team indexes are different, and if enough time has passed since the 
-        /// last damage wad ealt by this particular IDamageArea instance.
+        /// This returns true if the team indexes are different, ifthe damageable has > 0 CurrentHealth,
+        /// and if enough time has passed since the last damage was dealt by this particular IDamageArea instance. 
         /// </summary>
         /// <param name="damageable">The damageable object, typically a Player or Enemy.</param>
         /// <param name="damageArea">The damage dealing object, typically a bullet or enemy.</param>
         /// <returns></returns>
         public static bool ShouldTakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
-            if(damageable.TeamIndex == damageArea.TeamIndex)
+            if (damageable.TeamIndex == damageArea.TeamIndex || damageable.CurrentHealth <= 0)
             {
                 return false;
             }
@@ -98,8 +98,8 @@ namespace FlatRedBall.Entities
 
             if(healthBefore > 0 && damageable.CurrentHealth <= 0)
             {
-                damageable?.Died(modifiedByBoth, damageArea);
-                damageArea?.KilledDamageable(modifiedByBoth, damageable);
+                damageable?.Died?.Invoke(modifiedByBoth, damageArea);
+                damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
             }
         }
 

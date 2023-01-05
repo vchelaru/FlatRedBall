@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.SetVariable
         }
 
         /// <summary>
-        /// Reacts to the changing of a property by name considering the current GlueElement, NamedObject, REferencedFile, StateSave, StateSaveCategory, Event, or Variable.
+        /// Reacts to the changing of a property by name considering the current GlueElement, NamedObject, ReferencedFile, StateSave, StateSaveCategory, Event, or Variable.
         /// Note that this should not be called if a property change occurs on an object which is not selected. In that case, the
         /// specific Logic object should be invoked.
         /// </summary>

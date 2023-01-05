@@ -39,9 +39,7 @@
             <StackPanel>
                 <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}" IsEnabled="{Binding IsICollidableEnabled}">ICollidable</CheckBox>
                 <CheckBox x:Name="IDamageableCheckBox" IsChecked="{Binding IsIDamageableChecked}">IDamageable (can take damage)</CheckBox>
-                <CheckBox x:Name="IVisibleCheckBox" IsChecked="{Binding IsIVisibleChecked}">IVisible</CheckBox>
-                <CheckBox x:Name="IClickableCheckBox" IsChecked="{Binding IsIClickableChecked}">IClickable</CheckBox>
-                <CheckBox x:Name="IWindowCheckBox" IsChecked="{Binding IsIWindowChecked}">IWindow</CheckBox>
+                <CheckBox x:Name="IDamageAreaCheckBox" IsChecked="{Binding IsIDamageAreaChecked}">IDamageArea (can deal damage)</CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Creation">
