@@ -822,27 +822,37 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public NamedObjectSave()
         {
+            GenerateTimedEmit = true;
+            Instantiate = true;
             mTypedMembersReadOnly = new ReadOnlyCollection<TypedMemberBase>(mTypedMembers);
             //Events = new List<EventSave>();
 
-            // These values must match the default property
-            // because I believe the default is excluded from json...
-            Instantiate = true;
-            AddToManagers = true;
             IncludeInIVisible = true;
             IncludeInIClickable = true;
             IncludeInICollidable = true;
-            FulfillsRequirement = "<NONE>";
             CallActivity = true;
-            AssociateWithFactory = true;
 
-            // Even though this is a good default, do not assign it in the constructor
-            // or it will wipe the "false" value.
-            // Instead, do it in SetDefault
-            //AttachToContainer = true;
+            AttachToContainer = true;
+            AddToManagers = true;
 
+            FulfillsRequirement = "<NONE>";
 
             ContainedObjects = new List<NamedObjectSave>();
+
+            // Sept 25, 2020
+            // This used to be 
+            // true, but this causes
+            // unexpected behavior when 
+            // 2D games are resized. If we
+            // set this to false, then layers
+            // will automatically match the camera,
+            // which probably matches what the user expects
+            //IndependentOfCamera = true;
+            IndependentOfCamera = false;
+
+            // do not set this to true:
+            //AssociateWithFactory
+            // This will result in accumulation of values
 
         }
 
@@ -861,6 +871,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // which probably matches what the user expects
             //IndependentOfCamera = true;
             IndependentOfCamera = false;
+            AssociateWithFactory = true;
         }
 
         #endregion
