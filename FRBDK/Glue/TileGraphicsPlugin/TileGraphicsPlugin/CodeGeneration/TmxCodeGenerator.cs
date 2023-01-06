@@ -33,12 +33,12 @@ namespace TileGraphicsPlugin.CodeGeneration
             {
                 if(nos.GetAssetTypeInfo()?.Extension == "tmx")
                 {
+                    GenerateShiftZ0Code(nos, codeBlock);
+
                     // not sure if we need this for files, but for now
                     // going to implement just on NOS's since that's the 
                     // preferred pattern.
                     GenerateCreateEntitiesCode(nos, element as GlueElement, codeBlock);
-
-                    GenerateShiftZ0Code(nos, codeBlock);
                 }
             }
 
