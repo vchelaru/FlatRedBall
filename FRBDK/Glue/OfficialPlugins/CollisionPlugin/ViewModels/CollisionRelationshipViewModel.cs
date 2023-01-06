@@ -735,8 +735,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(IsFirstDamageArea))]
         [DependsOn(nameof(IsSecondDamageArea))]
         public Visibility DamageValuesVisibility =>
-            ((IsFirstDamageable && IsSecondDamageArea) ||
-            (IsSecondDamageable && IsFirstDamageArea)).ToVisibility();
+            // Only need to check if one is damageable. It doesn't matter
+            // if the other is a dmaage area.
+            //((IsFirstDamageable && IsSecondDamageArea) ||
+            //(IsSecondDamageable && IsFirstDamageArea)).ToVisibility();
+            (IsSecondDamageArea || IsFirstDamageArea).ToVisibility();
 
         [SyncedProperty]
         public bool IsDealDamageChecked
@@ -744,6 +747,11 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => Get<bool>();
             set => SetAndPersist(value);
         }
+
+
+        [DependsOn(nameof(IsFirstDamageArea))]
+        [DependsOn(nameof(IsSecondDamageArea))]
+        public Visibility DealDamageCheckBoxVisibility => (IsFirstDamageable || IsSecondDamageable).ToVisibility();
 
         [DependsOn(nameof(IsFirstDamageArea))]
         public Visibility DestroyFirstOnDamageVisibility => IsFirstDamageArea.ToVisibility();
@@ -764,11 +772,18 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
+        [DependsOn(nameof(IsSecondDamageable))]
+        string FirstDestroyDamageOrCollision => IsSecondDamageable ? "Damage" : "Collision";
         [DependsOn(nameof(FirstIndividualStrippedType))]
-        public string DestroyFirstOnDamageText => $"Destroy {FirstIndividualStrippedType} on Damage";
+        [DependsOn(nameof(FirstDestroyDamageOrCollision))]
+        public string DestroyFirstOnDamageText => $"Destroy {FirstIndividualStrippedType} on {FirstDestroyDamageOrCollision}";
 
+
+        [DependsOn(nameof(IsFirstDamageable))]
+        string SecondDestroyDamageOrCollision => IsFirstDamageable ? "Damage" : "Collision";
         [DependsOn(nameof(SecondIndividualStrippedType))]
-        public string DestroySecondOnDamageText => $"Destroy {SecondIndividualStrippedType} on Damage";
+        [DependsOn(nameof(SecondDestroyDamageOrCollision))]
+        public string DestroySecondOnDamageText => $"Destroy {SecondIndividualStrippedType} on {SecondDestroyDamageOrCollision}";
 
         #endregion
 

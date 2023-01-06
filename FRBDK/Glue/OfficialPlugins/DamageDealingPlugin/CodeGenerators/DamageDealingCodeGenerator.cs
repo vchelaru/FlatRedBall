@@ -51,6 +51,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                         codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageable, decimal> ModifyDamageDealt { get; set; }");
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> ReactToDamageDealt { get; set; }");
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> KilledDamageable { get; set; }");
+                        codeBlock.Line("public Action<FlatRedBall.Entities.IDamageable> RemovedByCollision { get; set; }");
+                        
     }
                 }
                 if (ImplementsIDamageable(entity) && !SuppressDamagePropertyCodeGeneration(entity))

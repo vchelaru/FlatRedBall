@@ -220,9 +220,11 @@
 
             <GroupBox Header="Damage" Visibility="{Binding DamageValuesVisibility}" Margin="0,8,0,0">
                 <StackPanel>
-                    <CheckBox IsChecked="{Binding IsDealDamageChecked}">Deal Damage in Generated Code</CheckBox>
-                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" IsChecked="{Binding IsDestroyFirstOnDamageChecked}" Content="{Binding DestroyFirstOnDamageText, FallbackValue=Destroy First on Damage}"></CheckBox>
-                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" IsChecked="{Binding IsDestroySecondOnDamageChecked}" Content="{Binding DestroySecondOnDamageText, FallbackValue=Destroy Second on Damage}"></CheckBox>
+                    <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}">Deal Damage in Generated Code</CheckBox>
+                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" 
+                              IsChecked="{Binding IsDestroyFirstOnDamageChecked}" Content="{Binding DestroyFirstOnDamageText, FallbackValue=Destroy First on Damage}"></CheckBox>
+                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" 
+                              IsChecked="{Binding IsDestroySecondOnDamageChecked}" Content="{Binding DestroySecondOnDamageText, FallbackValue=Destroy Second on Damage}"></CheckBox>
                 </StackPanel>
             </GroupBox>
             

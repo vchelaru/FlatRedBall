@@ -16,5 +16,6 @@ namespace FlatRedBall.Entities
         Func<decimal, IDamageable, decimal> ModifyDamageDealt { get; set; }
         Action<decimal, IDamageable> ReactToDamageDealt { get; set; }
         Action<decimal, IDamageable> KilledDamageable { get; set; }
+        Action<IDamageable> RemovedByCollision { get; set; }
     }
 }

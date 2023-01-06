@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace OfficialPlugins.CollisionPlugin
 {
@@ -370,39 +371,59 @@ namespace OfficialPlugins.CollisionPlugin
             var destroyFirst = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroyFirstOnDamageChecked));
             var destroySecond = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroySecondOnDamageChecked));
 
-            if(dealDamageInGeneratedCode)
+            var shouldGenerateEvent = dealDamageInGeneratedCode || 
+                (destroyFirst && isFirstDamageArea) ||
+                (destroySecond && isSecondDamageArea);
+
+            ICodeBlock eventBlock = null;
+
+            if(shouldGenerateEvent)
+            {
+                codeBlock.Line($"{instanceName}.CollisionOccurred += (first, second) =>");
+                eventBlock = codeBlock.Block();
+            }
+
+            if(shouldGenerateEvent)
             {
                 var firstTakesDamage = isFirstDamageable && isSecondDamageArea;
                 var secondTakesDamage = isSecondDamageable && isFirstDamageArea;
-                if(firstTakesDamage || secondTakesDamage)
+                if(firstTakesDamage && dealDamageInGeneratedCode)
                 {
-                    codeBlock.Line($"{instanceName}.CollisionOccurred += (first, second) =>");
-                    var eventBlock = codeBlock.Block();
-                    if(firstTakesDamage)
+                    var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(first, second)");
+                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
+                    if(destroySecond)
                     {
-                        var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(first, second)");
-                        ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
-                        if(destroySecond)
-                        {
-                            ifBlock.Line("second.Destroy();");
-                        }
-                        // Do we want this to be conditional? Let's make it always on for now and see if users complain...
-                        ifBlock.If("first.CurrentHealth <= 0").Line("first.Destroy();");
+                        ifBlock.Line("second.RemovedByCollision?.Invoke(first);");
+                        ifBlock.Line("second.Destroy();");
                     }
-                    if(secondTakesDamage)
-                    {
-                        var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(second, first)");
-                        ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
-                        if(destroyFirst)
-                        {
-                            ifBlock.Line("first.Destroy();");
-                        }
-                        ifBlock.If("second.CurrentHealth <= 0").Line("second.Destroy();");
-                    }
-                    codeBlock.Line(";");
+                    // Do we want this to be conditional? Let's make it always on for now and see if users complain...
+                    ifBlock.If("first.CurrentHealth <= 0").Line("first.Destroy();");
+                }
+                else if(destroySecond && isSecondDamageArea)
+                {
+                    eventBlock.Line("second.RemovedByCollision?.Invoke(null);");
+                    eventBlock.Line("second.Destroy();");
                 }
 
+                if (secondTakesDamage && dealDamageInGeneratedCode)
+                {
+                    var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(second, first)");
+                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
+                    if(destroyFirst)
+                    {
+                        ifBlock.Line("first.RemovedByCollision?.Invoke(second);");
+                        ifBlock.Line("first.Destroy();");
+                    }
+                    ifBlock.If("second.CurrentHealth <= 0").Line("second.Destroy();");
+                }
+                else if(destroyFirst && isFirstDamageArea)
+                {
+                    eventBlock.Line("first.RemovedByCollision?.Invoke(null);");
+                    eventBlock.Line("first.Destroy();");
+                }
+                codeBlock.Line(";");
             }
+
         }
 
         private static void GeneratePlatformerCollision(ICodeBlock codeBlock,
