@@ -8,6 +8,13 @@ using System.Windows;
 
 namespace GlueFormsCore.ViewModels
 {
+    public enum TeamIndexOption
+    {
+        Team0,
+        Team1,
+        Custom
+    }
+
     public class AddEntityViewModel : ViewModel
     {
         public string Name
@@ -16,6 +23,33 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        #region Failure/Validation
+
+        [DependsOn(nameof(Name))]
+        public string FailureText
+        {
+            get
+            {
+                var isValid = NameVerifier.IsEntityNameValid(Name, null, out string whyIsntValid);
+
+                if (!isValid)
+                {
+                    return whyIsntValid;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FailureText))]
+        public Visibility FailureTextVisibility => string.IsNullOrWhiteSpace(FailureText) ?
+            Visibility.Collapsed : Visibility.Visible;
+
+        #endregion
+
+        #region Visuals
 
         public bool IsSpriteChecked
         {
@@ -28,6 +62,14 @@ namespace GlueFormsCore.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(SelectedBaseEntity))]
+        public Visibility VisualsVisibility =>
+            (HasInheritance == false).ToVisibility();
+
+        #endregion
+
+        #region Collisions
 
         public bool IsCircleChecked
         {
@@ -65,6 +107,20 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+        [DependsOn(nameof(SelectedBaseEntity))]
+        public Visibility CollisionsVisibility =>
+            (HasInheritance == false).ToVisibility();
+
+        public bool IsICollidableEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
+
+        #region Interfaces
+
         // Not shown in the UI since this is never really used but we'll keep it here in case that changes in the future
         public bool IsIVisibleChecked
         {
@@ -92,27 +148,23 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
-        [DependsOn(nameof(Name))]
-        public string FailureText
-        {
-            get
-            {
-                var isValid = NameVerifier.IsEntityNameValid(Name, null, out string whyIsntValid);
+        bool hasExplicitlyUncheckedICollidable;
 
-                if (!isValid)
+        public bool IsICollidableChecked
+        {
+            get => Get<bool>();
+            set
+            {
+                if (Set(value) && !value)
                 {
-                    return whyIsntValid;
-                }
-                else
-                {
-                    return null;
+                    hasExplicitlyUncheckedICollidable = true;
                 }
             }
         }
 
-        [DependsOn(nameof(FailureText))]
-        public Visibility FailureTextVisibility => string.IsNullOrWhiteSpace(FailureText) ?
-            Visibility.Collapsed : Visibility.Visible;
+        #endregion
+
+        #region Inheritance
 
         public ObservableCollection<string> BaseEntityOptions
         {
@@ -133,28 +185,7 @@ namespace GlueFormsCore.ViewModels
         public Visibility InterfaceVisibility =>
             (HasInheritance == false).ToVisibility();
 
-        [DependsOn(nameof(SelectedBaseEntity))]
-        public Visibility VisualsVisibility =>
-            (HasInheritance == false).ToVisibility();
-
-        [DependsOn(nameof(SelectedBaseEntity))]
-        public Visibility CollisionsVisibility =>
-            (HasInheritance == false).ToVisibility();
-
-
-        bool hasExplicitlyUncheckedICollidable;
-
-        public bool IsICollidableChecked
-        {
-            get => Get<bool>();
-            set
-            {
-                if (Set(value) && !value)
-                {
-                    hasExplicitlyUncheckedICollidable = true;
-                }
-            }
-        }
+        #endregion
 
         public bool IsIDamageableChecked
         {
@@ -168,17 +199,69 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
-        public bool IsICollidableEnabled
+        [DependsOn(nameof(IsIDamageableChecked))]
+        [DependsOn(nameof(IsIDamageAreaChecked))]
+        public Visibility TeamIndexUiVisibility =>
+            (IsIDamageableChecked || IsIDamageAreaChecked).ToVisibility();
+
+        public TeamIndexOption TeamIndexOption
         {
-            get => Get<bool>();
+            get => Get<TeamIndexOption>();
             set => Set(value);
         }
+
+        [DependsOn(nameof(TeamIndexOption))]
+        public bool IsTeamIndex0Checked
+        {
+            get => TeamIndexOption == TeamIndexOption.Team0;
+            set
+            {
+                if(value)
+                {
+                    TeamIndexOption = TeamIndexOption.Team0;
+                }
+            }
+        }
+
+        [DependsOn(nameof(TeamIndexOption))]
+        public bool IsTeamIndex1Checked
+        {
+            get => TeamIndexOption == TeamIndexOption.Team1;
+            set
+            {
+                if (value)
+                {
+                    TeamIndexOption = TeamIndexOption.Team1;
+                }
+            }
+        }
+
+        [DependsOn(nameof(TeamIndexOption))]
+        public bool IsCustomTeamIndexChecked
+        {
+            get => TeamIndexOption == TeamIndexOption.Custom;
+            set
+            {
+                if (value)
+                {
+                    TeamIndexOption = TeamIndexOption.Custom;
+                }
+            }
+        }
+
+        [DependsOn(nameof(IsCustomTeamIndexChecked))]
+        public Visibility CustomTeamIndexTextBoxVisibility =>
+            IsCustomTeamIndexChecked.ToVisibility();
+
+        #region Factory
 
         public bool IsCreateFactoryChecked
         {
             get => Get<bool>();
             set => Set(value);
         }
+
+        #endregion
 
         public AddEntityViewModel()
         {

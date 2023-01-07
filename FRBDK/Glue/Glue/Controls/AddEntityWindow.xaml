@@ -40,6 +40,14 @@
                 <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}" IsEnabled="{Binding IsICollidableEnabled}">ICollidable</CheckBox>
                 <CheckBox x:Name="IDamageableCheckBox" IsChecked="{Binding IsIDamageableChecked}">IDamageable (can take damage)</CheckBox>
                 <CheckBox x:Name="IDamageAreaCheckBox" IsChecked="{Binding IsIDamageAreaChecked}">IDamageArea (can deal damage)</CheckBox>
+                <GroupBox Header="Team Index" Visibility="{Binding TeamIndexUiVisibility}">
+                    <StackPanel>
+                        <RadioButton IsChecked="{Binding IsTeamIndex0Checked}">0 (Player Team)</RadioButton>
+                        <RadioButton IsChecked="{Binding IsTeamIndex1Checked}">1 (Enemy Team)</RadioButton>
+                        <RadioButton IsChecked="{Binding IsCustomTeamIndexChecked}">Custom</RadioButton>
+                        <TextBox Visibility="{Binding CustomTeamIndexTextBoxVisibility}" Text="{Binding CustomTeamIndex}" Margin="18,0,0,0"></TextBox>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Creation">
