@@ -380,6 +380,13 @@ namespace FlatRedBall.Forms.Controls
             return null;
         }
 
+        /// <summary>
+        /// The additional offset to check when attempting to find a control when performing DPad navigation. This value is added
+        /// to the InnerPanel's StackSpacing. Increasing this value is useful if objects in the ListBox are not of uniform size, but
+        /// if the value is too large then navigation may skip rows or columns.
+        /// </summary>
+        public float AdditionalOffsetToCheckForDPadNavigation { get; set; } = 4;
+
         private void DoListItemFocusUpdate(RepositionDirections? direction, bool pressedButton)
         {
             var wraps = InnerPanel.WrapsChildren;
@@ -390,7 +397,7 @@ namespace FlatRedBall.Forms.Controls
                 {
                     var currentSelection = this.ListBoxItemsInternal[SelectedIndex].Visual;
 
-                    var offsetToCheck = InnerPanel.StackSpacing + 1 ;
+                    var offsetToCheck = InnerPanel.StackSpacing + AdditionalOffsetToCheckForDPadNavigation;
 
                     float xCenter = currentSelection.GetAbsoluteX() + currentSelection.GetAbsoluteWidth() / 2.0f;
                     float yCenter = currentSelection.GetAbsoluteY() + currentSelection.GetAbsoluteHeight() / 2.0f;
