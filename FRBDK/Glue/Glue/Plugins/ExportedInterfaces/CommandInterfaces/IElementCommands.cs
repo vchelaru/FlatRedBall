@@ -63,6 +63,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
         #endregion
 
+        #region Set CustomVariable
+
+        Task HandleSetVariable(CustomVariable variable, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        #endregion
+
         #region Events
 
         Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement);

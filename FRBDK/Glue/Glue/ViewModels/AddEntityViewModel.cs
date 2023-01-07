@@ -1,8 +1,10 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Windows;
 
@@ -187,6 +189,10 @@ namespace GlueFormsCore.ViewModels
 
         #endregion
 
+        #region Damage/Damageable
+
+        bool IsDamageableV2 => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+
         public bool IsIDamageableChecked
         {
             get => Get<bool>();
@@ -202,7 +208,7 @@ namespace GlueFormsCore.ViewModels
         [DependsOn(nameof(IsIDamageableChecked))]
         [DependsOn(nameof(IsIDamageAreaChecked))]
         public Visibility TeamIndexUiVisibility =>
-            (IsIDamageableChecked || IsIDamageAreaChecked).ToVisibility();
+            (IsDamageableV2 && (IsIDamageableChecked || IsIDamageAreaChecked)).ToVisibility();
 
         public TeamIndexOption TeamIndexOption
         {
@@ -249,9 +255,36 @@ namespace GlueFormsCore.ViewModels
             }
         }
 
+
+
         [DependsOn(nameof(IsCustomTeamIndexChecked))]
         public Visibility CustomTeamIndexTextBoxVisibility =>
             IsCustomTeamIndexChecked.ToVisibility();
+
+        public int CustomTeamIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int EffectiveTeamIndex =>
+            TeamIndexOption == TeamIndexOption.Team0 ? 0
+            : TeamIndexOption == TeamIndexOption.Team1 ? 1
+            : CustomTeamIndex;
+
+        [DependsOn(nameof(IsIDamageableChecked))]
+        [DependsOn(nameof(IsIDamageAreaChecked))]
+        public Visibility OpposingTeamIndexCheckboxVisibility =>
+                    (IsDamageableV2 && (IsIDamageableChecked || IsIDamageAreaChecked)).ToVisibility();
+
+
+        public bool IsOpposingTeamIndexDamageCollisionChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
 
         #region Factory
 
@@ -263,10 +296,23 @@ namespace GlueFormsCore.ViewModels
 
         #endregion
 
+        #region Lists
+
+        public bool IncludeListsInScreens
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        #endregion
+
         public AddEntityViewModel()
         {
             IsICollidableEnabled = true;
             IsCreateFactoryChecked = true;
+
+            CustomTeamIndex = 2; // If the user picks "other" it shouldn't default to 0
+            IncludeListsInScreens = true;
         }
     }
 }

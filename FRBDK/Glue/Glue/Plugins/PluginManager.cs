@@ -1119,10 +1119,18 @@ namespace FlatRedBall.Glue.Plugins
             nameof(ReactToResolutionChanged));
         }
 
-        public static async Task ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
+        public static async Task<NamedObjectSave> ReactToCreateCollisionRelationshipsBetween(NamedObjectSave firstNos, NamedObjectSave secondNos)
         {
-            await CallMethodOnPluginAsync(plugin => plugin.ReactToCreateCollisionRelationshipsBetween(firstNos, secondNos),
+            NamedObjectSave nos = null;
+            await CallMethodOnPluginAsync(
+                async plugin =>
+                {
+                    var innerNos = await plugin.ReactToCreateCollisionRelationshipsBetween(firstNos, secondNos);
+                    nos = innerNos ?? nos;
+                },
                 plugin => plugin.ReactToCreateCollisionRelationshipsBetween != null);
+
+            return nos;
         }
 
         internal static bool OpenSolution(string solutionName)

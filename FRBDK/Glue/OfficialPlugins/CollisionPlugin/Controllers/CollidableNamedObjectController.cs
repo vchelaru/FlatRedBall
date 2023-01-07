@@ -179,8 +179,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             await CreateCollisionRelationshipBetweenObjects(firstNosName, secondNosName, GlueState.Self.CurrentElement);
         }
 
-        public static async Task CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
+        public static async Task<NamedObjectSave> CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
         {
+            NamedObjectSave newNos = null;
             await TaskManager.Self.AddAsync(async () =>
             {
                 var addObjectModel = new AddObjectViewModel();
@@ -276,7 +277,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 // setting the SourceClassType sets the ObjectName. Overwrite it...
                 addObjectModel.ObjectName = "ToBeRenamed";
 
-                var newNos =
+                newNos =
                     await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
                     container, listToAddTo: null);
 
@@ -299,6 +300,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
                 CollisionRelationshipViewModelController.RefreshViewModel(newNos);
             }, $"Creating collision relationships between {firstNosName} and {secondNosName}", doOnUiThread:true);
+
+            return newNos;
         }
     }
 }

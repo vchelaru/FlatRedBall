@@ -17,6 +17,7 @@ using GlueFormsCore.Controls;
 using OfficialPlugins.PropertyGrid.Managers;
 using WpfDataUi.Controls;
 using FlatRedBall.Glue.FormHelpers.PropertyGrids;
+using System.Threading.Tasks;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -110,23 +111,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 //RefreshLogic.IgnoreNextRefresh();
 
-
-                var oldValue = variable.DefaultValue;
-
-                variable.DefaultValue = value;
-
-                await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
-                    "DefaultValue", variable, oldValue);
-
-
-
-                GlueCommands.Self.GluxCommands.SaveGlux();
-
-                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                RefreshLogic.RefreshGrid();
+                await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, value);
             };
 
             instanceMember.CustomGetEvent += (instance) =>

@@ -1900,7 +1900,8 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Removes this instance from all Lists that it shares two-way
+        /// Removes this instance from all Lists that it shares two-way. In practice this removes 
+        /// all objects from their Parent, managers, and any lists that store this in custom code.
         /// relationships with.
         /// </summary>
         /// <remarks>

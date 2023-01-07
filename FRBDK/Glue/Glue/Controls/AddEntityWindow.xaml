@@ -7,7 +7,7 @@
              WindowStyle="ToolWindow"
              mc:Ignorable="d" 
              SizeToContent="Height"
-             Width="240">
+             Width="260">
     <StackPanel x:Name="MainStackPanel" Margin="4">
         <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
         <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" 
@@ -33,7 +33,7 @@
                 <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}">Circle</CheckBox>
                 <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}">AxisAlignedRectangle</CheckBox>
                 <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}">Polygon (Rectangle)</CheckBox>
-            </StackPanel>            
+            </StackPanel>
         </GroupBox>
         <GroupBox Header="Interfaces" Visibility="{Binding InterfaceVisibility}">
             <StackPanel>
@@ -48,11 +48,28 @@
                         <TextBox Visibility="{Binding CustomTeamIndexTextBoxVisibility}" Text="{Binding CustomTeamIndex}" Margin="18,0,0,0"></TextBox>
                     </StackPanel>
                 </GroupBox>
+                <CheckBox Visibility="{Binding OpposingTeamIndexCheckboxVisibility}" IsChecked="{Binding IsOpposingTeamIndexDamageCollisionChecked}">
+                    <TextBlock TextWrapping="Wrap">Add Opposing Team Index Collision Relationships to GameScreen</TextBlock>
+                </CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Creation">
             <StackPanel>
                 <CheckBox x:Name="CreateFactoryCheckBox" IsChecked="{Binding IsCreateFactoryChecked}">Create Factory</CheckBox>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="1" VerticalAlignment="Center"
+                        IsChecked="{Binding IncludeListsInScreens}">
+                        <TextBlock>
+                <AccessText TextWrapping="Wrap"
+                    Text="Include lists in GameScreen"/>
+                        </TextBlock>
+
+                    </CheckBox>
+                </Grid>
             </StackPanel>
         </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

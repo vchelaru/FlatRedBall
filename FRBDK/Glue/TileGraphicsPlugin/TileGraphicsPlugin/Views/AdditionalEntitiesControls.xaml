@@ -6,22 +6,5 @@
              xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Game Screen" Visibility="{Binding AllTileMapUiVisibility}">
-        
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <CheckBox Grid.Row="1" VerticalAlignment="Center"
-                      Visibility="{Binding ScreenListVisibility}"
-                      IsChecked="{Binding IncludeListsInScreens}">
-                <TextBlock>
-                    <AccessText TextWrapping="Wrap"
-                        Text="Include lists in GameScreen"/>
-                </TextBlock>
-                
-            </CheckBox>
-        </Grid>
-    </GroupBox>
+
 </UserControl>

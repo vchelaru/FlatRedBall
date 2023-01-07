@@ -104,13 +104,11 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Here we tell the engine if we want this batch
-        /// updated every frame.  Since we have no updating to
-        /// do though, we will set this to false
+        /// Whether this batch
+        /// updated every frame.  Since MapDrawableBatches do not
+        /// have any built-in update, this value defaults to false.
         /// </summary>
-        #endregion
         public bool UpdateEveryFrame
         {
             get { return true; }
@@ -245,11 +243,14 @@ namespace FlatRedBall.TileGraphics
             mIndices = new int[6 * numberOfTiles];
         }
 
-        #region XML Docs
         /// <summary>
-        /// Create and initialize all assets
+        /// Create a new MapDrawableBatch with vertices to hold numberOfTiles. This creates a new Tileset which 
+        /// stores the argument texture which can be used to add or paint tiles.
         /// </summary>
-        #endregion
+        /// <remarks>
+        /// Although maps typically have fixed dimensions, this is not required. Tiles can be added anywhere so
+        /// no dimension parameters are required.
+        /// </remarks>
         public MapDrawableBatch(int numberOfTiles, int textureTileDimensionWidth, int textureTileDimensionHeight, Texture2D texture)
             : base()
         {
