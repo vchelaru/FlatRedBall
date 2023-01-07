@@ -216,10 +216,29 @@ namespace FlatRedBall.Entities
                 float minY = first.Y;
                 float maxY = first.Y;
 
+                if(Map != null)
+                {
+                    minX = System.Math.Max(minX, Map.Left);
+                    maxX = System.Math.Min(maxX, Map.Left + Map.Width);
+
+                    minY = System.Math.Max(minY, Map.Top - Map.Height);
+                    maxY = System.Math.Min(maxY, Map.Top);
+                }
+
                 for(int i = 1; i < Targets.Count; i++)
                 {
                     var positionable = ((PositionedObject)Targets[i]);
                     var position = positionable.Position;
+
+                    if(Map != null)
+                    {
+                        position.X = System.Math.Max(position.X, Map.Left);
+                        position.X = System.Math.Min(position.X, Map.Left + Map.Width);
+
+                        position.Y = System.Math.Max(position.Y, Map.Top - Map.Height);
+                        position.Y = System.Math.Min(position.Y, Map.Top);
+                    }
+
 
                     if(position.X < minX)
                     {
