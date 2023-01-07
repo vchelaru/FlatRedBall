@@ -1,10 +1,12 @@
 ﻿using System.Text;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+
     public class ScrollableListCodeGenerator : ElementComponentCodeGenerator
     {
         // When the user makes an
@@ -20,6 +22,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
+            // no longer do this for new projects
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.RemoveIsScrollableEntityList)
+            {
+                return codeBlock;
+            }
+
+
             if (element is EntitySave)
             {
                 EntitySave entitySave = (EntitySave)element;

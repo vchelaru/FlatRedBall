@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace OfficialPlugins.CollisionPlugin
 {
@@ -254,7 +255,7 @@ namespace OfficialPlugins.CollisionPlugin
                     codeBlock.Line($"{instanceName}.SetMoveCollision({firstMass}, {secondMass});");
                     break;
                 case CollisionType.MoveSoftCollision:
-                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipsSupportMoveSoft)
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipsSupportMoveSoft)
                     {
                         codeBlock.Line($"{instanceName}.SetMoveSoftCollision({firstMass}, {secondMass}, {softCollisionCoefficient});");
                     }
@@ -278,16 +279,23 @@ namespace OfficialPlugins.CollisionPlugin
                     $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.IsActive)} = false;");
             }
 
-            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics && 
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.CollisionRelationshipManualPhysics &&
                 !isAutomaticPhysics)
             {
                 codeBlock.Line(
                     $"{instanceName}.{nameof(FlatRedBall.Math.Collision.CollisionRelationship.ArePhysicsAppliedAutomatically)} = false;");
             }
 
+            GeneratePlatformerCode(codeBlock, groupPlatformerVariableName, airPlatformerVariableName, afterDoubleJumpPlatformerVariableName, instanceName, firstType, isAlwaysColliding);
+
+            GenerateDamageDealingCode(codeBlock, namedObject, instanceName, firstType, secondType);
+        }
+
+        private static void GeneratePlatformerCode(ICodeBlock codeBlock, string groupPlatformerVariableName, string airPlatformerVariableName, string afterDoubleJumpPlatformerVariableName, string instanceName, string firstType, bool isAlwaysColliding)
+        {
             if (!string.IsNullOrEmpty(groupPlatformerVariableName) ||
-                !string.IsNullOrEmpty(airPlatformerVariableName) ||
-                !string.IsNullOrEmpty(afterDoubleJumpPlatformerVariableName))
+                            !string.IsNullOrEmpty(airPlatformerVariableName) ||
+                            !string.IsNullOrEmpty(afterDoubleJumpPlatformerVariableName))
             {
                 string StrippedName(string nameWithCsv)
                 {
@@ -343,6 +351,77 @@ namespace OfficialPlugins.CollisionPlugin
                 }
                 codeBlock.Line(";");
 
+            }
+        }
+
+        private static void GenerateDamageDealingCode(ICodeBlock codeBlock, NamedObjectSave namedObject, string instanceName, string firstType, string secondType)
+        {
+            T Get<T>(string name) => namedObject.Properties.GetValue<T>(name);
+
+            var firstEntityType = ObjectFinder.Self.GetEntitySave(firstType?.Replace(".", "/"));
+            var secondEntityType = ObjectFinder.Self.GetEntitySave(secondType?.Replace(".", "/"));
+
+            bool isFirstDamageable = firstEntityType?.GetPropertyValue("ImplementsIDamageable") as bool? == true;
+            bool isFirstDamageArea = firstEntityType?.GetPropertyValue("ImplementsIDamageArea") as bool? == true;
+
+            bool isSecondDamageable = secondEntityType?.GetPropertyValue("ImplementsIDamageable") as bool? == true;
+            bool isSecondDamageArea = secondEntityType?.GetPropertyValue("ImplementsIDamageArea") as bool? == true;
+
+            var dealDamageInGeneratedCode = Get<bool>(nameof(CollisionRelationshipViewModel.IsDealDamageChecked));
+            var destroyFirst = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroyFirstOnDamageChecked));
+            var destroySecond = Get<bool>(nameof(CollisionRelationshipViewModel.IsDestroySecondOnDamageChecked));
+
+            var shouldGenerateEvent = dealDamageInGeneratedCode || 
+                (destroyFirst && isFirstDamageArea) ||
+                (destroySecond && isSecondDamageArea);
+
+            ICodeBlock eventBlock = null;
+
+            if(shouldGenerateEvent)
+            {
+                codeBlock.Line($"{instanceName}.CollisionOccurred += (first, second) =>");
+                eventBlock = codeBlock.Block();
+            }
+
+            if(shouldGenerateEvent)
+            {
+                var firstTakesDamage = isFirstDamageable && isSecondDamageArea;
+                var secondTakesDamage = isSecondDamageable && isFirstDamageArea;
+                if(firstTakesDamage && dealDamageInGeneratedCode)
+                {
+                    var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(first, second)");
+                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(first, second);");
+                    if(destroySecond)
+                    {
+                        ifBlock.Line("second.RemovedByCollision?.Invoke(first);");
+                        ifBlock.Line("second.Destroy();");
+                    }
+                    // Do we want this to be conditional? Let's make it always on for now and see if users complain...
+                    ifBlock.If("first.CurrentHealth <= 0").Line("first.Destroy();");
+                }
+                else if(destroySecond && isSecondDamageArea)
+                {
+                    eventBlock.Line("second.RemovedByCollision?.Invoke(null);");
+                    eventBlock.Line("second.Destroy();");
+                }
+
+                if (secondTakesDamage && dealDamageInGeneratedCode)
+                {
+                    var ifBlock = eventBlock.If("FlatRedBall.Entities.DamageableExtensionMethods.ShouldTakeDamage(second, first)");
+                    ifBlock.Line("FlatRedBall.Entities.DamageableExtensionMethods.TakeDamage(second, first);");
+                    if(destroyFirst)
+                    {
+                        ifBlock.Line("first.RemovedByCollision?.Invoke(second);");
+                        ifBlock.Line("first.Destroy();");
+                    }
+                    ifBlock.If("second.CurrentHealth <= 0").Line("second.Destroy();");
+                }
+                else if(destroyFirst && isFirstDamageArea)
+                {
+                    eventBlock.Line("first.RemovedByCollision?.Invoke(null);");
+                    eventBlock.Line("first.Destroy();");
+                }
+                codeBlock.Line(";");
             }
 
         }

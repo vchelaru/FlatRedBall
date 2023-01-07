@@ -195,6 +195,28 @@ namespace FlatRedBall.Glue.SaveClasses
                     variableValue = (float?)asDouble;
                 }
             }
+            else if(type == "decimal")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (decimal)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (decimal)asDouble;
+                }
+            }
+            else if (type == "decimal?")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (decimal?)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (decimal?)asDouble;
+                }
+            }
             else if(type == "List<Vector2>")
             {
                 if(variableValue is Newtonsoft.Json.Linq.JArray jArray)

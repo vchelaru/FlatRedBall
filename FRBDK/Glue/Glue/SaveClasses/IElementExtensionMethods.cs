@@ -7,6 +7,7 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using FlatRedBall.Glue.Parsing;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -212,7 +213,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // get the default value for the type:
                 // Could use the TypeManager and get full coverage but that is HEAVY and requires some (potentially) expensive conversions.
                 // Therefore, just use the quick-n-dirty VariableDefinition
-                toReturn = VariableDefinition.GetCastedValueForType(variable.Type, null);
+                toReturn = TypeManager.Parse(variable.Type, null);
 
             }
             return toReturn;

@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -320,29 +321,12 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
             try
             {
                 var valueAsString = whatToConvert?.ToString();
-                switch(variable.Type)
+
+                if(TypeManager.TryConvertStringValue(variable.Type, valueAsString, out object convertedValue))
                 {
-                    case "float":
-                    case "float?":
-                        return System.Convert.ToSingle(valueAsString, CultureInfo.InvariantCulture);
-                    case "int":
-                    case "int?":
-                        return System.Convert.ToInt32(valueAsString);
-                    case "bool":
-                    case "bool?":
-                        return System.Convert.ToBoolean(valueAsString);
-                    case "long":
-                    case "long?":
-                        return System.Convert.ToInt64(valueAsString);
-                    case "double":
-                    case "double?":
-                        return System.Convert.ToDouble(valueAsString, CultureInfo.InvariantCulture);
-                    case "byte":
-                    case "byte?":
-                        return System.Convert.ToByte(valueAsString);
-                    default:
-                        return whatToConvert;
+                    return convertedValue;
                 }
+                return whatToConvert;
             }
             catch
             {

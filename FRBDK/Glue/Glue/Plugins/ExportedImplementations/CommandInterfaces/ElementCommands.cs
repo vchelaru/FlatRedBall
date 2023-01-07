@@ -29,6 +29,8 @@ using System.Threading.Tasks;
 using System.IO;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
+using EditorObjects.IoC;
+using System.Windows.Data;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -445,45 +447,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 hasInheritance = true;
             }
 
-            if (viewModel.IsSpriteChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "SpriteInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsTextChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "TextInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsCircleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "CircleInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
-
-            if (viewModel.IsAxisAlignedRectangleChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                GlueState.Self.CurrentElement = newElement;
-            }
 
             // There are a few important things to note about this function:
             // 1. Whenever gluxCommands.AddNewNamedObjectToSelectedElement is called, Glue performs a full
@@ -498,66 +461,171 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //    because we'd have to suppress all the other calls.
             bool needsRefreshAndSave = false;
 
-            if (viewModel.IsPolygonChecked)
-            {
-                AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-                addObjectViewModel.ObjectName = "PolygonInstance";
-                addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
-                addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-
-                var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
-                CustomVariableInNamedObject instructions = null;
-                instructions = nos.GetCustomVariable("Points");
-                if (instructions == null)
-                {
-                    instructions = new CustomVariableInNamedObject();
-                    instructions.Member = "Points";
-                    nos.InstructionSaves.Add(instructions);
-                }
-                var points = new List<Vector2>();
-                points.Add(new Vector2(-16, 16));
-                points.Add(new Vector2(16, 16));
-                points.Add(new Vector2(16, -16));
-                points.Add(new Vector2(-16, -16));
-                points.Add(new Vector2(-16, 16));
-                instructions.Value = points;
-
-
-                needsRefreshAndSave = true;
-
-                GlueState.Self.CurrentElement = newElement;
-            }
-
             if(!hasInheritance)
             {
+                if (viewModel.IsSpriteChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "SpriteInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsTextChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "TextInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsCircleChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "CircleInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
+                if (viewModel.IsAxisAlignedRectangleChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    GlueState.Self.CurrentElement = newElement;
+                }
+                if (viewModel.IsPolygonChecked)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ObjectName = "PolygonInstance";
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+
+                    var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    CustomVariableInNamedObject instructions = null;
+                    instructions = nos.GetCustomVariable("Points");
+                    if (instructions == null)
+                    {
+                        instructions = new CustomVariableInNamedObject();
+                        instructions.Member = "Points";
+                        nos.InstructionSaves.Add(instructions);
+                    }
+                    var points = new List<Vector2>();
+                    points.Add(new Vector2(-16, 16));
+                    points.Add(new Vector2(16, 16));
+                    points.Add(new Vector2(16, -16));
+                    points.Add(new Vector2(-16, -16));
+                    points.Add(new Vector2(-16, 16));
+                    instructions.Value = points;
+
+
+                    needsRefreshAndSave = true;
+
+                    GlueState.Self.CurrentElement = newElement;
+                }
+
                 if (viewModel.IsIVisibleChecked)
                 {
                     newElement.ImplementsIVisible = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIVisible), false);
                 }
 
                 if (viewModel.IsIClickableChecked)
                 {
                     newElement.ImplementsIClickable = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIClickable), false);
                 }
 
                 if (viewModel.IsIWindowChecked)
                 {
                     newElement.ImplementsIWindow = true;
                     needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsIWindow), false);
                 }
 
                 if (viewModel.IsICollidableChecked)
                 {
                     newElement.ImplementsICollidable = true;
                     needsRefreshAndSave = true;
+
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, nameof(newElement.ImplementsICollidable), false);
                 }
 
-                if(viewModel.IsIDamageableChecked)
+                if (viewModel.IncludeListsInScreens)
+                {
+                    // loop through all screens that have a TMX object and add them.
+                    // be smart - if the base screen does, don't do it in the derived
+                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+                    foreach (var screen in allScreens)
+                    {
+                        var needsList = GetIfScreenNeedsList(screen);
+
+                        if (needsList)
+                        {
+                            AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+
+                            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                            addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+                            addObjectViewModel.SourceClassGenericType = newElement.Name;
+                            addObjectViewModel.ObjectName = $"{newElement.GetStrippedName()}List";
+
+
+                            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
+                                addObjectViewModel, screen, listToAddTo: null, selectNewNos: false);
+                            newNos.ExposedInDerived = true;
+
+                            await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
+                                namedObjectSave: newNos);
+
+                            GlueCommands.Self.PrintOutput(
+                                $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+
+                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
+                        }
+                    }
+                }
+
+
+                if (viewModel.IsIDamageableChecked)
                 {
                     newElement.Properties.SetValue<bool>("ImplementsIDamageable", true);
+                    needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageable", false);
                 }
+                if (viewModel.IsIDamageAreaChecked)
+                {
+                    newElement.Properties.SetValue<bool>("ImplementsIDamageArea", true);
+                    needsRefreshAndSave = true;
+                    await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(newElement, "ImplementsIDamageArea", false);
+                }
+
+                if(viewModel.IsIDamageableChecked || viewModel.IsIDamageAreaChecked)
+                {
+                    var variable = newElement.GetCustomVariable("TeamIndex");
+                    await GlueCommands.Self.GluxCommands.ElementCommands.HandleSetVariable(variable, viewModel.EffectiveTeamIndex);
+
+                    if(viewModel.IsOpposingTeamIndexDamageCollisionChecked)
+                    {
+                        var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+                        if(gameScreen != null)
+                        {
+                            await AddGameScreenOpposingTeamIndexCollisionRelationships(newElement, viewModel);
+                        }
+                    }
+                }
+
 
             }
 
@@ -575,13 +643,109 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
                 });
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(newElement);
+                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
                 GluxCommands.Self.SaveGlux();
             }
 
             return newElement;
         }
 
+        private static bool GetIfScreenNeedsList(ScreenSave screen)
+        {
+            var hasTmx = GetIfScreenHasTmxDirectly(screen);
+
+            //var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
+
+            var isDerived = string.IsNullOrEmpty(screen.BaseScreen) == false;
+
+            return hasTmx == true && !isDerived;
+        }
+
+
+        private static bool GetIfScreenHasTmxDirectly(ScreenSave screen)
+        {
+            var hasTmxFile = screen.ReferencedFiles.Any(item => FileManager.GetExtension(item.Name) == "tmx");
+            var hasTmx = hasTmxFile;
+
+
+            if (!hasTmx)
+            {
+
+                hasTmx = screen.AllNamedObjects.Any(item => item.GetAssetTypeInfo()?.FriendlyName == "LayeredTileMap (.tmx)");
+            }
+            return hasTmx;
+        }
+
+        private async Task AddGameScreenOpposingTeamIndexCollisionRelationships(EntitySave newElement, AddEntityViewModel viewModel)
+        {
+            var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+            var newTeamIndex = newElement.GetVariableValueRecursively("TeamIndex") as int?;
+
+            var newElementList = gameScreen.NamedObjects.FirstOrDefault(item => item.IsList && item.SourceClassGenericType == newElement.Name);
+
+            var isNewElementDamageable = viewModel.IsIDamageableChecked;
+            var isNewElementDamageArea = viewModel.IsIDamageAreaChecked;
+
+            ////////////////////////////Early Out///////////////////////////
+            if(newElementList == null)
+            {
+                return;
+            }
+            /////////////////////////End Early Out//////////////////////////
+
+            var gameScreenNamedObjects = gameScreen.NamedObjects.ToArray();
+            foreach (var item in gameScreenNamedObjects)
+            {
+                var isList = item.IsList;
+                var genericTypeName = item.SourceClassGenericType;
+
+                EntitySave entityForList = null;
+                if(!string.IsNullOrEmpty(genericTypeName))
+                {
+                    entityForList = ObjectFinder.Self.GetEntitySave(genericTypeName);
+                }
+
+                if(entityForList != null)
+                {
+                    var entityForListIndex = entityForList?.GetVariableValueRecursively("TeamIndex") as int?;
+
+                    var isEntityDamageable = entityForList.GetPropertyValue("ImplementsIDamageable") as bool? ?? false;
+                    var isEntityDamageArea = entityForList.GetPropertyValue("ImplementsIDamageArea") as bool? ?? false;
+
+                    var isCollidable = entityForList.GetPropertyValue("ImplementsICollidable") as bool? ?? false;
+
+                    var areApposingDamageInterfaces =
+                        (isEntityDamageable && isNewElementDamageArea) ||
+                        (isEntityDamageArea && isNewElementDamageable);
+
+                    if(isCollidable && entityForListIndex != null && newTeamIndex != entityForListIndex && areApposingDamageInterfaces)
+                    {
+                        // do it - add a collision relationship
+                        // Damageable should be first since that's a standard we're pushing
+
+                        NamedObjectSave collisionRelationshipNos = null;
+
+                        if(isNewElementDamageable && isEntityDamageArea)
+                        {
+                            collisionRelationshipNos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(newElementList, item);
+                        }
+                        else
+                        {
+                            collisionRelationshipNos = await PluginManager.ReactToCreateCollisionRelationshipsBetween(item, newElementList );
+                        }
+
+                        if(collisionRelationshipNos != null)
+                        {
+                            collisionRelationshipNos.SetProperty("IsDealDamageChecked", true);
+                            collisionRelationshipNos.SetProperty("IsDestroyFirstOnDamageChecked", true);
+                            collisionRelationshipNos.SetProperty("IsDestroySecondOnDamageChecked", true);
+                        }
+                    }
+                }
+
+            }
+        }
 
         public void AddEntity(EntitySave entitySave)
         {
@@ -739,6 +903,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
 
+
         private void UpdateInstanceCustomVariables(IElement currentElement)
         {
             List<NamedObjectSave> namedObjectsToUpdate = null;
@@ -756,6 +921,46 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
         }
+        #endregion
+
+        #region Set CustomVariable
+
+        public async Task HandleSetVariable(CustomVariable variable, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true)
+        {
+            var element = ObjectFinder.Self.GetElementContaining(variable);
+            var oldValue = variable.DefaultValue;
+
+            variable.DefaultValue = value;
+
+            await EditorObjects.IoC.Container.Get<CustomVariableSaveSetPropertyLogic>().ReactToCustomVariableChangedValue(
+                "DefaultValue", variable, oldValue);
+
+
+            if(performSaveAndGenerateCode)
+            {
+
+                if(element != null)
+                {
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                    var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
+            }
+
+            if(updateUi)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
+                GlueCommands.Self.RefreshCommands.RefreshVariables();
+            }
+
+        }
+
         #endregion
 
         #region Add StateSaveCategory
@@ -1083,6 +1288,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueState.Self.CurrentEventResponseSave = eventResponseSave;
         }
+        #endregion
+
+        #region Property Set
+
+        public async Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue)
+        {
+            if(element is EntitySave entitySave)
+            {
+                Container.Get<EntitySaveSetPropertyLogic>().ReactToEntityChangedProperty(propertyName, oldValue, entitySave);
+            }
+            else if(element is ScreenSave screenSave)
+            {
+                Container.Get<ScreenSaveSetVariableLogic>().ReactToScreenPropertyChanged(screenSave, propertyName, oldValue);
+            }
+        }
+
         #endregion
 
         /// <summary>

@@ -597,6 +597,8 @@ namespace FlatRedBall.Glue.SetVariable
 
         private static void ConvertVariableValueToCurrentType(CustomVariable customVariable, object currentValue, string oldType)
         {
+            // This could migrate to the TypeManager but I haven't yet because the cod e here uses both old type and new type strings, which
+            // the TypeManager doesn't yet handle. But we should unify that code
             bool wasAbleToConvert = false;
 
             if (currentValue != null)
@@ -605,11 +607,18 @@ namespace FlatRedBall.Glue.SetVariable
                 {
                     var valueAsInt = (int)currentValue;
 
+                    wasAbleToConvert = TypeManager.TryCastValue(customVariable.Type, valueAsInt, out object convertedValue);
+
                     switch (customVariable.Type)
                     {
                         case "float":
                         case "float?":
                             customVariable.DefaultValue = (float)valueAsInt;
+                            wasAbleToConvert = true;
+                            break;
+                        case "decimal":
+                        case "decimal?":
+                            customVariable.DefaultValue = (decimal)valueAsInt;
                             wasAbleToConvert = true;
                             break;
                         case "double":
@@ -618,9 +627,40 @@ namespace FlatRedBall.Glue.SetVariable
                             break;
                         case "string":
                             customVariable.DefaultValue = valueAsInt.ToString();
+                            break;
+                    }
+                }
+                else if(oldType == "decimal")
+                {
+                    var valueAsDecimal = (decimal)currentValue;
+
+                    switch (customVariable.Type)
+                    {
+                        case "float":
+                        case "float?":
+                            customVariable.DefaultValue = (float)valueAsDecimal;
+                            wasAbleToConvert = true;
+                            break;
+                        case "int":
+                        case "int?":
+                            customVariable.DefaultValue = (int)valueAsDecimal;
+                            wasAbleToConvert = true;
+                            break;
+                        case "decimal":
+                        case "decimal?":
+                            customVariable.DefaultValue = (decimal)valueAsDecimal;
+                            wasAbleToConvert = true;
+                            break;
+                        case "double":
+                            customVariable.DefaultValue = (double)valueAsDecimal;
+                            wasAbleToConvert = true;
+                            break;
+                        case "string":
+                            customVariable.DefaultValue = valueAsDecimal.ToString();
                             wasAbleToConvert = true;
                             break;
                     }
+
                 }
                 else if (oldType == "float")
                 {
@@ -628,6 +668,15 @@ namespace FlatRedBall.Glue.SetVariable
 
                     switch (customVariable.Type)
                     {
+                        case "float?":
+                            // is this necessary?
+                            customVariable.DefaultValue = (float?)valueAsFloat;
+                            break;
+                        case "decimal":
+                        case "decimal?":
+                            customVariable.DefaultValue = (decimal)valueAsFloat;
+                            wasAbleToConvert = true;
+                            break;
                         case "int":
                             customVariable.DefaultValue = (int)valueAsFloat;
                             wasAbleToConvert = true;
@@ -653,7 +702,13 @@ namespace FlatRedBall.Glue.SetVariable
                             wasAbleToConvert = true;
                             break;
                         case "float":
+                        case "float?":
                             customVariable.DefaultValue = (float)valueAsDouble;
+                            wasAbleToConvert = true;
+                            break;
+                        case "decimal":
+                        case "decimal?":
+                            customVariable.DefaultValue = (decimal)valueAsDouble;
                             wasAbleToConvert = true;
                             break;
                         case "string":
@@ -679,6 +734,14 @@ namespace FlatRedBall.Glue.SetVariable
                         case "float":
                             {
                                 if (float.TryParse(valueAsString, out float result))
+                                {
+                                    customVariable.DefaultValue = result;
+                                }
+                            }
+                            break;
+                        case "decimal":
+                            {
+                                if (decimal.TryParse(valueAsString, out decimal result))
                                 {
                                     customVariable.DefaultValue = result;
                                 }

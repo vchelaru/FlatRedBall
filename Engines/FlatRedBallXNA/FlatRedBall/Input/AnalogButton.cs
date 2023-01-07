@@ -20,6 +20,8 @@ namespace FlatRedBall.Input
 
         bool lastDPadDown = false;
 
+        public string Name { get; set; }
+
         #endregion
 
         #region Properties

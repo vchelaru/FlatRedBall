@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         errorCode = 0;
                         string memberType = member.Type;
                         errorCode = 1;
-                        memberType = TypeManager.ConvertToCommonType(memberType);
+                        memberType = TypeManager.GetCommonTypeName(memberType);
                         errorCode = 2;
 
                         Type type = TypeManager.GetTypeFromString(memberType);
@@ -187,7 +187,7 @@ namespace FlatRedBall.Glue.SaveClasses
                         if(!isAlreadyHandled)
                         {
                             string memberType = member.Type;
-                            memberType = TypeManager.ConvertToCommonType(memberType);
+                            memberType = TypeManager.GetCommonTypeName(memberType);
 
                             Type type = TypeManager.GetTypeFromString(memberType);
                             // Glue can't do anything with generic properties (yet)
@@ -725,7 +725,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             // special case - if it's a list, then handle it here
 
-            instructionSave.Type = TypeManager.ConvertToCommonType(instructionSave.Type);
+            instructionSave.Type = TypeManager.GetCommonTypeName(instructionSave.Type);
             instructionSave.Member = member;
             // Create a new instruction
 

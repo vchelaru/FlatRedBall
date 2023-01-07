@@ -125,7 +125,7 @@ namespace FlatRedBall.Glue.Parsing
             return typeString == "int" || typeString == "float"  ||
                 typeString == "double" || typeString == "string" ||
                 typeString == "byte"   || typeString == "bool"   ||
-                typeString == "char";
+                typeString == "char" || typeString == "decimal";
         }
 
         public bool IsPrimitiveArray

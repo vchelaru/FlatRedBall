@@ -299,6 +299,7 @@ namespace OfficialPluginsCore.Wizard.Managers
         {
             // create an object named GumScreen, add it, and then 
             var namedObjectSave = new NamedObjectSave();
+            namedObjectSave.SetDefaults();
             namedObjectSave.InstanceName = "GumScreen";
             namedObjectSave.SourceType = SourceType.File;
             namedObjectSave.SourceFile = "gumproject/Screens/GameScreenGum.gusx";

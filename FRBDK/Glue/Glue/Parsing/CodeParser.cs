@@ -174,6 +174,18 @@ namespace FlatRedBall.Glue.Parsing
                     value = ((double)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
                 }
             }
+            else if(objectToParse is decimal || typeof(T) == typeof(decimal?))
+            {
+                if (objectToParse == null)
+                {
+                    value = "null";
+                }
+                else
+                {
+                    value = ((decimal)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = value + "m";
+                }
+            }
             else if (objectToParse is string || typeof(T) == typeof(string))
             {
                 if (value == null)

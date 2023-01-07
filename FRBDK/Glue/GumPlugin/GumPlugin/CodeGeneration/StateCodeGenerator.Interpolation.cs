@@ -378,6 +378,7 @@ namespace GumPlugin.CodeGeneration
                         break;
                     case "float":
                     case "double":
+                    case "decimal":
                         curBlock.Line(string.Format("{0} = {1}FirstValue * (1 - interpolationValue) + {1}SecondValue * interpolationValue;",
                             memberNameInCode, memberNameInCode.Replace(".", "")));
                         break;
@@ -510,7 +511,7 @@ namespace GumPlugin.CodeGeneration
                 return InterpolationCharacteristic.CantInterpolate;
             }
 
-            if (variableType == "float" || variableType == "int" || variableType == "double" || variableType == "byte")
+            if (variableType == "float" || variableType == "int" || variableType == "double" || variableType == "byte" || variableType == "decimal")
             {
                 return InterpolationCharacteristic.CanInterpolate;
             }

@@ -1057,7 +1057,7 @@ namespace GlueControl.Editing
                     conversionReport += $"\nFound dictionary from {csvName}";
                     var itemInCsv = variableValue.Substring(0, indexOfIn);
 
-                    if(asDictionary.Contains(itemInCsv))
+                    if (asDictionary.Contains(itemInCsv))
                     {
                         convertedValue = asDictionary[itemInCsv];
                         conversionReport += $"\nFound entry in dictionary {itemInCsv}";

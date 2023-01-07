@@ -1427,11 +1427,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                         var memberInfoPropertyType = ((PropertyInfo)memberInfo).PropertyType;
                         var memberInfoPropertyTypeString = ToCSharpTypeString( memberInfoPropertyType);
                         
-                        typeOfResetVariable = TypeManager.ConvertToCommonType(memberInfoPropertyTypeString);
+                        typeOfResetVariable = TypeManager.GetCommonTypeName(memberInfoPropertyTypeString);
                     }
                     else
                     {
-                        typeOfResetVariable = TypeManager.ConvertToCommonType(((FieldInfo)memberInfo).FieldType.ToString());
+                        typeOfResetVariable = TypeManager.GetCommonTypeName(((FieldInfo)memberInfo).FieldType.ToString());
 
                     }
 

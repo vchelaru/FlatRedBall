@@ -606,6 +606,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     case "double":
                         curBlock.Line(string.Format("{0} = {1}FirstValue * (1 - interpolationValue) + {1}SecondValue * interpolationValue;", variableToAssign, prepend));
                         break;
+                    case "decimal":
+                        curBlock.Line(string.Format("{0} =  {1}FirstValue * (1 - (decimal)interpolationValue) + {1}SecondValue * (decimal)interpolationValue;", variableToAssign, prepend));
+                        break;
                 }
             }
         }

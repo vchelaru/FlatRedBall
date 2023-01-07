@@ -115,6 +115,17 @@ namespace GlueControl.Models
                     variableValue = (float)asDouble;
                 }
             }
+            else if (type == "decimal" || type == "Decimal")
+            {
+                if (variableValue is int asInt)
+                {
+                    variableValue = (decimal)asInt;
+                }
+                else if (variableValue is double asDouble)
+                {
+                    variableValue = (decimal)asDouble;
+                }
+            }
             else if (type == "float?")
             {
                 if (variableValue is int asInt)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using FlatRedBall;
 
@@ -9,21 +10,29 @@ namespace FlatRedBall.Entities
     {
         Dictionary<IDamageArea, double> DamageAreaLastDamage { get; }
         int TeamIndex { get; }
+        decimal CurrentHealth { get; set; }
+        decimal MaxHealth { get; set; }
+
+        Func<decimal, IDamageArea, decimal> ModifyDamageDealt { get; set; }
+        Action<decimal, IDamageArea> ReactToDamageDealt { get; set; }
+        Action<decimal, IDamageArea> Died { get; set; }
+
+
     }
 
     public static class DamageableExtensionMethods
     {
         /// <summary>
         /// Returns whether the argument IDamageable should take damage from the argument IDamageArea.
-        /// This returns true if the team indexes are different, and if enough time has passed since the 
-        /// last damage wad ealt by this particular IDamageArea instance.
+        /// This returns true if the team indexes are different, ifthe damageable has > 0 CurrentHealth,
+        /// and if enough time has passed since the last damage was dealt by this particular IDamageArea instance. 
         /// </summary>
         /// <param name="damageable">The damageable object, typically a Player or Enemy.</param>
         /// <param name="damageArea">The damage dealing object, typically a bullet or enemy.</param>
         /// <returns></returns>
         public static bool ShouldTakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
-            if(damageable.TeamIndex == damageArea.TeamIndex)
+            if (damageable.TeamIndex == damageArea.TeamIndex || damageable.CurrentHealth <= 0)
             {
                 return false;
             }
@@ -58,5 +67,67 @@ namespace FlatRedBall.Entities
                 }
             }
         }
+
+        public static void TakeDamage(this IDamageable damageable, IDamageArea damageArea)
+        {
+            // The DamageArea provides the damage, so the order should be:
+            // 1. Damageable modifies
+            // 2. DamageArea modifies
+            // 3. Damageable CurrentHealth -= 
+            // 4. Damageable.ReactToDamageDealt
+            // 5. Damageable.ReactToDamageDealt
+            // --if Damageable.CurrentHealth <= 0
+            // 6. Damageable.Died
+            // 7. DamageArea.KilledDamageable
+
+            // do we destroy? I think ....hm...
+
+            // damageArea could be null, in the case of the player taking damage from something that isn't IDamageArea like a TileShapeCollection, so be sure to do null checks
+
+            var damage = damageArea.DamageToDeal;
+
+            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, damageArea) ?? damage;
+            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+
+            var healthBefore = damageable.CurrentHealth;
+
+            damageable.CurrentHealth -= modifiedByBoth;
+
+            damageable.ReactToDamageDealt?.Invoke(modifiedByBoth, damageArea);
+            damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+            if(healthBefore > 0 && damageable.CurrentHealth <= 0)
+            {
+                damageable?.Died?.Invoke(modifiedByBoth, damageArea);
+                damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
+            }
+        }
+
+        // There could be situations where an object takes damage from something (like a tile shape collection) which
+        // is not an IDamageDealer.
+        // Vic considered making a version of this method that takes an object parameter, but this requires delegates
+        // that also take object. Then...does the player have to implement both to handle being dealt damage from IDamageable
+        // and object? That's a pain and confusing. So, we'll just keep it on IDamageable for now, and make it easier to create
+        // wrappers for common types like TileShapeCollection.
+        public static void TakeDamage(this IDamageable damageable, decimal damage)
+        {
+            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, null) ?? damage;
+            //var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+
+            var healthBefore = damageable.CurrentHealth;
+
+            damageable.CurrentHealth -= modifiedByDamageable;
+
+            damageable.ReactToDamageDealt?.Invoke(modifiedByDamageable, null);
+            //damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+            if (healthBefore > 0 && damageable.CurrentHealth <= 0)
+            {
+                damageable?.Died(modifiedByDamageable, null);
+                //damageArea?.KilledDamageable(modifiedByBoth, damageable);
+            }
+        }
+
+
     }
 }

@@ -542,6 +542,7 @@ namespace FlatRedBall.TileEntities
             {
                 case "System.String": return "string";
                 case "System.Single": return "float";
+                case "System.Decimal": return "decimal";
 
             }
             return type;
@@ -565,6 +566,15 @@ namespace FlatRedBall.TileEntities
                 if (float.TryParse((string)valueToSet, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out floatValue))
                 {
                     valueToSet = floatValue;
+                }
+            }
+            else if (valueType == "decimal")
+            {
+                decimal decimalValue;
+
+                if (decimal.TryParse((string)valueToSet, System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo, out decimalValue))
+                {
+                    valueToSet = decimalValue;
                 }
             }
             else if (valueType == "int")

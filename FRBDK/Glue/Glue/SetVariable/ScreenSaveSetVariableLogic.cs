@@ -18,9 +18,15 @@ namespace FlatRedBall.Glue.SetVariable
         {
             ScreenSave screenSave = GlueState.Self.CurrentScreenSave;
 
+            ReactToScreenPropertyChanged(screenSave, changedMember, oldValue);
+        }
+
+
+        public void ReactToScreenPropertyChanged(ScreenSave screenSave, string propertyName, object oldValue)
+        {
             #region Name
 
-            if (changedMember == "ClassName")
+            if (propertyName == "ClassName")
             {
                 ReactToChangedClassName(oldValue, screenSave);
             }
@@ -29,15 +35,18 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region BaseScreen
 
-            else if (changedMember == "BaseScreen")
+            else if (propertyName == "BaseScreen")
             {
                 InheritanceManager.ReactToChangedBaseScreen(oldValue, screenSave);
             }
 
             #endregion
 
+            // Jan 5, 2023
+            // Vic asks - should this call plugin code? Need to trace the code when setting properties
+            // through the property grid to see what it does, and re-route it through this function.
 
-            EventResponseSave eventSave = screenSave.GetEvent(changedMember);
+            EventResponseSave eventSave = screenSave.GetEvent(propertyName);
 
             if (eventSave != null)
             {

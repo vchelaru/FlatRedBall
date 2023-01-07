@@ -1,5 +1,7 @@
-﻿using FlatRedBall.Glue.CodeGeneration;
+﻿using FlatRedBall.Entities;
+using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 {
     class DamageDealingCodeGenerator : ElementComponentCodeGenerator
     {
+        #region Inheritance
+
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {
             if(element is EntitySave entity)
@@ -24,30 +28,99 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             }
         }
 
+        #endregion
+
+        public static bool UsesDamageV2 => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
             if(element is EntitySave entity)
             {
-                if (ImplementsIDamageArea(entity))
+                var shouldImplementIDamageArea =
+                    ImplementsIDamageArea(entity) && !SuppressDamagePropertyCodeGeneration(entity);
+                var shouldImplementIDamageable =
+                    ImplementsIDamageable(entity) && !SuppressDamagePropertyCodeGeneration(entity);
+
+                // Explicit is necessary if the entity implements both
+                // IDamageable and IDamageArea because that means it will
+                // have events that are named the same.
+
+                if (shouldImplementIDamageArea)
                 {
-                    // these 2 are exposed in Glue:
+                    // these variables are exposed in Glue, not pure codegen, so the user can modify them:
                     //codeBlock.Line("public double SecondsBetweenDamage { get; set; }");
                     //codeBlock.Line("public int TeamIndex { get; set; }");
+                    //codeBlock.Line("public decimal DamageToDeal { get; set; }");
+
+
 
                     codeBlock.Line("public object DamageDealer { get; set; }");
                     codeBlock.Line("public event Action Destroyed;");
+
+                    if(UsesDamageV2)
+                    {
+                        // See note about explicit implementation above
+                        var shouldBeExplicit = shouldImplementIDamageable && shouldImplementIDamageArea;
+
+                        if(shouldBeExplicit)
+                        {
+                            codeBlock.Line("Func<decimal, FlatRedBall.Entities.IDamageable, decimal> FlatRedBall.Entities.IDamageArea.ModifyDamageDealt { get; set; }");
+                            codeBlock.Line("Action<decimal, FlatRedBall.Entities.IDamageable> FlatRedBall.Entities.IDamageArea.ReactToDamageDealt { get; set; }");
+                        }
+                        else
+                        {
+                            codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageable, decimal> ModifyDamageDealt { get; set; }");
+                            codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> ReactToDamageDealt { get; set; }");
+                        }
+
+
+
+                        codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> KilledDamageable { get; set; }");
+                        codeBlock.Line("public Action<FlatRedBall.Entities.IDamageable> RemovedByCollision { get; set; }");
+                        
+    }
                 }
-                if (ImplementsIDamageable(entity))
+
+                if (shouldImplementIDamageable)
                 {
                     // This is exposed in Glue
                     //codeBlock.Line("public int TeamIndex { get; set; }");
 
                     codeBlock.Line("public System.Collections.Generic.Dictionary<FlatRedBall.Entities.IDamageArea, double> DamageAreaLastDamage { get; set; } = new System.Collections.Generic.Dictionary<FlatRedBall.Entities.IDamageArea, double>();");
 
+                    if (UsesDamageV2)
+                    {
+                        // See note about explicit implementation above
+                        var shouldBeExplicit = shouldImplementIDamageable && shouldImplementIDamageArea;
+
+                        if(shouldBeExplicit)
+                        {
+                            codeBlock.Line("Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> FlatRedBall.Entities.IDamageable.ModifyDamageDealt { get; set; }");
+                            codeBlock.Line("Action<decimal, FlatRedBall.Entities.IDamageArea> FlatRedBall.Entities.IDamageable.ReactToDamageDealt { get; set; }");
+                        }
+                        else
+                        {
+                            codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> ModifyDamageDealt { get; set; }");
+                            codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> ReactToDamageDealt { get; set; }");
+                        }
+
+                        codeBlock.Line("public decimal CurrentHealth { get; set; }");
+                        codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> Died { get; set; }");
+    }
                 }
             }
 
             return codeBlock;
+        }
+
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
+        {
+            if(UsesDamageV2 && ImplementsIDamageable(element as EntitySave))
+            {
+                codeBlock.Line("CurrentHealth = MaxHealth;");
+            }
+
+            return base.GenerateInitialize(codeBlock, element);
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
@@ -70,14 +143,14 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
             return codeBlock;
         }
 
-        public static bool ImplementsIDamageArea(EntitySave entity)
-        {
-            return entity.Properties.GetValue<bool>("ImplementsIDamageArea");
-        }
+        public static bool ImplementsIDamageArea(EntitySave entity) =>
+            entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageArea) == true;
 
-        public static bool ImplementsIDamageable(EntitySave entity)
-        {
-            return entity.Properties.GetValue<bool>("ImplementsIDamageable");
-        }
+        public static bool ImplementsIDamageable(EntitySave entity) => 
+            entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageable) == true;
+
+        public static bool SuppressDamagePropertyCodeGeneration(EntitySave entity) =>
+            entity.Properties.GetValue<bool>(MainDamageDealingPlugin.SuppressDamagePropertyCodeGeneration);
+
     }
 }

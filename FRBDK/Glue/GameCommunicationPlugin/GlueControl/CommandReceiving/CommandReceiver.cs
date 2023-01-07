@@ -349,6 +349,23 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             }
                         }
                         break;
+                    case "decimal":
+                    case nameof(Decimal):
+                        {
+                            if (value is double asDouble)
+                            {
+                                value = (decimal)asDouble;
+                            }
+                            else if (value is int asInt)
+                            {
+                                value = (decimal)asInt;
+                            }
+                            else if (value is float asFloat)
+                            {
+                                value = (decimal)asFloat;
+                            }
+                        }
+                        break;
                     case "Microsoft.Xna.Framework.Graphics.Texture2D":
                     case nameof(Texture2D):
                     case "FlatRedBall.Graphics.Animation.AnimationChainList":

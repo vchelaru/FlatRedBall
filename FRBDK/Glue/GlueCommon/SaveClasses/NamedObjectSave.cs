@@ -850,6 +850,28 @@ namespace FlatRedBall.Glue.SaveClasses
             //IndependentOfCamera = true;
             IndependentOfCamera = false;
 
+            // do not set this to true:
+            //AssociateWithFactory
+            // This will result in accumulation of values
+
+        }
+
+        public void SetDefaults()
+        {
+            GenerateTimedEmit = true;
+            AttachToContainer = true;
+
+            // Sept 25, 2020
+            // This used to be 
+            // true, but this causes
+            // unexpected behavior when 
+            // 2D games are resized. If we
+            // set this to false, then layers
+            // will automatically match the camera,
+            // which probably matches what the user expects
+            //IndependentOfCamera = true;
+            IndependentOfCamera = false;
+            AssociateWithFactory = true;
         }
 
         #endregion

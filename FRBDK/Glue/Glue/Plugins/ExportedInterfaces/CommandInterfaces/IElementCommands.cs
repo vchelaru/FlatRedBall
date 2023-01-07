@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.ViewModels;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
@@ -62,11 +63,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true);
         #endregion
 
+        #region Set CustomVariable
+
+        Task HandleSetVariable(CustomVariable variable, object value, bool performSaveAndGenerateCode = true,
+            bool updateUi = true);
+
+        #endregion
+
         #region Events
 
         Task AddEventToElement(AddEventViewModel viewModel, GlueElement glueElement);
 
         void AddEventToElement(GlueElement currentElement, EventResponseSave eventResponseSave);
+
+        #endregion
+
+        #region Property Set
+
+        Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue);
 
         #endregion
 

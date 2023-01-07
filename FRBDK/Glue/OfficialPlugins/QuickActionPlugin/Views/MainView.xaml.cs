@@ -156,6 +156,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
         private void AddObjectToListButton_Clicked(object sender, RoutedEventArgs e)
         {
             var namedObject = new NamedObjectSave();
+            namedObject.SetDefaults();
             var targetList = GlueState.Self.CurrentNamedObjectSave;
             if(!targetList.IsList)
             {

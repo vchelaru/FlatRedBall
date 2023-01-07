@@ -930,6 +930,11 @@ namespace GumPlugin.CodeGeneration
                 variableValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "f";
 
             }
+            else if(variableSave.Type == "decimal")
+            {
+                var value = Convert.ToDecimal(variableValue, System.Globalization.CultureInfo.CurrentCulture);
+                variableValue = value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "m";
+            }
             else if (variableSave.Type == "bool")
             {
                 variableValue = variableValue.ToLower();

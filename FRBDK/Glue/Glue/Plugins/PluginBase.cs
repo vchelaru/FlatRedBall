@@ -425,7 +425,7 @@ namespace FlatRedBall.Glue.Plugins
 
         public Func<ReferencedFileSave, List<AssetTypeInfo>> GetAvailableAssetTypes { get; protected set; }
 
-        public Func<NamedObjectSave, NamedObjectSave, Task> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
+        public Func<NamedObjectSave, NamedObjectSave, Task<NamedObjectSave>> ReactToCreateCollisionRelationshipsBetween { get; protected set; }
 
         public Func<ITreeNode, bool> TryHandleTreeNodeDoubleClicked { get; protected set; }
 

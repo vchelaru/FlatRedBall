@@ -92,9 +92,19 @@ namespace OfficialPlugins.CollisionPlugin
 
             this.AdjustDisplayedEntity += StackableEntityManager.Self.HandleDisplayedEntity;
 
-            this.ReactToCreateCollisionRelationshipsBetween += (NamedObjectSave first, NamedObjectSave second) =>
+            this.ReactToCreateCollisionRelationshipsBetween += async (NamedObjectSave first, NamedObjectSave second) =>
             {
-                return CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
+                if(first == null)
+                {
+                    throw new ArgumentNullException(nameof(first));
+                }
+                if(second == null)
+                {
+                    throw new ArgumentNullException(nameof(second));
+                }
+                var nos = await CollidableNamedObjectController.CreateCollisionRelationshipBetweenObjects(first.InstanceName, second.InstanceName, first.GetContainer());
+
+                return nos;
             };
         }
 

@@ -337,7 +337,7 @@ namespace TileGraphicsPlugin
                 }
             };
 
-            this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
+            //this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;
 
             this.ReactToNewObjectHandler += NewObjectLogic.HandleNewObject;
 

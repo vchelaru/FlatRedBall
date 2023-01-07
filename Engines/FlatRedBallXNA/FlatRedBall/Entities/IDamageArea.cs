@@ -11,5 +11,11 @@ namespace FlatRedBall.Entities
         double SecondsBetweenDamage { get; set; }
         object DamageDealer { get; }
         int TeamIndex { get; }
+
+        decimal DamageToDeal { get; }
+        Func<decimal, IDamageable, decimal> ModifyDamageDealt { get; set; }
+        Action<decimal, IDamageable> ReactToDamageDealt { get; set; }
+        Action<decimal, IDamageable> KilledDamageable { get; set; }
+        Action<IDamageable> RemovedByCollision { get; set; }
     }
 }

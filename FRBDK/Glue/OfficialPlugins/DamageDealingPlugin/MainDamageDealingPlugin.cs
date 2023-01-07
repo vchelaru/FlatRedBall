@@ -11,6 +11,7 @@ using OfficialPluginsCore.DamageDealingPlugin.CodeGenerators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 
 namespace OfficialPluginsCore.DamageDealingPlugin
@@ -50,14 +51,26 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             var implementsDamageArea = DamageDealingCodeGenerator.ImplementsIDamageArea(currentEntity);
             var implementsDamageable = DamageDealingCodeGenerator.ImplementsIDamageable(currentEntity);
 
-            var shouldReadd =
+            var shouldReadd = false;
+
+            shouldReadd =
                 variable.Name == nameof(IDamageable.TeamIndex) && (implementsDamageArea || implementsDamageable);
 
-            if(!shouldReadd)
+            var isV2 = DamageDealingCodeGenerator.UsesDamageV2;
+
+            if( implementsDamageArea && !shouldReadd)
             {
                 shouldReadd =
-                    variable.Name == nameof(IDamageArea.SecondsBetweenDamage) && implementsDamageArea;
+                    variable.Name == nameof(IDamageArea.SecondsBetweenDamage) ||
+                    (isV2 && variable.Name == nameof(IDamageArea.DamageToDeal));
             }
+
+            if(implementsDamageable && !shouldReadd)
+            {
+                shouldReadd =
+                    (isV2 && variable.Name == nameof(IDamageable.MaxHealth));
+            }
+
             if (shouldReadd)
             {
                 currentEntity.CustomVariables.Add(variable);
@@ -68,29 +81,78 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
         }
 
+        static CustomVariable GetTeamIndex(bool isV2)
+        {
+            var variableDefinition = new CustomVariable();
+            variableDefinition.Name = nameof(IDamageable.TeamIndex);
+            variableDefinition.DefaultValue = 0;
+            variableDefinition.Type = "int";
+            variableDefinition.CreatesProperty = true;
+            //variableDefinition.Category = "Damage Dealing";
+            return variableDefinition;
+        }
+        static CustomVariable GetMaxHealth(bool isV2)
+        {
+            if(isV2)
+            {
+                var variable = new CustomVariable();
+                variable.Name = nameof(IDamageable.MaxHealth);
+                variable.DefaultValue = 100m;
+                variable.Type = "decimal";
+                variable.CreatesProperty = true;
+                // why no category?
+                return variable;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        static CustomVariable GetSecondsBetweenDamage(bool isV2)
+        {
+            var secondsBetweenDamage = new CustomVariable();
+            secondsBetweenDamage.Name = nameof(IDamageArea.SecondsBetweenDamage);
+            secondsBetweenDamage.DefaultValue = 0.0;
+            secondsBetweenDamage.Type = "double";
+            secondsBetweenDamage.CreatesProperty = true;
+            //secondsBetweenDamage.Category = "Damage Dealing";
+            return secondsBetweenDamage;
+        }
+
+        static CustomVariable GetDamageToDeal(bool isV2)
+        {
+            if(isV2)
+            {
+                var variable = new CustomVariable();
+                variable.Name = nameof(IDamageArea.DamageToDeal);
+                variable.DefaultValue = 10m;
+                variable.Type = "decimal";
+                variable.CreatesProperty = true;
+                // why no category?
+                return variable;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        List<Func<bool, CustomVariable>> IDamageAreaVariables = new List<Func<bool, CustomVariable>>
+        {
+            GetTeamIndex,
+            GetSecondsBetweenDamage,
+            GetDamageToDeal
+        };
+        List<Func<bool, CustomVariable>> IDamageableVariables = new List<Func<bool, CustomVariable>>
+        {
+            GetTeamIndex,
+            GetMaxHealth
+        };
+
+
         private void HandleChangedProperty(string changedMember, object oldValue, GlueElement glueElement)
         {
-            CustomVariable GetTeamIndex()
-            {
-                var variableDefinition = new CustomVariable();
-                variableDefinition.Name = nameof(IDamageable.TeamIndex);
-                variableDefinition.DefaultValue = 0;
-                variableDefinition.Type = "int";
-                variableDefinition.CreatesProperty = true;
-                //variableDefinition.Category = "Damage Dealing";
-                return variableDefinition;
-            }
-
-            CustomVariable GetSecondsBetweenDamage()
-            {
-                var secondsBetweenDamage = new CustomVariable();
-                secondsBetweenDamage.Name = nameof(IDamageArea.SecondsBetweenDamage);
-                secondsBetweenDamage.DefaultValue = 0.0;
-                secondsBetweenDamage.Type = "double";
-                secondsBetweenDamage.CreatesProperty = true;
-                //secondsBetweenDamage.Category = "Damage Dealing";
-                return secondsBetweenDamage;
-            }
 
             var wereVariablesAddedOrRemoved = false;
 
@@ -101,55 +163,21 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 var teamIndexVariable = currentEntity.GetCustomVariable(nameof(IDamageable.TeamIndex));
                 var secondsBetweenDamage = currentEntity.GetCustomVariable(nameof(IDamageArea.SecondsBetweenDamage));
 
+                var isV2 = DamageDealingCodeGenerator.UsesDamageV2;
 
-
-                if (changedMember == "ImplementsIDamageArea")
+                if (changedMember == ImplementsIDamageArea)
                 {
-                    if(DamageDealingCodeGenerator.ImplementsIDamageArea(currentEntity))
-                    {
-                        if(teamIndexVariable == null)
-                        {
-                            currentEntity.CustomVariables.Add(GetTeamIndex());
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                        if (secondsBetweenDamage == null)
-                        {
-                            currentEntity.CustomVariables.Add(GetSecondsBetweenDamage());
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                    }
-                    else
-                    {
-                        if(teamIndexVariable != null)
-                        {
-                            currentEntity.CustomVariables.Remove(teamIndexVariable);
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                        if (secondsBetweenDamage != null)
-                        {
-                            currentEntity.CustomVariables.Remove(secondsBetweenDamage);
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                    }
+                    List<CustomVariable> variables = IDamageAreaVariables.Select(item => item(isV2)).ToList();
+                    var implements = DamageDealingCodeGenerator.ImplementsIDamageArea(currentEntity);
+
+                    wereVariablesAddedOrRemoved = RespondToImplementationChanged(currentEntity, variables, implements);
                 }
-                else if(changedMember == "ImplementsIDamageable")
+                else if(changedMember == ImplementsIDamageable)
                 {
-                    if (DamageDealingCodeGenerator.ImplementsIDamageable(currentEntity))
-                    {
-                        if (teamIndexVariable == null)
-                        {
-                            currentEntity.CustomVariables.Add(GetTeamIndex());
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                    }
-                    else
-                    {
-                        if (teamIndexVariable != null)
-                        {
-                            currentEntity.CustomVariables.Remove(teamIndexVariable);
-                            wereVariablesAddedOrRemoved = true;
-                        }
-                    }
+                    var variables = IDamageableVariables.Select(item => item(isV2)).ToList();
+                    var implements = DamageDealingCodeGenerator.ImplementsIDamageable(currentEntity);
+
+                    wereVariablesAddedOrRemoved = RespondToImplementationChanged(currentEntity, variables, implements);
                 }
 
                 if(wereVariablesAddedOrRemoved)
@@ -162,57 +190,62 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             }
         }
 
-        //private IEnumerable<VariableDefinition> HandleGetVariableDefinitionsForElement(IElement element)
-        //{
-        //    EntitySave entitySave = element as EntitySave;
-        //    if(entitySave == null)
-        //    {
-        //        yield break;
-        //    }
+        private static bool RespondToImplementationChanged(EntitySave currentEntity, List<CustomVariable> variables, bool implements)
+        {
+            bool wereVariablesAddedOrRemoved = false;
+            if (implements)
+            {
+                foreach (var variable in variables.Where(item => item != null))
+                {
+                    var existing = currentEntity.GetCustomVariable(variable.Name);
 
-        //    if (entitySave != null)
-        //    {
-        //        VariableDefinition GetTeamIndex()
-        //        {
-        //            var variableDefinition = new VariableDefinition();
-        //            variableDefinition.Name = nameof(IDamageable.TeamIndex);
-        //            variableDefinition.DefaultValue = "0";
-        //            variableDefinition.Type = "int";
-        //            variableDefinition.Category = "Damage Dealing";
-        //            return variableDefinition;
-        //        }
+                    if (existing == null)
+                    {
+                        currentEntity.CustomVariables.Add(variable);
+                        wereVariablesAddedOrRemoved = true;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var variable in variables.Where(item => item != null))
+                {
+                    var existing = currentEntity.GetCustomVariable(variable.Name);
 
-        //        if (DamageDealingCodeGenerator.ImplementsIDamageable(entitySave))
-        //        {
-        //            yield return GetTeamIndex();
-        //        }
-        //        if (DamageDealingCodeGenerator.ImplementsIDamageArea(entitySave))
-        //        {
-        //            var secondsBetweenDamage = new VariableDefinition();
-        //            secondsBetweenDamage.Name = nameof(IDamageArea.SecondsBetweenDamage);
-        //            secondsBetweenDamage.DefaultValue = "0";
-        //            secondsBetweenDamage.Type = "int";
-        //            secondsBetweenDamage.Category = "Damage Dealing";
+                    if (existing != null)
+                    {
+                        currentEntity.CustomVariables.Remove(existing);
+                        wereVariablesAddedOrRemoved = true;
+                    }
+                }
+            }
 
-        //            yield return secondsBetweenDamage;
+            return wereVariablesAddedOrRemoved;
+        }
 
-        //            yield return GetTeamIndex();
-        //        }
-        //    }
-        //}
+        public const string ImplementsIDamageArea = nameof(ImplementsIDamageArea);
+        public const string ImplementsIDamageable = nameof(ImplementsIDamageable);
+        public const string SuppressDamagePropertyCodeGeneration = nameof(SuppressDamagePropertyCodeGeneration);
 
         internal static void HandleDisplayedEntity(EntitySave entitySave, EntitySavePropertyGridDisplayer displayer)
         {
             // Only show this if this is an ICollidable
             if (entitySave.IsICollidableRecursive())
             {
-                var member = displayer.IncludeCustomPropertyMember("ImplementsIDamageArea", typeof(bool));
+                var member = displayer.IncludeCustomPropertyMember(ImplementsIDamageArea, typeof(bool));
 
-                member.SetCategory("Inheritance and Interfaces");
+                member.SetCategory("Damage");
             }
 
-            var damageableMember = displayer.IncludeCustomPropertyMember("ImplementsIDamageable", typeof(bool));
-            damageableMember.SetCategory("Inheritance and Interfaces");
+            var damageableMember = displayer.IncludeCustomPropertyMember(ImplementsIDamageable, typeof(bool));
+            damageableMember.SetCategory("Damage");
+
+            if(DamageDealingCodeGenerator.ImplementsIDamageArea(entitySave) ||
+                DamageDealingCodeGenerator.ImplementsIDamageable(entitySave))
+            {
+                var suppressCodeGenMember = displayer.IncludeCustomPropertyMember(SuppressDamagePropertyCodeGeneration, typeof(bool));
+                suppressCodeGenMember.SetCategory("Damage");
+            }
         }
     }
 }

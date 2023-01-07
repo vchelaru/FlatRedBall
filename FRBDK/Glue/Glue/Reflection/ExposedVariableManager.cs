@@ -32,6 +32,8 @@ namespace FlatRedBall.Glue.Reflection
             "<none>",
             "float",
             "float?",
+            "decimal",
+            "decimal?",
             "string",
             "bool",
 
