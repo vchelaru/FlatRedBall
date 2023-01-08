@@ -21,7 +21,7 @@ namespace FlatRedBall.Math.Geometry
     /// axes. The AxisAlignedRectangle is a shape commonly used in FlatRedBall Entities to perform collision against
     /// other entities and TileShapeCollections.
     /// </summary>
-    public class AxisAlignedRectangle : PositionedObject, 
+    public class AxisAlignedRectangle : PositionedObject,
         IPositionedSizedObject, IScalable, IEquatable<AxisAlignedRectangle>, IMouseOver, IVisible
     {
         #region Fields
@@ -36,7 +36,7 @@ namespace FlatRedBall.Math.Geometry
         float mBoundingRadius;
 
         internal Vector2 mLastMoveCollisionReposition;
-        
+
         internal Color mColor;
 
         internal Layer mLayerBelongingTo;
@@ -61,26 +61,26 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         public float Left
         {
-            get => Position.X - mScaleX; 
-            set => Position.X = value + mScaleX; 
+            get => Position.X - mScaleX;
+            set => Position.X = value + mScaleX;
         }
 
         public float Right
         {
-            get => Position.X + mScaleX; 
-            set => Position.X = value - mScaleX; 
+            get => Position.X + mScaleX;
+            set => Position.X = value - mScaleX;
         }
 
         public float Top
         {
-            get => Position.Y + mScaleY; 
-            set => Position.Y = value - mScaleY; 
+            get => Position.Y + mScaleY;
+            set => Position.Y = value - mScaleY;
         }
 
         public float Bottom
         {
-            get => Position.Y - mScaleY; 
-            set => Position.Y = value + mScaleY; 
+            get => Position.Y - mScaleY;
+            set => Position.Y = value + mScaleY;
         }
 
         public float RelativeLeft
@@ -134,7 +134,7 @@ namespace FlatRedBall.Math.Geometry
         public float ScaleX
         {
             get { return mScaleX; }
-            set 
+            set
             {
 #if DEBUG
                 if (value < 0)
@@ -150,7 +150,7 @@ namespace FlatRedBall.Math.Geometry
         public float ScaleY
         {
             get { return mScaleY; }
-            set 
+            set
             {
 #if DEBUG
                 if (value < 0)
@@ -241,7 +241,7 @@ namespace FlatRedBall.Math.Geometry
 #endif
                 mColor = newColor;
             }
-        } 
+        }
 
         public float Blue
         {
@@ -268,17 +268,17 @@ namespace FlatRedBall.Math.Geometry
             get { return mLastMoveCollisionReposition; }
         }
 
-		#region IMouseOver
-		bool IMouseOver.IsMouseOver(FlatRedBall.Gui.Cursor cursor)
-		{
-			return cursor.IsOn3D(this);
-		}
+        #region IMouseOver
+        bool IMouseOver.IsMouseOver(FlatRedBall.Gui.Cursor cursor)
+        {
+            return cursor.IsOn3D(this);
+        }
 
-		public bool IsMouseOver(FlatRedBall.Gui.Cursor cursor, Layer layer)
-		{
-			return cursor.IsOn3D(this, layer);
-		}
-		#endregion
+        public bool IsMouseOver(FlatRedBall.Gui.Cursor cursor, Layer layer)
+        {
+            return cursor.IsOn3D(this, layer);
+        }
+        #endregion
 
         #endregion
 
@@ -307,13 +307,13 @@ namespace FlatRedBall.Math.Geometry
 
         #region Public Methods
 
-		public AxisAlignedRectangle Clone()
-		{
-			AxisAlignedRectangle newRectangle = this.Clone<AxisAlignedRectangle>();
-			newRectangle.mVisible = false;
-			newRectangle.mLayerBelongingTo = null;
-			return newRectangle;
-		}
+        public AxisAlignedRectangle Clone()
+        {
+            AxisAlignedRectangle newRectangle = this.Clone<AxisAlignedRectangle>();
+            newRectangle.mVisible = false;
+            newRectangle.mLayerBelongingTo = null;
+            return newRectangle;
+        }
 
         #region CollideAgainst
 
@@ -371,7 +371,7 @@ namespace FlatRedBall.Math.Geometry
         /// <param name="capsule">The Capsule2D to test collision against.</param>
         /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(Capsule2D capsule)
-		{
+        {
             UpdateDependencies(TimeManager.CurrentTime);
             capsule.UpdateDependencies(TimeManager.CurrentTime);
 
@@ -413,7 +413,7 @@ namespace FlatRedBall.Math.Geometry
             polygon.UpdateDependencies(TimeManager.CurrentTime);
 
             return this.CollideAgainst(polygon);
-		}
+        }
 
         /// <summary>
         /// Returns whether this instance collides against the argument ShapeCollection.
@@ -444,7 +444,7 @@ namespace FlatRedBall.Math.Geometry
             {
                 Point circleCenter = new Point(circle.X, circle.Y);
 
-                if(IsPointOnOrInside(ref circleCenter))
+                if (IsPointOnOrInside(ref circleCenter))
                 {
                     double xDistanceToMoveCircle = 0;
                     double yDistanceToMoveCircle = 0;
@@ -481,24 +481,41 @@ namespace FlatRedBall.Math.Geometry
                         yDistanceToMoveCircle = -smallestDistance - circle.Radius;
                     }
 
-                    float amountToMoveThis = otherMass / (thisMass + otherMass);
+                    var shouldApply = RepositionHalfSize == false;
+                    if(RepositionHalfSize)
+                    {
+                        if(RepositionDirections == RepositionDirections.Right || RepositionDirections == RepositionDirections.Left)
+                        {
+                            shouldApply = System.Math.Abs(smallestDistance) < (circle.Radius + Width / 2);
+                        }
+                        if(RepositionDirections == RepositionDirections.Up || RepositionDirections == RepositionDirections.Down)
+                        {
+                            shouldApply = System.Math.Abs(smallestDistance) < (circle.Radius + Height / 2);
+                        }
 
-                    mLastMoveCollisionReposition.X = (float)(-xDistanceToMoveCircle * amountToMoveThis);
-                    mLastMoveCollisionReposition.Y = (float)(-yDistanceToMoveCircle * amountToMoveThis);
+                    }
 
-                    TopParent.X += mLastMoveCollisionReposition.X;
-                    TopParent.Y += mLastMoveCollisionReposition.Y;
+                    if(shouldApply)
+                    {
+                        float amountToMoveThis = otherMass / (thisMass + otherMass);
 
-                    circle.LastMoveCollisionReposition.X = (float)(xDistanceToMoveCircle * (1 - amountToMoveThis));
-                    circle.LastMoveCollisionReposition.Y = (float)(yDistanceToMoveCircle * (1 - amountToMoveThis));
-                    circle.mLastCollisionTangent = new Point(circle.LastMoveCollisionReposition.Y,
-                        -circle.LastMoveCollisionReposition.X);
+                        mLastMoveCollisionReposition.X = (float)(-xDistanceToMoveCircle * amountToMoveThis);
+                        mLastMoveCollisionReposition.Y = (float)(-yDistanceToMoveCircle * amountToMoveThis);
 
-                    circle.TopParent.Position.X += circle.LastMoveCollisionReposition.X;
-                    circle.TopParent.Position.Y += circle.LastMoveCollisionReposition.Y;
+                        TopParent.X += mLastMoveCollisionReposition.X;
+                        TopParent.Y += mLastMoveCollisionReposition.Y;
 
-                    ForceUpdateDependencies();
-                    circle.ForceUpdateDependencies();
+                        circle.LastMoveCollisionReposition.X = (float)(xDistanceToMoveCircle * (1 - amountToMoveThis));
+                        circle.LastMoveCollisionReposition.Y = (float)(yDistanceToMoveCircle * (1 - amountToMoveThis));
+                        circle.mLastCollisionTangent = new Point(circle.LastMoveCollisionReposition.Y,
+                            -circle.LastMoveCollisionReposition.X);
+
+                        circle.TopParent.Position.X += circle.LastMoveCollisionReposition.X;
+                        circle.TopParent.Position.Y += circle.LastMoveCollisionReposition.Y;
+
+                        ForceUpdateDependencies();
+                        circle.ForceUpdateDependencies();
+                    }
 
                     return true;
                 }
@@ -525,13 +542,29 @@ namespace FlatRedBall.Math.Geometry
 
                         if (shouldUseInfiniteSegment)
                         {
-                            smallestDistance = Top + circle.Radius - circle.Position.Y;
-                            
+                            float candidate = Top + circle.Radius - circle.Position.Y;
+                            if (this.RepositionHalfSize)
+                            {
+                                var maxMove = circle.Radius + Height / 2;
+                                if (System.Math.Abs(candidate) > maxMove)
+                                {
+                                    // no movement allowed
+                                    candidate = float.PositiveInfinity;
+                                }
+                            }
 
-                            isAmountToMoveSet = true;
+                            if (System.Math.Abs(candidate) < System.Math.Abs(smallestDistance))
 
-                            amountToMove.X = 0;
-                            amountToMove.Y = -smallestDistance;
+                            {
+                                smallestDistance = candidate;
+
+
+                                isAmountToMoveSet = true;
+
+                                amountToMove.X = 0;
+                                amountToMove.Y = -smallestDistance;
+
+                            }
                         }
                         else
                         {
@@ -555,6 +588,17 @@ namespace FlatRedBall.Math.Geometry
                         if (shouldUseInfiniteSegment)
                         {
                             float candidate = Bottom - circle.Radius - circle.Position.Y;
+
+                            if (this.RepositionHalfSize)
+                            {
+                                var maxMove = circle.Radius + Height / 2;
+                                if (System.Math.Abs(candidate) > maxMove)
+                                {
+                                    // no movement allowed
+                                    candidate = float.PositiveInfinity;
+                                }
+                            }
+
 
                             if (System.Math.Abs(candidate) < System.Math.Abs(smallestDistance))
                             {
@@ -591,6 +635,17 @@ namespace FlatRedBall.Math.Geometry
                         if (shouldUseInfiniteSegment)
                         {
                             float candidate = Left - circle.Radius - circle.Position.X;
+
+
+                            if (this.RepositionHalfSize)
+                            {
+                                var maxMove = circle.Radius + Width / 2;
+                                if (System.Math.Abs(candidate) > maxMove)
+                                {
+                                    // no movement allowed
+                                    candidate = float.PositiveInfinity;
+                                }
+                            }
 
                             if (System.Math.Abs(candidate) < System.Math.Abs(smallestDistance))
                             {
@@ -792,7 +847,7 @@ namespace FlatRedBall.Math.Geometry
 
 
                 //if(isLShaped)
-                if(RepositionHalfSize || rectangle.RepositionHalfSize)
+                if (RepositionHalfSize || rectangle.RepositionHalfSize)
                 {
                     if (side == Side.Left || side == Side.Right)
                     {
@@ -834,17 +889,17 @@ namespace FlatRedBall.Math.Geometry
 
                     switch (side)
                     {
-                        case Side.Left: 
+                        case Side.Left:
                             movementVector.X = rectangle.X - rectangle.mScaleX - mScaleX - X;
                             break;
-                        case Side.Right: 
-                            movementVector.X = rectangle.X + rectangle.mScaleX + mScaleX - X; 
+                        case Side.Right:
+                            movementVector.X = rectangle.X + rectangle.mScaleX + mScaleX - X;
                             break;
-                        case Side.Top: 
-                            movementVector.Y = rectangle.Y + rectangle.mScaleY + mScaleY - Y; 
+                        case Side.Top:
+                            movementVector.Y = rectangle.Y + rectangle.mScaleY + mScaleY - Y;
                             break;
-                        case Side.Bottom: 
-                            movementVector.Y = rectangle.Y - rectangle.mScaleY - mScaleY - Y; 
+                        case Side.Bottom:
+                            movementVector.Y = rectangle.Y - rectangle.mScaleY - mScaleY - Y;
                             break;
                     }
 
@@ -892,11 +947,11 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-		public bool CollideAgainstMove(Line line, float thisMass, float otherMass)
-		{
+        public bool CollideAgainstMove(Line line, float thisMass, float otherMass)
+        {
             // Vic says: The math for this is kinda complex and I don't know if it's even going to be
             // that common, so I'm going to not write this yet.
-            throw new NotImplementedException(); 
+            throw new NotImplementedException();
             /*
 #if DEBUG
             if (thisMass == 0 && otherMass == 0)
@@ -968,10 +1023,10 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-		public bool CollideAgainstMove(Capsule2D capsule2D, float thisMass, float otherMass)
-		{
+        public bool CollideAgainstMove(Capsule2D capsule2D, float thisMass, float otherMass)
+        {
             throw new NotImplementedException("This method is not implemented. Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce");
-		}
+        }
 
 
         public bool CollideAgainstMove(ShapeCollection shapeCollection, float thisMass, float otherMass)
@@ -1058,7 +1113,7 @@ namespace FlatRedBall.Math.Geometry
                 PositionedObject thisTopParent = this.TopParent;
                 PositionedObject otherTopParent = polygon.TopParent;
 
-                
+
                 Vector2 collisionNormal = LastMoveCollisionReposition;
 
                 if (otherMass == 0)
@@ -1107,28 +1162,28 @@ namespace FlatRedBall.Math.Geometry
         }
 
 
-		public bool CollideAgainstBounce(Capsule2D capsule2D, float thisMass, float otherMass, float elasticity)
-		{
-			throw new NotImplementedException("This method is not implemented.  Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce.");
-		}
+        public bool CollideAgainstBounce(Capsule2D capsule2D, float thisMass, float otherMass, float elasticity)
+        {
+            throw new NotImplementedException("This method is not implemented.  Capsules are intended only for CollideAgainst - use Polygons for CollideAgainstMove and CollideAgainstBounce.");
+        }
 
 
-		public bool CollideAgainstBounce(Circle circle, float thisMass, float otherMass, float elasticity)
-		{
-			return circle.CollideAgainstBounce(this, otherMass, thisMass, elasticity);
-		}
+        public bool CollideAgainstBounce(Circle circle, float thisMass, float otherMass, float elasticity)
+        {
+            return circle.CollideAgainstBounce(this, otherMass, thisMass, elasticity);
+        }
 
 
-		public bool CollideAgainstBounce(Line line, float thisMass, float otherMass, float elasticity)
-		{
-			throw new NotImplementedException();
-		}
+        public bool CollideAgainstBounce(Line line, float thisMass, float otherMass, float elasticity)
+        {
+            throw new NotImplementedException();
+        }
 
 
-		public bool CollideAgainstBounce(ShapeCollection shapeCollection, float thisMass, float otherMass, float elasticity)
-		{
-			return shapeCollection.CollideAgainstBounce(this, otherMass, thisMass, elasticity);
-		}
+        public bool CollideAgainstBounce(ShapeCollection shapeCollection, float thisMass, float otherMass, float elasticity)
+        {
+            return shapeCollection.CollideAgainstBounce(this, otherMass, thisMass, elasticity);
+        }
 
         #endregion
 
@@ -1210,8 +1265,8 @@ namespace FlatRedBall.Math.Geometry
         public Vector3 GetRandomPositionInThis()
         {
             return new Vector3(
-                Position.X - mScaleX + (float)(FlatRedBallServices.Random.NextDouble()*2 * mScaleX),
-                Position.Y - mScaleY + (float)(FlatRedBallServices.Random.NextDouble()*2 * mScaleY),
+                Position.X - mScaleX + (float)(FlatRedBallServices.Random.NextDouble() * 2 * mScaleX),
+                Position.Y - mScaleY + (float)(FlatRedBallServices.Random.NextDouble() * 2 * mScaleY),
                 0);
         }
 
@@ -1274,7 +1329,7 @@ namespace FlatRedBall.Math.Geometry
         {
             base.TimedActivity(secondDifference, secondDifferenceSquaredDividedByTwo, secondsPassedLastFrame);
 
-            
+
             mScaleX += (float)(mScaleXVelocity * secondDifference);
 
             ScaleY = mScaleY + (float)(mScaleYVelocity * secondDifference); // to force recalculation of radius
