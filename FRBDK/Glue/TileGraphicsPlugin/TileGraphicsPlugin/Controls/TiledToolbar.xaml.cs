@@ -160,11 +160,17 @@ namespace TiledPluginCore.Controls
                                new FilePath(b.Name).NoPath));
 
 
+            HashSet<FilePath> alreadyAdded = new HashSet<FilePath>(); // prevents duplicates:
+
             foreach (var rfs in sorted)
             {
                 var fullFilePath = new FilePath(GlueCommands.Self.GetAbsoluteFileName(rfs));
 
-                ViewModel.AllTmxFiles.Add(new TmxReferenceViewModel(fullFilePath));
+                if(!alreadyAdded.Contains(fullFilePath))
+                {
+                    alreadyAdded.Add(fullFilePath);
+                    ViewModel.AllTmxFiles.Add(new TmxReferenceViewModel(fullFilePath));
+                }
 
             }
 
