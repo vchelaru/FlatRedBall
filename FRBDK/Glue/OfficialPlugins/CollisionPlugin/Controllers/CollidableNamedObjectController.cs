@@ -181,6 +181,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
         public static async Task<NamedObjectSave> CreateCollisionRelationshipBetweenObjects(string firstNosName, string secondNosName, GlueElement container)
         {
+            if(container == null)
+            {
+                throw new ArgumentNullException(nameof(container));
+            }
             NamedObjectSave newNos = null;
             await TaskManager.Self.AddAsync(async () =>
             {
