@@ -44,27 +44,10 @@ namespace FlatRedBall.Input
 
         public bool AutomaticallyPushEventsToInputReceiver { get; set; } = true;
 
-        public bool IsShiftDown
-        {
-            get
-            {
-                return KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
-            }
-        }
-        public bool IsCtrlDown
-        {
-            get
-            {
-                return KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
-            }
-        }
-        public bool IsAltDown
-        {
-            get
-            {
-                return KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
-            }
-        }
+        public bool IsShiftDown => KeyDown(Keys.LeftShift) || KeyDown(Keys.LeftShift);
+        public bool IsCtrlDown => KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl);
+        public bool IsControlDown => IsCtrlDown;
+        public bool IsAltDown => KeyDown(Keys.LeftAlt) || KeyDown(Keys.RightAlt);
 
         List<Keys> keysTypedInternal = new List<Keys>();
         public IReadOnlyCollection<Microsoft.Xna.Framework.Input.Keys> KeysTyped
@@ -253,22 +236,22 @@ namespace FlatRedBall.Input
 
         public bool ControlCPushed()
         {
-            return (KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl)) && KeyPushed(Keys.C);
+            return IsCtrlDown && KeyPushed(Keys.C);
         }
 
         public bool ControlVPushed()
         {
-            return (KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl)) && KeyPushed(Keys.V);
+            return IsCtrlDown && KeyPushed(Keys.V);
         }
 
         public bool ControlXPushed()
         {
-            return (KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl)) && KeyPushed(Keys.X);
+            return IsCtrlDown && KeyPushed(Keys.X);
         }
 
         public bool ControlZPushed()
         {
-            return (KeyDown(Keys.LeftControl) || KeyDown(Keys.RightControl)) && KeyPushed(Keys.Z);
+            return IsCtrlDown && KeyPushed(Keys.Z);
         }
 
         public string GetStringTyped()
@@ -282,8 +265,7 @@ namespace FlatRedBall.Input
 
             string returnString = "";
 
-            bool isCtrlPressed =
-                InputManager.Keyboard.KeyDown(Keys.LeftControl) || InputManager.Keyboard.KeyDown(Keys.RightControl);
+            bool isCtrlPressed = IsCtrlDown;
 
 
             for (int i = 0; i < NumberOfKeys; i++)
