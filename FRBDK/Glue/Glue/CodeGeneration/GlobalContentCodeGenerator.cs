@@ -216,6 +216,13 @@ namespace FlatRedBall.Glue.Parsing
             currentBlock = initializeFunction
                     ._();
 
+            // Vic asks - should this be in a plugin? Or should it be core FRB? Let's put it here in core for now.
+            // This is needed for Tiled shapes
+            //https://github.com/vchelaru/FlatRedBall/issues/892
+            // But maybe we should do this for everything just to be safe?
+            currentBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
+            currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
+
             foreach (var generator in CodeWriter.GlobalContentCodeGenerators)
             {
                 generator.GenerateInitializeStart(initializeFunction);
@@ -284,6 +291,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 currentBlock.Line("#endif");
             }
+            currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
 
             if (!loadAsync)
             {
@@ -302,6 +310,8 @@ namespace FlatRedBall.Glue.Parsing
                 generator.GenerateInitializeEnd(initializeFunction);
                 generator.GenerateAdditionalMethods(classLevelBlock);
             }
+
+
 
             return codeBlock;
         }
