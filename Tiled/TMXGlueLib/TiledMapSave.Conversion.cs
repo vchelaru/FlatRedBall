@@ -109,9 +109,12 @@ namespace TMXGlueLib
                                 var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
                                 if (!string.IsNullOrEmpty(properties.Type))
                                 {
-
-                                    item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
-                                    item.PropertyDictionary["Type"] = properties.Type;
+                                    if(item.PropertyDictionary.ContainsKey("Type")) {
+                                        //If it already has a Type, it's overridden in tiled so we don't want the base tileset Type
+                                    } else {
+                                        item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
+                                        item.PropertyDictionary["Type"] = properties.Type;
+                                    }
                                 }
                             }
 
