@@ -375,6 +375,8 @@ namespace FlatRedBallAddOns.Entities
             // project. This is a last chance to add it if necessary:
             await GlueCommands.Self.ProjectCommands.TryAddCodeFileToProjectAsync(GetAbsoluteGeneratedCodeFileFor(element), saveOnAdd: true);
         }
+        
+        #region Predefines like #if ANDROID
 
         public static void GenerateDefines(ICodeBlock rootBlock)
         {
@@ -394,6 +396,10 @@ namespace FlatRedBallAddOns.Entities
 
             }
         }
+
+        #endregion
+
+        #region Namespace
 
         public static string GetGlueElementNamespace(GlueElement element)
         {
@@ -424,6 +430,10 @@ namespace FlatRedBallAddOns.Entities
             return classNamespace;
         }
 
+        #endregion
+
+        #region Class Header
+
         private static ICodeBlock GenerateClassHeader(IElement element, ICodeBlock namespaceBlock)
         {
             var inheritance = GetInheritance(element);
@@ -441,6 +451,91 @@ namespace FlatRedBallAddOns.Entities
 
             return classCodeblock;
         }
+
+        #endregion
+
+        #region Load Static Content
+
+        public static void GenerateLoadStaticContent(ICodeBlock codeBlock, IElement saveObject)
+        {
+            var curBlock = codeBlock;
+
+            bool inheritsFromElement = saveObject.InheritsFromElement();
+
+            curBlock = curBlock.Function(StringHelper.SpaceStrings(
+                                                        "public",
+                                                        "static",
+                                                        inheritsFromElement ? "new" : null,
+                                                        "void"),
+                                         "LoadStaticContent",
+                                         "string contentManagerName");
+
+
+            PerformancePluginCodeGenerator.GenerateStart(saveObject, curBlock, "LoadStaticContent");
+
+            curBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
+            curBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
+
+            curBlock.If("string.IsNullOrEmpty(contentManagerName)")
+                .Line("throw new System.ArgumentException(\"contentManagerName cannot be empty or null\");")
+                .End();
+
+            #region Set the ContentManagerName ( do this BEFORE checking for IsStaticContentLoaded )
+
+            if (saveObject is EntitySave)
+            {
+                if ((saveObject as EntitySave).UseGlobalContent)
+                {
+                    curBlock.Line("// Set to use global content");
+                    curBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
+                }
+                curBlock.Line("ContentManagerName = contentManagerName;");
+            }
+
+            #endregion
+
+
+            if (inheritsFromElement)
+            {
+                curBlock.Line(ProjectManager.ProjectNamespace + "." + saveObject.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
+            }
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
+                .OrderBy(item=>(int)item.CodeLocation))
+            {
+                curBlock = codeGenerator.GenerateLoadStaticContent(curBlock, saveObject);
+            }
+
+
+
+
+            #region Register the unload for EntitySaves
+
+            // Vic says - do we want this for Screens too?
+            // I don't think we do because Screens can just null- out stuff in their Destroy method.  There's only one of them around at a time.
+
+            if (saveObject is EntitySave)
+            {
+                if (!(saveObject as EntitySave).UseGlobalContent)
+                {
+                    var ifBlock = curBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
+                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, saveObject);
+                }
+            }
+
+            #endregion
+
+
+
+
+            curBlock.Line("CustomLoadStaticContent(contentManagerName);");
+
+            curBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
+
+            PerformancePluginCodeGenerator.GenerateEnd(saveObject, curBlock, "LoadStaticContent");
+        }
+
+        #endregion
 
         private static void GenerateConstructors(GlueElement element, ICodeBlock codeBlock)
         {
@@ -2035,78 +2130,6 @@ namespace FlatRedBallAddOns.Entities
             currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
         }
 
-        public static void GenerateLoadStaticContent(ICodeBlock codeBlock, IElement saveObject)
-        {
-            var curBlock = codeBlock;
-
-            bool inheritsFromElement = saveObject.InheritsFromElement();
-
-            curBlock = curBlock.Function(StringHelper.SpaceStrings(
-                                                        "public",
-                                                        "static",
-                                                        inheritsFromElement ? "new" : null,
-                                                        "void"),
-                                         "LoadStaticContent",
-                                         "string contentManagerName");
-
-
-            PerformancePluginCodeGenerator.GenerateStart(saveObject, curBlock, "LoadStaticContent");
-
-            curBlock.If("string.IsNullOrEmpty(contentManagerName)")
-                .Line("throw new System.ArgumentException(\"contentManagerName cannot be empty or null\");")
-                .End();
-
-            #region Set the ContentManagerName ( do this BEFORE checking for IsStaticContentLoaded )
-
-            if (saveObject is EntitySave)
-            {
-                if ((saveObject as EntitySave).UseGlobalContent)
-                {
-                    curBlock.Line("// Set to use global content");
-                    curBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
-                }
-                curBlock.Line("ContentManagerName = contentManagerName;");
-            }
-
-            #endregion
-
-
-            if (inheritsFromElement)
-            {
-                curBlock.Line(ProjectManager.ProjectNamespace + "." + saveObject.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
-            }
-
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
-                .OrderBy(item=>(int)item.CodeLocation))
-            {
-                curBlock = codeGenerator.GenerateLoadStaticContent(curBlock, saveObject);
-            }
-
-
-
-
-            #region Register the unload for EntitySaves
-
-            // Vic says - do we want this for Screens too?
-            // I don't think we do because Screens can just null- out stuff in their Destroy method.  There's only one of them around at a time.
-
-            if (saveObject is EntitySave)
-            {
-                if (!(saveObject as EntitySave).UseGlobalContent)
-                {
-                    var ifBlock = curBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
-                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, saveObject);
-                }
-            }
-
-            #endregion
-
-
-
-
-            curBlock.Line("CustomLoadStaticContent(contentManagerName);");
-            PerformancePluginCodeGenerator.GenerateEnd(saveObject, curBlock, "LoadStaticContent");
-        }
 
 
         public static ICodeBlock GenerateAfterActivity(ICodeBlock codeBlock, IElement saveObject)

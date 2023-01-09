@@ -266,8 +266,6 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-        #region Methods
-
         #region Constructor
 
         public Polygon()
@@ -276,6 +274,9 @@ namespace FlatRedBall.Math.Geometry
         }
 
         #endregion
+
+        #region Methods
+
 
         #region Static Public Methods
 
@@ -2479,6 +2480,8 @@ namespace FlatRedBall.Math.Geometry
         #endregion
     }
 
+    #region PolygonListExtensionMethods
+
     public static class PolygonListExtensionMethods
     {
         public static Polygon GetRandomPolygonWithWeightedArea(this IList<Polygon> polygonList)
@@ -2525,4 +2528,6 @@ namespace FlatRedBall.Math.Geometry
 
 
     }
+
+    #endregion
 }

@@ -291,6 +291,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 currentBlock.Line("#endif");
             }
+
             currentBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
 
             if (!loadAsync)
