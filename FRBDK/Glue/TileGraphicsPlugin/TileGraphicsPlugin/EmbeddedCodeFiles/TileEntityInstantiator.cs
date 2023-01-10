@@ -489,7 +489,7 @@ namespace FlatRedBall.TileEntities
                             $"Check the property type in your TMX and make sure it matches the type on the entity.";
                         throw new Exception(message, e);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // Since this code indiscriminately tries to set properties, it may set properties which don't
                         // actually exist. Therefore, we tolerate failures.

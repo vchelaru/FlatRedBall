@@ -171,6 +171,8 @@ namespace OfficialPluginsCore.Wizard.Models
 
                 formsData.AddBoolValue("Add Sprite to Player Entity", nameof(ViewModel.AddPlayerSprite), nameof(ViewModel.IsPlayerCreationSelectingOptions));
 
+                formsData.AddBoolValue("Make Player IDamageable", nameof(ViewModel.IsPlayerDamageableChecked), nameof(ViewModel.IsPlayerCreationSelectingOptions));
+
                 formsData.AddBoolValue("Add Platformer Animations", nameof(ViewModel.AddPlayerSpritePlatformerAnimations),
                     nameof(ViewModel.ShowAddPlayerSpritePlatformerAnimations));
 

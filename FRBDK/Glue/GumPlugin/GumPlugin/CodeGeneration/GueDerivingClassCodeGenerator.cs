@@ -127,7 +127,7 @@ namespace GumPlugin.CodeGeneration
 
             GenerateCreateChildrenRecursively(elementSave, currentBlock);
 
-            GenerateAssignReferencesMethod(elementSave, currentBlock);
+            GenerateAssignInternalReferencesMethod(elementSave, currentBlock);
 
             GenerateAddToManagersMethod(elementSave, currentBlock);
 
@@ -528,16 +528,16 @@ namespace GumPlugin.CodeGeneration
             {
 
                 currentBlock.Line("base.CreateChildrenRecursively(elementSave, systemManagers);");
-                currentBlock.Line("this.AssignReferences();");
+                currentBlock.Line("this.AssignInternalReferences();");
             }
 
             //public virtual void CreateChildrenRecursively(ElementSave elementSave, SystemManagers systemManagers)
 
         }
 
-        private void GenerateAssignReferencesMethod(ElementSave elementSave, ICodeBlock currentBlock)
+        private void GenerateAssignInternalReferencesMethod(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("private void", "AssignReferences", "");
+            currentBlock = currentBlock.Function("private void", "AssignInternalReferences", "");
             {
                 foreach (var instance in elementSave.Instances)
                 {

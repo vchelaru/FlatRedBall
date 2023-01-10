@@ -30,12 +30,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 );
         }
 
+        
         public void GenerateCurrentElementCode()
         {
             GlueElement element = GlueState.CurrentElement;
             if (element != null)
             {
-                TaskManager.Self.AddAsync(async ()  =>
+                var throwaway = TaskManager.Self.AddAsync(async ()  =>
                 {
                     // This can happen when the user exits the program, so let's check:
                     if(GlueState.CurrentGlueProject != null)
@@ -46,7 +47,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        [Obsolete("use GenerateElementCodeAsync")]
         public void GenerateElementCode(GlueElement element)
         {
             if(element == null)
@@ -55,7 +55,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             string taskName = nameof(GenerateElementCode) + " " + element.ToString();
 
-            TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
+            var throwaway = TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
                 taskName,
                 TaskExecutionPreference.AddOrMoveToEnd);
         }

@@ -220,6 +220,12 @@ namespace OfficialPluginsCore.Wizard.Models
         public bool ShowAddPlatformAnimatorController =>
             ShowAddPlayerSpritePlatformerAnimations && AddPlayerSpritePlatformerAnimations;
 
+        public bool IsPlayerDamageableChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Levels
@@ -338,6 +344,8 @@ namespace OfficialPluginsCore.Wizard.Models
             get; set;
         }
 
+        #region Constructor/Init
+
         public WizardViewModel()
         {
 
@@ -363,6 +371,8 @@ namespace OfficialPluginsCore.Wizard.Models
             AddPlayerSprite = true;
             OffsetPlayerPosition = true;
 
+            IsPlayerDamageableChecked = true;
+
             CreateLevels = true;
             NumberOfLevels = 2;
             IncludStandardTilesetInLevels = true;
@@ -381,6 +391,7 @@ namespace OfficialPluginsCore.Wizard.Models
             ScalePercent = 200;
         }
 
+        #endregion
 
     }
 }

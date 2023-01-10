@@ -719,6 +719,11 @@ namespace OfficialPluginsCore.Wizard.Managers
                 // none are checked, but we'll still have it be ICollidable
             }
 
+            if(vm.IsPlayerDamageableChecked)
+            {
+                addEntityVm.IsIDamageableChecked= true;
+            }
+
             addEntityVm.IsICollidableChecked = true;
 
             addEntityVm.IsSpriteChecked = vm.AddPlayerSprite;
@@ -869,6 +874,8 @@ namespace OfficialPluginsCore.Wizard.Managers
 
         #endregion
 
+        #region Additional Screens
+
         private static async Task AddAdditionalScreens(WizardViewModel vm)
         {
             foreach (var screenName in vm.AdditionalNonGameScreens)
@@ -876,6 +883,8 @@ namespace OfficialPluginsCore.Wizard.Managers
                 await TaskManager.Self.AddAsync(async () => await GlueCommands.Self.GluxCommands.ScreenCommands.AddScreen(screenName), $"Adding screen {screenName}");
             }
         }
+
+        #endregion
 
         private static async Task ApplyCameraValues(WizardViewModel vm, ScreenSave gameScreen)
         {
