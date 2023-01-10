@@ -258,36 +258,41 @@ namespace FlatRedBall.Glue.SaveClasses
             if (customVariable.GetIsEnumeration() && customVariable.DefaultValue != null)
             {
                 Type runtimeType = customVariable.GetRuntimeType();
-                Array array = Enum.GetValues(runtimeType);
 
-                int valueAsInt = 0;
-                if (customVariable.DefaultValue is int asInt)
+                if(customVariable.DefaultValue?.GetType() != runtimeType)
                 {
-                    valueAsInt = asInt;
-                }
-                else if(customVariable.DefaultValue is long asLong)
-                {
-                    valueAsInt = (int)asLong;
-                }
+                    Array array = Enum.GetValues(runtimeType);
 
-
-                try
-                {
-                    string name = Enum.GetName(runtimeType, valueAsInt);
-
-                    foreach (object enumValue in array)
+                    int valueAsInt = 0;
+                    if (customVariable.DefaultValue is int asInt)
                     {
-                        if (name == enumValue.ToString())
+                        valueAsInt = asInt;
+                    }
+                    else if(customVariable.DefaultValue is long asLong)
+                    {
+                        valueAsInt = (int)asLong;
+                    }
+
+
+                    try
+                    {
+                        string name = Enum.GetName(runtimeType, valueAsInt);
+
+                        foreach (object enumValue in array)
                         {
-                            customVariable.DefaultValue = enumValue;
-                            break;
+                            if (name == enumValue.ToString())
+                            {
+                                customVariable.DefaultValue = enumValue;
+                                break;
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                        throw new Exception("Could not set the integer value" + valueAsInt + "to an enumeration of type " + runtimeType.FullName);
+                    }
                 }
-                catch (Exception e)
-                {
-                    throw new Exception("Could not set the integer value" + valueAsInt + "to an enumeration of type " + runtimeType.FullName);
-                }
+
                     
             }
         }
