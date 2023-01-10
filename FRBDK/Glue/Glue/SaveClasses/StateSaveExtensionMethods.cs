@@ -118,7 +118,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 Type type = TypeManager.GetTypeFromString(instructionSave.Type);
 
-                if (type != null && type.IsEnum )
+                if (type != null && type.IsEnum && instructionSave.Value?.GetType() != type)
                 {
                     int valueAsInt = 0;
                     if(instructionSave.Value is int asInt)
