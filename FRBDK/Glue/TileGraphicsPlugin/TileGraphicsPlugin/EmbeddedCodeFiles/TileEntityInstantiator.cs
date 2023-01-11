@@ -353,7 +353,7 @@ namespace FlatRedBall.TileEntities
                                                 RightTextureCoordinate = tx + (tileSize / layer.Texture.Width),
                                                 BottomTextureCoordinate = ty + (tileSize / layer.Texture.Height)
                                             };
-                                            asEntity.SetTileTextureCoordinates(ttm);
+                                            asEntity.SetTileMetadata(ttm);
                                         }
 #endif
                                     }
