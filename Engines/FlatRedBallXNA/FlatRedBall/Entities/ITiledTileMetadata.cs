@@ -9,7 +9,7 @@ namespace FlatRedBall.Entities {
     }
 
     public interface ITiledTileMetadata {
-        void SetTileTextureCoordinates(TiledTileMetadata TextureCoords);
+        void SetTileMetadata(TiledTileMetadata tileMetadata);
     }
 
 }
