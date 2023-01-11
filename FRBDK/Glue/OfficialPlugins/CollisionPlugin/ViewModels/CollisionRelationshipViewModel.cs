@@ -33,9 +33,13 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
     public class CollisionRelationshipViewModel :
         PropertyListContainerViewModel
     {
+        #region Consts
+
         public const string EntireObject = "<Entire Object>";
         public const string AlwaysColliding = "<Always Colliding>";
         public const string SelfCollisionSuffix = "(self collision)";
+
+        #endregion
 
         #region Object and Subcollision Object
 
