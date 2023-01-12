@@ -8,6 +8,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Controls;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -74,6 +75,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 didErrorOccur = true;
                 var exceptionMessage = exception.Message;
 
+                GlueCommands.Self.PrintError(exceptionMessage);
+
                 var shouldThrowException = true;
                 string locationToOpen = null;
 
@@ -107,7 +110,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     message = @"FlatRedBall cannot load your project. This is likely because you are using .NET 6.0 or newer and the Xamarin targets are not available. To solve this, see the Troubleshooting section here:\n\n
 https://flatredball.com/documentation/tools/glue-reference/multi-platform/glue-how-to-create-a-flatredball-android-project/.
 
-This will automatically open when you click the OK button";
+This will automatically open when you click the OK button\n\n" + exceptionMessage;
                     locationToOpen = "https://flatredball.com/documentation/tools/glue-reference/multi-platform/glue-how-to-create-a-flatredball-android-project/";
                     result.ShouldTryToLoadProject = false;
                     shouldThrowException = false;
