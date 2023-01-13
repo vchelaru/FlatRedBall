@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfDataUi.Controls;
+using WpfDataUi.DataTypes;
 
 namespace OfficialPlugins.FrbSourcePlugin.Views
 {
@@ -49,11 +50,17 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
             var category = this.DataUiGrid.Categories[0];
             category.Name = "";
 
-            category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder)).PreferredDisplayer = typeof(FileSelectionDisplay);
-            category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder)).PreferredDisplayer = typeof(FileSelectionDisplay);
+            MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder)));
+            MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder)));
 
             this.DataUiGrid.InsertSpacesInCamelCaseMemberNames();
             
+        }
+
+        void MakeMemberFileSelectionDisplay(InstanceMember instanceMember)
+        {
+            instanceMember.PreferredDisplayer = typeof(FileSelectionDisplay);
+            instanceMember.PropertiesToSetOnDisplayer[nameof(FileSelectionDisplay.IsFolderDialog)] = true;
         }
 
         private void LinkToSourceButton_Click(object sender, RoutedEventArgs e) => LinkToSourceClicked();
