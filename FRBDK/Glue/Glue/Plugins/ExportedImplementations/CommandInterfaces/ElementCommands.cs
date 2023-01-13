@@ -380,12 +380,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueState.Self.CurrentGlueProject.StartUpScreen = screenSave.Name;
                 GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
             }
+            // Plugin should react to new screen before generating or refreshing tree node so that tree nodes can show new files
+            await PluginManager.ReactToNewScreenCreated(screenSave);
+
+            // Refresh tree node after plugin manager has a chance to make changes according to the screen
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
             await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
-
-            await PluginManager.ReactToNewScreenCreated(screenSave);
-
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
