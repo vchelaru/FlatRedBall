@@ -267,7 +267,7 @@ namespace FlatRedBall.Glue.Managers
                         ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
                             projectSpecificFile.File.FullPath);
 
-                        FileHelper.DeleteFile(projectSpecificFile.File.FullPath);
+                        FileHelper.MoveToRecycleBin(projectSpecificFile.File.FullPath);
                         shouldRefreshAgainst = true;
                     }
                 }
@@ -305,7 +305,7 @@ namespace FlatRedBall.Glue.Managers
                 ProjectManager.GetProjectByName(projectSpecificFile.ProjectName).ContentProject.RemoveItem(
                     projectSpecificFile.File.FullPath);
 
-                FileHelper.DeleteFile(projectSpecificFile.File.FullPath);
+                FileHelper.MoveToRecycleBin(projectSpecificFile.File.FullPath);
                 shouldRefreshAgainst = true;
             }
 

@@ -25,7 +25,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             if (File.Exists(destinationFileName))
             {
-                FileHelper.DeleteFile(destinationFileName);
+                FileHelper.MoveToRecycleBin(destinationFileName);
             }
             System.IO.Compression.ZipFile.CreateFromDirectory(sourceDirectory, destinationFileName,
                 System.IO.Compression.CompressionLevel.Fastest, includeBaseDirectory:true);

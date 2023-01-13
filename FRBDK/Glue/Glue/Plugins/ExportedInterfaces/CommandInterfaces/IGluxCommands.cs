@@ -115,7 +115,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
             GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
 
+
+        [Obsolete("Use RemoveReferencedFileAsync")]
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
+        Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
         Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null);
         

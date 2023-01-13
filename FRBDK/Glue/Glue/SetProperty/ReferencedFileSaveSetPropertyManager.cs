@@ -500,7 +500,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 try
                 {
-                    FileHelper.DeleteFile(fileToDelete);
+                    FileHelper.MoveToRecycleBin(fileToDelete);
                 }
                 catch (Exception e)
                 {

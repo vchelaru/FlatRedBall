@@ -1721,17 +1721,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         askAreYouSure = false;
                     }
 
-                    if(currentObject is ReferencedFileSave rfs)
-                    {
-                        if(rfs.IsCreatedByWildcard)
-                        {
-                            // for now, don't allow deleting it - must be removed from disk:
-                            GlueCommands.Self.DialogCommands.ShowMessageBox("Cannot remove this file through the FRB Editor - it's a wildcard file, so it must be removed from disk.");
-                            askAreYouSure = false;
-                            reallyRemoveResult = System.Windows.MessageBoxResult.No;
-                        }
-                    }
-
+                    
 
                     if (askAreYouSure)
                     {
@@ -1776,19 +1766,16 @@ namespace FlatRedBall.Glue.FormHelpers
 
                         #region Else if is ReferencedFileSave
 
-                        else if (GlueState.Self.CurrentReferencedFileSave != null)
+                        else if (currentObject is ReferencedFileSave rfs)
                         {
                             // the GluxCommand handles saving and regenerate internally, no need to do it twice
                             saveAndRegenerate = false;
-                            var toRemove = GlueState.Self.CurrentReferencedFileSave;
-                            deletedRfs = GlueState.Self.CurrentReferencedFileSave;
+                            var toRemove = rfs;
+                            deletedRfs = rfs;
                             if (GlueState.Self.Find.IfReferencedFileSaveIsReferenced(toRemove))
                             {
-                                var element = GlueState.Self.CurrentElement;
-
-                                await GluxCommands.Self.RemoveReferencedFileAsync(toRemove, filesToRemove, regenerateAndSave: true);
+                                await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(toRemove, filesToRemove, regenerateAndSave: true);
                             }
-
                         }
                         #endregion
 
@@ -1814,7 +1801,6 @@ namespace FlatRedBall.Glue.FormHelpers
                         }
                         #endregion
 
-
                         #region Else if is EntitySave
 
                         else if (GlueState.Self.CurrentEntitySave != null)
@@ -1830,7 +1816,6 @@ namespace FlatRedBall.Glue.FormHelpers
                         }
 
                         #endregion
-
 
                         #region Files were deleted and the user wants to be asked to delete
 
@@ -1882,7 +1867,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
                                             if (result == DialogResult.Yes && filePath.Exists())
                                             {
-                                                FileHelper.DeleteFile(filePath.FullPath);
+                                                FileHelper.MoveToRecycleBin(filePath.FullPath);
                                             }
                                         }
                                         GluxCommands.Self.ProjectCommands.SaveProjects();
@@ -1927,7 +1912,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         {
                             if (GlueState.Self.CurrentElement != null)
                             {
-                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(GlueState.Self.CurrentElement);
                             }
                             else if (GlueState.Self.CurrentReferencedFileSave != null)
                             {

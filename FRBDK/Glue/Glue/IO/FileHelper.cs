@@ -8,6 +8,7 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.IO;
 using Microsoft.VisualBasic.FileIO;
 using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -105,14 +106,17 @@ namespace FlatRedBall.Glue.IO
         }
 
         /// <summary>
-        /// Moves a file to the recycle bin.
+        /// Moves a file to the recycle bin. Attempts multiple times in case the file is in use
         /// </summary>
         /// <param name="fileName"></param>
-        public static void DeleteFile(string fileName)
+        public static void MoveToRecycleBin(string fileName)
         {
-            // Let's move stuff to the recycle bin:
-            //System.IO.File.Delete(fileName);
-            FileSystem.DeleteFile(fileName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            GlueCommands.Self.TryMultipleTimes(() =>
+            {
+                // Let's move stuff to the recycle bin:
+                //System.IO.File.Delete(fileName);
+                FileSystem.DeleteFile(fileName, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+            });
 
         }
     }

@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                 
                 if(result == MessageBoxResult.Yes)
                 {
-                    FileHelper.DeleteFile(SelectedAbsoluteFile);
+                    FileHelper.MoveToRecycleBin(SelectedAbsoluteFile);
 
                     UnreferencedFiles.Remove(SelectedFileName);
 
@@ -234,7 +234,7 @@ namespace FlatRedBall.Glue.UnreferencedFiles
                         
                         if (System.IO.File.Exists(file))
                         {
-                            FileHelper.DeleteFile(file);
+                            FileHelper.MoveToRecycleBin(file);
                         }
                     }
 

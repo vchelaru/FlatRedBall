@@ -408,7 +408,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             // from Glue.  Check to prevent a crash.
                             if (System.IO.File.Exists(fileName))
                             {
-                                FileHelper.DeleteFile(fileName);
+                                FileHelper.MoveToRecycleBin(fileName);
                             }
                         }
                     }

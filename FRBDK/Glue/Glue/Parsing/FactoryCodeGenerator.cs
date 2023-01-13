@@ -338,7 +338,7 @@ namespace FlatRedBall.Glue.Parsing
                 // Delete the file and remove it from the project
                 if (mEntireClassGenerator.ProjectSpecificFullFileName.Exists())
                 {
-                    FileHelper.DeleteFile(mEntireClassGenerator.ProjectSpecificFullFileName.FullPath);
+                    FileHelper.MoveToRecycleBin(mEntireClassGenerator.ProjectSpecificFullFileName.FullPath);
                 }
                 mEntireClassGenerator.RemoveSelfFromProject();
             }

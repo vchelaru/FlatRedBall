@@ -949,8 +949,28 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 $"Removing referenced file {referencedFileToRemove}");
         }
 
-        public void RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
+        async Task RemoveReferencedFileInternal(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true)
         {
+            // January 13, 2023
+            // note about removing
+            // wildcard files - Wildcard
+            // files are added to the project
+            // if there is a wildcard pattern in
+            // the .gluj. Therefore, the only way
+            // to remove a file from the project is
+            // to delete the file on disk. There is no
+            // exclusion pattern support currently, which
+            // would be required to have files on disk with
+            // a wildcard pattern without being added to the
+            // project. Therefore, until we do have exclusion
+            // support, wildcard files will be deleted here.
+            // Note that when files are removed through the tree
+            // view, the additionalFilesToRemove is populated and
+            // the files are deleted. However, there may be other code
+            // that calls this and it should be a fully-featured call which
+            // removes all reference files, so we'll add the logic to delete
+            // the file here if it's a wildcard.
+
             var isContained = GlueState.Self.Find.IfReferencedFileSaveIsReferenced(referencedFileToRemove);
             /////////////////////////Early Out//////////////////////////////
             if (!isContained)
@@ -1038,7 +1058,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 if (regenerateAndSave && container != null)
                 {
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(container);
                 }
 
             }
@@ -1065,7 +1085,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     foreach (var element in elements)
                     {
-                        CodeWriter.GenerateCode(element);
+                        await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
                     }
                 }
             }
@@ -1083,12 +1103,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 isFileReferenced = FileReferenceManager.Self.IsFileReferencedRecursively(rfsFilePath);
             }
 
+            var isWildcard = referencedFileToRemove.IsCreatedByWildcard;
+            string absoluteName = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove);
+            if(isWildcard && System.IO.File.Exists(absoluteName))
+            {
+                FileHelper.MoveToRecycleBin(absoluteName);
+            }
+
             if (isFileReferenced == false)
             {
-                additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
+                if(!isWildcard)
+                {
+                    // It's already been removed, no need to ask the user about it as a file to delete
+                    additionalFilesToRemove.Add(referencedFileToRemove.GetRelativePath());
+                }
 
                 string itemName = referencedFileToRemove.GetRelativePath();
-                string absoluteName = GlueCommands.Self.GetAbsoluteFileName(referencedFileToRemove);
 
                 // I don't know why we were removing the file from the ProjectBase - it should
                 // be from the Content project

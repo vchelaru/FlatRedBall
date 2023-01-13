@@ -247,7 +247,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (isCapitalizationOnlyChange == false && File.Exists(absoluteNewFile))
                     {
-                        FileHelper.DeleteFile(absoluteNewFile);
+                        FileHelper.MoveToRecycleBin(absoluteNewFile);
                     }
 
                     // The old files may not exist

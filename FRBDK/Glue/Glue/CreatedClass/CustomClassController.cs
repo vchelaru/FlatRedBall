@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.CreatedClass
                         ProjectManager.ProjectBase.RemoveItem(file);
                         try
                         {
-                            FileHelper.DeleteFile(file);
+                            FileHelper.MoveToRecycleBin(file);
                         }
                         catch
                         {
