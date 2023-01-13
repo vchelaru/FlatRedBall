@@ -115,10 +115,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 // we're only looking in the current folder:
                 var suffixFilePattern = wildcardFilePath.NoPath;
 
-                var allFiles = System.IO.Directory
-                    .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.TopDirectoryOnly)
-                    .Select(item => new FilePath(item));
-                return allFiles.Contains(changedFilePath);
+                if(directoryWithNoWildcard.Exists())
+                {
+
+                    var allFiles = System.IO.Directory
+                        .GetFiles(directoryWithNoWildcard.FullPath, suffixFilePattern, System.IO.SearchOption.TopDirectoryOnly)
+                        .Select(item => new FilePath(item));
+                    return allFiles.Contains(changedFilePath);
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }

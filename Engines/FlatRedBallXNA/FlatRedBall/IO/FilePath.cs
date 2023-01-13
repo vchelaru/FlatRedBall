@@ -161,7 +161,15 @@ namespace FlatRedBall.IO
 
         public bool Exists()
         {
-            return System.IO.File.Exists(this.StandardizedCaseSensitive);
+            var standardized = this.StandardizedCaseSensitive;
+            if(standardized.EndsWith("/"))
+            {
+                return System.IO.Directory.Exists(this.StandardizedCaseSensitive);
+            }
+            else
+            {
+                return System.IO.File.Exists(this.StandardizedCaseSensitive);
+            }
         }
 
         public bool IsRootOf(FilePath otherFilePath)

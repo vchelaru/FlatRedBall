@@ -151,8 +151,11 @@ namespace FlatRedBall.Glue.Managers
             {
                 if(remainderSuffix == null)
                 {
-                    var filesTemp = System.IO.Directory.GetFiles(prefix.FullPath, singleSuffix).Select(item => new FilePath(item));
-                    files.AddRange(filesTemp);
+                    if(prefix.Exists())
+                    {
+                        var filesTemp = System.IO.Directory.GetFiles(prefix.FullPath, singleSuffix).Select(item => new FilePath(item));
+                        files.AddRange(filesTemp);
+                    }
                 }
                 else
                 {
