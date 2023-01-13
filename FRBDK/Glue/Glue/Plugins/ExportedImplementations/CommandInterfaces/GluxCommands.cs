@@ -2248,7 +2248,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool updateUi = true, bool notifyPlugins = true)
         {
             // XML serialization doesn't like enums
-            if (value?.GetType().IsEnum() == true)
+            var needsEnum = GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson;
+            if (value?.GetType().IsEnum() == true && needsEnum)
             {
                 value = (int)value;
             }

@@ -27,6 +27,10 @@ using OfficialPlugins.PropertyGrid.Managers;
 using System.ComponentModel;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using EditorObjects.IoC;
+
+using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -154,9 +158,6 @@ namespace OfficialPlugins.VariableDisplay
             string displayName = StringFunctions.InsertSpacesInCamelCaseString(memberName);
             instanceMember.DisplayName = displayName;
 
-            instanceMember.TypeConverter = typeConverter;
-
-            #region Restrict ColorOperation options
 
             // hack! Certain ColorOperations aren't supported in MonoGame. One day they will be if we ever get the
             // shader situation solved. But until then, these cause crashes so let's remove them.
@@ -165,6 +166,7 @@ namespace OfficialPlugins.VariableDisplay
             {
                 instanceMember.TypeConverter = null;
                 // one day?
+                instanceMember.CustomOptions = new List<object>();
                 instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Texture);
                 instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Add);
                 instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Color);
@@ -176,8 +178,10 @@ namespace OfficialPlugins.VariableDisplay
                 //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.Modulate4X);
                 //instanceMember.CustomOptions.Add(FlatRedBall.Graphics.ColorOperation.InterpolateColor);
             }
-
-            #endregion
+            else
+            {
+                instanceMember.TypeConverter = typeConverter;
+            }
 
             #region CustomGetTypeEvent
             instanceMember.CustomGetTypeEvent += (throwaway) => memberType;
@@ -193,100 +197,8 @@ namespace OfficialPlugins.VariableDisplay
 
             instanceMember.CustomSetEvent += async (owner, value) =>
             {
-                if (GlueState.Self.CurrentGlueProject == null)
-                    return;
-                //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
-
-                //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
-                //{
-                // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
-                // runtime errors.
-                //
-
-                if (variableDefinition.CustomVariableSet != null)
-                {
-                    variableDefinition.CustomVariableSet(container, instance, memberName, value);
-                }
-                else
-                {
-                    bool makeDefault = false;
-                    var ati = instance.GetAssetTypeInfo();
-                    var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
-                    if (foundVariable?.Type == nameof(AnimationChainList))
-                    {
-                        if (value is string && ((string)value) == "<NONE>")
-                        {
-                            value = null;
-                            makeDefault = true;
-
-                            // Let's also set the CurrentChainName to null
-                            GlueCommands.Self.GluxCommands.SetVariableOn(
-                                instance,
-                                "CurrentChainName",
-                                null);
-                        }
-                    }
-                    instanceMember.IsDefault = makeDefault;
-
-                    // If we ignore the next refresh, then AnimationChains won't update when the user
-                    // picks an AnimationChainList from a combo box:
-                    //RefreshLogic.IgnoreNextRefresh();
-
-                    // Discussion about SetVariableOn vs SetVariableOnAsync:
-                    // SetVariableOn happens immediately - it does not respect
-                    // the task system. SetVariableOnAsync does use the task system,
-                    // which is safer, since setting the value immediately can cause bugs
-                    // due to variables changing while other tasks are running. However, if
-                    // SetVariableOnAsync is used, then that means the logic for setting the
-                    // variable will not run until the TaskManager gets to this task. If there
-                    // are other tasks running, then that means the variable will not get set right
-                    // away. This can cause the property grid to display the old value after the user
-                    // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
-                    // think of a more sophisticated solution.
-                    GlueCommands.Self.GluxCommands.SetVariableOn(
-                        instance,
-                        memberName,
-                        value, performSaveAndGenerateCode: false, updateUi: false);
-
-
-                    // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
-                    await System.Threading.Tasks.Task.Delay(400);
-
-                    // Set subtext before refreshing property grid
-                    AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
-
-                    instanceMember.IsDefault = makeDefault;
-
-                    await TaskManager.Self.AddAsync(async () =>
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
-                        EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
-
-                        GlueCommands.Self.DoOnUiThread(() =>
-                        {
-                            MainGlueWindow.Self.PropertyGrid.Refresh();
-                            PropertyGridHelper.UpdateNamedObjectDisplay();
-                            if (instanceMember.DisplayName == "Name")
-                            {
-                                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container,
-                                    // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
-                                    FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
-                            }
-                        });
-
-                        if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
-                        {
-                            await GlueCommands.Self.GluxCommands.SaveElementAsync(container);
-                        }
-                        else
-                        {
-                            GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
-                        }
-
-
-                    }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
-
-                }
+                await HandleVariableSet(variableDefinition, container, instance, memberName, value, instanceMember,
+                    categories);
             };
 
             #endregion
@@ -325,6 +237,7 @@ namespace OfficialPlugins.VariableDisplay
 
             return instanceMember;
         }
+
         #endregion
 
         #region Get Variable Value
@@ -346,6 +259,110 @@ namespace OfficialPlugins.VariableDisplay
                 };
             }
         }
+        #endregion
+
+        #region Set Variable Value
+
+        private static async Task HandleVariableSet(VariableDefinition variableDefinition, GlueElement container, 
+            NamedObjectSave instance, string memberName, object value, DataGridItem instanceMember,
+            IEnumerable<MemberCategory> categories)
+        {
+            if (GlueState.Self.CurrentGlueProject == null)
+                return;
+            //NamedObjectVariableChangeLogic.ReactToValueSet(instance, memberName, value, out bool makeDefault);
+
+            //static void ReactToValueSet(NamedObjectSave instance, string memberName, object value, out bool makeDefault)
+            //{
+            // If setting AnimationChianList to null then also null out the CurrentChainName to prevent
+            // runtime errors.
+            //
+
+            if (variableDefinition.CustomVariableSet != null)
+            {
+                variableDefinition.CustomVariableSet(container, instance, memberName, value);
+            }
+            else
+            {
+                bool makeDefault = false;
+                var ati = instance.GetAssetTypeInfo();
+                var foundVariable = ati?.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
+                if (foundVariable?.Type == nameof(AnimationChainList))
+                {
+                    if (value is string && ((string)value) == "<NONE>")
+                    {
+                        value = null;
+                        makeDefault = true;
+
+                        // Let's also set the CurrentChainName to null
+                        GlueCommands.Self.GluxCommands.SetVariableOn(
+                            instance,
+                            "CurrentChainName",
+                            null);
+                    }
+                }
+                instanceMember.IsDefault = makeDefault;
+
+                // If we ignore the next refresh, then AnimationChains won't update when the user
+                // picks an AnimationChainList from a combo box:
+                //RefreshLogic.IgnoreNextRefresh();
+
+                // Discussion about SetVariableOn vs SetVariableOnAsync:
+                // SetVariableOn happens immediately - it does not respect
+                // the task system. SetVariableOnAsync does use the task system,
+                // which is safer, since setting the value immediately can cause bugs
+                // due to variables changing while other tasks are running. However, if
+                // SetVariableOnAsync is used, then that means the logic for setting the
+                // variable will not run until the TaskManager gets to this task. If there
+                // are other tasks running, then that means the variable will not get set right
+                // away. This can cause the property grid to display the old value after the user
+                // presses ENTER. Therefore, for now we need to use the obsolete SetVariableOn, and 
+                // think of a more sophisticated solution.
+                GlueCommands.Self.GluxCommands.SetVariableOn(
+                instance,
+                    memberName,
+                    value, performSaveAndGenerateCode: false, updateUi: false);
+
+
+                // We're going to delay updating all UI, saving, and codegen for a half second to not spam the system:
+                await System.Threading.Tasks.Task.Delay(400);
+
+                // Set subtext before refreshing property grid
+                AssignVariableSubtext(instance, categories.ToList(), instance.GetAssetTypeInfo());
+
+                instanceMember.IsDefault = makeDefault;
+
+                await TaskManager.Self.AddAsync(async () =>
+                {
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
+                    EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors();
+
+                    GlueCommands.Self.DoOnUiThread(() =>
+                    {
+                        MainGlueWindow.Self.PropertyGrid.Refresh();
+                        PropertyGridHelper.UpdateNamedObjectDisplay();
+                        if (instanceMember.DisplayName == "Name")
+                        {
+                            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container,
+                                // We can be faster by doing only a NamedObject refresh, since the only way this could change is the Name...right?
+                                FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces.TreeNodeRefreshType.NamedObjects);
+                        }
+                    });
+
+                    if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
+                    {
+                        await GlueCommands.Self.GluxCommands.SaveElementAsync(container);
+                    }
+                    else
+                    {
+                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+
+
+                }, $"Delayed task to do all updates for {instance}", TaskExecutionPreference.AddOrMoveToEnd);
+
+            }
+        }
+
         #endregion
 
         private static TypeConverter GetTypeConverter(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, string customTypeName,

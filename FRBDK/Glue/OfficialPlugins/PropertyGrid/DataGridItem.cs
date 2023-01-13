@@ -78,7 +78,17 @@ namespace OfficialPlugins.VariableDisplay
 
             if(newCustomOptions == null)
             {
-                CustomOptions?.Clear();
+                // January 13, 2023
+                // Why do we do this?
+                // If we are refreshing
+                // and there's a CustomOptions
+                // already set, we don't want to
+                // clear this. If we clear this then
+                // we just lose the options unless there's
+                // a type converter.
+                //CustomOptions?.Clear();
+                // I don't know if this is going to cause problems
+                // but I'm commenting it out now.
             }
             else
             {
