@@ -326,7 +326,7 @@ namespace PlatformerPluginCore.Controllers
                 case (nameof(PlatformerEntityViewModel.AnimationRows)):
                     if(!IsLoadingFromDisk)
                     {
-                        SaveViewModelFor(GlueState.Self.CurrentElement);
+                        SaveOrDeleteViewModelFileFor(GlueState.Self.CurrentElement);
                         if(GlueState.Self.CurrentElement != null)
                         {
                             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
@@ -350,7 +350,7 @@ namespace PlatformerPluginCore.Controllers
             // could this be spammy? It's certainly easier to always save on any change.
             if (!IsLoadingFromDisk)
             {
-                SaveViewModelFor(GlueState.Self.CurrentElement);
+                SaveOrDeleteViewModelFileFor(GlueState.Self.CurrentElement);
                 if (GlueState.Self.CurrentElement != null)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
@@ -364,29 +364,48 @@ namespace PlatformerPluginCore.Controllers
                 GlueCommands.Self.GetAbsoluteFilePath(element).RemoveExtension() + ".PlatformerAnimations.json";
 
 
-        private static void SaveViewModelFor(GlueElement currentElement)
+        private static void SaveOrDeleteViewModelFileFor(GlueElement currentElement)
         {
-            var model = new AllPlatformerAnimationValues();
-
-            foreach(var animationVm in PlatformerViewModel.AnimationRows)
-            {
-                var individualModel = new IndividualPlatformerAnimationValues();
-                animationVm.ApplyTo(individualModel);
-                model.Values.Add(individualModel);
-            }
-
-            var whatToSave = JsonConvert.SerializeObject(model, Formatting.Indented);
-
             FilePath whereToSave = PlatformerAnimationsFileLocationFor(currentElement);
 
+            if(PlatformerViewModel.AnimationRows.Count > 0)
+            {
+                var model = new AllPlatformerAnimationValues();
 
-            try
-            {
-                GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(whereToSave.FullPath, whatToSave));
+                foreach(var animationVm in PlatformerViewModel.AnimationRows)
+                {
+                    var individualModel = new IndividualPlatformerAnimationValues();
+                    animationVm.ApplyTo(individualModel);
+                    model.Values.Add(individualModel);
+                }
+
+                var whatToSave = JsonConvert.SerializeObject(model, Formatting.Indented);
+
+
+
+                try
+                {
+                    GlueCommands.Self.TryMultipleTimes(() => System.IO.File.WriteAllText(whereToSave.FullPath, whatToSave));
+                }
+                catch(Exception e)
+                {
+                    GlueCommands.Self.PrintError(e.ToString());
+                }
             }
-            catch(Exception e)
+            else
             {
-                GlueCommands.Self.PrintError(e.ToString());
+                // delete the file if it exists
+                if(whereToSave.Exists())
+                {
+                    try
+                    {
+                        GlueCommands.Self.TryMultipleTimes(() => System.IO.File.Delete(whereToSave.FullPath));
+                    }
+                    catch(Exception e)
+                    {
+                        GlueCommands.Self.PrintError(e.ToString());
+                    }
+                }
             }
         }
     }
