@@ -832,7 +832,9 @@ namespace FlatRedBall.Glue.SaveClasses
             IncludeInICollidable = true;
             CallActivity = true;
 
-            AttachToContainer = true;
+            // do not assign this in the constructor. Doing so will result in the value being always reset when 
+            // anything changes here
+            //AttachToContainer = true;
             AddToManagers = true;
 
             FulfillsRequirement = "<NONE>";
