@@ -1,4 +1,5 @@
 using FlatRedBall.Math;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +10,7 @@ namespace FlatRedBall.Input
     /// </summary>
 	public interface I2DInput
 	{
+
         /// <summary>
         /// The X value of the input device, typically between 0 and 1.
         /// </summary>
@@ -43,6 +45,8 @@ namespace FlatRedBall.Input
         /// The distance from (0,0) of the input device. It can be used to detect if any input is being applied on this input device.
         /// </summary>
 		float Magnitude { get; }
+
+        public Vector2 Position => new Vector2(X, Y);
 	}
 
     /// <summary>
