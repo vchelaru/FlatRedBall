@@ -104,6 +104,8 @@
                         IsChecked="{Binding IsAllCollisionLimitChecked}">All</RadioButton>
                     <RadioButton
                         IsChecked="{Binding IsFirstCollisionLimitChecked}">Stop After First</RadioButton>
+                    <RadioButton
+                        IsChecked="{Binding IsClosestCollisionLimitChecked}">Closest</RadioButton>
                     <TextBlock Text="{Binding CollisionLimitExplanationText}"></TextBlock>
                 </StackPanel>
             </GroupBox>
