@@ -61,7 +61,9 @@ namespace FlatRedBall.Glue.Managers
                 {
                     succeeded = DragDropNosOnRootEventsNode(treeNodeMoving, targetNode);
                 }
-                else if (targetNos != null && targetNos.SourceType == SourceType.FlatRedBallType)
+                else if (targetNos?.SourceType == SourceType.FlatRedBallType || 
+                    // could be collidable:
+                    targetNos?.SourceType == SourceType.Entity)
                 {
                     succeeded = await DragDropNosOnNos(treeNodeMoving, targetNode, targetNos, movingNos, succeeded);
 
@@ -102,7 +104,7 @@ namespace FlatRedBall.Glue.Managers
 
             #region Failure cases
 
-            if (string.IsNullOrEmpty(targetClassType))
+            if (string.IsNullOrEmpty(targetClassType) && targetNos.SourceType != SourceType.Entity)
             {
                 MessageBox.Show("The target Object does not have a defined type.  This operation is not valid");
             }
