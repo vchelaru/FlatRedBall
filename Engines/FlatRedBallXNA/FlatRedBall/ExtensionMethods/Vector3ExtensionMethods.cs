@@ -177,19 +177,20 @@ namespace Microsoft.Xna.Framework
             return vector3;
         }
 
-        public static Vector3 WithX(this Vector3 vector3, float xValue)
+
+        public static Vector3 AtX(this Vector3 vector3, float xValue)
         {
             vector3.X = xValue;
             return vector3;
         }
 
-        public static Vector3 WithY(this Vector3 vector3, float yValue)
+        public static Vector3 AtY(this Vector3 vector3, float yValue)
         {
             vector3.Y = yValue;
             return vector3;
         }
 
-        public static Vector3 WithZ(this Vector3 vector3, float zValue)
+        public static Vector3 AtZ(this Vector3 vector3, float zValue)
         {
             vector3.Z = zValue;
             return vector3;
