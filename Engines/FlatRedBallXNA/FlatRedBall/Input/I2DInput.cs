@@ -46,7 +46,8 @@ namespace FlatRedBall.Input
         /// </summary>
 		float Magnitude { get; }
 
-        public Vector2 Position => new Vector2(X, Y);
+        // can't do this because it's not supported in older versions of FRB
+        //public Vector2 Position => new Vector2(X, Y);
 	}
 
     /// <summary>
