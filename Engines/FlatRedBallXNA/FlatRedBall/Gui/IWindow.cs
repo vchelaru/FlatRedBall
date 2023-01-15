@@ -188,10 +188,6 @@ namespace FlatRedBall.Gui
 
         bool OverlapsWindow(IWindow otherWindow);
 
-        void SetScaleTL(float newScaleX, float newScaleY);
-
-        void SetScaleTL(float newScaleX, float newScaleY, bool keepTopLeftStatic);
-
         void TestCollision(Cursor cursor);
 
         void UpdateDependencies();

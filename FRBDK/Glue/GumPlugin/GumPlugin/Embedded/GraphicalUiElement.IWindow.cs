@@ -332,7 +332,8 @@ namespace Gum.Wireframe
             throw new NotImplementedException();
         }
 
-        public FlatRedBall.ManagedSpriteGroups.SpriteFrame SpriteFrame
+        // Vic asks - can we kill this? I think we can....
+        FlatRedBall.ManagedSpriteGroups.SpriteFrame SpriteFrame
         {
             get
             {
