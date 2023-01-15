@@ -74,11 +74,11 @@ namespace Npc
 
         public static async Task<bool> MakeNewProject(NewProjectViewModel viewModel)
         {
-            string stringToReplace;
-            GetDefaultZipLocationAndStringToReplace(viewModel.SelectedProject, out stringToReplace);
-            string fileToDownload = GetFileToDownload(viewModel);
+            string stringToReplace = GetDefaultProjectNamespace(viewModel.SelectedProject);
 
-            GeneralResponse generalResponse = GeneralResponse.SuccessfulResponse;
+            string projectZipUrl = GetFileToDownload(viewModel);
+
+            var generalResponse = GeneralResponse.SuccessfulResponse;
             
             if (CommandLineManager.Self.OpenedBy != null && CommandLineManager.Self.OpenedBy.ToLower() == "glue")
             {
@@ -110,12 +110,12 @@ namespace Npc
             {
 
                 bool shouldTryDownloading;
-                var zipToUnpack = GetZipToUnpack(viewModel, fileToDownload, out shouldTryDownloading);
+                var zipToUnpack = GetZipToUnpack(viewModel, projectZipUrl, out shouldTryDownloading);
 
                 if (shouldTryDownloading)
                 {
                     // Checks for a newer version and downloads it if necessary
-                    generalResponse = DownloadFileSync(viewModel, zipToUnpack, fileToDownload);
+                    generalResponse = DownloadFileSync(viewModel, zipToUnpack, projectZipUrl);
 
                     if (!generalResponse.Succeeded)
                     {
@@ -219,7 +219,8 @@ namespace Npc
             }
 
 
-            shouldTryDownloading = checkOnline;
+            shouldTryDownloading = checkOnline ||
+                !System.IO.File.Exists(zipToUnpack);
 
             return zipToUnpack;
         }
@@ -651,9 +652,13 @@ namespace Npc
         /// </summary>
         /// <param name="zipToUnpack"></param>
         /// <param name="stringToReplace"></param>
-        public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, out string stringToReplace)
+        public static string GetDefaultProjectNamespace(PlatformProjectInfo project)
         {
-              GetDefaultZipLocationAndStringToReplace(project,FileManager.UserApplicationDataForThisApplication, out string _, out stringToReplace);
+            string defaultProjectNamespace = String.Empty;
+            GetDefaultZipLocationAndStringToReplace(project,
+                  FileManager.UserApplicationDataForThisApplication, out string _, out defaultProjectNamespace);
+
+            return defaultProjectNamespace;
         }
         public static void GetDefaultZipLocationAndStringToReplace(PlatformProjectInfo project, string templateLocation, out string zipToUnpack, out string stringToReplace)
         {
