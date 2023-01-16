@@ -375,6 +375,9 @@ namespace OfficialPlugins.CollisionPlugin
                 (destroyFirst && isFirstDamageArea) ||
                 (destroySecond && isSecondDamageArea);
 
+            // Only generate if there is a secondType. If it's an always-colliding event (second type is null), damage can't be dealt:
+            shouldGenerateEvent = shouldGenerateEvent && !string.IsNullOrEmpty(secondType);
+
             ICodeBlock eventBlock = null;
 
             if(shouldGenerateEvent)
