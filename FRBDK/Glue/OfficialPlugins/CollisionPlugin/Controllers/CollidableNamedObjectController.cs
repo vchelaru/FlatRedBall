@@ -248,13 +248,17 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
 
                 EntitySave secondEntityType = null;
-                if(effectiveSecondNos.SourceType == SourceType.Entity)
+                if(effectiveSecondNos != null)
                 {
-                    secondEntityType = ObjectFinder.Self.GetEntitySave(effectiveSecondNos.SourceClassType);
-                }
-                else
-                {
-                    secondEntityType = ObjectFinder.Self.GetEntitySave(effectiveSecondNos.SourceClassGenericType);
+                    // This can happen if the user is creating an always-colliding relationship.
+                    if(effectiveSecondNos.SourceType == SourceType.Entity)
+                    {
+                        secondEntityType = ObjectFinder.Self.GetEntitySave(effectiveSecondNos.SourceClassType);
+                    }
+                    else
+                    {
+                        secondEntityType = ObjectFinder.Self.GetEntitySave(effectiveSecondNos.SourceClassGenericType);
+                    }
                 }
 
 
