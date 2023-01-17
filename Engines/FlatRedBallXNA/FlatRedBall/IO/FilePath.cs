@@ -168,7 +168,9 @@ namespace FlatRedBall.IO
             }
             else
             {
-                return System.IO.File.Exists(this.StandardizedCaseSensitive);
+                // Update - this may be a directory like "c:/SomeDirectory/" or "c:/SomeDirectory/". We don't know, so we have to check both directory and file:
+                return System.IO.File.Exists(this.StandardizedCaseSensitive) ||
+                    System.IO.Directory.Exists(this.StandardizedCaseSensitive);
             }
         }
 
