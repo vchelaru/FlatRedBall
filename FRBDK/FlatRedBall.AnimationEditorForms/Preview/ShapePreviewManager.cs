@@ -73,7 +73,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
             FillShapesOver();
 
-            if(Cursor.PrimaryPush)
+            if(Cursor.PrimaryPush && Cursor.IsInWindow)
             {
                 DoPushLogic();
             }
@@ -140,7 +140,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             var shapeCollection = SelectedState.Self.SelectedFrame?.ShapeCollectionSave;
 
             /////////////////Early Out////////////////
-            if (shapeCollection == null)
+            if (shapeCollection == null || Cursor.IsInWindow == false)
             {
                 return;
             }

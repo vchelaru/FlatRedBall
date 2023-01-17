@@ -304,12 +304,12 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     mCursor.GetWorldX(mManagers),
                     mCursor.GetWorldY(mManagers));
 
-                var shouldUpdate = shapePreviewManager.Update();
+            }
+            var shouldUpdate = shapePreviewManager.Update();
 
-                if(shouldUpdate)
-                {
-                    UpdateShapes();
-                }
+            if(shouldUpdate)
+            {
+                UpdateShapes();
             }
         }
 
