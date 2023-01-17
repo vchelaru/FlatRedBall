@@ -9,6 +9,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.AnimationEditorForms.CommandsAndState;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Content.Math.Geometry;
+using System.Collections;
 
 namespace FlatRedBall.AnimationEditorForms
 {
@@ -59,7 +60,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else if (SelectedState.Self.SelectedFrame != null)
             {
-                PutInClipboard(SelectedState.Self.SelectedFrame);
+                PutInClipboard(SelectedState.Self.SelectedFrames);
             }
             else if (SelectedState.Self.SelectedChain != null)
             {
@@ -72,7 +73,15 @@ namespace FlatRedBall.AnimationEditorForms
             {
                 Clipboard.Clear();
                 FileManager.XmlSerialize(objectToPlace, out string serializedString);
-                Clipboard.SetText($"{objectToPlace.GetType().Name}:" + serializedString);
+
+                var type = objectToPlace.GetType();
+                var namePrefix = type.Name;
+                if (type.IsGenericType)
+                {
+                    namePrefix = $"List<{type.GenericTypeArguments[0].Name}>";
+                }
+
+                Clipboard.SetText($"{namePrefix}:" + serializedString);
             }
         }
 
@@ -92,7 +101,7 @@ namespace FlatRedBall.AnimationEditorForms
         internal void HandlePaste()
         {
             var text = Clipboard.GetText();
-            AnimationFrameSave pastedFrame = null;
+            List<AnimationFrameSave> pastedFrames = null;
             AnimationChainSave pastedChain = null;
             AxisAlignedRectangleSave pastedRectangle = null;
             CircleSave pastedCircle = null;
@@ -101,11 +110,11 @@ namespace FlatRedBall.AnimationEditorForms
                 var typeName = text.Substring(0, text.IndexOf(":"));
                 var after = text.Substring(text.IndexOf(":") + 1);
 
-                if(typeName == nameof(AnimationFrameSave))
+                if(typeName == $"List<{nameof(AnimationFrameSave)}>")
                 {
                     try
                     {
-                        pastedFrame = FileManager.XmlDeserializeFromString<AnimationFrameSave>(after);
+                        pastedFrames = FileManager.XmlDeserializeFromString<List<AnimationFrameSave>>(after);
                     }
                     catch { } // no biggie
                 }
@@ -181,15 +190,18 @@ namespace FlatRedBall.AnimationEditorForms
                     SelectedState.Self.SelectedCircles = newCircles;
                     AppCommands.Self.SaveCurrentAnimationChainList();
                 }
-                else if (pastedFrame != null && SelectedState.Self.SelectedChain != null)
+                else if (pastedFrames != null && SelectedState.Self.SelectedChain != null)
                 {
-                    if(pastedFrame.ShapeCollectionSave == null)
+                    foreach(var pastedFrame in pastedFrames)
                     {
-                        pastedFrame.ShapeCollectionSave = new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
+                        if(pastedFrame.ShapeCollectionSave == null)
+                        {
+                            pastedFrame.ShapeCollectionSave = new FlatRedBall.Content.Math.Geometry.ShapeCollectionSave();
+                        }
+                        SelectedState.Self.SelectedChain.Frames.Add(pastedFrame);
+                        AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
+                        SelectedState.Self.SelectedFrame = pastedFrame;
                     }
-                    SelectedState.Self.SelectedChain.Frames.Add(pastedFrame);
-                    AppCommands.Self.RefreshTreeNode(SelectedState.Self.SelectedChain);
-                    SelectedState.Self.SelectedFrame = pastedFrame;
                     ApplicationEvents.Self.RaiseAnimationChainsChanged();
                 }
                 else if (pastedChain != null)
