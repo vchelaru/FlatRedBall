@@ -46,9 +46,12 @@ namespace OfficialPlugins.ContentPreview.Views
 
             if(value.Exists())
             {
-                var stream = System.IO.File.OpenRead(value.FullPath);
+                // This locks the file
+                //var stream = System.IO.File.OpenRead(value.FullPath);
+                var bytes = System.IO.File.ReadAllBytes(value.FullPath);
 
-                SoundPlayer = new SoundPlayer(stream);
+                Stream= new MemoryStream(bytes);
+                SoundPlayer = new SoundPlayer(Stream);
 
             }
         }
