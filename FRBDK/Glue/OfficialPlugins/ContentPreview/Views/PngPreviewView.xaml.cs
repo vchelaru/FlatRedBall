@@ -78,6 +78,8 @@ namespace OfficialPlugins.ContentPreview.Views
                     // do we do anything?
                 }
             }
+
+            textureFilePath = value;
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e)

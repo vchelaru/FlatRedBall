@@ -26,11 +26,14 @@ namespace OfficialPlugins.ContentPreview.Views
         Stream Stream;
         SoundPlayer SoundPlayer;
 
+
+        FilePath wavFilePath;
         public FilePath WavFilePath
         {
+            get => wavFilePath;
             set
             {
-                UpdateToFilePath(value);
+                ForceRefreshToFilePath(value);
             }
         }
 
@@ -39,7 +42,7 @@ namespace OfficialPlugins.ContentPreview.Views
             InitializeComponent();
         }
 
-        private void UpdateToFilePath(FilePath value)
+        public void ForceRefreshToFilePath(FilePath value)
         {
             Stream?.Dispose();
             SoundPlayer?.Dispose();
@@ -54,6 +57,13 @@ namespace OfficialPlugins.ContentPreview.Views
                 SoundPlayer = new SoundPlayer(Stream);
 
             }
+            else
+            {
+                Stream = null;
+                SoundPlayer = null;
+            }
+
+            wavFilePath = value;
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e) => PlaySound();

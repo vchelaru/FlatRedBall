@@ -276,6 +276,15 @@ namespace OfficialPlugins.MonoGameContent
             var rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(
                 filePath);
 
+            // This could have gotten deleted. If it's a wildcard delete, then do nothing, it will get removed:
+            /////////////////////////////////////////Early Out////////////////////////////////////////////////////
+            if(rfs?.IsCreatedByWildcard == true && filePath.Exists()== false)
+            {
+                return;
+            }
+            ///////////////////////////////////////End Early Out/////////////////////////////////////////////////
+
+
             if(rfs != null)
             {
                 HandleRfsChange(rfs);

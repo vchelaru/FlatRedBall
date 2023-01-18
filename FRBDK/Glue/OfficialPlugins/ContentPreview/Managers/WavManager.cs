@@ -20,6 +20,8 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         public static WavViewModel ViewModel { get; private set; }
 
+        public static FilePath WavFilePath => View?.WavFilePath;
+
         public static void Initialize(PluginBase plugin)
         {
             Plugin = plugin;
@@ -64,5 +66,7 @@ namespace OfficialPlugins.ContentPreview.Managers
 
             Tab.Show();
         }
+
+        internal static void ForceRefreshWav(FilePath filePath) => View?.ForceRefreshToFilePath(filePath);
     }
 }

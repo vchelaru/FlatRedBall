@@ -105,10 +105,22 @@ namespace OfficialPlugins.ContentPreview
         {
             var extension = filePath.Extension;
 
-            if (extension == "png")
+            switch (extension)
             {
-                PngManager.ForceRefreshTexture(filePath);
+                case "png":
+                    if(PngManager.PngFilePath == filePath)
+                    {
+                        PngManager.ForceRefreshTexture(filePath);
+                    }
+                    break;
+                case "wav":
+                    if(WavManager.WavFilePath == filePath)
+                    {
+                        WavManager.ForceRefreshWav(filePath);
+                    }
+                    break;
             }
+
 
         }
 
