@@ -4,6 +4,7 @@ using NAudio.Wave;
 using OfficialPlugins.SongPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Text;
@@ -33,6 +34,9 @@ namespace OfficialPlugins.SongPlugin.Views
         WaveOutEvent nAudioOutputDevice = new WaveOutEvent();
 
         FilePath filePath;
+
+        MemoryStream memoryStream;
+
         public FilePath FilePath
         {
             set
@@ -41,13 +45,20 @@ namespace OfficialPlugins.SongPlugin.Views
                 if (value?.Exists() == true)
                 {
                     StopPlaying();
-                    if(value.Extension == "ogg")
+
+                    memoryStream?.Dispose();
+                    memoryStream = null;
+
+                    if (value.Extension == "ogg")
                     {
                         nAudioFileReader?.Dispose();
                         nAudioOutputDevice?.Dispose();
 
                         nAudioOutputDevice = new WaveOutEvent();
-                        nAudioFileReader = new VorbisWaveReader(value.FullPath);
+                        //nAudioFileReader = new VorbisWaveReader(value.FullPath);
+                        var bytes = System.IO.File.ReadAllBytes(value.FullPath);
+                        memoryStream = new MemoryStream(bytes);
+                        nAudioFileReader = new VorbisWaveReader(memoryStream);
                         nAudioOutputDevice.Init(nAudioFileReader);
 
                         ViewModel.Duration = nAudioFileReader.TotalTime;
