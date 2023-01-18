@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -43,6 +44,7 @@ namespace OfficialPlugins.ContentPreview
         private void AssignEvents()
         {
             this.ReactToItemSelectHandler += HandleTreeViewItemSelected;
+            this.ReactToFileChange += HandleFileChange;
 
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
         }
@@ -83,10 +85,9 @@ namespace OfficialPlugins.ContentPreview
             }
             ///////////////End Early Out/////////////////
 
-            var extension = FileManager.GetExtension(file.Name);
-
             var filePath = GlueCommands.Self.GetAbsoluteFilePath(file);
 
+            var extension = filePath.Extension;
 
             switch(extension)
             {
@@ -99,9 +100,17 @@ namespace OfficialPlugins.ContentPreview
             }
         }
 
-        private void ShowPngPreview()
+
+        private void HandleFileChange(FilePath filePath, FileChangeType changeType)
         {
+            var extension = filePath.Extension;
+
+            if (extension == "png")
+            {
+                PngManager.ForceRefreshTexture(filePath);
+            }
 
         }
+
     }
 }

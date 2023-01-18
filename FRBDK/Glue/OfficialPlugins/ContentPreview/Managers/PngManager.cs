@@ -73,5 +73,8 @@ namespace OfficialPlugins.ContentPreview.Managers
             Tab.Show();
             view.GumCanvas.InvalidateVisual();
         }
+
+        internal static void ForceRefreshTexture(FilePath filePath) =>
+            View.ForceRefreshMainSpriteTexture(filePath);
     }
 }
