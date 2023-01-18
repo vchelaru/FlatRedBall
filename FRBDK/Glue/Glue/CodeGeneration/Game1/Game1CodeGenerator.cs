@@ -18,15 +18,13 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
         }
 
-        public virtual void GenerateInitialize(ICodeBlock codeBlock)
-        {
+        public virtual void GenerateInitializeEarly(ICodeBlock codeBlock) { }
 
-        }
+        public virtual void GenerateInitialize(ICodeBlock codeBlock) { }
 
-        public virtual void GenerateUpdate(ICodeBlock codeBlock)
-        {
+        public virtual void GenerateUpdate(ICodeBlock codeBlock) { }
 
-        }
+        public virtual void GenerateDrawEarly(ICodeBlock codeBlock) { }
 
         public virtual void GenerateDraw(ICodeBlock codeBlock)
         {

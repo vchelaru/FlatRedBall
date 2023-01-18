@@ -96,7 +96,8 @@ namespace FlatRedBall.Glue.SaveClasses
             HasFrameworkElementManager = 30,
             HasGumSkiaElements = 31,
             ITiledTileMetadataInFrb = 32,
-            DamageableHasHealth = 33
+            DamageableHasHealth = 33,
+            HasGame1GenerateEarly = 34
         }
 
         #endregion
@@ -105,7 +106,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.DamageableHasHealth;
+        public const int LatestVersion = (int)GluxVersions.HasGame1GenerateEarly;
 
         public int FileVersion { get; set; }
 

@@ -18,8 +18,11 @@ namespace Windows8Template
     {
         GraphicsDeviceManager graphics;
 
+        
+        partial void GeneratedInitializeEarly();
         partial void GeneratedInitialize();
         partial void GeneratedUpdate(Microsoft.Xna.Framework.GameTime gameTime);
+        partial void GeneratedDrawEarly(Microsoft.Xna.Framework.GameTime gameTime);
         partial void GeneratedDraw(Microsoft.Xna.Framework.GameTime gameTime);
 
         public Game1() : base()
@@ -40,7 +43,7 @@ namespace Windows8Template
 
 #if WINDOWS_8
             FlatRedBall.Instructions.Reflection.PropertyValuePair.TopLevelAssembly = 
-                this.GetType().GetTypeInfo().Assembly;
+            this.GetType().GetTypeInfo().Assembly;
 #endif
 
         }
@@ -56,6 +59,8 @@ namespace Windows8Template
             graphics.PreferredBackBufferHeight = screenHeight;
             #endif
         
+            GeneratedInitializeEarly();
+
             FlatRedBallServices.InitializeFlatRedBall(this, graphics);
 
             GeneratedInitialize();
@@ -76,6 +81,8 @@ namespace Windows8Template
 
         protected override void Draw(GameTime gameTime)
         {
+            GeneratedDrawEarly(gameTime);
+
             FlatRedBallServices.Draw();
 
             GeneratedDraw(gameTime);

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,21 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
 
             GenerateClassScope(classBlock);
 
+            var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            var hasEarly = gluxVersion >= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly;
+            if (hasEarly)
+            {
+                GenerateGeneratedInitializeEarly(classBlock);
+            }
+
             GenerateGeneratedInitialize(classBlock);
 
             GenerateGeneratedUpdate(classBlock);
+
+            if(hasEarly)
+            {
+                GenerateGeneratedDrawEarly(classBlock);
+            }
 
             GenerateGeneratedDraw(classBlock);
 
@@ -38,13 +51,32 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             }
         }
 
+        private static void GenerateGeneratedInitializeEarly(ICodeBlock codeBlock)
+        {
+            var method = codeBlock.Function("partial void", "GeneratedInitializeEarly", null);
+
+            foreach(var generator in Generators)
+            {
+                generator.GenerateInitializeEarly(method);
+            }
+        }
+
         private static void GenerateGeneratedInitialize(ICodeBlock codeBlock)
         {
             var method = codeBlock.Function("partial void", "GeneratedInitialize", null);
 
+
             foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.BeforeStandardGenerated))
             {
                 generator.GenerateInitialize(method);
+            }
+
+
+            // Should this go in a generator?
+            var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            if(gluxVersion>= (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly)
+            {
+                method.Line("GlobalContent.Initialize();");
             }
 
             foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.StandardGenerated))
@@ -57,7 +89,6 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
                 generator.GenerateInitialize(method);
             }
         }
-
 
         private static void GenerateGeneratedUpdate(ICodeBlock codeBlock)
         {
@@ -76,6 +107,16 @@ namespace FlatRedBall.Glue.CodeGeneration.Game1
             foreach (var generator in Generators.Where(item => item.CodeLocation == Plugins.Interfaces.CodeLocation.AfterStandardGenerated))
             {
                 generator.GenerateUpdate(method);
+            }
+        }
+
+        private static void GenerateGeneratedDrawEarly(ICodeBlock codeBlock)
+        {
+            var method = codeBlock.Function("partial void", "GeneratedDrawEarly", "Microsoft.Xna.Framework.GameTime gameTime");
+
+            foreach (var generator in Generators)
+            {
+                generator.GenerateDrawEarly(method);
             }
         }
 

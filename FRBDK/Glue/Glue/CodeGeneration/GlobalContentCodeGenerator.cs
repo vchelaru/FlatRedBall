@@ -71,7 +71,7 @@ namespace FlatRedBall.Glue.Parsing
 
             try
             {
-                CodeWriter.InitializeStaticData(ProjectManager.GameClassFileName, true);
+                CodeWriter.InitializeStaticData(ProjectManager.GameClassFileName);
             }
             catch (CodeParseException exception)
             {

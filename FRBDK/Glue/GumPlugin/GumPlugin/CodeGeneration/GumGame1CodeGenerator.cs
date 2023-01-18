@@ -18,11 +18,27 @@ namespace GumPluginCore.CodeGeneration
 
         public GumGame1CodeGeneratorEarly() => CodeLocation = FlatRedBall.Glue.Plugins.Interfaces.CodeLocation.BeforeStandardGenerated;
 
+        public override void GenerateInitializeEarly(ICodeBlock codeBlock)
+        {
+            if(hasSkia && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGame1GenerateEarly)
+            {
+                codeBlock.Line("SkiaMonoGameRendering.SkiaGlManager.Initialize(GraphicsDevice);");
+            }
+        }
+
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
             if (hasSkia)
             {
                 codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+            }
+        }
+
+        public override void GenerateDrawEarly(ICodeBlock codeBlock)
+        {
+            if (hasSkia && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasGame1GenerateEarly)
+            {
+                codeBlock.Line("SkiaMonoGameRendering.SkiaRenderer.Draw();");
             }
         }
     }

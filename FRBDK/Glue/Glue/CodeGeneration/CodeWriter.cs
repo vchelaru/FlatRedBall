@@ -1764,7 +1764,7 @@ namespace FlatRedBallAddOns.Entities
 
         }
 
-        public static void InitializeStaticData(string relativeGameFileName, bool whetherToCall)
+        public static void InitializeStaticData(string relativeGameFileName)
         {
             if (string.IsNullOrEmpty(relativeGameFileName))
             {
@@ -1774,35 +1774,10 @@ namespace FlatRedBallAddOns.Entities
 
             string contents = FileManager.FromFileText(gameFilePath.FullPath);
             var contentsBeforeChange = contents;
-
-            string lineToReplaceWith = "GlobalContent.Initialize();";
-
-            if (whetherToCall)
+            var gluxVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            if(gluxVersion < (int)GlueProjectSave.GluxVersions.HasGame1GenerateEarly)
             {
-                lineToReplaceWith = "            " + lineToReplaceWith;
-            }
-            else
-            {
-                lineToReplaceWith = "            \\" + lineToReplaceWith;
-            }
-
-            if (contents.Contains("GlobalContent.Initialize"))
-            {
-                StringFunctions.ReplaceLine(ref contents, "GlobalContent.Initialize", lineToReplaceWith);
-            }
-            else
-            {
-                // We gotta find where to put the start call.  This should be after 
-                // FlatRedBallServices.InitializeFlatRedBall
-
-                int index = CodeParser.GetIndexAfterFlatRedBallInitialize(contents);
-
-                if (index == -1)
-                {
-                    throw new CodeParseException("Could not find FlatRedBall.Initialize in the Game file.  Did you delete this?  " + 
-                        "Glue requires this call to be in the Game class. You must manually add this call and reload Glue.");
-                }
-                contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
+                AddGlobalContentInitializeInCustomCode(ref contents);
             }
 
             if(contents != contentsBeforeChange)
@@ -1831,6 +1806,30 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
+        private static void AddGlobalContentInitializeInCustomCode(ref string contents)
+        {
+            string lineToReplaceWith = "            " + "GlobalContent.Initialize();";
+
+            if (contents.Contains("GlobalContent.Initialize"))
+            {
+                StringFunctions.ReplaceLine(ref contents, "GlobalContent.Initialize", lineToReplaceWith);
+            }
+            else
+            {
+                // We gotta find where to put the start call.  This should be after 
+                // FlatRedBallServices.InitializeFlatRedBall
+
+                int index = CodeParser.GetIndexAfterFlatRedBallInitialize(contents);
+
+                if (index == -1)
+                {
+                    throw new CodeParseException("Could not find FlatRedBall.Initialize in the Game file.  Did you delete this?  " +
+                        "Glue requires this call to be in the Game class. You must manually add this call and reload Glue.");
+                }
+                contents = contents.Insert(index, lineToReplaceWith + Environment.NewLine);
+            }
+
+        }
 
         internal static string ReplaceNamespace(string fileContents, string newNamespace)
         {
