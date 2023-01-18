@@ -46,6 +46,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Utilities;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Security.Cryptography;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -781,6 +782,7 @@ namespace FlatRedBall.Glue.FormHelpers
             else if (targetNode.IsReferencedFile())
             {
                 Add("View in explorer", () => RightClickHelper.ViewInExplorerClick(targetNode));
+                Add("Open", () => HandleOpen(targetNode));
                 AddItem(mFindAllReferences);
                 AddEvent("Copy path to clipboard", (_,_) => HandleCopyToClipboardClick(targetNode));
                 AddSeparator();
@@ -955,6 +957,14 @@ namespace FlatRedBall.Glue.FormHelpers
             }
 
             #endregion
+        }
+
+        private static void HandleOpen(ITreeNode targetNode)
+        {
+            if(targetNode.Tag is ReferencedFileSave rfs)
+            {
+                GlueCommands.Self.FileCommands.OpenReferencedFileInDefaultProgram(rfs);
+            }
         }
 
         private static void OpenCsFile(GlueElement glueElement)
