@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="200">
+             d:DesignHeight="300" d:DesignWidth="260">
     <Grid>
         <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>

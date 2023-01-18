@@ -306,6 +306,16 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
                     container, listToAddTo: null);
 
+                // if this is an always-colliding relationship, the user will typically want this
+                // to be at the beginning before all other relationships. Therefore, let's remove
+                // and re-add it:
+                var isAlwaysColliding = secondNos == null;
+                if(isAlwaysColliding)
+                {
+                    container.NamedObjects.Remove(newNos);
+                    container.NamedObjects.Insert(0, newNos);
+                }
+
                 // this will regenerate and save everything too:
                 CollisionRelationshipViewModelController.TryApplyAutoName(
                     container, newNos);
