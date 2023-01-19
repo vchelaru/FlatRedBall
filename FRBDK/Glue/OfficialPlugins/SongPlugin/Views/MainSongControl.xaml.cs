@@ -39,46 +39,52 @@ namespace OfficialPlugins.SongPlugin.Views
 
         public FilePath FilePath
         {
+            get => filePath;
             set
             {
-                filePath = value;
-                if (value?.Exists() == true)
+                ForceRefreshSongFilePath(value);
+            }
+        }
+
+        public void ForceRefreshSongFilePath(FilePath value)
+        {
+            filePath = value;
+            if (value?.Exists() == true)
+            {
+                StopPlaying();
+
+                memoryStream?.Dispose();
+                memoryStream = null;
+
+                if (value.Extension == "ogg")
                 {
-                    StopPlaying();
+                    nAudioFileReader?.Dispose();
+                    nAudioOutputDevice?.Dispose();
 
-                    memoryStream?.Dispose();
-                    memoryStream = null;
+                    nAudioOutputDevice = new WaveOutEvent();
+                    //nAudioFileReader = new VorbisWaveReader(value.FullPath);
+                    var bytes = System.IO.File.ReadAllBytes(value.FullPath);
+                    memoryStream = new MemoryStream(bytes);
+                    nAudioFileReader = new VorbisWaveReader(memoryStream);
+                    nAudioOutputDevice.Init(nAudioFileReader);
 
-                    if (value.Extension == "ogg")
+                    ViewModel.Duration = nAudioFileReader.TotalTime;
+                }
+                else if (value.Extension == "mp3")
+                {
+                    mediaPlayer.Open(new Uri(value.FullPath));
+
+                    if (mediaPlayer.NaturalDuration.HasTimeSpan)
                     {
-                        nAudioFileReader?.Dispose();
-                        nAudioOutputDevice?.Dispose();
-
-                        nAudioOutputDevice = new WaveOutEvent();
-                        //nAudioFileReader = new VorbisWaveReader(value.FullPath);
-                        var bytes = System.IO.File.ReadAllBytes(value.FullPath);
-                        memoryStream = new MemoryStream(bytes);
-                        nAudioFileReader = new VorbisWaveReader(memoryStream);
-                        nAudioOutputDevice.Init(nAudioFileReader);
-
-                        ViewModel.Duration = nAudioFileReader.TotalTime;
+                        ViewModel.Duration = mediaPlayer.NaturalDuration.TimeSpan;
                     }
-                    else if(value.Extension == "mp3")
+                    else
                     {
-                        mediaPlayer.Open(new Uri(value.FullPath));
+                        // maybe we should fall back to naudio
+                        var tempReader = new Mp3FileReader(value.FullPath);
+                        ViewModel.Duration = tempReader.TotalTime;
+                        tempReader.Dispose();
 
-                        if(mediaPlayer.NaturalDuration.HasTimeSpan)
-                        {
-                            ViewModel.Duration = mediaPlayer.NaturalDuration.TimeSpan;
-                        }
-                        else
-                        {
-                            // maybe we should fall back to naudio
-                            var tempReader = new Mp3FileReader(value.FullPath);
-                            ViewModel.Duration = tempReader.TotalTime;
-                            tempReader.Dispose();   
-                                
-                        }
                     }
                 }
             }
@@ -97,7 +103,12 @@ namespace OfficialPlugins.SongPlugin.Views
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             nAudioOutputDevice?.Stop();
-            mediaPlayer?.Stop();
+            if(mediaPlayer != null)
+            {
+                mediaPlayer.Stop();
+                mediaPlayer.Position = TimeSpan.Zero;
+
+            }
         }
 
         internal void StopPlaying()

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
@@ -62,6 +63,7 @@ namespace OfficialPlugins.SongPlugin
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToLoadedGluxEarly += HandleGluxLoadEarly;
+            this.ReactToFileChange += HandleFileChanged;
             this.TryHandleTreeNodeDoubleClicked += TryHandleDoubleClick;
         }
 
@@ -195,6 +197,14 @@ namespace OfficialPlugins.SongPlugin
             {
                 control?.StopPlaying();
                 pluginTab?.Hide();
+            }
+        }
+
+        private void HandleFileChanged(FilePath filePath, FileChangeType arg2)
+        {
+            if(filePath == control?.FilePath)
+            {
+                control.ForceRefreshSongFilePath(filePath);
             }
         }
 
