@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Managers
 {
     public class HotkeyManager : Singleton<HotkeyManager>
     {
-        // Sept 4, 2022 - I dontdon't think this is used anymore:
+        // Sept 4, 2022 - I don't think this is used anymore:
         //public async Task<bool> TryHandleKeys(Keys keyData)
         //{
         //    switch (keyData)

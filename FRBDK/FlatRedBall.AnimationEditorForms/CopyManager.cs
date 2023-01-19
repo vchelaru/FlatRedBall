@@ -64,7 +64,7 @@ namespace FlatRedBall.AnimationEditorForms
             }
             else if (SelectedState.Self.SelectedChain != null)
             {
-                PutInClipboard(SelectedState.Self.SelectedChain);
+                PutInClipboard(SelectedState.Self.SelectedChains);
             }
 
             // I tried to use Clipboard.SetData and for some reason every time I did CTRL+V, the data
@@ -102,7 +102,7 @@ namespace FlatRedBall.AnimationEditorForms
         {
             var text = Clipboard.GetText();
             List<AnimationFrameSave> pastedFrames = null;
-            AnimationChainSave pastedChain = null;
+            List<AnimationChainSave> pastedChains = null;
             AxisAlignedRectangleSave pastedRectangle = null;
             CircleSave pastedCircle = null;
             if (text?.Contains(":") == true)
@@ -118,11 +118,11 @@ namespace FlatRedBall.AnimationEditorForms
                     }
                     catch { } // no biggie
                 }
-                else if(typeName == nameof(AnimationChainSave))
+                else if(typeName == $"List<{nameof(AnimationChainSave)}>")
                 {
                     try
                     {
-                        pastedChain = FileManager.XmlDeserializeFromString<AnimationChainSave>(after);
+                        pastedChains = FileManager.XmlDeserializeFromString<List<AnimationChainSave>>(after);
                     }
                     catch { } // no biggie
                 }
@@ -204,9 +204,16 @@ namespace FlatRedBall.AnimationEditorForms
                     }
                     ApplicationEvents.Self.RaiseAnimationChainsChanged();
                 }
-                else if (pastedChain != null)
+                else if (pastedChains != null)
                 {
-                    Duplicate(pastedChain);
+                    List<AnimationChainSave> newDupes = new List<AnimationChainSave>();
+                    foreach(var chain in pastedChains)
+                    {
+                        newDupes.Add(Duplicate(chain));
+                    }
+
+                    SelectedState.Self.SelectedChains = newDupes;
+
                 }
             }
         }
