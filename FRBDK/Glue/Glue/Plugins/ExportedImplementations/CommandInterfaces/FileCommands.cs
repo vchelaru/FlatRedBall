@@ -545,7 +545,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     //ProcessManager.OpenProcess(applicationSetInGlue, fileName);
                     var startInfo = new ProcessStartInfo();
                     startInfo.FileName = "\"" + applicationSetInGlue + "\"";
-                    startInfo.Arguments = "\"" + fileName + "\"";
+                    // Miguel 19/01/2023
+                    // Some apps have trouble with paths using "/" as folder separator so we turn them to "\" so they look like Windows explorer paths
+                    startInfo.Arguments = ("\"" + fileName + "\"").Replace("/", @"\");
                     startInfo.UseShellExecute = true;
 
                     System.Diagnostics.Process.Start(startInfo);
