@@ -666,7 +666,7 @@ namespace OfficialPlugins.CollisionPlugin
                     // Only use the top level - lists will handle it
                     .NamedObjects.Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item));
 
-
+                var hasObjectsCollidedAgainst = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasObjectsCollidedAgainst;
                 foreach (var item in itemsToGenerate)
                 {
                     if (item.IsList)
@@ -679,12 +679,23 @@ namespace OfficialPlugins.CollisionPlugin
                             forBlock.Line("item.GroundCollidedAgainst.Clear();");
                         }
 
+                        // If-check Handled above in ShouldGenerateCollisionNameListCode
                         forBlock.Line($"item.LastFrameItemsCollidedAgainst.Clear();");
                         {
                             var innerForeach = forBlock.ForEach("var name in item.ItemsCollidedAgainst");
                             innerForeach.Line("item.LastFrameItemsCollidedAgainst.Add(name);");
                         }
-                        forBlock.Line($"item.ItemsCollidedAgainst.Clear();");
+                        forBlock.Line($"item.ObjectsCollidedAgainst.Clear();");
+
+                        if(hasObjectsCollidedAgainst)
+                        {
+                            forBlock.Line($"item.LastFrameObjectsCollidedAgainst.Clear();");
+                            {
+                                var innerForeach = forBlock.ForEach("var name in item.ObjectsCollidedAgainst");
+                                innerForeach.Line("item.LastFrameObjectsCollidedAgainst.Add(name);");
+                            }
+                            forBlock.Line($"item.ObjectsCollidedAgainst.Clear();");
+                        }
 
                     }
                     else
@@ -694,12 +705,24 @@ namespace OfficialPlugins.CollisionPlugin
                             codeBlock.Line($"{item.FieldName}.GroundCollidedAgainst.Clear();");
 
                         }
+
+                        // If-check Handled above in ShouldGenerateCollisionNameListCode
                         codeBlock.Line($"{item.FieldName}.LastFrameItemsCollidedAgainst.Clear();");
                         {
                             var innerForeach = codeBlock.ForEach($"var name in {item.FieldName}.ItemsCollidedAgainst");
                             innerForeach.Line($"{item.FieldName}.LastFrameItemsCollidedAgainst.Add(name);");
                         }
                         codeBlock.Line($"{item.FieldName}.ItemsCollidedAgainst.Clear();");
+
+                        if(hasObjectsCollidedAgainst)
+                        {
+                            codeBlock.Line($"{item.FieldName}.LastFrameObjectsCollidedAgainst.Clear();");
+                            {
+                                var innerForeach = codeBlock.ForEach($"var name in {item.FieldName}.ObjectsCollidedAgainst");
+                                innerForeach.Line($"{item.FieldName}.LastFrameObjectsCollidedAgainst.Add(name);");
+                            }
+                            codeBlock.Line($"{item.FieldName}.ObjectsCollidedAgainst.Clear();");
+                        }
 
                     }
                 }

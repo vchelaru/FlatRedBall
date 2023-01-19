@@ -46,6 +46,8 @@ namespace FlatRedBall.Math.Collision
 
         public bool IsPausedByScreen { get; set; }
 
+        // January 18, 2023
+        // Vic says - why do we have this? It never gets populated, and we handle it in generated code. Do we need this?
         HashSet<ICollidable> Collidables = new HashSet<ICollidable>();
 
         #endregion
@@ -179,12 +181,18 @@ namespace FlatRedBall.Math.Collision
             foreach(var collidable in Collidables)
             {
                 collidable.LastFrameItemsCollidedAgainst.Clear();
+                collidable.LastFrameObjectsCollidedAgainst.Clear();
 
                 foreach(var item in collidable.ItemsCollidedAgainst)
                 {
                     collidable.LastFrameItemsCollidedAgainst.Add(item);
                 }
+                foreach(var item in collidable.ObjectsCollidedAgainst)
+                {
+                    collidable.LastFrameObjectsCollidedAgainst.Add(item);
+                }
                 collidable.ItemsCollidedAgainst.Clear();
+                collidable.ObjectsCollidedAgainst.Clear();
             }
 
 

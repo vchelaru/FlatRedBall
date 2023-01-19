@@ -228,6 +228,9 @@ namespace FlatRedBall.Math.Collision
 #if ICollidableHasItemsCollidedAgainst
                         singleObject.ItemsCollidedAgainst.Add(data.TileShapeCollection.Name);
 #endif
+#if ICollidableHasObjectsCollidedAgainst
+                        singleObject.ObjectsCollidedAgainst.Add(data.TileShapeCollection);
+#endif
                     }
                 }
             }

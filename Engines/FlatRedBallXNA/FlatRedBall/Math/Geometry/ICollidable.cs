@@ -15,6 +15,9 @@ namespace FlatRedBall.Math.Geometry
 
         HashSet<string> ItemsCollidedAgainst { get; }
         HashSet<string> LastFrameItemsCollidedAgainst { get; } 
+
+        HashSet<object> ObjectsCollidedAgainst { get; }
+        HashSet<object> LastFrameObjectsCollidedAgainst { get; }
     }
 
 

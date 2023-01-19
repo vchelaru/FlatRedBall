@@ -889,6 +889,7 @@ namespace FlatRedBall.PlatformerPlugin.Generators
 ");
             }
 
+
             codeBlock.Line(
 @"
 

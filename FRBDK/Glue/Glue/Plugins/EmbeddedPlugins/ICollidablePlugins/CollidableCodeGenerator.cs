@@ -65,6 +65,15 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
                     codeBlock.Line("public HashSet<string> ItemsCollidedAgainst { get; private set;} = new HashSet<string>();");
                     codeBlock.Line("public HashSet<string> LastFrameItemsCollidedAgainst { get; private set;} = new HashSet<string>();");
                 }
+
+                if (glueProjectFileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasObjectsCollidedAgainst
+                    // If referencing source, source requires this. This could cause problems if a project is referencing old source, but 
+                    // that is probably easier to fix than to upgrade the glux:
+                    || GlueState.Self.IsReferencingFrbSource)
+                {
+                    codeBlock.Line("public HashSet<object> ObjectsCollidedAgainst { get; private set;} = new HashSet<object>();");
+                    codeBlock.Line("public HashSet<object> LastFrameObjectsCollidedAgainst { get; private set;} = new HashSet<object>();");
+                }
             }
             return codeBlock;
         }

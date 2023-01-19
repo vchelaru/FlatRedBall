@@ -241,6 +241,8 @@ namespace FlatRedBall.Math.Geometry
         public HashSet<string> ItemsCollidedAgainst { get; private set; } = new HashSet<string>();
         public HashSet<string> LastFrameItemsCollidedAgainst { get; private set; } = new HashSet<string>();
 
+        public HashSet<object> ObjectsCollidedAgainst { get; private set; } = new HashSet<object>();
+        public HashSet<object> LastFrameObjectsCollidedAgainst { get; private set; } = new HashSet<object>();
 
         #endregion
 

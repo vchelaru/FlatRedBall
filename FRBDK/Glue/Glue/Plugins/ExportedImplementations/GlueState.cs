@@ -387,9 +387,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 }
                 else
                 {
-                    // todo - handle different types of projects
-                    var projectReferenceName = "FlatRedBallDesktopGL";
-                    return CurrentMainProject.HasProjectReference(projectReferenceName);
+                    if(CurrentMainProject is DesktopGlProject)
+                    {
+                        // todo - handle different types of projects
+                        string projectReferenceName;
+                        if(CurrentMainProject.DotNetVersionNumber >= 6)
+                        {
+                            projectReferenceName = "FlatRedBallDesktopGLNet6";
+                        }
+                        else
+                        {
+                            projectReferenceName = "FlatRedBallDesktopGL";
+                        }
+                        return CurrentMainProject.HasProjectReference(projectReferenceName);
+
+                    }
+                    return false;
                 }
             }
         }
