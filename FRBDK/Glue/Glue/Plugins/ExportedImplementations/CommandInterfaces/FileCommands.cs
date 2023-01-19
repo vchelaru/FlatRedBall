@@ -461,7 +461,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string effectiveExtension = sourceExtension ?? textExtension;
 
-            string applicationSetInGlue = OpensWith ?? EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension);
+            string applicationSetInGlue = String.Empty;
+            if(string.IsNullOrEmpty(OpensWith)|| OpensWith == "<DEFAULT>")
+            {
+                applicationSetInGlue = EditorData.FileAssociationSettings.GetApplicationForExtension(effectiveExtension); 
+            }
+            else
+            {
+                applicationSetInGlue = OpensWith;
+            }
 
             if (string.IsNullOrEmpty(applicationSetInGlue) || applicationSetInGlue == "<DEFAULT>")
             {
@@ -533,8 +541,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    MessageBox.Show("This functionality has been removed as of March 7, 2021. If you need it, please talk to Vic on Discord.");
+                    //MessageBox.Show("This functionality has been removed as of March 7, 2021. If you need it, please talk to Vic on Discord.");
                     //ProcessManager.OpenProcess(applicationSetInGlue, fileName);
+                    var startInfo = new ProcessStartInfo();
+                    startInfo.FileName = "\"" + applicationSetInGlue + "\"";
+                    startInfo.Arguments = "\"" + fileName + "\"";
+                    startInfo.UseShellExecute = true;
+
+                    System.Diagnostics.Process.Start(startInfo);
                 }
             }
         }
