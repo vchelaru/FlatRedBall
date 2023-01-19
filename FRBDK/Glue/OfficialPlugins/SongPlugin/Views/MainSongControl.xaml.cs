@@ -102,19 +102,20 @@ namespace OfficialPlugins.SongPlugin.Views
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            nAudioOutputDevice?.Stop();
-            if(mediaPlayer != null)
+            StopPlaying();
+        }
+
+        internal void StopPlaying()
+        {
+
+            if (mediaPlayer != null)
             {
                 mediaPlayer.Stop();
                 mediaPlayer.Position = TimeSpan.Zero;
 
             }
-        }
 
-        internal void StopPlaying()
-        {
             nAudioOutputDevice?.Stop();
-            mediaPlayer?.Stop();
         }
 
         internal void PlaySong()

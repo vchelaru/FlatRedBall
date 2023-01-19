@@ -95,16 +95,19 @@ namespace FlatRedBall.Glue.Settings
             extensions.Add("bmp");
             extensions.Add("csv");
             extensions.Add("emix");
+            extensions.Add("mp3");
             extensions.Add("nntx");
+            extensions.Add("ogg");
             extensions.Add("png");
             extensions.Add("scnx");
 			extensions.Add("shcx");
 			extensions.Add("splx");
             extensions.Add("txt");
+            extensions.Add("wav");
             extensions.Add("xml");
-         
 
-			for (int i = 0; i < extensions.Count; i++)
+
+            for (int i = 0; i < extensions.Count; i++)
 			{
 				if (!mExtensionApplicationAssociations.ContainsKey(extensions[i]))
 				{
