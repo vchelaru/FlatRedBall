@@ -67,6 +67,13 @@ namespace FlatRedBall.Glue.SaveClasses
             return result.IsState;
         }
 
+        public static (bool isState, StateSaveCategory category) GetIsVariableStateAndCategory(this CustomVariable customVariable, GlueElement containingElement = null)
+        {
+            var result = ObjectFinder.Self.GetStateSaveCategory(customVariable, containingElement);
+
+            return result;
+        }
+
         public static string GetEntityNameDefiningThisTypeCategory(this CustomVariable customVariable)
         {
             if(customVariable.Type.StartsWith("Entities."))

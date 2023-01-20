@@ -184,13 +184,24 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         variableAssignment = null;
                     }
-                    else if(customVariable.GetIsVariableState())
+                    else 
                     {
-                        if(customVariable.DefaultValue != null)
+                        if (customVariable.DefaultValue != null)
                         {
-                            variableAssignment = customVariable.Type + "." + customVariable.DefaultValue;
+                            (bool isState, StateSaveCategory category) =
+                                customVariable.GetIsVariableStateAndCategory(element as GlueElement);
+                            if (isState)
+                            {
+                                var type = customVariable.Type;
+                                if(category != null)
+                                {
+                                    var categoryElement = ObjectFinder.Self.GetElementContaining(category);
+                                    type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
+                                }
+                                variableAssignment = type + "." + customVariable.DefaultValue;
+                            }
+
                         }
-                        int m = 3;
                     }
 
                     if (variableAssignment != null)

@@ -1,10 +1,12 @@
-﻿using FlatRedBall.Glue.CodeGeneration;
+﻿using FlatRedBall.Glue;
+using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,13 +25,19 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             }
             ///////////////////End Early Out//////////////////////////////
 
-            var classBlock = codeBlock.Class("public", $"{element.ClassName}Type");
+            var classBlock = codeBlock.Class("public partial", $"{element.ClassName}Type");
 
             classBlock.Line("public string Name { get; set; }");
+            classBlock.Line("public override string ToString() {return Name; }");
+
             classBlock.Line("public Type Type { get; set; }");
             classBlock.Line("public Performance.IEntityFactory Factory { get; set; }");
             classBlock.Line("public Func<string, object> GetFile {get; private set; }");
+            classBlock.Line("public Action<string> LoadStaticContent { get; private set; }");
+
+
             classBlock.Line($"public {element.ClassName} CreateNew(Microsoft.Xna.Framework.Vector3 position) => Factory.CreateNew(position) as {element.ClassName};");
+            classBlock.Line($"public {element.ClassName} CreateNew(float x = 0, float y = 0) => Factory.CreateNew(x, y) as {element.ClassName};");
 
             CustomVariable tempVariable = new CustomVariable();
             foreach(var variable in element.CustomVariables.Where(item => item.SetByDerived))
@@ -65,15 +73,16 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                 {
                     block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");
                 }
-                block.Line($"GetFile = {derivedElement.ClassName}.GetFile,");
+                block.Line($"GetFile = {QualifiedTypeName(derivedElement)}.GetFile,");
+                block.Line($"LoadStaticContent = {QualifiedTypeName(derivedElement)}.LoadStaticContent,");
 
                 foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived && !item.IsShared))
                 {
-                    if(variable.DefaultValue != null)
+                    var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
+                    if(matchingVariable.DefaultValue != null)
                     {
                         // If it's null, just use whatever is defined on the base
-                        var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
-                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(variable, derivedElement);
+                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
 
                         // It seems like the variable.DefaultValue can be String.Empty
                         // If so, it bypasses the != null check, but still produces an empty
@@ -87,6 +96,21 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
                 classBlock.Line(";");
             }
+
+            classBlock.Line($"public static List<{element.ClassName}Type> All = new List<{element.ClassName}Type>{{");
+            var innerList = classBlock.CodeBlockIndented();
+            foreach (var derivedElement in derivedElements)
+            {
+                innerList.Line(derivedElement.ClassName + ",");
+            }
+            classBlock.Line($"}};");
+
+
+        }
+
+        string QualifiedTypeName(GlueElement element)
+        {
+            return ProjectManager.ProjectNamespace + '.' + element.Name.Replace('\\', '.');
         }
     }
 }
