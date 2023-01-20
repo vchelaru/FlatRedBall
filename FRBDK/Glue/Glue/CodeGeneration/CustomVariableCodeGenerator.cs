@@ -21,9 +21,16 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Write Fields/Properties for CustomVariables
 
-        private static ICodeBlock AppendCodeForMember(IElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable,
-            VariableDefinition variableDefinition)
+        public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable)
         {
+            VariableDefinition variableDefinition = null;
+            if (!string.IsNullOrEmpty(customVariable.SourceObject))
+            {
+                var owner = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
+                var nosAti = owner.GetAssetTypeInfo();
+                variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
+            }
+
             // Regarding customVariable.IsTunneling -
             // If a variable is tunneling, then we want to generate code for DefinedByBase - this means
             // the use will be able to override virtual properties and give each class a specific implementation
@@ -406,182 +413,19 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
+            var glueElement = element as GlueElement;
+
             for (int i = 0; i < element.CustomVariables.Count; i++)
             {
                 CustomVariable customVariable = element.CustomVariables[i];
-
-                VariableDefinition variableDefinition = null;
-                if (!string.IsNullOrEmpty(customVariable.SourceObject))
-                {
-                    var owner = element.GetNamedObjectRecursively(customVariable.SourceObject);
-                    var nosAti = owner.GetAssetTypeInfo();
-                    variableDefinition = nosAti?.VariableDefinitions.Find(item => item.Name == customVariable.SourceObjectProperty);
-                }
 
                 if (CodeWriter.IsVariableHandledByCustomCodeGenerator(customVariable, element) == false)
                 {
-                    AppendCodeForMember(element, codeBlock, customVariable, variableDefinition);
+                    AppendCodeForMember(glueElement, codeBlock, customVariable);
                 }
             }
             return codeBlock;
         }
-
-        #endregion
-
-        #region Initialize
-
-        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            // Before August 23, 2010 Custom Variables used to be set
-            // here in Initialize before the AddToManagers method.  This
-            // is problematic because:
-            // 1.   We probably want these
-            //      variables reset whenever
-            //      this object is recycled. 
-            // 2.   If we set the position of 
-            //      the Entity before its children
-            //      have been attached, then the attachment
-            //      will not work as expected.  Therefore, I've
-            //      decided to move custom variable code to AddToManagers.
-            // UPDATE:  Actually, we do want variables set here so that they
-            // are available in Custom Initialize.
-            // UPDATE2:  This was moved to its own method so that inheritance works.
-            // UPDATE3:  It turns out there's 2 types of variables.  
-            // 1.   Variables that are not set by derived.  These variables should get set
-            //      in the base class or else they'll never get set for derived objects.
-            // 2.   Variables that are set by derived.  These variables should get set in the
-            //      "SetCustomVariables" method so that they get overridden by derived objects.
-            // This means that we're going to set variables that are not set by derived here, and the
-            // rest will get set in SetCustomVariables.
-            // UPDATE4:  This has all moved to PostInitialize, which is called
-            //           bottom-up.  This means there is no more split on variables.
-            // UPDATE5:  This has been moved out of BaseElementTreeNode int CustomVariableCodeGenerator.
-            return codeBlock;
-        }
-
-        #endregion
-
-        public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
-        {
-            return codeBlock;
-        }
-
-        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement elementAsIElement)
-        {
-            var element = elementAsIElement as GlueElement;
-            HashSet<GlueElement> elementsToLoadStaticContent = new HashSet<GlueElement>();
-            for (int i = 0; i < element.CustomVariables.Count; i++)
-            {
-                CustomVariable customVariable = element.CustomVariables[i];
-
-                // If a CustomVariable references a CSV and if that CustomVariable is shared static,
-                // we can't assign it until the CSV is loaded.  Therefore, we will do it in LoadStaticContent
-                if (customVariable.IsShared && 
-                    (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.CreatesEvent) &&
-                    ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string) &&
-                    !ReferencesCsvFromGlobalContent(customVariable))
-                {
-                    string variableAssignment = " = " + GetAssignmentToCsvItem(customVariable, element, (string)customVariable.DefaultValue);
-
-                    codeBlock.Line(customVariable.Name + variableAssignment + ";");
-                    
-                }
-
-                // If a custom variable references a state in another element, that state in the other element
-                // may require files to be loaded. For example, the state in the other element may reference movement
-                // variables in a platformer, which would require the CSV to be loaded.
-                // If this is the case, call LoadStaticContent on the container. Sure, it means that we may load unnecessarily, but
-                // it would be a lot of logic to make it more efficient. Plus, all-global-content games are probably becoming more and more common.
-                var getCategoryResult = ObjectFinder.Self.GetStateSaveCategory(customVariable, element as GlueElement);
-                GlueElement ownerOfCategory = null;
-                if(getCategoryResult.IsState && getCategoryResult.Category != null)
-                {
-                    ownerOfCategory = ObjectFinder.Self.GetElementContaining(getCategoryResult.Category);
-                }
-
-                if(ownerOfCategory != null && ownerOfCategory != null 
-                    // No inheritance relationship to prevent recursion
-                    && !ObjectFinder.Self.GetIfInherits(ownerOfCategory, element) 
-                    && !ObjectFinder.Self.GetIfInherits(element, ownerOfCategory)
-                    && element != ownerOfCategory)
-                {
-                    elementsToLoadStaticContent.Add(ownerOfCategory);
-                    
-                }
-
-            }
-
-            if(elementsToLoadStaticContent.Count > 0)
-            {
-                codeBlock.Line("// Generating LoadStaticContent calls because this element references states from the following elements, and those states may reference files internally.");
-            }
-            foreach(var elementToLoad in elementsToLoadStaticContent)
-            {
-                var fullName = CodeWriter.GetGlueElementNamespace(elementToLoad) + "." + elementToLoad.GetStrippedName();
-                codeBlock.Line($"{fullName}.LoadStaticContent(contentManagerName);");
-            }
-            return codeBlock;
-        }
-
-        static bool ReferencesCsvFromGlobalContent(CustomVariable customVariable)
-        {
-            if (customVariable.GetIsCsv() == false)
-            {
-                return false;
-            }
-            else
-            {
-
-                return customVariable.Type.StartsWith("GlobalContent/");
-            }
-        }
-
-        static bool IsSourceObjectEnabled(IElement saveObject, CustomVariable variable)
-        {
-            NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(variable.SourceObject);
-
-            return referencedNos != null && referencedNos.IsDisabled == false;
-        }
-            
-            
-
-
-        private static void CreateAccompanyingVelocityVariables(ICodeBlock codeBlock, CustomVariable customVariable)
-        {
-            if (customVariable.HasAccompanyingVelocityProperty)
-            {
-                string variableAssignment = " = 0";
-
-                string type = customVariable.Type;
-                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
-                {
-                    type = customVariable.OverridingPropertyType;
-                }
-
-                // Create the variable to store velocity
-                codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: type, Name: customVariable.Name + "Velocity") + variableAssignment + ";");
-
-                if (customVariable.Type == "int")
-                {
-                    codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: "float", Name: customVariable.Name + "ModifiedByVelocity") + variableAssignment + ";");
-                }
-                else if (customVariable.Type == "long")
-                {
-                    codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: "double", Name: customVariable.Name + "ModifiedByVelocity") + variableAssignment + ";");
-                }
-            }
-        }
-
 
         private static void WriteSetterForProperty(IElement saveObject, CustomVariable customVariable, ICodeBlock prop, 
             bool isVisibleSetterOnList, VariableDefinition variableDefinition)
@@ -767,6 +611,158 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
+
+        #endregion
+
+        #region Initialize
+
+        public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            // Before August 23, 2010 Custom Variables used to be set
+            // here in Initialize before the AddToManagers method.  This
+            // is problematic because:
+            // 1.   We probably want these
+            //      variables reset whenever
+            //      this object is recycled. 
+            // 2.   If we set the position of 
+            //      the Entity before its children
+            //      have been attached, then the attachment
+            //      will not work as expected.  Therefore, I've
+            //      decided to move custom variable code to AddToManagers.
+            // UPDATE:  Actually, we do want variables set here so that they
+            // are available in Custom Initialize.
+            // UPDATE2:  This was moved to its own method so that inheritance works.
+            // UPDATE3:  It turns out there's 2 types of variables.  
+            // 1.   Variables that are not set by derived.  These variables should get set
+            //      in the base class or else they'll never get set for derived objects.
+            // 2.   Variables that are set by derived.  These variables should get set in the
+            //      "SetCustomVariables" method so that they get overridden by derived objects.
+            // This means that we're going to set variables that are not set by derived here, and the
+            // rest will get set in SetCustomVariables.
+            // UPDATE4:  This has all moved to PostInitialize, which is called
+            //           bottom-up.  This means there is no more split on variables.
+            // UPDATE5:  This has been moved out of BaseElementTreeNode int CustomVariableCodeGenerator.
+            return codeBlock;
+        }
+
+        #endregion
+
+        public override ICodeBlock GenerateActivity(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, SaveClasses.IElement element)
+        {
+            return codeBlock;
+        }
+
+        public override ICodeBlock GenerateLoadStaticContent(ICodeBlock codeBlock, SaveClasses.IElement elementAsIElement)
+        {
+            var element = elementAsIElement as GlueElement;
+            HashSet<GlueElement> elementsToLoadStaticContent = new HashSet<GlueElement>();
+            for (int i = 0; i < element.CustomVariables.Count; i++)
+            {
+                CustomVariable customVariable = element.CustomVariables[i];
+
+                // If a CustomVariable references a CSV and if that CustomVariable is shared static,
+                // we can't assign it until the CSV is loaded.  Therefore, we will do it in LoadStaticContent
+                if (customVariable.IsShared && 
+                    (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.CreatesEvent) &&
+                    ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string) &&
+                    !ReferencesCsvFromGlobalContent(customVariable))
+                {
+                    string variableAssignment = " = " + GetAssignmentToCsvItem(customVariable, element, (string)customVariable.DefaultValue);
+
+                    codeBlock.Line(customVariable.Name + variableAssignment + ";");
+                    
+                }
+
+                // If a custom variable references a state in another element, that state in the other element
+                // may require files to be loaded. For example, the state in the other element may reference movement
+                // variables in a platformer, which would require the CSV to be loaded.
+                // If this is the case, call LoadStaticContent on the container. Sure, it means that we may load unnecessarily, but
+                // it would be a lot of logic to make it more efficient. Plus, all-global-content games are probably becoming more and more common.
+                var getCategoryResult = ObjectFinder.Self.GetStateSaveCategory(customVariable, element as GlueElement);
+                GlueElement ownerOfCategory = null;
+                if(getCategoryResult.IsState && getCategoryResult.Category != null)
+                {
+                    ownerOfCategory = ObjectFinder.Self.GetElementContaining(getCategoryResult.Category);
+                }
+
+                if(ownerOfCategory != null && ownerOfCategory != null 
+                    // No inheritance relationship to prevent recursion
+                    && !ObjectFinder.Self.GetIfInherits(ownerOfCategory, element) 
+                    && !ObjectFinder.Self.GetIfInherits(element, ownerOfCategory)
+                    && element != ownerOfCategory)
+                {
+                    elementsToLoadStaticContent.Add(ownerOfCategory);
+                    
+                }
+
+            }
+
+            if(elementsToLoadStaticContent.Count > 0)
+            {
+                codeBlock.Line("// Generating LoadStaticContent calls because this element references states from the following elements, and those states may reference files internally.");
+            }
+            foreach(var elementToLoad in elementsToLoadStaticContent)
+            {
+                var fullName = CodeWriter.GetGlueElementNamespace(elementToLoad) + "." + elementToLoad.GetStrippedName();
+                codeBlock.Line($"{fullName}.LoadStaticContent(contentManagerName);");
+            }
+            return codeBlock;
+        }
+
+        static bool ReferencesCsvFromGlobalContent(CustomVariable customVariable)
+        {
+            if (customVariable.GetIsCsv() == false)
+            {
+                return false;
+            }
+            else
+            {
+
+                return customVariable.Type.StartsWith("GlobalContent/");
+            }
+        }
+
+        static bool IsSourceObjectEnabled(IElement saveObject, CustomVariable variable)
+        {
+            NamedObjectSave referencedNos = saveObject.GetNamedObjectRecursively(variable.SourceObject);
+
+            return referencedNos != null && referencedNos.IsDisabled == false;
+        }
+            
+            
+
+
+        private static void CreateAccompanyingVelocityVariables(ICodeBlock codeBlock, CustomVariable customVariable)
+        {
+            if (customVariable.HasAccompanyingVelocityProperty)
+            {
+                string variableAssignment = " = 0";
+
+                string type = customVariable.Type;
+                if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
+                {
+                    type = customVariable.OverridingPropertyType;
+                }
+
+                // Create the variable to store velocity
+                codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: type, Name: customVariable.Name + "Velocity") + variableAssignment + ";");
+
+                if (customVariable.Type == "int")
+                {
+                    codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: "float", Name: customVariable.Name + "ModifiedByVelocity") + variableAssignment + ";");
+                }
+                else if (customVariable.Type == "long")
+                {
+                    codeBlock.Line(StringHelper.Modifiers(Public: true, Static: customVariable.IsShared, Type: "double", Name: customVariable.Name + "ModifiedByVelocity") + variableAssignment + ";");
+                }
+            }
+        }
+
         private static ICodeBlock WritePropertyHeader(ICodeBlock codeBlock, CustomVariable customVariable, string customVariableType)
         {
             ICodeBlock prop;
@@ -880,7 +876,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         
         public static string GetMemberTypeFor(CustomVariable customVariable, IElement element)
         {
-            customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
+            customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable, element as GlueElement);
             NamedObjectSave referencedNos = element.GetNamedObjectRecursively(customVariable.SourceObject);
 
             string customVariableType;
@@ -917,7 +913,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
 
-            if (customVariable.GetIsVariableState())
+            if (customVariable.GetIsVariableState(element as GlueElement))
             {
                 // handle old tunneled variables:  tunneled state variables used to set their type
                 // as "string" instead of the variable state type.
@@ -1024,7 +1020,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         // Unify?
         public static ICodeBlock AppendAssignmentForCustomVariableInElement(ICodeBlock codeBlock, CustomVariable customVariable, IElement saveObject)
         {
-            bool hasBase = !string.IsNullOrEmpty(((INamedObjectContainer)saveObject).BaseObject);
+            var glueElement = saveObject as GlueElement;
 
             // Victor Chelaru
             // December 17, 2014
@@ -1038,171 +1034,177 @@ namespace FlatRedBall.Glue.CodeGeneration
             //if (!customVariable.SetByDerived && 
             if (customVariable.DefaultValue != null && // if it's null the user doesn't want to change what is set in the file or in the source object
                 !customVariable.IsShared && // no need to handle statics here because they're always defined in class scope
-                !IsVariableTunnelingToDisabledObject(customVariable, saveObject)
+                !IsVariableTunnelingToDisabledObject(customVariable, glueElement)
                 )
             {
+                string rightSide = GetRightSideOfEquals(customVariable, glueElement);
 
-
-                string variableToAssign = "";
-
-                CustomVariable variableConsideringDefinedByBase = customVariable.GetDefiningCustomVariable();
-
-                IElement containerOfState = null;
-
-                // This can be null
-                // if the user takes
-                // an Element that inherits
-                // from another and has variables
-                // from it, then changes the Element
-                // to no longer inherit.
-
-                if (variableConsideringDefinedByBase != null)
+                if (!string.IsNullOrEmpty(rightSide))
                 {
-
-                    containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, saveObject);
-
-                    if (containerOfState == null)
+                    string relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.Name);
+                    if (!string.IsNullOrEmpty(relativeVersionOfProperty))
                     {
-                        variableToAssign =
-                            CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
-                        NamedObjectSave namedObject = saveObject.GetNamedObjectRecursively(variableConsideringDefinedByBase.SourceObject);
+                        codeBlock = codeBlock.If("Parent == null");
+                    }
 
+                    NamedObjectSave namedObject = glueElement.GetNamedObject(customVariable.SourceObject);
 
-                        if (variableConsideringDefinedByBase.GetIsFile())
-                        {
-                            variableToAssign = variableToAssign.Replace("\"", "").Replace("-", "_");
+                    bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
+                        customVariable.SourceObjectProperty == "Visible";
 
-                            if (variableToAssign == "<NONE>")
-                            {
-                                variableToAssign = "null";
-                            }
-                        }
-                        else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
-                        {
-                            if (ShouldAssignToCsv(variableConsideringDefinedByBase, variableToAssign))
-                            {
-                                variableToAssign = GetAssignmentToCsvItem(customVariable, saveObject, variableToAssign);
-                            }
-                            else
-                            {
-                                variableToAssign = null;
-                            }
-                        }
-                        else if (variableConsideringDefinedByBase.Type == "Color")
-                        {
-                            variableToAssign = "Color." + variableToAssign.Replace("\"", "");
+                    if (namedObject != null)
+                    {
+                        NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
+                    }
 
-                        }
-                        else if (variableConsideringDefinedByBase.Type != "string" && variableToAssign == "\"\"")
-                        {
-                            variableToAssign = null;
-                        }
-                        else
-                        {
+                    if (shouldSetUnderlyingValue)
+                    {
+                        codeBlock.Line(StringHelper.SpaceStrings(namedObject.InstanceName + "." + customVariable.SourceObjectProperty + " = ", rightSide + ";"));
 
-                            //Not sure why this wasn't localizing variables but it caused a problem with 
-                            //variables that tunnel in to a Text's DisplayText not being localized
-                            //finish here
-
-                            // Special Case:
-                            // We don't want to
-                            // set Visible on NOS's
-                            // which are added/removed
-                            // when Visible is set on them:
-                            // Update March 7, 2014 
-                            // We do want to set it because if we don't,
-                            // then the checks inside the Visible property
-                            // don't properly detect that they've been changed.
-                            // Therefore, we're going to set it on the underlying
-                            // object 
-                            bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
-                                variableConsideringDefinedByBase.SourceObjectProperty == "Visible";
-
-                            if (shouldSetUnderlyingValue)
-                            {
-                                // Don't change the variable to assign
-                            }
-                            else
-                            {
-                                variableToAssign = CodeWriter.MakeLocalizedIfNecessary(namedObject, customVariable.SourceObjectProperty,
-                                    customVariable.DefaultValue, variableToAssign, null);
-
-                                if (namedObject?.SourceType == SourceType.Gum && variableConsideringDefinedByBase.Type?.Contains(".") == true && variableConsideringDefinedByBase.Type.EndsWith("?"))
-                                {
-                                    // this is a state type, so remove the "?" and prefix it:
-                                    variableToAssign = variableConsideringDefinedByBase.Type.Substring(0, variableConsideringDefinedByBase.Type.Length - 1) + "." + customVariable.DefaultValue;
-                                }
-
-                                variableToAssign = variableToAssign.Replace("+", ".");
-                            }
-                        }
                     }
                     else
                     {
-                        string valueAsString = (string)customVariable.DefaultValue;
+                        codeBlock.Line(StringHelper.SpaceStrings(customVariable.Name, "=", rightSide + ";"));
 
-                        if (!string.IsNullOrEmpty(valueAsString))
-                        {
-                            variableToAssign = StateCodeGenerator.FullyQualifyStateValue(containerOfState, (string)customVariable.DefaultValue, customVariable.Type);
-                        }
                     }
 
-                    if (!string.IsNullOrEmpty(variableToAssign))
+
+                    if (!string.IsNullOrEmpty(relativeVersionOfProperty))
                     {
-                        string relativeVersionOfProperty = InstructionManager.GetRelativeForAbsolute(customVariable.Name);
-                        if (!string.IsNullOrEmpty(relativeVersionOfProperty))
+                        if (customVariable.Name == "Z")
                         {
-                            codeBlock = codeBlock.If("Parent == null");
+                            codeBlock = codeBlock.End().ElseIf("Parent is FlatRedBall.Camera");
+                            codeBlock.Line(relativeVersionOfProperty + " = " + rightSide + " - 40.0f;");
                         }
-
-                        NamedObjectSave namedObject = saveObject.GetNamedObject(customVariable.SourceObject);
-
-                        bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
-                            customVariable.SourceObjectProperty == "Visible";
-
-                        if (namedObject != null)
-                        {
-                            NamedObjectSaveCodeGenerator.AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
-                        }
-
-                        if (shouldSetUnderlyingValue)
-                        {
-                            codeBlock.Line(StringHelper.SpaceStrings(namedObject.InstanceName + "." + customVariable.SourceObjectProperty + " = ", variableToAssign + ";"));
-
-                        }
-                        else
-                        {
-                            codeBlock.Line(StringHelper.SpaceStrings(customVariable.Name, "=", variableToAssign + ";"));
-
-                        }
-
-
-                        if (!string.IsNullOrEmpty(relativeVersionOfProperty))
-                        {
-                            if (customVariable.Name == "Z")
-                            {
-                                codeBlock = codeBlock.End().ElseIf("Parent is FlatRedBall.Camera");
-                                codeBlock.Line(relativeVersionOfProperty + " = " + variableToAssign + " - 40.0f;");
-                            }
-                            codeBlock = codeBlock.End().Else();
-                            codeBlock.Line(relativeVersionOfProperty + " = " + variableToAssign + ";");
-                            codeBlock = codeBlock.End();
-                        }
-                        
-
-                        if (namedObject != null)
-                        {
-                            NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, namedObject);
-                        }
-
-
-
-
+                        codeBlock = codeBlock.End().Else();
+                        codeBlock.Line(relativeVersionOfProperty + " = " + rightSide + ";");
+                        codeBlock = codeBlock.End();
                     }
+
+
+                    if (namedObject != null)
+                    {
+                        NamedObjectSaveCodeGenerator.AddEndIfIfNecessary(codeBlock, namedObject);
+                    }
+
+
+
+
                 }
             }
 
             return codeBlock;
+        }
+
+        public static string GetRightSideOfEquals(CustomVariable customVariable, GlueElement glueElement)
+        {
+            string rightSide = "";
+
+            CustomVariable variableConsideringDefinedByBase = customVariable.GetDefiningCustomVariable();
+
+            IElement containerOfState = null;
+
+            // This can be null
+            // if the user takes
+            // an Element that inherits
+            // from another and has variables
+            // from it, then changes the Element
+            // to no longer inherit.
+
+            if (variableConsideringDefinedByBase != null)
+            {
+
+                containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
+
+                if (containerOfState == null)
+                {
+                    rightSide =
+                        CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
+                    NamedObjectSave namedObject = glueElement.GetNamedObjectRecursively(variableConsideringDefinedByBase.SourceObject);
+
+
+                    if (variableConsideringDefinedByBase.GetIsFile())
+                    {
+                        rightSide = rightSide.Replace("\"", "").Replace("-", "_");
+
+                        if (rightSide == "<NONE>")
+                        {
+                            rightSide = "null";
+                        }
+                    }
+                    else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
+                    {
+                        if (ShouldAssignToCsv(variableConsideringDefinedByBase, rightSide))
+                        {
+                            rightSide = GetAssignmentToCsvItem(customVariable, glueElement, rightSide);
+                        }
+                        else
+                        {
+                            rightSide = null;
+                        }
+                    }
+                    else if (variableConsideringDefinedByBase.Type == "Color")
+                    {
+                        rightSide = "Color." + rightSide.Replace("\"", "");
+
+                    }
+                    else if (variableConsideringDefinedByBase.Type != "string" && rightSide == "\"\"")
+                    {
+                        rightSide = null;
+                    }
+                    else
+                    {
+
+                        //Not sure why this wasn't localizing variables but it caused a problem with 
+                        //variables that tunnel in to a Text's DisplayText not being localized
+                        //finish here
+
+                        // Special Case:
+                        // We don't want to
+                        // set Visible on NOS's
+                        // which are added/removed
+                        // when Visible is set on them:
+                        // Update March 7, 2014 
+                        // We do want to set it because if we don't,
+                        // then the checks inside the Visible property
+                        // don't properly detect that they've been changed.
+                        // Therefore, we're going to set it on the underlying
+                        // object 
+                        bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
+                            variableConsideringDefinedByBase.SourceObjectProperty == "Visible";
+
+                        if (shouldSetUnderlyingValue)
+                        {
+                            // Don't change the variable to assign
+                        }
+                        else
+                        {
+                            rightSide = CodeWriter.MakeLocalizedIfNecessary(namedObject, customVariable.SourceObjectProperty,
+                                customVariable.DefaultValue, rightSide, null);
+
+                            if (namedObject?.SourceType == SourceType.Gum && variableConsideringDefinedByBase.Type?.Contains(".") == true && variableConsideringDefinedByBase.Type.EndsWith("?"))
+                            {
+                                // this is a state type, so remove the "?" and prefix it:
+                                rightSide = variableConsideringDefinedByBase.Type.Substring(0, variableConsideringDefinedByBase.Type.Length - 1) + "." + customVariable.DefaultValue;
+                            }
+
+                            rightSide = rightSide?.Replace("+", ".");
+                        }
+                    }
+                }
+                else
+                {
+                    string valueAsString = (string)customVariable.DefaultValue;
+
+                    if (!string.IsNullOrEmpty(valueAsString))
+                    {
+                        rightSide = StateCodeGenerator.FullyQualifyStateValue(containerOfState, (string)customVariable.DefaultValue, customVariable.Type);
+                    }
+                }
+
+            }
+
+            return rightSide;
         }
 
         private static bool IsVariableTunnelingToDisabledObject(CustomVariable customVariable, IElement saveObject)

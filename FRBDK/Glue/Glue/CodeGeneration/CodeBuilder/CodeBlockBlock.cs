@@ -12,7 +12,7 @@
     public static class CodeBlockBlockExtensions
     {
         /// <summary>
-        /// Creates an indented block with { and } brackets
+        /// Creates an indented block with { and } brackets.
         /// </summary>
         /// <param name="pCodeBlock"></param>
         /// <returns></returns>

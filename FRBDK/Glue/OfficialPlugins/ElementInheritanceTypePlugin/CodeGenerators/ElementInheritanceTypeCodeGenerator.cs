@@ -1,0 +1,92 @@
+﻿using FlatRedBall.Glue.CodeGeneration;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.SaveClasses;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
+{
+    internal class ElementInheritanceTypeCodeGenerator : ElementComponentCodeGenerator
+    {
+        public override void GenerateAdditionalClasses(ICodeBlock codeBlock, IElement element)
+        {
+            var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
+
+            /////////////////////Early Out////////////////////////////////
+            if(derivedElements.Count == 0)
+            {
+                return;
+            }
+            ///////////////////End Early Out//////////////////////////////
+
+            var classBlock = codeBlock.Class("public", $"{element.ClassName}Type");
+
+            classBlock.Line("public string Name { get; set; }");
+            classBlock.Line("public Type Type { get; set; }");
+            classBlock.Line("public Performance.IEntityFactory Factory { get; set; }");
+            classBlock.Line("public Func<string, object> GetFile {get; private set; }");
+            classBlock.Line($"public {element.ClassName} CreateNew(Microsoft.Xna.Framework.Vector3 position) => Factory.CreateNew(position) as {element.ClassName};");
+
+            CustomVariable tempVariable = new CustomVariable();
+            foreach(var variable in element.CustomVariables.Where(item => item.SetByDerived))
+            {
+                // We want this to not be a property, and to not have any source class type so that it generates
+                // as a simple field
+                tempVariable.Name = variable.Name;
+                tempVariable.Type = variable.Type;
+                tempVariable.DefaultValue = variable.DefaultValue;
+                tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
+
+                CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable);
+            }
+
+
+            var fromName = classBlock.Function($"public static {element.ClassName}Type", "FromName", "string name");
+            var switchBlock = fromName.Switch("name");
+            foreach (var derivedElement in derivedElements)
+            {
+                switchBlock.CaseNoBreak($"\"{derivedElement.ClassName}\"")
+                    .Line($"return {derivedElement.ClassName};");
+            }
+            fromName.Line("return null;");
+
+            foreach (var derivedElement in derivedElements)
+            {
+                classBlock.Line($"public static {element.ClassName}Type {derivedElement.ClassName} {{ get; private set; }} = new {element.ClassName}Type");
+                var block = classBlock.Block();
+                block.Line($"Name = \"{derivedElement.ClassName}\",");
+                block.Line($"Type = typeof({derivedElement.ClassName}),");
+                var hasFactory = derivedElement is EntitySave derivedEntity && derivedEntity.CreatedByOtherEntities;
+                if (hasFactory)
+                {
+                    block.Line($"Factory = Factories.{derivedElement.ClassName}Factory.Self,");
+                }
+                block.Line($"GetFile = {derivedElement.ClassName}.GetFile,");
+
+                foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived && !item.IsShared))
+                {
+                    if(variable.DefaultValue != null)
+                    {
+                        // If it's null, just use whatever is defined on the base
+                        var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
+                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(variable, derivedElement);
+
+                        // It seems like the variable.DefaultValue can be String.Empty
+                        // If so, it bypasses the != null check, but still produces an empty
+                        // right-slide assignment, so let's just put that here
+                        if(!string.IsNullOrEmpty(rightSide))
+                        {
+                            block.Line($"{variable.Name} = {rightSide},");
+                        }
+                    }
+                }
+
+                classBlock.Line(";");
+            }
+        }
+    }
+}
