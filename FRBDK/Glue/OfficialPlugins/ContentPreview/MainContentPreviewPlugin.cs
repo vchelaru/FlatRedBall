@@ -24,8 +24,6 @@ namespace OfficialPlugins.ContentPreview
 
         public override Version Version => new Version(1,0);
 
-
-
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             return true;
@@ -39,6 +37,7 @@ namespace OfficialPlugins.ContentPreview
 
             PngManager.Initialize(this);
             WavManager.Initialize(this);
+            AchxManager.Initialize(this);
         }
 
         private void AssignEvents()
@@ -65,6 +64,9 @@ namespace OfficialPlugins.ContentPreview
                     case "wav":
                         WavManager.HandleStrongSelect();
                         return true;
+                    case "achx":
+                        // Nah, let's open AnimationEditor for now
+                        return false;
                 }
             }
 
@@ -77,6 +79,7 @@ namespace OfficialPlugins.ContentPreview
 
             WavManager.HideTab();
             PngManager.HideTab();
+            AchxManager.HideTab();
 
             /////////////////Early Out///////////////////
             if (file == null)
@@ -96,6 +99,9 @@ namespace OfficialPlugins.ContentPreview
                     break;
                 case "wav":
                     WavManager.ShowTab(filePath);
+                    break;
+                case "achx":
+                    AchxManager.ShowTab(filePath);
                     break;
             }
         }
@@ -117,6 +123,12 @@ namespace OfficialPlugins.ContentPreview
                     if(WavManager.WavFilePath == filePath)
                     {
                         WavManager.ForceRefreshWav(filePath);
+                    }
+                    break;
+                case "achx":
+                    if(AchxManager.AchxFilePath == filePath)
+                    {
+                        AchxManager.ForceRefreshAchx(filePath);
                     }
                     break;
             }

@@ -669,7 +669,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else
             {
 
-                await TaskManager.Self.AddAsync(() =>
+                await TaskManager.Self.AddAsync(async () =>
                 {
                     // See if there is already a variable in the base with this name
                     CustomVariable existingVariableInBase = currentElement.GetCustomVariableRecursively(resultName);
@@ -759,7 +759,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         newVariable.DefaultValue = defaultValue;
 
-                        GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, currentElement);
+                        await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(newVariable, currentElement);
                     }
                 }, $"Adding variable {resultName} through UI");
             }
