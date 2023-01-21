@@ -75,6 +75,8 @@
             this.TimeTextBox.Size = new System.Drawing.Size(335, 20);
             this.TimeTextBox.TabIndex = 3;
             this.TimeTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.TimeTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TimeTextBox_KeyDown);
+            this.TimeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TimeTextBox_KeyPress);
             // 
             // groupBox1
             // 
@@ -122,6 +124,7 @@
             this.Controls.Add(this.OkButton);
             this.Name = "AnimationChainTimeScaleWindow";
             this.ShowIcon = false;
+            this.Shown += new System.EventHandler(this.AnimationChainTimeScaleWindow_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

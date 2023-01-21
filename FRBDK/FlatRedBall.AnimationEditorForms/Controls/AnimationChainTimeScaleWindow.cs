@@ -121,5 +121,28 @@ namespace FlatRedBall.AnimationEditorForms.Controls
             }
         }
 
+        private void TimeTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void TimeTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Enter)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            else if(e.KeyCode == Keys.Escape)
+            {
+                this.Close();
+            }
+        }
+
+        private void AnimationChainTimeScaleWindow_Shown(object sender, EventArgs e)
+        {
+            this.TimeTextBox.Focus();
+
+        }
     }
 }
