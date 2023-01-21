@@ -44,11 +44,9 @@ namespace FlatRedBall.Math.Geometry
         /// </summary>
         private Point[] mPoints;
 
-        #region XML Docs
         /// <summary>
         /// The midpoint Points used for collision.  These are updated in CollideAgainstMovePreview.
         /// </summary>
-        #endregion
         private Point3D[] mCenterPoints;
 
         private ReadOnlyCollection<Point> pointCollection;
@@ -88,6 +86,10 @@ namespace FlatRedBall.Math.Geometry
         bool isConcaveCache;
         bool isClockwiseCache;
 
+        public int? CollisionPointRangeStartInclusive;
+        public int? CollisionPointRangeEndExclusive;
+
+
         #endregion
 
         #region Properties
@@ -117,7 +119,6 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The Position-relative points of the Polygon. A point at 0,0 will be positioned at the center of the Polygon.
         /// </summary>
@@ -139,7 +140,6 @@ namespace FlatRedBall.Math.Geometry
         /// 
         /// polygonInstance.Points = points;
         /// </example>
-        #endregion
         public IList<Point> Points
         {
             get { return pointCollection; }
@@ -193,7 +193,6 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Reports the vector along which this polygon was moved along during the last
         /// CollideAgainstMove method.
@@ -209,17 +208,14 @@ namespace FlatRedBall.Math.Geometry
         /// as well as the argument.
         /// </para>
         /// </remarks>
-        #endregion
         public Vector3 LastMoveCollisionReposition
         {
             get { return mLastMoveCollisionReposition; }
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute position where the last collision was detected in a CollieAgainst method.
         /// </summary>
-        #endregion
         public Point LastCollisionPoint
         {
             get { return mLastCollisionPoint; }
@@ -250,8 +246,6 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
-
-
         #endregion
 
         #region Events
@@ -276,7 +270,6 @@ namespace FlatRedBall.Math.Geometry
         #endregion
 
         #region Methods
-
 
         #region Static Public Methods
 
@@ -369,94 +362,6 @@ namespace FlatRedBall.Math.Geometry
         }
 
         #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Returns the absolute (world) position of the point at the argument pointIndex. This considers the Polygon's position and rotation.
-        /// </summary>
-        /// <remarks>
-        /// This method internally uses the vertices of the polygon to return the position. These vertices are updated every frame if the polygon is
-        /// part of the ShapeManager. If a Polygon is not part of the ShapeManager, or if a change (such as position) has been performed on the polygon
-        /// and the AbsolutePointPosition is needed immediately, then ForceUpdateDependencies can be called to update the verts internally.
-        /// </remarks>
-        /// <param name="pointIndex">The 0-based index of the points.</param>
-        /// <returns>The absolute world position of the vert at the argument pointIndex.</returns>
-        public Vector3 AbsolutePointPosition(int pointIndex)
-        {
-            return mVertices[pointIndex].Position;
-        }
-
-        /// <summary>
-        /// Returns whether two indexes are adjacent.  This considers wrapping and duplicate
-        /// points for closed polygons.
-        /// </summary>
-        /// <param name="firstIndex">The first index.</param>
-        /// <param name="secondIndex">The second index</param>
-        /// <returns>Whether the two points are adjacent.</returns>
-        public bool ArePointsAdjacent(int firstIndex, int secondIndex)
-        {
-            // If firstIndex or secondIndex are the last point, make them
-            // 0 to make the rest of this method simpler
-            if(firstIndex == mPoints.Length -1)
-            {
-                firstIndex = 0;
-            }
-            if(secondIndex == mPoints.Length - 1)
-            {
-                secondIndex = 0;
-            }
-            
-
-            int pointBeforeFirst = firstIndex - 1;
-            if (pointBeforeFirst < 0)
-            {
-                pointBeforeFirst = mPoints.Length - 2;
-            }
-
-            int pointAfterFirst = (firstIndex + 1) % (mPoints.Length - 1);
-
-            return secondIndex == pointBeforeFirst || secondIndex == pointAfterFirst;
-
-        }
-
-
-        public Polygon Clone()
-        {
-			Polygon clonedPolygon = this.Clone<Polygon>();
-
-			return clonedPolygon;
-        }
-
-
-        public new T Clone<T>() where T : Polygon, new()
-        {
-            T newPolygon = base.Clone<T>();
-            newPolygon.mVisible = false;
-            
-#if !SILVERLIGHT
-            newPolygon.mLayerBelongingTo = null;
-#endif
-            Point[] newPoints = null;
-
-            if (mPoints != null)
-            {
-                newPoints = new Point[mPoints.Length];
-                mPoints.CopyTo(newPoints, 0);
-            }
-            // Set the mPoints to null so that setting newPoints
-            // resets it.
-            newPolygon.mPoints = null;
-
-            if (newPoints != null)
-            {
-                newPolygon.Points = newPoints;
-            }
-
-
-            return newPolygon;
-        }
-
 
         #region CollideAgainst Methods
 
@@ -1512,6 +1417,95 @@ namespace FlatRedBall.Math.Geometry
 
 
         #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Returns the absolute (world) position of the point at the argument pointIndex. This considers the Polygon's position and rotation.
+        /// </summary>
+        /// <remarks>
+        /// This method internally uses the vertices of the polygon to return the position. These vertices are updated every frame if the polygon is
+        /// part of the ShapeManager. If a Polygon is not part of the ShapeManager, or if a change (such as position) has been performed on the polygon
+        /// and the AbsolutePointPosition is needed immediately, then ForceUpdateDependencies can be called to update the verts internally.
+        /// </remarks>
+        /// <param name="pointIndex">The 0-based index of the points.</param>
+        /// <returns>The absolute world position of the vert at the argument pointIndex.</returns>
+        public Vector3 AbsolutePointPosition(int pointIndex)
+        {
+            return mVertices[pointIndex].Position;
+        }
+
+        /// <summary>
+        /// Returns whether two indexes are adjacent.  This considers wrapping and duplicate
+        /// points for closed polygons.
+        /// </summary>
+        /// <param name="firstIndex">The first index.</param>
+        /// <param name="secondIndex">The second index</param>
+        /// <returns>Whether the two points are adjacent.</returns>
+        public bool ArePointsAdjacent(int firstIndex, int secondIndex)
+        {
+            // If firstIndex or secondIndex are the last point, make them
+            // 0 to make the rest of this method simpler
+            if(firstIndex == mPoints.Length -1)
+            {
+                firstIndex = 0;
+            }
+            if(secondIndex == mPoints.Length - 1)
+            {
+                secondIndex = 0;
+            }
+            
+
+            int pointBeforeFirst = firstIndex - 1;
+            if (pointBeforeFirst < 0)
+            {
+                pointBeforeFirst = mPoints.Length - 2;
+            }
+
+            int pointAfterFirst = (firstIndex + 1) % (mPoints.Length - 1);
+
+            return secondIndex == pointBeforeFirst || secondIndex == pointAfterFirst;
+
+        }
+
+
+        public Polygon Clone()
+        {
+			Polygon clonedPolygon = this.Clone<Polygon>();
+
+			return clonedPolygon;
+        }
+
+
+        public new T Clone<T>() where T : Polygon, new()
+        {
+            T newPolygon = base.Clone<T>();
+            newPolygon.mVisible = false;
+            
+#if !SILVERLIGHT
+            newPolygon.mLayerBelongingTo = null;
+#endif
+            Point[] newPoints = null;
+
+            if (mPoints != null)
+            {
+                newPoints = new Point[mPoints.Length];
+                mPoints.CopyTo(newPoints, 0);
+            }
+            // Set the mPoints to null so that setting newPoints
+            // resets it.
+            newPolygon.mPoints = null;
+
+            if (newPoints != null)
+            {
+                newPolygon.Points = newPoints;
+            }
+
+
+            return newPolygon;
+        }
+
+
 
         /// <summary>
         /// Modifies the internal points list to flip horizontally. All X values will be multiplied by -1.
