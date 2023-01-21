@@ -85,6 +85,8 @@ namespace FlatRedBall.AnimationEditorForms
                 mMenu.Items.Add("Adjust Offsets", null, AdjustOffsetsClick);
                 mMenu.Items.Add("Flip Horizontally", null, FlipAnimationChainHorizontally);
                 mMenu.Items.Add("Flip Vertically", null, FlipAnimationChainVertically);
+                mMenu.Items.Add("Flip Vertically", null, FlipAnimationChainVertically);
+                mMenu.Items.Add("Invert Frame Order", null, InvertAnimationFrameOrder);
 
                 mMenu.Items.Add("-");
                 mMenu.Items.Add("Add AnimationChain", null, AddChainClick);
@@ -557,6 +559,25 @@ namespace FlatRedBall.AnimationEditorForms
 
                 CallAnimationChainsChange();
             }
+        }
+
+        private void InvertAnimationFrameOrder(object sender, EventArgs e)
+        {
+            foreach(var animation in SelectedState.Self.SelectedChains)
+            {
+                var frameCount = animation.Frames.Count;
+                var frameMinusOne = frameCount - 1;
+                for(int i = 0; i < frameMinusOne; i++)
+                {
+                    var frameToMove = animation.Frames[frameMinusOne];
+                    animation.Frames.RemoveAt(frameMinusOne);
+                    animation.Frames.Insert(i, frameToMove);
+                }
+            }
+
+            PreviewManager.Self.RefreshAll();
+
+            CallAnimationChainsChange();
         }
 
         private void FlipVertically(AnimationChainSave acs)
