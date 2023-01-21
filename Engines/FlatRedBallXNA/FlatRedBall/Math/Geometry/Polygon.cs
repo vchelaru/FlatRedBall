@@ -760,7 +760,10 @@ namespace FlatRedBall.Math.Geometry
                 // We need the point before to potentially calculate the normal
                 int pointBefore;
 
-                Point3D fromCircleToThis = VectorFrom(circle.Position.X, circle.Position.Y, out pointBefore);
+                Point3D fromCircleToThis = VectorFrom(circle.Position.X, circle.Position.Y, mVertices, 
+                    CollisionPointRangeStartInclusive,
+                    CollisionPointRangeEndExclusive,
+                    out pointBefore);
 
                 // The fromCircleToThis will be less than circle.Radius units in length.
                 // However much less it is is how far the objects should be moved.
@@ -813,12 +816,25 @@ namespace FlatRedBall.Math.Geometry
 
                     double distanceToMove = circle.Radius - length;
 
+
                     if (IsPointInside(ref circle.Position))
                     {
                         // If the circle falls inside of the shape, then it should be moved
                         // outside.  That means moving to the edge of the polygon then also moving out
                         // the distance of the radius.
                         distanceToMove = -(circle.Radius + length);
+                    }
+
+                    // If we move along this line, we should see if we're still inside the circle. The reason this can happen is
+                    // if the polygon's start/end points are not null, then the circle could get moved "across" the polygon and end up inside:
+                    if(CollisionPointRangeStartInclusive != null && CollisionPointRangeEndExclusive != null)
+                    {
+                        var positionAfterMove = circle.Position - (float)distanceToMove * fromCircleToThis.ToVector3() / (float)length;
+                        if(IsPointInside(ref positionAfterMove))
+                        {
+                            // still needs to move further so:
+                            distanceToMove = -(circle.Radius + length);
+                        }
                     }
 
                     amountToMoveOnX = distanceToMove * fromCircleToThis.X / length;
@@ -2267,6 +2283,11 @@ namespace FlatRedBall.Math.Geometry
 
         public static Point3D VectorFrom(double x, double y, VertexPositionColor[] vertices, out int pointIndexBefore)
         {
+            return VectorFrom(x, y, vertices, null, null, out pointIndexBefore);
+        }
+        
+        private static Point3D VectorFrom(double x, double y, VertexPositionColor[] vertices, int? startInclusive, int? endExclusive, out int pointIndexBefore)
+        {
 
             pointIndexBefore = -1;
 
@@ -2285,13 +2306,18 @@ namespace FlatRedBall.Math.Geometry
             Segment connectingSegment = new Segment();
             Segment segment = new Segment();
 
-            for (int i = 0; i < vertices.Length - 1; i++)
+            var start = startInclusive ?? 0;
+            var end = (endExclusive) ?? vertices.Length - 1;
+
+            var pointXY = new Point(x, y);
+
+            for (int i = start; i < end; i++)
             {
                 int afterI = i + 1;
                 segment.Point1 = new Point(vertices[i].Position.X, vertices[i].Position.Y);
                 segment.Point2 = new Point(vertices[afterI].Position.X, vertices[afterI].Position.Y);
 
-                tempMinDistance = segment.DistanceTo(new Point(x, y), out connectingSegment);
+                tempMinDistance = segment.DistanceTo(pointXY, out connectingSegment);
                 if (tempMinDistance < minDistance)
                 {
                     pointIndexBefore = i;
@@ -2303,6 +2329,7 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
             return vectorToReturn;
+
         }
 
         Point mVectorFromPoint;
