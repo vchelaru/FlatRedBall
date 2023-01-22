@@ -1,11 +1,15 @@
-﻿using FlatRedBall.Glue.Controls;
+﻿using EditorObjects.SaveClasses;
+using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +19,8 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
     [Export(typeof(PluginBase))]
     public class MainCsvPlugin : EmbeddedPlugin
     {
+        FilePath OpenOfficeExecutablePath = "C:/Program Files/LibreOffice/program/soffice.exe";
+
         public override void StartUp()
         {
             AssignEvents();
@@ -26,7 +32,53 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
         {
             this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
 
+            this.ReactToLoadedGlux += HandleGluxLoad;
+        }
 
+        private void HandleGluxLoad()
+        {
+            var hasOdfAssociation = GetIfHasOdfAssociation();
+
+            var hasLibreOfficeInstalled = GetIfHasLibreOfficeInstalled();
+
+            if(!hasOdfAssociation)
+            {
+                AddOdsAssociation();
+            }
+        }
+
+        private bool GetIfHasOdfAssociation()
+        {
+            var hasOdf = GlueState.Self.GlueSettingsSave?.BuildToolAssociations.Any(item => item.SourceFileType == "odf") == true;
+            return hasOdf;
+        }
+
+        private object GetIfHasLibreOfficeInstalled()
+        {
+            return OpenOfficeExecutablePath.Exists();
+        }
+
+        private void AddOdsAssociation()
+        {
+            //<BuildToolAssociation>
+            //  <BuildTool>C:/Program Files/LibreOffice/program/soffice.exe</BuildTool>
+            //  <IsBuildToolAbsolute>true</IsBuildToolAbsolute>
+            //  <SourceFileType>odf</SourceFileType>
+            //  <DestinationFileType>csv</DestinationFileType>
+            //  <IncludeDestination>false</IncludeDestination>
+            //  <SourceFileArgumentPrefix>--headless --convert-to csv</SourceFileArgumentPrefix>
+            //</BuildToolAssociation>
+            var assocation = new BuildToolAssociation();
+            assocation.BuildTool = OpenOfficeExecutablePath.FullPath;
+            assocation.IsBuildToolAbsolute = true;
+            assocation.SourceFileType = "odf";
+            assocation.DestinationFileType = "csv";
+            assocation.IncludeDestination = false;
+            assocation.SourceFileArgumentPrefix = "--headless --convert-to csv";
+
+            GlueState.Self.GlueSettingsSave.BuildToolAssociations.Add(assocation);
+
+            GlueCommands.Self.GluxCommands.SaveSettings();
         }
 
         private void HandleAddNewFileOptions(CustomizableNewFileWindow newFileWindow)
