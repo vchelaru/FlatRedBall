@@ -157,7 +157,10 @@ namespace GlueFormsCore.Managers
 
                 AskToPreserveVariables(entitySave, variablesBefore);
             }
-            PropertyGridHelper.UpdateEntitySaveDisplay();
+            if(entitySave == GlueState.Self.CurrentEntitySave)
+            {
+                PropertyGridHelper.UpdateEntitySaveDisplay();
+            }
         }
 
         private static bool GetIfCurrentEntityBaseIsValid(EntitySave entitySave)
