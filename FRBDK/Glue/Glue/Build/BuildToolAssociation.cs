@@ -138,7 +138,7 @@ namespace EditorObjects.SaveClasses
             }
             else
             {
-                Process process = CreateProcess("\"" + executable + "\"", arguments);
+                Process process = CreateProcess("\"" + executable + "\"", arguments, FileManager.GetDirectory(absoluteSourceFile));
 
                 if (printOutput != null)
                 {
@@ -193,7 +193,7 @@ namespace EditorObjects.SaveClasses
             return executable;
         }
 
-        private static Process CreateProcess(string executable, string arguments)
+        private static Process CreateProcess(string executable, string arguments, string workingDirectory)
         {
             Process process = new Process();
 
@@ -205,6 +205,7 @@ namespace EditorObjects.SaveClasses
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.CreateNoWindow = true;
 
+            process.StartInfo.WorkingDirectory = workingDirectory;
 
             return process;
         }
