@@ -17,6 +17,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Managers;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Glue
 {
@@ -61,6 +62,11 @@ namespace FlatRedBall.Glue
                     }
                 }
             }
+        }
+
+        public static async Task GenerateAndSaveDataClassAsync(ReferencedFileSave rfs, AvailableDelimiters delimiter)
+        {
+            await TaskManager.Self.AddAsync(() => GenerateAndSaveDataClass(rfs, delimiter), "GenerateAndSaveDataClassAsync " + rfs);
         }
 
         public static void GenerateAndSaveDataClass(ReferencedFileSave rfs, AvailableDelimiters delimiter)

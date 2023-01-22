@@ -66,7 +66,19 @@ namespace FlatRedBall.Glue.Controls
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             propertyGrid1.SelectedObject = SelectedBuildToolAssociation;
+            UpdateExampleLabel();
+        }
 
+        private void UpdateExampleLabel()
+        {
+            if(SelectedBuildToolAssociation == null)
+            {
+                ExampleLabel.Text = "Select an item to see an example command line";
+            }
+            else
+            {
+                ExampleLabel.Text = "Example:\n" + SelectedBuildToolAssociation?.ExampleCommandLine;
+            }
         }
 
         private void AddButton_Click(object sender, EventArgs e)
@@ -146,6 +158,8 @@ namespace FlatRedBall.Glue.Controls
             methodInfo.Invoke(listBox1, null);
 
             propertyGrid1.Refresh();
+
+            UpdateExampleLabel();
         }
 
         private void UpdateExternalBuildDirectory()

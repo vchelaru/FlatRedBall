@@ -81,7 +81,7 @@ namespace FlatRedBall.Glue.IO
                 {
                     try
                     {
-                        CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
+                        await CsvCodeGenerator.GenerateAndSaveDataClassAsync(rfs, rfs.CsvDelimiter);
 
                         shouldSave = true;
                     }
