@@ -685,7 +685,6 @@ namespace OfficialPlugins.CollisionPlugin
                             var innerForeach = forBlock.ForEach("var name in item.ItemsCollidedAgainst");
                             innerForeach.Line("item.LastFrameItemsCollidedAgainst.Add(name);");
                         }
-                        forBlock.Line($"item.ObjectsCollidedAgainst.Clear();");
 
                         if(hasObjectsCollidedAgainst)
                         {

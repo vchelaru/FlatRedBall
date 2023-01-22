@@ -100,8 +100,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         var elementsToRegenerate = new HashSet<GlueElement>();
 
-                        // regenerate *this*:
-                        elementsToRegenerate.Add(elementToRename);
+                        // The Types object is in the root object, so we need to generate the root-most object
+                        elementsToRegenerate.Add(ObjectFinder.Self.GetRootBaseElement(elementToRename));
 
                         if (elementToRename is EntitySave entityToRename)
                         {
@@ -647,7 +647,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
                 });
-                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
+                //var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
+                // Bases need to be generated because they may now contain the Type 
+                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(ObjectFinder.Self.GetRootBaseElement( newElement ));
                 GluxCommands.Self.SaveGlux();
             }
 

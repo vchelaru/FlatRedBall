@@ -687,6 +687,25 @@ namespace FlatRedBall.Glue.Elements
             return allDerived.Contains(derivedElement);
         }
 
+        public GlueElement GetRootBaseElement(GlueElement element)
+        {
+            GlueElement derived = null;
+
+            if (!string.IsNullOrEmpty(element?.BaseElement))
+            {
+                derived = GetElement(element.BaseElement);
+            }
+
+            if(derived == null)
+            {
+                return element;
+            }
+            else
+            {
+                return GetRootBaseElement(derived);
+            }
+        }
+
         public GlueElement GetBaseElement(IElement derivedElement)
         {
             if (!string.IsNullOrEmpty(derivedElement?.BaseElement))
