@@ -17,7 +17,7 @@ namespace OfficialPlugins.ContentPreview.Managers
         static PluginBase Plugin;
         static PluginTab Tab;
 
-        public static FilePath AchxFilePath => View.AchxFilePath;
+        public static FilePath AchxFilePath => View?.AchxFilePath;
 
         public static AchxViewModel ViewModel { get; private set; }
 

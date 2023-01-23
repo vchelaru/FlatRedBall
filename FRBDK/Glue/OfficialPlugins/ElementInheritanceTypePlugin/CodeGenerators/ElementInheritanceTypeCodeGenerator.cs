@@ -42,14 +42,17 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             CustomVariable tempVariable = new CustomVariable();
             foreach(var variable in element.CustomVariables.Where(item => item.SetByDerived))
             {
-                // We want this to not be a property, and to not have any source class type so that it generates
-                // as a simple field
-                tempVariable.Name = variable.Name;
-                tempVariable.Type = variable.Type;
-                tempVariable.DefaultValue = variable.DefaultValue;
-                tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
+                if(!ShouldSkip(variable))
+                {
+                    // We want this to not be a property, and to not have any source class type so that it generates
+                    // as a simple field
+                    tempVariable.Name = variable.Name;
+                    tempVariable.Type = variable.Type;
+                    tempVariable.DefaultValue = variable.DefaultValue;
+                    tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
 
-                CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable);
+                    CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable);
+                }
             }
 
 
@@ -78,18 +81,21 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
 
                 foreach (var variable in element.CustomVariables.Where(item => item.SetByDerived && !item.IsShared))
                 {
-                    var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
-                    if(matchingVariable.DefaultValue != null)
+                    if(!ShouldSkip(variable))
                     {
-                        // If it's null, just use whatever is defined on the base
-                        var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
-
-                        // It seems like the variable.DefaultValue can be String.Empty
-                        // If so, it bypasses the != null check, but still produces an empty
-                        // right-slide assignment, so let's just put that here
-                        if(!string.IsNullOrEmpty(rightSide))
+                        var matchingVariable = derivedElement.CustomVariables.FirstOrDefault(item => item.Name == variable.Name) ?? variable;
+                        if(matchingVariable.DefaultValue != null)
                         {
-                            block.Line($"{variable.Name} = {rightSide},");
+                            // If it's null, just use whatever is defined on the base
+                            var rightSide = CustomVariableCodeGenerator.GetRightSideOfEquals(matchingVariable, derivedElement);
+
+                            // It seems like the variable.DefaultValue can be String.Empty
+                            // If so, it bypasses the != null check, but still produces an empty
+                            // right-slide assignment, so let's just put that here
+                            if(!string.IsNullOrEmpty(rightSide))
+                            {
+                                block.Line($"{variable.Name} = {rightSide},");
+                            }
                         }
                     }
                 }
@@ -106,6 +112,17 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
             classBlock.Line($"}};");
 
 
+        }
+
+        bool ShouldSkip(CustomVariable customVariable)
+        {
+            switch(customVariable.Type)
+            {
+                // Don't want to handle variables of certain types so we don't get unintentional loads:
+                case "FlatRedBall.TileGraphics.LayeredTileMap":
+                    return true;
+            }
+            return false;
         }
 
         string QualifiedTypeName(GlueElement element)
