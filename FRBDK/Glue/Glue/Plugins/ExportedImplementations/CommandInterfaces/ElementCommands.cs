@@ -476,7 +476,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.ObjectName = "SpriteInstance";
                     addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
                 }
 
                 if (viewModel.IsTextChecked)
@@ -485,7 +485,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.ObjectName = "TextInstance";
                     addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
                 }
 
                 if (viewModel.IsCircleChecked)
@@ -494,7 +494,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.ObjectName = "CircleInstance";
                     addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
                 }
 
                 if (viewModel.IsAxisAlignedRectangleChecked)
@@ -503,7 +503,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
                     addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                    await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
                 }
                 if (viewModel.IsPolygonChecked)
                 {
@@ -512,7 +512,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
 
-                    var nos = await gluxCommands.AddNewNamedObjectToSelectedElementAsync(addObjectViewModel);
+                    var nos = await gluxCommands.AddNewNamedObjectToAsync(addObjectViewModel, newElement);
                     CustomVariableInNamedObject instructions = null;
                     instructions = nos.GetCustomVariable("Points");
                     if (instructions == null)
