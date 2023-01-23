@@ -25,11 +25,19 @@ namespace FlatRedBall.Forms.MVVM
 
     }
 
+    public enum TypeMismatchBehavior
+    {
+        IgnoreError,
+        ThrowException
+    }
+
     public class ViewModel : INotifyPropertyChanged
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
         private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
         private List<string> dependsOnOwners;
+
+        public static TypeMismatchBehavior DefaultTypeMismatchBehavior = TypeMismatchBehavior.IgnoreError;
 
         public int PropertyChangedSubscriptionCount => this.PropertyChanged?.GetInvocationList().Length ?? 0;
 
@@ -39,12 +47,27 @@ namespace FlatRedBall.Forms.MVVM
 
             if (propertyName != null && propertyDictionary.ContainsKey(propertyName))
             {
+                object uncasted = null;
                 try
                 {
-                    toReturn = (T)propertyDictionary[propertyName];
+                    uncasted = propertyDictionary[propertyName];
+                    toReturn = (T)uncasted;
                 }
-                catch
+                catch(InvalidCastException ex)
                 {
+                    if (DefaultTypeMismatchBehavior == TypeMismatchBehavior.ThrowException)
+                    {
+                        throw new InvalidCastException($"The property {propertyName} is of type {typeof(T)} but the inner object is of type {uncasted?.GetType()}");
+                    }
+                    // if it fails, then just return default T because the type may have changed:
+                    toReturn = default(T);
+                }
+                catch(Exception e)
+                {
+                    if(DefaultTypeMismatchBehavior == TypeMismatchBehavior.ThrowException)
+                    {
+                        throw;
+                    }
                     // if it fails, then just return default T because the type may have changed:
                     toReturn = default(T);
                 }

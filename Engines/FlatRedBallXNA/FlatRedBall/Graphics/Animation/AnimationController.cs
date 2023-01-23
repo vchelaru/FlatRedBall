@@ -91,7 +91,7 @@ namespace FlatRedBall.Graphics.Animation
                 }
             }
 
-            AnimatedObject.PlayAnimation(animationToSet);
+            AnimatedObject?.PlayAnimation(animationToSet);
         }
 
         /// <summary>
