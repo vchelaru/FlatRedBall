@@ -481,7 +481,6 @@ namespace FlatRedBall
             mLastSumTime = CurrentSystemTime;
         }
 
-        #region XML Docs
         /// <summary>
         /// Stores an unnamed timed section.
         /// </summary>
@@ -491,14 +490,12 @@ namespace FlatRedBall
         /// The sections can be retrieved through the GetTimedSections method.
         /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
-        #endregion
         public static void TimeSection()
         {
             TimeSection("");
         }
 
 
-        #region XML Docs
         /// <summary>
         /// Stores an named timed section.
         /// </summary>
@@ -509,7 +506,6 @@ namespace FlatRedBall
         /// <seealso cref="FRB.TimeManager.GetTimedSection"/>
         /// </remarks>
         /// <param name="label">The label for the timed section.</param>
-        #endregion
         public static void TimeSection(string label)
         {
             if (mTimeSectionsEnabled)
@@ -539,6 +535,17 @@ namespace FlatRedBall
 
         #endregion
 
+        /// <summary>
+        /// Returns the number of seconds which have passed since the argument value in game time.
+        /// This value continues to increment when the screen is paused, and does not reset when switching screens.
+        /// Usually game logic should use CurrentScreenSecondsSince.
+        /// </summary>
+        /// <remarks>
+        /// This value will only change once per frame, so it can be called multiple times per frame and the same
+        /// value will be returned, assuming the same parameter is passed.
+        /// </remarks>
+        /// <param name="absoluteTime">The amount of time since the start of the game.</param>
+        /// <returns>The number of seconds which have passed in absolute time since the start of the game.</returns>
         public static double SecondsSince(double absoluteTime)
         {
             return CurrentTime - absoluteTime;
