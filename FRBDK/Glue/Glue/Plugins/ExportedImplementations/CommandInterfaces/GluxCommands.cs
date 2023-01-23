@@ -1286,12 +1286,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-            //}
-
-            //if(performSaveAndGenerateCode)
-            //{
-            //}
-
         public async Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null)
         {
             await TaskManager.Self.AddAsync(async () =>
@@ -1308,7 +1302,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var extension = FileManager.GetExtension(rfs.Name);
 
                 while (!NameVerifier.IsReferencedFileNameValid(stripped,
-                    newRfs.GetAssetTypeInfo(), newRfs, rfs.GetContainer(), out string throwaway) ||
+                    newRfs.GetAssetTypeInfo(), 
+                    newRfs, 
+                    container, 
+                    out string throwaway) ||
                     System.IO.File.Exists(directoryOnDisk + stripped + "." + extension)
                     )
                 {
