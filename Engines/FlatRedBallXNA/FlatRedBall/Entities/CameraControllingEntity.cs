@@ -107,7 +107,14 @@ namespace FlatRedBall.Entities
         /// </summary>
         public bool IsActive { get; set; } = true;
 
+        /// <summary>
+        /// The width of the scrolling window. If an object is inside of the scrolling window, the CameraControllingEntity will not move the camera.
+        /// </summary>
         public float ScrollingWindowWidth { get; set; }
+
+        /// <summary>
+        /// The height of the scrolling window. If an object is inside of the scrolling window, the CameraControllingEntity will not move the camera.
+        /// </summary>
         public float ScrollingWindowHeight { get; set; }
 
         bool visible;

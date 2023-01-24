@@ -510,9 +510,7 @@ namespace FlatRedBall
         {
             if (mTimeSectionsEnabled)
             {
-#if !SILVERLIGHT && !WINDOWS_PHONE
                 Monitor.Enter(sections);
-#endif
 
                 double f = (CurrentSystemTime - mCurrentTimeForTimedSections);
                 if (TimedSectionReportingUnit == TimeMeasurementUnit.Millisecond)
@@ -527,9 +525,7 @@ namespace FlatRedBall
                 sections.Add(f);
                 sectionLabels.Add(label);
 
-#if !SILVERLIGHT && !WINDOWS_PHONE
                 Monitor.Exit(sections);
-#endif
             }
         }
 

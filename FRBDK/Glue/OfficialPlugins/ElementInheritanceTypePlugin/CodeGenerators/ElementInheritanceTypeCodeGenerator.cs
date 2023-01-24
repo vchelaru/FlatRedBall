@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,12 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
         {
             var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(element as GlueElement);
 
+            var shouldGenerate = derivedElements.Count > 0 &&
+                GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration == false;
+
+
             /////////////////////Early Out////////////////////////////////
-            if(derivedElements.Count == 0)
+            if(!shouldGenerate)
             {
                 return;
             }

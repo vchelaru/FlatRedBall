@@ -130,6 +130,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region Screens / Entities
+
         public List<ScreenSave> Screens = new List<ScreenSave>();
 
         public List<EntitySave> Entities = new List<EntitySave>();
@@ -137,6 +139,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<GlueElementFileReference> ScreenReferences { get; set; } = new List<GlueElementFileReference>();
         public List<GlueElementFileReference> EntityReferences { get; set; } = new List<GlueElementFileReference>();
 
+        #endregion
 
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
@@ -197,6 +200,11 @@ namespace FlatRedBall.Glue.SaveClasses
         // As of March 18, 2022, this has been removed. It's very buggy and it should probably get removed from Glue altogether.
         // Old projects will still use it, but not new ones.
         public bool UsesTranslation { get; set; }
+
+        /// <summary>
+        /// Whether to generate the base Type class for all base screens and entities. If false, these will not be generated.
+        /// </summary>
+        public bool SuppressBaseTypeGeneration { get; set; }
 
         [XmlIgnore]
         [JsonIgnore]
