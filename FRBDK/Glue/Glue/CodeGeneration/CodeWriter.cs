@@ -666,6 +666,7 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
+                fileContents = $"#pragma warning disable\r\n{fileContents}";
                 FileWatchManager.IgnoreNextChangeOnFile(fileName);
                 if (!tryAgain)
                 {
@@ -714,19 +715,9 @@ namespace FlatRedBallAddOns.Entities
 
         public static void CreateAndAddGeneratedFile(IElement saveObject)
         {
-
             // let's make a generated file
             string fileName = saveObject.Name + ".Generated.cs";
-
-            if (saveObject is EntitySave)
-            {
-                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, true);
-            }
-            else
-            {
-                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, true);
-            }
-
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, true);
             PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + saveObject.Name + ".cs");
         }
 
