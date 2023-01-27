@@ -214,6 +214,10 @@ namespace FlatRedBall.AnimationEditorForms
                         toReturn.Add(frame);
                     }
                 }
+                if(toReturn.Count == 0 && SelectedFrame != null)
+                {
+                    toReturn.Add(SelectedFrame);
+                }
 
                 return toReturn;
             }
