@@ -210,6 +210,11 @@ namespace FlatRedBall.Audio
             {
                 CurrentlyPlayingSong = null;
             }
+            // This can happen through  looping
+            else if(Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Playing)
+            {
+                CurrentlyPlayingSong = MediaPlayer.Queue.ActiveSong;
+            }
         }
 
         /// <summary>
