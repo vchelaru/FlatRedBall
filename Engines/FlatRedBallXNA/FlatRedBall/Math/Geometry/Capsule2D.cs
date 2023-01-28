@@ -92,6 +92,12 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public float BodyWidth
+        {
+            get => mScale * 2;
+            set => mScale = value * 2;
+        }
+
         public Segment TopSegment
         {
             get
