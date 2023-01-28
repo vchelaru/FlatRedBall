@@ -187,9 +187,13 @@ namespace FlatRedBall.Debugging
 
         public static void WriteSongInformation(Song song)
         {
-            var currentTime = song.Position;
+            var format = song.Duration.TotalMinutes > 60
+                ? @"hh\:mm\:ss"
+                : @"mm\:ss";
 
-            Write($"{song.Name} {currentTime}");
+            var currentTime = song.Position.ToString(format);
+            var totalDuration = song.Duration.ToString(format);
+            Write($"{song.Name} {currentTime} / {totalDuration}");
         }
 
         public static string ForceGetMemoryInformation()
