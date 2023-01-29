@@ -237,7 +237,7 @@ namespace FlatRedBall.Audio
         public static void PlaySongs(SongPlaylist songPlaylist)
         {
             Playlist = songPlaylist;
-
+            MediaPlayer.IsRepeating = false;
             playlistIndex = 0;
 
             PlaySongFromPlaylistInternal();
