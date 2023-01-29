@@ -86,7 +86,7 @@
                     VerticalAlignment="Bottom" >Show State Categories</CheckBox>
 
             </StackPanel>
-            <Label VerticalAlignment="Bottom">Type:</Label>
+            <Label VerticalAlignment="Bottom" HorizontalAlignment="Left">Type:</Label>
             <ListBox 
                 ItemsSource="{Binding AvailableNewVariableTypes}"
                 SelectedItem="{Binding SelectedNewType}"
