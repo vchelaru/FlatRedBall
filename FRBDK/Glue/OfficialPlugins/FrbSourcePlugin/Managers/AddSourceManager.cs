@@ -130,7 +130,6 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
             if (!ValidateSourceGum(viewModel.GumRootFolder, projectReferences, out innerError))
             {
                 outerError = $"Selected Gum path is not valid.  Error: {innerError}";
-                return;
             }
 
             if (viewModel.IncludeGumSkia)
@@ -318,9 +317,12 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
         {
             var relativePath = project.RelativeTo(solution.GetDirectoryContainingThis());
 
-            var standardized = FileManager.Standardize(relativePath, null, false);
+            var standardized = FileManager.Standardize(relativePath, null, false).ToLowerInvariant();
 
-            if (existingProjects.Any(item => FileManager.Standardize(item, null, false) == standardized))
+            var existingStandardized =
+                existingProjects.Select(item => FileManager.Standardize(item, null, false).ToLowerInvariant()).ToArray();
+
+            if (existingStandardized.Any(item => item == standardized))
                 return true;
 
             if (!VSSolution.AddExistingProject(solution, projectTypeId, projectId, projectName, project, new List<VSSolution.SharedProject> { }, new List<string>(), new List<string>(), out var errorMessages))
