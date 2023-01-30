@@ -7,6 +7,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework.Media;
 
 namespace FlatRedBall.Debugging
 {
@@ -182,6 +183,17 @@ namespace FlatRedBall.Debugging
                 MemoryInformation = ForceGetMemoryInformation();
             }
             Write(MemoryInformation);
+        }
+
+        public static void WriteSongInformation(Song song)
+        {
+            var format = song.Duration.TotalMinutes > 60
+                ? @"hh\:mm\:ss"
+                : @"mm\:ss";
+
+            var currentTime = song.Position.ToString(format);
+            var totalDuration = song.Duration.ToString(format);
+            Write($"{song.Name} {currentTime} / {totalDuration}");
         }
 
         public static string ForceGetMemoryInformation()

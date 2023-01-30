@@ -447,8 +447,20 @@ namespace EntityPerformancePlugin
                 }
 
                 UpdateInstanceValuesToInstance(instanceValues, instance);
-
             }
+
+            // Instances can get removed, so let's check for that too:
+            for(int i = values.InstanceManagementValuesList.Count- 1; i > -1; i--)
+            {
+
+                // Is there a matching item?
+                var matchingItem = entitySave.AllNamedObjects.FirstOrDefault(item => item.InstanceName == values.InstanceManagementValuesList[i].Name);
+                if(matchingItem == null)
+                {
+                    values.InstanceManagementValuesList.RemoveAt(i);
+                }
+            }
+
 
             return values;
         }

@@ -8,6 +8,7 @@ using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Instructions;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FlatRedBall.Audio
 {
@@ -23,7 +24,7 @@ namespace FlatRedBall.Audio
 
     public static partial class AudioManager
     {
-        #region Fields
+        #region Fields / Properties
 
         private static List<SoundEffectPlayInfo> mSoundEffectPlayInfos = new List<SoundEffectPlayInfo>();
 
@@ -54,6 +55,9 @@ namespace FlatRedBall.Audio
             set;
         } = 1.0f;
 
+        static SongPlaylist Playlist;
+
+        static int playlistIndex = 0;
 #if MONODROID
         //This is for a performance issue with SoundPool
         private static SoundEffect _droidLoop;
@@ -189,8 +193,6 @@ namespace FlatRedBall.Audio
 
         #endregion
 
-        #region Public Methods
-
         static AudioManager()
         {
             AreSoundEffectsEnabled = true;
@@ -204,13 +206,200 @@ namespace FlatRedBall.Audio
 
         }
 
+        #region Song Methods
+
+        /// <summary>
+        /// Plays the current song.  PlaySong with an argument must
+        /// be called before this can be called.  This can be used to
+        /// resume music when the game is unpaused or if audio options are
+        /// being turned on/off
+        /// </summary>
+        public static void PlaySong()
+        {
+            Playlist = null;
+            PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
+        }
+
+        /// <summary>
+        /// Plays the argument song, optionally restarting it if it is already playing.
+        /// </summary>
+        /// <param name="toPlay">The song to play.</param>
+        /// <param name="forceRestart">Whether the song should be restarted. If the toPlay parameter differs from the currently-playing song then it will 
+        /// restart regardless of the forceRestart value. This value only matters when the currently-playing song is passed.</param>
+        /// <param name="isSongGlobalContent">Whether the song uses a Global content manager. This is important if StopAndDisposeCurrentSongIfNameDiffers is called.
+        /// StopAndDisposeCurrentSongIfNameDiffers is called by Glue, so the isSongGlobalContent param matters even if your code is not directly calling this function.</param>
+        public static void PlaySong(Song toPlay, bool forceRestart, bool isSongGlobalContent)
+        {
+            Playlist = null;
+            PlaySongInternal(toPlay, forceRestart, isSongGlobalContent);
+        }
+
+        public static void PlaySongs(SongPlaylist songPlaylist)
+        {
+            Playlist = songPlaylist;
+            MediaPlayer.IsRepeating = false;
+            playlistIndex = 0;
+
+            PlaySongFromPlaylistInternal();
+        }
+
+        private static void PlaySongFromPlaylistInternal()
+        {
+            if(playlistIndex >= Playlist.Songs.Length)
+            {
+                playlistIndex = 0;
+            }
+
+            if(playlistIndex < Playlist.Songs.Length)
+            {
+                PlaySongInternal(Playlist.Songs[playlistIndex], forceRestart:true, isSongGlobalContent:Playlist.AreSongsGlobalContent);
+            }
+        }
+
+        private static void PlaySongInternal(Song toPlay, bool forceRestart, bool isSongGlobalContent)
+        {
+            bool shouldPlay = true;
+
+            shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
+
+            if (toPlay.Name != mLastSongNameRequested || forceRestart ||
+                CurrentlyPlayingSong == null)
+            {
+                mSongLastRequested = toPlay;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+                mLastSongNameRequested = toPlay.Name;
+            }
+            else
+            {
+                shouldPlay = false;
+            }
+
+            if (shouldPlay && AreSongsEnabled)
+            {
+                mCurrentSong = toPlay;
+
+                CurrentlyPlayingSong = mCurrentSong;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+
+
+
+#if ANDROID
+				try
+				{
+                	MediaPlayer.Play(toPlay);
+				}
+				// November 19, 2014
+				// For some reason the
+				// automated test project
+				// would always crash when
+				// trying to play a song on
+				// a certain screen.  I was able
+				// to avoid the crash by putting a
+				// breakpoint and waiting a while before
+				// continuing execution.  I suppose it means
+				// that the song needs a little bit of time before
+				// it is played.  So I just added a catch and put 
+				catch(Java.IO.IOException e)
+				{
+					string message = e.Message;
+
+					if(message.Contains("0x64"))
+					{
+						// This needs a second before it starts up
+						int msToWait = 100;
+
+						System.Threading.Thread.Sleep(msToWait);
+						MediaPlayer.Play(toPlay);
+					}
+					else
+					{
+						throw e;
+					}
+				}
+#else
+                Microsoft.Xna.Framework.Media.MediaPlayer.Play(toPlay);
+
+#endif
+            }
+        }
+
+        public static void StopSong()
+        {
+			Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+
+            CurrentlyPlayingSong = null;
+        }
+
+        public static bool StopAndDisposeCurrentSongIfNameDiffers(string nameToCompareAgainst)
+        {
+            bool wasDisposed = false;
+
+            if (CurrentlyPlayingSong != null && nameToCompareAgainst != mLastSongNameRequested)
+            {
+                Song songToDispose = CurrentlyPlayingSong;
+                StopSong();
+
+                if (!mIsSongUsingGlobalContent)
+                {
+                    songToDispose.Dispose();
+                }
+
+                wasDisposed = true;
+            }
+            return wasDisposed;
+        }
+
+
+        public static void PlaySongThenResumeCurrent(Song toPlay, bool songUsesGlobalContent)
+        {
+            mPreviousSong = mCurrentSong;
+            mPreviousSongUsesGlobalContent = mIsSongUsingGlobalContent;
+
+            mCurrentSong = toPlay;
+            mIsSongUsingGlobalContent = songUsesGlobalContent;
+            try
+            {
+                PlaySong(toPlay, false, songUsesGlobalContent);
+
+#if UWP
+                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
+#else
+                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);
+#endif
+                InstructionManager.Add(new StaticMethodInstruction(playMethod,
+                                                                    new object[1] { mPreviousSong },
+                                                                    TimeManager.CurrentTime + toPlay.Duration.TotalSeconds));
+            }
+            catch
+            {
+                // stupid DRM
+            }
+        }
+
         private static void HandleMediaStateChanged(object sender, EventArgs e)
         {
 			if(CurrentlyPlayingSong != null && Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Stopped)
             {
                 CurrentlyPlayingSong = null;
+
+                if(MediaPlayer.IsRepeating == false && Playlist != null)
+                {
+                    playlistIndex++;
+                    PlaySongFromPlaylistInternal();
+                }
+            }
+            // This can happen through  looping
+            else if(Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Playing)
+            {
+                CurrentlyPlayingSong = MediaPlayer.Queue.ActiveSong;
             }
         }
+
+        #endregion
+
+        #region Public Methods
+
+
 
         /// <summary>
         /// Returns whether the argument SoundEffect is playing. If true, then the SoundEffect is already
@@ -333,152 +522,11 @@ namespace FlatRedBall.Audio
                 Play(soundEffect);
             }
         }
-
-        /// <summary>
-        /// Plays the current song.  PlaySong with an argument must
-        /// be called before this can be called.  This can be used to
-        /// resume music when the game is unpaused or if audio options are
-        /// being turned on/off
-        /// </summary>
-        public static void PlaySong()
-        {
-            PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
-        }
-
-        
-        /// <summary>
-        /// Plays the argument song, optionally restarting it if it is already playing.
-        /// </summary>
-        /// <param name="toPlay">The song to play.</param>
-        /// <param name="forceRestart">Whether the song should be restarted. If the toPlay parameter differs from the currently-playing song then it will 
-        /// restart regardless of the forceRestart value. This value only matters when the currently-playing song is passed.</param>
-        /// <param name="isSongGlobalContent">Whether the song uses a Global content manager. This is important if StopAndDisposeCurrentSongIfNameDiffers is called.
-        /// StopAndDisposeCurrentSongIfNameDiffers is called by Glue, so the isSongGlobalContent param matters even if your code is not directly calling this function.</param>
-        public static void PlaySong(Song toPlay, bool forceRestart, bool isSongGlobalContent)
-        {
-            bool shouldPlay = true;
-
-			shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
-
-            if (toPlay.Name != mLastSongNameRequested || forceRestart || 
-                CurrentlyPlayingSong == null)
-            {
-                mSongLastRequested = toPlay;
-                mIsSongUsingGlobalContent = isSongGlobalContent;
-                mLastSongNameRequested = toPlay.Name;
-            }
-            else
-            {
-                shouldPlay = false;
-            }
-
-            if (shouldPlay && AreSongsEnabled)
-            {
-                mCurrentSong = toPlay;
-                
-                CurrentlyPlayingSong = mCurrentSong;
-                mIsSongUsingGlobalContent = isSongGlobalContent;
-
-
-
-				#if ANDROID
-				try
-				{
-                	MediaPlayer.Play(toPlay);
-				}
-				// November 19, 2014
-				// For some reason the
-				// automated test project
-				// would always crash when
-				// trying to play a song on
-				// a certain screen.  I was able
-				// to avoid the crash by putting a
-				// breakpoint and waiting a while before
-				// continuing execution.  I suppose it means
-				// that the song needs a little bit of time before
-				// it is played.  So I just added a catch and put 
-				catch(Java.IO.IOException e)
-				{
-					string message = e.Message;
-
-					if(message.Contains("0x64"))
-					{
-						// This needs a second before it starts up
-						int msToWait = 100;
-
-						System.Threading.Thread.Sleep(msToWait);
-						MediaPlayer.Play(toPlay);
-					}
-					else
-					{
-						throw e;
-					}
-				}
-				#else
-				Microsoft.Xna.Framework.Media.MediaPlayer.Play(toPlay);
-
-				#endif
-            }
-        }
-
         public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) => 
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
-
-        public static void StopSong()
-        {
-			Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
-
-            CurrentlyPlayingSong = null;
-        }
-
-        public static bool StopAndDisposeCurrentSongIfNameDiffers(string nameToCompareAgainst)
-        {
-            bool wasDisposed = false;
-
-            if (CurrentlyPlayingSong != null && nameToCompareAgainst != mLastSongNameRequested)
-            {
-                Song songToDispose = CurrentlyPlayingSong;
-                StopSong();
-
-                if (!mIsSongUsingGlobalContent)
-                {
-                    songToDispose.Dispose();
-                }
-
-                wasDisposed = true;
-            }
-            return wasDisposed;
-        }
-
-
-        public static void PlaySongThenResumeCurrent(Song toPlay, bool songUsesGlobalContent)
-        {
-            mPreviousSong = mCurrentSong;
-            mPreviousSongUsesGlobalContent = mIsSongUsingGlobalContent;
-
-            mCurrentSong = toPlay;
-            mIsSongUsingGlobalContent = songUsesGlobalContent;
-            try
-            {
-                PlaySong(toPlay, false, songUsesGlobalContent);
-
-#if UWP
-                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", new Type[1] { typeof(Song) });
-#else
-                MethodInfo playMethod = typeof(AudioManager).GetMethod("PlaySong", BindingFlags.Public | BindingFlags.Static, null, new Type[1] { typeof(Song) }, null);
-#endif
-                InstructionManager.Add(new StaticMethodInstruction(playMethod,
-                                                                    new object[1] { mPreviousSong },
-                                                                    TimeManager.CurrentTime + toPlay.Duration.TotalSeconds));
-            }
-            catch
-            {
-                // stupid DRM
-            }
-        }
         #endregion
 
-        #region Internal Methods
+        #region Manager methods
 
 
         internal static void UpdateDependencies()
@@ -500,7 +548,6 @@ namespace FlatRedBall.Audio
 
 
         }
-
 
         public static void Update()
         {
@@ -544,7 +591,23 @@ namespace FlatRedBall.Audio
 			*/
         }
 
+
         #endregion
 
     }
+
+    public class SongPlaylist
+    {
+        internal Song[] Songs;
+
+        public bool AreSongsGlobalContent { get; private set; }
+
+        public SongPlaylist(IEnumerable<Song> songs, bool areSongsGlobalContent)
+        {
+            Songs = songs.ToArray();
+            AreSongsGlobalContent = areSongsGlobalContent;
+        }
+    }
+
+
 }

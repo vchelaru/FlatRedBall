@@ -70,9 +70,9 @@ namespace GumPluginCore.CodeGeneration
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
                 var switchStatement = function.Switch("name");
-                switchStatement.CaseNoBreak("\"Arc\"").Line("return new SkiaPlugin.Renderables.RenderableArc();");
-                switchStatement.CaseNoBreak("\"ColoredCircle\"").Line("return new SkiaPlugin.Renderables.RenderableCircle();");
-                switchStatement.CaseNoBreak("\"RoundedRectangle\"").Line("return new SkiaPlugin.Renderables.RenderableRoundedRectangle();");
+                switchStatement.CaseNoBreak("\"Arc\"").Line("return new SkiaGum.Renderables.RenderableArc();");
+                switchStatement.CaseNoBreak("\"ColoredCircle\"").Line("return new SkiaGum.Renderables.RenderableCircle();");
+                switchStatement.CaseNoBreak("\"RoundedRectangle\"").Line("return new SkiaGum.Renderables.RenderableRoundedRectangle();");
                 function.Line("return null;");
             }
         }
