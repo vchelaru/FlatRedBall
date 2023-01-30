@@ -230,6 +230,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedCube.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\AxisAlignedRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Capsule2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\CapsulePolygon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\FloatRectangle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Geometry\Frustum.cs" />
