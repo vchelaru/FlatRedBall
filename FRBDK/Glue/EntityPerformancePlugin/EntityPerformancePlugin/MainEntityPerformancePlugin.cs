@@ -376,7 +376,7 @@ namespace EntityPerformancePlugin
             saveOnViewModelChanges = false;
             {
                 entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
-                if (entitySave != null && mainControl != null)
+                if (entitySave != null)
                 {
                     var entityModel = GetOrCreateEntityManagementValuesFor(entitySave);
 
@@ -384,7 +384,10 @@ namespace EntityPerformancePlugin
                     AssignInstancetypesOn(viewModel, entitySave);
                     viewModel.AssignPropertyChangedEventsOnInstanceViewModels();
                     viewModel.AnyValueChanged += HandleViewModelValueChanged;
-                    mainControl.DataContext = viewModel;
+                    if ( mainControl != null)
+                    {
+                        mainControl.DataContext = viewModel;
+                    }
                 }
 
                 if(GlueState.Self.CurrentNamedObjectSave != null)
