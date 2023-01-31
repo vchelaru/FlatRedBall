@@ -211,30 +211,14 @@ namespace FlatRedBall.Math.Geometry
 
         void UpdatePolygonPoints()
         {
-            if (mRotationZ == 0)
-            {
-                base.Points = mPoints;
-            }
-            else
-            {
-                // Make a copy of the unrotated points and apply rotation to the copy.
-                // This allows us to skip shape recreation when only RotationZ changes.
-                var rotatedPoints = new Point[NumberOfShapePoints];
-                mPoints.CopyTo(rotatedPoints, 0);
-
-                for (int i = 0; i < rotatedPoints.Length; i++)
-                {
-                    MathFunctions.RotatePointAroundPoint(Point.Zero, ref rotatedPoints[i], mRotationZ);
-                }
-
-                base.Points = rotatedPoints;
-            }
+            base.Points = mPoints;
+            
         }
 
         public override void UpdateDependencies(double currentTime)
         {
             base.UpdateDependencies(currentTime);
-            UpdatePolygonPoints();
+            RecalculatePoints();
         }
     }
 }
