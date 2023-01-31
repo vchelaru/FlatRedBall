@@ -33,7 +33,7 @@ namespace OfficialPlugins.MonoGameContent
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
 
-            if(project.DotNetVersion == "v6.0")
+            if(project.DotNetVersionNumber >= 6)
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
             }
