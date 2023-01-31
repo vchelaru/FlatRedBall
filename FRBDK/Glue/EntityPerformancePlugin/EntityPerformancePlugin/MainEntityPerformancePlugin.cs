@@ -4,6 +4,7 @@ using EntityPerformancePlugin.Models;
 using EntityPerformancePlugin.ViewModels;
 using EntityPerformancePlugin.Views;
 using EntityPerformancePluginCore.CodeGenerators;
+using FlatRedBall.Entities;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
@@ -137,7 +138,12 @@ namespace EntityPerformancePlugin
 
                     RefreshView(currentEntity);
 
-                    SavePerformanceData();
+                    if (viewModel == null)
+                    {
+                        throw new NullReferenceException($"{nameof(viewModel)} is null, entity is {currentEntity?.ToString() ?? "null"}");
+                    }
+
+                    SavePerformanceData(currentEntity);
                 }
             }
         }
@@ -302,11 +308,11 @@ namespace EntityPerformancePlugin
 
         }
 
-        private void SavePerformanceData()
+        private void SavePerformanceData(GlueElement entity = null)
         {
             if(viewModel ==null)
             {
-                throw new NullReferenceException(nameof(viewModel));
+                throw new NullReferenceException($"{nameof(viewModel)} is null, entity is {entity?.ToString() ?? "null"}");
             }
             var currentEntityViewModel = ViewModelToModelConverter.ToModel(viewModel);
 
