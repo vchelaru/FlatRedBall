@@ -163,7 +163,7 @@ namespace StateInterpolationPlugin
             var tweener = Tween(positionedObject, property, to, during, interpolation, easing);
             var didFinish = false;
             tweener.Ended += () => didFinish = true;
-            await TimeManager.DelayUntil(() => didFinish);
+            await TimeManager.DelayUntil(() => didFinish || tweener.Running == false);
         }
 
         public static Tweener Tween(this PositionedObject positionedObject, string property, float to,
