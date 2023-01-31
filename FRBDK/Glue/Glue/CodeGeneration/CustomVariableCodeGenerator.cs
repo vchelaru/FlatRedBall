@@ -85,7 +85,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // the event.
                     // If it's Visible, it's handled by the IVisible generator
                     var shouldGenerateDueToExposed = (!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible";
-                    shouldGenerateDueToExposed = shouldGenerate || forceGenerateExposed;
+                    shouldGenerateDueToExposed = shouldGenerateDueToExposed || forceGenerateExposed;
                     if (shouldGenerateDueToExposed)
                     {
                         CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
