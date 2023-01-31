@@ -206,13 +206,7 @@ namespace FlatRedBall.Math.Geometry
             // Add closing point
             mPoints[lastPointInserted + 1] = new Point(ref r1);
 
-            UpdatePolygonPoints();
-        }
-
-        void UpdatePolygonPoints()
-        {
             base.Points = mPoints;
-            
         }
 
         public override void UpdateDependencies(double currentTime)
