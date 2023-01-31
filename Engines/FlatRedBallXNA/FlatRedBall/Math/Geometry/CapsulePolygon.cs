@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace FlatRedBall.Math.Geometry
 {
-    public class CapsulePolygon : Polygon
+    public class CapsulePolygon : Polygon, IScalable
     {
         bool mSupressPointsRecalculation;
         Point[] mUnrotatedPoints;
@@ -106,6 +106,23 @@ namespace FlatRedBall.Math.Geometry
 
         int SemicircleNumberOfPoints => mSemicircleNumberOfSegments - 1;
         int NumberOfShapePoints => SemicircleNumberOfPoints * 2 + 5;
+
+        float IScalable.ScaleX
+        {
+            get => Width / 2;
+            set => Width = value * 2;
+        }
+        float IScalable.ScaleY
+        {
+            get => Height / 2;
+            set => Height = value * 2;
+        }
+
+        float IScalable.ScaleXVelocity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        float IScalable.ScaleYVelocity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        float IReadOnlyScalable.ScaleX => Width / 2.0f;
+        float IReadOnlyScalable.ScaleY => Height / 2.0f;
 
         public CapsulePolygon() : this(32, 16, 8) { }
 
