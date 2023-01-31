@@ -8,6 +8,7 @@ namespace FlatRedBall.Math.Geometry
     public class CapsulePolygon : Polygon
     {
         bool mSupressPointsRecalculation;
+        Point[] mUnrotatedPoints;
 
         float mWidth;
         public float Width
@@ -105,8 +106,6 @@ namespace FlatRedBall.Math.Geometry
 
         int SemicircleNumberOfPoints => mSemicircleNumberOfSegments - 1;
         int NumberOfShapePoints => SemicircleNumberOfPoints * 2 + 5;
-
-        Point[] mUnrotatedPoints;
 
         public CapsulePolygon(float width, float height, int semicircleNumberOfSegments)
         {
