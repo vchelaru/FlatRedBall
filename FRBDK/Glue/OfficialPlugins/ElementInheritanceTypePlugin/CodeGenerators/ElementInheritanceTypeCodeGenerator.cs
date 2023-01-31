@@ -123,7 +123,7 @@ namespace OfficialPlugins.ElementInheritanceTypePlugin.CodeGenerators
                     tempVariable.DefaultValue = variable.DefaultValue;
                     tempVariable.OverridingPropertyType = variable.OverridingPropertyType;
 
-                    CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable);
+                    CustomVariableCodeGenerator.AppendCodeForMember(element as GlueElement, classBlock, tempVariable, forceGenerateExposed:true);
                 }
             }
         }

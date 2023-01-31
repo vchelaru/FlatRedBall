@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -21,7 +22,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Write Fields/Properties for CustomVariables
 
-        public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable)
+        public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, bool forceGenerateExposed = false)
         {
             VariableDefinition variableDefinition = null;
             if (!string.IsNullOrEmpty(customVariable.SourceObject))
@@ -83,7 +84,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // to have a property that fires
                     // the event.
                     // If it's Visible, it's handled by the IVisible generator
-                    if ((!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible")
+                    var shouldGenerateDueToExposed = (!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible";
+                    shouldGenerateDueToExposed = shouldGenerate || forceGenerateExposed;
+                    if (shouldGenerateDueToExposed)
                     {
                         CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
                     }
