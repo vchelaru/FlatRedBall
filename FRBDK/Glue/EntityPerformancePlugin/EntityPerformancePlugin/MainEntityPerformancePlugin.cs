@@ -89,16 +89,16 @@ namespace EntityPerformancePlugin
 
                 if(entity != null)
                 {
-                    RefreshView();
+                    RefreshView(GlueState.Self.CurrentEntitySave);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             }
         }
 
-        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement currentElement)
+        private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement owningElement)
         {
-            var currentEntity = currentElement as EntitySave;
+            var currentEntity = owningElement as EntitySave;
             var instance = GlueState.Self.CurrentNamedObjectSave;
 
             if (currentEntity != null && changedMember == nameof(EntitySave.Name) && instance == null)
@@ -116,9 +116,9 @@ namespace EntityPerformancePlugin
 
                 if (foundModel != null)
                 {
-                    foundModel.Name = GlueState.Self.CurrentElement.Name;
+                    foundModel.Name = currentEntity.Name;
 
-                    RefreshView();
+                    RefreshView(currentEntity);
 
                     SavePerformanceData();
                 }
@@ -127,7 +127,7 @@ namespace EntityPerformancePlugin
             {
                 string oldName = (string)oldValue;
 
-                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == currentElement.Name);
+                var foundModel = model.EntityManagementValueList.FirstOrDefault(item => item.Name == owningElement.Name);
 
                 var foundInstance = foundModel?.InstanceManagementValuesList.FirstOrDefault(item => item.Name == oldName);
 
@@ -135,7 +135,7 @@ namespace EntityPerformancePlugin
                 {
                     foundInstance.Name = instance.InstanceName;
 
-                    RefreshView();
+                    RefreshView(currentEntity);
 
                     SavePerformanceData();
                 }
@@ -152,7 +152,7 @@ namespace EntityPerformancePlugin
             {
                 var isRootSelected = viewModel?.IsRootSelected;
                 var selectedInstance = viewModel?.SelectedInstance;
-                RefreshView();
+                RefreshView(element as EntitySave);
 
                 if(isRootSelected == true)
                 {
@@ -304,6 +304,10 @@ namespace EntityPerformancePlugin
 
         private void SavePerformanceData()
         {
+            if(viewModel ==null)
+            {
+                throw new NullReferenceException(nameof(viewModel));
+            }
             var currentEntityViewModel = ViewModelToModelConverter.ToModel(viewModel);
 
             model.EntityManagementValueList.RemoveAll(item => item.Name == viewModel.EntityName);
@@ -352,7 +356,7 @@ namespace EntityPerformancePlugin
                     tab = this.CreateTab(mainControl, "Entity Performance");
                 }
                 tab.Show();
-                RefreshView();
+                RefreshView(GlueState.Self.CurrentEntitySave);
             }
             else
             {
@@ -361,14 +365,13 @@ namespace EntityPerformancePlugin
 
         }
 
-        private void RefreshView()
+        private void RefreshView(EntitySave entitySave)
         {
             saveOnViewModelChanges = false;
             {
-                if (GlueState.Self.CurrentEntitySave != null && mainControl != null)
+                entitySave = entitySave ?? GlueState.Self.CurrentEntitySave;
+                if (entitySave != null && mainControl != null)
                 {
-                    var entitySave = GlueState.Self.CurrentEntitySave;
-
                     var entityModel = GetOrCreateEntityManagementValuesFor(entitySave);
 
                     viewModel = ModelToViewModelConverter.ToViewModel(entityModel);
