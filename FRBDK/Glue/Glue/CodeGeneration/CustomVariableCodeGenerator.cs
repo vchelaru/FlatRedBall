@@ -158,13 +158,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)
+        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, GlueElement element)
         {
             string variableAssignment = "";
 
             if (customVariable.DefaultValue != null)
             {
-                if (!IsTypeFromCsv(customVariable))
+                if (!IsTypeFromCsv(customVariable, element))
                 {
                     variableAssignment =
                         CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
@@ -892,7 +892,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string customVariableType;
             bool isTypeFromCsv = false;
-            if (IsTypeFromCsv(customVariable))
+            if (IsTypeFromCsv(customVariable, element as GlueElement))
             {
                 // This is a type defined in a CSV
                 ReferencedFileSave rfsForCsv = ObjectFinder.Self.GetAllReferencedFiles().FirstOrDefault(item =>
@@ -1574,10 +1574,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        internal static bool IsTypeFromCsv(CustomVariable customVariable)
+        internal static bool IsTypeFromCsv(CustomVariable customVariable, GlueElement glueElement = null)
         {
             if(customVariable != null && customVariable.Type != null &&
-                customVariable.GetIsVariableState() == false &&
+                customVariable.GetIsVariableState(glueElement) == false &&
                 customVariable.Type.Contains(".") &&
                 customVariable.GetRuntimeType() == null)
             {
