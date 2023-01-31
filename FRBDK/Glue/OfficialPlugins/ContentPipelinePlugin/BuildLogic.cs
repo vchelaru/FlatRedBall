@@ -424,7 +424,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
-            var needsBuilder = visualStudioProject.DotNetVersion == "v6.0";
+            var needsBuilder = visualStudioProject.DotNetVersionNumber >= 6;
 
             ///////////Early Out//////////////////
             if(!needsBuilder)

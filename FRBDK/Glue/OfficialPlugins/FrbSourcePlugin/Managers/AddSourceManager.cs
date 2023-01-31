@@ -189,7 +189,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
 
         private static List<ProjectReference> GetProjectReferencesForCurrentProject()
         {
-            if (GlueState.Self.CurrentMainProject.DotNetVersion == "v6.0")
+            if (GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6)
             {
                 return DesktopGlNet6;
             }
