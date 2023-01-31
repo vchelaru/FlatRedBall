@@ -221,6 +221,7 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
                     type == AvailableAssetTypes.CommonAtis.Line.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Polygon" ||
                     type == AvailableAssetTypes.CommonAtis.Polygon.QualifiedRuntimeTypeName.QualifiedType ||
+                    type == AvailableAssetTypes.CommonAtis.CapsulePolygon.QualifiedRuntimeTypeName.QualifiedType ||
                     type == "Sphere" ||
                     type == "FlatRedBall.Math.Geometry.Sphere" ||
 

@@ -1364,6 +1364,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var newAti = addObjectViewModel.SelectedAti;
                 isMatchingList = currentList.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection &&
                     (newAti == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                     newAti == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                      newAti == AvailableAssetTypes.CommonAtis.Circle ||
                      newAti == AvailableAssetTypes.CommonAtis.Polygon ||
                      newAti == AvailableAssetTypes.CommonAtis.Line);

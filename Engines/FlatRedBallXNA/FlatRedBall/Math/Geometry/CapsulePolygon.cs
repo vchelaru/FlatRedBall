@@ -107,6 +107,8 @@ namespace FlatRedBall.Math.Geometry
         int SemicircleNumberOfPoints => mSemicircleNumberOfSegments - 1;
         int NumberOfShapePoints => SemicircleNumberOfPoints * 2 + 5;
 
+        public CapsulePolygon() : this(32, 16, 8) { }
+
         public CapsulePolygon(float width, float height, int semicircleNumberOfSegments)
         {
             mSupressPointsRecalculation = true;
