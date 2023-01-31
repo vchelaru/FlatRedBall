@@ -233,7 +233,14 @@ namespace FlatRedBall.Glue.Plugins.ICollidablePlugins
 
                 if (hasAdd)
                 {
+                    if(type == AvailableAssetTypes.CommonAtis.CapsulePolygon.QualifiedRuntimeTypeName.QualifiedType)
+                    {
+                        // treat this as a polygon, becuse capsules do not have their own add method:
+                        type = AvailableAssetTypes.CommonAtis.Polygon.QualifiedRuntimeTypeName.QualifiedType;
+                    }
                     var unqualifiedType = type;
+
+
                     if(type.Contains("."))
                     {
                         unqualifiedType = type.Substring(type.LastIndexOf('.') + 1);
