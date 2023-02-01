@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FlatRedBall.Audio;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Collision;
@@ -191,7 +192,11 @@ namespace FlatRedBall.Debugging
                 ? @"hh\:mm\:ss"
                 : @"mm\:ss";
 
+#if MONOGAME
             var currentTime = song.Position.ToString(format);
+#else
+            var currentTime = song == AudioManager.CurrentSong ? MediaPlayer.PlayPosition.ToString(format) : "0";
+#endif
             var totalDuration = song.Duration.ToString(format);
             Write($"{song.Name} {currentTime} / {totalDuration}");
         }
