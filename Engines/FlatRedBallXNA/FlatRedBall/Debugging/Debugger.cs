@@ -195,7 +195,7 @@ namespace FlatRedBall.Debugging
 #if MONOGAME
             var currentTime = song.Position.ToString(format);
 #else
-            var currentTime = song == AudioManager.CurrentSong ? MediaPlayer.PlayPosition.ToString(format) : "0";
+            var currentTime = song == AudioManager.CurrentSong ? MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);
 #endif
             var totalDuration = song.Duration.ToString(format);
             Write($"{song.Name} {currentTime} / {totalDuration}");
