@@ -725,6 +725,9 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         #region Damage
 
+        bool UsesDamageV2 => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+
+
         public bool IsFirstDamageable
         {
             get => Get<bool>();
@@ -758,7 +761,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             // if the other is a dmaage area.
             //((IsFirstDamageable && IsSecondDamageArea) ||
             //(IsSecondDamageable && IsFirstDamageArea)).ToVisibility();
-            (IsSecondDamageArea || IsFirstDamageArea).ToVisibility();
+            (UsesDamageV2 && (IsSecondDamageArea || IsFirstDamageArea)).ToVisibility();
 
         [SyncedProperty]
         public bool IsDealDamageChecked
