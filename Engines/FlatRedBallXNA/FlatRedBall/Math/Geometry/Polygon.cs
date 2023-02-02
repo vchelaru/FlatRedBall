@@ -10,7 +10,6 @@ using VertexPositionColor = Microsoft.Xna.Framework.Graphics.VertexPositionColor
 
 
 
-
 using System.Collections.ObjectModel;
 using FlatRedBall.Graphics;
 
@@ -100,6 +99,30 @@ namespace FlatRedBall.Math.Geometry
 
         public float BoundingRadius => mBoundingRadius;
         
+        public FloatRectangle BoundingRectangle
+        {
+            get
+            {
+                double top = 0, bottom = 0, left = 0, right = 0;
+
+                for (int i = 0; i < mPoints.Length; i++)
+                {
+                    var point = mPoints[i];
+
+                    if (point.Y > top)
+                        top = point.Y;
+                    else if (point.Y < bottom)
+                        bottom = point.Y;
+
+                    if (point.X > right)
+                        right = point.X;
+                    else if (point.X < left)
+                        left = point.X;
+                }
+
+                return new FloatRectangle((float)top, (float)bottom, (float)left, (float)right);
+            }
+        }
 
         public bool Visible
         {
