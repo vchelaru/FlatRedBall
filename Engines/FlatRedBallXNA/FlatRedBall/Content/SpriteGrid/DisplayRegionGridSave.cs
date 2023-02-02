@@ -19,7 +19,7 @@ namespace FlatRedBall.Content.SpriteGrid
     public class DisplayRegionGridSave
     {
         #region Fields
-        public FloatRectangle[][] ReferenceGrid;
+        public FloatRectangle?[][] ReferenceGrid;
 
         [XmlElementAttribute("FirstPaintedX")]
         public List<float> FirstPaintedX = new List<float>();
@@ -27,9 +27,9 @@ namespace FlatRedBall.Content.SpriteGrid
         public float FirstPaintedY;
         #endregion
 
-        public TextureGrid<FloatRectangle> ToDisplayRegionGrid(float gridSpacing)
+        public TextureGrid<FloatRectangle?> ToDisplayRegionGrid(float gridSpacing)
         {
-            TextureGrid<FloatRectangle> toReturn = new TextureGrid<FloatRectangle>();
+            TextureGrid<FloatRectangle?> toReturn = new TextureGrid<FloatRectangle?>();
 
             toReturn.FirstPaintedX = FirstPaintedX;
             toReturn.LastPaintedX = new List<float>();
@@ -44,15 +44,15 @@ namespace FlatRedBall.Content.SpriteGrid
 
             //toReturn.BaseTexture = new FloatRectangle(0,1,0,1);
 
-            foreach (FloatRectangle[] frArray in ReferenceGrid)
+            foreach (FloatRectangle?[] frArray in ReferenceGrid)
             {
-                List<FloatRectangle> newFloatRectangleList =
-                    new List<FloatRectangle>();
+                List<FloatRectangle?> newFloatRectangleList =
+                    new List<FloatRectangle?>();
                 toReturn.Textures.Add(newFloatRectangleList);
 
                 toReturn.LastPaintedX.Add(toReturn.FirstPaintedX[yOn] + gridSpacing * (frArray.Length - 1));
 
-                foreach (FloatRectangle rectangle in frArray)
+                foreach (FloatRectangle? rectangle in frArray)
                 {
                     newFloatRectangleList.Add(rectangle);
                 }
@@ -66,18 +66,18 @@ namespace FlatRedBall.Content.SpriteGrid
         }
 
         public static DisplayRegionGridSave FromDisplayRegionGrid(
-            TextureGrid<FloatRectangle> displayRegionGrid)
+            TextureGrid<FloatRectangle?> displayRegionGrid)
         {
             DisplayRegionGridSave dgs = new DisplayRegionGridSave();
 
-            dgs.ReferenceGrid = new FloatRectangle[displayRegionGrid.Textures.Count][];
+            dgs.ReferenceGrid = new FloatRectangle?[displayRegionGrid.Textures.Count][];
 
             dgs.FirstPaintedX = displayRegionGrid.FirstPaintedX;
             dgs.FirstPaintedY = displayRegionGrid.FirstPaintedY;
 
             for (int i = 0; i < displayRegionGrid.Textures.Count; i++)
             {
-                dgs.ReferenceGrid[i] = new FloatRectangle[displayRegionGrid[i].Count];
+                dgs.ReferenceGrid[i] = new FloatRectangle?[displayRegionGrid[i].Count];
 
                 for (int j = 0; j < displayRegionGrid.Textures[i].Count; j++)
                 {
@@ -120,25 +120,25 @@ namespace FlatRedBall.Content.SpriteGrid
             return drgs;
         }
 
-        static FloatRectangle[][] ToFloatRectangleArrayArray(System.Xml.Linq.XElement element)
+        static FloatRectangle?[][] ToFloatRectangleArrayArray(System.Xml.Linq.XElement element)
         {
-            List<List<FloatRectangle>> frReferenceListList = new List<List<FloatRectangle>>();
+            List<List<FloatRectangle?>> frReferenceListList = new List<List<FloatRectangle?>>();
 
             foreach (var subElement in element.Elements())
             {
-                List<FloatRectangle> newList = new List<FloatRectangle>();
+                List<FloatRectangle?> newList = new List<FloatRectangle?>();
 
                 frReferenceListList.Add(newList);
                 foreach (var subSubElement in subElement.Elements())
                 {
-                    FloatRectangle newRectangle = ToFloatRectangle(subSubElement);
+                    FloatRectangle? newRectangle = ToFloatRectangle(subSubElement);
                     newList.Add(newRectangle);
                 }
 
 
             }
 
-            FloatRectangle[][] toReturn = new FloatRectangle[frReferenceListList.Count][];
+            FloatRectangle?[][] toReturn = new FloatRectangle?[frReferenceListList.Count][];
 
             for (int i = 0; i < frReferenceListList.Count; i++)
             {
