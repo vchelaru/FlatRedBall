@@ -1417,6 +1417,10 @@ namespace FlatRedBall.Math.Geometry
             return VectorFrom(vector.X, vector.Y, vector.Z);
         }
 
+        public FloatRectangle AsFloatRectangle()
+        {
+            return new FloatRectangle(Top, Bottom, Left, Right);
+        }
 
         #endregion
 
