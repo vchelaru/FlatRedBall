@@ -346,7 +346,6 @@ namespace FlatRedBall.Input
         internal void Update()
         {
 #if MONOGAME
-            return;
             var state = Joystick.GetState(GamepadIndex);
 
             if(JoystickCapabilities.DisplayName == null || WasConnectedThisFrame)
