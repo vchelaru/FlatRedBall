@@ -121,6 +121,15 @@ namespace FlatRedBall.Input
 
         JoystickCapabilities JoystickCapabilities;
 
+        bool WasConnectedThisFrame
+        {
+            get
+            { 
+
+                return !lastJoystickState.IsConnected && joystickState.IsConnected;
+            }
+        }
+
         #endregion
 
         public GenericGamePad(int gamepadIndex)
@@ -337,8 +346,13 @@ namespace FlatRedBall.Input
         internal void Update()
         {
 #if MONOGAME
+            return;
             var state = Joystick.GetState(GamepadIndex);
-            JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+
+            if(JoystickCapabilities.DisplayName == null || WasConnectedThisFrame)
+            {
+                JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+            }
 
             // each analog stick has an up/down
             var currentAnalogStickCount = JoystickCapabilities.AxisCount / 2;

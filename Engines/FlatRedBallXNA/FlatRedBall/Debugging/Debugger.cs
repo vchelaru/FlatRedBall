@@ -209,7 +209,7 @@ namespace FlatRedBall.Debugging
             long currentUsage;
 
                 currentUsage = GC.GetTotalMemory(false);
-                memoryInformation = "Total Memory: " + currentUsage;
+                memoryInformation = "Total Memory: " + currentUsage.ToString("N0");
 
 #if DEBUG
             if (mLastMemoryUse >= 0)
@@ -222,7 +222,7 @@ namespace FlatRedBall.Debugging
                 }
             }
             memoryInformation += "\nAverage Growth per second: " +
-                mAllocationAverage.Average.ToString("0,000");
+                mAllocationAverage.Average.ToString("N0");
 #endif
 
             LastCalculationTime = TimeManager.CurrentTime;

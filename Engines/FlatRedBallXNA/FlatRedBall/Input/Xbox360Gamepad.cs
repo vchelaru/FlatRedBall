@@ -460,14 +460,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if (mLastGamePadState == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
-                }
+                return !mLastGamePadState.IsConnected && mGamePadState.IsConnected;
             }
         }
 
@@ -479,15 +472,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if (mLastGamePadState == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
-                }
-
+                return mLastGamePadState.IsConnected && !mGamePadState.IsConnected;
             }
         }
 
@@ -1420,7 +1405,7 @@ namespace FlatRedBall.Input
 
             if(!found)
             {
-                if(name.Contains("Xbox"))
+                if(name?.Contains("Xbox") == true)
                 {
                     GamepadLayout = GamepadLayout.Xbox360;
                 }
@@ -1683,7 +1668,10 @@ namespace FlatRedBall.Input
             //gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState((int)mPlayerIndex, GamePadDeadZone.None);
 
-            mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+            if(mCapabilities.DisplayName == null || WasConnectedThisFrame)
+            {
+                mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+            }
 #else
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
 
