@@ -121,6 +121,9 @@ namespace FlatRedBall.Entities
 
         bool visible;
         AxisAlignedRectangle windowVisualization;
+        /// <summary>
+        /// Whether the visualization of the window is visible. This is typically only used to diagnose problems.
+        /// </summary>
         public bool Visible
         {
             get
@@ -151,6 +154,8 @@ namespace FlatRedBall.Entities
                 }
             }
         }
+
+        public Vector3 CameraOffset;
 
         #endregion
 
@@ -437,14 +442,14 @@ namespace FlatRedBall.Entities
 
                 var invertZoom = 1 / zoom;
 
-                Camera.X = MathFunctions.RoundFloat(effectiveThis.X, invertZoom) + SnapToPixelOffset * invertZoom;
-                Camera.Y = MathFunctions.RoundFloat(effectiveThis.Y, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.X = MathFunctions.RoundFloat(effectiveThis.X + CameraOffset.X, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Y = MathFunctions.RoundFloat(effectiveThis.Y + CameraOffset.Y, invertZoom) + SnapToPixelOffset * invertZoom;
 
             }
             else
             {
-                Camera.X = effectiveThis.X;
-                Camera.Y = effectiveThis.Y;
+                Camera.X = effectiveThis.X + CameraOffset.X;
+                Camera.Y = effectiveThis.Y + CameraOffset.Y;
             }
         }
 
@@ -466,6 +471,25 @@ namespace FlatRedBall.Entities
                 Camera.OrthogonalHeight = defaultOrthoHeight;
             }
             Camera.FixAspectRatioYConstant();
+        }
+
+        public async void ShakeScreen(float shakeRadius, float durationInSeconds)
+        {
+            const float individualShakeDurationInSeconds = .05f;
+
+            var random = FlatRedBallServices.Random;
+            for(float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
+            {
+                var point = random.PointInCircle(shakeRadius);
+
+                CameraOffset.X = point.X;
+                CameraOffset.Y = point.Y;
+
+                await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
+            }
+
+            CameraOffset.X = 0;
+            CameraOffset.Y = 0;
         }
     }
 }
