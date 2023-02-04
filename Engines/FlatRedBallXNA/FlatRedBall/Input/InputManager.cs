@@ -116,6 +116,14 @@ namespace FlatRedBall.Input
             set { mUpdateXbox360GamePads = value; }
         }
 
+        /// <summary>
+        /// Whether to update generic gamepads. This is only needed if using
+        /// the GenericGamepads array instead of Xbox360GamePads. Although it 
+        /// is a small amount, setting this value to false can save some every-frame
+        /// allocations.
+        /// </summary>
+        public static bool UpdateGenericGamePads = true;
+
 #if SUPPORTS_XBOX_GAMEPADS
 
         /// <summary>
@@ -474,9 +482,12 @@ namespace FlatRedBall.Input
                 PlatformSpecificXbox360GamePadUpdate();
             }
 
-            for(int i = 0; i < genericGamePads.Length; i++)
+            if(UpdateGenericGamePads)
             {
-                genericGamePads[i].Update();
+                for(int i = 0; i < genericGamePads.Length; i++)
+                {
+                    genericGamePads[i].Update();
+                }
             }
 
             CheckControllerConnectionChange();
