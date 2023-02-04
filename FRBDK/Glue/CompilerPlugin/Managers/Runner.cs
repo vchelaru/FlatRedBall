@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using CompilerLibrary.ViewModels;
 using System.Threading;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
+using System.ComponentModel;
 
 namespace CompilerPlugin.Managers
 {
@@ -204,6 +205,10 @@ namespace CompilerPlugin.Managers
                     catch (InvalidOperationException)
                     {
                         // do nothing, the game just stopped running
+                    }
+                    catch(Win32Exception)
+                    {
+                        // There's an exception happening, possibly because the game just stopped.
                     }
                 }
             }
