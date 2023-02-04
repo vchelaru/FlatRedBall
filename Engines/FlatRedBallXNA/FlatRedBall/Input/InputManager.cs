@@ -387,6 +387,9 @@ namespace FlatRedBall.Input
                     var ctrl = InputReceiverKeyboard.IsCtrlDown;
                     var alt = InputReceiverKeyboard.IsAltDown;
 
+                    // This allocates. We could potentially make this return 
+                    // an IList or List. That's a breaking change for a tiny amount
+                    // of allocation....what to do....
                     foreach (var key in InputReceiverKeyboard.KeysTyped)
                     {
                         InputManager.InputReceiver?.HandleKeyDown(key, shift, alt, ctrl);

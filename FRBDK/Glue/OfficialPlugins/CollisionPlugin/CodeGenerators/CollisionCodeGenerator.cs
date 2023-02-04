@@ -465,17 +465,22 @@ namespace OfficialPlugins.CollisionPlugin
             }
 
             block.Line($"var temp = new {relationshipType}({firstCollidable}, {secondCollidable});");
-            block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
-            block.Line($"temp.CollisionFunction = (first, second) =>");
+            // This causes a closure which allocates!
+            //block.Line($"var isCloud = {(collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant()};");
+            var collisionFunctionName = $"{firstCollidable}v{secondCollidable}PlatformFunction";
+            block.Line($"temp.CollisionFunction = {collisionFunctionName};");
+            // use firstType and secondType because the collision function is not called on the lists but on the individuals
+            block.Line($"static bool {collisionFunctionName}({firstType} first, {secondType} second)");
             block = block.Block();
 
+            var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();
             string whatToCollideAgainst = "second";
 
             if (!isFirstList && isSecondList)
             {
                 if (collisionType == CollisionType.PlatformerCloudCollision || collisionType == CollisionType.PlatformerSolidCollision)
                 {
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
                 }
                 else
                 {
@@ -483,11 +488,11 @@ namespace OfficialPlugins.CollisionPlugin
                     if (firstSubCollision == null)
                     {
                         // it's an icollidable probably
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, isCloud);");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, {isCloud});");
                     }
                     else
                     {
-                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, isCloud);");
+                        block.Line($"return first.CollideAgainst({whatToCollideAgainst}.Collision, first.{firstSubCollision}, {isCloud});");
                     }
 
                 }
@@ -497,12 +502,12 @@ namespace OfficialPlugins.CollisionPlugin
                 if (firstSubCollision == null)
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, {isCloud});");
                 }
                 else
                 {
                     // assume it's a shape collection
-                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, isCloud);");
+                    block.Line($"return first.CollideAgainst({whatToCollideAgainst}, first.{firstSubCollision}, {isCloud});");
                 }
             }
 
