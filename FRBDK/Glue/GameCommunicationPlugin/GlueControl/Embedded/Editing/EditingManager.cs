@@ -1095,6 +1095,12 @@ namespace GlueControl.Editing
 
         #region Variable Assignment (suppression)
 
+        static HashSet<string> VariableAssignmentsToIgnore = new HashSet<string>
+        {
+            nameof(NamedObjectSave.IsEditingLocked), // this gets copied over by the NOS
+            "PartitioningAutomaticManual" // We can't support this in realtime because it's done by codegen and would be hard to change...
+        };
+
         public bool GetIfShouldSuppressVariableAssignment(string variableName, INameable targetInstance)
         {
             var isAnythingGrabbed = itemGrabbed != null;
@@ -1115,9 +1121,9 @@ namespace GlueControl.Editing
 
             if (!shouldSuppress)
             {
-                if (variableName == nameof(NamedObjectSave.IsEditingLocked))
+                if (VariableAssignmentsToIgnore.Contains(variableName))
                 {
-                    shouldSuppress = true; // this simply gets copied over by the NOS
+                    shouldSuppress = true;
                 }
             }
 
