@@ -35,6 +35,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
             this.MoveToCursor();
+
+            this.SearchBar.FocusTextBox();
         }
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
@@ -74,6 +76,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
             {
                 DialogResult = true;
             }
+        }
+
+        private void SearchBar_EscapePressed()
+        {
+            DialogResult = false;
         }
     }
 }

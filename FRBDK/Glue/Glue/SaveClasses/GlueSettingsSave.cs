@@ -38,6 +38,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public string FileName { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime LastTimeAccessed { get; set; }
+
+        public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
 
     /// <summary>
