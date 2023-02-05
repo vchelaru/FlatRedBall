@@ -62,10 +62,10 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
                     <CheckBox Grid.Row="1" VerticalAlignment="Center"
-                        IsChecked="{Binding IncludeListsInScreens}">
+                        IsChecked="{Binding IncludeListsInScreens}" Visibility="{Binding IncludeListsInScreensVisibility}">
                         <TextBlock>
-                <AccessText TextWrapping="Wrap"
-                    Text="Include lists in GameScreen"/>
+                            <AccessText TextWrapping="Wrap"
+                                Text="Include lists in GameScreen"/>
                         </TextBlock>
 
                     </CheckBox>
