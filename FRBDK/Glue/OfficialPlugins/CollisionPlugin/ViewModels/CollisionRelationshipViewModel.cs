@@ -29,6 +29,13 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         StackingCollision = 6,
         MoveSoftCollision = 7,
     }
+
+    public enum DestroyType
+    {
+        Always,
+        OnlyIfDealtDamage
+    }
+
     #endregion
 
     public class CollisionRelationshipViewModel :

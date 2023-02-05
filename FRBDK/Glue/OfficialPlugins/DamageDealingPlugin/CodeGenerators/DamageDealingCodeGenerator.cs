@@ -52,6 +52,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                     //codeBlock.Line("public int TeamIndex { get; set; }");
                     //codeBlock.Line("public decimal DamageToDeal { get; set; }");
 
+                    codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> ReactToDamageDealt { get; set; }");
+                    codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageable, decimal> ModifyDamageDealt { get; set; }");
 
 
                     codeBlock.Line("public object DamageDealer { get; set; }");
@@ -61,18 +63,6 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                     {
                         // See note about explicit implementation above
                         var shouldBeExplicit = shouldImplementIDamageable && shouldImplementIDamageArea;
-
-                        if(shouldBeExplicit)
-                        {
-                            codeBlock.Line("Func<decimal, FlatRedBall.Entities.IDamageable, decimal> FlatRedBall.Entities.IDamageArea.ModifyDamageDealt { get; set; }");
-                            codeBlock.Line("Action<decimal, FlatRedBall.Entities.IDamageable> FlatRedBall.Entities.IDamageArea.ReactToDamageDealt { get; set; }");
-                        }
-                        else
-                        {
-                            codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageable, decimal> ModifyDamageDealt { get; set; }");
-                            codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> ReactToDamageDealt { get; set; }");
-                        }
-
 
 
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> KilledDamageable { get; set; }");
@@ -93,17 +83,9 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                         // See note about explicit implementation above
                         var shouldBeExplicit = shouldImplementIDamageable && shouldImplementIDamageArea;
 
-                        if(shouldBeExplicit)
-                        {
-                            codeBlock.Line("Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> FlatRedBall.Entities.IDamageable.ModifyDamageDealt { get; set; }");
-                            codeBlock.Line("Action<decimal, FlatRedBall.Entities.IDamageArea> FlatRedBall.Entities.IDamageable.ReactToDamageDealt { get; set; }");
-                        }
-                        else
-                        {
-                            codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> ModifyDamageDealt { get; set; }");
-                            codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> ReactToDamageDealt { get; set; }");
-                        }
-
+                        codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> ReactToDamageReceived { get; set; }");
+                        codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> ModifyDamageReceived { get; set; }");
+                        
                         codeBlock.Line("public decimal CurrentHealth { get; set; }");
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> Died { get; set; }");
     }
