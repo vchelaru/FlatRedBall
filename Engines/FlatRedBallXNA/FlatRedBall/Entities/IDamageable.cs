@@ -68,7 +68,7 @@ namespace FlatRedBall.Entities
             }
         }
 
-        public static void TakeDamage(this IDamageable damageable, IDamageArea damageArea)
+        public static decimal TakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
             // The DamageArea provides the damage, so the order should be:
             // 1. Damageable modifies
@@ -104,6 +104,8 @@ namespace FlatRedBall.Entities
                     damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
                 }
             }
+
+            return modifiedByBoth;
         }
 
         // There could be situations where an object takes damage from something (like a tile shape collection) which
