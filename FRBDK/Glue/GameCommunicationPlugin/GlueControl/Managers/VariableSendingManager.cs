@@ -179,6 +179,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
             var instruction = nos?.GetCustomVariable(changedMember);
             var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
+            var nosElement = ObjectFinder.Self.GetElement(nos);
 
             #region Identify the typeName
             if (variableDefinition != null)
@@ -205,18 +206,17 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             if (typeName == null && nos.SourceType == SourceType.Entity)
             {
-                var nosEntity = ObjectFinder.Self.GetElement(nos);
-                var variableInEntity = nosEntity.GetCustomVariable(changedMember);
+                var variableInEntity = nosElement.GetCustomVariable(changedMember);
                 typeName = variableInEntity?.Type;
 
                 if(variableInEntity != null)
                 {
-                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosEntity);
+                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosElement);
                     isState = getStateResult.IsState;
                     category = getStateResult.Category;
                     if(isState && category != null)
                     {
-                        typeName = nosEntity.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
+                        typeName = nosElement.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
                     }
                 }
             }
@@ -270,23 +270,28 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // we need to un-assign the state. We can do this by looping through all variables controlled by the
                 // category and setting them to null values:
                 var ownerOfCategory = ObjectFinder.Self.GetElementContaining(category);
-
-                var variablesToAssign = ownerOfCategory?.CustomVariables
-                    .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
-                if(variablesToAssign != null)
+                // Only unassign if the state is defined by the same element as the nos's element. Otherwise the variables
+                // won't apply:
+                if(ownerOfCategory == nosElement)
                 {
-                    foreach(var variableToAssign in variablesToAssign)
+                    var variablesToAssign = ownerOfCategory?.CustomVariables
+                        .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
+                    if(variablesToAssign != null)
                     {
-                        var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
-
-                        var name = variableToAssign.Name;
-                        if(!string.IsNullOrEmpty(variableToAssign.SourceObject))
+                        foreach(var variableToAssign in variablesToAssign)
                         {
-                            name = variableToAssign.SourceObject + "." + name;
-                        }
+                            var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
 
-                        toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                            var name = variableToAssign.Name;
+                            if(!string.IsNullOrEmpty(variableToAssign.SourceObject))
+                            {
+                                name = variableToAssign.SourceObject + "." + variableToAssign.SourceObjectProperty;
+                            }
+
+                            toReturn.AddRange(GetNamedObjectValueChangedDtos(name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                        }
                     }
+
                 }
             }
 
