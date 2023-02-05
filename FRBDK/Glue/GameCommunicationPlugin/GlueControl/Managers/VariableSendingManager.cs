@@ -222,6 +222,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
 
+
             if (forcedCurrentValue != null)
             {
                 currentValue = forcedCurrentValue;
@@ -238,6 +239,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = nos.IncludeInICollidable;
             }
+
+            if(isState && currentValue?.ToString() == "<NONE>")
+            {
+                currentValue = null;
+            }
             #endregion
 
 
@@ -253,7 +259,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             }
 
-            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
+            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, isState, ref nosName, ati, ref typeName, out value);
 
             GlueVariableSetData data = GetGlueVariableSetDataDto(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
 
@@ -272,6 +278,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     foreach(var variableToAssign in variablesToAssign)
                     {
                         var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+
+                        var name = variableToAssign.Name;
+                        if(!string.IsNullOrEmpty(variableToAssign.SourceObject))
+                        {
+                            name = variableToAssign.SourceObject + "." + name;
+                        }
+
                         toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
                     }
                 }
@@ -332,6 +345,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         private void ConvertValue(ref string changedMember, object oldValue, 
             object currentValue, NamedObjectSave nos, GlueElement currentElement, string glueScreenName,
+            bool isState,
             ref string nosName, FlatRedBall.Glue.Elements.AssetTypeInfo ati, 
             ref string type, out string value)
         {
@@ -509,7 +523,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
 
-            if (value == null)
+            if (value == null && !isState && type != null)
             {
                 value = TypeManager.GetDefaultForType(type);
             }
