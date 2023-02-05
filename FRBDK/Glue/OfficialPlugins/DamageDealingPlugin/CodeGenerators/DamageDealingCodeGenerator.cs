@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Entities;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -15,13 +16,13 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
         public override void AddInheritedTypesToList(List<string> listToAddTo, IElement element)
         {
-            if(element is EntitySave entity)
+            if (element is EntitySave entity)
             {
-                if(ImplementsIDamageArea(entity))
+                if (ImplementsIDamageArea(entity))
                 {
                     listToAddTo.Add("FlatRedBall.Entities.IDamageArea");
                 }
-                if(ImplementsIDamageable(entity))
+                if (ImplementsIDamageable(entity))
                 {
                     listToAddTo.Add("FlatRedBall.Entities.IDamageable");
                 }
@@ -34,7 +35,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
-            if(element is EntitySave entity)
+            if (element is EntitySave entity)
             {
                 var shouldImplementIDamageArea =
                     ImplementsIDamageArea(entity) && !SuppressDamagePropertyCodeGeneration(entity);
@@ -59,7 +60,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
                     codeBlock.Line("public object DamageDealer { get; set; }");
                     codeBlock.Line("public event Action Destroyed;");
 
-                    if(UsesDamageV2)
+                    if (UsesDamageV2)
                     {
                         // See note about explicit implementation above
                         var shouldBeExplicit = shouldImplementIDamageable && shouldImplementIDamageArea;
@@ -67,8 +68,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageable> KilledDamageable { get; set; }");
                         codeBlock.Line("public Action<FlatRedBall.Entities.IDamageable> RemovedByCollision { get; set; }");
-                        
-    }
+
+                    }
                 }
 
                 if (shouldImplementIDamageable)
@@ -85,10 +86,10 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> ReactToDamageReceived { get; set; }");
                         codeBlock.Line("public Func<decimal, FlatRedBall.Entities.IDamageArea, decimal> ModifyDamageReceived { get; set; }");
-                        
+
                         codeBlock.Line("public decimal CurrentHealth { get; set; }");
                         codeBlock.Line("public Action<decimal, FlatRedBall.Entities.IDamageArea> Died { get; set; }");
-    }
+                    }
                 }
             }
 
@@ -97,12 +98,22 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
         {
-            if(UsesDamageV2 && ImplementsIDamageable(element as EntitySave))
+            // Can't do this here, because derived needs a chance to set this
+            // Moving to AddToManagers
+            //if (UsesDamageV2 && ImplementsIDamageable(element as EntitySave))
+            //{
+            //    codeBlock.Line("CurrentHealth = MaxHealth;");
+            //}
+
+            return base.GenerateInitialize(codeBlock, element);
+        }
+
+        public override void GenerateAddToManagersBottomUp(ICodeBlock codeBlock, IElement element)
+        {
+            if (UsesDamageV2 && ImplementsIDamageableRecursively(element as EntitySave))
             {
                 codeBlock.Line("CurrentHealth = MaxHealth;");
             }
-
-            return base.GenerateInitialize(codeBlock, element);
         }
 
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
@@ -128,8 +139,26 @@ namespace OfficialPluginsCore.DamageDealingPlugin.CodeGenerators
         public static bool ImplementsIDamageArea(EntitySave entity) =>
             entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageArea) == true;
 
-        public static bool ImplementsIDamageable(EntitySave entity) => 
+        public static bool ImplementsIDamageable(EntitySave entity) =>
             entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageable) == true;
+
+        public static bool ImplementsIDamageableRecursively(EntitySave entity)
+        {
+            if(entity?.Properties.GetValue<bool>(MainDamageDealingPlugin.ImplementsIDamageable) == true)
+            {
+                return true;
+            }
+            else
+            {
+                var baseEntity = ObjectFinder.Self.GetBaseElement(entity) as EntitySave;
+                if(baseEntity != null)
+                {
+                    return ImplementsIDamageableRecursively(baseEntity);
+                }
+            }
+            return false;
+        }
+
 
         public static bool SuppressDamagePropertyCodeGeneration(EntitySave entity) =>
             entity.Properties.GetValue<bool>(MainDamageDealingPlugin.SuppressDamagePropertyCodeGeneration);
