@@ -870,8 +870,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            InheritanceManager.UpdateAllDerivedElementFromBaseValues(true, element);
-
+            InheritanceManager.UpdateAllDerivedElementFromBaseValues(regenerateCode:false, currentElement: element);
 
             CustomVariableHelper.SetDefaultValueFor(newVariable, element);
 
