@@ -29,6 +29,14 @@ namespace FlatRedBall.Math.Geometry
             Right = right;
         }
 
+        public bool Intersects(FloatRectangle other)
+        {
+            return other.Left < Right &&
+                   Left < other.Right &&
+                   other.Bottom < Top &&
+                   Bottom < other.Top;
+        }
+
         public override string ToString()
         {
             return "Top:" + Top + " Left:" + Left + " Bottom:" + Bottom + " Right:" + Right;
