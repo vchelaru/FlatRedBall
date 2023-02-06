@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.Build.Evaluation;
+using Newtonsoft.Json;
 
 namespace Glue
 {
@@ -527,8 +528,18 @@ namespace Glue
 
         private void LoadGlueSettings(InitializationWindowWpf initializationWindow)
         {
-            string settingsFileLocation = GlueSettingsSave.SettingsFileName;
-            if (FileManager.FileExists(settingsFileLocation))
+            FilePath settingsFileLocation = null;
+            // Need to fix up saving/loading of this in json since there's some converter causing problems
+            //if(FileManager.FileExists(GlueSettingsSave.SettingsFileNameJson))
+            //{
+            //    settingsFileLocation = GlueSettingsSave.SettingsFileNameJson;
+            //}
+            //else 
+            if (FileManager.FileExists(GlueSettingsSave.SettingsFileName))
+            {
+                settingsFileLocation = GlueSettingsSave.SettingsFileName;
+            }
+            if (settingsFileLocation != null)
             {
                 GlueSettingsSave settingsSave = null;
 
@@ -536,7 +547,15 @@ namespace Glue
 
                 try
                 {
-                    settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation);
+                    if(settingsFileLocation.Extension == "json")
+                    {
+                        var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
+                        settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
+                    }
+                    else
+                    {
+                        settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
+                    }
                     settingsSave.FixAllTypes();
                 }
                 catch (Exception e)
@@ -582,11 +601,13 @@ namespace Glue
                     // This used to be 0, b
                     //this.Height = settingsSave.WindowHeight > 100 ? settingsSave.WindowHeight : 480;
                     //this.Width = settingsSave.WindowWidth > 100 ? settingsSave.WindowWidth : 640;
+
+                    MainPanelControl.Self.ApplyGlueSettings(GlueState.Self.GlueSettingsSave);
                 }
             }
             else
             {
-                ProjectManager.GlueSettingsSave.Save();
+                GlueState.Self.GlueSettingsSave.Save();
             }
         }
 
