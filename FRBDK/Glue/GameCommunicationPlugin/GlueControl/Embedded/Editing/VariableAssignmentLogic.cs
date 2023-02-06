@@ -169,11 +169,18 @@ namespace GlueControl.Editing
             }
             catch (Exception e)
             {
-                response.Exception = e.ToString();
+                response.Exception = ExceptionWithJson(e, data);
+
                 response.WasVariableAssigned = false;
             }
             return response;
         }
+
+        static string ExceptionWithJson(Exception e, object data)
+        {
+            return $"{e.ToString()}\n{data?.GetType().Name}:\n{JsonConvert.SerializeObject(data, Formatting.Indented)}";
+        }
+
 
         private static object SetValueOnObjectInScreen(GlueVariableSetData data, object variableValue, GlueVariableSetDataResponse response, FlatRedBall.Screens.Screen screen)
         {
@@ -195,7 +202,7 @@ namespace GlueControl.Editing
             catch (Exception e)
             {
                 response.WasVariableAssigned = false;
-                response.Exception = e.ToString();
+                response.Exception = ExceptionWithJson(e, data);
             }
 
 
@@ -436,7 +443,12 @@ namespace GlueControl.Editing
             // If it's "this.InstanceName.SomeInstanceVariable" then it's > 2 and there is an instance
             if (splitVariable[0] == "this" && splitVariable.Length > 2)
             {
-                targetInstance = GetRuntimeInstance(screen, splitVariable[1]);
+                // If it's "this.InstanceName.SomeVariable" then we just grab the middle "InstanceName"
+                // However, it's possible that Glue sends thigns like "this.InstanceName.SubInstance.VariableName", so 
+                // we need to pass in "InstanceName.SubInstance"
+                var middleVars = splitVariable.Skip(1).Take(splitVariable.Length - 2).ToArray();
+                var middleVarsAsString = string.Join(".", middleVars);
+                targetInstance = GetRuntimeInstanceRecursively(screen, middleVarsAsString);
             }
 
             if (targetInstance != null && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
@@ -447,9 +459,32 @@ namespace GlueControl.Editing
             return targetInstance;
         }
 
-        private static FlatRedBall.Utilities.INameable GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName)
+        private static FlatRedBall.Utilities.INameable GetRuntimeInstanceRecursively(FlatRedBall.Screens.Screen screen, string objectAndSubObjects, object owner = null)
+        {
+            if (objectAndSubObjects.Contains(".") == false)
+            {
+                // no recurisve search necessary:
+                return GetRuntimeInstance(screen, objectAndSubObjects, owner);
+            }
+            else
+            {
+                var directInstanceName = objectAndSubObjects.Substring(0, objectAndSubObjects.IndexOf("."));
+                var remainder = objectAndSubObjects.Substring(directInstanceName.Length + 1);
+
+                var foundInstance = GetRuntimeInstance(screen, directInstanceName, owner);
+
+                return GetRuntimeInstanceRecursively(screen, remainder, foundInstance);
+            }
+        }
+
+        private static FlatRedBall.Utilities.INameable GetRuntimeInstance(FlatRedBall.Screens.Screen screen, string objectName, object owner = null)
         {
             FlatRedBall.Utilities.INameable targetInstance = null;
+
+            if (owner is PositionedObject ownerAsPositionedObject)
+            {
+                targetInstance = ownerAsPositionedObject.Children.FindByName(objectName);
+            }
 
             // This is the most likely to find (and end all other checks) so let's do that first.
             if (targetInstance == null)

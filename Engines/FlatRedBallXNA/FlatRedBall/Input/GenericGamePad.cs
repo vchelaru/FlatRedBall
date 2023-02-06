@@ -348,7 +348,15 @@ namespace FlatRedBall.Input
 #if MONOGAME
             var state = Joystick.GetState(GamepadIndex);
 
+#if MONOGAME_381
+
+
             if(JoystickCapabilities.DisplayName == null || WasConnectedThisFrame)
+#else
+            // we won't worry about this on older FRBs. Maybe it would be worth it, but it may also introduce bugs if
+            // the first frame is connected but doesn't have caps
+            if (true)
+#endif
             {
                 JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
             }

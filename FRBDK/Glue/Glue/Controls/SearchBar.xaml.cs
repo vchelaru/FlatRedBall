@@ -24,6 +24,7 @@ namespace GlueFormsCore.Controls
         public event Action DismissHintTextClicked;
 
         public event Action EnterPressed;
+        public event Action EscapePressed;
         public event Action<Key> ArrowKeyPushed;
         public SearchBar()
         {
@@ -36,6 +37,7 @@ namespace GlueFormsCore.Controls
             if (e.Key == Key.Escape)
             {
                 ViewModel.SearchBoxText = string.Empty;
+                EscapePressed?.Invoke();
             }
             else if(e.Key == Key.Enter)
             {

@@ -222,7 +222,8 @@ namespace OfficialPlugins.DoorEntityPlugin
 
             var newEntity = await CreateEntitySave();
 
-            await CreateEntityListInGameScreen(newEntity);
+            // now this is automatic:
+            //await CreateEntityListInGameScreen(newEntity);
 
             await CreateWidthHeightVariables(newEntity);
 
@@ -257,6 +258,7 @@ namespace OfficialPlugins.DoorEntityPlugin
             vm.IsAxisAlignedRectangleChecked = true;
             vm.IsICollidableChecked = true;
             vm.IsCreateFactoryChecked = true;
+            vm.IncludeListsInScreens = true;
 
             var newEntity = await GlueCommands.Self.GluxCommands.EntityCommands.AddEntityAsync(vm);
             return newEntity;

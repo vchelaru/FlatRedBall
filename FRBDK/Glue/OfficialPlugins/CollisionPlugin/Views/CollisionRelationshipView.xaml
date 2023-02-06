@@ -223,10 +223,22 @@
             <GroupBox Header="Damage" Visibility="{Binding DamageValuesVisibility}" Margin="0,8,0,0">
                 <StackPanel>
                     <CheckBox Visibility="{Binding DealDamageCheckBoxVisibility}" IsChecked="{Binding IsDealDamageChecked}">Deal Damage in Generated Code</CheckBox>
-                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" 
+                    <CheckBox Visibility="{Binding DestroyFirstOnDamageVisibility}" Margin="0,5,0,0"
                               IsChecked="{Binding IsDestroyFirstOnDamageChecked}" Content="{Binding DestroyFirstOnDamageText, FallbackValue=Destroy First on Damage}"></CheckBox>
-                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" 
+                    <GroupBox Header="Destruction" Visibility="{Binding FirstDestructionOptionsVisibility}">
+                        <StackPanel>
+                            <RadioButton IsChecked="{Binding IsFirstAlwaysDestroyChecked}">Always</RadioButton>
+                            <RadioButton IsChecked="{Binding IsFirstOnlyIfDamageDestroyChecked}">If Damage Dealt</RadioButton>
+                        </StackPanel>
+                    </GroupBox>
+                    <CheckBox Visibility="{Binding DestroySecondOnDamageVisibility}" Margin="0,5,0,0"
                               IsChecked="{Binding IsDestroySecondOnDamageChecked}" Content="{Binding DestroySecondOnDamageText, FallbackValue=Destroy Second on Damage}"></CheckBox>
+                    <GroupBox Header="Destruction" Visibility="{Binding SecondDestructionOptionsVisibility}">
+                        <StackPanel>
+                            <RadioButton IsChecked="{Binding IsSecondAlwaysDestroyChecked}">Always</RadioButton>
+                            <RadioButton IsChecked="{Binding IsSecondOnlyIfDamageDestroyChecked}">If Damage Dealt</RadioButton>
+                        </StackPanel>
+                    </GroupBox>
                 </StackPanel>
             </GroupBox>
             

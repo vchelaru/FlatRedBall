@@ -280,7 +280,9 @@ namespace GlueFormsCore.Controls
         private void FileWatchTimer_Tick(object sender, EventArgs e)
         {
             if (ProjectManager.ProjectBase != null && GlueState.Self.CurrentGlueProject != null)
-                FileWatchManager.Flush();
+            {
+                var throwaway = FileWatchManager.Flush();
+            }
         }
 
         private void UserControl_MouseDown(object sender, MouseButtonEventArgs e)
@@ -295,6 +297,18 @@ namespace GlueFormsCore.Controls
                 // navigate forward
                 TreeNodeStackManager.Self.GoForward();
             }
+        }
+
+        internal void ApplyGlueSettings(GlueSettingsSave glueSettingsSave)
+        {
+            if(glueSettingsSave.LeftTabWidthPixels > 1)
+            {
+                ViewModel.LeftPanelWidth = new GridLength(glueSettingsSave.LeftTabWidthPixels.Value);
+                // To prevent expansion from resetting:
+                ViewModel.LeftSplitterWidth = new GridLength(4);
+
+            }
+
         }
     }
 }

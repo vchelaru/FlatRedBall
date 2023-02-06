@@ -120,7 +120,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void RemoveReferencedFile(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
         Task RemoveReferencedFileAsync(ReferencedFileSave referencedFileToRemove, List<string> additionalFilesToRemove, bool regenerateAndSave = true);
 
-        Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null);
+        Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null, FilePath desiredFolder = null);
         
 
         #endregion

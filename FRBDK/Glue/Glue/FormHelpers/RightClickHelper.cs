@@ -222,6 +222,10 @@ namespace FlatRedBall.Glue.FormHelpers
 
         }
 
+        /// <summary>
+        /// Returns whether this is a folder inside GloalContent.
+        /// </summary>
+        /// <returns>Whether this is a folder inside GlobalContent.</returns>
         public bool IsFolderForGlobalContentFiles()
         {
             if (Parent == null || Tag != null)

@@ -1,6 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="FlatRedBall.Glue.Controls">
+                    xmlns:local="FlatRedBall.Glue.Controls"
+                    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                    xmlns:pt="http://propertytools.org/wpf"
+                    >
 
 
     <Color x:Key="Black">#ff302C2E</Color>
@@ -39,20 +42,56 @@
     
     <SolidColorBrush x:Key="Button.Pressed.Background" Color="{StaticResource Purple}"/>
     <SolidColorBrush x:Key="Button.Pressed.Border" Color="{StaticResource DarkBluePurple}"/>
-    
-    <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
-    <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+
+    <SolidColorBrush x:Key="Button.Disabled.Background" Color="{StaticResource DarkPurple}"/>
+    <SolidColorBrush x:Key="Button.Disabled.Border" Color="{StaticResource Black}"/>
     <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
 
     <Style TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
     </Style>
-    
+
+    <Style TargetType="{x:Type xctk:SplitButton}">
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+        <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
+
+    </Style>
+
+
+    <Style TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    </Style>
+
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    </Style>
 
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    </Style>
+
+
+    <Style TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    </Style>
+
+    <Style TargetType="{x:Type pt:TreeListBox}">
+        <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    </Style>
+
+    <Style TargetType="{x:Type RichTextBox}">
+        <Setter Property="Background" Value="{StaticResource DarkestBluePurpleBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DarkestBluePurpleHighlightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
     </Style>
 
     <Style TargetType="{x:Type UserControl}" x:Key="UserControlStyle">
@@ -62,6 +101,16 @@
 
 
     <Style TargetType="{x:Type TabControl}">
+        <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
+    </Style>
+
+    <Style TargetType="{x:Type ToolBarTray}">
+        <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
+        
+    </Style>
+
+    <Style TargetType="{x:Type ToolBar}">
         <Setter Property="Background" Value="{StaticResource BlackBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
     </Style>

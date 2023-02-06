@@ -304,6 +304,9 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(HasInheritance))]
+        public Visibility IncludeListsInScreensVisibility => (HasInheritance == false).ToVisibility();
+
         #endregion
 
         public AddEntityViewModel()

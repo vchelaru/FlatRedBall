@@ -34,6 +34,9 @@ namespace GlueFormsCore.Managers
         {
             currentElement = currentElement ?? GlueState.Self.CurrentElement;
 
+            // This method can be slow, so we should store off the base elements to regenerate and only do those, in tasks, one by one:
+            //HashSet<GlueElement> toRegenerate = new HashSet<GlueElement>();
+
             if (currentElement is EntitySave currentEntity)
             {
                 List<EntitySave> derivedEntities = ObjectFinder.Self.GetAllEntitiesThatInheritFrom(currentEntity.Name);
@@ -63,7 +66,7 @@ namespace GlueFormsCore.Managers
 
                     var element = nos.GetContainer();
 
-                    if (element != null)
+                    if (element != null && regenerateCode)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
                     }

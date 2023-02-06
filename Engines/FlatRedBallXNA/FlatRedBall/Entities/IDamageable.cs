@@ -13,8 +13,8 @@ namespace FlatRedBall.Entities
         decimal CurrentHealth { get; set; }
         decimal MaxHealth { get; set; }
 
-        Func<decimal, IDamageArea, decimal> ModifyDamageDealt { get; set; }
-        Action<decimal, IDamageArea> ReactToDamageDealt { get; set; }
+        Func<decimal, IDamageArea, decimal> ModifyDamageReceived { get; set; }
+        Action<decimal, IDamageArea> ReactToDamageReceived { get; set; }
         Action<decimal, IDamageArea> Died { get; set; }
 
 
@@ -68,14 +68,14 @@ namespace FlatRedBall.Entities
             }
         }
 
-        public static void TakeDamage(this IDamageable damageable, IDamageArea damageArea)
+        public static decimal TakeDamage(this IDamageable damageable, IDamageArea damageArea)
         {
             // The DamageArea provides the damage, so the order should be:
             // 1. Damageable modifies
             // 2. DamageArea modifies
             // 3. Damageable CurrentHealth -= 
-            // 4. Damageable.ReactToDamageDealt
-            // 5. Damageable.ReactToDamageDealt
+            // 4. Damageable.ReactToDamageReceived
+            // 5. DamageArea.ReactToDamageDealt
             // --if Damageable.CurrentHealth <= 0
             // 6. Damageable.Died
             // 7. DamageArea.KilledDamageable
@@ -86,21 +86,26 @@ namespace FlatRedBall.Entities
 
             var damage = damageArea.DamageToDeal;
 
-            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, damageArea) ?? damage;
+            var modifiedByDamageable = damageable.ModifyDamageReceived?.Invoke(damage, damageArea) ?? damage;
             var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
 
-            damageable.CurrentHealth -= modifiedByBoth;
-
-            damageable.ReactToDamageDealt?.Invoke(modifiedByBoth, damageArea);
-            damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
-
-            if(healthBefore > 0 && damageable.CurrentHealth <= 0)
+            if(modifiedByBoth != 0)
             {
-                damageable?.Died?.Invoke(modifiedByBoth, damageArea);
-                damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
+                damageable.CurrentHealth -= modifiedByBoth;
+
+                damageable.ReactToDamageReceived?.Invoke(modifiedByBoth, damageArea);
+                damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+                if(healthBefore > 0 && damageable.CurrentHealth <= 0)
+                {
+                    damageable?.Died?.Invoke(modifiedByBoth, damageArea);
+                    damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
+                }
             }
+
+            return modifiedByBoth;
         }
 
         // There could be situations where an object takes damage from something (like a tile shape collection) which
@@ -111,14 +116,14 @@ namespace FlatRedBall.Entities
         // wrappers for common types like TileShapeCollection.
         public static void TakeDamage(this IDamageable damageable, decimal damage)
         {
-            var modifiedByDamageable = damageable.ModifyDamageDealt?.Invoke(damage, null) ?? damage;
+            var modifiedByDamageable = damageable.ModifyDamageReceived?.Invoke(damage, null) ?? damage;
             //var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
 
             damageable.CurrentHealth -= modifiedByDamageable;
 
-            damageable.ReactToDamageDealt?.Invoke(modifiedByDamageable, null);
+            damageable.ReactToDamageReceived?.Invoke(modifiedByDamageable, null);
             //damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
 
             if (healthBefore > 0 && damageable.CurrentHealth <= 0)
