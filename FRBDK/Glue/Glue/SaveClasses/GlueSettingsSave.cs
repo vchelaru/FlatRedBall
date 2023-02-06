@@ -9,6 +9,8 @@ using System.IO;
 using EditorObjects.Collections;
 using FlatRedBall.IO.Csv;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
+using System.Windows;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -38,6 +40,8 @@ namespace FlatRedBall.Glue.SaveClasses
         public string FileName { get; set; }
         public bool IsFavorite { get; set; }
         public DateTime LastTimeAccessed { get; set; }
+
+        public override string ToString() => $"{FileName} {LastTimeAccessed}";
     }
 
     /// <summary>
@@ -87,6 +91,9 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
+        public static string SettingsFileNameJson => FileManager.UserApplicationDataForThisApplication +
+                       "settings.json";
+
 		public string LastProjectFile
 		{
 			get;
@@ -112,6 +119,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public List<string> RightTabs { get; set; } = new List<string>();
         public List<string> BottomTabs { get; set; } = new List<string>();
 
+        public double? LeftTabWidthPixels { get; set; }
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
@@ -138,6 +146,10 @@ namespace FlatRedBall.Glue.SaveClasses
             BuildToolAssociations.RemoveExternals();
 
             FileManager.XmlSerialize(this, SettingsFileName);
+
+            // for some reason the build tool associations die here, maybe because of the type converters? 
+            //var asJson = JsonConvert.SerializeObject(this, Formatting.Indented);
+            //FileManager.SaveText(asJson, SettingsFileNameJson);
 
             Associations.ReAddExternals();
             BuildToolAssociations.ReAddExternals();

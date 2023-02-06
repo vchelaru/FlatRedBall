@@ -150,11 +150,11 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("Rectangle", "RenderingLibrary.Math.Geometry.LineRectangle");
             mStandardElementToQualifiedTypes.Add("Polygon", "RenderingLibrary.Math.Geometry.LinePolygon");
 
-            mStandardElementToQualifiedTypes.Add("Arc", "SkiaPlugin.Renderables.RenderableArc");
-            mStandardElementToQualifiedTypes.Add("ColoredCircle", "SkiaPlugin.Renderables.RenderableCircle");
-            mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaPlugin.Renderables.RenderableLottieAnimation");
-            mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaPlugin.Renderables.RenderableRoundedRectangle");
-            mStandardElementToQualifiedTypes.Add("Svg", "SkiaPlugin.Renderables.RenderableSvg");
+            mStandardElementToQualifiedTypes.Add("Arc", "SkiaGum.Renderables.RenderableArc");
+            mStandardElementToQualifiedTypes.Add("ColoredCircle", "SkiaGum.Renderables.RenderableCircle");
+            mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaGum.Renderables.RenderableLottieAnimation");
+            mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaGum.Renderables.RenderableRoundedRectangle");
+            mStandardElementToQualifiedTypes.Add("Svg", "SkiaGum.Renderables.RenderableSvg");
 
 
             // What we will never support (as is)

@@ -179,6 +179,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var variableDefinition = nosAti?.VariableDefinitions.FirstOrDefault(item => item.Name == changedMember);
             var instruction = nos?.GetCustomVariable(changedMember);
             var property = nos.Properties.FirstOrDefault(item => item.Name == changedMember);
+            var nosElement = ObjectFinder.Self.GetElement(nos);
 
             #region Identify the typeName
             if (variableDefinition != null)
@@ -205,21 +206,21 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             if (typeName == null && nos.SourceType == SourceType.Entity)
             {
-                var nosEntity = ObjectFinder.Self.GetElement(nos);
-                var variableInEntity = nosEntity.GetCustomVariable(changedMember);
+                var variableInEntity = nosElement.GetCustomVariable(changedMember);
                 typeName = variableInEntity?.Type;
 
                 if(variableInEntity != null)
                 {
-                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosEntity);
+                    var getStateResult = ObjectFinder.Self.GetStateSaveCategory(variableInEntity, nosElement);
                     isState = getStateResult.IsState;
                     category = getStateResult.Category;
                     if(isState && category != null)
                     {
-                        typeName = nosEntity.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
+                        typeName = nosElement.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
                     }
                 }
             }
+
 
 
             if (forcedCurrentValue != null)
@@ -238,6 +239,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = nos.IncludeInICollidable;
             }
+
+            if(isState && currentValue?.ToString() == "<NONE>")
+            {
+                currentValue = null;
+            }
             #endregion
 
 
@@ -253,7 +259,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             }
 
-            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, ref nosName, ati, ref typeName, out value);
+            ConvertValue(ref changedMember, oldValue, currentValue, nos, currentElement, glueScreenName, isState, ref nosName, ati, ref typeName, out value);
 
             GlueVariableSetData data = GetGlueVariableSetDataDto(nosName, changedMember, typeName, value, currentElement, assignOrRecordOnly, isState);
 
@@ -264,16 +270,28 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // we need to un-assign the state. We can do this by looping through all variables controlled by the
                 // category and setting them to null values:
                 var ownerOfCategory = ObjectFinder.Self.GetElementContaining(category);
-
-                var variablesToAssign = ownerOfCategory?.CustomVariables
-                    .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
-                if(variablesToAssign != null)
+                // Only unassign if the state is defined by the same element as the nos's element. Otherwise the variables
+                // won't apply:
+                if(ownerOfCategory == nosElement)
                 {
-                    foreach(var variableToAssign in variablesToAssign)
+                    var variablesToAssign = ownerOfCategory?.CustomVariables
+                        .Where(item => !category.ExcludedVariables.Contains(item.Name)).ToArray();
+                    if(variablesToAssign != null)
                     {
-                        var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
-                        toReturn.AddRange(GetNamedObjectValueChangedDtos(variableToAssign.Name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                        foreach(var variableToAssign in variablesToAssign)
+                        {
+                            var defaultValue = ObjectFinder.Self.GetValueRecursively(nos, ownerOfCategory, variableToAssign.Name);
+
+                            var name = variableToAssign.Name;
+                            if(!string.IsNullOrEmpty(variableToAssign.SourceObject))
+                            {
+                                name = variableToAssign.SourceObject + "." + variableToAssign.SourceObjectProperty;
+                            }
+
+                            toReturn.AddRange(GetNamedObjectValueChangedDtos(name, null, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue:defaultValue));
+                        }
                     }
+
                 }
             }
 
@@ -332,6 +350,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         private void ConvertValue(ref string changedMember, object oldValue, 
             object currentValue, NamedObjectSave nos, GlueElement currentElement, string glueScreenName,
+            bool isState,
             ref string nosName, FlatRedBall.Glue.Elements.AssetTypeInfo ati, 
             ref string type, out string value)
         {
@@ -509,7 +528,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
 
-            if (value == null)
+            if (value == null && !isState && type != null)
             {
                 value = TypeManager.GetDefaultForType(type);
             }

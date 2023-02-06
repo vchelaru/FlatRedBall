@@ -178,6 +178,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 var ati = nos.GetAssetTypeInfo();
 
                 return ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                    ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                     ati == AvailableAssetTypes.CommonAtis.Circle ||
                     ati == AvailableAssetTypes.CommonAtis.Line ||
                     ati == AvailableAssetTypes.CommonAtis.Polygon;

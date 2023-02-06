@@ -44,8 +44,13 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         LineCircle HighlightCircle;
         LineRectangle HighlightRectangle;
 
+        List<RenderingLibrary.Math.Geometry.LineRectangle> SelectedRectangleMarkers = new List<LineRectangle>();
+        List<RenderingLibrary.Math.Geometry.LineCircle> SelectedCircleMarkers = new List<LineCircle>();
+
         List<RenderingLibrary.Math.Geometry.LineRectangle> frameRectangles = new List<LineRectangle>();
         List<RenderingLibrary.Math.Geometry.LineCircle> frameCircles = new List<LineCircle>();
+        float HighlightPadding => 3 / SystemManagers.Renderer.Camera.Zoom;
+        float SelectionPadding => 1 / SystemManagers.Renderer.Camera.Zoom;
 
         #endregion
 
@@ -80,6 +85,8 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
             DoHighlightLogic();
 
+            UpdateSelectionVisibilityToSelectedShapes();
+
             if (Cursor.PrimaryDown)
             {
                 DoDownLogic();
@@ -101,6 +108,53 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             return shouldUpdate;
         }
 
+        private void UpdateSelectionVisibilityToSelectedShapes()
+        {
+            var numberOfCirclesNeeded = SelectedState.Self.SelectedCircles.Count;
+
+            while(SelectedCircleMarkers.Count < numberOfCirclesNeeded)
+            {
+                var circle = new LineCircle(SystemManagers);
+                SystemManagers.ShapeManager.Add(circle);
+                SelectedCircleMarkers.Add(circle);
+            }
+            while(SelectedCircleMarkers.Count > numberOfCirclesNeeded)
+            {
+                var toRemove = SelectedCircleMarkers.Last();
+                SelectedCircleMarkers.RemoveAt(SelectedCircleMarkers.Count - 1);
+                SystemManagers.ShapeManager.Remove(toRemove);
+            }
+
+            for(int i = 0; i < SelectedCircleMarkers.Count; i++)
+            {
+                var marker = SelectedCircleMarkers[i];
+                UpdateVisualCircleToCircleSave(marker, SelectedState.Self.SelectedCircles[i]);
+                marker.Radius += SelectionPadding;
+            }
+
+            var numberOfRectanglesNeeded = SelectedState.Self.SelectedRectangles.Count;
+            while(SelectedRectangleMarkers.Count < numberOfRectanglesNeeded)
+            {
+                var rectangle = new LineRectangle(SystemManagers);
+                SystemManagers.ShapeManager.Add(rectangle);
+                SelectedRectangleMarkers.Add(rectangle);
+            }
+            while(SelectedRectangleMarkers.Count > numberOfRectanglesNeeded)
+            {
+                var toRemove = SelectedRectangleMarkers.Last();
+                SelectedRectangleMarkers.RemoveAt(SelectedRectangleMarkers.Count - 1);
+                SystemManagers.ShapeManager.Remove(toRemove);
+            }
+
+            for(int i = 0; i < SelectedRectangleMarkers.Count; i++)
+            {
+                var marker = SelectedRectangleMarkers[i];
+                UpdateVisualRectToAarectSave(marker, SelectedState.Self.SelectedRectangles[i], SelectionPadding);
+            }
+        }
+
+
+
         private void DoHighlightLogic()
         {
             /////////////Early Out////////////////
@@ -112,24 +166,19 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
             ///////////End Early Out////////////////
 
-            var padding = 2 / SystemManagers.Renderer.Camera.Zoom;
+            var highlightPadding = HighlightPadding;
 
             HighlightRectangle.Visible = ShapesOver.Rectangle != null;
             HighlightCircle.Visible = ShapesOver.Circle != null;
 
             if(ShapesOver.Rectangle != null)
             {
-                UpdateVisualRectToAarectSave(HighlightRectangle, ShapesOver.Rectangle);
-                HighlightRectangle.X -= padding;
-                HighlightRectangle.Y -= padding;
-                HighlightRectangle.Width += 2*padding;
-                HighlightRectangle.Height += 2*padding;
+                UpdateVisualRectToAarectSave(HighlightRectangle, ShapesOver.Rectangle, highlightPadding);
             }
             if(ShapesOver.Circle != null)
             {
-                HighlightCircle.X = ShapesOver.Circle.X;
-                HighlightCircle.Y = -ShapesOver.Circle.Y;
-                HighlightCircle.Radius = ShapesOver.Circle.Radius + padding;
+                UpdateVisualCircleToCircleSave(HighlightCircle, ShapesOver.Circle);
+                HighlightCircle.Radius += highlightPadding;
             }
         }
 
@@ -248,7 +297,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                         frameRectangles.Add(rectangle);
                     }
 
-                    UpdateVisualRectToAarectSave(rectangle, frameAarectSave);
+                    UpdateVisualRectToAarectSave(rectangle, frameAarectSave, 0);
                 }
 
                 foreach (var frameCircleSave in frame.ShapeCollectionSave.CircleSaves)
@@ -331,12 +380,19 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
         }
 
-        private static void UpdateVisualRectToAarectSave(LineRectangle rectangle, AxisAlignedRectangleSave frameAarectSave)
+        private static void UpdateVisualRectToAarectSave(LineRectangle rectangle, AxisAlignedRectangleSave frameAarectSave, float padding)
         {
-            rectangle.Width = frameAarectSave.ScaleX * 2;
-            rectangle.Height = frameAarectSave.ScaleY * 2;
-            rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX;
-            rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY;
+            rectangle.Width = frameAarectSave.ScaleX * 2 + padding*2;
+            rectangle.Height = frameAarectSave.ScaleY * 2 + padding * 2;
+            rectangle.X = frameAarectSave.X - frameAarectSave.ScaleX - padding;
+            rectangle.Y = -frameAarectSave.Y - frameAarectSave.ScaleY - padding;
+        }
+
+        private static void UpdateVisualCircleToCircleSave(LineCircle circle, CircleSave frameCircleSave)
+        {
+            circle.X = frameCircleSave.X;
+            circle.Y = -frameCircleSave.Y;
+            circle.Radius = frameCircleSave.Radius;
         }
     }
 }

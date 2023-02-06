@@ -20,6 +20,8 @@ namespace FlatRedBall.Entities
     {
         #region Fields/Properties
 
+        public Camera Camera { get; set; }
+
         bool hasActivityBeenCalled = false;
         private float defaultOrthoWidth;
         private float defaultOrthoHeight;
@@ -119,6 +121,9 @@ namespace FlatRedBall.Entities
 
         bool visible;
         AxisAlignedRectangle windowVisualization;
+        /// <summary>
+        /// Whether the visualization of the window is visible. This is typically only used to diagnose problems.
+        /// </summary>
         public bool Visible
         {
             get
@@ -150,7 +155,14 @@ namespace FlatRedBall.Entities
             }
         }
 
+        public Vector3 CameraOffset;
+
         #endregion
+
+        public CameraControllingEntity()
+        {
+            Camera = Camera.Main;
+        }
 
         /// <summary>
         /// Enables auto zooming which will zoom the camera (adjust orthogonal values) to attempt to keep all targets in screen.
@@ -342,24 +354,24 @@ namespace FlatRedBall.Entities
                 var mapBottom = Map.Top - Map.Height + effectivePaddingY;
                 var mapTop = Map.Top - effectivePaddingY;
 
-                if (Camera.Main.OrthogonalWidth > Map.Width)
+                if (Camera.OrthogonalWidth > Map.Width)
                 {
                     target.X = mapLeft + Map.Width / 2;
                 }
                 else
                 {
-                    target.X = System.Math.Max(target.X, mapLeft + Camera.Main.OrthogonalWidth / 2);
-                    target.X = System.Math.Min(target.X, mapRight - Camera.Main.OrthogonalWidth / 2);
+                    target.X = System.Math.Max(target.X, mapLeft + Camera.OrthogonalWidth / 2);
+                    target.X = System.Math.Min(target.X, mapRight - Camera.OrthogonalWidth / 2);
                 }
 
-                if (Camera.Main.OrthogonalHeight > Map.Height)
+                if (Camera.OrthogonalHeight > Map.Height)
                 {
                     target.Y = mapBottom + Map.Height / 2;
                 }
                 else
                 {
-                    target.Y = System.Math.Max(target.Y, mapBottom + Camera.Main.OrthogonalHeight / 2);
-                    target.Y = System.Math.Min(target.Y, mapTop - Camera.Main.OrthogonalHeight / 2);
+                    target.Y = System.Math.Max(target.Y, mapBottom + Camera.OrthogonalHeight / 2);
+                    target.Y = System.Math.Min(target.Y, mapTop - Camera.OrthogonalHeight / 2);
                 }
             }
 
@@ -426,18 +438,18 @@ namespace FlatRedBall.Entities
 
             if (SnapToPixel)
             {
-                var zoom = Camera.Main.DestinationRectangle.Height / Camera.Main.OrthogonalHeight;
+                var zoom = Camera.DestinationRectangle.Height / Camera.OrthogonalHeight;
 
                 var invertZoom = 1 / zoom;
 
-                Camera.Main.X = MathFunctions.RoundFloat(effectiveThis.X, invertZoom) + SnapToPixelOffset * invertZoom;
-                Camera.Main.Y = MathFunctions.RoundFloat(effectiveThis.Y, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.X = MathFunctions.RoundFloat(effectiveThis.X + CameraOffset.X, invertZoom) + SnapToPixelOffset * invertZoom;
+                Camera.Y = MathFunctions.RoundFloat(effectiveThis.Y + CameraOffset.Y, invertZoom) + SnapToPixelOffset * invertZoom;
 
             }
             else
             {
-                Camera.Main.X = effectiveThis.X;
-                Camera.Main.Y = effectiveThis.Y;
+                Camera.X = effectiveThis.X + CameraOffset.X;
+                Camera.Y = effectiveThis.Y + CameraOffset.Y;
             }
         }
 
@@ -452,13 +464,32 @@ namespace FlatRedBall.Entities
             if(currentSeparationDistance > noZoomDistance)
             {
                 var newZoom = System.Math.Min(furthestZoom, currentSeparationDistance / noZoomDistance);
-                Camera.Main.OrthogonalHeight = defaultOrthoHeight * newZoom;
+                Camera.OrthogonalHeight = defaultOrthoHeight * newZoom;
             }
             else
             {
-                Camera.Main.OrthogonalHeight = defaultOrthoHeight;
+                Camera.OrthogonalHeight = defaultOrthoHeight;
             }
-            Camera.Main.FixAspectRatioYConstant();
+            Camera.FixAspectRatioYConstant();
+        }
+
+        public async void ShakeScreen(float shakeRadius, float durationInSeconds)
+        {
+            const float individualShakeDurationInSeconds = .05f;
+
+            var random = FlatRedBallServices.Random;
+            for(float timePassed = 0; timePassed < durationInSeconds; timePassed += individualShakeDurationInSeconds)
+            {
+                var point = random.PointInCircle(shakeRadius);
+
+                CameraOffset.X = point.X;
+                CameraOffset.Y = point.Y;
+
+                await TimeManager.DelaySeconds(individualShakeDurationInSeconds);
+            }
+
+            CameraOffset.X = 0;
+            CameraOffset.Y = 0;
         }
     }
 }

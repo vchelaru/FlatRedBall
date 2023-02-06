@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -83,6 +84,12 @@ namespace FlatRedBall.Math.Geometry
         #region Constructors
 
         public Point(ref Vector3 vector)
+        {
+            X = vector.X;
+            Y = vector.Y;
+        }
+
+        public Point(ref Vector2 vector)
         {
             X = vector.X;
             Y = vector.Y;

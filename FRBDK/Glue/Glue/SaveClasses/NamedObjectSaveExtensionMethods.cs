@@ -848,7 +848,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 EntitySave instanceElement = instance.GetReferencedElement() as EntitySave;
 
-                IElement listElementType = ObjectFinder.Self.GetIElement(listNos.SourceClassGenericType);
+                var listElementType = ObjectFinder.Self.GetElement(listNos.SourceClassGenericType);
 
                 if (instanceElement == null || listElementType == null)
                 {
@@ -870,6 +870,7 @@ namespace FlatRedBall.Glue.SaveClasses
             var ati = instance.GetAssetTypeInfo();
             var isOfCorrectType = instance.SourceType == SourceType.FlatRedBallType &&
                 (
+                    ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                     ati == AvailableAssetTypes.CommonAtis.Circle ||
                     ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
                     ati == AvailableAssetTypes.CommonAtis.Polygon
@@ -894,7 +895,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 NamedObjectSave foundNos = null;
 
-                IElement currentElement = ObjectFinder.Self.GetIElement(container.BaseElement);
+                var currentElement = ObjectFinder.Self.GetElement(container.BaseElement);
 
                 while (currentElement != null)
                 {
@@ -907,7 +908,7 @@ namespace FlatRedBall.Glue.SaveClasses
                     }
                     else
                     {
-                        currentElement = ObjectFinder.Self.GetIElement(currentElement.BaseElement);
+                        currentElement = ObjectFinder.Self.GetElement(currentElement.BaseElement);
 
                         if (currentElement == null)
                         {

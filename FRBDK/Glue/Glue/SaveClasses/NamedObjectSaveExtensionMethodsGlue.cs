@@ -73,6 +73,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
             else if (AvailableClassTypeConverter.IsFlatRedBallType(typeOfNewObject) ||
                 namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                 namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Circle ||
                 namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Line ||
                 namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon

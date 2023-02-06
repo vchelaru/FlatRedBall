@@ -15,6 +15,7 @@ using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Runtime.InteropServices;
+using GlueFormsCore.Controls;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -216,7 +217,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public void UpdateGlueSettingsFromCurrentGlueStateImmediately(bool saveToDisk = true)
         {
-            var save = ProjectManager.GlueSettingsSave;
+            var save = GlueState.Self.GlueSettingsSave;
 
             string lastFileName = null;
 
@@ -291,6 +292,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             SetTabs(save.CenterTabs, PluginManager.TabControlViewModel.CenterTabItems);
             SetTabs(save.RightTabs, PluginManager.TabControlViewModel.RightTabItems);
             SetTabs(save.BottomTabs, PluginManager.TabControlViewModel.BottomTabItems);
+
+            var panel = MainPanelControl.Self;
+
+            if(MainPanelControl.ViewModel.LeftPanelWidth.GridUnitType == System.Windows.GridUnitType.Pixel)
+            {
+                save.LeftTabWidthPixels = MainPanelControl.ViewModel.LeftPanelWidth.Value;
+            }
+            else
+            {
+                save.LeftTabWidthPixels = null;
+            }
+            // do we care about the other panels?
+
 
             if (saveToDisk)
             {

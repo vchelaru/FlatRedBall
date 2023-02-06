@@ -29,6 +29,13 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         StackingCollision = 6,
         MoveSoftCollision = 7,
     }
+
+    public enum CollisionDestroyType
+    {
+        Always,
+        OnlyIfDealtDamage
+    }
+
     #endregion
 
     public class CollisionRelationshipViewModel :
@@ -725,6 +732,9 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         #region Damage
 
+        bool UsesDamageV2 => GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.DamageableHasHealth;
+
+
         public bool IsFirstDamageable
         {
             get => Get<bool>();
@@ -758,7 +768,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             // if the other is a dmaage area.
             //((IsFirstDamageable && IsSecondDamageArea) ||
             //(IsSecondDamageable && IsFirstDamageArea)).ToVisibility();
-            (IsSecondDamageArea || IsFirstDamageArea).ToVisibility();
+            (UsesDamageV2 && (IsSecondDamageArea || IsFirstDamageArea)).ToVisibility();
 
         [SyncedProperty]
         public bool IsDealDamageChecked
@@ -784,12 +794,66 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             set => SetAndPersist(value);
         }
 
+        [DependsOn(nameof(IsDestroyFirstOnDamageChecked))]
+        [DependsOn(nameof(DestroyFirstOnDamageVisibility))]
+        public Visibility FirstDestructionOptionsVisibility =>
+            (IsDestroyFirstOnDamageChecked && DestroyFirstOnDamageVisibility == Visibility.Visible).ToVisibility();
+
+        [SyncedProperty]
+        public CollisionDestroyType FirstCollisionDestroyType
+        {
+            get => Get<CollisionDestroyType>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(FirstCollisionDestroyType))]
+        public bool IsFirstAlwaysDestroyChecked
+        {
+            get => FirstCollisionDestroyType== CollisionDestroyType.Always;
+            set { if(value) FirstCollisionDestroyType= CollisionDestroyType.Always; }
+        }
+        [DependsOn(nameof(FirstCollisionDestroyType))]
+        public bool IsFirstOnlyIfDamageDestroyChecked
+        {
+            get => FirstCollisionDestroyType== CollisionDestroyType.OnlyIfDealtDamage;
+            set { if (value) FirstCollisionDestroyType = CollisionDestroyType.OnlyIfDealtDamage; }
+        }
+
+
+
         [SyncedProperty]
         public bool IsDestroySecondOnDamageChecked
         {
             get => Get<bool>();
             set => SetAndPersist(value);
         }
+
+        [DependsOn(nameof(IsDestroySecondOnDamageChecked))]
+        [DependsOn(nameof(DestroySecondOnDamageVisibility))]
+        public Visibility SecondDestructionOptionsVisibility =>
+            (IsDestroySecondOnDamageChecked && DestroySecondOnDamageVisibility == Visibility.Visible).ToVisibility();
+
+        [SyncedProperty]
+        public CollisionDestroyType SecondCollisionDestroyType
+        {
+            get => Get<CollisionDestroyType>();
+            set => SetAndPersist(value);
+        }
+
+        [DependsOn(nameof(SecondCollisionDestroyType))]
+        public bool IsSecondAlwaysDestroyChecked
+        {
+            get => SecondCollisionDestroyType== CollisionDestroyType.Always;
+            set { if (value) SecondCollisionDestroyType = CollisionDestroyType.Always; }
+        }
+
+        [DependsOn(nameof(SecondCollisionDestroyType))]
+        public bool IsSecondOnlyIfDamageDestroyChecked
+        {
+            get => SecondCollisionDestroyType == CollisionDestroyType.OnlyIfDealtDamage;
+            set { if (value) SecondCollisionDestroyType = CollisionDestroyType.OnlyIfDealtDamage; }
+        }
+
 
         [DependsOn(nameof(IsSecondDamageable))]
         string FirstDestroyDamageOrCollision => IsSecondDamageable ? "Damage" : "Collision";

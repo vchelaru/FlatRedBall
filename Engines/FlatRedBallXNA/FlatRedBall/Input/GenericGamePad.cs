@@ -121,6 +121,15 @@ namespace FlatRedBall.Input
 
         JoystickCapabilities JoystickCapabilities;
 
+        bool WasConnectedThisFrame
+        {
+            get
+            { 
+
+                return !lastJoystickState.IsConnected && joystickState.IsConnected;
+            }
+        }
+
         #endregion
 
         public GenericGamePad(int gamepadIndex)
@@ -338,7 +347,19 @@ namespace FlatRedBall.Input
         {
 #if MONOGAME
             var state = Joystick.GetState(GamepadIndex);
-            JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+
+#if MONOGAME_381
+
+
+            if(JoystickCapabilities.DisplayName == null || WasConnectedThisFrame)
+#else
+            // we won't worry about this on older FRBs. Maybe it would be worth it, but it may also introduce bugs if
+            // the first frame is connected but doesn't have caps
+            if (true)
+#endif
+            {
+                JoystickCapabilities = Joystick.GetCapabilities(GamepadIndex);
+            }
 
             // each analog stick has an up/down
             var currentAnalogStickCount = JoystickCapabilities.AxisCount / 2;

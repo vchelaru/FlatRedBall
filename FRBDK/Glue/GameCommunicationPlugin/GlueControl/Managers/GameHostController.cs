@@ -204,7 +204,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
             // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
-            if(GlueState.Self.CurrentMainProject.DotNetVersion != "v6.0")
+            var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6;
+            if (!is6OrGreater)
             {
                 var project = GlueState.Self.CurrentGlueProject;
                 if(project?.DisplaySettings?.AllowWindowResizing == true && glueViewSettingsViewModel.EmbedGameInGameTab)

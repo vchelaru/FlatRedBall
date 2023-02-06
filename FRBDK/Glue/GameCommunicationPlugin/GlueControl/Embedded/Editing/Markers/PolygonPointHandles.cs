@@ -32,6 +32,13 @@ namespace GlueControl.Editing
         public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
         {
             var itemAsPolygon = item as Polygon;
+            // special case for derived polygons, this will handle capsule polygon.
+            // If in the future this is a problem, then we will add a new Glux file version:
+            if (item?.GetType() != typeof(Polygon))
+            {
+                itemAsPolygon = null;
+            }
+
             Visible = selectionMarker.Visible && itemAsPolygon != null;
 
             if (itemAsPolygon == null)

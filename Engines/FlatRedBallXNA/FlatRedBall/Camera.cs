@@ -587,16 +587,10 @@ namespace FlatRedBall
             UpdateViewProjectionMatrix(true);
         }
 
-
-
-
         public Matrix GetLookAtMatrix()
         {
             return GetLookAtMatrix(false);
         }
-
-
-
 
         public Matrix GetLookAtMatrix(bool relativeToCamera)
         {
@@ -1286,7 +1280,23 @@ namespace FlatRedBall
                 mDestinationRectangle.Height);
         }
 
-        #region XML Docs
+
+        public void WorldToScreen(float x, float y, float z, out int screenX, out int screenY)
+        {
+            screenX = 0;
+            screenY = 0;
+
+            MathFunctions.AbsoluteToWindow(x, y, z, ref screenX, ref screenY, this);
+        }
+
+        public void WorldToScreen(Vector3 position, out int screenX, out int screenY)
+        {
+            screenX = 0;
+            screenY = 0;
+
+            MathFunctions.AbsoluteToWindow(position.X, position.Y, position.Z, ref screenX, ref screenY, this);
+        }
+
         /// Sets the viewport for this camera to a standard split-screen viewport
         /// </summary>
         /// <param name="viewport">The viewport to use for this camera. If null, the camera will not automatically 
@@ -1343,7 +1353,6 @@ namespace FlatRedBall
             }
 
         }
-        #endregion
 
         #region Internal Methods
 

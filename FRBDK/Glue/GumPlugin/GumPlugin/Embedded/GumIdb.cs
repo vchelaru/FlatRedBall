@@ -511,7 +511,8 @@ namespace FlatRedBall.Gum
             }
             else if (mFrbToGumLayers.ContainsKey(FlatRedBall.Graphics.Renderer.CurrentLayer))
             {
-                mManagers.Draw(mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer]);
+                var layers = mFrbToGumLayers[FlatRedBall.Graphics.Renderer.CurrentLayer];
+                mManagers.Draw(layers);
             }
 
 

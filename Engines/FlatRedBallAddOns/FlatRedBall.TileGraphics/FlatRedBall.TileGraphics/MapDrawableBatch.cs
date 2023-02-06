@@ -1022,6 +1022,9 @@ namespace FlatRedBall.TileGraphics
             //////////////////End Early Out/////////////////
 
 
+            AdjustOffsetAndParallax(camera);
+
+            ForceUpdateDependencies();
 
             int firstVertIndex;
             int lastVertIndex;
@@ -1351,15 +1354,25 @@ namespace FlatRedBall.TileGraphics
         }
 
 
-        #region XML Docs
-        /// <summary>
-        /// Here we update our batch - but this batch doesn't
-        /// need to be updated
-        /// </summary>
-        #endregion
+
         public void Update()
         {
             var camera = Camera.Main;
+            AdjustOffsetAndParallax(camera);
+
+            this.TimedActivity(TimeManager.SecondDifference, TimeManager.SecondDifferenceSquaredDividedByTwo, TimeManager.LastSecondDifference);
+
+            // The MapDrawableBatch may be attached to a LayeredTileMap (the container of all layers)
+            // If so, the player may move the LayeredTileMap and expect all contained layers to move along
+            // with it.  To allow this, we need to have dependencies updated.  We'll do this by simply updating
+            // dependencies here, although I don't know at this point if there's a better way - like if we should
+            // be adding this to the SpriteManager's PositionedObjectList.  This is an improvement so we'll do it for
+            // now and revisit this in case there's a problem in the future.
+            this.UpdateDependencies(TimeManager.CurrentTime);
+        }
+
+        private void AdjustOffsetAndParallax(Camera camera)
+        {
             float leftView = camera.AbsoluteLeftXEdgeAt(0);
             float topView = camera.AbsoluteTopYEdgeAt(0);
 
@@ -1384,17 +1397,6 @@ namespace FlatRedBall.TileGraphics
                 this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
                 this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
             }
-
-
-            this.TimedActivity(TimeManager.SecondDifference, TimeManager.SecondDifferenceSquaredDividedByTwo, TimeManager.LastSecondDifference);
-
-            // The MapDrawableBatch may be attached to a LayeredTileMap (the container of all layers)
-            // If so, the player may move the LayeredTileMap and expect all contained layers to move along
-            // with it.  To allow this, we need to have dependencies updated.  We'll do this by simply updating
-            // dependencies here, although I don't know at this point if there's a better way - like if we should
-            // be adding this to the SpriteManager's PositionedObjectList.  This is an improvement so we'll do it for
-            // now and revisit this in case there's a problem in the future.
-            this.UpdateDependencies(TimeManager.CurrentTime);
         }
 
         // TODO: I would like to somehow make this a property on the LayeredTileMap, but right now it is easier to put them here

@@ -3,12 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.TreeViewPlugin.Views" xmlns:pt="http://propertytools.org/wpf" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
+             xmlns:local="clr-namespace:OfficialPlugins.TreeViewPlugin.Views" 
+             xmlns:pt="http://propertytools.org/wpf" xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="350">
-    <UserControl.Resources>
-
-    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" x:Name="ButtonsToolBar"></RowDefinition>

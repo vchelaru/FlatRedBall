@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.Generic;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -21,7 +22,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Write Fields/Properties for CustomVariables
 
-        public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable)
+        public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, bool forceGenerateExposed = false)
         {
             VariableDefinition variableDefinition = null;
             if (!string.IsNullOrEmpty(customVariable.SourceObject))
@@ -83,7 +84,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // to have a property that fires
                     // the event.
                     // If it's Visible, it's handled by the IVisible generator
-                    if ((!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible")
+                    var shouldGenerateDueToExposed = (!isExposedExistingMember || customVariable.CreatesEvent) && customVariable.Name != "Visible";
+                    shouldGenerateDueToExposed = shouldGenerateDueToExposed || forceGenerateExposed;
+                    if (shouldGenerateDueToExposed)
                     {
                         CreateNewVariableMember(codeBlock, customVariable, isExposedExistingMember, saveObject);
                     }
@@ -158,13 +161,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, IElement element)
+        private static void CreateNewVariableMember(ICodeBlock codeBlock, CustomVariable customVariable, bool isExposing, GlueElement element)
         {
             string variableAssignment = "";
 
             if (customVariable.DefaultValue != null)
             {
-                if (!IsTypeFromCsv(customVariable))
+                if (!IsTypeFromCsv(customVariable, element))
                 {
                     variableAssignment =
                         CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
@@ -892,7 +895,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             string customVariableType;
             bool isTypeFromCsv = false;
-            if (IsTypeFromCsv(customVariable))
+            if (IsTypeFromCsv(customVariable, element as GlueElement))
             {
                 // This is a type defined in a CSV
                 ReferencedFileSave rfsForCsv = ObjectFinder.Self.GetAllReferencedFiles().FirstOrDefault(item =>
@@ -1574,10 +1577,10 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        internal static bool IsTypeFromCsv(CustomVariable customVariable)
+        internal static bool IsTypeFromCsv(CustomVariable customVariable, GlueElement glueElement = null)
         {
             if(customVariable != null && customVariable.Type != null &&
-                customVariable.GetIsVariableState() == false &&
+                customVariable.GetIsVariableState(glueElement) == false &&
                 customVariable.Type.Contains(".") &&
                 customVariable.GetRuntimeType() == null)
             {

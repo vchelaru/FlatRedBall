@@ -1706,6 +1706,7 @@ namespace FlatRedBall.Math.Geometry
 
         public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
         {
+            this.ClearLastCollisionLists();
             line.LastCollisionPoint = new Point(double.NaN, double.NaN);
 
             Segment a = line.AsSegment();
@@ -1824,6 +1825,15 @@ namespace FlatRedBall.Math.Geometry
                     FillSegments(currentShapeSegments, polygon);
                     CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
                 }
+            }
+
+            if (collidedObject as AxisAlignedRectangle != null)
+            {
+                mLastCollisionAxisAlignedRectangles.Add((AxisAlignedRectangle)collidedObject);
+            }
+            else if (collidedObject as Polygon != null)
+            {
+                mLastCollisionPolygons.Add((Polygon)collidedObject);
             }
 
             line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);

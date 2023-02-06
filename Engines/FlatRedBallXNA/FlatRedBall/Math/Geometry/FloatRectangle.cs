@@ -1,24 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FlatRedBall.Math.Geometry
 {
-    #region XML Docs
     /// <summary>
-    /// A rectangle class using floats for its bounds.  
+    /// A rectangle class using floats for its bounds. This was previously a class. There might be breaking changes.
     /// </summary>
-    #endregion
-    public class FloatRectangle : IEquatable<FloatRectangle>
+    public struct FloatRectangle : IEquatable<FloatRectangle>
     {
         #region Fields
 
-        #region XML Docs
         /// <summary>
         /// A Rectangle with its top-left point at (0,0) with a width and height of 1.
         /// </summary>
-        #endregion
-        public static FloatRectangle Default = new FloatRectangle();
+        public static FloatRectangle Default = new FloatRectangle(0, 1, 0, 1);
         public static FloatRectangle Invalid = new FloatRectangle(float.NaN, float.NaN, float.NaN, float.NaN);
         public float Top;
         public float Bottom;
@@ -27,21 +21,20 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
-
-        public FloatRectangle()
-        {
-            Top = 0;
-            Bottom = 1;
-            Left = 0;
-            Right = 1;
-        }
-
         public FloatRectangle(float top, float bottom, float left, float right)
         {
             Top = top;
             Bottom = bottom;
             Left = left;
             Right = right;
+        }
+
+        public bool Intersects(FloatRectangle other)
+        {
+            return other.Left < Right &&
+                   Left < other.Right &&
+                   other.Bottom < Top &&
+                   Bottom < other.Top;
         }
 
         public override string ToString()

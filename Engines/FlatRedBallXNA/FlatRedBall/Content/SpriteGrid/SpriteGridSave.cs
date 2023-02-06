@@ -199,7 +199,7 @@ namespace FlatRedBall.Content.SpriteGrid
             if (DisplayRegionGridSave != null)
             {
 
-                TextureGrid<FloatRectangle> displayRegionGrid =
+                TextureGrid<FloatRectangle?> displayRegionGrid =
                     DisplayRegionGridSave.ToDisplayRegionGrid(GridSpacing);
                 if (displayRegionGrid.BaseTexture == null)
                 {

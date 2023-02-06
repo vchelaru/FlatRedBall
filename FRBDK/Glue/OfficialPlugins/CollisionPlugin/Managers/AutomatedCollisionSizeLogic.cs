@@ -74,6 +74,11 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     small = x - Get("Radius");
                     big = x + Get("Radius");
                 }
+                else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
+                {
+                    small = x - Get("Width");
+                    big = x + Get("Width");
+                }
                 else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
                 {
                     small = x - Get("Width");
@@ -103,6 +108,11 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                 {
                     small = y - Get("Radius");
                     big = y + Get("Radius");
+                }
+                else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
+                {
+                    small = y - Get("Height") / 2;
+                    big = y + Get("Height") / 2;
                 }
                 else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
                 {
@@ -153,6 +163,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
             return ati == AvailableAssetTypes.CommonAtis.Circle ||
                 ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle ||
+                ati == AvailableAssetTypes.CommonAtis.CapsulePolygon ||
                 ati == AvailableAssetTypes.CommonAtis.Polygon;
         }
 

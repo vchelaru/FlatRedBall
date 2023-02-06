@@ -112,10 +112,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueSettings.RecentFileList.Add(file);
             }
 
+            GlueSettings.RecentFileList = GlueSettings.RecentFileList
+                // Put favorites up front so we don't remove them from the recent files below
+                .OrderBy(item => !item.IsFavorite)
+                .ThenByDescending(item =>  item.LastTimeAccessed).ToList();
+
             // Vic bounces around projects enough that sometimes he needs more...
             // Increase from 30 up now that we have a dedicated window
             // Or why not 60?
-            const int maxItemCount = 60;
+            int maxItemCount = 60 + GlueSettings.RecentFileList.Count(item => item.IsFavorite);
 
             if (GlueSettings.RecentFileList.Count > maxItemCount)
             {
