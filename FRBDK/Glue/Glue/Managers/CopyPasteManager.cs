@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,13 @@ namespace FlatRedBall.Glue.Managers
         {
             if(copiedObjectClone is ReferencedFileSave asRfs)
             {
-                await GlueCommands.Self.GluxCommands.DuplicateAsync(asRfs, GlueState.Self.CurrentElement);
+                var currentTreeNode = GlueState.Self.CurrentTreeNode;
+                FilePath desiredFolder = null;
+                if(currentTreeNode.IsFolderInFilesContainerNode() || currentTreeNode.IsFolderForGlobalContentFiles())
+                {
+                    desiredFolder = GlueState.Self.ContentDirectoryPath + currentTreeNode.GetRelativeFilePath();
+                }
+                await GlueCommands.Self.GluxCommands.DuplicateAsync(asRfs, GlueState.Self.CurrentElement, desiredFolder);
             }
             else if(copiedObjectClone is NamedObjectSave asNos)
             {

@@ -1286,7 +1286,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public async Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null)
+        public async Task DuplicateAsync(ReferencedFileSave rfs, GlueElement forcedContainer = null, FilePath desiredFolder = null)
         {
             await TaskManager.Self.AddAsync(async () =>
             {
@@ -1298,7 +1298,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var container = forcedContainer ?? rfs.GetContainer();
 
-                var directoryOnDisk = FileManager.GetDirectory(file);
+                var destinationDirectoryOnDisk = desiredFolder.FullPath ?? FileManager.GetDirectory(file);
                 var extension = FileManager.GetExtension(rfs.Name);
 
                 while (!NameVerifier.IsReferencedFileNameValid(stripped,
@@ -1306,15 +1306,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     newRfs, 
                     container, 
                     out string throwaway) ||
-                    System.IO.File.Exists(directoryOnDisk + stripped + "." + extension)
+                    System.IO.File.Exists(destinationDirectoryOnDisk + stripped + "." + extension)
                     )
                 {
                     stripped = StringFunctions.IncrementNumberAtEnd(stripped);
                 }
 
-                newRfs.Name = FileManager.GetDirectory(rfs.Name, RelativeType.Relative) + stripped + "." + FileManager.GetExtension(rfs.Name);
+                newRfs.Name = FileManager.MakeRelative(destinationDirectoryOnDisk + stripped + "." + FileManager.GetExtension(rfs.Name), GlueState.Self.ContentDirectory);
 
-                var destinationFile = FileManager.GetDirectory(file) + stripped + "." + FileManager.GetExtension(file);
+                var destinationFile = destinationDirectoryOnDisk + stripped + "." + FileManager.GetExtension(file);
 
                 System.IO.File.Copy(file, destinationFile);
 

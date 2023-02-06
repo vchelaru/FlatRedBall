@@ -204,6 +204,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
         }
 
+        public FilePath ContentDirectoryPath => ContentDirectory != null
+            ? new FilePath(ContentDirectory) : null;
+
         /// <summary>
         /// Returns the current Glue code project file name
         /// </summary>
