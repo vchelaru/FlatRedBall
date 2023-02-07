@@ -32,14 +32,24 @@ namespace FlatRedBall.Math.Geometry
         /// <summary>
         /// Checks whether this rectangle's defined area overlaps with another <see cref="FloatRectangle"/>.
         /// </summary>
-        /// <param name="other">Rectangle to check.</param>
+        /// <param name="value">Rectangle to check.</param>
         /// <returns></returns>
-        public bool Intersects(FloatRectangle other)
+        public bool Intersects(FloatRectangle value)
         {
-            return other.Left < Right &&
-                   Left < other.Right &&
-                   other.Bottom < Top &&
-                   Bottom < other.Top;
+            return value.Left < Right &&
+                   Left < value.Right &&
+                   value.Bottom < Top &&
+                   Bottom < value.Top;
+        }
+
+        /// <summary>
+        /// Gets whether or not the provided <see cref="FloatRectangle"/> lies within the bounds of this <see cref="FloatRectangle"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="FloatRectangle"/> to check for inclusion in this <see cref="FloatRectangle"/>.</param>
+        /// <returns><c>true</c> if the provided <see cref="FloatRectangle"/>'s bounds lie entirely inside this <see cref="FloatRectangle"/>; <c>false</c> otherwise.</returns>
+        public bool Contains(FloatRectangle value)
+        {
+            return value.Left >= Left && value.Right <= Right && value.Top <= Top && value.Bottom >= Bottom;
         }
 
         /// <summary>
