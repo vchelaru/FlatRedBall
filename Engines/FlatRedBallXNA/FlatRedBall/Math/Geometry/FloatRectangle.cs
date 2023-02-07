@@ -21,6 +21,34 @@ namespace FlatRedBall.Math.Geometry
 
         #endregion
 
+        #region Properties
+
+        public float Width { get => Right - Left; }
+        public float Height { get => Top - Bottom; }
+
+        /// <summary>
+        /// A <see cref="Point"/> located in the center of this <see cref="Rectangle"/>.
+        /// </summary>
+        public Point Center
+        {
+            get
+            {
+                return new Point(Left + (Width / 2), Top - (Height / 2));
+            }
+            set
+            {
+                float halfWidth = Width / 2;
+                float halfHeight = Height / 2;
+
+                Top = (float)value.Y + halfHeight;
+                Bottom = (float)value.Y - halfHeight;
+                Right = (float)value.X + halfWidth;
+                Left = (float)value.X - halfWidth;
+            }
+        }
+
+        #endregion
+
         public FloatRectangle(float top, float bottom, float left, float right)
         {
             Top = top;
