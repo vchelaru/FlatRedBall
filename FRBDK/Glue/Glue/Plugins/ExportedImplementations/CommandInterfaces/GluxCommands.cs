@@ -1298,7 +1298,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 var container = forcedContainer ?? rfs.GetContainer();
 
-                var destinationDirectoryOnDisk = desiredFolder.FullPath ?? FileManager.GetDirectory(file);
+                var destinationDirectoryOnDisk = desiredFolder?.FullPath ?? FileManager.GetDirectory(file);
                 var extension = FileManager.GetExtension(rfs.Name);
 
                 while (!NameVerifier.IsReferencedFileNameValid(stripped,

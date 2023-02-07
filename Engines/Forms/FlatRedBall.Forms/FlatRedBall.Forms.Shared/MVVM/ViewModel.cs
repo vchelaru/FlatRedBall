@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Instructions.Reflection;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -21,6 +22,11 @@ namespace FlatRedBall.Forms.MVVM
         public DependsOnAttribute(string owner, string parentPropertyName)
         {
             ParentProperty = owner + "." + parentPropertyName;
+        }
+
+        public override string ToString()
+        {
+            return $"Depends on {ParentProperty}";
         }
 
     }
@@ -79,10 +85,10 @@ namespace FlatRedBall.Forms.MVVM
         protected bool Set<T>(T propertyValue, [CallerMemberName]string propertyName = null)
         {
             
+            var oldValue = Get<T>(propertyName);
+
             if(propertyValue is INotifyCollectionChanged collection)
             {
-                var oldValue = Get<T>(propertyName);
-
                 if(oldValue is INotifyCollectionChanged oldCollection)
                 {
                     oldCollection.CollectionChanged -= CollectionChangedInternal;
@@ -90,15 +96,16 @@ namespace FlatRedBall.Forms.MVVM
                 collection.CollectionChanged += CollectionChangedInternal;
             }
 
-            bool didSet = SetWithoutNotifying(propertyValue, propertyName);
+            bool didSet = SetWithoutNotifying(propertyValue, propertyName, oldValue);
 
             if (didSet)
             {
-                NotifyPropertyChanged(propertyName);
+                NotifyPropertyChanged(propertyName, oldValue, propertyValue);
             }
 
             return didSet;
 
+            // Careful, this causes event accumulation. Need to solve this!!
             void CollectionChangedInternal(object sender, NotifyCollectionChangedEventArgs e)
             {
                 NotifyPropertyChanged(propertyName);
@@ -106,29 +113,17 @@ namespace FlatRedBall.Forms.MVVM
         }
 
 
-        protected bool SetWithoutNotifying<T>(T propertyValue, [CallerMemberName]string propertyName = null)
+        protected bool SetWithoutNotifying<T>(T propertyValue, string propertyName, T oldValue)
         {
             var didSet = false;
 
-            var isDependsOwner = dependsOnOwners?.Contains(propertyName) == true;
 
             if (propertyDictionary.ContainsKey(propertyName))
             {
-                var oldValue = (T)propertyDictionary[propertyName];
                 if (EqualityComparer<T>.Default.Equals(oldValue, propertyValue) == false)
                 {
-                    if(isDependsOwner && oldValue is INotifyPropertyChanged asNotifyPropertyChanged)
-                    {
-                        asNotifyPropertyChanged.PropertyChanged -= HandleDependsOwnerPropertyChanged;
-                    }
-
-                    didSet = true;
                     propertyDictionary[propertyName] = propertyValue;
-
-                    if(isDependsOwner && propertyValue is INotifyPropertyChanged asNotifyPropertyChanged2)
-                    {
-                        asNotifyPropertyChanged2.PropertyChanged += HandleDependsOwnerPropertyChanged;
-                    }
+                    didSet = true;
                 }
             }
             else
@@ -142,18 +137,10 @@ namespace FlatRedBall.Forms.MVVM
                     EqualityComparer<T>.Default.Equals(defaultValue, propertyValue);
 
                 didSet = isSettingDefault == false;
-                // old value is null, so no need to -= the property changed, but the new one is 
-                // potentially not null, so let's += the property changed
-                if(isDependsOwner && propertyValue is INotifyPropertyChanged asNotifyPropertyChanged)
-                {
-                    asNotifyPropertyChanged.PropertyChanged += HandleDependsOwnerPropertyChanged;
-                }
+
+
             }
 
-            void HandleDependsOwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
-            {
-                NotifyPropertyChanged($"{propertyName}.{e.PropertyName}");
-            }
 
             return didSet;
         }
@@ -225,11 +212,14 @@ namespace FlatRedBall.Forms.MVVM
             }
         }
 
-        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
+        Dictionary<INotifyPropertyChanged, string> ObjectToNameDictionary = new Dictionary<INotifyPropertyChanged, string>();
+
+        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = null, object oldValue = null, object newValue = null)
         {
             if (PropertyChanged != null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                var args = new PropertyChangedExtendedEventArgs(propertyName, oldValue, newValue);
+                PropertyChanged(this, args);
             }
 
             if (notifyRelationships.ContainsKey(propertyName))
@@ -238,8 +228,14 @@ namespace FlatRedBall.Forms.MVVM
 
                 foreach (var childPropertyName in childPropertyNames)
                 {
-                    // todo - worry about recursive notifications?
-                    NotifyPropertyChanged(childPropertyName);
+                    // This is going to be on "this" so we can use the old and new values passed, I believe...
+                    var newChildPropertyValue = GetValueThroughDictionaryOrReflection(childPropertyName);
+                    object oldChildPropertyValue = newValue == newChildPropertyValue
+                        // The old value is the actual old value passed on to the parameter, so we can just use that:
+                        ? oldValue
+                        // we don't know the old value...
+                        : null;
+                    NotifyPropertyChanged(childPropertyName, oldChildPropertyValue, newChildPropertyValue);
                 }
             }
 
@@ -252,11 +248,88 @@ namespace FlatRedBall.Forms.MVVM
                     {
                         foreach (var childPropertyName in relationship.Value)
                         {
-                            // todo - worry about recursive notifications?
-                            NotifyPropertyChanged(childPropertyName);
+                            object newChildValue = null;
+                            object oldChildValue = null;
+                            // Jan 26 2023 LateBinder is busted... Not sure why, Joel prob doesn't know either...
+                            //if (oldValue != null)
+                            //{
+                            //    oldChildValue = LateBinder.GetValueStatic(oldValue, childPropertyName);
+                            //}
+                            //if (newValue != null)
+                            //{
+                            //    newChildValue = LateBinder.GetValueStatic(newValue, childPropertyName);
+                            //}
+
+                            NotifyPropertyChanged(childPropertyName, oldChildValue, newChildValue);
                         }
                     }
                 }
+
+                #region Internal Methods
+
+                SubscribeToEventsOnNewProperty(newValue, propertyName, oldValue);
+
+
+
+                void SubscribeToEventsOnNewProperty<T>(T _newValue, string _propertyName, T _oldValue)
+                {
+                    var isDependsOwner = dependsOnOwners?.Contains(_propertyName) == true;
+                    if (isDependsOwner && _oldValue is INotifyPropertyChanged asNotifyPropertyChanged)
+                    {
+                        if(ObjectToNameDictionary.ContainsKey(asNotifyPropertyChanged))
+                        {
+                            ObjectToNameDictionary.Remove(asNotifyPropertyChanged);
+                            asNotifyPropertyChanged.PropertyChanged -= HandleDependsOwnerPropertyChanged;
+                        }
+                    }
+
+                    if (isDependsOwner && _newValue is INotifyPropertyChanged asNotifyPropertyChanged2)
+                    {
+                        if(ObjectToNameDictionary.ContainsKey(asNotifyPropertyChanged2) == false)
+                        {
+                            ObjectToNameDictionary[asNotifyPropertyChanged2] = _propertyName;
+                            asNotifyPropertyChanged2.PropertyChanged += HandleDependsOwnerPropertyChanged;
+                        }
+                    }
+                }
+
+                #endregion
+                // This could have changed based on a different value, so since we now have a new dependensOnOnwer,
+                // we should also look at updating this value:
+
+            }
+        }
+
+        object GetValueThroughDictionaryOrReflection(string propertyName)
+        {
+            if(propertyDictionary.ContainsKey(propertyName))
+            {
+                return propertyDictionary[propertyName];
+            }
+            else
+            {
+                var propInfo = this.GetType().GetProperty(propertyName);
+                return propInfo?.GetValue(this);
+            }
+        }
+
+        // This cannot be a local func with closures or else -= will not work.
+        // To guarantee that, let's move this out to class scope. Then += will work fine.
+        void HandleDependsOwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var senderAsNotifyPropertyChanged = sender as INotifyPropertyChanged;
+            string senderName = "";
+            if (senderAsNotifyPropertyChanged != null && ObjectToNameDictionary.ContainsKey(senderAsNotifyPropertyChanged))
+            {
+                senderName = ObjectToNameDictionary[senderAsNotifyPropertyChanged];
+            }
+            if (e is PropertyChangedExtendedEventArgs eExtended)
+            {
+                NotifyPropertyChanged($"{senderName}.{e.PropertyName}", eExtended.OldValue, eExtended.NewValue);
+            }
+            else
+            {
+                NotifyPropertyChanged($"{senderName}.{e.PropertyName}");
             }
         }
 
@@ -278,4 +351,20 @@ namespace FlatRedBall.Forms.MVVM
             };
         }
     }
+
+    // From https://stackoverflow.com/questions/47723876/how-to-capture-old-value-and-new-value-in-inotifypropertychanged-implementation#:~:text=NotifyPropertyChanged%20event%20where%20event%20args%20contain%20the%20old,public%20delegate%20void%20PropertyChangedExtendedEventHandler%20%28object%20sender%2C%20PropertyChangedExtendedEventArgs%20e%29%3B
+    public class PropertyChangedExtendedEventArgs : PropertyChangedEventArgs
+    {
+        public virtual object OldValue { get; private set; }
+        public virtual object NewValue { get; private set; }
+
+        public PropertyChangedExtendedEventArgs( string propertyName, object oldValue,
+               object newValue)
+               : base(propertyName)
+        {
+            OldValue = oldValue;
+            NewValue = newValue;
+        }
+    }
+
 }

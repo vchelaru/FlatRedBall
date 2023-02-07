@@ -723,7 +723,7 @@ namespace FlatRedBall.Instructions.Reflection
                 if (propertyInfo != null)
                 {
 
-                    mPropertyGet.Add(propertyName, DynamicMethodCompiler.CreateGetHandler(type, propertyInfo));
+                    mPropertyGet[propertyName] = DynamicMethodCompiler.CreateGetHandler(type, propertyInfo);
                 }
             }
         }
@@ -779,7 +779,8 @@ namespace FlatRedBall.Instructions.Reflection
                 BoxIfNeeded(getMethodInfo.ReturnType, getGenerator);
                 getGenerator.Emit(OpCodes.Ret);
 
-                return (GetHandler)dynamicGet.CreateDelegate(typeof(GetHandler));
+                var getHandler = (GetHandler)dynamicGet.CreateDelegate(typeof(GetHandler));
+                return getHandler;
 #else
                 throw new NotSupportedException();
 #endif

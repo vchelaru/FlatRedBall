@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
@@ -311,6 +312,44 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 .Location;
             return filePath.GetDirectoryContainingThis();
         }
+
+        public async Task PasteFolder(FilePath sourceFolder, FilePath destinationFolder)
+        {
+            if(sourceFolder.Exists() == false)
+            {
+                GlueCommands.Self.PrintError($"Cannot copy {sourceFolder} because it doesn't exist");
+            }
+
+            var rfsesRelativeToSource = GlueState.Self.GetAllReferencedFiles()
+                .Where(item => sourceFolder.IsRootOf(GlueCommands.Self.GetAbsoluteFilePath(item)))
+                .ToArray();
+
+            FilePath destinationWithSourceAppended = destinationFolder + sourceFolder.NoPath;
+            if(!destinationWithSourceAppended.FullPath.EndsWith("/") && !destinationWithSourceAppended.FullPath.EndsWith("\\"))
+            {
+                destinationWithSourceAppended += "/";
+            }
+            var currentElement = GlueState.Self.CurrentElement;
+
+            foreach(var rfs in rfsesRelativeToSource)
+            {
+                var absolutePath = GlueCommands.Self.GetAbsoluteFilePath(rfs);
+                var relativeToSource = absolutePath.RelativeTo(sourceFolder);
+
+                FilePath desiredDestination = destinationWithSourceAppended + relativeToSource;
+                desiredDestination = desiredDestination.GetDirectoryContainingThis();
+
+                // make sure this directory exists
+                if(!desiredDestination.Exists())
+                {
+                    System.IO.Directory.CreateDirectory(desiredDestination.FullPath);
+                }
+
+                await GlueCommands.Self.GluxCommands.DuplicateAsync(rfs, currentElement, desiredDestination);
+
+            }
+        }
+
 
         public bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName)
         {
