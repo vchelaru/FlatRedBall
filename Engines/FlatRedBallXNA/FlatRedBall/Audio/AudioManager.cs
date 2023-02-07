@@ -31,7 +31,7 @@ namespace FlatRedBall.Audio
         private static List<string> mSoundsPlayedThisFrame = new List<string>();
 
         private static string mSettingsFile;
-        
+
 
         private static bool mIsInitialized = false;
         private static Song mCurrentSong = null;
@@ -44,7 +44,7 @@ namespace FlatRedBall.Audio
         static bool mAreSongsEnabled;
         static bool mAreSoundEffectsEnabled;
 
-		static bool? mDoesUserWantCustomSoundtrack = null;
+        static bool? mDoesUserWantCustomSoundtrack = null;
 
         /// <summary>
         /// The default volume for playing sounds, applied when calling Play(SoundEffect). Ranges between 0 and 1.
@@ -63,7 +63,7 @@ namespace FlatRedBall.Audio
         private static SoundEffect _droidLoop;
         private static DateTime _lastPlay = DateTime.Now;
 #endif
-        
+
 
         #endregion
 
@@ -71,12 +71,12 @@ namespace FlatRedBall.Audio
 
         public static bool IsCustomMusicPlaying
         {
-            get 
-            { 
+            get
+            {
 #if SILVERLIGHT
                 return false;
 #else
-				return Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false; 
+                return Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false;
 #endif
             }
         }
@@ -113,8 +113,8 @@ namespace FlatRedBall.Audio
         public static bool AreSongsEnabled
         {
             get { return mAreSongsEnabled; }
-            set 
-            { 
+            set
+            {
                 mAreSongsEnabled = value;
 
                 if (CurrentlyPlayingSong != null && !mAreSongsEnabled)
@@ -160,7 +160,7 @@ namespace FlatRedBall.Audio
                 }
             }
         }
-            
+
 #if DEBUG
         /// <summary>
         /// Reports the total number of sound effects that have been played by the AudioManager since the start of the program's execution.
@@ -237,7 +237,9 @@ namespace FlatRedBall.Audio
         public static void PlaySongs(SongPlaylist songPlaylist)
         {
             Playlist = songPlaylist;
+#if !__IOS__
             MediaPlayer.IsRepeating = false;
+#endif
             playlistIndex = 0;
 
             PlaySongFromPlaylistInternal();
@@ -245,14 +247,14 @@ namespace FlatRedBall.Audio
 
         private static void PlaySongFromPlaylistInternal()
         {
-            if(playlistIndex >= Playlist.Songs.Length)
+            if (playlistIndex >= Playlist.Songs.Length)
             {
                 playlistIndex = 0;
             }
 
-            if(playlistIndex < Playlist.Songs.Length)
+            if (playlistIndex < Playlist.Songs.Length)
             {
-                PlaySongInternal(Playlist.Songs[playlistIndex], forceRestart:true, isSongGlobalContent:Playlist.AreSongsGlobalContent);
+                PlaySongInternal(Playlist.Songs[playlistIndex], forceRestart: true, isSongGlobalContent: Playlist.AreSongsGlobalContent);
             }
         }
 
@@ -325,7 +327,7 @@ namespace FlatRedBall.Audio
 
         public static void StopSong()
         {
-			Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+            Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
 
             CurrentlyPlayingSong = null;
         }
@@ -378,20 +380,23 @@ namespace FlatRedBall.Audio
 
         private static void HandleMediaStateChanged(object sender, EventArgs e)
         {
-			if(CurrentlyPlayingSong != null && Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Stopped)
+            if (CurrentlyPlayingSong != null && Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Stopped)
             {
                 CurrentlyPlayingSong = null;
 
-                if(MediaPlayer.IsRepeating == false && Playlist != null)
+                var shouldMoveToNext =
+                    Microsoft.Xna.Framework.Media.MediaPlayer.IsRepeating == false && Playlist != null;
+
+                if (shouldMoveToNext)
                 {
                     playlistIndex++;
                     PlaySongFromPlaylistInternal();
                 }
             }
             // This can happen through  looping
-            else if(Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Playing)
+            else if (Microsoft.Xna.Framework.Media.MediaPlayer.State == MediaState.Playing)
             {
-                CurrentlyPlayingSong = MediaPlayer.Queue.ActiveSong;
+                CurrentlyPlayingSong = Microsoft.Xna.Framework.Media.MediaPlayer.Queue.ActiveSong;
             }
         }
 
@@ -483,16 +488,16 @@ namespace FlatRedBall.Audio
 
 #else
                     if (volume < 1 || pitch != 0.0f || pan != 0.0f)
-					{
-						soundEffect.Play(volume, pitch, pan);
-					}
-					else
-					{
-						soundEffect.Play();
-					}
+                    {
+                        soundEffect.Play(volume, pitch, pan);
+                    }
+                    else
+                    {
+                        soundEffect.Play();
+                    }
 
 
-					#endif
+#endif
 
 
 #if DEBUG
@@ -517,14 +522,14 @@ namespace FlatRedBall.Audio
         /// <param name="soundEffect">The sound effect to play.</param>
         public static void PlayIfNotPlaying(SoundEffect soundEffect)
         {
-            if(!IsSoundEffectPlaying(soundEffect))
+            if (!IsSoundEffectPlaying(soundEffect))
             {
                 Play(soundEffect);
             }
         }
-        public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) => 
+        public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) =>
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
-        #endregion
+#endregion
 
         #region Manager methods
 
@@ -573,8 +578,8 @@ namespace FlatRedBall.Audio
             }
 #endif
 
-// TODO [msmith] Get this working again once we add the data into the asset folder.
-			/* TODO MDS_TEMP
+            // TODO [msmith] Get this working again once we add the data into the asset folder.
+            /* TODO MDS_TEMP
 #if MONODROID
             if ((DateTime.Now - _lastPlay).Milliseconds > 200)
             {
@@ -592,7 +597,7 @@ namespace FlatRedBall.Audio
         }
 
 
-        #endregion
+#endregion
 
     }
 

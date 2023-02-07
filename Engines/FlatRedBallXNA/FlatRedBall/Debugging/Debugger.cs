@@ -192,10 +192,10 @@ namespace FlatRedBall.Debugging
                 ? @"hh\:mm\:ss"
                 : @"mm\:ss";
 
-#if MONOGAME && !UWP
+#if MONOGAME && !UWP && !__IOS__
             var currentTime = song.Position.ToString(format);
 #else
-            var currentTime = song == AudioManager.CurrentSong ? MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);
+            var currentTime = song == AudioManager.CurrentSong ?  Microsoft.Xna.Framework.Media.MediaPlayer.PlayPosition.ToString(format) : new TimeSpan(0).ToString(format);
 #endif
             var totalDuration = song.Duration.ToString(format);
             Write($"{song.Name} {currentTime} / {totalDuration}");
