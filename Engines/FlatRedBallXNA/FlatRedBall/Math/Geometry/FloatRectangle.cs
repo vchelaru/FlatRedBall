@@ -29,12 +29,30 @@ namespace FlatRedBall.Math.Geometry
             Right = right;
         }
 
+        /// <summary>
+        /// Checks whether this rectangle's defined area overlaps with another <see cref="FloatRectangle"/>.
+        /// </summary>
+        /// <param name="other">Rectangle to check.</param>
+        /// <returns></returns>
         public bool Intersects(FloatRectangle other)
         {
             return other.Left < Right &&
                    Left < other.Right &&
                    other.Bottom < Top &&
                    Bottom < other.Top;
+        }
+
+        /// <summary>
+        /// Adjusts the edges of this <see cref="FloatRectangle"/> by specified horizontal and vertical amounts. 
+        /// </summary>
+        /// <param name="horizontalAmount">Value to adjust the left and right edges.</param>
+        /// <param name="verticalAmount">Value to adjust the top and bottom edges.</param>
+        public void Inflate(float horizontalAmount, float verticalAmount)
+        {
+            Left -= horizontalAmount;
+            Right += horizontalAmount;
+            Top += verticalAmount;
+            Bottom -= verticalAmount;
         }
 
         public override string ToString()
