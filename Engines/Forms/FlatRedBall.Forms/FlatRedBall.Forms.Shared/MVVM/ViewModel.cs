@@ -271,10 +271,10 @@ namespace FlatRedBall.Forms.MVVM
 
 
 
-                void SubscribeToEventsOnNewProperty<T>(T newValue, string propertyName, T oldValue)
+                void SubscribeToEventsOnNewProperty<T>(T _newValue, string _propertyName, T _oldValue)
                 {
-                    var isDependsOwner = dependsOnOwners?.Contains(propertyName) == true;
-                    if (isDependsOwner && oldValue is INotifyPropertyChanged asNotifyPropertyChanged)
+                    var isDependsOwner = dependsOnOwners?.Contains(_propertyName) == true;
+                    if (isDependsOwner && _oldValue is INotifyPropertyChanged asNotifyPropertyChanged)
                     {
                         if(ObjectToNameDictionary.ContainsKey(asNotifyPropertyChanged))
                         {
@@ -283,11 +283,11 @@ namespace FlatRedBall.Forms.MVVM
                         }
                     }
 
-                    if (isDependsOwner && newValue is INotifyPropertyChanged asNotifyPropertyChanged2)
+                    if (isDependsOwner && _newValue is INotifyPropertyChanged asNotifyPropertyChanged2)
                     {
                         if(ObjectToNameDictionary.ContainsKey(asNotifyPropertyChanged2) == false)
                         {
-                            ObjectToNameDictionary[asNotifyPropertyChanged2] = propertyName;
+                            ObjectToNameDictionary[asNotifyPropertyChanged2] = _propertyName;
                             asNotifyPropertyChanged2.PropertyChanged += HandleDependsOwnerPropertyChanged;
                         }
                     }
