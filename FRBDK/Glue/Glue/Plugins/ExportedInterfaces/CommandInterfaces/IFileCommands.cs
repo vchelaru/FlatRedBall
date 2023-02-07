@@ -50,6 +50,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         FilePath GetGlueExecutingFolder();
 
+        Task PasteFolder(FilePath sourceFolder, FilePath destinationFolder);
+
+
         bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName);
 
         bool IsContent(FilePath filePath);

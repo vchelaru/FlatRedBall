@@ -32,6 +32,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 copiedObjectClone = entity.Clone();
             }
+            else if(GlueState.Self.CurrentTreeNode.IsFolderForGlobalContentFiles())
+            {
+                copiedObjectClone = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
+            }
         }
         internal async Task HandlePaste()
         {
@@ -56,6 +60,20 @@ namespace FlatRedBall.Glue.Managers
             else if(copiedObjectClone is GlueElement element)
             {
                 await GlueCommands.Self.GluxCommands.CopyGlueElement(element);
+            }
+            else if(copiedObjectClone is string sourceFolderRelative)
+            {
+                var sourceFolderAbsolute = GlueState.Self.ContentDirectoryPath + sourceFolderRelative;
+                var currentTreeNode = GlueState.Self.CurrentTreeNode;
+                FilePath destinationFolder = null;
+                if (currentTreeNode.IsFolderInFilesContainerNode() || currentTreeNode.IsFolderForGlobalContentFiles())
+                {
+                    destinationFolder = GlueState.Self.ContentDirectoryPath + currentTreeNode.GetRelativeFilePath();
+                }
+                if(destinationFolder != null)
+                {
+                    await GlueCommands.Self.FileCommands.PasteFolder(sourceFolderAbsolute, destinationFolder);
+                }
             }
         }
     }
