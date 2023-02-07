@@ -128,8 +128,8 @@ namespace FlatRedBall.Entities
 
             if (healthBefore > 0 && damageable.CurrentHealth <= 0)
             {
-                damageable.Died?(modifiedByDamageable, null);
-                //damageArea.KilledDamageable?(modifiedByBoth, damageable);
+                damageable.Died?.Invoke(modifiedByDamageable, null);
+                //damageArea.KilledDamageable?.Invoke(modifiedByBoth, damageable);
             }
         }
 
