@@ -82,6 +82,9 @@ namespace FlatRedBall.Utilities
         /// <returns>The random float between the bounds.</returns>
         public float Between(float lowerBound, float upperBound) => lowerBound + (float)NextDouble() * (upperBound - lowerBound);
 
+        public double Between(double lowerBound, double upperBound) => lowerBound + NextDouble() * (upperBound - lowerBound);
+
+
         public decimal Between(decimal lowerBound, decimal upperBound) => lowerBound + (decimal)NextDouble() * (upperBound - lowerBound);
 
 

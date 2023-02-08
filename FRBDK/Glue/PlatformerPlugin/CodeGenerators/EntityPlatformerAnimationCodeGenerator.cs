@@ -84,7 +84,7 @@ namespace PlatformerPluginCore.CodeGenerators
                 {
                     codeBlock = codeBlock.Block();
                     {
-                        string animationSpeedAssignment = $"{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
+                        string animationSpeedAssignment = $"global::{GlueState.Self.ProjectNamespace}.Entities.AnimationSpeedAssignment.{entry.AnimationSpeedAssignment}";
 
 
                         codeBlock.Line("var configuration = new PlatformerAnimationConfiguration");

@@ -666,7 +666,10 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
-                fileContents = $"#pragma warning disable\r\n{fileContents}";
+                if(fileName.Contains(".generated.", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    fileContents = $"#pragma warning disable\r\n{fileContents}";
+                }
                 FileWatchManager.IgnoreNextChangeOnFile(fileName);
                 if (!tryAgain)
                 {
