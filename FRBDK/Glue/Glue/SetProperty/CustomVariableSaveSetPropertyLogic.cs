@@ -393,6 +393,8 @@ namespace FlatRedBall.Glue.SetVariable
             //        }
             //    }
             //}
+            // Update Feb 9 2023 - for more info on why this is the
+            // case, see https://github.com/vchelaru/FlatRedBall/issues/959
             bool didErrorOccur = false;
             if (customVariable.SetByDerived && customVariable.IsShared)
             {
@@ -413,6 +415,41 @@ namespace FlatRedBall.Glue.SetVariable
 
             if (!didErrorOccur)
             {
+
+                if(customVariable.SetByDerived == false)
+                {
+                    HashSet<GlueElement> elementsToSave = new HashSet<GlueElement>();
+
+                    var ownerEntity = ObjectFinder.Self.GetElementContaining(customVariable);
+                    List<GlueElement> derivedEntities = null;
+                    if (ownerEntity != null)
+                    {
+                        derivedEntities = ObjectFinder.Self.GetAllDerivedElementsRecursive(ownerEntity);
+                    }
+
+                    if (derivedEntities != null)
+                    {
+                        foreach (var element in derivedEntities)
+                        {
+                            foreach (CustomVariable cv in element.CustomVariables)
+                            {
+                                if (cv.Name == customVariable.Name)
+                                {
+                                    cv.IsShared = customVariable.IsShared;
+                                    cv.DefinedByBase = true;
+                                    elementsToSave.Add(element);
+                                }
+                            }
+                        }
+                    }
+
+                    // This is a rare operation and normally when a variable is changed, the derived aren't saved.
+                    // So we'll do it here to be safe:
+                    foreach(var element in elementsToSave)
+                    {
+                        var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                    }
+                }
 
                 if (customVariable.IsShared && customVariable.GetIsCsv())
                 {

@@ -244,7 +244,6 @@ namespace FlatRedBall.Glue.Controls
 
 			Location = new Point(MainGlueWindow.MousePosition.X - this.Width/2, MainGlueWindow.MousePosition.Y - this.Height / 2);
 
-            FillExposableEvents();
 
             FillTunnelingObjects();
 
@@ -270,6 +269,17 @@ namespace FlatRedBall.Glue.Controls
                 }
             }
 
+            foreach (ExposableEvent variableName in ViewModel.ExposableEvents)
+            {
+                AvailableEventsComboBox.Items.Add(variableName);
+            }
+            if(ViewModel.ExposableEvents.Count > 0)
+            {
+                if (AvailableEventsComboBox.Items.Count > 0)
+                    AvailableEventsComboBox.SelectedIndex = 0;
+            }
+
+
         }
 
         private void FillAvailableDelegateTypes()
@@ -293,33 +303,7 @@ namespace FlatRedBall.Glue.Controls
                 TypeConverterComboBox.SelectedIndex = 0;
         }
 
-        private void FillExposableEvents()
-        {
-            List<ExposableEvent> availableEvents = null;
-
-            if (GlueState.Self.CurrentEntitySave != null)
-            {
-                availableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentEntitySave, true);
-
-
-            }
-            else if (GlueState.Self.CurrentScreenSave != null)
-            {
-                availableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentScreenSave, true);
-            }
-
-            if (availableEvents != null)
-            {
-                foreach (ExposableEvent variableName in availableEvents)
-                {
-                    AvailableEventsComboBox.Items.Add(variableName);
-                }
-
-                if (AvailableEventsComboBox.Items.Count > 0)
-                    AvailableEventsComboBox.SelectedIndex = 0;
-            }
-        }
-
+        
         //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         //{
         //    mLastText = comboBox1.Text;

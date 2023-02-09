@@ -296,6 +296,9 @@ namespace GlueFormsCore.ViewModels
             get => Get<bool>();
             set => Set(value);
         }
+        // statics can't be set by derived because that would result in duplicate variables and confusing behavior
+        [DependsOn(nameof(IsStatic))]
+        public Visibility SetByDerivedVisibility => (IsStatic == false).ToVisibility();
 
 
         [DependsOn(nameof(SelectedNewType))]

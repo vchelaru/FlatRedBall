@@ -104,6 +104,7 @@
                     >Static (all objects share one copy of the same variable)</CheckBox>
                 <CheckBox
                     IsChecked="{Binding SetByDerived}"
+                    Visibility="{Binding SetByDerivedVisibility}"
                     >Can Be Set By Derived</CheckBox>
             </StackPanel>
         </Grid>

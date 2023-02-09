@@ -1380,21 +1380,11 @@ namespace FlatRedBall.Glue.FormHelpers
             GlueCommands.Self.GluxCommands.SaveGlux();
         }
 
-        static void OnRefreshTreeNodesClick(object sender, EventArgs e)
-        {
+        static void OnRefreshTreeNodesClick(object sender, EventArgs e) =>
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-        }
 
-        static void AddEventClicked(object sender, EventArgs e)
-        {
-            // add event, new event, add new event
-            AddEventWindow addEventWindow = new AddEventWindow();
-
-            if (addEventWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-            {
-                HandleAddEventOk(addEventWindow);
-            }
-        }
+        static void AddEventClicked(object sender, EventArgs e) =>
+            GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(GlueState.Self.CurrentElement);
 
         public static void HandleAddEventOk(AddEventWindow addEventWindow)
         {

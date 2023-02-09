@@ -23,6 +23,7 @@ using GlueFormsCore.Extensions;
 using System.Runtime.InteropServices;
 using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -730,7 +731,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             // User could have checked a source object after checking IsStatic 
                             string.IsNullOrEmpty(sourceObject);
 
-                        newVariable.SetByDerived = viewModel.SetByDerived;
+                        if(!viewModel.IsStatic)
+                        {
+                            newVariable.SetByDerived = viewModel.SetByDerived;
+                        }
+
                         newVariable.DefinedByBase = isDefinedByBase;
 
 
@@ -896,24 +901,51 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Event
 
+        public void ShowAddNewEventDialog(GlueElement glueElement)
+        {
+            AddEventViewModel viewModel = CreateAddEventViewModel(glueElement);
+            ShowAddNewEventDialog(viewModel);
+        }
+
         public void ShowAddNewEventDialog(NamedObjectSave eventOwner)
         {
             var name = eventOwner.InstanceName;
             var element = ObjectFinder.Self.GetElementContaining(eventOwner);
+
+            // Vic asks - is this necessary anymore?
             if (element != GlueState.Self.CurrentElement)
             {
                 GlueState.Self.CurrentElement = element;
             }
-            AddEventViewModel viewModel = new AddEventViewModel();
+            AddEventViewModel viewModel = CreateAddEventViewModel(element);
+
             viewModel.TunnelingObject = name;
             viewModel.DesiredEventType = CustomEventType.Tunneled;
-
             ShowAddNewEventDialog(viewModel);
+        }
+
+        private static AddEventViewModel CreateAddEventViewModel(GlueElement element)
+        {
+            AddEventViewModel viewModel = new AddEventViewModel();
+
+            if (element != null)
+            {
+                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentEntitySave, true);
+            }
+            else if (element != null)
+            {
+                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentScreenSave, true);
+            }
+
+            return viewModel;
         }
 
         public void ShowAddNewEventDialog(AddEventViewModel viewModel)
         {
             AddEventWindow addEventWindow = new AddEventWindow();
+
+            
+
             addEventWindow.ViewModel = viewModel;
 
             if (addEventWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)

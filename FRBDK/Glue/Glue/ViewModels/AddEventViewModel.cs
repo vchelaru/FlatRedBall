@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -50,5 +51,17 @@ namespace GlueFormsCore.ViewModels
             get => Get<string>();
             set => Set(value);
         }
+
+        public List<ExposableEvent> ExposableEvents 
+        {
+            get => Get<List<ExposableEvent>>();
+            set => Set(value);
+        }
+
+        public AddEventViewModel()
+        {
+            ExposableEvents = new List<ExposableEvent>();
+        }
+
     }
 }
