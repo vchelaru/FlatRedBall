@@ -1640,7 +1640,7 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            var toReturn= $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+            var toReturn= $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
 
             for(int i = 0; i < NumberOfButtons; i++)
             {
