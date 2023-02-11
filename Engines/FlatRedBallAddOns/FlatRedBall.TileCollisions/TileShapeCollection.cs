@@ -284,13 +284,14 @@ namespace FlatRedBall.TileCollisions
             return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);
         }
 
+        public bool CollideAgainstMove(ICollidable collidable)
+        {
+            return mShapes.CollideAgainstMove(collidable.Collision, 1, 0);
+        }
+
         public bool CollideAgainstSolid(ICollidable collidable)
         {
-            bool toReturn = false;
-
-            toReturn = mShapes.CollideAgainstBounce(collidable.Collision, true, mSortAxis, 1, 0, 0);
-
-            return toReturn;
+            return mShapes.CollideAgainstBounce(collidable.Collision, true, mSortAxis, 1, 0, 0);
         }
 
 #if IStackableInEngine

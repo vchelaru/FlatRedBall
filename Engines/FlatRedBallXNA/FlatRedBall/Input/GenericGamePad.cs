@@ -249,24 +249,28 @@ namespace FlatRedBall.Input
 
             for(int i = 0; i < AnalogSticks.Length; i++)
             {
-                var stickPosition = new Vector2(
-                    joystickState.Axes[i*2] / analogStickMaxValue,
-                    -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue);
+                var stickPosition = new Vector2(0,0);
 
-                if (Deadzone > 0)
+                if (IsConnected)
                 {
-                    switch (DeadzoneType)
+                    stickPosition = new Vector2(
+                        joystickState.Axes[i*2] / analogStickMaxValue,
+                        -1 * joystickState.Axes[i*2 + 1] / analogStickMaxValue);
+
+                    if (Deadzone > 0)
                     {
-                        case DeadzoneType.Radial:
-                            stickPosition = GetRadialDeadzoneValue(stickPosition);
-                            break;
-                        case DeadzoneType.Cross:
-                            stickPosition = GetCrossDeadzoneValue(stickPosition);
-                            break;
+                        switch (DeadzoneType)
+                        {
+                            case DeadzoneType.Radial:
+                                stickPosition = GetRadialDeadzoneValue(stickPosition);
+                                break;
+                            case DeadzoneType.Cross:
+                                stickPosition = GetCrossDeadzoneValue(stickPosition);
+                                break;
+                        }
+
                     }
-
                 }
-
 
                 AnalogSticks[i].Update(new Microsoft.Xna.Framework.Vector2(stickPosition.X, stickPosition.Y));
 
