@@ -24,12 +24,22 @@ namespace FlatRedBall.Input
         bool WasJustReleased { get; }
 	}
 
+
+    public interface IRepeatPressableInput : IPressableInput
+    {
+        /// <summary>
+        /// Returns whether the input was pressed this frame (not down last frame, is down this frame), or
+        /// whether a repeat push occurred from the input being held down.
+        /// </summary>
+        bool WasJustPressedOrRepeated { get; }
+    }
+
     /// <summary>
     /// Implementation of IPressableInput which always returns false. Can be used for classes
     /// requiring an IPressableInput implementation
     /// (like IInputDevice) which sould always return false.
     /// </summary>
-    public class FalsePressableInput : IPressableInput
+    public class FalsePressableInput : IRepeatPressableInput
     {
         public static FalsePressableInput Instance = new FalsePressableInput();
         public bool IsDown => false;
@@ -37,19 +47,24 @@ namespace FlatRedBall.Input
         public bool WasJustPressed => false;
 
         public bool WasJustReleased => false;
+
+        public bool WasJustPressedOrRepeated => false;
     }
 
-    public class DelegateBasedPressableInput : IPressableInput
+    public class DelegateBasedPressableInput : IRepeatPressableInput
     {
         Func<bool> isDown;
         Func<bool> wasJustPressed;
         Func<bool> wasJustReleased;
+        Func<bool> wasJustPressedOrRepeated;
 
-        public DelegateBasedPressableInput(Func<bool> isDown, Func<bool> wasJustPressed, Func<bool> wasJustReleased)
+        public DelegateBasedPressableInput(Func<bool> isDown, Func<bool> wasJustPressed, Func<bool> wasJustReleased,
+            Func<bool> wasJustPressedOrRepeated = null)
         {
             this.isDown = isDown;
             this.wasJustPressed = wasJustPressed;
             this.wasJustReleased = wasJustReleased;
+            this.wasJustPressedOrRepeated = wasJustPressedOrRepeated;
         }
 
         public bool IsDown
@@ -65,6 +80,11 @@ namespace FlatRedBall.Input
         public bool WasJustReleased
         {
             get { return this.wasJustReleased(); }
+        }
+
+        public bool WasJustPressedOrRepeated
+        {
+            get {  return wasJustPressedOrRepeated?.Invoke() ?? false; }
         }
     }
 
@@ -90,12 +110,22 @@ namespace FlatRedBall.Input
             {
                 toReturn = new MultiplePressableInputs();
                 toReturn.Inputs.Add(thisInput);
+
+                if(thisInput is IRepeatPressableInput thisAsRepeatable)
+                {
+                    toReturn.RepeatPressableInputs.Add(thisAsRepeatable);
+                }
             }
 
             toReturn.Inputs.Add(input);
+            if(input is IRepeatPressableInput inputAsRepeatable)
+            {
+                toReturn.Inputs.Add(inputAsRepeatable);
+            }
 
             return toReturn;
         }
+
 
         /// <summary>
         /// Creates a new I2DInput from the calling IPressableInput which returns a Value of 0 if not pressed, and 1 if pressed.
@@ -117,7 +147,7 @@ namespace FlatRedBall.Input
     /// An IPressableInput interface which can contain multiple IPressableInputs. This is useful if a particular action can be
     /// performed with multiple inputs, such as both the space bar and a game pad's A button being used to make a character jump.
     /// </summary>
-    public class MultiplePressableInputs : IPressableInput
+    public class MultiplePressableInputs : IRepeatPressableInput
     {
         /// <summary>
         /// The list of inputs to be used for an action.
@@ -134,9 +164,16 @@ namespace FlatRedBall.Input
             private set;
         }
 
+        public List<IRepeatPressableInput> RepeatPressableInputs
+        {
+            get;
+            private set;
+        }
+
         public MultiplePressableInputs()
         {
             Inputs = new List<IPressableInput>();
+            RepeatPressableInputs = new List<IRepeatPressableInput>();
         }
 
         public bool IsDown
@@ -180,6 +217,29 @@ namespace FlatRedBall.Input
                         return true;
                     }
                 }
+                return false;
+            }
+        }
+
+        public bool WasJustPressedOrRepeated
+        {
+            get
+            {
+                if(WasJustPressed)
+                {
+                    return true;
+                }
+                foreach(var repeatPressableInput in RepeatPressableInputs)
+                {
+                    if(repeatPressableInput.WasJustPressedOrRepeated)
+                    {
+                        if(repeatPressableInput.WasJustPressedOrRepeated)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
                 return false;
             }
         }

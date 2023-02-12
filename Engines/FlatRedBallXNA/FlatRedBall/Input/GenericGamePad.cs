@@ -26,7 +26,7 @@ namespace FlatRedBall.Input
 
     }
 
-    public class DelegateBasedIndexedButton : IPressableInput
+    public class DelegateBasedIndexedButton : IRepeatPressableInput
     {
         public int Index;
         private GenericGamePad gamepad;
@@ -42,6 +42,7 @@ namespace FlatRedBall.Input
         public bool WasJustPressed => gamepad.ButtonPushed(Index);
         public bool WasJustReleased => gamepad.ButtonReleased(Index);
 
+        public bool WasJustPressedOrRepeated => gamepad.ButtonRepeatRate(Index);
     }
     #endregion
 
@@ -57,17 +58,17 @@ namespace FlatRedBall.Input
         public I2DInput Default2DInput { get; private set; }
 
         DelegateBasedIndexedButton defaultUpPressable;
-        public IPressableInput DefaultUpPressable => defaultUpPressable;
+        public IRepeatPressableInput DefaultUpPressable => defaultUpPressable;
 
 
         DelegateBasedIndexedButton defaultDownPressable;
-        public IPressableInput DefaultDownPressable => defaultDownPressable;
+        public IRepeatPressableInput DefaultDownPressable => defaultDownPressable;
 
         DelegateBasedIndexedButton defaultLeftPressable;
-        public IPressableInput DefaultLeftPressable => defaultLeftPressable;
+        public IRepeatPressableInput DefaultLeftPressable => defaultLeftPressable;
 
         DelegateBasedIndexedButton defaultRightPressable;
-        public IPressableInput DefaultRightPressable => defaultRightPressable;
+        public IRepeatPressableInput DefaultRightPressable => defaultRightPressable;
 
         public I1DInput DefaultHorizontalInput { get; private set; }
 
@@ -111,6 +112,12 @@ namespace FlatRedBall.Input
         double[] lastDPadPush = new double[4];
         double[] lastDPadRepeatRate = new double[4];
 
+        // Feb 12, 2023 - is this a valid assumption? Can there be more?
+        const int MaxNumberOfButtons = 512;
+        double[] lastButtonPush = new double[MaxNumberOfButtons];
+        double[] lastButtonRepeatRate = new double[MaxNumberOfButtons];
+
+
         public int NumberOfButtons { get; private set; }
 
         public float Deadzone { get; set; } = .1f;
@@ -139,6 +146,11 @@ namespace FlatRedBall.Input
             for (int i = 0; i < lastDPadPush.Length; i++)
             {
                 lastDPadPush[i] = -1;
+            }
+
+            for(int i = 0; i < MaxNumberOfButtons; i++)
+            {
+                lastButtonPush[i] = -1;
             }
 
             defaultUpPressable = new DelegateBasedIndexedButton(this);
@@ -347,6 +359,26 @@ namespace FlatRedBall.Input
             return joystickState.Buttons[buttonIndex] == ButtonState.Pressed;
         }
 
+        public bool ButtonRepeatRate(int buttonIndex, double timeAfterPush = .35, double timeBetweenRepeating = .12)
+        {
+            if (ButtonPushed(buttonIndex))
+            {
+                return true;
+            }
+            bool repeatedThisFrame = lastButtonRepeatRate[buttonIndex] == TimeManager.CurrentTime;
+            if (repeatedThisFrame ||
+                (
+                    ButtonDown(buttonIndex) &&
+                    TimeManager.CurrentTime - lastButtonPush[buttonIndex] > timeAfterPush &&
+                    TimeManager.CurrentTime - lastButtonRepeatRate[buttonIndex] > timeBetweenRepeating)
+                )
+            {
+                lastButtonRepeatRate[buttonIndex] = TimeManager.CurrentTime;
+                return true;
+            }
+            return false;
+        }
+
         internal void Update()
         {
 #if MONOGAME
@@ -377,6 +409,21 @@ namespace FlatRedBall.Input
 
             Update(state);
 #endif
+        }
+
+        private void UpdateLastButtonPushedValues()
+        {
+            // Set the last pushed and clear the ignored input
+
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                //mButtonsIgnoredForThisFrame[i] = false;
+
+                if (ButtonPushed(i))
+                {
+                    lastButtonPush[i] = TimeManager.CurrentTime;
+                }
+            }
         }
 
         public string GetJoystickStateInfo()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static FlatRedBall.Input.Xbox360GamePad;
 
 namespace FlatRedBall.Input
 {
@@ -8,7 +9,7 @@ namespace FlatRedBall.Input
     /// A button or single-axis input device which can return a range of values.
     /// Common examples include shoulder triggers on the Xbox360GamePad.
     /// </summary>
-    public class AnalogButton : I1DInput, IPressableInput
+    public class AnalogButton : I1DInput, IRepeatPressableInput
     {
         #region Fields
 
@@ -21,6 +22,9 @@ namespace FlatRedBall.Input
         bool lastDPadDown = false;
 
         public string Name { get; set; }
+
+        double mLastButtonPush;
+        double mLastRepeatRate;
 
         #endregion
 
@@ -64,9 +68,34 @@ namespace FlatRedBall.Input
 
         public bool WasJustReleased => lastDPadDown && !IsDown;
 
-        float I1DInput.Value =>  Position;
+
+
+        float I1DInput.Value => Position;
 
         bool I1DInput.IsAnalog => true;
+
+        public bool WasJustPressedOrRepeated
+        {
+            get
+            {
+                const double timeAfterPush = .35;
+                const double timeBetweenRepeating = .12;
+                bool repeatedThisFrame = mLastButtonPush == TimeManager.CurrentTime;
+
+                if (repeatedThisFrame ||
+                (
+                    IsDown &&
+                    TimeManager.CurrentTime - mLastButtonPush > timeAfterPush &&
+                    TimeManager.CurrentTime - mLastRepeatRate > timeBetweenRepeating)
+                    )
+                {
+                    mLastRepeatRate = TimeManager.CurrentTime;
+                    return true;
+                }
+                return false;
+
+            }
+        }
 
         #endregion
 
@@ -76,6 +105,7 @@ namespace FlatRedBall.Input
         {
             mPosition = 0;
             mVelocity = 0;
+
         }
 
         public void Update(float newPosition)
@@ -88,6 +118,11 @@ namespace FlatRedBall.Input
                 mVelocity = (newPosition - mPosition) / TimeManager.SecondDifference;
             }
             mPosition = newPosition;
+
+            if(IsDown)
+            {
+                mLastButtonPush = TimeManager.CurrentTime;
+            }
         }
 
         #endregion

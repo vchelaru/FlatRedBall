@@ -705,10 +705,10 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W); 
-        IPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S); 
-        IPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A); 
-        IPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
+        IRepeatPressableInput IInputDevice.DefaultUpPressable => GetKey(Keys.W);
+        IRepeatPressableInput IInputDevice.DefaultDownPressable => GetKey(Keys.S);
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable => GetKey(Keys.A);
+        IRepeatPressableInput IInputDevice.DefaultRightPressable => GetKey(Keys.D); 
 
         I1DInput IInputDevice.DefaultHorizontalInput => Get1DInput(Keys.A, Keys.D);
 

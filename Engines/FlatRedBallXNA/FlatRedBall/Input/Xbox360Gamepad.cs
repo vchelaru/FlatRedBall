@@ -1143,7 +1143,7 @@ namespace FlatRedBall.Input
             // If this method is called multiple times per frame this line
             // of code guarantees that the user will get true every time until
             // the next TimeManager.Update (next frame).
-            bool repeatedThisFrame = mLastButtonPush[(int)button] == TimeManager.CurrentTime;
+            bool repeatedThisFrame = mLastRepeatRate[(int)button] == TimeManager.CurrentTime;
 
             if (repeatedThisFrame ||
                 (
@@ -1698,8 +1698,8 @@ namespace FlatRedBall.Input
             }
         }
 
-        IPressableInput defaultUpPressable;
-        IPressableInput IInputDevice.DefaultUpPressable
+        IRepeatPressableInput defaultUpPressable;
+        IRepeatPressableInput IInputDevice.DefaultUpPressable
         { 
             get 
             { 
@@ -1711,8 +1711,8 @@ namespace FlatRedBall.Input
             } 
         }
 
-        IPressableInput defaultDownPressable;
-        IPressableInput IInputDevice.DefaultDownPressable
+        IRepeatPressableInput defaultDownPressable;
+        IRepeatPressableInput IInputDevice.DefaultDownPressable
         { 
             get 
             {
@@ -1724,8 +1724,8 @@ namespace FlatRedBall.Input
             } 
         }
 
-        IPressableInput defaultLeftPressable;
-        IPressableInput IInputDevice.DefaultLeftPressable
+        IRepeatPressableInput defaultLeftPressable;
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable
         { 
             get 
             { 
@@ -1737,8 +1737,8 @@ namespace FlatRedBall.Input
             } 
         }
 
-        IPressableInput defaultRightPressable;
-        IPressableInput IInputDevice.DefaultRightPressable
+        IRepeatPressableInput defaultRightPressable;
+        IRepeatPressableInput IInputDevice.DefaultRightPressable
         { 
             get 
             { 

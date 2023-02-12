@@ -18,22 +18,22 @@ namespace FlatRedBall.Input
         /// <summary>
         /// The default input for moving up, such as the up direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultUpPressable { get; }
+        IRepeatPressableInput DefaultUpPressable { get; }
 
         /// <summary>
         /// The default input for moving down, such as the down direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultDownPressable { get; }
+        IRepeatPressableInput DefaultDownPressable { get; }
 
         /// <summary>
         /// The default input for moving left, such as the left direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultLeftPressable { get; }
+        IRepeatPressableInput DefaultLeftPressable { get; }
 
         /// <summary>
         /// The default input for moving right, such as the right direction on an analog stick on a gamepad.
         /// </summary>
-        IPressableInput DefaultRightPressable { get; }
+        IRepeatPressableInput DefaultRightPressable { get; }
 
         /// <summary>
         /// The default input for moving horizontally, like in a platformer. For example, this may be 

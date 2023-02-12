@@ -32,23 +32,23 @@ namespace FlatRedBall.Input
 
         bool isUpPressedThisFrame;
         bool wasUpPressedLastFrame;
-        IPressableInput defaultUpPressable;
-        IPressableInput IInputDevice.DefaultUpPressable => defaultUpPressable;
+        IRepeatPressableInput defaultUpPressable;
+        IRepeatPressableInput IInputDevice.DefaultUpPressable => defaultUpPressable;
 
         bool isDownPressedThisFrame;
         bool wasDownPressedLastFrame;
-        IPressableInput defaultDownPressable;
-        IPressableInput IInputDevice.DefaultDownPressable => defaultDownPressable;
+        IRepeatPressableInput defaultDownPressable;
+        IRepeatPressableInput IInputDevice.DefaultDownPressable => defaultDownPressable;
 
         bool isLeftPressedThisFrame;
         bool wasLeftPressedLastFrame;
-        IPressableInput defaultLeftPressable;
-        IPressableInput IInputDevice.DefaultLeftPressable => defaultLeftPressable;
+        IRepeatPressableInput defaultLeftPressable;
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable => defaultLeftPressable;
 
         bool isRightPressedThisFrame;
         bool wasRightPressedLastFrame;
-        IPressableInput defaultRightPressable;
-        IPressableInput IInputDevice.DefaultRightPressable => defaultRightPressable;
+        IRepeatPressableInput defaultRightPressable;
+        IRepeatPressableInput IInputDevice.DefaultRightPressable => defaultRightPressable;
 
         float horizontalInputThisFrame;
         I1DInput defaultHorizontalInput;

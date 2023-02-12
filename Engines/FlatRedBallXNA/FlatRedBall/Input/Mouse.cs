@@ -294,10 +294,10 @@ namespace FlatRedBall.Input
         }
 
         I2DInput IInputDevice.Default2DInput => Zero2DInput.Instance;
-        IPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultLeftPressable => FalsePressableInput.Instance;
-        IPressableInput IInputDevice.DefaultRightPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultUpPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultDownPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultLeftPressable => FalsePressableInput.Instance;
+        IRepeatPressableInput IInputDevice.DefaultRightPressable => FalsePressableInput.Instance;
         I1DInput IInputDevice.DefaultHorizontalInput => Zero1DInput.Instance;
         I1DInput IInputDevice.DefaultVerticalInput => Zero1DInput.Instance;
         IPressableInput IInputDevice.DefaultPrimaryActionInput => FalsePressableInput.Instance;

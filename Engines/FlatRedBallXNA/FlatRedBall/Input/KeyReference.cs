@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace FlatRedBall.Input
 {
-	public class KeyReference : IPressableInput
+	public class KeyReference : IRepeatPressableInput
 	{
 		public Keys Key{ get; set;}
 
@@ -35,6 +35,8 @@ namespace FlatRedBall.Input
 				return InputManager.Keyboard.KeyReleased (Key);
 			}
 		}
-	}
+
+		public bool WasJustPressedOrRepeated => InputManager.Keyboard.KeyTyped(Key);
+    }
 }
 
