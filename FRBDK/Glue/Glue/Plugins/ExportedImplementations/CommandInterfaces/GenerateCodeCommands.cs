@@ -14,6 +14,7 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using Xceed.Wpf.Toolkit;
+using FlatRedBall.Glue.VSHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -303,6 +304,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 },
                 5);
             }
+        }
+
+        public string ReplaceGlueVersionString(string contents)
+        {
+            if (contents.Contains("$GLUE_VERSIONS$"))
+            {
+                return contents.Replace("$GLUE_VERSIONS$", CodeBuildItemAdder.GetGlueVersionsString());
+            }
+            return contents;
         }
 
     }

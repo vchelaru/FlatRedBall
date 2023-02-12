@@ -1,4 +1,5 @@
-﻿using FlatRedBall;
+﻿$GLUE_VERSIONS$
+using FlatRedBall;
 using FlatRedBall.Input;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
@@ -69,13 +70,19 @@ namespace $NAMESPACE$.TopDown
         Values2DInput values2DInput = new Values2DInput();
         public virtual I2DInput Default2DInput => values2DInput;
 
+#if HasIRepeatPressableInput || REFERENCES_FRB_SOURCE
+
+        public virtual IRepeatPressableInput DefaultUpPressable => throw new NotImplementedException();
+        public virtual IRepeatPressableInput DefaultDownPressable => throw new NotImplementedException();
+        public virtual IRepeatPressableInput DefaultLeftPressable => throw new NotImplementedException();
+        public virtual IRepeatPressableInput DefaultRightPressable => throw new NotImplementedException();
+#else
+
         public virtual IPressableInput DefaultUpPressable => throw new NotImplementedException();
-
         public virtual IPressableInput DefaultDownPressable => throw new NotImplementedException();
-
         public virtual IPressableInput DefaultLeftPressable => throw new NotImplementedException();
-
         public virtual IPressableInput DefaultRightPressable => throw new NotImplementedException();
+#endif
 
         public virtual I1DInput DefaultHorizontalInput => throw new NotImplementedException();
 
@@ -92,8 +99,7 @@ namespace $NAMESPACE$.TopDown
         public virtual IPressableInput DefaultPauseInput => throw new NotImplementedException();
 
         public virtual IPressableInput DefaultBackInput => throw new NotImplementedException();
-
-        #endregion
+#endregion
 
         public Vector3? NextImmediateTarget { get; set; }
 
@@ -223,7 +229,7 @@ namespace $NAMESPACE$.TopDown
             UpdateLines();
         }
 
-    private void UpdateLines()
+        private void UpdateLines()
         {
             if (IsPathVisible)
             {

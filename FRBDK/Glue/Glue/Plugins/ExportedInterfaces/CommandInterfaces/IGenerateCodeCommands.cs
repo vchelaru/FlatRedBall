@@ -43,5 +43,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         void GenerateStartupScreenCode();
 
         void GenerateGame1();
+
+        /// <summary>
+        /// Replaces $GLUE_VERSIONS$ with all defines based on the current glux/gluj version
+        /// </summary>
+        /// <param name="contents"></param>
+        /// <returns></returns>
+        string ReplaceGlueVersionString(string contents);
     }
 }

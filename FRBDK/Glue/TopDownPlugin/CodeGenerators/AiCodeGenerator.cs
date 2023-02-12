@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.CodeGenerators;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace TopDownPlugin.CodeGenerators
         {
             get
             {
-                if(mSelf == null)
+                if (mSelf == null)
                 {
                     mSelf = new AiCodeGenerator();
                 }
@@ -26,7 +27,7 @@ namespace TopDownPlugin.CodeGenerators
             }
         }
 
-        public override string RelativeFile => 
+        public override string RelativeFile =>
             GlueState.Self.CurrentGlueProject?.FileVersion > (int)GluxVersions.PreVersion
             ? "TopDown/TopDownAiInput.Generated.cs"
             : "TopDown/TopDownAiInput.cs"
@@ -41,9 +42,8 @@ namespace TopDownPlugin.CodeGenerators
             string toReturn = System.Text.Encoding.UTF8.GetString(byteArray);
 
             toReturn = toReturn.Replace("$NAMESPACE$", GlueState.Self.ProjectNamespace);
-
+            toReturn = GlueCommands.Self.GenerateCodeCommands.ReplaceGlueVersionString(toReturn);
             return toReturn;
         }
-
     }
 }

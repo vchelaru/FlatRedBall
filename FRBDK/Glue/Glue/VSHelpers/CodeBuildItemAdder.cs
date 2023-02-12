@@ -360,7 +360,7 @@ namespace FlatRedBall.Glue.VSHelpers
             }
         }
 
-        private static string GetGlueVersionsString()
+        public static string GetGlueVersionsString()
         {
             var currentFileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
 
@@ -384,6 +384,11 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     toReturn += $"#define {gluxNames.GetValue(i)}\n";
                 }
+            }
+
+            if(GlueState.Self.CurrentMainProject.IsFrbSourceLinked())
+            {
+                toReturn += $"#define REFERENCES_FRB_SOURCE\n";
             }
 
             return toReturn;

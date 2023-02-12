@@ -16,6 +16,7 @@ using FlatRedBall.Glue.Managers;
 using Microsoft.Build.Evaluation;
 using Container = EditorObjects.IoC.Container;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
+using System.Reflection;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -504,12 +505,18 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public override bool IsFrbSourceLinked()
         {
-            var item = mProject.AllEvaluatedItems.FirstOrDefault(item =>
+            foreach(var item in mProject.AllEvaluatedItems)
             {
-                return item.ItemType == "ProjectReference" &&
-                    item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGL.csproj");
-            });
-            return item != null;
+                if(item.ItemType == "ProjectReference")
+                {
+                    if(item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGL.csproj") || item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGLNet6.csproj"))
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
         }
 
         // nope! This reads the .csproj for the file version # which is old, it doesn't get updated by the build. We'd have to load the .dll to see
