@@ -1417,7 +1417,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                 }
 
-                if (ati.ShouldBeDisposed && element.UseGlobalContent == false)
+                var shouldDispose = ati.ShouldBeDisposed && 
+                    element.UseGlobalContent == false &&
+                    // If this is also in global content, then it's being loaded and managed as global content:
+                    !GlueState.Self.CurrentGlueProject.GlobalFiles.Any(item => item.Name == referencedFile.Name);
+
+                if (shouldDispose)
                 {
                     codeBlock = codeBlock.If("this.UnloadsContentManagerWhenDestroyed && ContentManagerName != \"Global\"");
                     codeBlock.Line(string.Format("{0}.Dispose();", variableName));
