@@ -91,19 +91,23 @@ namespace FlatRedBall.Entities
 
             var healthBefore = damageable.CurrentHealth;
 
-            if(modifiedByBoth != 0)
+            if (modifiedByBoth != 0)
             {
                 damageable.CurrentHealth -= modifiedByBoth;
-
-                damageable.ReactToDamageReceived?.Invoke(modifiedByBoth, damageArea);
-                damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
-
-                if(healthBefore > 0 && damageable.CurrentHealth <= 0)
-                {
-                    damageable?.Died?.Invoke(modifiedByBoth, damageArea);
-                    damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
-                }
             }
+
+            // We used to not raise events when taking 0 damage, but we may want
+            // to have some kind of logic play when taking 0 damage, likeplay a sound
+            // effect to indicate that this is not a spot that an enemy can get hit.
+            damageable.ReactToDamageReceived?.Invoke(modifiedByBoth, damageArea);
+            damageArea.ReactToDamageDealt?.Invoke(modifiedByBoth, damageable);
+
+            if(healthBefore > 0 && damageable.CurrentHealth <= 0)
+            {
+                damageable?.Died?.Invoke(modifiedByBoth, damageArea);
+                damageArea?.KilledDamageable?.Invoke(modifiedByBoth, damageable);
+            }
+            
 
             return modifiedByBoth;
         }
