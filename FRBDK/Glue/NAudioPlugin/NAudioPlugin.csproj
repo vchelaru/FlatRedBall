@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-  <PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>

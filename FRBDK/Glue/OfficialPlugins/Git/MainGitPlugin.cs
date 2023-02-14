@@ -16,12 +16,34 @@ namespace OfficialPlugins.Git
     {
         public override string FriendlyName => "Git Plugin";
 
+        //FilePath UpdateAllAndRunLocation =>
+        //    new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis() + "UpdateAllAndRunFrb.bat";
         public override Version Version => new Version(1, 0);
 
         public override void StartUp()
         {
+            this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+
+        void HandleGluxLoaded()
+        {
             this.AddMenuItemTo("Add/Update .gitignore", (not, used) => AddGitIgnore(), "Update");
-            this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
+
+            // This is handled in the FrbdkUpdaterPlugin
+            //this.RemoveAllMenuItems();
+
+            //if (UpdateAllAndRunLocation.Exists())
+            //{
+            //    this.AddMenuItemTo("Shut Down and Update from Source", HandleShutdownAndUpdate, "Update");
+            //    this.AddMenuItemTo("Refresh UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
+
+            //}
+            //else
+            //{
+            //    this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
+            //}
+
         }
 
         public void AddGitIgnore()
@@ -66,43 +88,6 @@ namespace OfficialPlugins.Git
             }
         }
 
-        public void AddUpdateAllAndRun()
-        {
-            if(GlueState.Self.CurrentGlueProject != null)
-            {
-                var contents =
-@":: Get the latest code for your project
-git fetch
-git pull
-:: Get the latest Gum
-cd ..\Gum
-git fetch
-git pull
-:: Get the latest FlatRedBall
-cd ..\FlatRedBall
-git fetch
-git pull
-:: Build Glue with All solution
-cd FRBDK\Glue
-dotnet build ""Glue with All.sln""
-:: Run the newly built Glue
-cd Glue\bin\x86\Debug\netcoreapp3.0\
-start GlueFormsCore.exe";
-                var locationToSave = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
-
-                var destinationFileName = locationToSave.FullPath + "UpdateAllAndRunFrb.bat";
-
-                try
-                {
-                    System.IO.File.WriteAllText(destinationFileName, contents);
-                    GlueCommands.Self.PrintOutput($"Added batch file to:\n{destinationFileName}");
-                }
-                catch (Exception ex)
-                {
-                    GlueCommands.Self.PrintOutput(ex.ToString());
-                }
-            }
-        }
 
         private IEnumerable<string> GetNecessaryLines()
         {
@@ -154,5 +139,11 @@ start GlueFormsCore.exe";
             RemoveAllMenuItems();
             return true;
         }
+
+        //public void HandleShutdownAndUpdate(object sender, EventArgs e) 
+        //{
+        //    //GlueCommands.Self.FileCommands.Open(UpdateAllAndRunLocation.GetDirectoryContainingThis());
+        //    //GlueCommands.Self.CloseGlue();    
+        //}
     }
 }

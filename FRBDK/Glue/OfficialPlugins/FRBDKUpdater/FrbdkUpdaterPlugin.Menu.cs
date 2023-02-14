@@ -54,8 +54,9 @@ namespace OfficialPlugins.FrbdkUpdater
 @"git pull & " + 
 @"cd FRBDK\Glue & " + 
 @"dotnet build ""Glue with All.sln"" & " + 
-@"cd Glue\bin\x86\Debug\netcoreapp3.0\ & " +
-@"GlueFormsCore.exe";
+@"cd Glue\bin\Debug\ & " +
+@"start GlueFormsCore.exe & " +
+@"exit";
 
             var processStartInfo = new ProcessStartInfo("cmd.exe");
             processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;

@@ -1,20 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\..\..\Glue\OfficialPlugins\FRBDKUpdater\FrbdkUpdaterSettings.cs" Link="FrbdkUpdaterSettings.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\..\..\Glue\OfficialPlugins\FRBDKUpdater\FrbdkUpdaterSettings.cs" Link="FrbdkUpdaterSettings.cs" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="DotNetZip" Version="1.16.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.16.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
+	</ItemGroup>
 
 </Project>
