@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Math.Geometry;
