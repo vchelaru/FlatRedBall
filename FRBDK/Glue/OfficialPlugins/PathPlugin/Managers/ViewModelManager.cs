@@ -27,7 +27,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             {
                 var variableName = MainViewModel?.VariableName ?? AssetTypeInfoManager.PathsVariableName;
 
-                var variable = nos.GetCustomVariable(variableName);
+                var variable = nos?.GetCustomVariable(variableName);
 
                 if(variable == null)
                 {
