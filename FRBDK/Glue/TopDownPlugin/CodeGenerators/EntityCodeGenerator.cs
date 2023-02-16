@@ -72,6 +72,10 @@ namespace TopDownPlugin.CodeGenerators
                 codeBlock.Line($"protected virtual System.Collections.Generic.Dictionary<string, {projectNamespace}.DataTypes.TopDownValues> TopDownValues => TopDownValuesStatic;");
             }
 
+            // Made a field so the user can assign individual values
+            // Made a Vector3 to make assignment and usage easier.
+            codeBlock.Line("public Microsoft.Xna.Framework.Vector3 GroundVelocity;");
+
             WriteAnimationFields(element, codeBlock);
 
             codeBlock.Line("DataTypes.TopDownValues mCurrentMovement;");
@@ -282,52 +286,56 @@ namespace TopDownPlugin.CodeGenerators
             }
             //////end early out
 
-            var velocity = this.Velocity;
+            var absoluteVelocity = this.Velocity;
+            var groundVelocity = this.Velocity - GroundVelocity;
 
-            var desiredVelocity = Microsoft.Xna.Framework.Vector3.Zero;
+            var desiredGroundVelocity = Microsoft.Xna.Framework.Vector3.Zero;
+            var desiredAbsoluteVelocity = GroundVelocity;
 
-            if(InputEnabled && MovementInput != null)
+            if (InputEnabled && MovementInput != null)
             {
                 var vector = new Microsoft.Xna.Framework.Vector2(MovementInput.X, MovementInput.Y);
                 if(vector.LengthSquared() > 1)
                 {
                     vector = Microsoft.Xna.Framework.Vector2ExtensionMethods.AtLength(vector, 1);
                 }
-                desiredVelocity = new Microsoft.Xna.Framework.Vector3(vector.X, vector.Y, velocity.Z) * 
+                desiredGroundVelocity = new Microsoft.Xna.Framework.Vector3(vector.X, vector.Y, absoluteVelocity.Z) * 
                     mCurrentMovement.MaxSpeed * TopDownSpeedMultiplier;
             }
+            desiredAbsoluteVelocity = GroundVelocity + desiredGroundVelocity;
 
-            var difference = desiredVelocity - velocity;
+            var absoluteDifference =  desiredAbsoluteVelocity - absoluteVelocity;
+            var groundDifference = desiredGroundVelocity - groundVelocity;
 
             Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
 
-            var differenceLength = difference.Length();
+            var absoluteDifferenceLength = absoluteDifference.Length();
 
             const float differenceEpsilon = .1f;
 
-            if (differenceLength > differenceEpsilon)
+            if (absoluteDifferenceLength > differenceEpsilon)
             {
-                var isMoving = velocity.X != 0 || velocity.Y != 0;
-                var isDesiredVelocityNonZero = desiredVelocity.X != 0 || desiredVelocity.Y != 0;
+                var isMovingRelativeToGround = groundVelocity.X != 0 || groundVelocity.Y != 0;
+                var isDesiredGroundVelocityNonZero = desiredGroundVelocity.X != 0 || desiredGroundVelocity.Y != 0;
 
                 // A 0 to 1 ratio of acceleration to deceleration, where 1 means the player is accelerating completely,
                 // and 0 means decelerating completely. This value will often be between 0 and 1 because the player may
                 // set desired velocity perpendicular to the current velocity
                 float accelerationRatio = 1;
-                if(isMoving && isDesiredVelocityNonZero == false)
+                if(isMovingRelativeToGround && isDesiredGroundVelocityNonZero == false)
                 {
                     // slowing down completely
                     accelerationRatio = 0;
                 }
-                else if(isMoving == false && isDesiredVelocityNonZero)
+                else if(isMovingRelativeToGround == false && isDesiredGroundVelocityNonZero)
                 {
                     accelerationRatio = 1;
                 }
                 else
                 {
                     // both is moving and has a non-zero desired value
-                    var movementAngle = (float)Math.Atan2(velocity.Y, velocity.X);
-                    var desiredAngle = (float)Math.Atan2(difference.Y, difference.X);
+                    var movementAngle = (float)Math.Atan2(absoluteVelocity.Y, absoluteVelocity.X);
+                    var desiredAngle = (float)Math.Atan2(absoluteDifference.Y, absoluteDifference.X);
 
                     accelerationRatio = 1-
                         Math.Abs(FlatRedBall.Math.MathFunctions.AngleToAngle(movementAngle, desiredAngle)) / (float)Math.PI;
@@ -342,7 +350,7 @@ namespace TopDownPlugin.CodeGenerators
                 if(!mCurrentMovement.UsesAcceleration || secondsToTake == 0)
                 {
                     this.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-                    this.Velocity = desiredVelocity;
+                    this.Velocity = desiredAbsoluteVelocity;
                 }
                 else
                 {
@@ -369,17 +377,17 @@ namespace TopDownPlugin.CodeGenerators
                         }
                     }
                 
-                    var nonNormalizedDifference = difference;
+                    var nonNormalizedAbsoluteDifference = absoluteDifference;
+                    var normalizedAbsoluteDifference = absoluteDifference;
+                    normalizedAbsoluteDifference.Normalize();
                 
-                    difference.Normalize();
-                
-                    var accelerationToSet = accelerationMagnitude * difference;
+                    var accelerationToSet = accelerationMagnitude * normalizedAbsoluteDifference;
                     var expectedVelocityToAdd = accelerationToSet * TimeManager.SecondDifference;
                 
-                    if(expectedVelocityToAdd.Length() > nonNormalizedDifference.Length())
+                    if(expectedVelocityToAdd.Length() > nonNormalizedAbsoluteDifference.Length())
                     {
                         // we will overshoot it, so let's adjust the acceleration accordingly:
-                        var ratioOfToAdd = nonNormalizedDifference.Length() / expectedVelocityToAdd.Length();
+                        var ratioOfToAdd = nonNormalizedAbsoluteDifference.Length() / expectedVelocityToAdd.Length();
                         this.Acceleration = accelerationToSet * ratioOfToAdd;
                     }
                     else
@@ -389,34 +397,34 @@ namespace TopDownPlugin.CodeGenerators
 
                 if (mCurrentMovement.UpdateDirectionFromInput)
                 {
-                    if (desiredVelocity.X != 0 || desiredVelocity.Y != 0)
+                    if (desiredGroundVelocity.X != 0 || desiredGroundVelocity.Y != 0)
                     {
-                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredVelocity.X, desiredVelocity.Y, PossibleDirections, mDirectionFacing);
+                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredGroundVelocity.X, desiredGroundVelocity.Y, PossibleDirections, mDirectionFacing);
                     }
                 }
                 else if (mCurrentMovement.UpdateDirectionFromVelocity)
                 {
                     const float velocityEpsilon = .1f;
-                    var shouldAssignDirection = this.Velocity.Length() > velocityEpsilon || difference.Length() > 0;
+                    var shouldAssignDirection = (this.Velocity.Length() - groundVelocity.Length()) > velocityEpsilon || groundDifference.Length() > 0;
 
-                    if(this.Velocity.LengthSquared() == 0)
+                    if(groundVelocity.LengthSquared() == 0)
                     {
-                        if(desiredVelocity.X != 0 || desiredVelocity.Y != 0)
+                        if(desiredGroundVelocity.X != 0 || desiredGroundVelocity.Y != 0)
                         {
                             // use the desired movement value, so the player can
                             // change directions when facing a wall
-                            mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredVelocity.X, desiredVelocity.Y, PossibleDirections, mDirectionFacing);
+                            mDirectionFacing = TopDownDirectionExtensions.FromDirection(desiredGroundVelocity.X, desiredGroundVelocity.Y, PossibleDirections, mDirectionFacing);
                         }
                     }
                     else
                     {
-                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(XVelocity, YVelocity, PossibleDirections, mDirectionFacing);
+                        mDirectionFacing = TopDownDirectionExtensions.FromDirection(groundVelocity.X, groundVelocity.Y, PossibleDirections, mDirectionFacing);
                     }
                 }
             }
             else
             {
-                Velocity = desiredVelocity;
+                Velocity = desiredAbsoluteVelocity;
                 Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
             }
 
