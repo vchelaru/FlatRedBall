@@ -1640,9 +1640,14 @@ namespace FlatRedBall.Input
 
         public override string ToString()
         {
-            var toReturn= $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
 
-            for(int i = 0; i < NumberOfButtons; i++)
+#if WINDOWS_PHONE || MONOGAME
+            var toReturn= $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
+#else
+            var toReturn= $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+#endif
+
+            for (int i = 0; i < NumberOfButtons; i++)
             {
                 var button = (Button)i;
                 if(ButtonDown(button))
@@ -1655,9 +1660,9 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
-        #region Internal Methods
+#region Internal Methods
 
         internal void Update()
         {
@@ -1684,11 +1689,11 @@ namespace FlatRedBall.Input
         }
 
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region IInputDevice Explicit Implementation
+#region IInputDevice Explicit Implementation
 
         I2DInput IInputDevice.Default2DInput
         {
