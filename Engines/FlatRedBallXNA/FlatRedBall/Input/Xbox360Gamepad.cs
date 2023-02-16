@@ -1641,10 +1641,10 @@ namespace FlatRedBall.Input
         public override string ToString()
         {
 
-#if WINDOWS_PHONE || MONOGAME
-            var toReturn= $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
+#if MONOGAME_381
+            var toReturn = $"{mPlayerIndex} {Capabilities.Identifier} Connected:{IsConnected} LeftStick:{mLeftStick}";
 #else
-            var toReturn= $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
+            var toReturn = $"{mPlayerIndex} Connected:{IsConnected} LeftStick:{mLeftStick}";
 #endif
 
             for (int i = 0; i < NumberOfButtons; i++)
