@@ -212,7 +212,6 @@ namespace FlatRedBall.Math.Geometry
         public override void UpdateDependencies(double currentTime)
         {
             base.UpdateDependencies(currentTime);
-            base.Points = mPoints;
         }
     }
 }
