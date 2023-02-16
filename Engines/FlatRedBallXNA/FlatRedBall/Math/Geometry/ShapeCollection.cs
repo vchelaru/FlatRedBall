@@ -1827,13 +1827,13 @@ namespace FlatRedBall.Math.Geometry
                 }
             }
 
-            if (collidedObject as AxisAlignedRectangle != null)
+            if (collidedObject is AxisAlignedRectangle collidedRectangle)
             {
-                mLastCollisionAxisAlignedRectangles.Add((AxisAlignedRectangle)collidedObject);
+                mLastCollisionAxisAlignedRectangles.Add(collidedRectangle);
             }
-            else if (collidedObject as Polygon != null)
+            else if (collidedObject is Polygon collidedPolygon)
             {
-                mLastCollisionPolygons.Add((Polygon)collidedObject);
+                mLastCollisionPolygons.Add(collidedPolygon);
             }
 
             line.LastCollisionPoint = intersectionPoint ?? new Point(double.NaN, double.NaN);
