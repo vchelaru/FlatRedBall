@@ -17,6 +17,7 @@ using Microsoft.Build.Evaluation;
 using Container = EditorObjects.IoC.Container;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Reflection;
+using System.IO;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -509,7 +510,8 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 if(item.ItemType == "ProjectReference")
                 {
-                    if(item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGL.csproj") || item.EvaluatedInclude.EndsWith("\\FlatRedBallDesktopGLNet6.csproj"))
+                    var filename = Path.GetFileName(item.EvaluatedInclude);
+                    if((filename == "FlatRedBallDesktopGL.csproj") || (filename == "FlatRedBallDesktopGLNet6.csproj"))
                     {
                         return true;
                     }
