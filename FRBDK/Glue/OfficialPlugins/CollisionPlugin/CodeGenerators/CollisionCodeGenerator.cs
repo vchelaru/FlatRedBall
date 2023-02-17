@@ -699,8 +699,9 @@ namespace OfficialPlugins.CollisionPlugin
             {
                 codeBlock = codeBlock.Function("void", "HandleBeforeCollisionGenerated");
                 var itemsToGenerate = element
-                    // Only use the top level - lists will handle it
-                    .NamedObjects.Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item));
+                    // Only use the top level NamedObjects. Don't go into the individual objects since those will be handled by their list
+                    .NamedObjects
+                    .Where(item => item.IsCollidableOrCollidableList() && !IsTileShapeCollection(item) && !item.DefinedByBase && !item.IsDisabled);
 
                 var hasObjectsCollidedAgainst = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ICollidableHasObjectsCollidedAgainst;
                 foreach (var item in itemsToGenerate)

@@ -873,6 +873,81 @@ namespace FlatRedBall.TileGraphics
             textureY = vector.Y;
         }
 
+        public float GetRotationZForOrderedTile(int orderedTileIndex)
+        {
+            // The order is:
+            // 3   2
+            //
+            // 0   1
+
+            // So that means 
+            // 3           2
+            // ^
+            // |
+            // Y
+            // |
+            // 0 ---X--->  1
+
+            // We can't use positions because for rotated tiles the positions stay the same, but the
+            // texture coordiantes do not. So we should use the texture coordiantes.
+            // A tile's texture coordiantes may look like this:
+            // (0, 0)       (1, 0)
+            //
+            //
+            //
+            //
+            // (0, 1)       (1, 1)
+            // 
+
+            // The X Axis is set by finding the pair of texture coordinates where
+            // the Y value is the same, and the X value is increasing
+            // There may be a more elegant way to do this (mathematically)
+            // but I'm not sure what that is so we'll just brute force it:
+            var startIndex = orderedTileIndex * 4;
+
+            var bottomLeft = mVertices[startIndex];
+            var bottomRight = mVertices[startIndex + 1];
+            var topRight = mVertices[startIndex + 2];
+            var topLeft = mVertices[startIndex + 3];
+
+            Vector3 xAxis = Vector3.UnitX;
+
+            if (bottomLeft.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+            {
+                if (bottomRight.TextureCoordinate.X > bottomLeft.TextureCoordinate.X)
+                {
+                    xAxis = bottomRight.Position - bottomLeft.Position;
+                }
+                else
+                {
+                    xAxis = bottomLeft.Position - bottomRight.Position;
+                }
+            }
+            else
+            {
+                // use top right and bottom right
+                if (topRight.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+                {
+                    if (topRight.TextureCoordinate.X > bottomRight.TextureCoordinate.X)
+                    {
+                        xAxis = topRight.Position - bottomRight.Position;
+                    }
+                    else
+                    {
+                        xAxis = bottomRight.Position - topRight.Position;
+                    }
+                }
+            }
+
+            var rotationZ = (float)System.Math.Atan2(xAxis.Y, xAxis.X);
+            if (rotationZ < 0)
+            {
+                rotationZ += MathHelper.TwoPi;
+            }
+
+            return rotationZ;
+        }
+
         public void GetBottomLeftWorldCoordinateForOrderedTile(int orderedTileIndex, out float x, out float y)
         {
             // The order is:

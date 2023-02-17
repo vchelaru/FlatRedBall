@@ -530,18 +530,9 @@ namespace FlatRedBall
                 mRelativeRotationX = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationX);
 
-#if FRB_MDX
-                mRelativeRotationMatrix = Matrix.RotationX((float)mRelativeRotationX);
-                mRelativeRotationMatrix *= Matrix.RotationY((float)mRelativeRotationY);
-                mRelativeRotationMatrix *= Matrix.RotationZ((float)mRelativeRotationZ);
-#elif FRB_XNA
                 mRelativeRotationMatrix = Matrix.CreateRotationX((float)mRelativeRotationX);
                 mRelativeRotationMatrix *= Matrix.CreateRotationY((float)mRelativeRotationY);
                 mRelativeRotationMatrix *= Matrix.CreateRotationZ((float)mRelativeRotationZ);
-#elif SILVERLIGHT
-                mRelativeRotationMatrix = Matrix.CreateRotationZ((float)mRelativeRotationZ);
-
-#endif
             }
         }
 
@@ -556,17 +547,9 @@ namespace FlatRedBall
                 mRelativeRotationY = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationY);
 
-#if FRB_MDX
-                mRelativeRotationMatrix = Matrix.RotationX((float)mRelativeRotationX);
-                mRelativeRotationMatrix *= Matrix.RotationY((float)mRelativeRotationY);
-                mRelativeRotationMatrix *= Matrix.RotationZ((float)mRelativeRotationZ);
-#elif FRB_XNA
                 mRelativeRotationMatrix = Matrix.CreateRotationX((float)mRelativeRotationX);
                 mRelativeRotationMatrix *= Matrix.CreateRotationY((float)mRelativeRotationY);
                 mRelativeRotationMatrix *= Matrix.CreateRotationZ((float)mRelativeRotationZ);
-#elif SILVERLIGHT
-                mRelativeRotationMatrix = Matrix.CreateRotationZ((float)mRelativeRotationZ);
-#endif
             }
         }
 
@@ -591,20 +574,9 @@ namespace FlatRedBall
 
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRelativeRotationZ);
 
-#if FRB_MDX
-                mRelativeRotationMatrix = Matrix.RotationX((float)mRelativeRotationX);
-                mRelativeRotationMatrix *= Matrix.RotationY((float)mRelativeRotationY);
-                mRelativeRotationMatrix *= Matrix.RotationZ((float)mRelativeRotationZ);
-#elif FRB_XNA
                 mRelativeRotationMatrix = Matrix.CreateRotationX((float)mRelativeRotationX);
                 mRelativeRotationMatrix *= Matrix.CreateRotationY((float)mRelativeRotationY);
                 mRelativeRotationMatrix *= Matrix.CreateRotationZ((float)mRelativeRotationZ);
-#elif SILVERLIGHT
-                mRelativeRotationMatrix = Matrix.CreateRotationZ((float)mRelativeRotationZ);
-
-
-#endif
-
             }
         }
 
@@ -625,11 +597,11 @@ namespace FlatRedBall
                 mRelativeRotationZ = (float)System.Math.Atan2(mRelativeRotationMatrix.M12, mRelativeRotationMatrix.M11);
                 mRelativeRotationY = -(float)System.Math.Asin(mRelativeRotationMatrix.M13);
                 if (mRelativeRotationX < 0)
-                    mRelativeRotationX += (float)System.Math.PI * 2;
+                    mRelativeRotationX += MathHelper.TwoPi;
                 if (mRelativeRotationY < 0)
-                    mRelativeRotationY += (float)System.Math.PI * 2;
+                    mRelativeRotationY += MathHelper.TwoPi;
                 if (mRelativeRotationZ < 0)
-                    mRelativeRotationZ += (float)System.Math.PI * 2;
+                    mRelativeRotationZ += MathHelper.TwoPi;
 
 #if DEBUG
 #if FRB_XNA
@@ -738,16 +710,9 @@ namespace FlatRedBall
                 mRotationX = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationX);
 
-#if FRB_MDX
-                mRotationMatrix = Matrix.RotationX((float)mRotationX);
-                mRotationMatrix *= Matrix.RotationY((float)mRotationY);
-                mRotationMatrix *= Matrix.RotationZ((float)mRotationZ);
-#else
-
                 mRotationMatrix = Matrix.CreateRotationX(mRotationX);
                 mRotationMatrix *= Matrix.CreateRotationY(mRotationY);
                 mRotationMatrix *= Matrix.CreateRotationZ(mRotationZ);
-#endif
             }
         }
 
@@ -776,25 +741,13 @@ namespace FlatRedBall
                 mRotationY = value;
                 FlatRedBall.Math.MathFunctions.RegulateAngle(ref mRotationY);
 
-#if FRB_MDX
-                mRotationMatrix = Matrix.RotationX((float)mRotationX);
-                mRotationMatrix *= Matrix.RotationY((float)mRotationY);
-                mRotationMatrix *= Matrix.RotationZ((float)mRotationZ);
-#else
-
-#if !SILVERLIGHT
                 Matrix xRotationMatrix = Matrix.CreateRotationX(mRotationX);
                 Matrix yRotationMatrix = Matrix.CreateRotationY(mRotationY);
-
-
                 mRotationMatrix = xRotationMatrix;
                 mRotationMatrix *= yRotationMatrix;
-#endif
 
                 Matrix zRotationMatrix = Matrix.CreateRotationZ(mRotationZ);
-
                 mRotationMatrix *= zRotationMatrix;
-#endif
 
             }
         }
@@ -862,11 +815,11 @@ namespace FlatRedBall
                 //mRotationY = -(float)System.Math.Asin(mRotationMatrix.M13);
                 mRotationY = (float)System.Math.Atan2(-mRotationMatrix.M13, mRotationMatrix.M11);
                 if (mRotationX < 0)
-                    mRotationX += (float)System.Math.PI * 2;
+                    mRotationX += MathHelper.TwoPi;
                 if (mRotationY < 0)
-                    mRotationY += (float)System.Math.PI * 2;
+                    mRotationY += MathHelper.TwoPi;
                 if (mRotationZ < 0)
-                    mRotationZ += (float)System.Math.PI * 2;
+                    mRotationZ += MathHelper.TwoPi;
 
 #if DEBUG
                 // Make sure matrix is invertable
@@ -925,15 +878,12 @@ namespace FlatRedBall
 
         }
 
-
-        #region XML Docs
         /// <summary>
         /// Gets or sets the overall transformation of this object
         /// </summary>
         /// <remarks>
         /// Changing the transformation matrix will change rotation, position and scaling
         /// </remarks>
-        #endregion
         public virtual Matrix TransformationMatrix
         {
             get
@@ -977,14 +927,12 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets or sets the overall transformation of this object, relative to its parent
         /// </summary>
         /// <remarks>
         /// Changing the transformation matrix will change rotation, position and scaling
         /// </remarks>
-        #endregion
         public virtual Matrix RelativeTransformationMatrix
         {
             get { return RelativeRotationMatrix * Matrix.CreateTranslation(RelativePosition); }
@@ -1025,7 +973,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute X rotation speed measured in radians per second
         /// </summary>
@@ -1033,14 +980,12 @@ namespace FlatRedBall
         /// The RotationXVelocity variable is how fast a PositionedObject is rotating on the X axis. It is
         /// measured in radians per second.
         /// </remarks>
-        #endregion
         public float RotationXVelocity
         {
             get => mRotationXVelocity; 
             set => mRotationXVelocity = value; 
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute Y rotation speed measured in radians per second
         /// </summary>
@@ -1048,14 +993,12 @@ namespace FlatRedBall
         /// The RotationYVelocity variable is how fast a PositionedObject is rotating on the Y axis. It is
         /// measured in radians per second.
         /// </remarks>
-        #endregion
         public float RotationYVelocity
         {
             get => mRotationYVelocity; 
             set => mRotationYVelocity = value; 
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute Z rotation speed measured in radians per second
         /// </summary>
@@ -1063,8 +1006,6 @@ namespace FlatRedBall
         /// The RotationZVelocity variable is how fast a PositionedObject is rotating on the Z axis. It is
         /// measured in radians per second.
         /// </remarks>
-        /// 
-        #endregion
         public float RotationZVelocity
         {
             get { return mRotationZVelocity; }
@@ -1080,11 +1021,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Returns the top node in the attachment hierarchical relationship
         /// </summary>
-        #endregion
         public PositionedObject TopParent
         {
             get
@@ -1094,11 +1033,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute X position.
         /// </summary>
-        #endregion
         [CategoryAttribute("Position")]
         public float X
         {
@@ -1117,11 +1054,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute Y position.
         /// </summary>
-        #endregion
         [CategoryAttribute("Position")]
         public float Y
         {
@@ -1139,11 +1074,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// The absolute Z position.
         /// </summary>
-        #endregion
         [CategoryAttribute("Position")]
         public float Z
         {
@@ -1161,78 +1094,64 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute X Velocity.  Measured in units per second.
         /// </summary>
-        #endregion
         public float XVelocity
         {
             get { return Velocity.X; }
             set { Velocity.X = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute Y Velocity.  Measured in units per second.
         /// </summary>
-        #endregion
         public float YVelocity
         {
             get { return Velocity.Y; }
             set { Velocity.Y = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute Z Velocity.  Measured in units per second.
         /// </summary>
-        #endregion
         public float ZVelocity
         {
             get { return Velocity.Z; }
             set { Velocity.Z = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute X Acceleration.  Measured in units per second.
         /// </summary>
-        #endregion
         public float XAcceleration
         {
             get { return Acceleration.X; }
             set { Acceleration.X = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute Y Acceleration.  Measured in units per second.
         /// </summary>
-        #endregion
         public float YAcceleration
         {
             get { return Acceleration.Y; }
             set { Acceleration.Y = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets the absolute Z Acceleration.  Measured in units per second.
         /// </summary>
-        #endregion
         public float ZAcceleration
         {
             get { return Acceleration.Z; }
             set { Acceleration.Z = value; }
         }
 
-        #region XML Docs
         /// <summary>
         /// Whether the PositionedObject's RealVelocity and RealAcceleration are
         /// updated every frame.
         /// </summary>
-        #endregion
         public bool KeepTrackOfReal
         {
             get { return mKeepTrackOfReal; }

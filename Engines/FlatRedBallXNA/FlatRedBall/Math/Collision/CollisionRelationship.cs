@@ -1572,6 +1572,12 @@ namespace FlatRedBall.Math.Collision
                             {
                                 CollisionOccurred?.Invoke(first, second);
                                 collisionOccurred = true;
+
+                                first.ItemsCollidedAgainst.Add(second.Name);
+                                first.ObjectsCollidedAgainst.Add(second);
+                                second.ItemsCollidedAgainst.Add(first.Name);
+                                second.ObjectsCollidedAgainst.Add(first);
+
                                 if (CollisionLimit == CollisionLimit.First)
                                 {
                                     break;
