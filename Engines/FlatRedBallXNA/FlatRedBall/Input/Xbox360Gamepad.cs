@@ -1675,7 +1675,12 @@ namespace FlatRedBall.Input
 
             if(mCapabilities.DisplayName == null || WasConnectedThisFrame)
             {
-                mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+                // This can crash internally:
+                try
+                {
+                    mCapabilities = Microsoft.Xna.Framework.Input.GamePad.GetCapabilities((int)mPlayerIndex);
+                }
+                catch (NullReferenceException) { }
             }
 #else
             gamepadState = Microsoft.Xna.Framework.Input.GamePad.GetState(mPlayerIndex, GamePadDeadZone.None);
