@@ -73,7 +73,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
         private ToggleButton CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
         {
-            CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id);
+            CroppedBitmap croppedBitmap = GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tile.id, tile.Type);
 
             var button = new ToggleButton();
             button.Tag = tile;

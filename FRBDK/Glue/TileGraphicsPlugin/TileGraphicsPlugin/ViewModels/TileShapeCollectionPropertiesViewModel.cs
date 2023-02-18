@@ -288,7 +288,7 @@ namespace TileGraphicsPlugin.ViewModels
 
                         if(tilesetTile != null)
                         {
-                            return GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tilesetTile.id);
+                            return GlueState.Self.TiledCache.GetBitmapForStandardTilesetId(tilesetTile.id, tilesetTile.Type);
                         }
                     }
                 }

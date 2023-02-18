@@ -247,7 +247,7 @@ namespace FlatRedBall.Glue.Tiled
             }
         }
 
-        public CroppedBitmap GetBitmapForStandardTilesetId(int tileId)
+        public CroppedBitmap GetBitmapForStandardTilesetId(int tileId, string tileType)
         {
             if(standardTilesetImage == null)
             {
@@ -255,14 +255,23 @@ namespace FlatRedBall.Glue.Tiled
             }
 
             var unwrappedX = tileId * 16;
-            var y = 16 * (unwrappedX / (int)standardTilesetImage.Width);
-            var x = unwrappedX % (int)standardTilesetImage.Width;
+            var y = 16 * (unwrappedX / (int)standardTilesetImage.PixelWidth);
+            var x = unwrappedX % (int)standardTilesetImage.PixelWidth;
 
             CroppedBitmap croppedBitmap = new CroppedBitmap();
-            croppedBitmap.BeginInit();
-            croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
-            croppedBitmap.Source = standardTilesetImage;
-            croppedBitmap.EndInit();
+
+            try
+            {
+                croppedBitmap.BeginInit();
+                croppedBitmap.SourceRect = new Int32Rect(x, y, 16, 16);
+                croppedBitmap.Source = standardTilesetImage;
+                croppedBitmap.EndInit();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error creating cropped bitmap at X,Y {x},{y} for tile ID {tileId} with type {tileType}");
+            }
+
 
             return croppedBitmap;
         }
