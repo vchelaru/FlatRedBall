@@ -884,9 +884,10 @@ namespace FlatRedBall.TileGraphics
 
             var strippedId = tiles[i] & 0x0fffffff;
 
+            TiledMapSave.GetFlipBoolsFromGid(tiles[i], out flipHorizontally, out flipVertically, out flipDiagonally);
+
             if (strippedId == tilesetTileGid)
             {
-
                 float xIndex = i % layer.width;
                 // intentional int division
                 float yIndex = i / layer.width;
@@ -898,11 +899,37 @@ namespace FlatRedBall.TileGraphics
                 //cloned.Y = -(yIndex + .5f) * tileDimension;
                 // Actually use the X and Y to get the top left, then use the actual rectangle's X and Y values so that
                 // its offset applies:
-                cloned.X = rectangle.X + (xIndex) * tileDimension;
-                cloned.Y = rectangle.Y - (yIndex) * tileDimension;
+
+                var rectX = rectangle.X;
+                var rectY = rectangle.Y;
+                var width = rectangle.Width;
+                var height = rectangle.Height;
+
+
+                // diagonal flipping first
+                if (flipDiagonally)
+                {
+                    rectX = -rectangle.Y;
+                    rectY = -rectangle.X;
+                    width = rectangle.Height;
+                    height = rectangle.Width;
+                }
+                if (flipHorizontally)
+                {
+                    rectX = tileDimension - rectX;
+                }
+                if (flipVertically)
+                {
+                    rectY = -tileDimension - rectY;
+                }
+
+                cloned.X = rectX + (xIndex) * tileDimension;
+                cloned.Y = rectY - (yIndex) * tileDimension;
+
+                cloned.Width = width;
+                cloned.Height = height;
 
                 collectionForThisName.Rectangles.Add(cloned);
-
             }
         }
 
