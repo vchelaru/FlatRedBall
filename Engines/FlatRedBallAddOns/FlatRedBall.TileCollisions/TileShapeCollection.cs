@@ -695,8 +695,8 @@ namespace FlatRedBall.TileCollisions
             var worldX = positionedObject.Position.X;
             var worldY = positionedObject.Position.Y;
 
-            var xIndex = MathFunctions.RoundToInt((worldX - collectionLeft) / mGridSizeX);
-            var yIndex = MathFunctions.RoundToInt((worldY - collectionBottom) / mGridSizeY);
+            var xIndex = MathFunctions.RoundToInt(System.Math.Floor((worldX - collectionLeft) / mGridSizeX));
+            var yIndex = MathFunctions.RoundToInt(System.Math.Floor((worldY - collectionBottom) / mGridSizeY));
 
             bool ValueAt(int xIndexInner, int yIndexInner)
             {
@@ -1175,12 +1175,13 @@ namespace FlatRedBall.TileCollisions
             return Name;
         }
 
-        bool[] GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide)
+
+        bool[] GetCollisionByteArray(out float leftEdge, out float bottomEdge, out int numberTilesWide)
         {
             bool[] toReturn;
 
-            left = 0;
-            bottom = 0;
+            leftEdge = 0;
+            bottomEdge = 0;
 
             if (mShapes.AxisAlignedRectangles.Count == 0)
             {
@@ -1190,41 +1191,70 @@ namespace FlatRedBall.TileCollisions
             else
             {
                 var rectangles = mShapes.AxisAlignedRectangles;
-                var minX = rectangles[0].X;
-                var maxX = rectangles[0].X;
+                var first = rectangles[0];
+                var minCenterX = first.X;
+                var maxCenterX = first.X;
 
-                var minY = rectangles[0].Y;
-                var maxY = rectangles[0].Y;
+                var minLeft = first.X - first.Width / 2.0f;
+                var maxRight = first.X + first.Width / 2.0f;
+
+                var minCenterY = first.Y;
+                var maxCenterY = first.Y;
+
+                var minBottom = first.Y - first.Height / 2.0f;
+                var maxTop = first.Y + first.Height / 2.0f;
 
                 for (int i = 1; i < mShapes.AxisAlignedRectangles.Count; i++)
                 {
                     var rect = mShapes.AxisAlignedRectangles[i];
 
-                    if (rect.X < minX)
+                    if (rect.X < minCenterX)
                     {
-                        minX = rect.X;
+                        minCenterX = rect.X;
                     }
-                    if (rect.X > maxX)
+                    if (rect.X > maxCenterX)
                     {
-                        maxX = rect.X;
+                        maxCenterX = rect.X;
                     }
 
-                    if (rect.Y < minY)
+                    if (rect.Y < minCenterY)
                     {
-                        minY = rect.Y;
+                        minCenterY = rect.Y;
                     }
-                    if (rect.Y > maxY)
+                    if (rect.Y > maxCenterY)
                     {
-                        maxY = rect.Y;
+                        maxCenterY = rect.Y;
                     }
+
+
+                    var left = rect.X - rect.Width / 2.0f;
+                    var right = rect.X + rect.Width / 2.0f;
+
+                    var top = rect.Y + rect.Height / 2.0f;
+                    var bottom = rect.Y - rect.Height / 2.0f;
+
+                    if (left < minLeft) minLeft = left;
+                    if (right > maxRight) maxRight = right;
+
+                    if (bottom < minBottom) minBottom = bottom;
+                    if (top > maxTop) maxTop = top;
                 }
 
                 // now we know the mins and maxes
-                var numberOfXTiles = 1 + MathFunctions.RoundToInt((maxX - minX) / mGridSizeX);
-                var numberOfYTiles = 1 + MathFunctions.RoundToInt((maxY - minY) / mGridSizeY);
 
-                left = minX;
-                bottom = minY;
+
+                //if(BottomSeedY / mGridSizeY != 0 || LeftSeedX/mGridSizeX != 0)
+                //{
+                //    throw new Exception("Due to recent changes in tile shape collection generation, seed code has not yet been supported. If you need this, file an issue on github or explain it in the FlatRedBall Discord");
+                //}
+
+                leftEdge = (int)(minCenterX / mGridSizeX) * mGridSizeX;
+
+                bottomEdge = (float)(System.Math.Floor(minBottom / mGridSizeY) * mGridSizeY);
+
+                var numberOfXTiles = MathFunctions.RoundToInt(System.Math.Ceiling((maxRight - leftEdge) / mGridSizeX));
+                var numberOfYTiles = MathFunctions.RoundToInt(System.Math.Ceiling((maxTop - bottomEdge) / mGridSizeY));
+
 
                 numberTilesWide = numberOfXTiles;
 
@@ -1236,8 +1266,8 @@ namespace FlatRedBall.TileCollisions
                 {
                     var rect = mShapes.AxisAlignedRectangles[i];
 
-                    var xIndex = MathFunctions.RoundToInt((rect.Position.X - minX) / mGridSizeX);
-                    var yIndex = MathFunctions.RoundToInt((rect.Position.Y - minY) / mGridSizeY);
+                    var xIndex = MathFunctions.RoundToInt(System.Math.Floor((rect.Position.X - leftEdge) / mGridSizeX));
+                    var yIndex = MathFunctions.RoundToInt(System.Math.Floor((rect.Position.Y - bottomEdge) / mGridSizeY));
 
                     var index = xIndex + yIndex * numberOfXTiles;
 

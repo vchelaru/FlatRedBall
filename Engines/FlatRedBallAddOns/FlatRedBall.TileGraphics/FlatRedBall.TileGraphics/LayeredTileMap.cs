@@ -884,7 +884,7 @@ namespace FlatRedBall.TileGraphics
 
             var strippedId = tiles[i] & 0x0fffffff;
 
-            TiledMapSave.GetFlipBoolsFromGid(tiles[i], out flipHorizontally, out flipVertically, out flipDiagonally);
+            TiledMapSave.GetFlipBoolsFromGid(tiles[i], out bool flipHorizontally, out bool flipVertically, out bool flipDiagonally);
 
             if (strippedId == tilesetTileGid)
             {
