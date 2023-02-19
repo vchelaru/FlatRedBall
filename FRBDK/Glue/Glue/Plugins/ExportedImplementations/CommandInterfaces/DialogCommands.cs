@@ -928,13 +928,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             AddEventViewModel viewModel = new AddEventViewModel();
 
-            if (element != null)
+            if (element is EntitySave entity)
             {
-                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentEntitySave, true);
+                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(entity, true);
             }
-            else if (element != null)
+            else if (element is ScreenSave screen)
             {
-                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(GlueState.Self.CurrentScreenSave, true);
+                viewModel.ExposableEvents = ExposedEventManager.GetExposableEventsFor(screen, true);
             }
 
             return viewModel;

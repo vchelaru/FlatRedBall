@@ -1,4 +1,5 @@
-﻿using FlatRedBall.IO;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +76,14 @@ namespace OfficialPlugins.ContentPreview.Views
 
         internal void PlaySound()
         {
-            SoundPlayer?.Play();
+            try
+            {
+                SoundPlayer?.Play();
+            }
+            catch(Exception e)
+            {
+                GlueCommands.Self.PrintError($"Error playing wav file:\n" + e.ToString());
+            }
         }
     }
 }
