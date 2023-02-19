@@ -1099,6 +1099,7 @@ namespace FlatRedBall.TileCollisions
 
             while (rectanglesWithNoneReposition.Count > 0)
             {
+                var startedRectanglesCount = rectanglesWithNoneReposition.Count;
                 rectanglesProcessedThisRound.Clear();
 
                 // see if any 
@@ -1154,8 +1155,15 @@ namespace FlatRedBall.TileCollisions
                         }
                     }
                 }
+
+                // This can get stuck. If we still have rectangles but nothing was 
+                if (startedRectanglesCount == rectanglesWithNoneReposition.Count)
+                {
+                    break; // somehow some rectangle is left without a reposition...
+                }
             }
         }
+
 
         public void UpdateShapesForCloudCollision()
         {
