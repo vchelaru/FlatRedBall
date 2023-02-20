@@ -640,6 +640,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueState.Self.CurrentElement = newElement;
 
+            if(hasInheritance || needsRefreshAndSave)
+            {
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
+            }
 
             if (needsRefreshAndSave)
             {
@@ -652,6 +656,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(ObjectFinder.Self.GetRootBaseElement( newElement ));
                 GluxCommands.Self.SaveGlux();
             }
+
+
 
             return newElement;
         }
