@@ -37,20 +37,20 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
         private void HandleGluxLoad()
         {
-            var hasOdfAssociation = GetIfHasOdfAssociation();
+            var hasOdsAssociation = GetIfHasOdsAssociation();
 
             var hasLibreOfficeInstalled = GetIfHasLibreOfficeInstalled();
 
-            if(!hasOdfAssociation)
+            if(!hasOdsAssociation)
             {
                 AddOdsAssociation();
             }
         }
 
-        private bool GetIfHasOdfAssociation()
+        private bool GetIfHasOdsAssociation()
         {
-            var hasOdf = GlueState.Self.GlueSettingsSave?.BuildToolAssociations.Any(item => item.SourceFileType == "odf") == true;
-            return hasOdf;
+            var hasOds = GlueState.Self.GlueSettingsSave?.BuildToolAssociations.Any(item => item.SourceFileType == "ods") == true;
+            return hasOds;
         }
 
         private object GetIfHasLibreOfficeInstalled()
@@ -71,7 +71,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             var assocation = new BuildToolAssociation();
             assocation.BuildTool = OpenOfficeExecutablePath.FullPath;
             assocation.IsBuildToolAbsolute = true;
-            assocation.SourceFileType = "odf";
+            assocation.SourceFileType = "ods";
             assocation.DestinationFileType = "csv";
             assocation.IncludeDestination = false;
             assocation.SourceFileArgumentPrefix = "--headless --convert-to csv";
