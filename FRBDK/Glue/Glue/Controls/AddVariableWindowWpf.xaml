@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
         mc:Ignorable="d"
-        Title="New Variable" Height="450" Width="400">
+        Title="New Variable" Height="600" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -94,7 +94,14 @@
             </ListBox>
             <StackPanel Grid.Row="2" Margin="0,4,0,0">
                 <Label Margin="0,0,0,-4">Name:</Label>
-                <TextBox x:Name="NewVariableTextBox" Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+                <TextBox x:Name="NewVariableTextBox" Text="{Binding NewVariableName}" KeyDown="TextBox_KeyDown" Margin="0,0,0,0"></TextBox>
+
+                <Label Margin="0,0,0,-4">Category:</Label>
+                <TextBox Text="{Binding NewVariableCategory}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+
+                <Label Margin="0,0,0,-4">Summary:</Label>
+                <TextBox Text="{Binding NewVariableSummary}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+
                 <CheckBox 
                     IsChecked="{Binding IsList}"
                     Visibility="{Binding ListCheckBoxVisibility}"

@@ -748,6 +748,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         object defaultValue = null;
 
+                        newVariable.Summary = viewModel.NewVariableSummary;
+                        newVariable.Category = viewModel.NewVariableCategory;
+
                         if (!string.IsNullOrEmpty(sourceObject))
                         {
                             var namedObjectSource = currentElement.GetNamedObjectRecursively(sourceObject);

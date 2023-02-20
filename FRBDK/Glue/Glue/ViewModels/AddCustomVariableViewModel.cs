@@ -261,6 +261,18 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public string NewVariableCategory
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string NewVariableSummary
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         [DependsOn(nameof(IsShowStateCategoriesChecked))]
         public List<string> AvailableNewVariableTypes
         {
