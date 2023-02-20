@@ -85,8 +85,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         {
             var currentFile = GlueState.Self.CurrentCodeProjectFileName;
 
-            if(ProjectManager.GlueSettingsSave == null)
+            if(GlueState.Self.GlueSettingsSave == null)
             {
+                // This should probably not be the responsibility of the plugin. It should be handled elsewhere before this hapens.
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
@@ -100,6 +101,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             if(existing != null)
             {
                 GlueSettings.RecentFileList.Remove(existing);
+                existing.LastTimeAccessed = DateTime.Now;
                 GlueSettings.RecentFileList.Insert(0, existing);
             }
             else
