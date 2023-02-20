@@ -63,7 +63,8 @@ namespace FlatRedBall.Glue.VSHelpers
             get;
             set;
         }
-
+        // If true, then files added here will be added with a .Generated.cs suffix instead of .cs
+        public bool AddAsGenerated { get; set; }
         #endregion
 
         #region Constructor
@@ -280,7 +281,15 @@ namespace FlatRedBall.Glue.VSHelpers
                 destination = null;
                 if (resourceName.Contains("/"))
                 {
-                    destination = destinationDirectory + FileManager.RemovePath(resourceName);
+                    var stripped = FileManager.RemovePath(resourceName);
+
+                    var alreadyContainsGenerated = stripped.Contains(".Generated.cs");
+                    if (AddAsGenerated && !alreadyContainsGenerated)
+                    {
+                        stripped = FileManager.RemoveExtension(stripped) + ".Generated.cs";
+                    }
+
+                    destination = destinationDirectory + FileManager.RemovePath(stripped);
                 }
                 else
                 {
@@ -288,7 +297,15 @@ namespace FlatRedBall.Glue.VSHelpers
                     int lastDot = completelyStripped.LastIndexOf('.');
                     completelyStripped = completelyStripped.Substring(lastDot + 1);
 
-                    destination = destinationDirectory + completelyStripped + ".cs";
+                    var alreadyContainsGenerated = resourceName.Contains(".Generated.cs");
+                    if(AddAsGenerated && !alreadyContainsGenerated)
+                    {
+                        destination = destinationDirectory + completelyStripped + ".Generated.cs";
+                    }
+                    else
+                    {
+                        destination = destinationDirectory + completelyStripped + ".cs";
+                    }
                 }
             }
         }

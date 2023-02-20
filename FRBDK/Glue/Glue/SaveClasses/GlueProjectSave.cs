@@ -99,7 +99,8 @@ namespace FlatRedBall.Glue.SaveClasses
             DamageableHasHealth = 33,
             HasGame1GenerateEarly = 34,
             ICollidableHasObjectsCollidedAgainst = 35,
-            HasIRepeatPressableInput = 36
+            HasIRepeatPressableInput = 36,
+            AllTiledFilesGenerated = 37
         }
 
         #endregion
