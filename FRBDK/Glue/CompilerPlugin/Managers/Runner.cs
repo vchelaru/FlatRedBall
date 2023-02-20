@@ -181,6 +181,8 @@ namespace CompilerPlugin.Managers
 
             var process = runningGameProcess;
 
+
+
             if (process == null)
             {
                 ProjectBase projectBase = null;
@@ -201,6 +203,9 @@ namespace CompilerPlugin.Managers
                         IsRunning = runningGameProcess != null;
                         DidRunnerStartProcess = GetDidRunnerStartProcess();
 
+                        _compilerViewModel.HasWindowPointer = foundProcess.MainWindowHandle != IntPtr.Zero;
+
+
                     }
                     catch (InvalidOperationException)
                     {
@@ -211,12 +216,21 @@ namespace CompilerPlugin.Managers
                         // There's an exception happening, possibly because the game just stopped.
                     }
                 }
+                else
+                {
+                    _compilerViewModel.HasWindowPointer = false;
+                }
             }
             else if (IsRunning == false)
             {
                 // we ahve a process, so let's mark the view model as running:
                 IsRunning = runningGameProcess != null;
                 DidRunnerStartProcess = GetDidRunnerStartProcess();
+            }
+            else if(_compilerViewModel.HasWindowPointer == false)
+            {
+                var pointer = process?.MainWindowHandle;
+                _compilerViewModel.HasWindowPointer = pointer != null && pointer != IntPtr.Zero;
             }
         }
 

@@ -145,8 +145,11 @@ namespace OfficialPlugins.GameHost.Views
         {
             GlueCommands.Self.DoOnUiThread(() =>
             {
+                ViewModel.IsWindowEmbedded = false;
                 SetParent(handle, winformsPanel.Handle);
+                ViewModel.IsWindowEmbedded = false;
             });
+
             gameHandle = handle;
             var succeededMakingGameBorderless = await MakeGameBorderless();
 
@@ -175,6 +178,7 @@ namespace OfficialPlugins.GameHost.Views
                         Repaint = true
                     }));
                 }
+
             }
         }
 

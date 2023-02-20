@@ -104,6 +104,48 @@ namespace CompilerLibrary.ViewModels
         [DependsOn(nameof(IsRunning))]
         public Visibility WhileRunningViewVisibility => IsRunning.ToVisibility();
 
+        [DependsOn(nameof(IsRunning))]
+        [DependsOn(nameof(IsWindowEmbedded))]
+        public Visibility WhileRunningEmbeddedVisibility => (IsRunning && IsWindowEmbedded).ToVisibility();
+
+        public bool HasWindowPointer
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsWindowEmbedded
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(HasWindowPointer))]
+        [DependsOn(nameof(IsWindowEmbedded))]
+        [DependsOn(nameof(IsRunning))]
+        public string GameRunningNotInWindowDisplay
+        {
+            get
+            {
+                if(!IsRunning)
+                {
+                    return string.Empty;
+                }
+                else if(!HasWindowPointer)
+                {
+                    return "The game is running in the background (no window is visible)";
+                }
+                else if(!IsWindowEmbedded)
+                {
+                    return "The game is running in an external window";
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
         [DependsOn(nameof(IsEditChecked))]
         [DependsOn(nameof(IsRunning))]
         public Visibility EditingToolsVisibility => (IsRunning && IsEditChecked).ToVisibility();

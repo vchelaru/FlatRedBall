@@ -1119,13 +1119,22 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 await gameHostView.EmbedHwnd(handle.Value);
 
+                GlueCommands.Self.DoOnUiThread(() =>
+                {
+                    CompilerViewModel.IsWindowEmbedded = true;
+                });
+
                 // sometimes the game doesn't embed itself properly. To fix this, we can resize the window:
                 await Task.Delay(50);
 
-                await GlueCommands.Self.DoOnUiThread(() => gameHostView.ForceRefreshGameArea(force: true));
+                await GlueCommands.Self.DoOnUiThread(async () =>
+                {
+                    await gameHostView.ForceRefreshGameArea(force: true);
+                });
             }
             else
             {
+                GlueCommands.Self.DoOnUiThread(() => CompilerViewModel.IsWindowEmbedded = false);
                 if(gameProcess == null)
                 {
                     GlueCommands.Self.PrintOutput("Failed to find game handle.");
