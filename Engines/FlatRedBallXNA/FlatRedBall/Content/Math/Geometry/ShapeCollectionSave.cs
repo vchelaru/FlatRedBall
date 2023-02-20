@@ -192,10 +192,13 @@ namespace FlatRedBall.Content.Math.Geometry
                     shapeCollection.AxisAlignedRectangles.Add(match);
                 }
 
-                rectangle.SetValuesOn(match);
-                match.RelativeX = rectangle.X;
-                match.RelativeY = rectangle.Y;
-                match.RelativeZ = rectangle.Z;
+                if(match != null)
+                {
+                    rectangle.SetValuesOn(match);
+                    match.RelativeX = rectangle.X;
+                    match.RelativeY = rectangle.Y;
+                    match.RelativeZ = rectangle.Z;
+                }
             }
 
             for (int i = 0; i < CircleSaves.Count; i++)
@@ -223,10 +226,13 @@ namespace FlatRedBall.Content.Math.Geometry
                     shapeCollection.Circles.Add(match);
                 }
 
-                circle.SetValuesOn(match);
-                match.RelativeX = circle.X;
-                match.RelativeY = circle.Y;
-                match.RelativeZ = circle.Z;
+                if(match != null)
+                {
+                    circle.SetValuesOn(match);
+                    match.RelativeX = circle.X;
+                    match.RelativeY = circle.Y;
+                    match.RelativeZ = circle.Z;
+                }
             }
 
             for (int i = 0; i < AxisAlignedCubeSaves.Count; i++)

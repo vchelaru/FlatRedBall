@@ -763,10 +763,17 @@ namespace FlatRedBall.Glue.FormHelpers
                 {
                     var shouldAdd = true;
                     var genericEntityType = ObjectFinder.Self.GetEntitySave(currentNamedObject.SourceClassGenericType);
-                    var isAbstractEntity = genericEntityType?.AllNamedObjects.Any(item => item.SetByDerived) == true;
+                    bool IsAbstract(GlueElement element) => element?.AllNamedObjects.Any(item => item.SetByDerived) == true;
+                    var isAbstractEntity = IsAbstract(genericEntityType);
                     if (isAbstractEntity)
                     {
-                        shouldAdd = false;
+                        // It's okay if it's abstract, so long as there are derived entities that are not abstract:
+
+                        var derived = ObjectFinder.Self.GetAllDerivedElementsRecursive(genericEntityType);
+
+                        var hasNonAbstract = derived.Any(item => !IsAbstract(item));
+
+                        shouldAdd = hasNonAbstract;
                     }
                     if (shouldAdd)
                     {
