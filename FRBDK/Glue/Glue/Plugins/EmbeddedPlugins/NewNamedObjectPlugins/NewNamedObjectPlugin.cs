@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewNamedObjectPlugins
         void AdjustNewNamedObject(NamedObjectSave nos)
         {
             //ExportedImplementations.GlueState.Self.CurrentElement;
-            IElement element = GlueState.Self.CurrentElement;
+            var element = ObjectFinder.Self.GetElementContaining(nos) ?? GlueState.Self.CurrentElement;
 
             if (element != null)
             {
