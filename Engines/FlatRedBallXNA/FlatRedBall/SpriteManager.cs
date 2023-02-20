@@ -2,7 +2,6 @@
 #define THREAD_POOL_IS_SLOW
 #endif
 
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -437,11 +436,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Read-only collection of SpriteFrames managed by the SpriteManager.
         /// </summary>
-        #endregion
         public static ReadOnlyCollection<SpriteFrame> SpriteFrames
         {
             get { return mSpriteFramesReadOnly; }
