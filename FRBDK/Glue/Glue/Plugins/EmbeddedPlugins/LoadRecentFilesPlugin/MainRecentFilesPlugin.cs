@@ -23,11 +23,26 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent...", HandleLoadRecentClicked, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", null, "File", preferredIndex:2);
 
-            //RefreshMenuItems();
+            RefreshMenuItems();
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+        private void RefreshMenuItems()
+        {
+            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFileList;
+
+            recentFilesMenuItem.DropDownItems.Clear();
+
+            foreach(var item in recentFiles.Where(item => item.IsFavorite))
+            {
+                var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
+                recentFilesMenuItem.DropDownItems.Add(name, null, async (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+            }
+
+            recentFilesMenuItem.DropDownItems.Add("More...", null, HandleLoadRecentClicked);
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)
