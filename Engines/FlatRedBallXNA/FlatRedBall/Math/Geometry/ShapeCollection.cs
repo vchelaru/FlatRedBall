@@ -7,6 +7,7 @@ using FlatRedBall.Input;
 
 using Vector3 = Microsoft.Xna.Framework.Vector3;
 using FlatRedBall.Utilities;
+using System.Drawing;
 
 namespace FlatRedBall.Math.Geometry
 {
@@ -1778,7 +1779,7 @@ namespace FlatRedBall.Math.Geometry
             var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
             var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
 
-            var topMost = (float)System.Math.Min(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
+            var topMost = (float)System.Math.Max(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
             var bottomMost = (float)System.Math.Min(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
 
             float clampedPositionX = line.Position.X;
@@ -1817,10 +1818,13 @@ namespace FlatRedBall.Math.Geometry
 
             if (sortAxis == Axis.X)
             {
-                var rectangles = this.AxisAlignedRectangles;
 
                 var firstIndex = 0;
                 var lastIndex = 0;
+
+                #region Rectangles
+
+                var rectangles = this.AxisAlignedRectangles;
                 if(gridSize != null)
                 {
                     firstIndex= rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
@@ -1857,14 +1861,61 @@ namespace FlatRedBall.Math.Geometry
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
                     }
                 }
+
+                #endregion
+
+                #region Polygons
+
+                var polygons = this.Polygons;
+                if(gridSize != null)
+                {
+                    firstIndex = polygons.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, polygons.Count);
+                    lastIndex = polygons.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, polygons.Count);
+                }
+
+                if (clampedPositionX < rightmost)
+                {
+                    // start at the beginning of the list, go up
+                    for (int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var polygon = polygons[i];
+                        if(intersectionPoint?.X < polygon.Position.X - polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var polygon = polygons[i];
+                        if(intersectionPoint?.X > polygon.Position.X + polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                    }
+                }
+                #endregion
             }
 
             else if (sortAxis == Axis.Y)
             {
-                var rectangles = this.AxisAlignedRectangles;
 
                 var firstIndex = 0;
                 var lastIndex = 0;
+
+                #region Rectangles
+
+                var rectangles = this.AxisAlignedRectangles;
                 if (gridSize != null)
                 {
                     firstIndex = rectangles.GetFirstAfter(bottomMost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
@@ -1901,6 +1952,49 @@ namespace FlatRedBall.Math.Geometry
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
                     }
                 }
+
+                #endregion
+
+                #region Polygons
+
+                var polygons = this.Polygons;
+                if(gridSize != null)
+                {
+                    firstIndex = polygons.GetFirstAfter(bottomMost - gridSize.Value, sortAxis.Value, 0, polygons.Count);
+                    lastIndex = polygons.GetFirstAfter(topMost + gridSize.Value, sortAxis.Value, firstIndex, polygons.Count);
+                }
+
+                if(clampedPositionY < topMost)
+                {
+                    for(int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var polygon = polygons[i];
+                        if (intersectionPoint?.Y < polygon.Position.Y - polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var polygon = polygons[i];
+                        if (intersectionPoint?.Y > polygon.Position.Y + polygon.BoundingRadius)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                    }
+                }
+
+                #endregion
             }
             else
             {
