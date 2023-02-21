@@ -1778,19 +1778,32 @@ namespace FlatRedBall.Math.Geometry
             var leftmost = (float)System.Math.Min(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
             var rightmost = (float)System.Math.Max(line.AbsolutePoint1.X, line.AbsolutePoint2.X);
 
-            // todo - need to handle Y and top/bottom most
+            var topMost = (float)System.Math.Min(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
+            var bottomMost = (float)System.Math.Min(line.AbsolutePoint1.Y, line.AbsolutePoint2.Y);
 
-            float clampedPosition = line.Position.X;
+            float clampedPositionX = line.Position.X;
+            float clampedPositionY = line.Position.Y;
 
             bool isPositionOnEnd = false;
-            if (clampedPosition <= leftmost)
+            if (clampedPositionX <= leftmost)
             {
-                clampedPosition = leftmost;
+                clampedPositionX = leftmost;
                 isPositionOnEnd = true;
             }
-            else if (clampedPosition >= rightmost)
+            else if (clampedPositionX >= rightmost)
             {
-                clampedPosition = rightmost;
+                clampedPositionX = rightmost;
+                isPositionOnEnd = true;
+            }
+
+            if(clampedPositionY <= bottomMost)
+            {
+                clampedPositionY = bottomMost;
+                isPositionOnEnd = true;
+            }
+            else if(clampedPositionY >= topMost)
+            {
+                clampedPositionY = topMost;
                 isPositionOnEnd = true;
             }
 
@@ -1814,7 +1827,7 @@ namespace FlatRedBall.Math.Geometry
                     lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
                 }
 
-                if (clampedPosition < rightmost)
+                if (clampedPositionX < rightmost)
                 {
                     // start at the beginning of the list, go up
                     for (int i = firstIndex; i < lastIndex; i++)
@@ -1844,11 +1857,8 @@ namespace FlatRedBall.Math.Geometry
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
                     }
                 }
-
             }
-            // April 29, 2022
-            // At the time of this writing, tile shape collections created the standard way (like solid collision) use the X axis for sorting. This is
-            // less efficient than using Y if the map is taller rather than wider, so once that is fixed, this needs to be fixed too. But...we'll handle that later.
+
             else if (sortAxis == Axis.Y)
             {
                 var rectangles = this.AxisAlignedRectangles;
@@ -1857,11 +1867,40 @@ namespace FlatRedBall.Math.Geometry
                 var lastIndex = 0;
                 if (gridSize != null)
                 {
-                    firstIndex = rectangles.GetFirstAfter(leftmost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
-                    lastIndex = rectangles.GetFirstAfter(rightmost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
+                    firstIndex = rectangles.GetFirstAfter(bottomMost - gridSize.Value, sortAxis.Value, 0, rectangles.Count);
+                    lastIndex = rectangles.GetFirstAfter(topMost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
                 }
 
-                throw new NotImplementedException("Bug Vic to do Y. Currently just X is done");
+                if(clampedPositionY < bottomMost)
+                {
+                    // start at the beginning of the list, go up
+                    for (int i = firstIndex; i < lastIndex; i++)
+                    {
+                        var rectangle = rectangles[i];
+                        if (intersectionPoint?.Y < rectangle.Bottom)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    }
+                }
+                else
+                {
+                    // start at the end of the list, go down
+                    for (int i = lastIndex - 1; i >= firstIndex; i--)
+                    {
+                        var rectangle = rectangles[i];
+                        if (intersectionPoint?.Y > rectangle.Top)
+                        {
+                            break;
+                        }
+
+                        FillSegments(currentShapeSegments, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    }
+                }
             }
             else
             {
