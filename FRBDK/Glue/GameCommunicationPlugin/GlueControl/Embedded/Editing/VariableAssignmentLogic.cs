@@ -1201,6 +1201,18 @@ namespace GlueControl.Editing
                             convertedValue = 0.0;
                         }
                         break;
+                    case "decimal":
+                    case nameof(Decimal):
+                    case "System.Decimal":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = decimal.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0m;
+                        }
+                        break;
                     case "Microsoft.Xna.Framework.Color":
                     case nameof(Microsoft.Xna.Framework.Color):
                         if (!string.IsNullOrWhiteSpace(variableValue))
