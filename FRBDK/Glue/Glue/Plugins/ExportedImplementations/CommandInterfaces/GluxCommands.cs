@@ -2649,6 +2649,29 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region CustomVariable
+
+        public async Task CopyCustomVariable(CustomVariable original)
+        {
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                var currentElement = GlueState.Self.CurrentElement;
+                CustomVariable newVariable = original.Clone();
+                if (!newVariable.Name.EndsWith("Copy") && currentElement.GetCustomVariable(newVariable.Name) != null)
+                {
+                    newVariable.Name = original.Name + "Copy";
+                }
+                while (currentElement.GetCustomVariable(newVariable.Name) != null)
+                {
+                    newVariable.Name = StringFunctions.IncrementNumberAtEnd(newVariable.Name);
+                }
+                GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
+
+            }, $"Adding copy of {original}");
+        }
+
+        #endregion
+
         #region Entity
 
         private static bool MoveEntityCodeFilesToDirectory(EntitySave entitySave, string targetDirectory)
