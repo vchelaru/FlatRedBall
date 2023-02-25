@@ -67,7 +67,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else if (copiedObjectClone is CustomVariable variable)
             {
-                await GlueCommands.Self.GluxCommands.CopyCustomVariable(variable);
+                await GlueCommands.Self.GluxCommands.CopyCustomVariableToGlueElement(variable, GlueState.Self.CurrentElement);
             }
             else if(copiedObjectClone is string sourceFolderRelative)
             {

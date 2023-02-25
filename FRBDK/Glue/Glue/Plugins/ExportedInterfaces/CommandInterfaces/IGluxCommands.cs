@@ -144,7 +144,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         #region CustomVariables
-        Task CopyCustomVariable(CustomVariable original);
+        Task CopyCustomVariableToGlueElement(CustomVariable original, GlueElement element);
         #endregion
 
         #region Entity

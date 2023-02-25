@@ -2652,32 +2652,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region CustomVariable
 
-        public async Task CopyCustomVariable(CustomVariable original)
+        public async Task CopyCustomVariableToGlueElement(CustomVariable original, GlueElement toElement)
         {
-            var currentElement = GlueState.Self.CurrentElement;
             await TaskManager.Self.AddAsync(async () =>
             {
                 CustomVariable newVariable = original.Clone();
-                if (!newVariable.Name.EndsWith("Copy") && currentElement.GetCustomVariable(newVariable.Name) != null)
+                if (!newVariable.Name.EndsWith("Copy") && toElement.GetCustomVariable(newVariable.Name) != null)
                 {
                     newVariable.Name = original.Name + "Copy";
                 }
-                while (currentElement.GetCustomVariable(newVariable.Name) != null)
+                while (toElement.GetCustomVariable(newVariable.Name) != null)
                 {
                     newVariable.Name = StringFunctions.IncrementNumberAtEnd(newVariable.Name);
                 }
 
                 if (!original.IsTunneling)
                 {
-                    GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
+                    await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
                 }
-                else if (original.IsTunneling && currentElement.GetNamedObject(original.SourceObject) != null)
+                else if (original.IsTunneling && toElement.GetNamedObject(original.SourceObject) != null)
                 {
-                    GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
+                    await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
                 }
                 else
                 {
-                    GlueGui.ShowMessageBox($"{original.Name} is a tunneled variable and {currentElement.Name} does not have a {original.SourceObject} to tunnel.");
+                    GlueGui.ShowMessageBox($"{original.Name} is a tunneled variable and {toElement.Name} does not have a {original.SourceObject} to tunnel.");
                 }
             }, $"Adding copy of {original}");
         }
