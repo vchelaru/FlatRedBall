@@ -40,6 +40,7 @@ using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Newtonsoft.Json;
 using FlatRedBall.Entities;
 using System.Windows.Forms.Design;
+using FlatRedBall.Glue.AutomatedGlue;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -2665,8 +2666,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     newVariable.Name = StringFunctions.IncrementNumberAtEnd(newVariable.Name);
                 }
-                GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
 
+                if (!original.IsTunneling)
+                {
+                    GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
+                }
+                else if (original.IsTunneling && currentElement.GetNamedObject(original.SourceObject) != null)
+                {
+                    GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToCurrentElement(newVariable);
+                }
+                else
+                {
+                    GlueGui.ShowMessageBox($"{original.Name} is a tunneled variable and {currentElement.Name} does not have a {original.SourceObject} to tunnel.");
+                }
             }, $"Adding copy of {original}");
         }
 
