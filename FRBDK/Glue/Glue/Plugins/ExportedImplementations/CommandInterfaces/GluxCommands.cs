@@ -2654,9 +2654,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task CopyCustomVariable(CustomVariable original)
         {
+            var currentElement = GlueState.Self.CurrentElement;
             await TaskManager.Self.AddAsync(async () =>
             {
-                var currentElement = GlueState.Self.CurrentElement;
                 CustomVariable newVariable = original.Clone();
                 if (!newVariable.Name.EndsWith("Copy") && currentElement.GetCustomVariable(newVariable.Name) != null)
                 {
