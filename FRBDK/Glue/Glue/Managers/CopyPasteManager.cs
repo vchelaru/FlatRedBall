@@ -32,6 +32,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 copiedObjectClone = entity.Clone();
             }
+            else if (currentTreeNodeTag is CustomVariable variable)
+            {
+                copiedObjectClone = variable.Clone();
+            }
             else if(GlueState.Self.CurrentTreeNode.IsFolderForGlobalContentFiles())
             {
                 copiedObjectClone = GlueState.Self.CurrentTreeNode.GetRelativeFilePath();
@@ -60,6 +64,10 @@ namespace FlatRedBall.Glue.Managers
             else if(copiedObjectClone is GlueElement element)
             {
                 await GlueCommands.Self.GluxCommands.CopyGlueElement(element);
+            }
+            else if (copiedObjectClone is CustomVariable variable)
+            {
+                await GlueCommands.Self.GluxCommands.CopyCustomVariableToGlueElement(variable, GlueState.Self.CurrentElement);
             }
             else if(copiedObjectClone is string sourceFolderRelative)
             {

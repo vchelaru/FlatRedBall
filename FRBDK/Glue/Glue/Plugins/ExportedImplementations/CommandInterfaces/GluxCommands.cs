@@ -40,6 +40,7 @@ using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
 using Newtonsoft.Json;
 using FlatRedBall.Entities;
 using System.Windows.Forms.Design;
+using FlatRedBall.Glue.AutomatedGlue;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -2644,6 +2645,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.GluxCommands.EntityCommands.AddEntity(newEntitySave);
                 }
 
+            }, $"Adding copy of {original}");
+        }
+
+        #endregion
+
+        #region CustomVariable
+
+        public async Task CopyCustomVariableToGlueElement(CustomVariable original, GlueElement toElement)
+        {
+            await TaskManager.Self.AddAsync(async () =>
+            {
+                CustomVariable newVariable = original.Clone();
+                if (!newVariable.Name.EndsWith("Copy") && toElement.GetCustomVariable(newVariable.Name) != null)
+                {
+                    newVariable.Name = original.Name + "Copy";
+                }
+                while (toElement.GetCustomVariable(newVariable.Name) != null)
+                {
+                    newVariable.Name = StringFunctions.IncrementNumberAtEnd(newVariable.Name);
+                }
+
+                if (!original.IsTunneling)
+                {
+                    await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
+                }
+                else if (original.IsTunneling && toElement.GetNamedObject(original.SourceObject) != null)
+                {
+                    await GlueCommands.Self.GluxCommands.EntityCommands.AddCustomVariableToElementAsync(newVariable, toElement);
+                }
+                else
+                {
+                    GlueGui.ShowMessageBox($"{original.Name} is a tunneled variable and {toElement.Name} does not have a {original.SourceObject} to tunnel.");
+                }
             }, $"Adding copy of {original}");
         }
 

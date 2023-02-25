@@ -143,6 +143,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #endregion
 
+        #region CustomVariables
+        Task CopyCustomVariableToGlueElement(CustomVariable original, GlueElement element);
+        #endregion
+
         #region Entity
 
         bool MoveEntityToDirectory(EntitySave entitySave, string newRelativeDirectory);
