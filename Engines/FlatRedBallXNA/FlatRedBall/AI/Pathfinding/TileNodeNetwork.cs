@@ -609,7 +609,7 @@ namespace FlatRedBall.AI.Pathfinding
             }
         }
 
-        public void RemoveNodesOverlapping(Polygon polygon)
+        public void RemoveNodesOverlapping(Polygon polygon, float minDistance = 0)
         {
             var left = polygon.X - polygon.BoundingRadius;
             var right = polygon.X + polygon.BoundingRadius;
@@ -625,9 +625,22 @@ namespace FlatRedBall.AI.Pathfinding
                 for (int x = startX; x <= endXInclusive; x++)
                 {
                     var node = mTiledNodes[x][y];
-                    if (node != null && polygon.IsPointInside(ref node.Position ))
+                    if (node != null)
                     {
-                        Remove(node);
+                        if(polygon.IsPointInside(ref node.Position))
+                        {
+
+                            Remove(node);
+                        }
+                        else if(minDistance > 0)
+                        {
+                            var distance = polygon.VectorFrom(node.Position.X, node.Position.Y).Length();
+
+                            if(distance < minDistance)
+                            {
+                                Remove(node);
+                            }
+                        }
                     }
                 }
             }
