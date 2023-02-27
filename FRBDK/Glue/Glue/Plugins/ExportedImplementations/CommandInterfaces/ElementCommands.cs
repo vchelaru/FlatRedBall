@@ -650,6 +650,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.DoOnUiThread(() =>
                 {
                     MainGlueWindow.Self.PropertyGrid.Refresh();
+
+                    if(hasInheritance)
+                    {
+                        // if it has inheritance then the tree item should update to show the triangle:
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(newElement);
+                    }
                 });
                 //var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
                 // Bases need to be generated because they may now contain the Type 
