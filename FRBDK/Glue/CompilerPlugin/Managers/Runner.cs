@@ -179,6 +179,12 @@ namespace CompilerPlugin.Managers
             }
             ////////////End Early Out///////////////////
 
+            if(runningGameProcess?.HasExited == true)
+            {
+                runningGameProcess = null;
+                IsRunning = false;
+            }
+
             var process = runningGameProcess;
 
 
