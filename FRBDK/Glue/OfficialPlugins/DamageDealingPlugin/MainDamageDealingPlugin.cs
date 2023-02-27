@@ -83,13 +83,14 @@ namespace OfficialPluginsCore.DamageDealingPlugin
 
         static CustomVariable GetTeamIndex(bool isV2)
         {
-            var variableDefinition = new CustomVariable();
-            variableDefinition.Name = nameof(IDamageable.TeamIndex);
-            variableDefinition.DefaultValue = 0;
-            variableDefinition.Type = "int";
-            variableDefinition.CreatesProperty = true;
+            var variable = new CustomVariable();
+            variable.Name = nameof(IDamageable.TeamIndex);
+            variable.DefaultValue = 0;
+            variable.Type = "int";
+            variable.CreatesProperty = true;
+            variable.SetByDerived = true;
             //variableDefinition.Category = "Damage Dealing";
-            return variableDefinition;
+            return variable;
         }
         static CustomVariable GetMaxHealth(bool isV2)
         {
@@ -100,6 +101,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 variable.DefaultValue = 100m;
                 variable.Type = "decimal";
                 variable.CreatesProperty = true;
+                variable.SetByDerived = true;
                 // why no category?
                 return variable;
             }
@@ -116,6 +118,8 @@ namespace OfficialPluginsCore.DamageDealingPlugin
             secondsBetweenDamage.DefaultValue = 0.0;
             secondsBetweenDamage.Type = "double";
             secondsBetweenDamage.CreatesProperty = true;
+            secondsBetweenDamage.SetByDerived = true;
+
             //secondsBetweenDamage.Category = "Damage Dealing";
             return secondsBetweenDamage;
         }
@@ -129,6 +133,7 @@ namespace OfficialPluginsCore.DamageDealingPlugin
                 variable.DefaultValue = 10m;
                 variable.Type = "decimal";
                 variable.CreatesProperty = true;
+                variable.SetByDerived = true;
                 // why no category?
                 return variable;
             }
