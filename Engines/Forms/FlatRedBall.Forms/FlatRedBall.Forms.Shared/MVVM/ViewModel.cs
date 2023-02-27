@@ -59,7 +59,7 @@ namespace FlatRedBall.Forms.MVVM
                     uncasted = propertyDictionary[propertyName];
                     toReturn = (T)uncasted;
                 }
-                catch(InvalidCastException ex)
+                catch(InvalidCastException)
                 {
                     if (DefaultTypeMismatchBehavior == TypeMismatchBehavior.ThrowException)
                     {
@@ -68,7 +68,7 @@ namespace FlatRedBall.Forms.MVVM
                     // if it fails, then just return default T because the type may have changed:
                     toReturn = default(T);
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
                     if(DefaultTypeMismatchBehavior == TypeMismatchBehavior.ThrowException)
                     {

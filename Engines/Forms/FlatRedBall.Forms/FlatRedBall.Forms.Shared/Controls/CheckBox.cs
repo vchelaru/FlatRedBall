@@ -22,7 +22,7 @@ namespace FlatRedBall.Forms.Controls
 #if DEBUG
                 ReportMissingTextInstance();
 #endif
-                return coreTextObject.RawText;
+                return coreTextObject?.RawText;
             }
             set
             {
@@ -64,6 +64,7 @@ namespace FlatRedBall.Forms.Controls
         {
             // text component is optional:
             textComponent = base.Visual.GetGraphicalUiElementByName("TextInstance");
+            coreTextObject = textComponent?.RenderableComponent as RenderingLibrary.Graphics.Text;
 
             base.ReactToVisualChanged();
 

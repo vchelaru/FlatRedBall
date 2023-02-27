@@ -227,7 +227,7 @@ namespace FlatRedBall.Forms.Controls
             // don't do this, the layout may not have yet been performed yet:
             //OffsetTextToKeepCaretInView();
 
-            HasFocus = false;
+            IsFocused = false;
         }
 
 
@@ -699,12 +699,12 @@ namespace FlatRedBall.Forms.Controls
 
         public void OnGainFocus()
         {
-            HasFocus = true;
+            IsFocused = true;
         }
 
         public void LoseFocus()
         {
-            HasFocus = false;
+            IsFocused = false;
 
         }
 

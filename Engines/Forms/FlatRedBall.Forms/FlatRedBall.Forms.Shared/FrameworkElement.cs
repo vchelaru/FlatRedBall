@@ -520,13 +520,13 @@ namespace FlatRedBall.Forms.Controls
                 throw new InvalidOperationException("This cannot be moved to keep in screen because it depends on its parent's position");
             }
 #endif
-            var cameraTop = 0;
+            //var cameraTop = 0;
             var cameraBottom = Renderer.Self.Camera.ClientHeight / Renderer.Self.Camera.Zoom;
-            var cameraLeft = 0;
+            //var cameraLeft = 0;
             var cameraRight = Renderer.Self.Camera.ClientWidth / Renderer.Self.Camera.Zoom;
 
-            var amountXToShift = 0;
-            var amountYToShift = 0;
+            //var amountXToShift = 0;
+            //var amountYToShift = 0;
 
             var thisBottom = this.Visual.AbsoluteY + this.Visual.GetAbsoluteHeight();
             if (thisBottom > cameraBottom)
