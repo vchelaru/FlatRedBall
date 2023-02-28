@@ -109,7 +109,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.HasIRepeatPressableInput;
+        public const int LatestVersion = (int)GluxVersions.AllTiledFilesGenerated;
 
         public int FileVersion { get; set; }
 
