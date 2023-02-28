@@ -817,7 +817,8 @@ namespace FlatRedBall
 #if DEBUG
                 if (AnimationChains.Contains(value) == false)
                 {
-                    throw new InvalidOperationException("The AnimationChains list does not contain the assigned AnimationChain, so it cannot be set");
+                    string message = $"The AnimationChains list {AnimationChains.Name} does not contain the assigned AnimationChain {value?.Name}, so it cannot be set";
+                    throw new InvalidOperationException(message);
                 }
 #endif
                 CurrentChainName = value?.Name;
