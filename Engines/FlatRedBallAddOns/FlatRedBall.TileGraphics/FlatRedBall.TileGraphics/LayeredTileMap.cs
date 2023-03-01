@@ -414,9 +414,17 @@ namespace FlatRedBall.TileGraphics
 
             AddShapeCollections(toReturn, tms);
 
-            foreach (var layer in tms.MapLayers)
+            // February 28, 2023
+            // Tiled allows multiple layers with the same name.
+            // We can't do a foreach and find matching by name.
+            // Instead, we will loop through by index.
+            //foreach (var layer in tms.MapLayers)
+            //{
+            //    var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+            for (int i = 0; i < tms.MapLayers.Count; i++)
             {
-                var matchingLayer = toReturn.MapLayers.FirstOrDefault(item => item.Name == layer.Name);
+                AbstractMapLayer layer = tms.MapLayers[i];
+                var matchingLayer = toReturn.MapLayers[i];
 
 
                 if (matchingLayer != null)

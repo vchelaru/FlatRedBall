@@ -276,6 +276,11 @@ namespace FlatRedBall.Audio
                 shouldPlay = false;
             }
 
+            if(shouldPlay && toPlay.IsDisposed)
+            {
+                shouldPlay = false;
+            }
+
             if (shouldPlay && AreSongsEnabled)
             {
                 mCurrentSong = toPlay;
