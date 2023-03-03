@@ -206,6 +206,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 }
 
+                if(instance.CachedInstanceName.Length > 0 && char.IsDigit( instance.CachedInstanceName[0]))
+                {
+                    instance.CachedInstanceName = '_' + instance.CachedInstanceName;
+                }
+
             }
 
             return instance.CachedInstanceName;
