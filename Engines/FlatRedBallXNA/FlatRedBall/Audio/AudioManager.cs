@@ -166,7 +166,7 @@ namespace FlatRedBall.Audio
         public static int? MaxConcurrentSoundEffects
         {
             get; set;
-        } = 16; // This max was introduced March 1, 2023
+        } = 32; // This max was introduced March 1, 2023
         // This is technically a breaking change, but 16 is quite
         // generous, and provides safety on mobile platforms. This
         // can be increased if users need more concurrent sounds.
