@@ -1404,13 +1404,13 @@ namespace FlatRedBall.Input
                 }
             }
 
-            if(!found)
+            if(!found && name != null)
             {
-                if(name?.Contains("Xbox") == true)
+                if(name.Contains("Xbox") == true)
                 {
                     GamepadLayout = GamepadLayout.Xbox360;
                 }
-                else if(name.Contains("Nintendo"))
+                else if(name.Contains("Nintendo") == true)
                 {
                     GamepadLayout = GamepadLayout.SwitchPro;
                 }
