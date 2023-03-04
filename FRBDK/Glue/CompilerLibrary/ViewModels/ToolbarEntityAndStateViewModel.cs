@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.AxHost;
 
 namespace CompilerLibrary.ViewModels
 {
@@ -114,25 +115,30 @@ namespace CompilerLibrary.ViewModels
         /// </summary>
         /// <param name="force">Whether to force generate the preview PNG. If true, then the PNG
         /// will be generated even if it already exists.</param>
-        public void SetSourceFromElementAndState(bool force = false)
+        public async void SetSourceFromElementAndState(bool force = false)
         {
             var imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(GlueElement, StateSave);
 
             if (!imageFilePath.Exists() || force)
             {
-                var geId = Guid.NewGuid();
-                var ssId = Guid.NewGuid();
-
-                _pluginStorge.TryAdd(geId, GlueElement);
-                _pluginStorge.TryAdd(ssId, StateSave);
-
-                var result = _pluginAction("PreviewGenerator_SaveImageSourceForSelection", JsonConvert.SerializeObject(new
+                StateSaveCategory category = null;
+                if(StateSave != null)
                 {
-                    ImageFilePath = imageFilePath,
-                    NamedObjectSave = (Guid?)null,
-                    Element = geId,
-                    State = ssId
-                })).Result;
+                    category = ObjectFinder.Self.GetStateSaveCategory(StateSave);
+                }
+                
+                var dto = new
+                {
+                    ImageFilePath = imageFilePath.FullPath,
+                    //NamedObjectSave = (Guid?)null,
+                    Element = GlueElement?.Name,
+                    CategoryName = category?.Name,
+                    State = StateSave?.Name
+                };
+
+                var json = JsonConvert.SerializeObject(dto);
+
+                var result = await _pluginAction("PreviewGenerator_SaveImageSourceForSelection", json);
             }
 
             if (imageFilePath.Exists())
