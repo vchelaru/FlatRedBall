@@ -1409,6 +1409,8 @@ namespace FlatRedBall
             if(!string.IsNullOrEmpty(animationName))
             {
                 newParticleSprite.CurrentChainName = animationName;
+                newParticleSprite.TimeIntoAnimation = 0;
+                newParticleSprite.Animate = true;
             }
             AddSprite(newParticleSprite);
             return newParticleSprite;
