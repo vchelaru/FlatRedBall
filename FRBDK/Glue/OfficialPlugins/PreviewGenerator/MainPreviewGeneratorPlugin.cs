@@ -59,7 +59,7 @@ namespace OfficialPlugins.PreviewGenerator
 
                     var obj = JObject.Parse(payload);
 
-                    if(obj.ContainsKey("ImageFilePath") && obj.ContainsKey("NamedObjectSave") && obj.ContainsKey("Element") && obj.ContainsKey("State"))
+                    if(obj.ContainsKey("ImageFilePath") && obj.ContainsKey("Element") && obj.ContainsKey("State"))
                     {
                         //var path = obj.Value<string>("ImageFilePath");
                         //var nosId = obj.Value<Guid?>("NamedObjectSave");
