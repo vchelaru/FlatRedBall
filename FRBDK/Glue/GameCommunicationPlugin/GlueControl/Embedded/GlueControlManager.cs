@@ -336,7 +336,7 @@ namespace GlueControl
             List<NosVariableAssignment> nosVariableAssignments = new List<NosVariableAssignment>();
             foreach (var change in propertyChangeArgs)
             {
-                var nos = currentElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
+                var nos = currentElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
                 if (nos != null)
                 {
                     nosVariableAssignments.Add(new NosVariableAssignment

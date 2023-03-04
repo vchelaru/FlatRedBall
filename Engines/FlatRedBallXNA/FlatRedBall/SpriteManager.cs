@@ -1405,6 +1405,7 @@ namespace FlatRedBall
         public static Sprite AddParticleSprite(AnimationChainList animations, string animationName = null)
         {
             var newParticleSprite = CreateParticleSprite(null);
+
             newParticleSprite.AnimationChains = animations;
             if(!string.IsNullOrEmpty(animationName))
             {
