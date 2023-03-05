@@ -50,8 +50,8 @@ namespace CompilerLibrary.ViewModels
             _pluginStorge = pluginStorage;
         }
 
-        public GlueElement GlueElement { get; set; }
-        public StateSave StateSave { get; set; }
+        public NamedObjectSave NamedObjectSave { get; set; }
+
         public ImageSource ImageSource
         {
             get => Get<ImageSource>();
@@ -64,49 +64,27 @@ namespace CompilerLibrary.ViewModels
         {
             get
             {
-                var entityName = GlueElement.Name;
+                var entityName = NamedObjectSave.SourceClassType;
                 if(entityName?.StartsWith("Entities\\") == true)
                 {
                     entityName = entityName.Substring("Entities\\".Length);
                 }
-                if(StateSave == null)
-                {
-                    return entityName;
-                }
-                else
-                {
-                    return $"{StateSave.Name}\n({entityName})";
-                }
+
+                // NamedObjects can have any number of properties assigned. Previously
+                // we would use state but...what should we do now? We could randomly loop through
+                // variables, limiting to something like 5? Or would that be too noisy?
+                return entityName;
             }
         }
 
-        public void ApplyTo(ToolbarEntityAndState toolbarModel)
+        public void ApplyTo(ToolbarModel toolbarModel)
         {
-
-            StateSaveCategory category = null;
-            if(StateSave != null)
-            {
-                category = ObjectFinder.Self.GetStateSaveCategory(StateSave);
-            }
-            toolbarModel.CategoryName = category?.Name;
-            toolbarModel.StateName = StateSave?.Name;
-            toolbarModel.EntityName = GlueElement?.Name;
+            toolbarModel.NamedObject = NamedObjectSave.Clone();
         }
 
-        internal void SetFrom(ToolbarEntityAndState item)
+        internal void SetFrom(ToolbarModel item)
         {
-            GlueElement = ObjectFinder.Self.GetElement(item.EntityName) as EntitySave;
-            if(!string.IsNullOrEmpty(item.StateName))
-            {
-                StateSaveCategory category = null;
-                if(item.CategoryName != null)
-                {
-                    category = GlueElement?.GetStateCategory(item.CategoryName);
-                }
-
-                StateSave = category?.GetState(item.StateName) ??
-                    GlueElement?.States.FirstOrDefault(possibleState => possibleState.Name == item.StateName);
-            }
+            this.NamedObjectSave = item.NamedObject.Clone();
         }
 
         /// <summary>
@@ -117,23 +95,26 @@ namespace CompilerLibrary.ViewModels
         /// will be generated even if it already exists.</param>
         public async void SetSourceFromElementAndState(bool force = false)
         {
-            var imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(GlueElement, StateSave);
+            var element = ObjectFinder.Self.GetElement(NamedObjectSave.SourceClassType);
+            // for now don't do any states...
+            StateSave state = null;
+            var imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, stateSave:null);
 
             if (!imageFilePath.Exists() || force)
             {
                 StateSaveCategory category = null;
-                if(StateSave != null)
+                if(state != null)
                 {
-                    category = ObjectFinder.Self.GetStateSaveCategory(StateSave);
+                    category = ObjectFinder.Self.GetStateSaveCategory(state);
                 }
                 
                 var dto = new
                 {
                     ImageFilePath = imageFilePath.FullPath,
                     //NamedObjectSave = (Guid?)null,
-                    Element = GlueElement?.Name,
+                    Element = element?.Name,
                     CategoryName = category?.Name,
-                    State = StateSave?.Name
+                    State = state?.Name
                 };
 
                 var json = JsonConvert.SerializeObject(dto);

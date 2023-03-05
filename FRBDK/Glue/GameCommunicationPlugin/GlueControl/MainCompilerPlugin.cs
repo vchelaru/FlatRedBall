@@ -128,18 +128,27 @@ namespace GameCommunicationPlugin.GlueControl
             gameHostView.DataContext = CompilerViewModel;
             gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
             {
-                if(treeNode.Tag is StateSave stateSave)
+                // todo - handle this:
+                //if(treeNode.Tag is StateSave stateSave)
+                //{
+                //    var container = ObjectFinder.Self.GetElementContaining(stateSave);
+                //    if(container is EntitySave entitySave)
+                //    {
+                //        HandleAddToEditToolbar(stateSave, entitySave, null);
+                //    }
+                //}
+                //else 
+                if(treeNode.Tag is EntitySave entitySave)
                 {
-                    var container = ObjectFinder.Self.GetElementContaining(stateSave);
-                    if(container is EntitySave entitySave)
-                    {
-                        HandleAddToEditToolbar(stateSave, entitySave, null);
-                    }
-                }
-                else if(treeNode.Tag is EntitySave entitySave)
-                {
+                    var namedObjectSave = new NamedObjectSave();
+                    namedObjectSave.SourceType = SourceType.FlatRedBallType;
+                    namedObjectSave.SourceClassType = entitySave.Name;
                     // todo finish here
-                    HandleAddToEditToolbar(null, entitySave, null);
+                    HandleAddToEditToolbar(namedObjectSave);
+                }
+                else if(treeNode.Tag is NamedObjectSave nos)
+                {
+                    HandleAddToEditToolbar(nos);
                 }
             };
 
@@ -243,129 +252,130 @@ namespace GameCommunicationPlugin.GlueControl
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)
         {
-            var tag = rightClickedTreeNode.Tag;
+            //var tag = rightClickedTreeNode.Tag;
 
-            if(tag != null)
-            {
-                if(tag is StateSave asStateSave)
-                {
-                    listToAddTo.Add("Add State to Edit Toolbar", HandleAddStateToEditToolbar);
-                }
-            }
+            //if(tag != null)
+            //{
+            //    if(tag is StateSave asStateSave)
+            //    {
+            //        listToAddTo.Add("Add State to Edit Toolbar", HandleAddStateToEditToolbar);
+            //    }
+            //}
         }
 
-        private async void HandleAddStateToEditToolbar(object sender, EventArgs e)
-        {
-            var state = GlueState.Self.CurrentStateSave;
-            var entitySave = GlueState.Self.CurrentEntitySave;
-            var namedObject = GlueState.Self.CurrentNamedObjectSave;
+        //private async void HandleAddStateToEditToolbar(object sender, EventArgs e)
+        //{
+        //    var state = GlueState.Self.CurrentStateSave;
+        //    var entitySave = GlueState.Self.CurrentEntitySave;
+        //    var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
 
 
-            HandleAddToEditToolbar(state, entitySave, namedObject);
+        //    HandleAddToEditToolbar(state, entitySave, namedObject);
 
-        }
+        //}
 
-        private async void HandleAddToEditToolbar(StateSave state, EntitySave entitySave, NamedObjectSave namedObject)
+        private async void HandleAddToEditToolbar(NamedObjectSave namedObject)
         {
 
             //////////////////////////Early Out////////////////////////////
             var alreadyHasMatch = CompilerViewModel.ToolbarEntitiesAndStates.Any(item =>
-                item.StateSave == state &&
-                item.GlueElement == entitySave);
+                item.NamedObjectSave.SourceClassType == namedObject.SourceClassType);
             if(alreadyHasMatch)
             {
                 return;
             }
             ////////////////////////End Early Out//////////////////////////
 
-            if (entitySave != null)
+            //StateSaveCategory category = ObjectFinder.Self.GetStateSaveCategory(state);
+            // As of 2022 we really don't mess with uncategorized states anymore. Add this check for old projects:
+            //if (category != null)
+            //{
+            //    // The state category must be exposed as a variable...
+            //    var variableName = "Current" + category.Name + "State";
+            //    if (entitySave.GetCustomVariableRecursively(variableName) == null)
+            //    {
+            //        await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, entitySave);
+            //    }
+            //}
+
+
+            var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
+            newViewModel.NamedObjectSave = namedObject.Clone();
+            newViewModel.Clicked += async () =>
             {
-                var category = ObjectFinder.Self.GetStateSaveCategory(state);
-                // As of 2022 we really don't mess with uncategorized states anymore. Add this check for old projects:
-                if (category != null)
+                var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
+                if(!canEdit)
                 {
-                    // The state category must be exposed as a variable...
-                    var variableName = "Current" + category.Name + "State";
-                    if (entitySave.GetCustomVariableRecursively(variableName) == null)
-                    {
-                        await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, entitySave);
-                    }
+                    return;
                 }
 
+                var element = GlueState.Self.CurrentElement;
 
-                var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
-                newViewModel.GlueElement = entitySave;
-                newViewModel.StateSave = state;
-                newViewModel.Clicked += async () =>
+                NamedObjectSave newNos = null;
+
+                if (element != null)
                 {
-                    var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
-                    if(!canEdit)
-                    {
-                        return;
-                    }
+                    var addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.SourceType = SourceType.Entity;
+                    var entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
 
-                    var element = GlueState.Self.CurrentElement;
+                    addObjectViewModel.SelectedEntitySave = entitySave;
 
-                    NamedObjectSave newNos = null;
+                    var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
 
-                    if (element != null)
-                    {
-                        var addObjectViewModel = new AddObjectViewModel();
-                        addObjectViewModel.SourceType = SourceType.Entity;
-                        addObjectViewModel.SelectedEntitySave = entitySave;
+                    newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
+                        addObjectViewModel,
+                        element,
+                        listToAddTo);
+                }
 
-                        var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
+                //if (newNos != null && state != null)
+                //{
+                //    // Set the state variable on the new NOS 
 
-                        newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
-                            addObjectViewModel,
-                            element,
-                            listToAddTo);
-                    }
+                //    var category = ObjectFinder.Self.GetStateSaveCategory(state);
 
-                    if (newNos != null && state != null)
-                    {
-                        // Set the state variable on the new NOS 
-
-                        var category = ObjectFinder.Self.GetStateSaveCategory(state);
-
-                        if (category != null)
-                        {
-                            var variableName = $"Current{category.Name}State";
-                            await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNos, variableName, state.Name);
-                        }
-                    }
-                };
-                newViewModel.RemovedFromToolbar += () =>
+                //    if (category != null)
+                //    {
+                //        var variableName = $"Current{category.Name}State";
+                //        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNos, variableName, state.Name);
+                //    }
+                //}
+            };
+            newViewModel.RemovedFromToolbar += () =>
+            {
+                CompilerViewModel.ToolbarEntitiesAndStates.Remove(newViewModel);
+            };
+            newViewModel.ForceRefreshPreview += () => 
+            {
+                newViewModel.SetSourceFromElementAndState(force:true);
+            };
+            newViewModel.ViewInExplorer += () =>
+            {
+                var element = ObjectFinder.Self.GetElement(namedObject);
+                var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, null);
+                GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
+            };
+            newViewModel.DragLeave += () =>
+            {
+                if(GlueState.Self.DraggedTreeNode == null)
                 {
-                    CompilerViewModel.ToolbarEntitiesAndStates.Remove(newViewModel);
-                };
-                newViewModel.ForceRefreshPreview += () => 
-                {
-                    newViewModel.SetSourceFromElementAndState(force:true);
-                };
-                newViewModel.ViewInExplorer += () =>
-                {
-                    var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(entitySave, state);
-                    GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
-                };
-                newViewModel.DragLeave += () =>
-                {
-                    if(GlueState.Self.DraggedTreeNode == null)
-                    {
-                        // Simulate having grabbed the tree node
-                        var tag = (object)state ?? entitySave;
-                        var treeNode = GlueState.Self.Find.TreeNodeByTag(tag);
-                        GlueState.Self.DraggedTreeNode = treeNode;
-                    }
+                    var element = ObjectFinder.Self.GetElement(namedObject);
 
-                };
+                    // Simulate having grabbed the tree node
+                    var tag = element;
+                    var treeNode = GlueState.Self.Find.TreeNodeByTag(tag);
+                    GlueState.Self.DraggedTreeNode = treeNode;
+                }
 
-                newViewModel.SetSourceFromElementAndState();
+            };
+
+            newViewModel.SetSourceFromElementAndState(force:true);
 
 
-                CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
-            }
+            CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
+            
         }
 
         private void HandlePropertyChanged(string changedMember, object oldValue, GlueElement glueElement)
@@ -602,18 +612,9 @@ namespace GameCommunicationPlugin.GlueControl
             CompilerViewModel.ToolbarEntitiesAndStates.Clear();
             CompilerViewModel.HasLoadedGlux = true;
             //CompilerViewModel.SetFrom(model);
-            foreach (var toolbarModel in model.ToolbarEntitiesAndStates)
+            foreach (var toolbarModel in model.ToolbarObjects)
             {
-                var entitySave = ObjectFinder.Self.GetEntitySave(toolbarModel.EntityName);
-
-                if(entitySave != null)
-                {
-                    StateSaveCategory category = null;
-                    category = entitySave.GetStateCategory(toolbarModel.CategoryName);
-                    var state = category?.GetState(toolbarModel.StateName) ?? entitySave.States.FirstOrDefault(item => item.Name == toolbarModel.StateName);
-                    HandleAddToEditToolbar(state, entitySave, null);
-
-                }
+                HandleAddToEditToolbar(toolbarModel.NamedObject);
 
             }
 
@@ -966,9 +967,9 @@ namespace GameCommunicationPlugin.GlueControl
 
             foreach(var vm in CompilerViewModel.ToolbarEntitiesAndStates)
             {
-                var toolbarModel = new ToolbarEntityAndState();
+                var toolbarModel = new ToolbarModel();
                 vm.ApplyTo(toolbarModel);
-                model.ToolbarEntitiesAndStates.Add(toolbarModel);
+                model.ToolbarObjects.Add(toolbarModel);
             }
 
             try

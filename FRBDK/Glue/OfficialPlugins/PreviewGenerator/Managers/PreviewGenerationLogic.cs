@@ -35,6 +35,9 @@ namespace OfficialPlugins.PreviewGenerator.Managers
                 }).ToList();
             }
 
+            // give preferential treatment to Sprite
+            visibleNamedObjects = visibleNamedObjects.OrderBy(item => item.GetAssetTypeInfo() != AvailableAssetTypes.CommonAtis.Sprite).ToList();
+
             ImageSource imageSource = null;
             foreach (var nos in visibleNamedObjects)
             {
