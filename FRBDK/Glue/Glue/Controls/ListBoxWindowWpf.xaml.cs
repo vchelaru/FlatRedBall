@@ -22,6 +22,8 @@ namespace FlatRedBall.Glue.Controls
 
         public object ClickedOption { get; private set; }
 
+        public object SelectedListBoxItem => ListBoxInstance.SelectedItem;
+
         public string Message
         {
             get => DisplayTextLabel.Text;

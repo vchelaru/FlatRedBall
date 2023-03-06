@@ -313,6 +313,12 @@ namespace FlatRedBall.Glue.Elements
         [Obsolete("Use GetElement instead")]
         public GlueElement GetIElement(string elementName) => GetElement(elementName);
 
+        /// <summary>
+        /// Returns the element referenced by the argument NamedObjectSave. If the NamedObjectSave
+        /// does not reference an element (such as if it is a Sprite), then this method returns null.
+        /// </summary>
+        /// <param name="nos">The NamedObjectSave to check the SourceClassType and return the matching Element.</param>
+        /// <returns>The matching GlueElement or null if one isn't found.</returns>
         public GlueElement GetElement(NamedObjectSave nos)
         {
             if(nos?.SourceType == SourceType.Entity)

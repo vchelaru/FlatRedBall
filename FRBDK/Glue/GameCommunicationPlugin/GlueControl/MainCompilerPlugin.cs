@@ -39,6 +39,8 @@ using FlatRedBall.Glue.ViewModels;
 using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls;
 using Newtonsoft.Json.Linq;
 using CompilerLibrary.ViewModels;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
+using System.Security.Permissions;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -125,6 +127,10 @@ namespace GameCommunicationPlugin.GlueControl
             // winforms stuff is here:
             // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
             gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent, _commandSender);
+
+            ToolbarEntityViewModelManager.CompilerViewModel = CompilerViewModel;
+            ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
+
             gameHostView.DataContext = CompilerViewModel;
             gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
             {
@@ -275,103 +281,63 @@ namespace GameCommunicationPlugin.GlueControl
 
         //}
 
-        private async void HandleAddToEditToolbar(NamedObjectSave namedObject)
+        bool AlreadyHasMatch(NamedObjectSave newNos)
+        {
+            var namedObjectsWithMatchingEntity = CompilerViewModel.ToolbarEntitiesAndStates.Where(item =>
+                item.NamedObjectSave.SourceClassType == newNos.SourceClassType)
+                .ToArray();
+
+            var hasMatch = false;
+
+            // If we have a match, see if the matches have the same variables, excluding X,Y,Z
+            if(namedObjectsWithMatchingEntity.Length > 0)
+            {
+                foreach(var existing in namedObjectsWithMatchingEntity)
+                {
+                    if(IsMatchOnVariables(existing.NamedObjectSave, newNos))
+                    {
+                        hasMatch = true;
+                    }
+                }
+            }
+
+            return hasMatch;
+        }
+
+        private bool IsMatchOnVariables(NamedObjectSave existing, NamedObjectSave newNos)
+        {
+            var nonXYZExisting = ToolbarEntityViewModelManager.ExceptXYZ(existing.InstructionSaves);
+            var nonXYZNew = ToolbarEntityViewModelManager.ExceptXYZ(newNos.InstructionSaves);
+
+            if(nonXYZExisting.Length != nonXYZNew.Length)
+            {
+                return false;
+            }
+
+            for(int i = 0; i < nonXYZExisting.Length; i++)
+            {
+                if (nonXYZExisting[i].Member != nonXYZNew[i].Member || nonXYZExisting[i].Value != nonXYZNew[i].Value)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        private async void HandleAddToEditToolbar(NamedObjectSave namedObject, string customPreviewLocation = null)
         {
 
             //////////////////////////Early Out////////////////////////////
-            var alreadyHasMatch = CompilerViewModel.ToolbarEntitiesAndStates.Any(item =>
-                item.NamedObjectSave.SourceClassType == namedObject.SourceClassType);
+            var alreadyHasMatch = AlreadyHasMatch(namedObject);
             if(alreadyHasMatch)
             {
                 return;
             }
             ////////////////////////End Early Out//////////////////////////
 
-            //StateSaveCategory category = ObjectFinder.Self.GetStateSaveCategory(state);
-            // As of 2022 we really don't mess with uncategorized states anymore. Add this check for old projects:
-            //if (category != null)
-            //{
-            //    // The state category must be exposed as a variable...
-            //    var variableName = "Current" + category.Name + "State";
-            //    if (entitySave.GetCustomVariableRecursively(variableName) == null)
-            //    {
-            //        await GlueCommands.Self.GluxCommands.ElementCommands.AddStateCategoryCustomVariableToElementAsync(category, entitySave);
-            //    }
-            //}
-
-
-            var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn, PluginStorage);
-            newViewModel.NamedObjectSave = namedObject.Clone();
-            newViewModel.Clicked += async () =>
-            {
-                var canEdit = CompilerViewModel.IsRunning && CompilerViewModel.IsEditChecked;
-                if(!canEdit)
-                {
-                    return;
-                }
-
-                var element = GlueState.Self.CurrentElement;
-
-                NamedObjectSave newNos = null;
-
-                if (element != null)
-                {
-                    var addObjectViewModel = new AddObjectViewModel();
-                    addObjectViewModel.SourceType = SourceType.Entity;
-                    var entitySave = ObjectFinder.Self.GetEntitySave(namedObject.SourceClassType);
-
-                    addObjectViewModel.SelectedEntitySave = entitySave;
-
-                    var listToAddTo = ObjectFinder.Self.GetDefaultListToContain(entitySave.Name, element);
-
-                    newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
-                        addObjectViewModel,
-                        element,
-                        listToAddTo);
-                }
-
-                //if (newNos != null && state != null)
-                //{
-                //    // Set the state variable on the new NOS 
-
-                //    var category = ObjectFinder.Self.GetStateSaveCategory(state);
-
-                //    if (category != null)
-                //    {
-                //        var variableName = $"Current{category.Name}State";
-                //        await GlueCommands.Self.GluxCommands.SetVariableOnAsync(newNos, variableName, state.Name);
-                //    }
-                //}
-            };
-            newViewModel.RemovedFromToolbar += () =>
-            {
-                CompilerViewModel.ToolbarEntitiesAndStates.Remove(newViewModel);
-            };
-            newViewModel.ForceRefreshPreview += () => 
-            {
-                newViewModel.SetSourceFromElementAndState(force:true);
-            };
-            newViewModel.ViewInExplorer += () =>
-            {
-                var element = ObjectFinder.Self.GetElement(namedObject);
-                var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, null);
-                GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
-            };
-            newViewModel.DragLeave += () =>
-            {
-                if(GlueState.Self.DraggedTreeNode == null)
-                {
-                    var element = ObjectFinder.Self.GetElement(namedObject);
-
-                    // Simulate having grabbed the tree node
-                    var tag = element;
-                    var treeNode = GlueState.Self.Find.TreeNodeByTag(tag);
-                    GlueState.Self.DraggedTreeNode = treeNode;
-                }
-
-            };
-
-            newViewModel.SetSourceFromElementAndState(force:true);
+            var newViewModel = ToolbarEntityViewModelManager.CreateNewViewModel(namedObject, SaveCompilerSettingsModel, customPreviewLocation);
 
 
             CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);
@@ -610,11 +576,12 @@ namespace GameCommunicationPlugin.GlueControl
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
                 GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.AddedGeneratedGame1;
             CompilerViewModel.ToolbarEntitiesAndStates.Clear();
+
             CompilerViewModel.HasLoadedGlux = true;
             //CompilerViewModel.SetFrom(model);
             foreach (var toolbarModel in model.ToolbarObjects)
             {
-                HandleAddToEditToolbar(toolbarModel.NamedObject);
+                HandleAddToEditToolbar(toolbarModel.NamedObject, toolbarModel.CustomPreviewLocation);
 
             }
 

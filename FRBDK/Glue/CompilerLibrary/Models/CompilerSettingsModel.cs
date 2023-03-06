@@ -10,6 +10,8 @@ namespace CompilerLibrary.Models
     public class ToolbarModel
     {
         public NamedObjectSave NamedObject { get; set; }
+
+        public string CustomPreviewLocation { get; set; }
     }
     public class CompilerSettingsModel
     {

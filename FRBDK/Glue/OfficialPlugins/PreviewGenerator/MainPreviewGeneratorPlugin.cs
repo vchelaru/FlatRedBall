@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using Newtonsoft.Json.Linq;
 using OfficialPlugins.PreviewGenerator.Views;
 using System;
@@ -67,6 +68,7 @@ namespace OfficialPlugins.PreviewGenerator
                         var categoryName = obj.Value<string>("CategoryName");
                         //var sId = obj.Value<Guid?>("sId");
                         var stateName = obj.Value<string>("State");
+                        var forcedLocation = obj.Value<string>("ForcedLocation");
 
                         //var nos = nosId.HasValue ? PluginStorage.TryRemove(nosId.Value, out var tempNos) ? (NamedObjectSave)tempNos : null : null;
                         //var e = eId.HasValue ? PluginStorage.TryRemove(eId.Value, out var tempE) ? (GlueElement)tempE : null : null;
@@ -81,7 +83,12 @@ namespace OfficialPlugins.PreviewGenerator
                         {
                             try
                             {
-                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state);
+                                FilePath forcedLocationFilePath = null;
+                                if(!string.IsNullOrEmpty(forcedLocation))
+                                {
+
+                                }
+                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, forcedLocationFilePath);
                             }
                             catch (Exception ex)
                             {

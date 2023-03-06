@@ -2591,7 +2591,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         }
 
-        public FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave)
+        public FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave = null)
         {
             var folder = GlueCommands.Self.GluxCommands.GetElementJsonLocation(glueElement).GetDirectoryContainingThis();
 

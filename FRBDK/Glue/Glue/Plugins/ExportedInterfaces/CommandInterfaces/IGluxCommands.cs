@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         FilePath GetElementJsonLocation(GlueElement element);
 
-        FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave);
+        FilePath GetPreviewLocation(GlueElement glueElement, StateSave stateSave = null);
 
         #endregion
 
