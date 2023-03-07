@@ -88,6 +88,22 @@ namespace CompilerLibrary.ViewModels
             }
         }
 
+        [DependsOn(nameof(CustomPreviewLocation))]
+        public string RefreshPreviewText
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(CustomPreviewLocation))
+                {
+                    return "Refresh Preview";
+                }
+                else
+                {
+                    return $"Revert to default preview for {NamedObjectSave.SourceClassType}";
+                }
+            }
+        }
+
         #endregion
 
         CustomVariableInNamedObject[] ExceptXYZ(List<CustomVariableInNamedObject> variables) => variables

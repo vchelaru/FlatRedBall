@@ -24,8 +24,8 @@
                                     <MenuItem Header="From Custom File..."  Command="{Binding SelectPreviewFileCommand}"></MenuItem>
                                     <MenuItem Header="From Entity..." Command="{Binding SelectPreviewFromEntityCommand}"></MenuItem>
                                 </MenuItem> 
+                                <MenuItem Header="{Binding RefreshPreviewText}" Command="{Binding ForceRefreshPreviewCommand}" />
                                 <Separator></Separator>
-                                <MenuItem Header="Refresh Preview" Command="{Binding ForceRefreshPreviewCommand}" />
                                 <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
                             </ContextMenu>
                         </Button.ContextMenu>
