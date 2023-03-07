@@ -179,7 +179,22 @@ namespace CompilerPlugin.Managers
             }
             ////////////End Early Out///////////////////
 
-            if(runningGameProcess?.HasExited == true)
+            var hasExited = false;
+
+            try
+            {
+                hasExited = runningGameProcess?.HasExited == true;
+            }
+            catch(Win32Exception)
+            {
+                // According to this:
+                // https://stackoverflow.com/questions/52605704/access-is-denied-when-trying-to-close-an-exe-through-c-sharp-in-winforms#:~:text=After%20calling%20the%20Kill%20method%2C%20call%20the%20WaitForExit,terminating%2C%20a%20Win32Exception%20is%20thrown%20for%20Access%20Denied.
+                // If the process is exiting, then an access denied will be thrown. Therefore, treat this as if it
+                // is exiting
+                hasExited = true;
+            }
+
+            if (hasExited)
             {
                 runningGameProcess = null;
                 IsRunning = false;
