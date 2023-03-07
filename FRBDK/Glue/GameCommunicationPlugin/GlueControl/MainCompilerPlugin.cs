@@ -130,6 +130,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             ToolbarEntityViewModelManager.CompilerViewModel = CompilerViewModel;
             ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
+            ToolbarEntityViewModelManager.SaveCompilerSettingsModel = SaveCompilerSettingsModel;
 
             gameHostView.DataContext = CompilerViewModel;
             gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
@@ -337,7 +338,7 @@ namespace GameCommunicationPlugin.GlueControl
             }
             ////////////////////////End Early Out//////////////////////////
 
-            var newViewModel = ToolbarEntityViewModelManager.CreateNewViewModel(namedObject, SaveCompilerSettingsModel, customPreviewLocation);
+            var newViewModel = ToolbarEntityViewModelManager.CreateNewViewModel(namedObject, customPreviewLocation);
 
 
             CompilerViewModel.ToolbarEntitiesAndStates.Add(newViewModel);

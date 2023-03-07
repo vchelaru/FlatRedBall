@@ -62,13 +62,12 @@ namespace OfficialPlugins.PreviewGenerator
 
                     if(obj.ContainsKey("ImageFilePath") && obj.ContainsKey("Element") && obj.ContainsKey("State"))
                     {
-                        //var path = obj.Value<string>("ImageFilePath");
+                        var path = obj.Value<string>("ImageFilePath");
                         //var nosId = obj.Value<Guid?>("NamedObjectSave");
                         var elementSave = obj.Value<string>("Element");
                         var categoryName = obj.Value<string>("CategoryName");
                         //var sId = obj.Value<Guid?>("sId");
                         var stateName = obj.Value<string>("State");
-                        var forcedLocation = obj.Value<string>("ForcedLocation");
 
                         //var nos = nosId.HasValue ? PluginStorage.TryRemove(nosId.Value, out var tempNos) ? (NamedObjectSave)tempNos : null : null;
                         //var e = eId.HasValue ? PluginStorage.TryRemove(eId.Value, out var tempE) ? (GlueElement)tempE : null : null;
@@ -83,12 +82,8 @@ namespace OfficialPlugins.PreviewGenerator
                         {
                             try
                             {
-                                FilePath forcedLocationFilePath = null;
-                                if(!string.IsNullOrEmpty(forcedLocation))
-                                {
 
-                                }
-                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, forcedLocationFilePath);
+                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, path);
                             }
                             catch (Exception ex)
                             {

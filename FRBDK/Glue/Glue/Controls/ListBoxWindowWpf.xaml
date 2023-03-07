@@ -11,11 +11,14 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap">This is the top row with information. Below is the list box, then the button stack</TextBlock>
+        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap">This is the top row with information. Below is the list box, custom control stack, then the button stack</TextBlock>
         <ListBox x:Name="ListBoxInstance" Grid.Row="1" MinHeight="120">
         </ListBox>
-        <StackPanel MinHeight="20" x:Name="ButtonStackPanel" Grid.Row="2">
+        <StackPanel MinHeight="20" x:Name="AdditionalControlStackPanel" Grid.Row="2">
+        </StackPanel>
+        <StackPanel MinHeight="20" x:Name="ButtonStackPanel" Grid.Row="3">
         </StackPanel>
     </Grid>
 </Window>

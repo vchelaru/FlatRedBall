@@ -12,6 +12,5 @@ namespace GameCommunicationPlugin.Dtos
         public string Element { get; set; }
         public string CategoryName { get; set; }
         public string State { get; set; }
-        public string ForcedFilePath { get; set; }
     }
 }

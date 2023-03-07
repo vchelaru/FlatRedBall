@@ -55,6 +55,11 @@ namespace FlatRedBall.Glue.Controls
 
         }
 
+        public void AddControl(UIElement element)
+        {
+            this.AdditionalControlStackPanel.Children.Add(element);
+        }
+
         public void AddButton(string message, object result)
         {
             Button button = new Button();

@@ -45,6 +45,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             // If a file changed, always copy it over - why only do so if we're in edit mode?
 
             var extension = FileManager.GetExtension(fileName);
+
+            ToolbarEntityViewModelManager.ReactToFileChanged(fileName);
+
             var shouldCopy = copiedExtensions.Contains(extension);
 
             if(shouldCopy)

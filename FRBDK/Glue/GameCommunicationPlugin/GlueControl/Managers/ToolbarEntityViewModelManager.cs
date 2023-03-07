@@ -15,6 +15,9 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using GameCommunicationPlugin.Dtos;
+using System.Windows.Controls;
+using static System.Windows.Forms.AxHost;
+using FlatRedBall.Utilities;
 
 namespace GameCommunicationPlugin.GlueControl.Managers
 {
@@ -22,14 +25,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
     {
         public static CompilerViewModel CompilerViewModel { get; set; }
         public static Func<string, string, Task<string>> ReactToPluginEventWithReturn { get; set; }
-
+        public static Action SaveCompilerSettingsModel;
         public static CustomVariableInNamedObject[] ExceptXYZ(List<CustomVariableInNamedObject> variables) => variables
             .Where(item => item.Member != "X" && item.Member != "Y" && item.Member != "Z")
             .OrderBy(item => item.Member)
             .ToArray();
 
-        public static ToolbarEntityAndStateViewModel CreateNewViewModel(NamedObjectSave namedObject, 
-            Action saveCompilerSettingsModel,
+        public static ToolbarEntityAndStateViewModel CreateNewViewModel(NamedObjectSave namedObject,
             string customPreviewLocation = null)
         {
             var newViewModel = new ToolbarEntityAndStateViewModel(ReactToPluginEventWithReturn);
@@ -113,15 +115,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                     newViewModel.CustomPreviewLocation = relativePath;
                     SetSourceFromElementAndState(newViewModel);
-                    saveCompilerSettingsModel();
+                    SaveCompilerSettingsModel();
                 }
             };
-            newViewModel.SelectPreviewFromEntity += HandleSelectPreviewFromEntity;
+            newViewModel.SelectPreviewFromEntity += () => HandleSelectPreviewFromEntity(newViewModel);
             newViewModel.ViewInExplorer += () =>
             {
-                var element = ObjectFinder.Self.GetElement(namedObject);
-                var filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, null);
-                GlueCommands.Self.FileCommands.ViewInExplorer(filePath);
+                GlueCommands.Self.FileCommands.ViewInExplorer(GetPreviewPathFor(newViewModel));
             };
             newViewModel.DragLeave += () =>
             {
@@ -142,11 +142,58 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return newViewModel;
         }
 
-        private static void HandleSelectPreviewFromEntity()
+        static FilePath GetPreviewPathFor(ToolbarEntityAndStateViewModel model)
+        {
+            FilePath filePath = null;
+
+            if(!string.IsNullOrEmpty(model.CustomPreviewLocation))
+            {
+                filePath = GlueState.Self.CurrentGlueProjectDirectory + model.CustomPreviewLocation;
+            }
+            else
+            {
+                var element = ObjectFinder.Self.GetElement(model.NamedObjectSave);
+                if(element != null)
+                {
+                    filePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, null);
+                }
+            }
+
+            return filePath;
+        }
+
+        private static async void HandleSelectPreviewFromEntity(ToolbarEntityAndStateViewModel viewModel)
         {
             var window = new ListBoxWindowWpf();
 
             window.Message = "Select an entity. A custom PNG will be created for this named object";
+
+            var label = new Label();
+            label.Content = "File Name:";
+            window.AddControl(label);
+
+            var textBox = new TextBox();
+
+            var element = ObjectFinder.Self.GetEntitySave( viewModel.NamedObjectSave);
+
+            var previewDirectory = GlueCommands.Self.GluxCommands.GetPreviewLocation(element, stateSave: null)
+                .GetDirectoryContainingThis();
+
+            var name = element.GetStrippedName() + ".preview";
+
+            while(System.IO.File.Exists(previewDirectory + name + ".png"))
+            {
+                var withoutPreview = name.Substring(name.IndexOf("."));
+                withoutPreview = StringFunctions.IncrementNumberAtEnd(withoutPreview);
+                name = withoutPreview + ".preview";
+            }
+
+
+            textBox.Text = name;
+
+
+
+            window.AddControl(textBox);
 
             foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
             {
@@ -157,9 +204,23 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (result == true)
             {
-                var selectedItem = window.SelectedListBoxItem;
+                var selectedEntityName = window.SelectedListBoxItem as string;
 
+                FilePath imageFilePath = previewDirectory + 
+                    textBox.Text + ".png";
 
+                var dto = new GeneratePreviewDto
+                {
+                    ImageFilePath = imageFilePath.FullPath,
+                    Element = selectedEntityName,
+                };
+                var json = JsonConvert.SerializeObject(dto);
+                await ReactToPluginEventWithReturn("PreviewGenerator_SaveImageSourceForSelection", json);
+
+                ApplyImageToViewModel(imageFilePath, viewModel);
+
+                viewModel.CustomPreviewLocation =  imageFilePath.RelativeTo(GlueState.Self.CurrentGlueProjectDirectory);
+                SaveCompilerSettingsModel();
 
             }
         }
@@ -208,6 +269,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 imageFilePath = GlueState.Self.CurrentGlueProjectDirectory + viewModel.CustomPreviewLocation;
             }
 
+            ApplyImageToViewModel(imageFilePath, viewModel);
+        }
+
+        private static void ApplyImageToViewModel(FilePath imageFilePath, ToolbarEntityAndStateViewModel viewModel)
+        {
             if (imageFilePath.Exists())
             {
                 // Loading PNGs in WPF sucks
@@ -239,6 +305,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     bitmap.EndInit();
                     bitmap.Freeze();
                     viewModel.ImageSource = bitmap;
+                }
+            }
+        }
+
+        internal static void ReactToFileChanged(string fileName)
+        {
+            foreach(var item in CompilerViewModel.ToolbarEntitiesAndStates)
+            {
+                var previewFilePath = GetPreviewPathFor(item);
+
+                if(previewFilePath == fileName)
+                {
+                    ApplyImageToViewModel(fileName, item);
                 }
             }
         }
