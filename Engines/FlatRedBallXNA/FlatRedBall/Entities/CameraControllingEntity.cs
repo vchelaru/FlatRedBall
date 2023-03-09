@@ -482,6 +482,7 @@ namespace FlatRedBall.Entities
             {
                 var point = random.PointInCircle(shakeRadius);
 
+                // todo - use velocity here instead of snapping
                 CameraOffset.X = point.X;
                 CameraOffset.Y = point.Y;
 
