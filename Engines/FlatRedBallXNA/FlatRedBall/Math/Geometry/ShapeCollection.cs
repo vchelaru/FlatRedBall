@@ -1922,7 +1922,7 @@ namespace FlatRedBall.Math.Geometry
                     lastIndex = rectangles.GetFirstAfter(topMost + gridSize.Value, sortAxis.Value, firstIndex, rectangles.Count);
                 }
 
-                if(clampedPositionY < bottomMost)
+                if(clampedPositionY <= bottomMost)
                 {
                     // start at the beginning of the list, go up
                     for (int i = firstIndex; i < lastIndex; i++)
