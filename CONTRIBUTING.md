@@ -17,6 +17,7 @@ If you believe you have encountered a bug with the FlatRedBall Engine or tools, 
 1. Create a new Entity named Monster
 1. Add an instance of the Monster Entity to the GameScreen
 1. Click the Variables tab
+
 Observe: The Z value is missing from the Monster entity instance
 Expected: The Z value should be available on the Monster entity instance
 Additional Information: Restarting Glue 
