@@ -286,10 +286,12 @@ namespace FlatRedBall.Audio
                 shouldPlay = false;
             }
 
+#if !IOS
             if(shouldPlay && toPlay.IsDisposed)
             {
                 shouldPlay = false;
             }
+#endif
 
             if (shouldPlay && AreSongsEnabled)
             {
@@ -415,9 +417,9 @@ namespace FlatRedBall.Audio
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
 
 
@@ -551,7 +553,7 @@ namespace FlatRedBall.Audio
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
 #endregion
 
-        #region Manager methods
+#region Manager methods
 
 
         internal static void UpdateDependencies()
