@@ -79,7 +79,11 @@ namespace Glue
             var output = process.StandardOutput.ReadToEnd();
             var sdkPaths = Regex.Matches(output, "([0-9]+.[0-9]+.[0-9]+) \\[(.*)\\]")
                 .OfType<Match>()
-                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"));
+
+                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
+                // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
+                .Where(item => item.Contains("7.0.201") == false)
+                .ToArray();
 
             if(sdkPaths.Count() > 0)
             {
