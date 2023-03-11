@@ -12,14 +12,18 @@ FlatRedBall Discord: https://discord.gg/tG5RBgw
 
 If you believe you have encountered a bug with the FlatRedBall Engine or tools, please report a Github Issue. When reporting a bug, please include the minimum steps requires to reproduce the problem. Include very detailed steps and end the steps with the **observed** problem and **expected** behavior. If there are workarounds or actions which change the behavior of the bugs, include that as additional information after the steps. See below for an example:
 
-1. Open a new project in Glue (Desktop GL)
-1. Run the Glue Wizard and accept all defaults
-1. Create a new Entity named Monster
-1. Add an instance of the Monster Entity to the GameScreen
-1. Click the Variables tab
-Observe: The Z value is missing from the Monster entity instance
-Expected: The Z value should be available on the Monster entity instance
-Additional Information: Restarting Glue 
+1. Open a new project in the FlatRedBall Editor (Desktop GL)
+1. Run the Wizard, and select the platformer game type
+2. Wait for the wizard to finish
+3. Create a new Entity named Monster
+4. Add an instance of the Monster Entity to the GameScreen
+5. Click the Variables tab
+
+**Observe**: The Z value is missing from the Monster entity instance
+
+**Expected**: The Z value should be available on the Monster entity instance
+
+**Additional Information**: Restarting Glue fixes the problem - the variable shows after a restart.
 
 If possible, include:
 
