@@ -51,6 +51,9 @@
                 <CheckBox Visibility="{Binding OpposingTeamIndexCheckboxVisibility}" IsChecked="{Binding IsOpposingTeamIndexDamageCollisionChecked}">
                     <TextBlock TextWrapping="Wrap">Add Opposing Team Index Collision Relationships to GameScreen</TextBlock>
                 </CheckBox>
+                <ListBox Height="100" Visibility="{Binding OpposingTeamCollisionListVisibility}" ItemsSource="{Binding OpposingTeamCollisionListItems}" Margin="20,0,0,0">
+                    
+                </ListBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Creation">

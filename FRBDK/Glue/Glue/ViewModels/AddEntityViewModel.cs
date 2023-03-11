@@ -10,12 +10,14 @@ using System.Windows;
 
 namespace GlueFormsCore.ViewModels
 {
+    #region TeamIndexOption enum
     public enum TeamIndexOption
     {
         Team0,
         Team1,
         Custom
     }
+    #endregion
 
     public class AddEntityViewModel : ViewModel
     {
@@ -267,6 +269,8 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(CustomTeamIndex))]
+        [DependsOn(nameof(TeamIndexOption))]
         public int EffectiveTeamIndex =>
             TeamIndexOption == TeamIndexOption.Team0 ? 0
             : TeamIndexOption == TeamIndexOption.Team1 ? 1
@@ -277,11 +281,39 @@ namespace GlueFormsCore.ViewModels
         public Visibility OpposingTeamIndexCheckboxVisibility =>
                     (IsDamageableV2 && (IsIDamageableChecked || IsIDamageAreaChecked)).ToVisibility();
 
-
         public bool IsOpposingTeamIndexDamageCollisionChecked
         {
             get => Get<bool>();
             set => Set(value);
+        }
+
+        [DependsOn(nameof(IsOpposingTeamIndexDamageCollisionChecked))]
+        [DependsOn(nameof(OpposingTeamIndexCheckboxVisibility))]
+        public Visibility OpposingTeamCollisionListVisibility =>
+            (OpposingTeamIndexCheckboxVisibility == Visibility.Visible &&
+            IsOpposingTeamIndexDamageCollisionChecked).ToVisibility();
+
+        
+        [DependsOn(nameof(EffectiveTeamIndex))]
+        [DependsOn(nameof(Name))]
+        public List<string> OpposingTeamCollisionListItems
+        {
+            get
+            {
+                var fakeNos = new NamedObjectSave();
+                fakeNos.InstanceName = $"{Name}List";
+                var pairs = GlueCommands.Self.GluxCommands.ElementCommands.GetGameScreenOpposingTeamIndexCollisionPairs(
+                    EffectiveTeamIndex, fakeNos, this);
+
+                List<string> toReturn = new List<string>();
+
+                foreach(var pair in pairs)
+                {
+                    toReturn.Add($"{pair.First.InstanceName} vs {pair.Second.InstanceName}");
+                }
+
+                return toReturn;
+            }
         }
 
         #endregion
