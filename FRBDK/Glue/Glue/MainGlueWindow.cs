@@ -90,6 +90,10 @@ namespace Glue
                 var sdkPath = sdkPaths.Last();
                 Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
             }
+            else
+            {
+                MessageBox.Show("Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK");
+            }
         }
 
         public MainGlueWindow()
