@@ -81,8 +81,11 @@ namespace Glue
                 .OfType<Match>()
                 .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"));
 
-            var sdkPath = sdkPaths.Last();
-            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+            if(sdkPaths.Count() > 0)
+            {
+                var sdkPath = sdkPaths.Last();
+                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+            }
         }
 
         public MainGlueWindow()
