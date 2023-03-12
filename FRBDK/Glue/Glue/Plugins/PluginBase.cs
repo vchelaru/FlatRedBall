@@ -455,6 +455,8 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToCtrlF;
 
+        public Action<System.Windows.Input.Key> ReactToCtrlKey;
+
         public Action ReactToGlobalTimer;
 
         public Action<StateSaveCategory, string, StateCategoryVariableAction> ReactToStateCategoryExcludedVariablesChanged;

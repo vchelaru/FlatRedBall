@@ -2116,6 +2116,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToCtrlF(),
                 plugin => plugin.ReactToCtrlF != null);
 
+        public static void ReactToCtrlKey(System.Windows.Input.Key key) => CallMethodOnPlugin(
+                plugin => plugin.ReactToCtrlKey(key),
+                plugin => plugin.ReactToCtrlKey != null);
+
         public static void ReactToGrabbedTreeNodeChanged(ITreeNode treeNode, TreeNodeAction treeNodeAction) => CallMethodOnPlugin(
                 plugin => plugin.GrabbedTreeNodeChanged(treeNode, treeNodeAction),
                 plugin => plugin.GrabbedTreeNodeChanged != null);

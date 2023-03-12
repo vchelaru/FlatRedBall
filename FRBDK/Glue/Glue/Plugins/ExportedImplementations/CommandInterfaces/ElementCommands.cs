@@ -738,6 +738,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
             var gameScreen = ObjectFinder.Self.GetScreenSave("GameScreen");
+
+            /////////////////early out//////////////////
+            if(gameScreen == null)
+            {
+                return pairs;
+            }
+            //////////////end early out///////////////////////
+
             var gameScreenNamedObjects = gameScreen.NamedObjects.ToArray();
             foreach (var item in gameScreenNamedObjects)
             {

@@ -80,6 +80,10 @@ namespace FlatRedBall.Math.Paths
             }
         }
 
+        public override string ToString()
+        {
+            return $"{SegmentType}:({StartX},{StartY})=>({EndX},{EndY})";
+        }
     }
 
     #endregion
