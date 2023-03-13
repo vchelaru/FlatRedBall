@@ -1237,7 +1237,7 @@ namespace FlatRedBall.Glue.Elements
 
                 var getVariableResponse = GetVariableOnInstance(instance, container, memberName);
 
-                if (getVariableResponse.customVariable != null)
+                if (getVariableResponse.customVariable?.DefaultValue != null)
                 {
                     return getVariableResponse.customVariable.DefaultValue;
                 }

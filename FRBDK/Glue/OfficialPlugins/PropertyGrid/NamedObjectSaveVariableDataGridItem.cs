@@ -26,6 +26,7 @@ using OfficialPlugins.VariableDisplay.Controls;
 using OfficialPlugins.VariableDisplay.Data;
 using System.Reflection;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
+using System.Security.RightsManagement;
 
 namespace OfficialPlugins.PropertyGrid
 {
@@ -38,6 +39,11 @@ namespace OfficialPlugins.PropertyGrid
         public IEnumerable<MemberCategory> categories;
 
         public VariableDefinition VariableDefinition { get; set; }
+
+        /// <summary>
+        /// If false, changes will not get pushed to the plugin manager. This should be set to false when refreshing
+        /// </summary>
+        public bool PushChangesToPluginManager = true;
 
         public event Action View;
         public void OnView()
@@ -73,11 +79,30 @@ namespace OfficialPlugins.PropertyGrid
                 }
             };
 
+
+            View = null;
+
+            View += () =>
+            {
+                var rfs = (TypeConverter as IObjectsInFileConverter).ReferencedFileSave;
+
+                if (rfs != null)
+                {
+                    var value = this.Value as string;
+                    GlueCommands.Self.SelectCommands.Select(
+                        rfs,
+                        value);
+                }
+            };
+
             CustomGetTypeEvent += (throwaway) => MemberType;
         }
 
         public void RefreshFrom(NamedObjectSave namedObjectSave, VariableDefinition variableDefinition, GlueElement container, IEnumerable<MemberCategory> categories, string customTypeName)
         {
+            var wasPushing = PushChangesToPluginManager;
+            PushChangesToPluginManager = false;
+
             this.NamedObjectSave= namedObjectSave;
             VariableDefinition = variableDefinition;
             Container = container;
@@ -89,23 +114,9 @@ namespace OfficialPlugins.PropertyGrid
 
             bool isObjectInFile = typeConverter is IObjectsInFileConverter;
 
-            View = null;
-
+            PreferredDisplayer = null;
             if (isObjectInFile)
             {
-                View += () =>
-                {
-                    var rfs = (typeConverter as IObjectsInFileConverter).ReferencedFileSave;
-
-                    if (rfs != null)
-                    {
-                        var value = this.Value as string;
-                        GlueCommands.Self.SelectCommands.Select(
-                            rfs,
-                            value);
-                    }
-                };
-
                 PreferredDisplayer = typeof(FileReferenceComboBox);
             }
 
@@ -185,6 +196,7 @@ namespace OfficialPlugins.PropertyGrid
 
             IsDefault = NamedObjectSave.GetCustomVariable(variableDefinition.Name) == null;
 
+            PushChangesToPluginManager = wasPushing;
 
         }
 
@@ -358,39 +370,43 @@ namespace OfficialPlugins.PropertyGrid
             }
         }
 
-        private static void MakeDefault(NamedObjectSave instance, string memberName)
+        private void MakeDefault(NamedObjectSave instance, string memberName)
         {
             var oldValue = instance.GetCustomVariable(memberName)?.Value;
 
             PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
 
-            var element = ObjectFinder.Self.GetElementContaining(instance);
-
-            if (element != null)
+            if(PushChangesToPluginManager)
             {
-                // do we want to run this async?
-                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-            }
+                var element = ObjectFinder.Self.GetElementContaining(instance);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
-
-            MainGlueWindow.Self.PropertyGrid.Refresh();
-
-            PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSavePropertyChange
-            {
-                NamedObjectSave = instance,
-                ChangedPropertyName = memberName
-            });
-
-            PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
-            {
-                new VariableChangeArguments
+                if (element != null)
                 {
-                    NamedObject = instance,
-                    ChangedMember = memberName,
-                    OldValue = oldValue
+                    // do we want to run this async?
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
-            });
+
+                GlueCommands.Self.GluxCommands.SaveGlux();
+
+                MainGlueWindow.Self.PropertyGrid.Refresh();
+
+
+                PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSavePropertyChange
+                {
+                    NamedObjectSave = instance,
+                    ChangedPropertyName = memberName
+                });
+
+                PluginManager.ReactToNamedObjectChangedValueList(new List<VariableChangeArguments>
+                {
+                    new VariableChangeArguments
+                    {
+                        NamedObject = instance,
+                        ChangedMember = memberName,
+                        OldValue = oldValue
+                    }
+                });
+            }
         }
 
         private static TypeConverter GetTypeConverter(NamedObjectSave instance, GlueElement container, string memberName, Type memberType, string customTypeName,

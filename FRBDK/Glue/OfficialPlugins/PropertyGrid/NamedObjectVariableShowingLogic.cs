@@ -32,22 +32,22 @@ using EditorObjects.IoC;
 using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 using OfficialPlugins.PropertyGrid;
+using System.Windows.Controls;
+using Gum.DataTypes.Variables;
 
 namespace OfficialPlugins.VariableDisplay
 {
     static class NamedObjectVariableShowingLogic
     {
         #region Create InstanceMember (Variable)
-        private static InstanceMember CreateInstanceMember(NamedObjectSave instance,
+        private static NamedObjectSaveVariableDataGridItem CreateInstanceMember(NamedObjectSave instance,
             GlueElement container,
-            string memberName,
-            Type memberType,
             string customTypeName,
             AssetTypeInfo ati,
             VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
         {
             bool shouldBeSkipped = 
-                GetIfShouldBeSkipped(memberName, instance, ati);
+                GetIfShouldBeSkipped(variableDefinition.Name, instance, ati);
             ///////Early Out//////////
             if (shouldBeSkipped)
             {
@@ -97,7 +97,7 @@ namespace OfficialPlugins.VariableDisplay
                     {
                         TypedMemberBase typedMember = null;
                         typedMember = TypedMemberBase.GetTypedMember(variableName, type);
-                        InstanceMember instanceMember = CreateInstanceMember(instance, container, variableName, type, typedMember.CustomTypeName, ati, variableDefinition, categories);
+                        var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, categories);
                         if (instanceMember != null)
                         {
                             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
@@ -200,12 +200,11 @@ namespace OfficialPlugins.VariableDisplay
             return variableDefinitions;
         }
 
-        public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, IElement container,
+        public static void UpdateShownVariables(DataUiGrid grid, NamedObjectSave instance, GlueElement container,
             AssetTypeInfo assetTypeInfo = null)
         {
             #region Initial logic
 
-            grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
             var defaultCategory = new MemberCategory("Variables");
@@ -251,17 +250,92 @@ namespace OfficialPlugins.VariableDisplay
                 // "Name" should be the very first property:
                 topmostCategory.Members.Add(CreateNameInstanceMember(instance));
                 topmostCategory.Members.Add(CreateIsLockedMember(instance));
-
             }
 
-            SetAlternatingColors(grid, categories);
-
-            foreach (var category in categories)
+            var needsFullRefresh = GetIfNeedsFullRefresh(grid.Categories?.ToArray(), categories?.ToArray());
+            if(needsFullRefresh )
             {
-                grid.Categories.Add(category);
+                grid.Categories.Clear();
+                SetAlternatingColors(grid, categories);
+
+                foreach (var category in categories)
+                {
+                    grid.Categories.Add(category);
+                }
+
+                grid.Refresh();
+            }
+            else
+            {
+                var ati = instance.GetAssetTypeInfo();
+                Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
+
+                for(int i = 0; i < grid.Categories.Count; i++)
+                {
+                    var category = grid.Categories[i];
+
+                    for(int j = 0; j < category.Members.Count; j++)
+                    {
+                        var member = category.Members[j];
+
+                        if(member is NamedObjectSaveVariableDataGridItem memberAsNamedObjectSaveVariableDataGridItem)
+                        {
+                            var variableDefinition = variableDefinitions[memberAsNamedObjectSaveVariableDataGridItem.UnmodifiedVariableName];
+                            Type type = null;
+                            if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
+                            {
+                                type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
+                            }
+                            var typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember.CustomTypeName);
+                        }
+                        else
+                        {
+                            // This isn't a NamedObjectSaveVariableDataGridItem instance, so we have to do a full replace since this type
+                            // doesn't know how to refresh itself
+                            category.Members[j] = categories[i].Members[j];
+                        }
+                    }
+                }
+
+                grid.Refresh();
+            }
+        }
+
+        static bool GetIfNeedsFullRefresh(MemberCategory[] oldCategories, MemberCategory[] newCategories)
+        {
+            if(oldCategories == null)
+            {
+                return true;
+            }
+            if(oldCategories.Length != newCategories.Length)
+            {
+                return true;
+            }
+            for(int i = 0; i < oldCategories.Length; i++)
+            {
+                var oldCategory = oldCategories[i];
+                var newCategory = newCategories[i];
+                if (oldCategory.Name != newCategory.Name)
+                {
+                    return true;
+                }
+
+                for(int j = 0; j < oldCategory.Members.Count; j++)
+                {
+                    if (oldCategory.Members[j].Name != newCategory.Members[j].Name)
+                    {
+                        return true;
+                    }
+                    if (oldCategory.Members[j].PropertyType != newCategory.Members[j].PropertyType)
+                    {
+                        return true;
+                    }
+                }
             }
 
-            grid.Refresh();
+            // They match, does not need full refresh
+            return false;
         }
 
         private static MemberCategory CreateTopmostCategory(List<MemberCategory> categories)
@@ -317,7 +391,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.MemberName, typedMember.MemberType, typedMember.CustomTypeName, ati, variableDefinition, categories);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, categories);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 
