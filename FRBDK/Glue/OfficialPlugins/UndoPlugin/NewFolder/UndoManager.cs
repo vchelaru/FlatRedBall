@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins;
+using OfficialPlugins.UndoPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -11,13 +13,35 @@ namespace OfficialPlugins.UndoPlugin.NewFolder
 {
     internal static class UndoManager
     {
+        public static UndoViewModel UndoViewModel { get; set;}
+
         #region Variables Changed
 
-        internal static void ReactToChangedVariables(List<PluginManager.NamedObjectSaveVariableChange> changes)
+        internal static void HandleNamedObjectValueChanges(List<VariableChangeArguments> changes)
         {
-            foreach(var change in changes)
+            var undoGroup = new UndoGroup();
+            foreach (var change in changes)
             {
+                if(change.RecordUndo)
+                {
 
+                    var undo = new UndoVariableAssignment();
+
+                    var element = ObjectFinder.Self.GetElementContaining(change.NamedObject);
+
+                    undo.ElementName = element?.Name;
+                    undo.NamedObjectName = change.NamedObject.InstanceName;
+                    undo.VariableName = change.ChangedMember;
+                    undo.OldValue = change.OldValue;
+
+                    undoGroup.Undos.Add(undo);
+                }
+
+            }
+
+            if(undoGroup.Undos.Count > 0)
+            {
+                UndoViewModel.Undos.Add(undoGroup);
             }
         }
 
@@ -25,9 +49,17 @@ namespace OfficialPlugins.UndoPlugin.NewFolder
 
         #region Undo
 
-        private static void HandleUndo()
+        private static async void HandleUndo()
         {
-            throw new NotImplementedException();
+            var lastUndo = UndoViewModel.Undos.LastOrDefault();
+
+            if(lastUndo != null)
+            {
+                UndoViewModel.Undos.RemoveAt(UndoViewModel.Undos.Count - 1);
+
+                await lastUndo.Execute();
+
+            }
         }
 
         internal static void ReactToCtrlKey(Key key)
@@ -37,6 +69,7 @@ namespace OfficialPlugins.UndoPlugin.NewFolder
                 HandleUndo();
             }
         }
+
 
         #endregion
     }

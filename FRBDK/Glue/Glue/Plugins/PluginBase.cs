@@ -188,6 +188,7 @@ namespace FlatRedBall.Glue.Plugins
         public string ChangedMember { get; set; }
         public object OldValue { get; set; }
         public NamedObjectSave NamedObject { get; set; }
+        public bool RecordUndo { get; set; } = true;
 
         public override string ToString()
         {
@@ -251,8 +252,11 @@ namespace FlatRedBall.Glue.Plugins
         /// <summary>
         /// Delegate raised whenever a property on either a variable or an element has changed.
         /// </summary>
+        /// <remarks>
+        /// New plugins should use ReactToChangedNamedObjectVariableList instead if they intend to handle variables specifically
+        /// </remarks>
         public ReactToChangedPropertyDelegate ReactToChangedPropertyHandler { get; protected set; }
-        public Action<List<NamedObjectSaveVariableChange>> ReactToChangedNamedObjectVariableList { get; protected set; }
+        public Action<List<NamedObjectSavePropertyChange>> ReactToChangedNamedObjectPropertyList { get; protected set; }
         [Obsolete("Use ReactToFileChange")]
         public ReactToFileChangeDelegate ReactToFileChangeHandler { get; protected set; }
         public Action<FilePath, FileChangeType> ReactToFileChange { get; protected set; }

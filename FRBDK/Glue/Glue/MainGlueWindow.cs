@@ -112,8 +112,6 @@ namespace Glue
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Move += HandleWindowMoved;
 
-            //this.KeyPress += (sender, args) => HotkeyManager.Self.TryHandleKeys(args.Ke)
-
             // this fires continually, so instead overriding wndproc
             this.ResizeEnd += HandleResizeEnd;
 
@@ -123,7 +121,6 @@ namespace Glue
             this.Controls.Add(this.mMenu);
 
         }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {

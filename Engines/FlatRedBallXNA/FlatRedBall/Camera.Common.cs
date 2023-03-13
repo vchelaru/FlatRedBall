@@ -33,7 +33,11 @@ namespace FlatRedBall
             TopLeft,
             TopRight,
             BottomLeft,
-            BottomRight
+            BottomRight,
+
+            LeftThird,
+            MiddleThird,
+            RightThird
         }
 
         #endregion

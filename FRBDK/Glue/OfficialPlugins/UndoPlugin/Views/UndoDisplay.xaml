@@ -7,8 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ListBox>
-            Item1
+        <ListBox ItemsSource="{Binding Undos}">
         </ListBox>
     </Grid>
 </UserControl>

@@ -2152,7 +2152,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
+            bool updateUi = true, bool recordUndo = true)
         {
             HashSet<GlueElement> nosContainers = new HashSet<GlueElement>();
 
@@ -2169,7 +2169,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 object oldValue = assignment.NamedObjectSave.GetCustomVariable(assignment.VariableName)?.Value;
 
                 await SetVariableOnInner(assignment.NamedObjectSave, assignment.VariableName, assignment.Value, performSaveAndGenerateCode: false, updateUi: false,
-                    notifyPlugins: false);
+                    notifyPlugins: false, recordUndo:recordUndo);
                 nosContainers.Add(ObjectFinder.Self.GetElementContaining(assignment.NamedObjectSave));
 
 
@@ -2177,7 +2177,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     ChangedMember = assignment.VariableName,
                     NamedObject = assignment.NamedObjectSave,
-                    OldValue = oldValue
+                    OldValue = oldValue,
+                    RecordUndo = recordUndo
                 });
 
             }
@@ -2229,22 +2230,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         [Obsolete("Use SetVariableOnAsync")]
         public async void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
+            bool updateUi = true, bool recordUndo = true)
         {
-            await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true);
+            await SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true, recordUndo:recordUndo);
         }
 
 
         public async Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
+            bool updateUi = true, bool recordUndo = true)
         {
             await TaskManager.Self.AddAsync(
-                () => SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi, notifyPlugins: true),
+                () => SetVariableOnInner(nos, memberName, value, performSaveAndGenerateCode, updateUi:updateUi, notifyPlugins: true, recordUndo:recordUndo),
                 nameof(SetVariableOnAsync));
         }
 
         private async Task SetVariableOnInner(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, bool notifyPlugins = true)
+            bool updateUi = true, bool notifyPlugins = true, bool recordUndo = true)
         {
             // XML serialization doesn't like enums
             var needsEnum = GlueState.Self.CurrentGlueProject.FileVersion < (int)GlueProjectSave.GluxVersions.GlueSavedToJson;
@@ -2339,19 +2340,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
                 }
 
-                if (updateUi)
-                {
-                    // Avoids accumulation when dragging a slider around:
-                    // Even though this is inside a task, still add so we can move to end
-                    TaskManager.Self.AddOrRunIfTasked(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
-                }
-
                 if (notifyPlugins)
                 {
-                    var variableChange = new NamedObjectSaveVariableChange
+                    var variableChange = new NamedObjectSavePropertyChange
                     {
                         NamedObjectSave = nos,
-                        ChangedMember = memberName
+                        ChangedPropertyName = memberName,
+                        OldValue = oldValue
                     };
                     PluginManager.ReactToChangedProperty(memberName, oldValue, nosContainer, variableChange);
 
@@ -2361,17 +2356,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         {
                             NamedObject = nos,
                             ChangedMember = memberName,
-                            OldValue = oldValue
+                            OldValue = oldValue,
+                            RecordUndo = recordUndo
                         }
                     });
                 }
 
                 if (updateUi)
                 {
+                    // Avoids accumulation when dragging a slider around:
+                    // Even though this is inside a task, still add so we can move to end
+                    TaskManager.Self.Add(() => EditorObjects.IoC.Container.Get<GlueErrorManager>().ClearFixedErrors(), "Clear fixed errors", TaskExecutionPreference.AddOrMoveToEnd);
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
+
                         MainGlueWindow.Self.PropertyGrid.Refresh();
                         GlueCommands.Self.RefreshCommands.RefreshVariables();
+
+
                         // Do we need this?
                         //PropertyGridHelper.UpdateNamedObjectDisplay();
 
@@ -2398,7 +2400,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         public async Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true)
+            bool updateUi = true, bool recordUndo = true)
         {
             object oldValue;
 

@@ -1544,31 +1544,39 @@ namespace FlatRedBall.Glue.Plugins
         /// <remarks>Although this has the word "Property" in the name, it applies to both properties and variables.</remarks>
         /// <param name="changedMember">The member that has changed</param>
         /// <param name="oldValue">The value of the member before the change</param>
-        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner, NamedObjectSaveVariableChange nosVariableChange)
+        public static void ReactToChangedProperty(string changedMember, object oldValue, GlueElement owner, NamedObjectSavePropertyChange nosVariableChange)
         {
 
             CallMethodOnPlugin(
                 plugin => plugin.ReactToChangedPropertyHandler(changedMember, oldValue, owner),
                 plugin => plugin.ReactToChangedPropertyHandler != null);
 
-            if(nosVariableChange != null)
+            if (nosVariableChange != null)
             {
-                var list = new List<NamedObjectSaveVariableChange>();
-                ReactToVariableListChanged(list);
+                var list = new List<NamedObjectSavePropertyChange>();
+                list.Add(nosVariableChange);
+                ReactToPropertyListChanged(list);
             }
 
         }
 
-        public static void ReactToVariableListChanged(List<NamedObjectSaveVariableChange> namedObjectSaveVariableChangeList) =>
+        public static void ReactToPropertyListChanged(List<NamedObjectSavePropertyChange> namedObjectSavePropertyChangeList) =>
             CallMethodOnPlugin(
-                plugin => plugin.ReactToChangedNamedObjectVariableList(namedObjectSaveVariableChangeList),
-                plugin => plugin.ReactToChangedNamedObjectVariableList != null);
+                plugin => plugin.ReactToChangedNamedObjectPropertyList(namedObjectSavePropertyChangeList),
+                plugin => plugin.ReactToChangedNamedObjectPropertyList != null);
 
-        public class NamedObjectSaveVariableChange
+        public class NamedObjectSavePropertyChange
         {
             public NamedObjectSave NamedObjectSave { get; set; }
-            public string ChangedMember { get; set; }
-            // unsure if we need the old value, but it's more work to support so...dropping it for now.
+            public string ChangedPropertyName { get; set; }
+            public object OldValue { get; set; }
+
+            public bool RecordUndo { get; set; }
+
+            public override string ToString()
+            {
+                return $"{NamedObjectSave} {ChangedPropertyName}";
+            }
         }
 
 

@@ -187,17 +187,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="value">The value of the variable.</param>
         [Obsolete("Use SetVariableOnAsync")]
         void SetVariableOn(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task SetVariableOnAsync(NamedObjectSave nos, string memberName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task SetVariableOnList(List<NosVariableAssignment> nosVariableAssignments,
             bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task SetPropertyOnAsync(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
-            bool updateUi = true);
+            bool updateUi = true, bool recordUndo = true);
 
         Task ReactToPropertyChanged(NamedObjectSave nos, string propertyName, object value, bool performSaveAndGenerateCode = true,
             bool updateUi = true);
