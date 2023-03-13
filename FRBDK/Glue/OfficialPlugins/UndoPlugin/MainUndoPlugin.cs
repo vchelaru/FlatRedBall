@@ -55,5 +55,7 @@ namespace OfficialPlugins.UndoPlugin
 
             this.ReactToLoadedGlux += () => ViewModel?.Undos.Clear();
         }
+
+        public void Undo() => UndoManager.HandleUndo();
     }
 }

@@ -21,11 +21,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
     public class GlueCommands : IGlueCommands
     {
-        #region Fields
+        #region Fields/Properties
 
         public static GlueCommands Self { get; private set; } = new GlueCommands();
-
-        #endregion
 
         public IGenerateCodeCommands GenerateCodeCommands{ get; private set; }
 
@@ -46,6 +44,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public IFileCommands FileCommands { get; private set; }
 
         public ISelectCommands SelectCommands { get; private set; }
+
+        #endregion
 
         public void PrintOutput(string output)
         {
@@ -315,5 +315,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
         public int CompareFileSort(string first, string second) => StrCmpLogicalW(first, second);
+
+        public void Undo()
+        {
+            PluginManager.CallPluginMethod(pluginFriendlyName: "Undo Plugin", methodName: "Undo");
+        }
     }
 }

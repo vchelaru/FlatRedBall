@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficialPlugins.UndoPlugin.NewFolder;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,11 @@ namespace OfficialPlugins.UndoPlugin.Views
         public UndoDisplay()
         {
             InitializeComponent();
+        }
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            UndoManager.HandleUndo();
         }
     }
 }

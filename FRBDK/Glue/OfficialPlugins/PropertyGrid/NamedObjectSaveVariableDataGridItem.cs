@@ -208,7 +208,6 @@ namespace OfficialPlugins.PropertyGrid
                 if (cachedMemberType == null)
                 {
                     var typeName = VariableDefinition?.Type;
-                    Type type = null;
                     if (!string.IsNullOrEmpty(typeName))
                     {
                         cachedMemberType = TypeManager.GetTypeFromString(typeName);

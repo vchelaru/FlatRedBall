@@ -542,12 +542,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (newPosition.X != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X, false, false);
+                gluxCommands.SetVariableOn(newNamedObject, "X", newPosition.X, false, updateUi:false);
                 didSetValue = true;
             }
             if (newPosition.Y != 0)
             {
-                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y, false, false);
+                gluxCommands.SetVariableOn(newNamedObject, "Y", newPosition.Y, false, updateUi: false);
 
                 didSetValue = true;
             }

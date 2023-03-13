@@ -34,6 +34,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces
         FilePath GetAbsoluteFilePath(SaveClasses.ReferencedFileSave rfs);
         string GetAbsoluteFileName(string relativeFileName, bool isContent);
         Task LoadProjectAsync(string fileName);
+        void Undo();
 
     }
 }

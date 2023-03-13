@@ -49,7 +49,7 @@ namespace OfficialPlugins.UndoPlugin.NewFolder
 
         #region Undo
 
-        private static async void HandleUndo()
+        public static async void HandleUndo()
         {
             var lastUndo = UndoViewModel.Undos.LastOrDefault();
 

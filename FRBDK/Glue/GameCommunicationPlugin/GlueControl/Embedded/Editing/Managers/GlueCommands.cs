@@ -58,6 +58,11 @@ namespace GlueControl.Managers
             SendMethodCallToGame(nameof(PrintOutput), output);
         }
 
+        public void Undo()
+        {
+            SendMethodCallToGame(nameof(Undo));
+        }
+
         private Task<object> SendMethodCallToGame(string caller = null, params object[] parameters)
         {
             return base.SendMethodCallToGame(new GlueCommandDto(), caller, parameters);
