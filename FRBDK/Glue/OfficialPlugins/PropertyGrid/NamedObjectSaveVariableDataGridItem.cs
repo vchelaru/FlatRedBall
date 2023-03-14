@@ -65,7 +65,7 @@ namespace OfficialPlugins.PropertyGrid
             {
                 if (newValue is string && string.IsNullOrEmpty(newValue as string))
                 {
-                    MakeDefault(NamedObjectSave, VariableDefinition.Name);
+                    MakeDefault(NamedObjectSave, NameOnInstance);
                 }
             };
 
@@ -77,7 +77,7 @@ namespace OfficialPlugins.PropertyGrid
                     // June 29 2021 - this used to get called whenever
                     // IsDefault is set to either true or false, but we
                     // only want to call MakeDefault if the value is set to true.
-                    MakeDefault(NamedObjectSave, VariableDefinition.Name);
+                    MakeDefault(NamedObjectSave, NameOnInstance);
                 }
             };
 
@@ -116,7 +116,7 @@ namespace OfficialPlugins.PropertyGrid
             
             if(MemberType != null)
             {
-                typeConverter = GetTypeConverter(NamedObjectSave, container, VariableDefinition.Name, MemberType, customTypeName, VariableDefinition);
+                typeConverter = GetTypeConverter(NamedObjectSave, container, NameOnInstance, MemberType, customTypeName, VariableDefinition);
             }
 
             bool isObjectInFile = typeConverter is IObjectsInFileConverter;
@@ -172,7 +172,7 @@ namespace OfficialPlugins.PropertyGrid
 
             FirstGridLength = new System.Windows.GridLength(140);
 
-            UnmodifiedVariableName = variableDefinition.Name;
+            UnmodifiedVariableName = NameOnInstance;
             string displayName = StringFunctions.InsertSpacesInCamelCaseString(NameOnInstance);
             DisplayName = displayName;
 
@@ -201,7 +201,7 @@ namespace OfficialPlugins.PropertyGrid
                 TypeConverter = typeConverter;
             }
 
-            IsDefault = NamedObjectSave.GetCustomVariable(variableDefinition.Name) == null;
+            IsDefault = NamedObjectSave.GetCustomVariable(NameOnInstance) == null;
 
             PushChangesToPluginManager = wasPushing;
 
@@ -228,12 +228,12 @@ namespace OfficialPlugins.PropertyGrid
         {
             if (VariableDefinition.CustomVariableGet != null)
             {
-                return VariableDefinition.CustomVariableGet(Container, NamedObjectSave, VariableDefinition.Name);
+                return VariableDefinition.CustomVariableGet(Container, NamedObjectSave, NameOnInstance);
             }
             else
             {
 
-                return ObjectFinder.Self.GetValueRecursively(NamedObjectSave, Container, VariableDefinition.Name, MemberType, VariableDefinition);
+                return ObjectFinder.Self.GetValueRecursively(NamedObjectSave, Container, NameOnInstance, MemberType, VariableDefinition);
             }
         }
 
@@ -251,7 +251,7 @@ namespace OfficialPlugins.PropertyGrid
 
             if (VariableDefinition.CustomVariableSet != null)
             {
-                VariableDefinition.CustomVariableSet(Container, NamedObjectSave, VariableDefinition.Name, value);
+                VariableDefinition.CustomVariableSet(Container, NamedObjectSave, NameOnInstance, value);
             }
             else
             {
@@ -291,7 +291,7 @@ namespace OfficialPlugins.PropertyGrid
                 // think of a more sophisticated solution.
                 GlueCommands.Self.GluxCommands.SetVariableOn(
                 NamedObjectSave,
-                    VariableDefinition.Name,
+                    NameOnInstance,
                     value, performSaveAndGenerateCode: false, updateUi: false);
 
 
@@ -338,7 +338,7 @@ namespace OfficialPlugins.PropertyGrid
         public void RefreshAddContextMenuEvents()
         {
             var isAlreadyTunneled = Container.CustomVariables.Any(item =>
-                item.SourceObject == NamedObjectSave.InstanceName && item.SourceObjectProperty == VariableDefinition.Name);
+                item.SourceObject == NamedObjectSave.InstanceName && item.SourceObjectProperty == NameOnInstance);
 
             if (!isAlreadyTunneled)
             {
@@ -380,10 +380,10 @@ namespace OfficialPlugins.PropertyGrid
         {
             var oldValue = instance.GetCustomVariable(memberName)?.Value;
 
-            PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
 
             if(PushChangesToPluginManager)
             {
+                PropertyGridRightClickHelper.SetVariableToDefault(instance, memberName);
                 var element = ObjectFinder.Self.GetElementContaining(instance);
 
                 if (element != null)
