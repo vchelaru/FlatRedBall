@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,21 @@ namespace OfficialPlugins.UndoPlugin.ViewModels
 
         public async Task Execute()
         {
-            foreach(var item in Undos)
+            //////////////Early Out/////////////////
+            if(Undos.Count  == 0) return;
+            ////////////End Early Out///////////////
+
+            if (await Undos[0].TryExecuteGroup(Undos))
             {
-                await item.Execute();
+                // done!
+                //return;
+            }
+            else
+            {
+                foreach(var item in Undos)
+                {
+                    await item.Execute();
+                }
             }
         }
 
@@ -51,6 +64,8 @@ namespace OfficialPlugins.UndoPlugin.ViewModels
     internal abstract class UndoBase
     {
         public abstract Task Execute();
+
+        public abstract Task<bool> TryExecuteGroup(List<UndoBase> undos);
     }
 
     internal class UndoVariableAssignment : UndoBase
@@ -65,6 +80,34 @@ namespace OfficialPlugins.UndoPlugin.ViewModels
         public override string ToString()
         {
             return $"{ElementName}.{NamedObjectName}.{VariableName} = {OldValue}";
+        }
+
+        public override async Task<bool> TryExecuteGroup(List<UndoBase> undos)
+        {
+            if(undos.All(item => item is UndoVariableAssignment))
+            {
+                List<NosVariableAssignment> assignments = new List<NosVariableAssignment>();
+                foreach (UndoVariableAssignment undo in undos)
+                {
+                    var element = ObjectFinder.Self.GetElement(undo.ElementName);
+                    var namedObject = element?.GetNamedObjectRecursively(undo.NamedObjectName);
+
+
+                    var assignment = new NosVariableAssignment
+                    {
+                        VariableName = undo.VariableName,
+                        NamedObjectSave = namedObject,
+                        Value = undo.OldValue
+                    };
+                    assignments.Add(assignment);
+                }
+                if(assignments.Count > 0)
+                {
+                    await GlueCommands.Self.GluxCommands.SetVariableOnList(assignments, recordUndo: false);
+                }
+            }
+
+            return false;
         }
 
         public override async Task Execute()
