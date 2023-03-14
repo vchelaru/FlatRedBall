@@ -44,7 +44,7 @@ namespace OfficialPlugins.VariableDisplay
             GlueElement container,
             string customTypeName,
             AssetTypeInfo ati,
-            VariableDefinition variableDefinition, IEnumerable<MemberCategory> categories)
+            VariableDefinition variableDefinition, string nameOnInstance, IEnumerable<MemberCategory> categories)
         {
             bool shouldBeSkipped = 
                 GetIfShouldBeSkipped(variableDefinition.Name, instance, ati);
@@ -56,7 +56,7 @@ namespace OfficialPlugins.VariableDisplay
             ////End Early Out///////
 
             var instanceMember = new NamedObjectSaveVariableDataGridItem();
-            instanceMember.RefreshFrom(instance, variableDefinition, container, categories, customTypeName);
+            instanceMember.RefreshFrom(instance, variableDefinition, container, categories, customTypeName, nameOnInstance);
             instanceMember.RefreshAddContextMenuEvents();
 
             return instanceMember;
@@ -74,6 +74,10 @@ namespace OfficialPlugins.VariableDisplay
         private static void CreateCategoriesAndVariables(NamedObjectSave instance, GlueElement container,
             List<MemberCategory> categories, AssetTypeInfo ati)
         {
+            // This defines the variable definitions, where the key is the name of the variable
+            // on the instance, and the VariableDefinition is the root variable definition.
+            // Note that the variable name will often match the VariableDefinition name, but not necessarily,
+            // if the NamedObjectSave has tunneled the variable.
             Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
 
             foreach (var kvp in variableDefinitions)
@@ -97,7 +101,7 @@ namespace OfficialPlugins.VariableDisplay
                     {
                         TypedMemberBase typedMember = null;
                         typedMember = TypedMemberBase.GetTypedMember(variableName, type);
-                        var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, categories);
+                        var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, variableName, categories);
                         if (instanceMember != null)
                         {
                             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
@@ -272,28 +276,38 @@ namespace OfficialPlugins.VariableDisplay
 
                 for(int i = 0; i < grid.Categories.Count; i++)
                 {
-                    var category = grid.Categories[i];
+                    var oldCategory = grid.Categories[i];
 
-                    for(int j = 0; j < category.Members.Count; j++)
+                    for(int j = 0; j < oldCategory.Members.Count; j++)
                     {
-                        var member = category.Members[j];
+                        var oldMember = oldCategory.Members[j];
 
-                        if(member is NamedObjectSaveVariableDataGridItem memberAsNamedObjectSaveVariableDataGridItem)
+                        var newMember = categories[i].Members[j];
+
+                        if(oldMember is NamedObjectSaveVariableDataGridItem memberAsNamedObjectSaveVariableDataGridItem)
                         {
-                            var variableDefinition = variableDefinitions[memberAsNamedObjectSaveVariableDataGridItem.UnmodifiedVariableName];
+                            var nameOnInstance = (newMember as NamedObjectSaveVariableDataGridItem).NameOnInstance;
+
+                            var variableDefinition = variableDefinitions[nameOnInstance];
                             Type type = null;
                             if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
                             {
                                 type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
                             }
-                            var typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember.CustomTypeName);
+
+                            TypedMemberBase typedMember = null;
+                            if (type != null)
+                            {
+                                typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
+                            }
+                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember?.CustomTypeName, 
+                                nameOnInstance: nameOnInstance);
                         }
                         else
                         {
                             // This isn't a NamedObjectSaveVariableDataGridItem instance, so we have to do a full replace since this type
                             // doesn't know how to refresh itself
-                            category.Members[j] = categories[i].Members[j];
+                            oldCategory.Members[j] = categories[i].Members[j];
                         }
                     }
                 }
@@ -391,7 +405,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati, TypedMemberBase typedMember, VariableDefinition variableDefinition)
         {
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
-            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, categories);
+            InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, typedMember.MemberName, categories);
 
             var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
 

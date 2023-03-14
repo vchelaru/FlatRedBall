@@ -40,6 +40,8 @@ namespace OfficialPlugins.PropertyGrid
 
         public VariableDefinition VariableDefinition { get; set; }
 
+        public string NameOnInstance { get; set; }
+
         /// <summary>
         /// If false, changes will not get pushed to the plugin manager. This should be set to false when refreshing
         /// </summary>
@@ -98,7 +100,7 @@ namespace OfficialPlugins.PropertyGrid
             CustomGetTypeEvent += (throwaway) => MemberType;
         }
 
-        public void RefreshFrom(NamedObjectSave namedObjectSave, VariableDefinition variableDefinition, GlueElement container, IEnumerable<MemberCategory> categories, string customTypeName)
+        public void RefreshFrom(NamedObjectSave namedObjectSave, VariableDefinition variableDefinition, GlueElement container, IEnumerable<MemberCategory> categories, string customTypeName, string nameOnInstance)
         {
             var wasPushing = PushChangesToPluginManager;
             PushChangesToPluginManager = false;
@@ -106,11 +108,16 @@ namespace OfficialPlugins.PropertyGrid
             this.NamedObjectSave= namedObjectSave;
             VariableDefinition = variableDefinition;
             Container = container;
+            NameOnInstance = nameOnInstance;
             this.categories = categories;
 
 
-
-            TypeConverter typeConverter = GetTypeConverter(NamedObjectSave, container, VariableDefinition.Name, MemberType, customTypeName, VariableDefinition);
+            TypeConverter typeConverter = null;
+            
+            if(MemberType != null)
+            {
+                typeConverter = GetTypeConverter(NamedObjectSave, container, VariableDefinition.Name, MemberType, customTypeName, VariableDefinition);
+            }
 
             bool isObjectInFile = typeConverter is IObjectsInFileConverter;
 
@@ -166,7 +173,7 @@ namespace OfficialPlugins.PropertyGrid
             FirstGridLength = new System.Windows.GridLength(140);
 
             UnmodifiedVariableName = variableDefinition.Name;
-            string displayName = StringFunctions.InsertSpacesInCamelCaseString(variableDefinition.Name);
+            string displayName = StringFunctions.InsertSpacesInCamelCaseString(NameOnInstance);
             DisplayName = displayName;
 
 
