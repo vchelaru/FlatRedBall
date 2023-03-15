@@ -330,7 +330,8 @@ namespace OfficialPlugins.VariableDisplay
             {
                 var oldCategory = oldCategories[i];
                 var newCategory = newCategories[i];
-                if (oldCategory.Name != newCategory.Name)
+                if (oldCategory.Name != newCategory.Name ||
+                    oldCategory.Members.Count != newCategory.Members.Count)
                 {
                     return true;
                 }
