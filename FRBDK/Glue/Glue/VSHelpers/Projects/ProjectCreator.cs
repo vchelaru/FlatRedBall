@@ -9,6 +9,7 @@ using FlatRedBall.Glue.Controls;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Math.Paths;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -80,19 +81,41 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 var shouldThrowException = true;
                 string locationToOpen = null;
 
-                bool isMissingMonoGame = exceptionMessage.Contains("MonoGame.Content.Builder.targets\"");
-                string message;
-                if(isMissingMonoGame)
+                bool isMissingMonoGameTargets = exceptionMessage.Contains("MonoGame.Content.Builder.targets\"");
+                string message = null;
+                if(isMissingMonoGameTargets)
                 {
 
-                    //locationToOpen = "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
-                    locationToOpen =
-                        "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
-                    //"https://community.monogame.net/t/monogame-3-7-1/11173";
-                    message = $"Could not load the project {fileName}\nbecause MonoGame 3.7.1 files are missing. click OK to open your browser to the MonoGame 3.7.1 install location:\n\n" +
-                        locationToOpen + "\n\n" +
-                        "Alternatively you can remove the MonoGame content project from your .csproj. You probably don't need it if FlatRedBall is handling your content building." +
-                        "To do this, search your .csproj file for the following text and delete it";
+                    // This gets installed here: C:\Program Files (x86)\MSBuild\MonoGame\v3.0
+                    string programFilesX86Path = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                    var monogamePath = System.IO.Path.Combine(programFilesX86Path, "MSBuild", "MonoGame", "v3.0", "MonoGame.Content.Builder.targets");
+                    var hasMonoGame = System.IO.File.Exists(monogamePath);
+
+                    if(!hasMonoGame)
+                    {
+                        //locationToOpen = "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
+                        locationToOpen =
+                            "https://github.com/MonoGame/MonoGame/releases/download/v3.7.1/MonoGameSetup.exe";
+                        //"https://community.monogame.net/t/monogame-3-7-1/11173";
+                        message = $"Could not load the project {fileName}\nbecause MonoGame 3.7.1 files are missing. click OK to open your browser to the MonoGame 3.7.1 install location:\n\n" +
+                            locationToOpen + "\n\n" +
+                            "Alternatively you can remove the MonoGame content project from your .csproj. You probably don't need it if FlatRedBall is handling your content building." +
+                            "To do this, search your .csproj file for the following text and delete it\n\n";
+                        message += @"
+<ItemGroup>
+    <MonoGameContentReference Include=""Content\Content.mgcb"" />
+  </ItemGroup>";
+
+
+                    }
+                    else
+                    {
+                        var path = FileManager.GetDirectory( Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH"));
+                        GlueCommands.Self.PrintOutput($"You have MonoGame installed at {monogamePath}\nIt needs to be in {path}. You can manually copy it to fix this problem.");
+                    }
+
+
+
                     shouldThrowException = false;
                     result.ShouldTryToLoadProject = false;
                 }
@@ -144,7 +167,10 @@ Additional Info:
                 }
                 else
                 {
-                    Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+                    if(!string.IsNullOrEmpty(message))
+                    {
+                        Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+                    }
 
                     if(locationToOpen != null)
                     {
