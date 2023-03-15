@@ -114,7 +114,7 @@ namespace OfficialPlugins.PropertyGrid
 
             TypeConverter typeConverter = null;
             
-            if(MemberType != null)
+            //if(MemberType != null)
             {
                 typeConverter = GetTypeConverter(NamedObjectSave, container, NameOnInstance, MemberType, customTypeName, VariableDefinition);
             }
@@ -218,6 +218,12 @@ namespace OfficialPlugins.PropertyGrid
                     if (!string.IsNullOrEmpty(typeName))
                     {
                         cachedMemberType = TypeManager.GetTypeFromString(typeName);
+                    }
+
+                    if(cachedMemberType == null)
+                    {
+                        // if we got here, we don't know the type, but it seems Glue operates on there it needing to be typeof object:
+                        cachedMemberType = typeof(object);
                     }
                 }
                 return cachedMemberType;
