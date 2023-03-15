@@ -344,22 +344,30 @@ namespace GlueControl.Editing
         {
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Down))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(-rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += -rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Left))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(-rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += -rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Right))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
         }
 
