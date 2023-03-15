@@ -147,7 +147,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextArrow == Arrows.Count)
+            while (nextArrow >= Arrows.Count)
             {
                 Arrows.Add(new Visuals.Arrow(DefaultLayer));
             }
