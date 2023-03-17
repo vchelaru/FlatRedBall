@@ -112,7 +112,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextLine >= Lines.Count)
+            while (nextLine >= Lines.Count)
             {
                 var line = new Line();
                 ShapeManager.AddToLayer(line, DefaultLayer);
