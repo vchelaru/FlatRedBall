@@ -71,7 +71,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextText == Texts.Count)
+            while (nextText >= Texts.Count)
             {
                 Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
             }
@@ -112,7 +112,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextLine == Lines.Count)
+            if (nextLine >= Lines.Count)
             {
                 var line = new Line();
                 ShapeManager.AddToLayer(line, DefaultLayer);
@@ -127,6 +127,14 @@ namespace GlueControl.Editing
             nextLine++;
 
             return lineInstance;
+        }
+
+        public static void LinePath(List<Vector3> points, Color? color = null)
+        {
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                Line(points[i], points[i + 1], color);
+            }
         }
 
         public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)

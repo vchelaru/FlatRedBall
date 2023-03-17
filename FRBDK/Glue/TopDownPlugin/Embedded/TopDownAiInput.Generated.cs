@@ -237,6 +237,7 @@ namespace $NAMESPACE$.TopDown
                 {
                     var line = new Line();
                     line.Color = new Color(1f, 1f, 0);
+                    line.Name = "Pathfinding line " + ownedLines.Count;
 
                     line.Visible = true;
                     ownedLines.Add(line);
