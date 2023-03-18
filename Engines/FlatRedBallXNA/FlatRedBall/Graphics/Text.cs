@@ -937,11 +937,16 @@ namespace FlatRedBall.Graphics
 
         }
 
+        public void SetColor(Microsoft.Xna.Framework.Color color)
+        {
+            SetColor(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
+        }
+
         /// <summary>
         /// Sets the Scale and Spacing such that the Text is drawn pixel-perfect at its given Z position.
         /// </summary>
         /// <param name="camera">Reference to the camera to use when calculating the Scale and Spacing.</param>
-        public void SetPixelPerfectScale(Camera camera)
+        public void SetPixelPerfectScale(Camera camera, float multiple = 1)
         {
             int lineHeight = 0;
 
@@ -994,6 +999,10 @@ namespace FlatRedBall.Graphics
             {
                 NewLineDistance = Scale * 1.5f;
             }
+
+            Scale *= multiple;
+            Spacing *= multiple;
+            NewLineDistance *= multiple;
 
             UpdateDisplayedText();
             UpdateDimensions();

@@ -563,37 +563,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (viewModel.IncludeListsInScreens)
                 {
-                    // loop through all screens that have a TMX object and add them.
-                    // be smart - if the base screen does, don't do it in the derived
-                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
-
-                    foreach (var screen in allScreens)
-                    {
-                        var needsList = GetIfScreenNeedsList(screen);
-
-                        if (needsList)
-                        {
-                            AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
-
-                            addObjectViewModel.SourceType = SourceType.FlatRedBallType;
-                            addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
-                            addObjectViewModel.SourceClassGenericType = newElement.Name;
-                            addObjectViewModel.ObjectName = $"{newElement.GetStrippedName()}List";
-
-
-                            var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
-                                addObjectViewModel, screen, listToAddTo: null, selectNewNos: false);
-                            newNos.ExposedInDerived = true;
-
-                            await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
-                                namedObjectSave: newNos);
-
-                            GlueCommands.Self.PrintOutput(
-                                $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
-
-                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
-                        }
-                    }
+                    await IncludeListsFor(newElement);
                 }
 
 
@@ -668,15 +638,59 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return newElement;
         }
 
+        private static async Task IncludeListsFor(EntitySave newElement)
+        {
+            // loop through all screens that have a TMX object and add them.
+            // be smart - if the base screen does, don't do it in the derived
+            var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+            foreach (var screen in allScreens)
+            {
+                var needsList = GetIfScreenNeedsList(screen);
+
+                if (needsList)
+                {
+                    AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+
+                    addObjectViewModel.SourceType = SourceType.FlatRedBallType;
+                    addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
+                    addObjectViewModel.SourceClassGenericType = newElement.Name;
+                    addObjectViewModel.ObjectName = $"{newElement.GetStrippedName()}List";
+
+
+                    var newNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(
+                        addObjectViewModel, screen, listToAddTo: null, selectNewNos: false);
+                    newNos.ExposedInDerived = true;
+
+                    await Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(nameof(newNos.ExposedInDerived), false,
+                        namedObjectSave: newNos);
+
+                    GlueCommands.Self.PrintOutput(
+                        $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
+
+                    var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
+                }
+            }
+        }
+
         private static bool GetIfScreenNeedsList(ScreenSave screen)
         {
-            var hasTmx = GetIfScreenHasTmxDirectly(screen);
+            if (screen.Name.EndsWith("\\GameScreen"))
+            {
+                return true;
+            }
+            else
+            {
+                var hasTmx = GetIfScreenHasTmxDirectly(screen);
 
-            //var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
+                //var doBaseScreensHaveTmx = GetIfBaseScreensHaveTmx(screen);
 
-            var isDerived = string.IsNullOrEmpty(screen.BaseScreen) == false;
+                var isDerived = string.IsNullOrEmpty(screen.BaseScreen) == false;
 
-            return hasTmx == true && !isDerived;
+
+
+                return hasTmx == true && !isDerived;
+            }
         }
 
 
