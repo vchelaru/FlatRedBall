@@ -31,6 +31,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.Build.Evaluation;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Glue
 {
@@ -82,17 +83,23 @@ namespace Glue
 
                 .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
                 // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
-                .Where(item => item.Contains("7.0.201") == false)
+                // "7.0.20" instead of "7.0.201"
+                .Where(item => item.Contains("7.0.20") == false)
                 .ToArray();
 
             if(sdkPaths.Count() > 0)
             {
                 var sdkPath = sdkPaths.Last();
                 Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+
+                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
             }
             else
             {
-                MessageBox.Show("Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK");
+                var message = "Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK";
+                GlueCommands.Self.PrintOutput(message);
+
+                MessageBox.Show(message);
             }
         }
 

@@ -15,6 +15,7 @@ namespace FlatRedBall.Glue.Controls
         Below
     }
 
+    [Obsolete("Use CustomizableTextInputWindow which is WPF and more flexible")]
     public partial class TextInputWindow : Form
 	{
 		#region Properties
