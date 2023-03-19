@@ -286,6 +286,17 @@ namespace FlatRedBall
 
         static MethodInfo mRemoveSpriteMethodInfo = typeof(SpriteManager).GetMethod("RemoveSprite", new Type[] { typeof(Sprite) });
 
+        /// <summary>
+        /// List of particles which should be removed on a timer. This is internal, so it can only be used by emitters.
+        /// </summary>
+        /// <remarks>
+        /// As of March 19, 2023 Emitters
+        /// are not used very often. Therefore,
+        /// this list is almost always empty. It
+        /// will remain here for old games but it's
+        /// unlikely new games will use this unless the
+        /// FRB Emitter object gets revived.
+        /// </remarks>
         internal static List<TimedRemovalRecord> mTimedRemovalList = new List<TimedRemovalRecord>(100);
 
         #endregion
@@ -1402,11 +1413,19 @@ namespace FlatRedBall
 
         #region Add Particle Sprite
 
+        /// <summary>
+        /// Creates a new particle sprite and adds it to the SpriteManager for management. The sprite will have
+        /// its AnimationChains assigned to the argument animations property. This sprite is given a TextureScale of 1.
+        /// </summary>
+        /// <param name="animations">The animations to use by the new particle Sprite.</param>
+        /// <param name="animationName">The name of the animation to show. This name must be contained in the argument animations.</param>
+        /// <returns>The newly-created Sprite.</returns>
         public static Sprite AddParticleSprite(AnimationChainList animations, string animationName = null)
         {
             var newParticleSprite = CreateParticleSprite(null);
 
             newParticleSprite.AnimationChains = animations;
+            newParticleSprite.TextureScale = 1;
             if(!string.IsNullOrEmpty(animationName))
             {
                 newParticleSprite.CurrentChainName = animationName;
