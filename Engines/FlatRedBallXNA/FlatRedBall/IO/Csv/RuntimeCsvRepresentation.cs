@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using FlatRedBall.Utilities;
 using System.Linq;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace FlatRedBall.IO.Csv
 {
@@ -793,6 +794,9 @@ namespace FlatRedBall.IO.Csv
 
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
             var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            fields = fields.Where(fi => fi.GetCustomAttribute<IgnoreDataMemberAttribute>() == null).ToArray();
+            properties = properties.Where(pi => pi.GetCustomAttribute<IgnoreDataMemberAttribute>() == null).ToArray();
 
             foreach(var newKvp in newDictionary)
             {
