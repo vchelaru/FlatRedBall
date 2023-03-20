@@ -624,7 +624,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!failed && isBuiltFile)
             {
                 errorMessage = buildToolAssociation.PerformBuildOn(fileName, targetFile, extraCommandLineArguments, PluginManager.ReceiveOutput, PluginManager.ReceiveError);
-                failed = true;
+                if(!string.IsNullOrEmpty(errorMessage))
+                {
+                    failed = true;
+                }
             }
 
             if (!failed)

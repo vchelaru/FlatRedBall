@@ -45,6 +45,20 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             {
                 AddOdsAssociation();
             }
+
+            if(!AvailableAssetTypes.Self.AllAssetTypes.Any(item => item.Extension == "ods"))
+            {
+                AddOdsAssetTypeInfo();
+            }
+        }
+
+        private void AddOdsAssetTypeInfo()
+        {
+            AssetTypeInfo ati = new AssetTypeInfo();
+            ati.Extension = "ods";
+            ati.FriendlyName = $"Open Office/Libre Office Spreadsheet (ods)";
+
+            AvailableAssetTypes.Self.AddAssetType(ati);
         }
 
         private bool GetIfHasOdsAssociation()
