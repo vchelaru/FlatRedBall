@@ -79,7 +79,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 Settings.Add(
                     "File Build Tools",
-                    () => new FileBuildToolAssociationWindow(BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList).Show(MainGlueWindow.Self));
+                    () => new FileBuildToolAssociationWindow(GlueState.Self.GlueSettingsSave.BuildToolAssociations).Show(MainGlueWindow.Self));
 
                 Settings.Add(
                     "Performance Settings",

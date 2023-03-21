@@ -211,9 +211,9 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     error = "Could not find the build tool for the source file\n" + absoluteSourceName + "\nwith destination extension\n" + destinationExtension;
 
-                    error += "\nThere are " + BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList.Count + " build tools registered with Glue";
+                    error += "\nThere are " + GlueState.Self.GlueSettingsSave.BuildTools.Count + " build tools registered with Glue";
 
-                    foreach (BuildToolAssociation bta in BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList)
+                    foreach (BuildToolAssociation bta in GlueState.Self.GlueSettingsSave.BuildToolAssociations)
                     {
                         error += "\n\"" + bta.SourceFileType + "\" -> " +  bta.BuildToolProcessed + " -> \"" + bta.DestinationFileType + "\"";
                     }

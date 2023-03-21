@@ -158,6 +158,11 @@ namespace Microsoft.Xna.Framework
             return vector3.NormalizedOrRight() * length;
         }
 
+        public static Vector3 AtLength(this Vector3 vector3, double length)
+        {
+            return vector3.NormalizedOrRight() * (float)length;
+        }
+
         public static Vector3 AtAngle(this Vector3 vector3, float angleRadians)
         {
             return Vector3ExtensionMethods.FromAngle(angleRadians) * vector3.Length();

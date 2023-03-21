@@ -58,7 +58,6 @@ namespace FlatRedBall.Glue.Controls
 
             ProjectManager.GlueSettingsSave.Save();
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            BuildToolAssociationManager.Self.SaveProjectSpecificBuildTools();
 
             this.Close();
         }

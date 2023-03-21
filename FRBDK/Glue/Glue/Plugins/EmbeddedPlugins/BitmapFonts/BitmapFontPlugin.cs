@@ -1,5 +1,6 @@
 ﻿using EditorObjects.SaveClasses;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -60,16 +61,16 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.BitmapFonts
         {
             if (System.IO.File.Exists(association.BuildToolProcessed))
             {
-                var buildToolList = BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList;
+                var buildToolList = GlueState.Self.GlueSettingsSave.BuildTools;
 
                 bool found = buildToolList.Any(
                     possible => possible.ToString().ToLowerInvariant() == association.ToString().ToLowerInvariant());
 
                 if (!found)
                 {
-                    BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList.Add(association);
+                    GlueState.Self.GlueSettingsSave.BuildToolAssociations.Add(association);
 
-                    BuildToolAssociationManager.Self.SaveProjectSpecificBuildTools();
+                    GlueCommands.Self.GluxCommands.SaveSettings();
 
                 }
             }

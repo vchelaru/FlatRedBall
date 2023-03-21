@@ -362,7 +362,8 @@ namespace FlatRedBall.Glue.IO
                 PluginManager.ReactToLoadedGluxEarly(ProjectManager.GlueProjectSave);
 
                 // and after that's done we can validate that the build tools are there
-                BuildToolAssociationManager.Self.ProjectSpecificBuildTools.ValidateBuildTools(FileManager.GetDirectory(projectFileName));
+                // todo - maybe do this on the GlueSettingsSave?
+                //BuildToolAssociationManager.Self.ProjectSpecificBuildTools.ValidateBuildTools(FileManager.GetDirectory(projectFileName));
 
                 ProjectManager.GlueProjectSave.UpdateIfTranslationIsUsed();
 

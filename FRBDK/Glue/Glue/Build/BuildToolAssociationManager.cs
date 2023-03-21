@@ -6,6 +6,7 @@ using EditorObjects.SaveClasses;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Controls;
 using System.Windows.Forms;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -19,12 +20,7 @@ namespace FlatRedBall.Glue.Managers
 
         #region Properties
 
-
-        public BuildToolAssociationList ProjectSpecificBuildTools
-        {
-            get;
-            set;
-        }
+        List<BuildToolAssociation> ProjectSpecificBuildTools => GlueState.Self.GlueSettingsSave.BuildToolAssociations;
 
         public static BuildToolAssociationManager Self
         {
@@ -38,18 +34,13 @@ namespace FlatRedBall.Glue.Managers
             }
         }
 
-        public string ProjectSpecificBuildToolAssociationFileName
-        {
-            get { return ProjectManager.ProjectSpecificSettingsFolder + "BuildToolAssociation.xml"; }
-        }
-
         #endregion
 
         internal BuildToolAssociation GetBuilderToolAssociationForSourceExtension(string sourceExtension)
         {
             BuildToolAssociation buildToolAssociation = null;
 
-            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools.BuildToolList)
+            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools)
             {
                 if (bta.SourceFileType != null && bta.SourceFileType.ToLowerInvariant() == sourceExtension.ToLowerInvariant())
                 {
@@ -64,7 +55,7 @@ namespace FlatRedBall.Glue.Managers
         {
             BuildToolAssociation buildToolAssociation = null;
 
-            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools.BuildToolList)
+            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools)
             {
                 if (bta.DestinationFileType.ToLowerInvariant() == destinationExtension.ToLowerInvariant())
                 {
@@ -77,7 +68,7 @@ namespace FlatRedBall.Glue.Managers
 
         public BuildToolAssociation GetBuilderToolAssociationForExtensions(string sourceExtension, string destinationExtension)
         {
-            return ProjectSpecificBuildTools.BuildToolList.FirstOrDefault(item =>
+            return ProjectSpecificBuildTools.FirstOrDefault(item =>
                 item.SourceFileType != null && 
                 item.SourceFileType.ToLowerInvariant() == sourceExtension.ToLowerInvariant() &&
                 item.DestinationFileType.ToLowerInvariant() == destinationExtension.ToLowerInvariant());
@@ -87,7 +78,7 @@ namespace FlatRedBall.Glue.Managers
         {
             BuildToolAssociation buildToolAssociation = null;
 
-            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools.BuildToolList)
+            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools)
             {
                 if (bta.ToString().ToLower() == name.ToLower())
                 {
@@ -98,50 +89,6 @@ namespace FlatRedBall.Glue.Managers
             return buildToolAssociation;
         }
 
-
-
-        internal bool LoadOrCreateProjectSpecificBuildTools(string projectFolder)
-        {
-            string settingsFolder = projectFolder + "GlueSettings/";
-
-            string fileName = settingsFolder + "BuildToolAssociation.xml";
-
-
-            bool wasLoaded = false;
-
-            if (System.IO.File.Exists(fileName))
-            {
-                ProjectSpecificBuildTools = BuildToolAssociationList.FromFileXml(fileName);
-                wasLoaded = true;
-            }
-            else
-            {
-                ProjectSpecificBuildTools = new BuildToolAssociationList();
-
-                foreach (BuildToolAssociation bta in ProjectManager.GlueSettingsSave.BuildToolAssociations)
-                {
-                    ProjectSpecificBuildTools.BuildToolList.Add(bta);
-                    if (!FileManager.IsRelative(bta.BuildToolProcessed))
-                    {
-                        bta.BuildTool = FileManager.MakeRelative(bta.BuildToolProcessed, projectFolder);
-                    }
-                }
-
-                FileManager.XmlSerialize(ProjectSpecificBuildTools, fileName);
-            }
-
-            return wasLoaded;
-        }
-
-        public void SaveProjectSpecificBuildTools()
-        {
-            if (ProjectSpecificBuildTools != null)
-            {
-                FileManager.XmlSerialize(ProjectSpecificBuildTools, ProjectSpecificBuildToolAssociationFileName);
-
-            }
-
-        }
 
         public BuildToolAssociation GetBuildToolAssocationAndNameFor(string fileName, out bool userCancelled, out bool userPickedNone, out string rfsName, out string extraCommandLineArguments)
         {
@@ -154,7 +101,7 @@ namespace FlatRedBall.Glue.Managers
             string sourceExtension = FileManager.GetExtension(fileName);
 
             List<BuildToolAssociation> btaList = new List<BuildToolAssociation>();
-            foreach (BuildToolAssociation bta in BuildToolAssociationManager.Self.ProjectSpecificBuildTools.BuildToolList)
+            foreach (BuildToolAssociation bta in ProjectSpecificBuildTools)
             {
                 if (bta.SourceFileType != null && bta.SourceFileType.ToLower() == sourceExtension.ToLower())
                 {
@@ -227,7 +174,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else
             {
-                return ProjectSpecificBuildTools.BuildToolList.Any(item => item.SourceFileType != null && item.SourceFileType.ToLower() == sourceExtension.ToLower());
+                return GlueState.Self.GlueSettingsSave.BuildToolAssociations.Any(item => item.SourceFileType != null && item.SourceFileType.ToLower() == sourceExtension.ToLower());
             }
         }
     }

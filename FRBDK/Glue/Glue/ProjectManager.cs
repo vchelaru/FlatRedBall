@@ -571,15 +571,11 @@ namespace FlatRedBall.Glue
             return null;
         }
 
-        internal static bool LoadOrCreateProjectSpecificSettings(string projectFolder)
+        internal static void LoadOrCreateProjectSpecificSettings(string projectFolder)
         {
             // The Glue project hasn't been loaded yet so we need to manually get the folder:
 
-            bool wasLoaded = BuildToolAssociationManager.Self.LoadOrCreateProjectSpecificBuildTools(projectFolder);
-
             AvailableAssetTypes.Self.ReactToProjectLoad(projectFolder);
-
-            return wasLoaded;
         }
 
 
