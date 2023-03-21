@@ -26,6 +26,7 @@ using Matrix = Microsoft.Xna.Framework.Matrix;
 using FlatRedBall.ManagedSpriteGroups;
 using FlatRedBall.Utilities;
 using FlatRedBall.Graphics.Texture;
+using System.Threading.Tasks;
 
 namespace FlatRedBall
 {
@@ -1751,13 +1752,20 @@ namespace FlatRedBall
 
         #region Animation
 
-        #region XML Docs
+        public async Task PlayAnimationsAsync(params string[] animations)
+        {
+            foreach(var animation in animations)
+            {
+                CurrentChainName = animation;
+                await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+            }
+        }
+
         /// <summary>
         /// Performs the every-frame logic for updating the current AnimationFrame index.  If the
         /// Sprite is part of the SpriteManager then this is automatically called.
         /// </summary>
         /// <param name="currentTime">The number of seconds that have passed since the game has started running.</param>
-        #endregion
         public void AnimateSelf(double currentTime)
         {
             mJustChangedFrame = false;
@@ -1787,11 +1795,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Clears all references to AnimationChains and sets the Animate property to false.
         /// </summary>
-        #endregion
         public void ClearAnimationChains()
         {
             mAnimate = false;
@@ -1800,7 +1806,6 @@ namespace FlatRedBall
             mAnimationChains.Clear();
         }
 
-        #region XML Docs
         /// <summary>
         /// Removes the AnimationChain from the Sprite's internal AnimationChain List.
         /// </summary>
@@ -1809,7 +1814,6 @@ namespace FlatRedBall
         /// is set to false.
         /// </remarks>
         /// <param name="chainToRemove">The AnimationChain to remove.</param>
-        #endregion
         public void RemoveAnimationChain(AnimationChain chainToRemove)
         {
             int index = mAnimationChains.IndexOf(chainToRemove);
@@ -1825,7 +1829,6 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the argument chainToSet as the animationChain. If the argument chainToSet is not
         /// part of the Sprite's internal list of AnimationChains, it is added.
@@ -1840,7 +1843,6 @@ namespace FlatRedBall
         /// </remarks>
         /// <param name="chainToSet">The AnimationChain to set as the current AnimationChain.  This is
         /// added to the internal AnimationChains property if it is not already there.</param>
-        #endregion
         public void SetAnimationChain(AnimationChain chainToSet)
         {
             if (chainToSet != null)
@@ -1894,7 +1896,6 @@ namespace FlatRedBall
         {
             CurrentChainName = chainToSet;
         }
-
 
         public string GetAnimationInformation()
         {
