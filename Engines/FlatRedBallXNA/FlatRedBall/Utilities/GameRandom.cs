@@ -186,6 +186,12 @@ namespace FlatRedBall.Utilities
 
         public bool NextBool() => Next(2) == 0;
 
+        /// <summary>
+        /// Returns a <see cref="float"/> representing a random sign, that is, +1 or -1.
+        /// </summary>
+        /// <returns></returns>
+        public float NextSign() => NextBool() ? 1f : -1f;
+
         class CumulativeAreaRectangle
         {
             public AxisAlignedRectangle Rectangle;
