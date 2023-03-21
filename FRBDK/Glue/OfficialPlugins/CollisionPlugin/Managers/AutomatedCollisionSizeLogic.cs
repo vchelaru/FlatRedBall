@@ -76,13 +76,13 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                 }
                 else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
                 {
-                    small = x - Get("Width");
-                    big = x + Get("Width");
+                    small = x - Get("Width") / 2.0f;
+                    big = x + Get("Width")/2.0f;
                 }
                 else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
                 {
-                    small = x - Get("Width");
-                    big = x + Get("Width");
+                    small = x - Get("Width")/2.0f;
+                    big = x + Get("Width")/2.0f;
                 }
                 else if (ati == AvailableAssetTypes.CommonAtis.Polygon)
                 {

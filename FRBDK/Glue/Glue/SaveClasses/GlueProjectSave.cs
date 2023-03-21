@@ -44,7 +44,8 @@ namespace FlatRedBall.Glue.SaveClasses
             AddedGeneratedGame1 = 2,
             ListsHaveAssociateWithFactoryBool = 3,
             GumGueHasGetAnimation = 4,
-            GumHasMIsLayoutSuspendedPublic = 4,
+            // Nope, this isn't v4, I checked and it's actually version 14
+            //GumHasMIsLayoutSuspendedPublic = 4,
             CsvInheritanceSupport = 5,
             IPositionedSizedObjectInEngine = 5,
             NugetPackageInCsproj = 6,
@@ -71,6 +72,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // Added Feb 28, 2022
             StartupInGeneratedGame = 13,
             RemoveAutoLocalizationOfVariables = 14,
+            GumHasMIsLayoutSuspendedPublic = 14, // not exact, but close enough. Was added March 3, 2022
             SpriteHasUseAnimationTextureFlip = 15,
             RemoveIsScrollableEntityList = 16,
             // Not exact, but close enough to help address issues:
@@ -99,7 +101,8 @@ namespace FlatRedBall.Glue.SaveClasses
             DamageableHasHealth = 33,
             HasGame1GenerateEarly = 34,
             ICollidableHasObjectsCollidedAgainst = 35,
-            HasIRepeatPressableInput = 36
+            HasIRepeatPressableInput = 36,
+            AllTiledFilesGenerated = 37
         }
 
         #endregion
@@ -108,7 +111,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.HasIRepeatPressableInput;
+        public const int LatestVersion = (int)GluxVersions.AllTiledFilesGenerated;
 
         public int FileVersion { get; set; }
 

@@ -43,7 +43,10 @@
                     <Button.ToolTip>Adds or replaces all points on the polygon to create a rectangle.</Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddRectanglePoints.png"></Image>
                 </Button>
-
+                <Button Height="24" Click="HandleAddPolygonPointsClicked">
+                    <Button.ToolTip>Adds or replaces all points on the polygon to create a multi-sided polygon.</Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddPolygonPoints.png"></Image>
+                </Button>
                 <Button Height="24" Click="MovePointUp" Margin="4,0,0,0"
                         IsEnabled="{Binding IsMoveUpEnabled}">
                     <Button.ToolTip>Moves the selected point up in the list.</Button.ToolTip>
@@ -54,6 +57,12 @@
                     <Button.ToolTip>Moves the selected point down in the list.</Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/MoveDown.png"></Image>
                 </Button>
+
+                <Button Height="24" Click="ResizePolygon" Margin="4,0,0,0">
+                    <Button.ToolTip>Resize the polygon by moving the contained points.</Button.ToolTip>
+                    <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/ResizePolygon.png"></Image>
+                </Button>
+
 
             </StackPanel>
             <Grid Grid.Row="1">

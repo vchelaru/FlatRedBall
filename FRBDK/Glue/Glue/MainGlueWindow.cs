@@ -31,6 +31,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.Build.Evaluation;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Glue
 {
@@ -79,10 +80,27 @@ namespace Glue
             var output = process.StandardOutput.ReadToEnd();
             var sdkPaths = Regex.Matches(output, "([0-9]+.[0-9]+.[0-9]+) \\[(.*)\\]")
                 .OfType<Match>()
-                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"));
 
-            var sdkPath = sdkPaths.Last();
-            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
+                // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
+                // "7.0.20" instead of "7.0.201"
+                .Where(item => item.Contains("7.0.20") == false)
+                .ToArray();
+
+            if(sdkPaths.Count() > 0)
+            {
+                var sdkPath = sdkPaths.Last();
+                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+
+                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
+            }
+            else
+            {
+                var message = "Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK";
+                GlueCommands.Self.PrintOutput(message);
+
+                MessageBox.Show(message);
+            }
         }
 
         public MainGlueWindow()
@@ -101,8 +119,6 @@ namespace Glue
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Move += HandleWindowMoved;
 
-            //this.KeyPress += (sender, args) => HotkeyManager.Self.TryHandleKeys(args.Ke)
-
             // this fires continually, so instead overriding wndproc
             this.ResizeEnd += HandleResizeEnd;
 
@@ -112,7 +128,6 @@ namespace Glue
             this.Controls.Add(this.mMenu);
 
         }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {

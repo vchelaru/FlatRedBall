@@ -202,7 +202,7 @@ namespace GlueControl.Editing
                 await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
                     variableAssignments,
                     currentElement,
-                    performSaveAndGenerateCode: true, updateUi: true, echoToGame: true);
+                    performSaveAndGenerateCode: true, updateUi: true, recordUndo:true, echoToGame: true);
 
             }
 

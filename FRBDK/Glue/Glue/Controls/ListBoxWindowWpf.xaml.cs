@@ -22,6 +22,8 @@ namespace FlatRedBall.Glue.Controls
 
         public object ClickedOption { get; private set; }
 
+        public object SelectedListBoxItem => ListBoxInstance.SelectedItem;
+
         public string Message
         {
             get => DisplayTextLabel.Text;
@@ -51,6 +53,11 @@ namespace FlatRedBall.Glue.Controls
 
             mButtons.Clear();
 
+        }
+
+        public void AddControl(UIElement element)
+        {
+            this.AdditionalControlStackPanel.Children.Add(element);
         }
 
         public void AddButton(string message, object result)

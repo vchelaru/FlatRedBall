@@ -19,6 +19,21 @@ namespace Gum.Wireframe
     }
     public partial class GraphicalUiElement : FlatRedBall.Gui.Controls.IControl, FlatRedBall.Graphics.Animation.IAnimatable
     {
+        struct VmToUiProperty
+        {
+            public string VmProperty;
+            public string UiProperty;
+
+            public string ToStringFormat;
+
+            public override string ToString()
+            {
+                return $"VM:{VmProperty} UI{UiProperty}";
+            }
+
+            public static VmToUiProperty Unassigned => new VmToUiProperty();
+        }
+
         class HandledActions
         {
             public bool HandledMouseWheel;
@@ -764,8 +779,7 @@ namespace Gum.Wireframe
         // to put it here for now. I may eventually
         // migrate this to the common Gum code but we'll
         // see
-
-        Dictionary<string, string> vmPropsToUiProps = new Dictionary<string, string>();
+        Dictionary<string, VmToUiProperty> vmPropsToUiProps = new Dictionary<string, VmToUiProperty>();
 
         object mInheritedBindingContext;
         internal object InheritedBindingContext
@@ -901,7 +915,7 @@ namespace Gum.Wireframe
             //}
         }
 
-        public void SetBinding(string uiProperty, string vmProperty)
+        public void SetBinding(string uiProperty, string vmProperty, string toStringFormat = null)
         {
             if(uiProperty == nameof(BindingContext))
             {
@@ -914,9 +928,9 @@ namespace Gum.Wireframe
                     vmPropsToUiProps.Remove(vmProperty);
                 }
                 // This prevents single UI properties from being bound to multiple VM properties
-                if (vmPropsToUiProps.Any(item => item.Value == uiProperty))
+                if (vmPropsToUiProps.Any(item => item.Value.UiProperty == uiProperty))
                 {
-                    var toRemove = vmPropsToUiProps.Where(item => item.Value == uiProperty).ToArray();
+                    var toRemove = vmPropsToUiProps.Where(item => item.Value.UiProperty == uiProperty).ToArray();
 
                     foreach (var kvp in toRemove)
                     {
@@ -924,8 +938,12 @@ namespace Gum.Wireframe
                     }
                 }
 
+                var newBinding = new VmToUiProperty();
+                newBinding.UiProperty = uiProperty;
+                newBinding.VmProperty = vmProperty;
+                newBinding.ToStringFormat = toStringFormat;
 
-                vmPropsToUiProps.Add(vmProperty, uiProperty);
+                vmPropsToUiProps.Add(vmProperty, newBinding);
 
                 if(EffectiveBindingContext != null)
                 {
@@ -976,22 +994,17 @@ namespace Gum.Wireframe
                     }
                     else
                     {
-                        var uiPropertyName = vmPropsToUiProps[vmPropertyName];
-                        PropertyInfo uiProperty = this.GetType().GetProperty(uiPropertyName);
+                        var binding = vmPropsToUiProps[vmPropertyName];
+                        PropertyInfo uiProperty = this.GetType().GetProperty(binding.UiProperty);
 
                         if (uiProperty == null)
                         {
                             throw new Exception($"The type {this.GetType()} does not have a property {vmPropsToUiProps[vmPropertyName]}");
                         }
 
-                        if (uiProperty.PropertyType == typeof(string))
-                        {
-                            uiProperty.SetValue(this, vmValue?.ToString(), null);
-                        }
-                        else
-                        {
-                            uiProperty.SetValue(this, vmValue, null);
-                        }
+                        var convertedValue = ConvertValue(vmValue, uiProperty.PropertyType, binding.ToStringFormat);
+
+                        uiProperty.SetValue(this, convertedValue, null);
                     }
                     updated = true;
                 }
@@ -1001,6 +1014,81 @@ namespace Gum.Wireframe
 
             return updated;
         }
+
+        private object ConvertValue(object value, Type desiredType, string format)
+        {
+            object convertedValue = value;
+            if (desiredType == typeof(string))
+            {
+                if (!string.IsNullOrEmpty(format))
+                {
+                    if (value is int asInt) convertedValue = asInt.ToString(format);
+                    else if (value is double asDouble) convertedValue = asDouble.ToString(format);
+                    else if (value is decimal asDecimal) convertedValue = asDecimal.ToString(format);
+                    else if (value is float asFloat) convertedValue = asFloat.ToString(format);
+                    else if (value is long asLong) convertedValue = asLong.ToString(format);
+                }
+                else
+                {
+                    convertedValue = value?.ToString();
+                }
+            }
+            else if (desiredType == typeof(int))
+            {
+                if (value is decimal asDecimal)
+                {
+                    // do we round? 
+                    convertedValue = (int)asDecimal;
+                }
+            }
+            else if (desiredType == typeof(double))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (double)asInt;
+                }
+                else if (value is decimal asDecimal)
+                {
+                    convertedValue = (double)asDecimal;
+                }
+                else if (value is float asFloat)
+                {
+                    convertedValue = (double)asFloat;
+                }
+            }
+            else if (desiredType == typeof(decimal))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (decimal)asInt;
+                }
+                else if (value is double asDouble)
+                {
+                    convertedValue = (decimal)asDouble;
+                }
+                else if (value is float asFloat)
+                {
+                    convertedValue = (decimal)asFloat;
+                }
+            }
+            else if (desiredType == typeof(float))
+            {
+                if (value is int asInt)
+                {
+                    convertedValue = (float)asInt;
+                }
+                else if (value is double asDouble)
+                {
+                    convertedValue = (float)asDouble;
+                }
+                else if (value is decimal asDecimal)
+                {
+                    convertedValue = (float)asDecimal;
+                }
+            }
+            return convertedValue;
+        }
+
 
         private void TryPushBindingContextChangeToChildren(string vmPropertyName)
         {
@@ -1034,9 +1122,9 @@ namespace Gum.Wireframe
         protected void PushValueToViewModel([CallerMemberName]string uiPropertyName = null)
         {
 
-            var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value == uiPropertyName);
+            var kvp = vmPropsToUiProps.FirstOrDefault(item => item.Value.UiProperty == uiPropertyName);
 
-            if (kvp.Value == uiPropertyName)
+            if (kvp.Value.UiProperty == uiPropertyName)
             {
                 var vmPropName = kvp.Key;
 

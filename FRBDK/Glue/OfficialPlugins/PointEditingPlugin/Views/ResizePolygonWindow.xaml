@@ -1,0 +1,32 @@
+﻿<Window x:Class="OfficialPlugins.PointEditingPlugin.Views.ResizePolygonWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OfficialPlugins.PointEditingPlugin.Views"
+        mc:Ignorable="d"
+        Title="ResizePolygonWindow" Height="Auto" Width="Auto" SizeToContent="WidthAndHeight">
+    <StackPanel>
+        <Grid Margin="0,6,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Label>Width:</Label>
+            <TextBox Grid.Column="1" Width="80" HorizontalAlignment="Left" Text="{Binding WidthPercentage}"></TextBox>
+            <Label Grid.Column="2">%</Label>
+
+            <Label Grid.Row="1">Height:</Label>
+            <TextBox Grid.Row="1" Grid.Column="1"  Width="80" HorizontalAlignment="Left" Text="{Binding HeightPercentage}"></TextBox>
+            <Label Grid.Row="1" Grid.Column="2">%</Label>
+
+        </Grid>
+        <Button Width="60" HorizontalAlignment="Right" Margin="0,6,0,0" Click="Button_Click">OK</Button>
+    </StackPanel>
+</Window>

@@ -209,7 +209,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 var locationToSave = glueDirectory + screen.Name + "." + GlueProjectSave.ScreenExtension;
 
                 PluginManager.ReactToScreenJsonSaveAsync(screen.Name, serialized);
-                FileManager.SaveText(serialized, locationToSave);
+                GlueCommands.Self.TryMultipleTimes(() => FileManager.SaveText(serialized, locationToSave));
             }
 
             clone.Entities.Clear();

@@ -583,6 +583,10 @@ namespace GlueControl.Editing
 
             CameraLogic.DoHotkeyLogic();
 
+            if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Z) && keyboard.IsCtrlDown)
+            {
+                GlueCommands.Self.Undo();
+            }
         }
 
         private void DoForwardBackActivity()

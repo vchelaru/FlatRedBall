@@ -38,6 +38,12 @@ namespace OfficialPlugins.FrbdkUpdater
 
         private async void UpdateFrbFromCode()
         {
+            if(GlueState.Self.CurrentGlueProject == null)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("You must open a project first before updating");
+                return;
+            }
+
             await TaskManager.Self.WaitForAllTasksFinished();
 
             var command =

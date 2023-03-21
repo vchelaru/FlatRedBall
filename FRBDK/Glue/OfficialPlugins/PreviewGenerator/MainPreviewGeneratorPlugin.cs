@@ -1,8 +1,10 @@
-﻿using FlatRedBall.Glue.FormHelpers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using Newtonsoft.Json.Linq;
 using OfficialPlugins.PreviewGenerator.Views;
 using System;
@@ -58,23 +60,30 @@ namespace OfficialPlugins.PreviewGenerator
 
                     var obj = JObject.Parse(payload);
 
-                    if(obj.ContainsKey("ImageFilePath") && obj.ContainsKey("NamedObjectSave") && obj.ContainsKey("Element") && obj.ContainsKey("State"))
+                    if(obj.ContainsKey("ImageFilePath") && obj.ContainsKey("Element") && obj.ContainsKey("State"))
                     {
                         var path = obj.Value<string>("ImageFilePath");
-                        var nosId = obj.Value<Guid?>("NamedObjectSave");
-                        var eId = obj.Value<Guid?>("Element");
-                        var sId = obj.Value<Guid?>("sId");
+                        //var nosId = obj.Value<Guid?>("NamedObjectSave");
+                        var elementSave = obj.Value<string>("Element");
+                        var categoryName = obj.Value<string>("CategoryName");
+                        //var sId = obj.Value<Guid?>("sId");
+                        var stateName = obj.Value<string>("State");
 
-                        var nos = nosId.HasValue ? PluginStorage.TryRemove(nosId.Value, out var tempNos) ? (NamedObjectSave)tempNos : null : null;
-                        var e = eId.HasValue ? PluginStorage.TryRemove(eId.Value, out var tempE) ? (GlueElement)tempE : null : null;
-                        var s = sId.HasValue ? PluginStorage.TryRemove(sId.Value, out var tempS) ? (StateSave)tempS : null : null;
+                        //var nos = nosId.HasValue ? PluginStorage.TryRemove(nosId.Value, out var tempNos) ? (NamedObjectSave)tempNos : null : null;
+                        //var e = eId.HasValue ? PluginStorage.TryRemove(eId.Value, out var tempE) ? (GlueElement)tempE : null : null;
+                        //var s = sId.HasValue ? PluginStorage.TryRemove(sId.Value, out var tempS) ? (StateSave)tempS : null : null;
 
-                        var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(nos, e, s);
+                        var element = ObjectFinder.Self.GetElement(elementSave);
+                        var category = element.GetStateCategory(categoryName);
+                        var state = category?.GetState(stateName) ?? element.GetState(stateName);   
+
+                        var image = PreviewGenerator.Managers.PreviewGenerationLogic.GetImageSourceForSelection(null, element, state);
                         if (image != null)
                         {
                             try
                             {
-                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, e, s);
+
+                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, path);
                             }
                             catch (Exception ex)
                             {

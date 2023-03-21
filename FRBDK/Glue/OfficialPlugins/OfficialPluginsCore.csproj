@@ -37,9 +37,11 @@
     <None Remove="ErrorPlugin\Icons\CopySingle.png" />
     <None Remove="ErrorPlugin\Icons\ErrorWindowError.png" />
     <None Remove="ErrorPlugin\Icons\Refresh.png" />
+    <None Remove="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <None Remove="PointEditingPlugin\Content\AddRectanglePoints.png" />
     <None Remove="PointEditingPlugin\Content\MoveDown.png" />
     <None Remove="PointEditingPlugin\Content\MoveUp.png" />
+    <None Remove="PointEditingPlugin\Content\ResizePolygon.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <None Remove="QuickActionPlugin\Icons\Add Gum Project.png" />
@@ -148,9 +150,11 @@
     <Resource Include="ErrorPlugin\Icons\CopySingle.png" />
     <Resource Include="ErrorPlugin\Icons\ErrorWindowError.png" />
     <Resource Include="ErrorPlugin\Icons\Refresh.png" />
+    <Resource Include="PointEditingPlugin\Content\AddPolygonPoints.png" />
     <Resource Include="PointEditingPlugin\Content\AddRectanglePoints.png" />
     <Resource Include="PointEditingPlugin\Content\MoveDown.png" />
     <Resource Include="PointEditingPlugin\Content\MoveUp.png" />
+    <Resource Include="PointEditingPlugin\Content\ResizePolygon.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity instance to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Entity List to GameScreen.png" />
     <Resource Include="QuickActionPlugin\Icons\Add Gum Project.png" />

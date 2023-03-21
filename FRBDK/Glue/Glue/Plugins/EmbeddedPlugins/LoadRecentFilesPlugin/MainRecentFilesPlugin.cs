@@ -23,11 +23,26 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent...", HandleLoadRecentClicked, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", null, "File", preferredIndex:2);
 
-            //RefreshMenuItems();
+            RefreshMenuItems();
 
             this.ReactToLoadedGlux += HandleGluxLoaded;
+        }
+
+        private void RefreshMenuItems()
+        {
+            var recentFiles = GlueState.Self.GlueSettingsSave?.RecentFileList;
+
+            recentFilesMenuItem.DropDownItems.Clear();
+
+            foreach(var item in recentFiles.Where(item => item.IsFavorite))
+            {
+                var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
+                recentFilesMenuItem.DropDownItems.Add(name, null, async (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+            }
+
+            recentFilesMenuItem.DropDownItems.Add("More...", null, HandleLoadRecentClicked);
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)
@@ -85,8 +100,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         {
             var currentFile = GlueState.Self.CurrentCodeProjectFileName;
 
-            if(ProjectManager.GlueSettingsSave == null)
+            if(GlueState.Self.GlueSettingsSave == null)
             {
+                // This should probably not be the responsibility of the plugin. It should be handled elsewhere before this hapens.
                 ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
@@ -100,6 +116,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             if(existing != null)
             {
                 GlueSettings.RecentFileList.Remove(existing);
+                existing.LastTimeAccessed = DateTime.Now;
                 GlueSettings.RecentFileList.Insert(0, existing);
             }
             else

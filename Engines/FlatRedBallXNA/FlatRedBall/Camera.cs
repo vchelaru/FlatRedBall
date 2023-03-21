@@ -1314,38 +1314,62 @@ namespace FlatRedBall
             
                 splitScreenViewport = viewport.Value;
 
-                // Set the left
-                mLeftDestination = //FlatRedBallServices.GraphicsDevice.Viewport.X + ((
-                    ((
-                    viewport != SplitScreenViewport.RightHalf &&
-                    viewport != SplitScreenViewport.TopRight &&
-                    viewport != SplitScreenViewport.BottomRight) ?
-                    0 : FlatRedBallServices.ClientWidth / 2);
+                if(viewport == SplitScreenViewport.LeftThird)
+                {
+                    mTopDestination = 0;
+                    mBottomDestination = FlatRedBallServices.ClientHeight;
+                    mLeftDestination = 0;
+                    mRightDestination = FlatRedBallServices.ClientWidth / 3;
+                }
+                else if(viewport == SplitScreenViewport.MiddleThird)
+                {
+                    mTopDestination = 0;
+                    mBottomDestination = FlatRedBallServices.ClientHeight;
+                    mLeftDestination = FlatRedBallServices.ClientWidth / 3;
+                    mRightDestination = 2 * FlatRedBallServices.ClientWidth / 3; 
+                }
+                else if(viewport == SplitScreenViewport.RightThird)
+                {
+                    mTopDestination = 0;
+                    mBottomDestination = FlatRedBallServices.ClientHeight;
+                    mLeftDestination = 2 * FlatRedBallServices.ClientWidth / 3;
+                    mRightDestination = FlatRedBallServices.ClientWidth;
+                }
+                else
+                {
+                    // Set the left
+                    mLeftDestination = //FlatRedBallServices.GraphicsDevice.Viewport.X + ((
+                        ((
+                        viewport != SplitScreenViewport.RightHalf &&
+                        viewport != SplitScreenViewport.TopRight &&
+                        viewport != SplitScreenViewport.BottomRight) ?
+                        0 : FlatRedBallServices.ClientWidth / 2);
 
-                // Set the top
-                mTopDestination = //FlatRedBallServices.GraphicsDevice.Viewport.Y + ((
-                    ((
-                    viewport != SplitScreenViewport.BottomHalf &&
-                    viewport != SplitScreenViewport.BottomLeft &&
-                    viewport != SplitScreenViewport.BottomRight) ?
-                    0 : FlatRedBallServices.ClientHeight / 2);
+                    // Set the top
+                    mTopDestination = //FlatRedBallServices.GraphicsDevice.Viewport.Y + ((
+                        ((
+                        viewport != SplitScreenViewport.BottomHalf &&
+                        viewport != SplitScreenViewport.BottomLeft &&
+                        viewport != SplitScreenViewport.BottomRight) ?
+                        0 : FlatRedBallServices.ClientHeight / 2);
 
-                // Set the right (left + width)
-                mRightDestination = mLeftDestination + ((
-                    viewport != SplitScreenViewport.FullScreen &&
-                    viewport != SplitScreenViewport.BottomHalf &&
-                    viewport != SplitScreenViewport.TopHalf) ?
-                    FlatRedBallServices.ClientWidth / 2 :
-                    FlatRedBallServices.ClientWidth);
+                    // Set the right (left + width)
+                    mRightDestination = mLeftDestination + ((
+                        viewport != SplitScreenViewport.FullScreen &&
+                        viewport != SplitScreenViewport.BottomHalf &&
+                        viewport != SplitScreenViewport.TopHalf) ?
+                        FlatRedBallServices.ClientWidth / 2 :
+                        FlatRedBallServices.ClientWidth);
 
-                // Set the bottom (top + height)
-                mBottomDestination = mTopDestination + ((
-                    viewport != SplitScreenViewport.FullScreen &&
-                    viewport != SplitScreenViewport.LeftHalf &&
-                    viewport != SplitScreenViewport.RightHalf) ?
-                    FlatRedBallServices.ClientHeight / 2 :
-                    FlatRedBallServices.ClientHeight);
+                    // Set the bottom (top + height)
+                    mBottomDestination = mTopDestination + ((
+                        viewport != SplitScreenViewport.FullScreen &&
+                        viewport != SplitScreenViewport.LeftHalf &&
+                        viewport != SplitScreenViewport.RightHalf) ?
+                        FlatRedBallServices.ClientHeight / 2 :
+                        FlatRedBallServices.ClientHeight);
 
+                }
                 // Update the destination rectangle
                 UpdateDestinationRectangle();
 

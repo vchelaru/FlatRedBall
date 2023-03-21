@@ -746,6 +746,8 @@ namespace TileGraphicsPlugin
 
         void HandleGluxLoad()
         {
+            CodeItemAdderManager.Self.RefreshAppendGenerated();
+
             // Add the .cs files which include the map drawable batch classes
             FlatRedBall.Glue.Managers.TaskManager.Self.Add( CodeItemAdderManager.Self.UpdateCodePresenceInProject,
                 "Adding Tiled .cs files to the project");

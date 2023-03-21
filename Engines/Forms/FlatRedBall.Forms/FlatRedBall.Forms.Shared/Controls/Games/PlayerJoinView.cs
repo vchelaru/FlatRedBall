@@ -57,6 +57,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
+
         #region Constructor
         public PlayerJoinView() : base() { }
 
@@ -243,7 +244,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-#region Join/Unjoin
+        #region Join/Unjoin
 
         public override void Activity()
         {
@@ -283,6 +284,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     if(gamepad.ButtonPushed(button))
                     {
                         joinItem.ConnectedJoinedState = ConnectedJoinedState.ConnectedAndJoined;
+                        joinItem.CallJoinedInput();
                         break;
                     }
                 }
@@ -294,6 +296,8 @@ namespace FlatRedBall.Forms.Controls.Games
                     if(gamepad.ButtonPushed(button))
                     {
                         joinItem.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                        joinItem.CallUnjoinedInput();
+                        break;
                     }
                 }
             }
@@ -311,6 +315,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     if ( keyboard.KeyPushed(key))
                     {
                         joinItem.ConnectedJoinedState = ConnectedJoinedState.ConnectedAndJoined;
+                        joinItem.CallJoinedInput();
                         break;
                     }
                 }
@@ -322,6 +327,8 @@ namespace FlatRedBall.Forms.Controls.Games
                     if (keyboard.KeyPushed(key))
                     {
                         joinItem.ConnectedJoinedState = ConnectedJoinedState.Connected;
+                        joinItem.CallUnjoinedInput();
+                        break;
                     }
                 }
             }
@@ -339,6 +346,6 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-#endregion
+        #endregion
     }
 }

@@ -108,7 +108,11 @@ namespace FlatRedBall.IO
             {
                 if(standardizedCaseSensitive == null)
                 {
-                    standardizedCaseSensitive = FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                    var beforeDotDotSlashRemoved = StandardizeInternal(Original);
+                    if(beforeDotDotSlashRemoved != null)
+                    {
+                        standardizedCaseSensitive = FileManager.RemoveDotDotSlash(StandardizeInternal(Original));
+                    }
                 }
                 return standardizedCaseSensitive;
             }

@@ -246,6 +246,7 @@ namespace FlatRedBall.TileEntities
                                 var entityCollision = (entity as Math.Geometry.ICollidable).Collision;
                                 entityCollision.Polygons.Add(polygon);
                                 polygon.AttachTo(entity, false);
+                                polygon.RelativeRotationZ = polygon.RotationZ;
                             }
                         }
                     }

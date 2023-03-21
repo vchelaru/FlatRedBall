@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatRedBall.Glue.SaveClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace CompilerLibrary.Models
 {
-    public class ToolbarEntityAndState
+    public class ToolbarModel
     {
-        public string EntityName { get; set; }
-        public string CategoryName { get; set; }
-        public string StateName { get; set; }
+        public NamedObjectSave NamedObject { get; set; }
+
+        public string CustomPreviewLocation { get; set; }
     }
     public class CompilerSettingsModel
     {
@@ -33,7 +34,7 @@ namespace CompilerLibrary.Models
         public int BackgroundRed { get; set; }
         public int BackgroundGreen { get; set; }
         public int BackgroundBlue { get; set; }
-        public List<ToolbarEntityAndState> ToolbarEntitiesAndStates { get; set; } = new List<ToolbarEntityAndState>();
+        public List<ToolbarModel> ToolbarObjects { get; set; } = new List<ToolbarModel>();
 
         public void SetDefaults()
         {

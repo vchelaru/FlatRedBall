@@ -113,7 +113,8 @@ namespace " + GlueState.Self.ProjectNamespace + @".Entities
 
         public void AddLayer(PlatformerAnimationConfiguration configuration)
         {
-            var layer = this.AddLayer();
+            var layer = new FlatRedBall.Graphics.Animation.AnimationLayer();
+            this.Layers.Add(layer);
 
             platformerAnimationConfigurations.Add(configuration);
 

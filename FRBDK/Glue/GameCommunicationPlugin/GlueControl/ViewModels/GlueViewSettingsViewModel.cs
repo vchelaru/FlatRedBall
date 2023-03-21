@@ -148,7 +148,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.SnapSize = this.SnapSize;
             compilerSettings.PolygonPointSnapSize = this.PolygonPointSnapSize;
 
-            compilerSettings.ToolbarEntitiesAndStates.Clear();
+            compilerSettings.ToolbarObjects.Clear();
 
 
         }

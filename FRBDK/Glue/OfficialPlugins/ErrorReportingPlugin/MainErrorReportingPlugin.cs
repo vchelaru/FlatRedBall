@@ -28,10 +28,10 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
             this.ReactToFileChangeHandler += HandleFileChanged;
             //this.ReactToNamedObjectChangedValue += HandleNamedObjectChangedValue;
-            this.ReactToChangedNamedObjectVariableList += HandleChangedNamedObjectVariableList;
+            this.ReactToChangedNamedObjectPropertyList += HandleChangedNamedObjectPropertyList;
         }
 
-        private async void HandleChangedNamedObjectVariableList(List<PluginManager.NamedObjectSaveVariableChange> obj)
+        private async void HandleChangedNamedObjectPropertyList(List<PluginManager.NamedObjectSavePropertyChange> obj)
         {
             await GlueCommands.Self.RefreshCommands.ClearFixedErrors();
             this.RefreshErrors();

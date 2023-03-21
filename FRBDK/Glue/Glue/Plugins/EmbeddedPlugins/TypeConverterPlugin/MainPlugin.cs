@@ -23,6 +23,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
 
         private TypeConverter HandleGetTypeConverter(IElement containerAsIElement, NamedObjectSave instance, Type memberType, string memberName, string customType)
         {
+            if(memberType == null)
+            {
+                throw new ArgumentNullException(nameof(memberType));
+            }
+
+            if(instance == null)
+            {
+                throw new ArgumentNullException(nameof(instance));
+            }
             GlueElement container = containerAsIElement as GlueElement;
             TypeConverter typeConverter = null;
 

@@ -14,160 +14,125 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static System.Windows.Forms.AxHost;
 
 namespace CompilerLibrary.ViewModels
 {
     public class ToolbarEntityAndStateViewModel : ViewModel
     {
+        #region Events and related
+
         public ICommand ClickedCommand { get; private set; } 
         public ICommand RemoveFromToolbarCommand { get; private set; }
 
         public ICommand ForceRefreshPreviewCommand { get; private set; }
         public ICommand ViewInExplorerCommand { get;private set; }
+        public ICommand SelectPreviewFileCommand { get; private set; }
+        public ICommand SelectPreviewFromEntityCommand { get; private set; }
 
         private Func<string, string, Task<string>> _pluginAction;
-        private ConcurrentDictionary<Guid, object> _pluginStorge;
 
         void RaiseClicked() => Clicked?.Invoke();
         void RaiseRemoveFromToolbar() => RemovedFromToolbar?.Invoke();
         void RaiseForceRefreshPreview() => ForceRefreshPreview?.Invoke();
         void RaiseViewInExplorerCommand() => ViewInExplorer?.Invoke();
+        void RaiseSelectPreviewFile() => SelectPreviewFile?.Invoke();
+        void RaiseSelectPreviewFromEntity() => SelectPreviewFromEntity?.Invoke();
 
         public event Action Clicked;
         public event Action RemovedFromToolbar;
         public event Action ForceRefreshPreview;
         public event Action DragLeave;
         public event Action ViewInExplorer;
+        public event Action SelectPreviewFile;
+        public event Action SelectPreviewFromEntity;
 
-        public ToolbarEntityAndStateViewModel(Func<string, string, Task<string>> pluginAction, ConcurrentDictionary<Guid, object> pluginStorage)
-        {
-            ClickedCommand = new Command(RaiseClicked);
-            RemoveFromToolbarCommand = new Command(RaiseRemoveFromToolbar);
-            ForceRefreshPreviewCommand = new Command(RaiseForceRefreshPreview);
-            ViewInExplorerCommand = new Command(RaiseViewInExplorerCommand);
-            _pluginAction = pluginAction;
-            _pluginStorge = pluginStorage;
-        }
+        #endregion
 
-        public GlueElement GlueElement { get; set; }
-        public StateSave StateSave { get; set; }
+        #region Fields/Properties
+
+        public NamedObjectSave NamedObjectSave { get; set; }
+
         public ImageSource ImageSource
         {
             get => Get<ImageSource>();
             set => Set(value) ;
         }
 
-        [DependsOn(nameof(StateSave))]
-        [DependsOn(nameof(GlueElement))]
+        public string CustomPreviewLocation
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(NamedObjectSave))]
         public string TooltipText
         {
             get
             {
-                var entityName = GlueElement.Name;
-                if(entityName?.StartsWith("Entities\\") == true)
+                var toReturn = NamedObjectSave.SourceClassType;
+                if(toReturn?.StartsWith("Entities\\") == true)
                 {
-                    entityName = entityName.Substring("Entities\\".Length);
+                    toReturn = toReturn.Substring("Entities\\".Length);
                 }
-                if(StateSave == null)
+
+                foreach(var variable in ExceptXYZ( NamedObjectSave.InstructionSaves))
                 {
-                    return entityName;
+                    toReturn += $"\n{variable.Member} = {variable.Value}";
+                }
+
+                // NamedObjects can have any number of properties assigned. Previously
+                // we would use state but...what should we do now? We could randomly loop through
+                // variables, limiting to something like 5? Or would that be too noisy?
+                return toReturn;
+            }
+        }
+
+        [DependsOn(nameof(CustomPreviewLocation))]
+        public string RefreshPreviewText
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(CustomPreviewLocation))
+                {
+                    return "Refresh Preview";
                 }
                 else
                 {
-                    return $"{StateSave.Name}\n({entityName})";
+                    return $"Revert to default preview for {NamedObjectSave.SourceClassType}";
                 }
             }
         }
 
-        public void ApplyTo(ToolbarEntityAndState toolbarModel)
-        {
+        #endregion
 
-            StateSaveCategory category = null;
-            if(StateSave != null)
-            {
-                category = ObjectFinder.Self.GetStateSaveCategory(StateSave);
-            }
-            toolbarModel.CategoryName = category?.Name;
-            toolbarModel.StateName = StateSave?.Name;
-            toolbarModel.EntityName = GlueElement?.Name;
+        CustomVariableInNamedObject[] ExceptXYZ(List<CustomVariableInNamedObject> variables) => variables
+            .Where(item => item.Member != "X" && item.Member != "Y" && item.Member != "Z")
+            .OrderBy(item => item.Member)
+            .ToArray();
+
+        public ToolbarEntityAndStateViewModel(Func<string, string, Task<string>> pluginAction)
+        {
+            ClickedCommand = new Command(RaiseClicked);
+            RemoveFromToolbarCommand = new Command(RaiseRemoveFromToolbar);
+            ForceRefreshPreviewCommand = new Command(RaiseForceRefreshPreview);
+            ViewInExplorerCommand = new Command(RaiseViewInExplorerCommand);
+            SelectPreviewFileCommand = new Command(RaiseSelectPreviewFile);
+            SelectPreviewFromEntityCommand = new Command(RaiseSelectPreviewFromEntity);
+            _pluginAction = pluginAction;
         }
 
-        internal void SetFrom(ToolbarEntityAndState item)
+        public void ApplyTo(ToolbarModel toolbarModel)
         {
-            GlueElement = ObjectFinder.Self.GetElement(item.EntityName) as EntitySave;
-            if(!string.IsNullOrEmpty(item.StateName))
-            {
-                StateSaveCategory category = null;
-                if(item.CategoryName != null)
-                {
-                    category = GlueElement?.GetStateCategory(item.CategoryName);
-                }
-
-                StateSave = category?.GetState(item.StateName) ??
-                    GlueElement?.States.FirstOrDefault(possibleState => possibleState.Name == item.StateName);
-            }
+            toolbarModel.CustomPreviewLocation = CustomPreviewLocation;
+            toolbarModel.NamedObject = NamedObjectSave.Clone();
         }
 
-        /// <summary>
-        /// Sets the ImageSource according to a preview generated based on the Element and its State.
-        /// This method will generate a cached PNG on disk if it doesn't already exist, or if force is true.
-        /// </summary>
-        /// <param name="force">Whether to force generate the preview PNG. If true, then the PNG
-        /// will be generated even if it already exists.</param>
-        public void SetSourceFromElementAndState(bool force = false)
+        internal void SetFrom(ToolbarModel item)
         {
-            var imageFilePath = GlueCommands.Self.GluxCommands.GetPreviewLocation(GlueElement, StateSave);
+            this.CustomPreviewLocation = item.CustomPreviewLocation;
+            this.NamedObjectSave = item.NamedObject.Clone();
 
-            if (!imageFilePath.Exists() || force)
-            {
-                var geId = Guid.NewGuid();
-                var ssId = Guid.NewGuid();
-
-                _pluginStorge.TryAdd(geId, GlueElement);
-                _pluginStorge.TryAdd(ssId, StateSave);
-
-                var result = _pluginAction("PreviewGenerator_SaveImageSourceForSelection", JsonConvert.SerializeObject(new
-                {
-                    ImageFilePath = imageFilePath,
-                    NamedObjectSave = (Guid?)null,
-                    Element = geId,
-                    State = ssId
-                })).Result;
-            }
-
-            if (imageFilePath.Exists())
-            {
-                // Loading PNGs in WPF sucks
-                // This code works, but it holds
-                // on to the file path, so that 
-                // saving the file after it's loaded
-                // doesn't work:
-                //var bitmapImage = new BitmapImage(new Uri(imageFilePath.FullPath));
-                //ImageSource = bitmapImage;
-
-                // If I use "OnLoad" cache, it works, but it never re-loads...
-                //var bitmapImage = new BitmapImage();
-                //bitmapImage.BeginInit();
-                //// OnLoad means we can't refresh this image if the user makes changes to the object
-                ////bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                ////bitmapImage.CacheOption = BitmapCacheOption.None;
-                ////bitmapImage.CacheOption = BitmapCacheOption.OnDemand;
-                //bitmapImage.UriSource = new Uri(imageFilePath.FullPath, UriKind.Relative);
-                //bitmapImage.EndInit();
-
-                // Big thanks to Thraka who helped me figure this out. Using my own stream allows the file
-                // to be loaded AND allows it to be re-loaded
-                using (var stream = System.IO.File.OpenRead(imageFilePath.FullPath))
-                {
-                    var bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.StreamSource = stream;
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
-                    ImageSource = bitmap;
-                }
-            }
         }
 
         public void HandleDragLeave() => DragLeave?.Invoke();

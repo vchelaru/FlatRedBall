@@ -133,9 +133,17 @@
             </StackPanel>
 
 
-            <Grid x:Name="BackgroundGrid" Background="#555555" Grid.Column="1" SizeChanged="BackgroundGrid_SizeChanged"></Grid>
+            <Grid x:Name="BackgroundGrid" Background="#555555" Grid.Column="1" SizeChanged="BackgroundGrid_SizeChanged">
 
-            <Grid x:Name="MainGrid" Grid.Column="1" Visibility="{Binding WhileRunningViewVisibility}">
+                <StackPanel>
+                    <TextBlock Text="{Binding GameRunningNotInWindowDisplay, FallbackValue=GameRunningExternally}" TextWrapping="Wrap" Foreground="White"></TextBlock>
+                </StackPanel>
+                
+            </Grid>
+
+
+
+            <Grid x:Name="MainGrid" Grid.Column="1" Visibility="{Binding WhileRunningEmbeddedVisibility}">
                 <WindowsFormsHost x:Name="WinformsHost" 
                               
                                   SizeChanged="WinformsHost_SizeChanged"

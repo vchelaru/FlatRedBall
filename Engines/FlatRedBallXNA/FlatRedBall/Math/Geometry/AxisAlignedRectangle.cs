@@ -1422,6 +1422,11 @@ namespace FlatRedBall.Math.Geometry
             return new FloatRectangle(Top, Bottom, Left, Right);
         }
 
+        public override string ToString()
+        {
+            return $"Left:{Left} Right:{Right} Top:{Top} Bottom:{Bottom}";
+        }
+
         #endregion
 
         #region Protected Methods

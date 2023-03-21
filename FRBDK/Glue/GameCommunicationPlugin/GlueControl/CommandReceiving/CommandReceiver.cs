@@ -769,7 +769,17 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     parameters.Add(converted);
                 }
 
-                var methodResponse = method.Invoke(target, parameters.ToArray());
+                object methodResponse = null;
+                try
+                {
+                    methodResponse = method.Invoke(target, parameters.ToArray());
+                }
+                catch(TargetParameterCountException)
+                {
+                    var message =
+                        $"Attempting to invoke method {dto.Method} but the parameter count is wrong. Did this change in Glue without changing in the generated code for this method?";
+                    throw new Exception(message);
+                }
 
                 if(methodResponse is Task asTask)
                 {

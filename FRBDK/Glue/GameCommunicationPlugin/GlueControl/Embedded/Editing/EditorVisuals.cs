@@ -71,7 +71,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextText == Texts.Count)
+            while (nextText >= Texts.Count)
             {
                 Texts.Add(TextManager.AddText(String.Empty, DefaultLayer));
             }
@@ -112,7 +112,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextLine == Lines.Count)
+            while (nextLine >= Lines.Count)
             {
                 var line = new Line();
                 ShapeManager.AddToLayer(line, DefaultLayer);
@@ -127,6 +127,14 @@ namespace GlueControl.Editing
             nextLine++;
 
             return lineInstance;
+        }
+
+        public static void LinePath(List<Vector3> points, Color? color = null)
+        {
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                Line(points[i], points[i + 1], color);
+            }
         }
 
         public static Arrow Arrow(Vector3 point1, Vector3 point2, Color? color = null)
@@ -147,7 +155,7 @@ namespace GlueControl.Editing
             }
             TryResetEveryFrameValues();
 
-            if (nextArrow == Arrows.Count)
+            while (nextArrow >= Arrows.Count)
             {
                 Arrows.Add(new Visuals.Arrow(DefaultLayer));
             }
@@ -344,22 +352,30 @@ namespace GlueControl.Editing
         {
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Up))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Down))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddY(-rectangle.Height / 2));
+                var endpoint = rectangle.Position;
+                endpoint.Y += -rectangle.Height / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Left))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(-rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += -rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
 
             if (rectangle.RepositionDirections.HasFlag(RepositionDirections.Right))
             {
-                EditorVisuals.Arrow(rectangle.Position, rectangle.Position.AddX(rectangle.Width / 2));
+                var endpoint = rectangle.Position;
+                endpoint.X += rectangle.Width / 2;
+                EditorVisuals.Arrow(rectangle.Position, endpoint);
             }
         }
 

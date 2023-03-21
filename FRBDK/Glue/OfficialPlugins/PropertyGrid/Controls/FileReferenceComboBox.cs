@@ -43,9 +43,9 @@ namespace OfficialPlugins.VariableDisplay.Controls
 
         private void HandleViewButtonClicked(object sender, RoutedEventArgs e)
         {
-            if(this.InstanceMember is FileInstanceMember)
+            if(this.InstanceMember is IFileInstanceMember fileInstanceMember)
             {
-                (this.InstanceMember as FileInstanceMember).OnView();
+                fileInstanceMember.OnView();
             }
         }
     }

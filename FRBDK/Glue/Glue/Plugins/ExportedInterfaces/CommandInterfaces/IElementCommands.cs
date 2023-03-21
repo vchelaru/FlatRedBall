@@ -7,9 +7,16 @@ using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.ViewModels;
+using static FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    public class OrderedNamedObjectPair
+    {
+        public NamedObjectSave First;
+        public NamedObjectSave Second;
+    }
+
     public interface IElementCommands
     {
         #region AddEntity
@@ -83,6 +90,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task ReactToPropertyChanged(GlueElement element, string propertyName, object oldValue);
 
         #endregion
+
+        List<OrderedNamedObjectPair> GetGameScreenOpposingTeamIndexCollisionPairs(int? newTeamIndex, NamedObjectSave newElementList, AddEntityViewModel viewModel);
+
 
         bool UpdateFromBaseType(GlueElement glueElement);
 

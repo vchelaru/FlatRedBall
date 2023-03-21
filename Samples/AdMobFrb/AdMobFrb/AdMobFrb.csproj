@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D5CDECE9-2B7C-4CBE-A342-5A822781345C}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AdMobFrb</RootNamespace>
+    <AssemblyName>AdMobFrb</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidSupportedAbis>armeabi%3barmeabi-v7a%3bx86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidUseLatestPlatformSdk />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;ANDROID; XNA4; MONOGAME; FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
+    <AndroidSupportedAbis>
+    </AndroidSupportedAbis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;ANDROID; XNA4; MONOGAME; FRB_XNA</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FlatRedBall.Forms.Android">
+      <HintPath>Libraries\Android\Debug\FlatRedBall.Forms.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="GumCoreAndroid">
+      <HintPath>Libraries\Android\Debug\GumCoreAndroid.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\Android\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="OpenTK-1.0" />
+    <Reference Include="StateInterpolation.Android">
+      <HintPath>Libraries\Android\Debug\StateInterpolation.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Android">
+      <HintPath>Libraries\Mono.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="FlatRedBallAndroid">
+      <HintPath>Libraries\Android\Debug\FlatRedBallAndroid.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activity1.cs" />
+    <Compile Include="DataTypes\TileMapInfo.Generated.cs" />
+    <Compile Include="FileAliases.Generated.cs" />
+    <Compile Include="Game1.cs" />
+    <Compile Include="Game1.Generated.cs">
+      <DependentUpon>Game1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalContent.Generated.cs" />
+    <Compile Include="GlueCommunication\GameConnectionManager.Generated.cs" />
+    <Compile Include="GlueControl\CommandReceiver.Generated.cs" />
+    <Compile Include="GlueControl\Dtos.Generated.cs" />
+    <Compile Include="GlueControl\Editing\CameraLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\CopyPasteManager.Generated.cs" />
+    <Compile Include="GlueControl\Editing\EditingManager.Generated.cs" />
+    <Compile Include="GlueControl\Editing\EditorVisuals.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Guides.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\GenerateCodeCommands.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\GlueCommands.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\GlueCommandsStateBase.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\GlueState.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\GluxCommands.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\ObjectFinder.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Managers\RefreshCommands.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\MeasurementMarker.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\PolygonPointHandles.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\SelectionMarker.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Markers\TileShapeCollectionMarker.Generated.cs" />
+    <Compile Include="GlueControl\Editing\MoveObjectToContainerLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\SelectionLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\VariableAssignmentLogic.Generated.cs" />
+    <Compile Include="GlueControl\Editing\Visuals\Arrow.Generated.cs" />
+    <Compile Include="GlueControl\Forms\ObjectCreationWindow.Generated.cs" />
+    <Compile Include="GlueControl\GlueCallsClassGenerationManager.Generated.cs" />
+    <Compile Include="GlueControl\GlueControlManager.Generated.cs" />
+    <Compile Include="GlueControl\InstanceLogic.Generated.cs" />
+    <Compile Include="GlueControl\Models\CustomVariable.Generated.cs" />
+    <Compile Include="GlueControl\Models\GlueElement.Generated.cs" />
+    <Compile Include="GlueControl\Models\GlueElementFileReference.Generated.cs" />
+    <Compile Include="GlueControl\Models\GlueProjectSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\GlueProjectSaveExtensions.Generated.cs" />
+    <Compile Include="GlueControl\Models\IElementExtensionMethods.Generated.cs" />
+    <Compile Include="GlueControl\Models\INamedObjectContainer.Generated.cs" />
+    <Compile Include="GlueControl\Models\NamedObjectSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\NamedObjectSaveExtensionMethods.Generated.cs" />
+    <Compile Include="GlueControl\Models\ReferencedFileSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\StateSave.Generated.cs" />
+    <Compile Include="GlueControl\Models\StateSaveCategory.Generated.cs" />
+    <Compile Include="GlueControl\Runtime\DynamicEntity.Generated.cs" />
+    <Compile Include="GlueControl\Screens\EntityViewingScreen.Generated.cs" />
+    <Compile Include="MonoGameAdMob.cs" />
+    <Compile Include="Performance\IEntityFactory.Generated.cs" />
+    <Compile Include="Performance\PoolList.Generated.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Setup\CameraSetup.Generated.cs" />
+    <Compile Include="TileCollisions\CollidableListVsTileShapeCollectionRelationship.Generated.cs" />
+    <Compile Include="TileCollisions\CollidableVsTileShapeCollectionRelationship.Generated.cs" />
+    <Compile Include="TileCollisions\CollisionManagerTileShapeCollectionExtensions.Generated.cs" />
+    <Compile Include="TileCollisions\TileShapeCollection.Generated.cs" />
+    <Compile Include="TileEntities\TileEntityInstantiator.Generated.cs" />
+    <Compile Include="TileGraphics\AbstractMapLayer.Generated.cs" />
+    <Compile Include="TileGraphics\AnimationChainContainer.Generated.cs" />
+    <Compile Include="TileGraphics\ExternalTileset.Generated.cs" />
+    <Compile Include="TileGraphics\LayeredTileMap.Generated.cs" />
+    <Compile Include="TileGraphics\LayeredTileMapAnimation.Generated.cs" />
+    <Compile Include="TileGraphics\MapDrawableBatch.Generated.cs" />
+    <Compile Include="TileGraphics\MapLayer.Generated.cs" />
+    <Compile Include="TileGraphics\MapTileset.Generated.cs" />
+    <Compile Include="TileGraphics\MapTilesetTile.Generated.cs" />
+    <Compile Include="TileGraphics\NamedValue.Generated.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.Generated.cs" />
+    <Compile Include="TileGraphics\ReducedTileMapInfo.TiledMapSave.Generated.cs" />
+    <Compile Include="TileGraphics\TileAnimation.Generated.cs" />
+    <Compile Include="TileGraphics\TileAnimationFrame.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Conversion.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapSave.Serialization.Generated.cs" />
+    <Compile Include="TileGraphics\TiledMapToShapeCollectionConverter.Generated.cs" />
+    <Compile Include="TileGraphics\TileNodeNetworkCreator.Generated.cs" />
+    <Compile Include="TileGraphics\Tileset.Generated.cs" />
+    <Compile Include="TileGraphics\TilesetExtensionMethods.Generated.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\AboutAssets.txt" />
+    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Libraries\Android\Debug\FlatRedBallAndroid.dll" />
+    <None Include="Libraries\Android\Debug\MonoGame.Framework.dll" />
+    <None Include="Libraries\Android\Debug\OpenTK.dll" />
+    <None Include="Resources\AboutResources.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\content\defaultfonttexture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\content\redball.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\Icon.png" />
+    <AndroidResource Include="Resources\Drawable\Splash.png" />
+    <AndroidResource Include="Resources\Values\Strings.xml" />
+    <AndroidResource Include="Resources\Values\Styles.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.GooglePlayServices.Ads.Lite">
+      <Version>120.3.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+</Project>

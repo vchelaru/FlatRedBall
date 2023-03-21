@@ -28,32 +28,36 @@ namespace FlatRedBall.Glue.SaveClasses
 
         static string[] mXnaReservedWords = new string[]
         {
+            "Color",
+            "SpriteBatch",
             "Texture2D",
             "Vector2",
             "Vector3",
-            "Color"
         };
 
         static string[] mReservedClassNames = new string[]
         {
-            "Sprite",
-            "Test",
-            "Cursor",
-            "PositionedObject",
-            "SpriteFrame",
-            "SpriteRig",
-            "Scene",
             "AnimationChain",
-            "Emitter",
-            "Camera",
-            "SpriteManager",
-            "ShapeManager",
-            "TextManager",
-            "Polygon",
-            "Circle",
             "AxisAlignedRectangle",
+            "Camera",
+            "Circle",
+            "Cursor",
+            "Emitter",
+            nameof(Entities.IDamageable),
+            nameof(Entities.IDamageArea),
+            "Object",
+            "PositionedObject",
+            "Polygon",
+            "Scene",
+            "ShapeManager",
+            "Sprite",
+            "SpriteFrame",
+            "SpriteManager",
+            "SpriteRig",
+            "Test",
             "Text",
-            "Object"
+            "TextManager",
+
         };
 
 

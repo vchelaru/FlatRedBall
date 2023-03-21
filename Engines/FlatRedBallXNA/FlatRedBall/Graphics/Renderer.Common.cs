@@ -679,7 +679,9 @@ namespace FlatRedBall.Graphics
             #region find out the initial Z values of the 3 categories of objects to know which to render first
 
 
-            if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
+            if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || 
+                // Custom comparers define how objects sort within the category, but outside we just have to rely on Z
+                sortType == SortType.CustomComparer)
             {
                 lock (spriteList)
                 {

@@ -134,7 +134,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             var tiw = new CustomizableTextInputWindow();
 
-            tiw.Label.Content = "Enter a name for the display setting";
+            tiw.Label.Text = "Enter a name for the display setting";
 
             var result = tiw.ShowDialog();
 

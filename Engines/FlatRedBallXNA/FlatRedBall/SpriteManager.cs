@@ -2,7 +2,6 @@
 #define THREAD_POOL_IS_SLOW
 #endif
 
-
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -287,6 +286,17 @@ namespace FlatRedBall
 
         static MethodInfo mRemoveSpriteMethodInfo = typeof(SpriteManager).GetMethod("RemoveSprite", new Type[] { typeof(Sprite) });
 
+        /// <summary>
+        /// List of particles which should be removed on a timer. This is internal, so it can only be used by emitters.
+        /// </summary>
+        /// <remarks>
+        /// As of March 19, 2023 Emitters
+        /// are not used very often. Therefore,
+        /// this list is almost always empty. It
+        /// will remain here for old games but it's
+        /// unlikely new games will use this unless the
+        /// FRB Emitter object gets revived.
+        /// </remarks>
         internal static List<TimedRemovalRecord> mTimedRemovalList = new List<TimedRemovalRecord>(100);
 
         #endregion
@@ -437,11 +447,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Read-only collection of SpriteFrames managed by the SpriteManager.
         /// </summary>
-        #endregion
         public static ReadOnlyCollection<SpriteFrame> SpriteFrames
         {
             get { return mSpriteFramesReadOnly; }
@@ -557,7 +565,6 @@ namespace FlatRedBall
         #endregion
 
         #region Methods
-
  
         #region Constructor / Initialize
 
@@ -660,8 +667,6 @@ namespace FlatRedBall
 
 
         #endregion
-
-        #region Public Methods
 
         #region Add Methods
 
@@ -1357,28 +1362,6 @@ namespace FlatRedBall
                 return newSprite;
             }
         }
-
-        public static Sprite AddParticleSprite(Texture2D texture)
-        {
-            Sprite newParticleSprite = CreateParticleSprite(texture);
-            AddSprite(newParticleSprite);
-            return newParticleSprite;
-        }
-
-        /// <summary>
-        /// Returns a particle Sprite which is not managed internally by the engine. This is the most
-        /// efficient type of Sprite in FlatRedBall because it is pooled and the engine does not internally
-        /// update the sprite. 
-        /// </summary>
-        /// <param name="texture">The texture to assign to the sprite.</param>
-        /// <returns>The sprite, which may be returned from a pool of sprites.</returns>
-        public static Sprite AddManualParticleSprite(Texture2D texture)
-        {
-            Sprite newParticleSprite = CreateParticleSprite(texture);
-            AddManualSprite(newParticleSprite);
-            return newParticleSprite;
-        }
-
         public static Sprite AddManagedInvisibleSprite()
         {
 #if DEBUG
@@ -1424,6 +1407,54 @@ namespace FlatRedBall
                     new object[] { spriteToAdd }, timeToAdd);
 
             Instructions.InstructionManager.Instructions.Add(staticMethodInstruction);
+        }
+
+        #endregion
+
+        #region Add Particle Sprite
+
+        /// <summary>
+        /// Creates a new particle sprite and adds it to the SpriteManager for management. The sprite will have
+        /// its AnimationChains assigned to the argument animations property. This sprite is given a TextureScale of 1.
+        /// </summary>
+        /// <param name="animations">The animations to use by the new particle Sprite.</param>
+        /// <param name="animationName">The name of the animation to show. This name must be contained in the argument animations.</param>
+        /// <returns>The newly-created Sprite.</returns>
+        public static Sprite AddParticleSprite(AnimationChainList animations, string animationName = null)
+        {
+            var newParticleSprite = CreateParticleSprite(null);
+
+            newParticleSprite.AnimationChains = animations;
+            newParticleSprite.TextureScale = 1;
+            if(!string.IsNullOrEmpty(animationName))
+            {
+                newParticleSprite.CurrentChainName = animationName;
+                newParticleSprite.TimeIntoAnimation = 0;
+                newParticleSprite.Animate = true;
+            }
+            AddSprite(newParticleSprite);
+            return newParticleSprite;
+        }
+
+        public static Sprite AddParticleSprite(Texture2D texture)
+        {
+            Sprite newParticleSprite = CreateParticleSprite(texture);
+            AddSprite(newParticleSprite);
+            return newParticleSprite;
+        }
+
+        /// <summary>
+        /// Returns a particle Sprite which is not managed internally by the engine. This is the most
+        /// efficient type of Sprite in FlatRedBall because it is pooled and the engine does not internally
+        /// update the sprite. 
+        /// </summary>
+        /// <param name="texture">The texture to assign to the sprite.</param>
+        /// <returns>The sprite, which may be returned from a pool of sprites.</returns>
+        public static Sprite AddManualParticleSprite(Texture2D texture)
+        {
+            Sprite newParticleSprite = CreateParticleSprite(texture);
+            AddManualSprite(newParticleSprite);
+            return newParticleSprite;
         }
 
         #endregion
@@ -1659,6 +1690,7 @@ namespace FlatRedBall
 
         #endregion
 
+        #region AddPositionedObject
         public static void AddPositionedObject(PositionedObject positionedObjectToManage)
         {
 #if DEBUG
@@ -1678,6 +1710,9 @@ namespace FlatRedBall
             mManagedPositionedObjects.Add(positionedObjectToManage);
             //mManagedPositionedObjects.Add(positionedObjectToManage);
         }
+        #endregion
+
+        #region Add DrawableBatch
 
         /// <summary>
         /// Adds the argument IDrawableBatch to the engine to be rendered in order of its Z value.
@@ -1701,9 +1736,7 @@ namespace FlatRedBall
 #endif
             mDrawableBatches.Add(drawableBatch);
         }
-
         
-
         public static void AddZBufferedDrawableBatch(IDrawableBatch drawableBatch)
         {
 #if DEBUG
@@ -1723,6 +1756,10 @@ namespace FlatRedBall
         }
 
         #endregion
+
+        #endregion
+
+        #region Public Methods
 
         public static bool AreAnySpritesReferencingDisposedAssets()
         {

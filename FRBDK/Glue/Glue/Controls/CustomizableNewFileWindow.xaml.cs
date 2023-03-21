@@ -146,7 +146,7 @@ namespace FlatRedBall.Glue.Controls
                     fileType = fileType.Substring(0, fileType.IndexOf('('));
                 }
 
-                fileType = fileType?.Replace(" ", "");
+                fileType = fileType?.Replace(" ", "")?.Replace("/", "");
                 return fileType;
             }
         }

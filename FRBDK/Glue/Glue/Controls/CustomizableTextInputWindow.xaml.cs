@@ -25,8 +25,8 @@ namespace FlatRedBall.Glue.Controls
 
         public string Message
         {
-            get => (string)this.Label.Content;
-            set => this.Label.Content = value;
+            get => this.Label.Text;
+            set => this.Label.Text = value;
         }
 
         public string Result

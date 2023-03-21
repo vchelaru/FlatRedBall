@@ -389,7 +389,7 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     if (IsAssemblyAlreadyReferenced(assemblyName, out var assembly))
                     {
-                        string message = $"Warning: {pluginDirectory} - Skipping over assembly {assemblyName} because it is already loaded by a different plugin";
+                        string message = $"Info: {pluginDirectory} - Skipping over assembly {assemblyName} because it is already loaded by a different plugin. If you are working on this plugin, you may not need to have this .dll copied. Otherwise, you can ignore this message.";
 
                         CompileOutput.Add(message);
                     }

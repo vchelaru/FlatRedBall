@@ -505,15 +505,6 @@ namespace FlatRedBall.Graphics.Particle
 
                         break;
                     case (int)RemovalEventType.Timed:
-
-#if FRB_MDX
-                        tempParticle.Instructions.Add(
-                            new FlatRedBall.Instructions.StaticMethodInstruction(
-                                sSpriteManagerRemoveSprite,
-                                new object[] { tempParticle },
-                                TimeManager.CurrentTime + (mSecondsLasting * mSecondsModifier)));
-#else                
-   
                         // August 28, 2012
                         // The following code
                         // was added during Sentient
@@ -535,11 +526,6 @@ namespace FlatRedBall.Graphics.Particle
                         //}                       
                         SpriteManager.mTimedRemovalList.InsertSorted(tempParticle,
                             TimeManager.CurrentTime + (mSecondsLasting * mSecondsModifier));
-#endif
-
-
-
-
                         //                        SpriteManager.RemoveSpriteInstruction(tempParticle, TimeManager.CurrentTimeAfterXSeconds(SecondsLasting));
                         break;
                 }

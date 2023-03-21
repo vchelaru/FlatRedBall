@@ -501,7 +501,9 @@ namespace OfficialPlugins.CollisionPlugin
             var collisionFunctionName = $"{firstCollidable}v{secondCollidable}PlatformFunction";
             block.Line($"temp.CollisionFunction = {collisionFunctionName};");
             // use firstType and secondType because the collision function is not called on the lists but on the individuals
-            block.Line($"static bool {collisionFunctionName}({firstType} first, {secondType} second)");
+            // can't be static bool because this breaks old FRB projects (.Net 4.7)
+            //block.Line($"static bool {collisionFunctionName}({firstType} first, {secondType} second)");
+            block.Line($"bool {collisionFunctionName}({firstType} first, {secondType} second)");
             block = block.Block();
 
             var isCloud = (collisionType == CollisionType.PlatformerCloudCollision).ToString().ToLowerInvariant();

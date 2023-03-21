@@ -161,6 +161,16 @@ namespace FlatRedBall.Audio
             }
         }
 
+        public static int ConcurrentSoundEffects => mSoundEffectPlayInfos.Count;
+
+        public static int? MaxConcurrentSoundEffects
+        {
+            get; set;
+        } = 32; // This max was introduced March 1, 2023
+        // This is technically a breaking change, but 16 is quite
+        // generous, and provides safety on mobile platforms. This
+        // can be increased if users need more concurrent sounds.
+
 #if DEBUG
         /// <summary>
         /// Reports the total number of sound effects that have been played by the AudioManager since the start of the program's execution.
@@ -275,6 +285,13 @@ namespace FlatRedBall.Audio
             {
                 shouldPlay = false;
             }
+
+#if !IOS
+            if(shouldPlay && toPlay.IsDisposed)
+            {
+                shouldPlay = false;
+            }
+#endif
 
             if (shouldPlay && AreSongsEnabled)
             {
@@ -400,9 +417,9 @@ namespace FlatRedBall.Audio
             }
         }
 
-        #endregion
+#endregion
 
-        #region Public Methods
+#region Public Methods
 
 
 
@@ -454,6 +471,11 @@ namespace FlatRedBall.Audio
             {
                 bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
                     mSoundsPlayedThisFrame.Contains(soundEffect.Name) == false;
+
+                if(shouldPlay && MaxConcurrentSoundEffects != null)
+                {
+                    shouldPlay = ConcurrentSoundEffects < MaxConcurrentSoundEffects;
+                }
 
                 if (shouldPlay)
                 {
@@ -531,7 +553,7 @@ namespace FlatRedBall.Audio
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
 #endregion
 
-        #region Manager methods
+#region Manager methods
 
 
         internal static void UpdateDependencies()

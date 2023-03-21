@@ -189,10 +189,20 @@ namespace GlueCommunication
                                 long size = sendBytes.LongLength;
 
                                 //Send size
-                                _server.Send(BitConverter.GetBytes(size));
+                                var bytes = BitConverter.GetBytes(size);
+                                try
+                                {
+                                    _server.Send(bytes);
+                                }
+                                catch(ObjectDisposedException) { }
 
-                                //Send payload
-                                _server.Send(sendBytes);
+                                try
+                                {
+                                    //Send payload
+                                    _server.Send(sendBytes);
+                                }
+                                catch (ObjectDisposedException) { }
+
                             }
                             catch
                             {

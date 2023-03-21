@@ -16,6 +16,7 @@ namespace FlatRedBall.Glue.Managers
 {
     public class HotkeyManager : Singleton<HotkeyManager>
     {
+        #region old TryHandleKeys taking the Keys parameter - not used anymore
         // Sept 4, 2022 - I don't think this is used anymore:
         //public async Task<bool> TryHandleKeys(Keys keyData)
         //{
@@ -64,7 +65,7 @@ namespace FlatRedBall.Glue.Managers
         //            return false;
         //    }
         //}
-
+        #endregion
 
         public async Task<bool> TryHandleKeys(System.Windows.Input.KeyEventArgs e, bool isTextBoxFocused)
         {
@@ -80,10 +81,10 @@ namespace FlatRedBall.Glue.Managers
                     if(ctrlDown)
                     {
                         PluginManager.ReactToCtrlF();
-
                         return true;
                     }
                     break;
+
                 case System.Windows.Input.Key.C:
                     if (ctrlDown && !isTextBoxFocused)
                     {
@@ -163,6 +164,13 @@ namespace FlatRedBall.Glue.Managers
                 //case Key.Delete:
                 //    HandleDeletePressed();
                     //return true;
+            }
+
+            // fi we got here, it's not handled, so let's see if it was some CTRL+something hotkey. If so, we can let the plugin handle it
+            if(ctrlDown)
+            {
+                PluginManager.ReactToCtrlKey(key);
+                return true;
             }
 
             return false;

@@ -206,7 +206,10 @@ namespace OfficialPlugins.VariableDisplay
             AddOrShowVariableGrid();
             // can't add variables on the instance:
             variableViewModel.CanAddVariable = false;
-            VariableGrid.DataUiGrid.Instance = namedObject;
+
+            // Setting the instance resets all categories. Categories get replaced
+            // in the UpdateShownVariables method, so do we even need the instance set here?
+            //VariableGrid.DataUiGrid.Instance = namedObject;
             VariableGrid.Visibility = System.Windows.Visibility.Visible;
 
             NamedObjectVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, namedObject,

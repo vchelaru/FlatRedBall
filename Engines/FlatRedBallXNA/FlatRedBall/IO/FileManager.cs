@@ -1653,6 +1653,12 @@ namespace FlatRedBall.IO
 
         public static string RemoveDotDotSlash(string fileNameToFix)
         {
+#if DEBUG
+            if(fileNameToFix == null)
+            {
+                throw new ArgumentNullException(nameof(fileNameToFix));
+            }
+#endif
             if (fileNameToFix.Contains(".."))
             {
                 // First let's get rid of any ..'s that are in the middle

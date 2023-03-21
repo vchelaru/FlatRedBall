@@ -179,7 +179,30 @@ namespace CompilerPlugin.Managers
             }
             ////////////End Early Out///////////////////
 
+            var hasExited = false;
+
+            try
+            {
+                hasExited = runningGameProcess?.HasExited == true;
+            }
+            catch(Win32Exception)
+            {
+                // According to this:
+                // https://stackoverflow.com/questions/52605704/access-is-denied-when-trying-to-close-an-exe-through-c-sharp-in-winforms#:~:text=After%20calling%20the%20Kill%20method%2C%20call%20the%20WaitForExit,terminating%2C%20a%20Win32Exception%20is%20thrown%20for%20Access%20Denied.
+                // If the process is exiting, then an access denied will be thrown. Therefore, treat this as if it
+                // is exiting
+                hasExited = true;
+            }
+
+            if (hasExited)
+            {
+                runningGameProcess = null;
+                IsRunning = false;
+            }
+
             var process = runningGameProcess;
+
+
 
             if (process == null)
             {
@@ -201,6 +224,9 @@ namespace CompilerPlugin.Managers
                         IsRunning = runningGameProcess != null;
                         DidRunnerStartProcess = GetDidRunnerStartProcess();
 
+                        _compilerViewModel.HasWindowPointer = foundProcess.MainWindowHandle != IntPtr.Zero;
+
+
                     }
                     catch (InvalidOperationException)
                     {
@@ -211,12 +237,21 @@ namespace CompilerPlugin.Managers
                         // There's an exception happening, possibly because the game just stopped.
                     }
                 }
+                else
+                {
+                    _compilerViewModel.HasWindowPointer = false;
+                }
             }
             else if (IsRunning == false)
             {
                 // we ahve a process, so let's mark the view model as running:
                 IsRunning = runningGameProcess != null;
                 DidRunnerStartProcess = GetDidRunnerStartProcess();
+            }
+            else if(_compilerViewModel.HasWindowPointer == false)
+            {
+                var pointer = process?.MainWindowHandle;
+                _compilerViewModel.HasWindowPointer = pointer != null && pointer != IntPtr.Zero;
             }
         }
 

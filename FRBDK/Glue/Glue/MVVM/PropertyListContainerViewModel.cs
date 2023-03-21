@@ -228,35 +228,44 @@ namespace FlatRedBall.Glue.MVVM
                 OnSetAndPersist(propertyValue, modelName);
 
 
-                if (element != null)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
-                    }, $"Generating code for {element}", TaskExecutionPreference.AddOrMoveToEnd);
-                }
-                else if (isGlobalContent)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
-                    }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
-                }
-
-                // Do this in a task after the codegen so that the compiler can pick up on it and restart
-                if (GlueObject is NamedObjectSave namedObject)
-                {
-                    TaskManager.Self.Add(() =>
-                    {
-                        TaskManager.Self.OnUiThread(() =>
-                            EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
-                                propertyName, oldValue, namedObjectSave:namedObject));
-                    },
-                    "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
-                }
 
                 if(!IsUpdatingFromGlueObject)
                 {
+                    // February 20, 2023
+                    // Generating code and
+                    // reacting to Named Object
+                    // changed previously was not
+                    // surrounded by IsUpdatingFromGlueObject.
+                    // But if we are updating from glue object, 
+                    // why would we ever generate code or notify
+                    // a change has been made? 
+                    if (element != null)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+                        }, $"Generating code for {element}", TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+                    else if (isGlobalContent)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
+                        }, "Generating Global Content Code", TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+
+                    // Do this in a task after the codegen so that the compiler can pick up on it and restart
+                    if (GlueObject is NamedObjectSave namedObject)
+                    {
+                        TaskManager.Self.Add(() =>
+                        {
+                            TaskManager.Self.OnUiThread(() =>
+                                EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                                    propertyName, oldValue, namedObjectSave:namedObject));
+                        },
+                        "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
+                    }
+
                     GlueCommands.Self.GluxCommands.SaveGlux();
                 }
                 return true;

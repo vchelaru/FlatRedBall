@@ -37,20 +37,34 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
         private void HandleGluxLoad()
         {
-            var hasOdfAssociation = GetIfHasOdfAssociation();
+            var hasOdsAssociation = GetIfHasOdsAssociation();
 
             var hasLibreOfficeInstalled = GetIfHasLibreOfficeInstalled();
 
-            if(!hasOdfAssociation)
+            if(!hasOdsAssociation)
             {
                 AddOdsAssociation();
             }
+
+            if(!AvailableAssetTypes.Self.AllAssetTypes.Any(item => item.Extension == "ods"))
+            {
+                AddOdsAssetTypeInfo();
+            }
         }
 
-        private bool GetIfHasOdfAssociation()
+        private void AddOdsAssetTypeInfo()
         {
-            var hasOdf = GlueState.Self.GlueSettingsSave?.BuildToolAssociations.Any(item => item.SourceFileType == "odf") == true;
-            return hasOdf;
+            AssetTypeInfo ati = new AssetTypeInfo();
+            ati.Extension = "ods";
+            ati.FriendlyName = $"Open Office/Libre Office Spreadsheet (ods)";
+
+            AvailableAssetTypes.Self.AddAssetType(ati);
+        }
+
+        private bool GetIfHasOdsAssociation()
+        {
+            var hasOds = GlueState.Self.GlueSettingsSave?.BuildToolAssociations.Any(item => item.SourceFileType == "ods") == true;
+            return hasOds;
         }
 
         private object GetIfHasLibreOfficeInstalled()
@@ -71,7 +85,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             var assocation = new BuildToolAssociation();
             assocation.BuildTool = OpenOfficeExecutablePath.FullPath;
             assocation.IsBuildToolAbsolute = true;
-            assocation.SourceFileType = "odf";
+            assocation.SourceFileType = "ods";
             assocation.DestinationFileType = "csv";
             assocation.IncludeDestination = false;
             assocation.SourceFileArgumentPrefix = "--headless --convert-to csv";
