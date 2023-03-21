@@ -1396,14 +1396,12 @@ namespace FlatRedBall
 
         #endregion
 
-        #region Public Methods
+        #region Initialize
 
         public override void Initialize()
         {
             Initialize(true);
         }
-
-
 
         public override void Initialize(bool initializeListsBelongingTo)
         {
@@ -1446,239 +1444,16 @@ namespace FlatRedBall
             //           constantPixelSize = -1;
         }
 
-        #region Animation
-
-        #region XML Docs
-        /// <summary>
-        /// Performs the every-frame logic for updating the current AnimationFrame index.  If the
-        /// Sprite is part of the SpriteManager then this is automatically called.
-        /// </summary>
-        /// <param name="currentTime">The number of seconds that have passed since the game has started running.</param>
-        #endregion
-        public void AnimateSelf(double currentTime)
-        {
-            mJustChangedFrame = false;
-            mJustCycled = false;
-            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mCurrentChainIndex >= mAnimationChains.Count || mAnimationChains[mCurrentChainIndex].Count == 0) return;
-
-            int frameBefore = mCurrentFrameIndex;
-
-            // June 10, 2011
-            // A negative animation speed should cause the animation to play in reverse
-            //Removed the System.Math.Abs on the mAnimationSpeed variable to restore the correct behaviour.
-            //double modifiedTimePassed = TimeManager.SecondDifference * System.Math.Abs(mAnimationSpeed);
-            double modifiedTimePassed = TimeManager.SecondDifference * mAnimationSpeed;
-
-            mTimeIntoAnimation += modifiedTimePassed;
-
-            AnimationChain animationChain = mAnimationChains[mCurrentChainIndex];
-
-            mTimeIntoAnimation = MathFunctions.Loop(mTimeIntoAnimation, animationChain.TotalLength, out mJustCycled);
-
-            UpdateFrameBasedOffOfTimeIntoAnimation();
-
-            if (mCurrentFrameIndex != frameBefore)
-            {
-                UpdateToCurrentAnimationFrame();
-                mJustChangedFrame = true;
-            }
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// Clears all references to AnimationChains and sets the Animate property to false.
-        /// </summary>
-        #endregion
-        public void ClearAnimationChains()
-        {
-            mAnimate = false;
-            mCurrentChainIndex = -1;
-
-            mAnimationChains.Clear();
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// Removes the AnimationChain from the Sprite's internal AnimationChain List.
-        /// </summary>
-        /// <remarks>
-        /// If the chainToRemove is also the CurrentChain, the animate field 
-        /// is set to false.
-        /// </remarks>
-        /// <param name="chainToRemove">The AnimationChain to remove.</param>
-        #endregion
-        public void RemoveAnimationChain(AnimationChain chainToRemove)
-        {
-            int index = mAnimationChains.IndexOf(chainToRemove);
-
-            if (mAnimationChains.Contains(chainToRemove))
-            {
-                mAnimationChains.Remove(chainToRemove);
-            }
-            if (index == mCurrentChainIndex)
-            {
-                mCurrentChainIndex = -1;
-                mAnimate = false;
-            }
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// Sets the argument chainToSet as the animationChain. If the argument chainToSet is not
-        /// part of the Sprite's internal list of AnimationChains, it is added.
-        /// </summary>
-        /// <remarks>
-        /// This differs from FlatRedBall MDX - this method on FlatRedBall MDX does not add the argument
-        /// AnimationChain to the Sprite's internal list.
-        /// <para>
-        /// This does not set any animation-related properties, but it does set the current
-        /// texture to the current frame's texture.  Therefore, it is still necessary to set Animate to true.
-        /// </para>
-        /// </remarks>
-        /// <param name="chainToSet">The AnimationChain to set as the current AnimationChain.  This is
-        /// added to the internal AnimationChains property if it is not already there.</param>
-        #endregion
-        public void SetAnimationChain(AnimationChain chainToSet)
-        {
-            if (chainToSet != null)
-            {
-                int index = mAnimationChains.IndexOf(chainToSet);
-                if (index != -1)
-                    mCurrentChainIndex = index;
-                else
-                {
-                    mAnimationChains.Add(chainToSet);
-                    mCurrentChainIndex = mAnimationChains.Count - 1;
-                }
-
-                mTimeIntoAnimation = 0;
-                mCurrentFrameIndex = 0;
-                UpdateToCurrentAnimationFrame();
-            }
-        }
-
-
-        public void SetAnimationChain(AnimationChain chainToSet, double timeIntoAnimation)
-        {
-            if (chainToSet != null)
-            {
-                mCurrentFrameIndex = 0;
-                SetAnimationChain(chainToSet);
-
-                mTimeIntoAnimation = timeIntoAnimation;
-
-                UpdateFrameBasedOffOfTimeIntoAnimation();
-            }
-        }
-
-        #region XML Docs
-        /// <summary>
-        /// Sets the current AnimationChain by name and keeps the CurrentFrame the same.
-        /// </summary>
-        /// <remarks>
-        /// This method assumes that the Sprite contains a reference to an AnimationChain with the name matching chainToSet.  Passing a
-        /// name that is not found in the Sprite's AnimationChainArray will not cause any changes.
-        /// 
-        /// <para>This method will keep the CurrentFrame property the same (unless it exceeds the bounds of the new AnimationChain).  In the 
-        /// case that the CurrentFrame is greater than the bounds of the new AnimationChain, the animation will cycle back to the beginning.
-        /// The animate field is not changed to true if it is false.</para>
-        /// <seealso cref="FRB.Sprite.AnimationChains"/>
-        /// </remarks>
-        /// <param name="chainToSet">The name of the AnimationChain to set as current.</param>
-        #endregion
-        [Obsolete("Use the CurrentChainName Property instead of this method")]
-        public void SetAnimationChain(string chainToSet)
-        {
-            CurrentChainName = chainToSet;
-        }
-
-
-        public string GetAnimationInformation()
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("Animate: ").AppendLine(mAnimate.ToString());
-            if (CurrentChain != null)
-                stringBuilder.Append("CurrentChain: ").AppendLine(CurrentChain.Name);
-            else
-                stringBuilder.Append("CurrentChain: <null>");
-
-            stringBuilder.Append("CurrentFrameIndex: ").AppendLine(CurrentFrameIndex.ToString());
-
-            stringBuilder.Append("Time Into Animation: ").AppendLine(mTimeIntoAnimation.ToString());
-
-            return stringBuilder.ToString();
-
-
-        }
-
-
-        void UpdateFrameBasedOffOfTimeIntoAnimation()
-        {
-            if(double.IsPositiveInfinity(mTimeIntoAnimation))
-            {
-                mTimeIntoAnimation = 0;
-            }
-            double timeIntoAnimation = mTimeIntoAnimation;
-
-            // Not sure how this can happen, but we want to make sure the engine doesn't freeze if it does
-
-            if (timeIntoAnimation < 0)
-            {
-                throw new ArgumentException("The timeIntoAnimation argument must be 0 or positive");
-            }
-            else if (CurrentChain != null && CurrentChain.Count > 1)
-            {
-                int frameIndex = 0;
-                while (timeIntoAnimation >= 0)
-                {
-                    double frameTime = CurrentChain[frameIndex].FrameLength;
-
-                    if (timeIntoAnimation < frameTime)
-                    {
-                        mCurrentFrameIndex = frameIndex;
-
-                        break;
-                    }
-                    else
-                    {
-                        timeIntoAnimation -= frameTime;
-
-                        frameIndex = (frameIndex + 1) % CurrentChain.Count;
-                    }
-                }
-            }
-        }
-
-        void UpdateTimeBasedOffOfAnimationFrame()
-        {
-            int animationFrame = mCurrentFrameIndex;
-
-            if (animationFrame < 0)
-            {
-                throw new ArgumentException("The animationFrame argument must be 0 or positive");
-            }
-            else if (CurrentChain != null && CurrentChain.Count > 1)
-            {
-                mTimeIntoAnimation = 0.0f;
-                //update to the correct time for this frame
-                for (int x = 0; x < mCurrentFrameIndex && x < CurrentChain.Count; x++)
-                {
-                    mTimeIntoAnimation += CurrentChain[x].FrameLength;
-                }
-            }
-        }
-
-
-
-
         #endregion
 
+        #region Public Methods
 
-        #region XML Docs
+
+
+
         /// <summary>
         /// Sets the ScaleY so that the ScaleX/ScaleY ratio is the same as the source image used for the Sprite's texture.
         /// </summary>
-        #endregion
         public void SetScaleYRatioToX()
         {
             float widthToUse = mTexture.Width * (RightTextureCoordinate - LeftTextureCoordinate);
@@ -1690,11 +1465,9 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
         /// <summary>
         /// Sets the ScaleY so that the ScaleX/ScaleY ratio is the same as the source image used for the Sprite's texture.
         /// </summary>
-        #endregion
         public virtual void SetScaleXRatioToY()
         {
             float widthToUse = mTexture.Width * (RightTextureCoordinate - LeftTextureCoordinate);
@@ -1716,7 +1489,6 @@ namespace FlatRedBall
             instructions.Add(instruction);
         }
 
-        #region XML Docs
         /// <summary>
         /// Applies all velocities, rates, accelerations for real and relative values.
         /// If the Sprite is part of the SpriteManager (which is common) then this is automatically
@@ -1725,7 +1497,6 @@ namespace FlatRedBall
         /// <param name="secondDifference">The number of seocnds that have passed since last frame.</param>
         /// <param name="secondDifferenceSquaredDividedByTwo">Precalculated (secondDifference * secondDifference)/2.0f for applying acceleration.</param>
         /// <param name="secondsPassedLastFrame">The number of seconds that passed last frame for calculating "real" values.</param>
-        #endregion
         public override void TimedActivity(float secondDifference, double secondDifferenceSquaredDividedByTwo, float secondsPassedLastFrame)
         {
             base.TimedActivity(secondDifference, secondDifferenceSquaredDividedByTwo, secondsPassedLastFrame);
@@ -1934,7 +1705,6 @@ namespace FlatRedBall
 
         #endregion
 
-
         #region Private Methods
 
         private void UpdateScale()
@@ -1977,6 +1747,229 @@ namespace FlatRedBall
             set;
         }
 
+        #endregion
+
+        #region Animation
+
+        #region XML Docs
+        /// <summary>
+        /// Performs the every-frame logic for updating the current AnimationFrame index.  If the
+        /// Sprite is part of the SpriteManager then this is automatically called.
+        /// </summary>
+        /// <param name="currentTime">The number of seconds that have passed since the game has started running.</param>
+        #endregion
+        public void AnimateSelf(double currentTime)
+        {
+            mJustChangedFrame = false;
+            mJustCycled = false;
+            if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mCurrentChainIndex >= mAnimationChains.Count || mAnimationChains[mCurrentChainIndex].Count == 0) return;
+
+            int frameBefore = mCurrentFrameIndex;
+
+            // June 10, 2011
+            // A negative animation speed should cause the animation to play in reverse
+            //Removed the System.Math.Abs on the mAnimationSpeed variable to restore the correct behaviour.
+            //double modifiedTimePassed = TimeManager.SecondDifference * System.Math.Abs(mAnimationSpeed);
+            double modifiedTimePassed = TimeManager.SecondDifference * mAnimationSpeed;
+
+            mTimeIntoAnimation += modifiedTimePassed;
+
+            AnimationChain animationChain = mAnimationChains[mCurrentChainIndex];
+
+            mTimeIntoAnimation = MathFunctions.Loop(mTimeIntoAnimation, animationChain.TotalLength, out mJustCycled);
+
+            UpdateFrameBasedOffOfTimeIntoAnimation();
+
+            if (mCurrentFrameIndex != frameBefore)
+            {
+                UpdateToCurrentAnimationFrame();
+                mJustChangedFrame = true;
+            }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Clears all references to AnimationChains and sets the Animate property to false.
+        /// </summary>
+        #endregion
+        public void ClearAnimationChains()
+        {
+            mAnimate = false;
+            mCurrentChainIndex = -1;
+
+            mAnimationChains.Clear();
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Removes the AnimationChain from the Sprite's internal AnimationChain List.
+        /// </summary>
+        /// <remarks>
+        /// If the chainToRemove is also the CurrentChain, the animate field 
+        /// is set to false.
+        /// </remarks>
+        /// <param name="chainToRemove">The AnimationChain to remove.</param>
+        #endregion
+        public void RemoveAnimationChain(AnimationChain chainToRemove)
+        {
+            int index = mAnimationChains.IndexOf(chainToRemove);
+
+            if (mAnimationChains.Contains(chainToRemove))
+            {
+                mAnimationChains.Remove(chainToRemove);
+            }
+            if (index == mCurrentChainIndex)
+            {
+                mCurrentChainIndex = -1;
+                mAnimate = false;
+            }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Sets the argument chainToSet as the animationChain. If the argument chainToSet is not
+        /// part of the Sprite's internal list of AnimationChains, it is added.
+        /// </summary>
+        /// <remarks>
+        /// This differs from FlatRedBall MDX - this method on FlatRedBall MDX does not add the argument
+        /// AnimationChain to the Sprite's internal list.
+        /// <para>
+        /// This does not set any animation-related properties, but it does set the current
+        /// texture to the current frame's texture.  Therefore, it is still necessary to set Animate to true.
+        /// </para>
+        /// </remarks>
+        /// <param name="chainToSet">The AnimationChain to set as the current AnimationChain.  This is
+        /// added to the internal AnimationChains property if it is not already there.</param>
+        #endregion
+        public void SetAnimationChain(AnimationChain chainToSet)
+        {
+            if (chainToSet != null)
+            {
+                int index = mAnimationChains.IndexOf(chainToSet);
+                if (index != -1)
+                    mCurrentChainIndex = index;
+                else
+                {
+                    mAnimationChains.Add(chainToSet);
+                    mCurrentChainIndex = mAnimationChains.Count - 1;
+                }
+
+                mTimeIntoAnimation = 0;
+                mCurrentFrameIndex = 0;
+                UpdateToCurrentAnimationFrame();
+            }
+        }
+
+
+        public void SetAnimationChain(AnimationChain chainToSet, double timeIntoAnimation)
+        {
+            if (chainToSet != null)
+            {
+                mCurrentFrameIndex = 0;
+                SetAnimationChain(chainToSet);
+
+                mTimeIntoAnimation = timeIntoAnimation;
+
+                UpdateFrameBasedOffOfTimeIntoAnimation();
+            }
+        }
+
+        #region XML Docs
+        /// <summary>
+        /// Sets the current AnimationChain by name and keeps the CurrentFrame the same.
+        /// </summary>
+        /// <remarks>
+        /// This method assumes that the Sprite contains a reference to an AnimationChain with the name matching chainToSet.  Passing a
+        /// name that is not found in the Sprite's AnimationChainArray will not cause any changes.
+        /// 
+        /// <para>This method will keep the CurrentFrame property the same (unless it exceeds the bounds of the new AnimationChain).  In the 
+        /// case that the CurrentFrame is greater than the bounds of the new AnimationChain, the animation will cycle back to the beginning.
+        /// The animate field is not changed to true if it is false.</para>
+        /// <seealso cref="FRB.Sprite.AnimationChains"/>
+        /// </remarks>
+        /// <param name="chainToSet">The name of the AnimationChain to set as current.</param>
+        #endregion
+        [Obsolete("Use the CurrentChainName Property instead of this method")]
+        public void SetAnimationChain(string chainToSet)
+        {
+            CurrentChainName = chainToSet;
+        }
+
+
+        public string GetAnimationInformation()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("Animate: ").AppendLine(mAnimate.ToString());
+            if (CurrentChain != null)
+                stringBuilder.Append("CurrentChain: ").AppendLine(CurrentChain.Name);
+            else
+                stringBuilder.Append("CurrentChain: <null>");
+
+            stringBuilder.Append("CurrentFrameIndex: ").AppendLine(CurrentFrameIndex.ToString());
+
+            stringBuilder.Append("Time Into Animation: ").AppendLine(mTimeIntoAnimation.ToString());
+
+            return stringBuilder.ToString();
+
+
+        }
+
+
+        void UpdateFrameBasedOffOfTimeIntoAnimation()
+        {
+            if (double.IsPositiveInfinity(mTimeIntoAnimation))
+            {
+                mTimeIntoAnimation = 0;
+            }
+            double timeIntoAnimation = mTimeIntoAnimation;
+
+            // Not sure how this can happen, but we want to make sure the engine doesn't freeze if it does
+
+            if (timeIntoAnimation < 0)
+            {
+                throw new ArgumentException("The timeIntoAnimation argument must be 0 or positive");
+            }
+            else if (CurrentChain != null && CurrentChain.Count > 1)
+            {
+                int frameIndex = 0;
+                while (timeIntoAnimation >= 0)
+                {
+                    double frameTime = CurrentChain[frameIndex].FrameLength;
+
+                    if (timeIntoAnimation < frameTime)
+                    {
+                        mCurrentFrameIndex = frameIndex;
+
+                        break;
+                    }
+                    else
+                    {
+                        timeIntoAnimation -= frameTime;
+
+                        frameIndex = (frameIndex + 1) % CurrentChain.Count;
+                    }
+                }
+            }
+        }
+
+        void UpdateTimeBasedOffOfAnimationFrame()
+        {
+            int animationFrame = mCurrentFrameIndex;
+
+            if (animationFrame < 0)
+            {
+                throw new ArgumentException("The animationFrame argument must be 0 or positive");
+            }
+            else if (CurrentChain != null && CurrentChain.Count > 1)
+            {
+                mTimeIntoAnimation = 0.0f;
+                //update to the correct time for this frame
+                for (int x = 0; x < mCurrentFrameIndex && x < CurrentChain.Count; x++)
+                {
+                    mTimeIntoAnimation += CurrentChain[x].FrameLength;
+                }
+            }
+        }
         #endregion
 
         #region IAnimatable implementation
