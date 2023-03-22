@@ -91,8 +91,8 @@ namespace FlatRedBall.Gui
 
         internal Sides mSidesGrabbed = Sides.None;
 
-        int mScreenX;
-        int mScreenY;
+        double mScreenX;
+        double mScreenY;
 
         float mGrabbedWindowRelativeX;
         float mGrabbedWindowRelativeY;
@@ -528,7 +528,7 @@ namespace FlatRedBall.Gui
         public int ScreenX
         {
 
-            get { return mScreenX; }
+            get { return (int)mScreenX; }
             // set made public for custom modification of cursor
             set { mScreenX = value; }
         }
@@ -542,7 +542,7 @@ namespace FlatRedBall.Gui
         /// If using an input device which sets the position in absolute coordiantes (such as a Mouse), this value will be overwritten every frame.</remarks>
         public int ScreenY
         {
-            get { return mScreenY; }
+            get { return (int)mScreenY; }
             // set made public for custom modification of cursor
             set { mScreenY = value; }
         }
@@ -593,7 +593,7 @@ namespace FlatRedBall.Gui
         {
             get
             {
-                return mScreenX;
+                return (int)mScreenX;
             }
         }
 
@@ -602,7 +602,7 @@ namespace FlatRedBall.Gui
         {
             get
             {
-                return mScreenY;
+                return (int)mScreenY;
             }
         }
 
@@ -990,7 +990,7 @@ namespace FlatRedBall.Gui
             }
 #endif
 
-            return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera);
+            return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera);
         }
 
 
@@ -998,11 +998,11 @@ namespace FlatRedBall.Gui
         {
             if (layer == null)
             {
-                return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera, null);
+                return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera, null);
             }
             else
             {
-                return MathFunctions.GetRay(mScreenX, mScreenY, 1, this.mCamera, layer.LayerCameraSettings);
+                return MathFunctions.GetRay((int)mScreenX, (int)mScreenY, 1, this.mCamera, layer.LayerCameraSettings);
             }
         }
 
@@ -2110,7 +2110,7 @@ namespace FlatRedBall.Gui
 #endif
 
 
-            float ratio = (mScreenX - mLastScreenX) /
+            float ratio = (float)(mScreenX - mLastScreenX) /
 
                 // Victor Chelaru
                 // February 1, 2014
@@ -2184,22 +2184,18 @@ namespace FlatRedBall.Gui
 
         float WorldYChangeAt(float zPosition, bool orthogonal, float orthogonalHeight)
         {
-#if WINDOWS_PHONE || MONODROID || WINDOWS_8 || IOS
+#if MONODROID || IOS
             if (PrimaryPush || InputManager.TouchScreen.NumberOfTouchesChanged)
             {
                 return 0;
             }
 #endif
 
-            float ratio = (mScreenY - mLastScreenY) /
-#if FRB_MDX
-                (float)FlatRedBallServices.ClientHeight;
-#else
+            float ratio = (float)(mScreenY - mLastScreenY) /
                 // See WorldXChangeAt comment for
                 // information about this change:
                 //(float)FlatRedBallServices.GraphicsOptions.ResolutionHeight;
                 (float)this.Camera.DestinationRectangle.Height;
-#endif
 
             if (orthogonal)
             {
@@ -2274,8 +2270,8 @@ namespace FlatRedBall.Gui
 			mLastSecondaryDown = SecondaryDown;
             mLastMiddleDown = MiddleDown;
 
-            mLastScreenX = mScreenX;
-            mLastScreenY = mScreenY;
+            mLastScreenX = (int)mScreenX;
+            mLastScreenY = (int)mScreenY;
 
             #endregion
 
@@ -2340,8 +2336,8 @@ namespace FlatRedBall.Gui
             // causes a huge change
             if (!lastFrameActive)
             {
-                mLastScreenX = mScreenX;
-                mLastScreenY = mScreenY;
+                mLastScreenX = (int)mScreenX;
+                mLastScreenY = (int)mScreenY;
             }
 
             if (PrimaryPush)
@@ -2466,8 +2462,8 @@ namespace FlatRedBall.Gui
                 }
 
                 var thisFrameMultiplier = GamepadPixelsPerSecondMovementSpeed * TimeManager.SecondDifference;
-                mScreenX += (int)(xPosition * thisFrameMultiplier);
-                mScreenY -= (int)(yPosition * thisFrameMultiplier);
+                mScreenX += xPosition * thisFrameMultiplier;
+                mScreenY -= yPosition * thisFrameMultiplier;
 
                 if(mScreenX < 0)
                 {
@@ -2550,8 +2546,8 @@ namespace FlatRedBall.Gui
 
                     if (handled)
                     {
-                        mLastXFromHardware = mScreenX;
-                        mLastYFromHardware = mScreenY;
+                        mLastXFromHardware = (int)mScreenX;
+                        mLastYFromHardware = (int)mScreenY;
                     }
                     else
                     {
@@ -2613,8 +2609,8 @@ namespace FlatRedBall.Gui
                     // is a moue involved we want to use that position
                     if (SupportedInputDevices == Gui.InputDevice.TouchScreen)
                     {
-                        mLastScreenX = mScreenX;
-                        mLastScreenY = mScreenY;
+                        mLastScreenX = (int)mScreenX;
+                        mLastScreenY = (int)mScreenY;
                     }
                 }
 

@@ -38,8 +38,8 @@ namespace FlatRedBall.Gui
                 if (InputManager.TouchScreen.PinchStarted || InputManager.TouchScreen.PinchStopped)
                 {
                     mLastRay = GetRay();
-                    mLastScreenX = mScreenX;
-                    mLastScreenY = mScreenY;
+                    mLastScreenX = (int)mScreenX;
+                    mLastScreenY = (int)mScreenY;
 
                 }
                 handled = true;
