@@ -113,7 +113,8 @@ namespace FlatRedBall
         /// <summary>
         /// The number of seconds (usually a fraction of a second) since
         /// the last frame.  This value can be used for time-based movement.
-        /// This value is changed once per frame, and will remain constant within each frame.
+        /// This value is changed once per frame, and will remain constant within each frame, assuming a consant TimeFactor.
+        /// Changing the TimeFactor adjusts this value.
         /// </summary>
         public static float SecondDifference
         {
@@ -138,7 +139,9 @@ namespace FlatRedBall
 
         /// <summary>
         /// A multiplier for how fast time runs.  This is 1 by default.  Setting
-        /// this value to 2 will make everything run twice as fast.
+        /// this value to 2 will make everything run twice as fast. Increasing this value
+        /// effectively increases the SecondDifference value, so custom code which is time-based
+        /// will behave properly when TimeFactor is adjusted.
         /// </summary>
         public static double TimeFactor
         {
