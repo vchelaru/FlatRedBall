@@ -34,7 +34,7 @@ namespace FlatRedBall.Glue.IO
 
         #endregion
 
-        public static async Task<bool> UpdateFile(string changedFile, FileChangeType changeType = FileChangeType.Modified)
+        public static async Task<bool> UpdateFile(FilePath changedFile, FileChangeType changeType = FileChangeType.Modified)
         {
             bool handled = false;
             ///////////////Early Out////////////////////
@@ -48,8 +48,8 @@ namespace FlatRedBall.Glue.IO
                 
             var projectFileName = ProjectManager.ProjectBase?.FullFileName.FullPath;
 
-            handled = TryHandleProjectFileChanges(changedFile);
-            bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile, projectFileName);
+            handled = TryHandleProjectFileChanges(changedFile.FullPath);
+            bool isGlueProjectOrElementFile = GetIfIsGlueProjectOrElementFile(changedFile.FullPath, projectFileName);
             if (!handled && isGlueProjectOrElementFile)
             {
                 if (!ProjectManager.WantsToCloseProject)
@@ -59,14 +59,22 @@ namespace FlatRedBall.Glue.IO
                 handled = true;
             }
 
-            if (! handled && GlueCommands.Self.FileCommands.IsContent(changedFile))
+            if (! handled)
             {
-                PluginManager.ReactToChangedFile(changedFile, changeType);
+                var isContent = GlueCommands.Self.FileCommands.IsContent(changedFile) ||
+                    // If a folder changes relative to the content directory, then consider that content so
+                    // plugins can respond to the changed directory
+                    changedFile.IsRelativeTo(GlueState.Self.ContentDirectory);
+
+                if(isContent)
+                {
+                    PluginManager.ReactToChangedFile(changedFile, changeType);
+                }
             }
 
             #region If it's a CSV, then re-generate the code for the objects
 
-            string extension = FileManager.GetExtension(changedFile);
+            string extension = changedFile.Extension;
 
             if (extension == "csv" ||
                 extension == "txt")
@@ -98,7 +106,7 @@ namespace FlatRedBall.Glue.IO
 
             #region If it's a file that references other content we may need to update the project
 
-            if (FileHelper.DoesFileReferenceContent(changedFile))
+            if (FileHelper.DoesFileReferenceContent(changedFile.FullPath))
             {
                 ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
 
@@ -151,7 +159,7 @@ namespace FlatRedBall.Glue.IO
                     // project scan, so we'll just see if this file is part of Visual Studio.  If so
                     // then let's add its children
 
-                    if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile))
+                    if (ProjectManager.ContentProject.IsFilePartOfProject(changedFile.FullPath))
                     {
                         FilePath changedFilePath = changedFile;
                         shouldSave |= GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(
@@ -168,7 +176,7 @@ namespace FlatRedBall.Glue.IO
             #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
             if (extension == "cs")
             {
-                TaskManager.Self.OnUiThread(() => ReactToChangedCodeFile(changedFile));
+                TaskManager.Self.OnUiThread(() => ReactToChangedCodeFile(changedFile.FullPath));
 
             }
 
@@ -177,7 +185,7 @@ namespace FlatRedBall.Glue.IO
 
             #region Maybe it's a directory that was added or removed
 
-            if (FileManager.GetExtension(changedFile) == "")
+            if (changedFile.Extension == "")
             {
                 MainGlueWindow.Self.Invoke((MethodInvoker)delegate
                 {
@@ -203,14 +211,14 @@ namespace FlatRedBall.Glue.IO
             if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile) != null)
             {
                 // This is a file that is part of the project, so let's see if any named objects are missing references
-                CheckForBrokenReferencesToObjectsInFile(changedFile);
+                CheckForBrokenReferencesToObjectsInFile(changedFile.FullPath);
             }
 
             #endregion
 
             // This could be an externally built file:
 
-            ProjectManager.UpdateExternallyBuiltFile(changedFile);
+            ProjectManager.UpdateExternallyBuiltFile(changedFile.FullPath);
 
             if (handled)
             {

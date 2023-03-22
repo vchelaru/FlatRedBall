@@ -55,6 +55,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         bool RenameReferencedFileSave(ReferencedFileSave rfs, string newName);
 
+        /// <summary>
+        /// Returns whether the argument FilePath is a content file (such as a PNG)
+        /// </summary>
+        /// <param name="filePath">The argument filepath</param>
+        /// <returns>Whether the filepath is considered content.</returns>
         bool IsContent(FilePath filePath);
         void ViewInExplorer(FilePath filePath);
 

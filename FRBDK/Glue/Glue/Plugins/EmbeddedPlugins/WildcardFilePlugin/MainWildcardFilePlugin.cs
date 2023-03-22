@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -19,11 +20,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             this.ReactToFileChange += HandleFileChanged;
         }
 
-        private async void HandleFileChanged(FilePath filePath, FileChangeType fileChangeType)
+        private async void HandleFileChanged(FilePath changedFile, FileChangeType fileChangeType)
         {
             var project = GlueState.Self.CurrentGlueProject;
 
-            var exists = filePath.Exists();
+            var exists = changedFile.Exists();
 
             if(exists)
             {
@@ -31,28 +32,41 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 {
                     await TaskManager.Self.AddAsync(() =>
                     {
-                        // was it added?
-                        foreach(var wildcardFile in project.GlobalFileWildcards)
+
+                        if(changedFile.IsDirectory)
                         {
-                            // Note - a file may change 2x really fast (one after another)
-                            // If that happens, the alradyExists may be false both times, and
-                            // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
-                            if(IsFileRelativeToWildcard(filePath, wildcardFile))
+                            var contentFolder = GlueState.Self.ContentDirectory;
+                            foreach (var wildcardFile in project.GlobalFileWildcards)
                             {
-                                var newRfsName = filePath.RelativeTo(GlueState.Self.ContentDirectory);
-                                var alreadyExists = project.GlobalFiles.Any(item => item.Name == newRfsName);
-                                if(!alreadyExists)
+                                var absoluteFile = new FilePath(contentFolder + wildcardFile.Name);
+                                var files = WildcardReferencedFileSaveLogic.GetFilesForWildcard(absoluteFile);
+
+                                foreach(var candidate in files)
                                 {
-                                    // clone it, add it here
-                                    var clone = wildcardFile.Clone();
-                                    clone.Name = newRfsName;
-                                    clone.IsCreatedByWildcard = true;
-                                    var fireAndForget = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContentAsync(clone);
+                                    if(candidate.IsRelativeTo(changedFile))
+                                    {
+                                        TryAddFile(candidate, project, wildcardFile);
+
+                                    }
                                 }
-                                break;
                             }
                         }
-                    }, $"MainWildcardFilePlugin HandleFileChanged {filePath} {fileChangeType}");
+                        else
+                        {
+                            // was it added?
+                            foreach(var wildcardFile in project.GlobalFileWildcards)
+                            {
+                                // Note - a file may change 2x really fast (one after another)
+                                // If that happens, the alradyExists may be false both times, and
+                                // the file may get added 2x. We need to instead wrap everything in tasks to prevent this from happening:
+                                if(IsFileRelativeToWildcard(changedFile, wildcardFile))
+                                {
+                                    TryAddFile(changedFile, project, wildcardFile);
+                                    break;
+                                }
+                            }
+                        }
+                    }, $"MainWildcardFilePlugin HandleFileChanged {changedFile} {fileChangeType}");
 
                 }
             }
@@ -64,11 +78,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
                 {
                     var fileForCandidate = GlueCommands.Self.GetAbsoluteFilePath(file);
 
-                    if(fileForCandidate == filePath)
+                    if(fileForCandidate == changedFile || fileForCandidate.IsRelativeTo(changedFile))
                     {
-                        GlueCommands.Self.GluxCommands.RemoveReferencedFile(file, null);
+                        var fireAndForget = GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(file, null);
                     }
                 }
+            }
+        }
+
+        private static void TryAddFile(FilePath newFile, GlueProjectSave project, ReferencedFileSave wildcardFile)
+        {
+            var newRfsName = newFile.RelativeTo(GlueState.Self.ContentDirectory);
+            var alreadyExists = project.GlobalFiles.Any(item => item.Name == newRfsName);
+            if (!alreadyExists)
+            {
+                // clone it, add it here
+                var clone = wildcardFile.Clone();
+                clone.Name = newRfsName;
+                clone.IsCreatedByWildcard = true;
+                var fireAndForget = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContentAsync(clone);
             }
         }
 

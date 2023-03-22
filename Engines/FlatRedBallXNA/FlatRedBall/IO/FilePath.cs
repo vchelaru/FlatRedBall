@@ -118,6 +118,9 @@ namespace FlatRedBall.IO
             }
         }
 
+        // assume that if no extension, it's a directory? 
+        public bool IsDirectory => string.IsNullOrEmpty(Extension);
+
         #endregion
 
         /// <summary>
@@ -260,9 +263,13 @@ namespace FlatRedBall.IO
             }
         }
 
+        public bool IsRelativeTo(FilePath otherFilePath) => FileManager.IsRelativeTo(this.FullPath, otherFilePath.FullPath);
+
+
         public string RelativeTo(FilePath otherFilePath)
         {
             return FileManager.MakeRelative(this.FullPath, otherFilePath.FullPath);
         }
+
     }
 }
