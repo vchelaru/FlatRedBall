@@ -310,6 +310,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
             if (canDelete)
             {
                 var askAreYouSure = true;
@@ -319,7 +320,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     var window = new RemoveObjectWindow();
                     var viewModel = new RemoveObjectViewModel();
                     viewModel.SetFrom(namedObjectToRemove);
-                    var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
                     if (owner == null)
                     { System.Diagnostics.Debugger.Break(); }
                     if (owner != null)
@@ -424,9 +424,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // a "refresh nodes" method is called, which may remove unneeded
                     // nodes, but event raising is suppressed. Therefore, we have to explicitly 
                     // do it here:
-                    if (glueState.CurrentElement != null)
+                    if (owner != null)
                     {
-                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(glueState.CurrentElement);
+                        GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
                     }
                     else
                     {
@@ -437,9 +437,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (saveAndRegenerate)
                 {
-                    if (GlueState.Self.CurrentElement != null)
+                    if (owner != null)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(owner);
                     }
                     else //if (GlueState.Self.CurrentReferencedFileSave != null)
                     {
@@ -450,7 +450,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
 
                     GluxCommands.Self.ProjectCommands.SaveProjects();
-                    GluxCommands.Self.SaveGlux();
+                    //GluxCommands.Self.SaveGlux();
+                    var throwaway = GluxCommands.Self.SaveElementAsync(owner);
                 }
             }
         }

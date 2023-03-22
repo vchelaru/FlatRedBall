@@ -163,39 +163,47 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task SaveElementAsync(GlueElement element)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
-                var target = GlueState.Self.GlueProjectFileName;
-                var glueDirectory = target.GetDirectoryContainingThis();
-
-                var extension = element is SaveClasses.ScreenSave ? GlueProjectSave.ScreenExtension
-                    : GlueProjectSave.EntityExtension;
-
-                var fileToIgnore = glueDirectory + element.Name + "." + extension;
-
-                FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
-
-                // todo - eventually need to handle wildcards here
-
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.Formatting = Formatting.Indented;
-                settings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-                var serialized = JsonConvert.SerializeObject(element, settings);
-
-                var locationToSave = glueDirectory + element.Name + "." + extension;
-
-                if (element is EntitySave entitySave)
+                await TaskManager.Self.AddAsync(async () =>
                 {
-                    await PluginManager.ReactToEntityJsonSaveAsync(entitySave.Name, serialized);
-                }
-                else if (element is ScreenSave screenSave)
-                {
-                    await PluginManager.ReactToScreenJsonSaveAsync(screenSave.Name, serialized);
-                }
-                FileManager.SaveText(serialized, locationToSave);
+                    var target = GlueState.Self.GlueProjectFileName;
+                    var glueDirectory = target.GetDirectoryContainingThis();
 
-            }, $"{nameof(SaveElementAsync)} {element}");
+                    var extension = element is SaveClasses.ScreenSave ? GlueProjectSave.ScreenExtension
+                        : GlueProjectSave.EntityExtension;
+
+                    var fileToIgnore = glueDirectory + element.Name + "." + extension;
+
+                    FileWatchManager.IgnoreNextChangeOnFile(fileToIgnore);
+
+                    // todo - eventually need to handle wildcards here
+
+                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    settings.Formatting = Formatting.Indented;
+                    settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+                    var serialized = JsonConvert.SerializeObject(element, settings);
+
+                    var locationToSave = glueDirectory + element.Name + "." + extension;
+
+                    if (element is EntitySave entitySave)
+                    {
+                        await PluginManager.ReactToEntityJsonSaveAsync(entitySave.Name, serialized);
+                    }
+                    else if (element is ScreenSave screenSave)
+                    {
+                        await PluginManager.ReactToScreenJsonSaveAsync(screenSave.Name, serialized);
+                    }
+                    FileManager.SaveText(serialized, locationToSave);
+
+                }, $"{nameof(SaveElementAsync)} {element}");
+            }
+            else
+            {
+                // fall back to saving entire project:
+                SaveGlux();
+            }
         }
 
         /// <summary>
@@ -2147,7 +2155,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (performSaveAndGenerateCode)
             {
-                GluxCommands.Self.SaveGlux();
+                // This can get called over and over again
+                // when deleting an instance from a base object
+                // which is exposed. Therefore, we should add to end
+                // so these don't stack
+                //GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                // Actually why not just save the element
+                var throwaway = GluxCommands.Self.SaveElementAsync(element);
             }
         }
 
