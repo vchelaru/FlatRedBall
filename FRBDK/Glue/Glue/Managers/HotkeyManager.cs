@@ -169,8 +169,19 @@ namespace FlatRedBall.Glue.Managers
             // fi we got here, it's not handled, so let's see if it was some CTRL+something hotkey. If so, we can let the plugin handle it
             if(ctrlDown)
             {
-                PluginManager.ReactToCtrlKey(key);
-                return true;
+                // This is tricky. Sometimes we want hotkey combinations to pass through (like CTRL+Z) but sometimes
+                // we want them to bubble up to native text box handling (CTRL+C). Therefore, let's create a list of keys that 
+                // are not handled by the plugin manager
+                var shouldHandleByPlugin = true;
+                if(key == Key.C || key == Key.X || key == Key.V)
+                {
+                    shouldHandleByPlugin = !isTextBoxFocused;
+                }
+                if(shouldHandleByPlugin)
+                {
+                    PluginManager.ReactToCtrlKey(key);
+                    return true;
+                }
             }
 
             return false;
