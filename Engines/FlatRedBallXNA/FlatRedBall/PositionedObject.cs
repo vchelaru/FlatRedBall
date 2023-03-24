@@ -2004,7 +2004,14 @@ namespace FlatRedBall
             {
                 System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
-                sb.Append("Name: ").Append(mName);
+                if(string.IsNullOrEmpty(mName))
+                {
+                    sb.Append("Type: ").Append(GetType().Name);
+                }
+                else
+                {
+                    sb.Append("Name: ").Append(mName);
+                }
                 sb.Append(" \nPosition: ").Append(Position);
 
                 return sb.ToString();

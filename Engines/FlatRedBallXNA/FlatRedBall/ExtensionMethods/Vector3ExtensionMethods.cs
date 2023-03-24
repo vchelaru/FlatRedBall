@@ -209,5 +209,16 @@ namespace Microsoft.Xna.Framework
             vector3.Z = zValue;
             return vector3;
         }
+
+        public static Vector3 LerpTo(this Vector3 vector3, Vector3 target, float lerpAmount)
+        {
+            Vector3 toReturn = target;
+
+            toReturn.X = MathHelper.Lerp(vector3.X, target.X, lerpAmount);
+            toReturn.Y = MathHelper.Lerp(vector3.Y, target.Y, lerpAmount);
+            toReturn.Z = MathHelper.Lerp(vector3.Z, target.Z, lerpAmount);
+
+            return toReturn;
+        }
     }
 }

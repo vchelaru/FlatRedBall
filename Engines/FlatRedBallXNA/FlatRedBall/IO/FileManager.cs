@@ -1122,6 +1122,12 @@ namespace FlatRedBall.IO
                     fileName = fileName.ToLowerInvariant().Replace('\\', '/');
                     directory = directory.ToLowerInvariant().Replace('\\', '/');
 
+                    if(directory.EndsWith("/") == false)
+                    {
+                        // Do this to simplify the code below by allowing a "contains" call
+                        directory += "/";
+                    }
+
                     return fileName.IndexOf(directory) == 0;
                 }
             }
