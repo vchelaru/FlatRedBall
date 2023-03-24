@@ -211,19 +211,54 @@ namespace StateInterpolationPlugin
             }
         }
 
-        public static Tweener Tween(this PositionedObject positionedObject, Tweener.PositionChangedHandler assignmentAction, float from, float to,
+        //public static Tweener Tween(this PositionedObject positionedObject, Tweener.PositionChangedHandler assignmentAction, float from, float to,
+        //    float during, InterpolationType interpolation, Easing easing)
+        //{
+
+        //    Tweener tweener = new Tweener(from, to, during, interpolation, easing);
+
+        //    tweener.PositionChanged = assignmentAction;
+
+        //    tweener.Owner = positionedObject;
+
+        //    TweenerManager.Self.Add(tweener);
+        //    tweener.Start();
+        //    return tweener;
+        //}
+
+        public static Tweener Tween(this PositionedObject positionedObject, Action<float> assignmentAction, float from, float to,
             float during, InterpolationType interpolation, Easing easing)
         {
 
             Tweener tweener = new Tweener(from, to, during, interpolation, easing);
 
-            tweener.PositionChanged = assignmentAction;
+            // wrap it to allow assignment...
+            tweener.PositionChanged = (newValue => assignmentAction(newValue));
 
             tweener.Owner = positionedObject;
 
             TweenerManager.Self.Add(tweener);
             tweener.Start();
             return tweener;
+        }
+
+        public static async Task TweenAsync(this PositionedObject positionedObject, Action<float> assignmentAction, float from, float to,
+            float during, InterpolationType interpolation, Easing easing)
+        {
+            Tweener tweener = new Tweener(from, to, during, interpolation, easing);
+
+            // wrap it to allow assignment...
+            tweener.PositionChanged = (newValue => assignmentAction(newValue));
+
+            tweener.Owner = positionedObject;
+
+            TweenerManager.Self.Add(tweener);
+            var didFinish = false;
+            tweener.Ended += () => didFinish = true;
+            tweener.Start();
+            //return tweener;
+            await TimeManager.DelayUntil(() => didFinish || tweener.Running == false);
+
         }
     }
 
