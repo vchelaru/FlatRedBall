@@ -436,7 +436,6 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             if (SelectedState.Self.SelectedFrame != null)
             {
                 UpdateSpriteToAnimationFrame();
-                UpdateShapes();
             }
             else
             {
@@ -444,6 +443,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                 // may have selected the chain that owns the frame
                 ReactToAnimationChainSelected();
             }
+            UpdateShapes();
         }
 
         private void UpdateSpriteToAnimationFrame()
