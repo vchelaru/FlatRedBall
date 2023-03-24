@@ -19,6 +19,11 @@ namespace FlatRedBall.Forms.MVVM
             ParentProperty = parentPropertyName;
         }
 
+        /// <summary>
+        /// Creates a new DependsOnAttribute which access the owner's subproperty.
+        /// </summary>
+        /// <param name="owner">The owner of the property.</param>
+        /// <param name="parentPropertyName">The property inside of the owner.</param>
         public DependsOnAttribute(string owner, string parentPropertyName)
         {
             ParentProperty = owner + "." + parentPropertyName;
