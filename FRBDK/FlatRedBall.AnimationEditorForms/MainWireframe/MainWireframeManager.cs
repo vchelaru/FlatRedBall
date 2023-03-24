@@ -693,6 +693,9 @@ namespace FlatRedBall.AnimationEditorForms
             // Walk Left
             // If we run this code for every instance that the cursor is over, objects may get moved multiple
             // times per frame. Therefore, let's only do this for the one grabbed instance:
+            // Update March 24, 2023
+            // When creating a new animation through the magic wand, the send is null. In that case sender doesn't
+            // equal the mPushedRegion, but we'll allow null to pass through (we won't early out).
             ///////////////////////////Early Out//////////////////////////
             if(sender != null && sender != mPushedRegion)
             {
