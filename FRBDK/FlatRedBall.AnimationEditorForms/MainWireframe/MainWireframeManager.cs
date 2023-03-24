@@ -694,7 +694,7 @@ namespace FlatRedBall.AnimationEditorForms
             // If we run this code for every instance that the cursor is over, objects may get moved multiple
             // times per frame. Therefore, let's only do this for the one grabbed instance:
             ///////////////////////////Early Out//////////////////////////
-            if(sender != mPushedRegion)
+            if(sender != null && sender != mPushedRegion)
             {
                 return;
             }
