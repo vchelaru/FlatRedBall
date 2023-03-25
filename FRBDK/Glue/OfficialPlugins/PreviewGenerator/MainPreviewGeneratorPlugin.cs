@@ -83,8 +83,10 @@ namespace OfficialPlugins.PreviewGenerator
                         {
                             try
                             {
-
-                                PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, path);
+                                GlueCommands.Self.TryMultipleTimes(() =>
+                                {
+                                    PreviewGenerator.Managers.PreviewSaver.SavePreview(image as BitmapSource, element, state, path);
+                                });
                             }
                             catch (Exception ex)
                             {

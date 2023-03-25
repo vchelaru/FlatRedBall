@@ -121,7 +121,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             newViewModel.SelectPreviewFromEntity += () => HandleSelectPreviewFromEntity(newViewModel);
             newViewModel.ViewInExplorer += () =>
             {
-                GlueCommands.Self.FileCommands.ViewInExplorer(GetPreviewPathFor(newViewModel));
+                var previewPath = GetPreviewPathFor(newViewModel);
+
+                if(previewPath == null)
+                {
+                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Could not find preview for {newViewModel.NamedObjectSave}");
+                }
+                else
+                {
+                    GlueCommands.Self.FileCommands.ViewInExplorer(previewPath);
+                }
             };
             newViewModel.DragLeave += () =>
             {
@@ -137,7 +146,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             };
 
-            SetSourceFromElementAndState(newViewModel, force: true);
+            // This gets called right when the project is loaded. This forces a refresh. Do we want that?
+            // It slows startup times a little
+            //SetSourceFromElementAndState(newViewModel, force: true);
+            SetSourceFromElementAndState(newViewModel, force: false);
 
             return newViewModel;
         }
@@ -183,7 +195,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             while(System.IO.File.Exists(previewDirectory + name + ".png"))
             {
-                var withoutPreview = name.Substring(name.IndexOf("."));
+                var withoutPreview = name.Substring(0, name.IndexOf("."));
                 withoutPreview = StringFunctions.IncrementNumberAtEnd(withoutPreview);
                 name = withoutPreview + ".preview";
             }

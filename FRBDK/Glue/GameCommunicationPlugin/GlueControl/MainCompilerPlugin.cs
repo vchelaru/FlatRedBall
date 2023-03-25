@@ -148,7 +148,7 @@ namespace GameCommunicationPlugin.GlueControl
                 if(treeNode.Tag is EntitySave entitySave)
                 {
                     var namedObjectSave = new NamedObjectSave();
-                    namedObjectSave.SourceType = SourceType.FlatRedBallType;
+                    namedObjectSave.SourceType = SourceType.Entity;
                     namedObjectSave.SourceClassType = entitySave.Name;
                     // todo finish here
                     HandleAddToEditToolbar(namedObjectSave);
