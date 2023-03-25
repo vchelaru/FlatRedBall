@@ -23,7 +23,8 @@ namespace OfficialPlugins.PreviewGenerator
 
         public override Version Version => new Version(1, 0);
 
-        PluginTab previewPreviewTab;
+        // I dont' think we need this anymore:
+        //PluginTab previewPreviewTab;
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -33,23 +34,23 @@ namespace OfficialPlugins.PreviewGenerator
         public override void StartUp()
         {
             var view = new MainPreviewGeneratorControl();
-            previewPreviewTab = this.CreateTab(view, "Preview Preview");
+            //previewPreviewTab = this.CreateTab(view, "Preview Preview");
 
             this.ReactToItemSelectHandler = HandleReactToItemSelectHandler;
         }
 
         private void HandleReactToItemSelectHandler(ITreeNode selectedTreeNode)
         {
-            var shouldShow = GlueState.Self.CurrentEntitySave != null;
+            //var shouldShow = GlueState.Self.CurrentEntitySave != null;
 
-            if(shouldShow)
-            {
-                previewPreviewTab.Show();
-            }
-            else
-            {
-                previewPreviewTab.Hide();
-            }
+            //if(shouldShow)
+            //{
+            //    previewPreviewTab.Show();
+            //}
+            //else
+            //{
+            //    previewPreviewTab.Hide();
+            //}
         }
 
         protected override Task<string> HandleEventWithReturnImplementation(string eventName, string payload)
