@@ -29,6 +29,8 @@ namespace NonGraphicalTests.Gui
             get { throw new NotImplementedException(); }
         }
 
+
+
         public bool Enabled
         {
             get
@@ -225,6 +227,9 @@ namespace NonGraphicalTests.Gui
         {
 
         }
+
+        public void CallRemovedAsPushedWindow() { }
+        public void RemovedAsPushedWindow() { }
 
         public void CallRollOff()
         {
