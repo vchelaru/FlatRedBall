@@ -16,7 +16,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         /// <summary>
         /// Generates the argument element's code. Also generates all elements which inherit from this element. This creates a Task in the TaskManger but does not
-        /// await it to finish - its' fire-and-forget.
+        /// await it to finish - it's fire-and-forget.
         /// </summary>
         /// <param name="element"></param>
         void GenerateElementCode(GlueElement element);
