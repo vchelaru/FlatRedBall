@@ -617,7 +617,10 @@ namespace FlatRedBall.IO
             }
             finally
             {
-                Close(fileStream);
+                if(fileStream != null)
+                {
+                    Close(fileStream);
+                }
 
             }
 

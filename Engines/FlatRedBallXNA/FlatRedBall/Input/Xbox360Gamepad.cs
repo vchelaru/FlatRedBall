@@ -1706,7 +1706,7 @@ namespace FlatRedBall.Input
 
 #endregion
 
-#region IInputDevice Explicit Implementation
+        #region IInputDevice Explicit Implementation
 
         I2DInput IInputDevice.Default2DInput
         {
