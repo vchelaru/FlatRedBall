@@ -688,5 +688,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
         #endregion
+
+        private void Bookmarks_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Bookmarks.SelectedItem= null;
+        }
     }
 }

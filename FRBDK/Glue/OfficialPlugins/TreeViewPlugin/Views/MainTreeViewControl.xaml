@@ -73,6 +73,7 @@
                  MouseMove="Bookmarks_MouseMove" Drop="Bookmarks_Drop" 
                  SelectionChanged="Bookmarks_SelectionChanged"
                  KeyDown="Bookmarks_KeyDown"
+                 LostFocus="Bookmarks_LostFocus"
                  ItemsSource="{Binding Bookmarks}">
             <ListBox.Resources>
 
@@ -98,6 +99,7 @@
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>
                         <pt:EditableTextBlock Grid.Column="1" Text="{Binding Text}" />
+                        
                         <!--FontWeight="{Binding FontWeight}" 
                                               IsEditing="{Binding IsEditing}"-->
                     </Grid>
