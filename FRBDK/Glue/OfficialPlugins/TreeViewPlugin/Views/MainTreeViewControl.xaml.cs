@@ -601,6 +601,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                     // don't focus because if we do that, the right-click menu on this disappears
                     SelectionLogic.SuppressFocus = true;
                     GlueState.Self.CurrentTreeNode = node;
+                    node.IsExpanded= true;
                     SelectionLogic.SuppressFocus = false;
 
                 }
