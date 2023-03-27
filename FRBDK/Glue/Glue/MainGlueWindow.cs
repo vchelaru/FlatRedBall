@@ -89,7 +89,13 @@ namespace Glue
 
             if(sdkPaths.Count() > 0)
             {
-                var sdkPath = sdkPaths.Last();
+
+                var sdkPath = sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
+                if(string.IsNullOrEmpty(sdkPath))
+                {
+                    sdkPath = sdkPaths.Last();
+                }
+                    
                 Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
 
                 GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");

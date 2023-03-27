@@ -666,6 +666,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 node.CollapseRecursively();
             }
+
         }
 
         internal void CollapseToDefinitions()
