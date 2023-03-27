@@ -426,6 +426,18 @@ namespace FlatRedBall.Glue.FormHelpers
             }
         }
 
+        public string GetRelativeTreeNodePath()
+        {
+            if(Parent != null)
+            {
+                return Parent.GetRelativeTreeNodePath() + "/" + this.Text;
+            }
+            else
+            {
+                return this.Text;
+            }
+        }
+
         ITreeNode FindByName(string name);
 
         void RemoveGlobalContentTreeNodesIfDoesntExist(ITreeNode treeNode);

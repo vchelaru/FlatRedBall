@@ -550,7 +550,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             TaskManager.Self.WarnIfNotInTask();
             var project = GlueState.Self.CurrentGlueProject;
             project.GlobalFiles.Add(referencedFileSave);
-            project.GlobalContentHasChanged = true;
 
             GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSave);
 
@@ -1081,7 +1080,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else
             {
                 ProjectManager.GlueProjectSave.GlobalFiles.Remove(referencedFileToRemove);
-                ProjectManager.GlueProjectSave.GlobalContentHasChanged = true;
 
                 // Much faster to just remove the tree node.  This was done
                 // to reuse code and make things reactive, but this has gotten

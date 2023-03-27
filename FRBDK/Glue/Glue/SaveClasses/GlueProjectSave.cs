@@ -22,6 +22,12 @@ namespace FlatRedBall.Glue.SaveClasses
     }
     #endregion
 
+    public class GlueBookmark
+    {
+        public string Name { get; set; }
+        public string ImageSource { get; set; }
+    }
+
     public class GlueProjectSave
     {
         #region Constants
@@ -107,8 +113,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
-        #region Fields / Properties
-
         #region Versions
 
         public const int LatestVersion = (int)GluxVersions.AllTiledFilesGenerated;
@@ -145,6 +149,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #endregion
 
+        #region Global Files
+
         public List<ReferencedFileSave> GlobalFiles = new List<ReferencedFileSave>();
 
         // Even though these never appear in the saved json on disk, they need to be serialized
@@ -152,6 +158,18 @@ namespace FlatRedBall.Glue.SaveClasses
         // [JsonIgnore]
         public List<ReferencedFileSave> GlobalFileWildcards = new List<ReferencedFileSave>();
 
+        public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
+
+        #endregion
+
+        #region Bookmarks
+
+        public List<GlueBookmark> Bookmarks { get; set; } = new List<GlueBookmark>();
+
+
+        #endregion
+
+        #region Fields / Properties
 
         public GluxPluginData PluginData
         {
@@ -166,8 +184,6 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
-
-        public GlobalContentSettingsSave GlobalContentSettingsSave = new GlobalContentSettingsSave();
 
         public List<string> SyncedProjects = new List<string>();
 
@@ -209,10 +225,6 @@ namespace FlatRedBall.Glue.SaveClasses
         /// Whether to generate the base Type class for all base screens and entities. If false, these will not be generated.
         /// </summary>
         public bool SuppressBaseTypeGeneration { get; set; }
-
-        [XmlIgnore]
-        [JsonIgnore]
-        public bool GlobalContentHasChanged { get; set; }
 
         #endregion
 

@@ -44,24 +44,48 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         #region Static ImageSource Members
 
-        public static ImageSource CodeIcon;
-        public static ImageSource CollisionsIcon;
-        public static ImageSource CollisionIcon;
-        public static ImageSource EntityIcon;
-        public static ImageSource EntityDerivedIcon;
-        public static ImageSource EntityInstanceIcon;
-        public static ImageSource EntityInstanceListIcon;
-        public static ImageSource EventIcon;
-        public static ImageSource FileIcon;
-        public static ImageSource FileIconWildcard;
-        public static ImageSource FolderClosedIcon;
-        public static ImageSource FolderOpenIcon;
-        public static ImageSource LayersIcon;
-        public static ImageSource LayerIcon;
-        public static ImageSource ScreenIcon;
-        public static ImageSource ScreenStartupIcon;
-        public static ImageSource StateIcon;
-        public static ImageSource VariableIcon;
+        public static BitmapImage CodeIcon;
+        public static BitmapImage CollisionsIcon;
+        public static BitmapImage CollisionIcon;
+        public static BitmapImage EntityIcon;
+        public static BitmapImage EntityDerivedIcon;
+        public static BitmapImage EntityInstanceIcon;
+        public static BitmapImage EntityInstanceListIcon;
+        public static BitmapImage EventIcon;
+        public static BitmapImage FileIcon;
+        public static BitmapImage FileIconWildcard;
+        public static BitmapImage FolderClosedIcon;
+        public static BitmapImage FolderOpenIcon;
+        public static BitmapImage LayersIcon;
+        public static BitmapImage LayerIcon;
+        public static BitmapImage ScreenIcon;
+        public static BitmapImage ScreenStartupIcon;
+        public static BitmapImage StateIcon;
+        public static BitmapImage VariableIcon;
+
+        public static BitmapImage FromSource(string source)
+        {
+            if (source == CodeIcon.UriSource.OriginalString) return CodeIcon;
+            if (source == CollisionsIcon.UriSource.OriginalString) return CollisionsIcon;
+            if (source == CollisionIcon.UriSource.OriginalString) return CollisionIcon;
+            if (source == EntityIcon.UriSource.OriginalString) return EntityIcon;
+            if (source == EntityDerivedIcon.UriSource.OriginalString) return EntityDerivedIcon;
+            if (source == EntityInstanceIcon.UriSource.OriginalString) return EntityInstanceIcon;
+            if (source == EntityInstanceListIcon.UriSource.OriginalString) return EntityInstanceListIcon;
+            if (source == EventIcon.UriSource.OriginalString) return EventIcon;
+            if (source == FileIcon.UriSource.OriginalString) return FileIcon;
+            if (source == FileIconWildcard.UriSource.OriginalString) return FileIconWildcard;
+            if (source == FolderClosedIcon.UriSource.OriginalString) return FolderClosedIcon;
+            if (source == FolderOpenIcon.UriSource.OriginalString) return FolderOpenIcon;
+            if (source == LayersIcon.UriSource.OriginalString) return LayersIcon;
+            if (source == LayerIcon.UriSource.OriginalString) return LayerIcon;
+            if (source == ScreenIcon.UriSource.OriginalString) return ScreenIcon;
+            if (source == ScreenStartupIcon.UriSource.OriginalString) return ScreenStartupIcon;
+            if (source == StateIcon.UriSource.OriginalString) return StateIcon;
+            if (source == VariableIcon.UriSource.OriginalString) return VariableIcon;
+
+            return null;
+        }
 
         #endregion
 
@@ -96,9 +120,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
-        public ImageSource ImageSource
+        public BitmapImage ImageSource
         {
-            get => Get<ImageSource>();
+            get => Get<BitmapImage>();
             set => Set(value);
         }
 
@@ -178,6 +202,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        public void SelectNoFocus()
+        {
+            Set(true, nameof(IsSelected));
+        }
+
         public int Level
         {
             get => Get<int>();
@@ -209,7 +238,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             StateIcon = LoadIcon("icon_state");
             VariableIcon = LoadIcon("icon_variable");
 
-            ImageSource LoadIcon(string iconName)
+            BitmapImage LoadIcon(string iconName)
             {
                 var location = $"/OfficialPluginsCore;component/TreeViewPlugin/Content/{iconName}.png";
                 var bitmapImage = new BitmapImage(new Uri(location, UriKind.Relative));

@@ -65,12 +65,14 @@ namespace GlueControl.Models
 
         #endregion
 
-        public List<ScreenSave> Screens = new List<ScreenSave>();
+        #region Elements and References
 
+        public List<ScreenSave> Screens = new List<ScreenSave>();
         public List<EntitySave> Entities = new List<EntitySave>();
 
         public List<GlueElementFileReference> ScreenReferences { get; set; } = new List<GlueElementFileReference>();
         public List<GlueElementFileReference> EntityReferences { get; set; } = new List<GlueElementFileReference>();
 
+        #endregion
     }
 }

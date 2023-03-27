@@ -370,6 +370,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
+        private void MainTreeView_DragLeave(object sender, DragEventArgs e)
+        {
+            // If the user leaves, then set the nodeWaitingOnSelection to null so that a later push doesn't select
+            // the node that was dragged off
+            nodeWaitingOnSelection = null;
+        }
+
         #endregion
 
         #region Selection
@@ -499,6 +506,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 this.FlatList.ScrollIntoView(this.FlatList.SelectedItem);
             }
         }
+
         private void SearchBar_EnterPressed()
         {
             if(FlatList.SelectedItem != null)
@@ -506,9 +514,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 SelectSearchNode(FlatList.SelectedItem as NodeViewModel);
             }
         }
-
-
-        #endregion
 
         private async void SearchBar_DismissHintTextClicked()
         {
@@ -524,11 +529,164 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }, "Saving settings after dismissing tree view hint text");
         }
 
-        private void MainTreeView_DragLeave(object sender, DragEventArgs e)
+        #endregion
+
+        #region Bookmarks
+
+        private void Bookmarks_MouseMove(object sender, MouseEventArgs e)
         {
-            // If the user leaves, then set the nodeWaitingOnSelection to null so that a later push doesn't select
-            // the node that was dragged off
-            nodeWaitingOnSelection = null;
+
         }
+
+        private void Bookmarks_Drop(object sender, DragEventArgs e)
+        {
+            var node = GlueState.Self.DraggedTreeNode;
+
+            if (node != null)
+            {
+                var path = node.GetRelativeTreeNodePath();
+
+                var alreadyHas = ViewModel.Bookmarks.Any(item => item.Text == path);
+                if(!alreadyHas)
+                {
+                    var bookmark = new GlueBookmark();
+                    bookmark.Name = path;
+
+                    var imageSource = (node as NodeViewModel).ImageSource;
+
+                    if(imageSource == NodeViewModel.ScreenStartupIcon)
+                    {
+                        // don't show the startup:
+                        imageSource = NodeViewModel.ScreenIcon;
+                    }
+                    if(imageSource == NodeViewModel.FileIconWildcard)
+                    {
+                        // Don't show wildcard, since this could change
+                        imageSource = NodeViewModel.FileIcon;
+                    }
+
+                    bookmark.ImageSource = imageSource.UriSource.OriginalString;
+
+                    GlueState.Self.CurrentGlueProject.Bookmarks.Add(bookmark);
+
+                    var bookmarkViewModel = new BookmarkViewModel();
+                    bookmarkViewModel.Text = path;
+                    bookmarkViewModel.ImageSource = imageSource;
+
+                    ViewModel.Bookmarks.Add(bookmarkViewModel);
+
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
+        }
+
+        private void Bookmarks_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = Bookmarks.SelectedItem as BookmarkViewModel;
+
+            if(selectedItem != null)
+            {
+                var separated = selectedItem.Text.Split('/').ToList();
+
+                var node = GetTreeNode(separated);
+
+                if(node != null)
+                {
+
+                    // don't focus because if we do that, the right-click menu on this disappears
+                    SelectionLogic.SuppressFocus = true;
+                    GlueState.Self.CurrentTreeNode = node;
+                    SelectionLogic.SuppressFocus = false;
+
+                }
+            }
+
+            //Bookmarks.SelectedItem = null;
+        }
+
+        private NodeViewModel GetTreeNode(List<string> separated)
+        {
+            var first = separated[0];
+            separated.RemoveAt(0);
+
+            NodeViewModel nodeViewModel = null;
+
+            if (first == ViewModel.EntityRootNode.Text)
+            {
+                nodeViewModel = ViewModel.EntityRootNode;
+            }
+            else if(first == ViewModel.ScreenRootNode.Text)
+            {
+                nodeViewModel = ViewModel.ScreenRootNode;
+            }
+            else if(first == ViewModel.GlobalContentRootNode.Text)
+            {
+                nodeViewModel = ViewModel.GlobalContentRootNode;
+            }
+
+            return GetTreeNode(separated, nodeViewModel);
+            
+
+        }
+
+        private NodeViewModel GetTreeNode(List<string> separated, NodeViewModel nodeViewModel)
+        {
+            if(separated.Count == 0)
+            {
+                return nodeViewModel;
+            }
+            else
+            {
+                var child = nodeViewModel.Children.FirstOrDefault(item => item.Text == separated[0]);
+                separated.RemoveAt(0);
+                if (child != null)
+                {
+                    return GetTreeNode(separated, child);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private void DeleteBookmark_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModel = Bookmarks.SelectedItem as BookmarkViewModel;
+            DeleteBookmark(viewModel);
+
+        }
+
+        private void DeleteBookmark(BookmarkViewModel viewModel)
+        {
+            if (ViewModel.Bookmarks.Contains(viewModel))
+            {
+                // remove and save:
+                ViewModel.Bookmarks.Remove(viewModel);
+                var modelToRemove = GlueState.Self.CurrentGlueProject.Bookmarks.FirstOrDefault(item => item.Name == viewModel.Text);
+                if (modelToRemove != null)
+                {
+                    GlueState.Self.CurrentGlueProject.Bookmarks.Remove(modelToRemove);
+                    GlueCommands.Self.GluxCommands.SaveGlux();
+                }
+            }
+        }
+
+        private void Bookmarks_KeyDown(object sender, KeyEventArgs e)
+        {
+            var selectedBookmark = Bookmarks.SelectedItem as BookmarkViewModel;
+            switch (e.Key)
+            {
+                case Key.Delete:
+
+                    if(selectedBookmark != null)
+                    {
+                        DeleteBookmark(selectedBookmark);
+                    }
+
+                    break;
+            }
+        }
+        #endregion
     }
 }

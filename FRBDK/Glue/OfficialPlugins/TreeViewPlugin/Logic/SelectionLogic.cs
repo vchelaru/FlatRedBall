@@ -71,14 +71,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         #endregion
 
-        public static void HandleSelected(NodeViewModel nodeViewModel)
+        public static void HandleSelected(NodeViewModel nodeViewModel, bool focus = true)
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
             var didSelectionChange = currentNode?.Tag != nodeViewModel?.Tag;
             currentNode = nodeViewModel;
 
-            if(nodeViewModel != null && nodeViewModel.IsSelected)
+            if(nodeViewModel != null && nodeViewModel.IsSelected && focus)
             {
                 nodeViewModel.Focus(mainView);
             }
@@ -162,8 +162,12 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         }
 
+        public static bool SuppressFocus = false;
+
         public static async Task SelectByTreeNode(NodeViewModel treeNode)
         {
+            // record the value here since we delay on this method
+            var suppressFocusCopy = SuppressFocus;
             if (treeNode == null)
             {
                 if (currentNode != null)
@@ -185,7 +189,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                         // so the consequence of selecting this node is immediate:
                         currentNode.IsSelected = false;
                     }
-                    treeNode.IsSelected = true;
+                    if(suppressFocusCopy)
+                    {
+                        treeNode.SelectNoFocus();
+                    }
+                    else
+                    {
+                        treeNode.IsSelected = true;
+                    }
 
                     treeNode.ExpandParentsRecursively();
                 }
@@ -197,7 +208,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 mainView.MainTreeView.ScrollIntoView(treeNode);
 
                 // Do this after the delay
-                if(treeNode?.IsSelected == true)
+                if(treeNode?.IsSelected == true && !suppressFocusCopy)
                 {
                     treeNode.Focus(mainView);
                 }

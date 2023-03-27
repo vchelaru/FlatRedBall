@@ -194,6 +194,7 @@ namespace OfficialPlugins.TreeViewPlugin
             pluginTab.Show();
             MainViewModel.AddDirectoryNodes();
             MainViewModel.RefreshGlobalContentTreeNodes();
+            MainViewModel.RefreshBookmarks();
 
         }
 
