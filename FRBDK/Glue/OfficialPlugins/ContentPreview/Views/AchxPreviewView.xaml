@@ -3,24 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pt="http://propertytools.org/wpf" 
+             
              xmlns:local="clr-namespace:OfficialPlugins.ContentPreview.Views" xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.Net6"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackPanel>
-        </StackPanel>
-        <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="1"
-                MouseDown="GumCanvas_MouseDown"
-                MouseMove="GumCanvas_MouseMove"
-                MouseWheel="GumCanvas_MouseWheel"
-                           ></wpf1:GumSKElement>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="5"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <pt:TreeListBox
+            HierarchySource="{Binding VisibleRoot}"
+            ChildrenPath="VisibleChildren"
+            
+            >
+            
+        </pt:TreeListBox>
+        <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <wpf1:GumSKElement x:Name="GumCanvas" Grid.Row="0"
+                    MouseDown="GumCanvas_MouseDown"
+                    MouseMove="GumCanvas_MouseMove"
+                    MouseWheel="GumCanvas_MouseWheel"
+                               ></wpf1:GumSKElement>
+            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
+            </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

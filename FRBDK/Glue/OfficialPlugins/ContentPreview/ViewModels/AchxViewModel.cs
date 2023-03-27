@@ -1,7 +1,10 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using OfficialPlugins.Common.ViewModels;
+using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
+using OfficialPlugins.TreeViewPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,6 +43,9 @@ namespace OfficialPlugins.ContentPreview.ViewModels
         [DependsOn(nameof(ResolutionWidth))]
         [DependsOn(nameof(ResolutionHeight))]
         public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
+
+        public ObservableCollection<AnimationEditorNodeViewModel> VisibleRoot { get; private set; } = new ObservableCollection<AnimationEditorNodeViewModel>();
+
 
         public AchxViewModel()
         {

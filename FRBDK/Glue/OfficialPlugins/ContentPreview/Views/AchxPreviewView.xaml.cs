@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.IO;
 using OfficialPlugins.ContentPreview.ViewModels;
+using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
 using OfficialPlugins.SpritePlugin.Managers;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
@@ -26,6 +27,8 @@ namespace OfficialPlugins.ContentPreview.Views
     /// </summary>
     public partial class AchxPreviewView : UserControl
     {
+        #region Fields/Properties
+
         AchxViewModel ViewModel => DataContext as AchxViewModel;
 
         FilePath textureFilePath;
@@ -63,6 +66,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
         CameraLogic CameraLogic;
 
+        #endregion
+
         public AchxPreviewView()
         {
             InitializeComponent();
@@ -70,20 +75,50 @@ namespace OfficialPlugins.ContentPreview.Views
             this.Loaded += HandleLoaded;
         }
 
-        public void ForceRefreshAchx(FilePath value)
+        public void ForceRefreshAchx(FilePath achxFilePath)
         {
-            foreach(var outline in Outlines)
+            foreach (var outline in Outlines)
             {
                 GumCanvas.Children.Remove(outline);
             }
-            Outlines.Clear();
-            if(value == null || value.Exists() == false)
+
+            AnimationChainListSave animationChain = null;
+            if (achxFilePath?.Exists() == true)
+            {
+                animationChain = AnimationChainListSave.FromFile(achxFilePath.FullPath);
+            }
+
+            RefreshTexture(achxFilePath, animationChain);
+
+            RefreshOutlines(animationChain);
+
+            RefreshTreeView(animationChain);
+
+            GumCanvas.InvalidateVisual();
+        }
+
+        private void RefreshTreeView(AnimationChainListSave animationChain)
+        {
+            ViewModel.VisibleRoot.Clear();
+
+            if (animationChain == null) return;
+
+            foreach(var animation in animationChain.AnimationChains)
+            {
+                var animationViewModel = new AnimationEditorNodeViewModel();
+                animationViewModel.Text = animation.Name;
+                ViewModel.VisibleRoot.Add(animationViewModel);
+            }
+        }
+
+        private void RefreshTexture(FilePath value, AnimationChainListSave animationChain)
+        {
+            if (animationChain == null)
             {
                 ForceRefreshMainSpriteTexture(null);
             }
             else
             {
-                var animationChain = AnimationChainListSave.FromFile(value.FullPath);
 
                 var firstAnimation = animationChain.AnimationChains.FirstOrDefault(item => item.Frames.Count > 0);
                 if (firstAnimation != null)
@@ -96,23 +131,25 @@ namespace OfficialPlugins.ContentPreview.Views
 
                     ForceRefreshMainSpriteTexture(textureAbsolute);
                 }
+            }
+        }
 
-                var texture = MainSprite.Texture;
-                if(texture != null)
+        private void RefreshOutlines(AnimationChainListSave animationChain)
+        {
+            Outlines.Clear();
+            var texture = MainSprite.Texture;
+            if (texture != null && animationChain != null)
+            {
+                foreach (var animation in animationChain.AnimationChains)
                 {
-                    foreach(var animation in animationChain.AnimationChains)
+                    foreach (var frame in animation.Frames)
                     {
-                        foreach(var frame in animation.Frames)
-                        {
-                            PolygonRuntime outline = CreateOutlinePolygon(frame);
-                            Outlines.Add(outline);
-                            GumCanvas.Children.Add(outline);
-                        }
+                        PolygonRuntime outline = CreateOutlinePolygon(frame);
+                        Outlines.Add(outline);
+                        GumCanvas.Children.Add(outline);
                     }
                 }
             }
-
-            GumCanvas.InvalidateVisual();
         }
 
         private static PolygonRuntime CreateOutlinePolygon(AnimationFrameSave frame)

@@ -26,7 +26,7 @@ namespace OfficialPlugins.ContentPreview.Managers
             Plugin = plugin;
         }
 
-        public static AchxPreviewView GetView(FilePath filePath)
+        public static AchxPreviewView GetView()
         {
             CreateViewIfNecessary();
 
@@ -53,7 +53,7 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         internal static void ShowTab(FilePath filePath)
         {
-            var view = AchxManager.GetView(filePath);
+            var view = AchxManager.GetView();
             var changedFilePath = view.AchxFilePath != filePath;
 
 
