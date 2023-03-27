@@ -539,6 +539,13 @@ namespace FlatRedBall.Glue.FormHelpers
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
         {
 
+            #region All Nodes
+
+            Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode));
+
+
+            #endregion
+
             #region IsScreenNode
 
             if (targetNode.IsScreenNode())

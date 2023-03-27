@@ -289,5 +289,11 @@ namespace OfficialPlugins.TreeViewPlugin
         {
             mainView.FocusSearchBox();
         }
+
+        public void AddBookmark(ITreeNode treeNode)
+        {
+            mainView.AddBookmark(treeNode);
+            MainViewModel.IsBookmarkListVisible = true;
+        }
     }
 }

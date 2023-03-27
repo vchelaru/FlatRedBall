@@ -541,25 +541,29 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void Bookmarks_Drop(object sender, DragEventArgs e)
         {
             var node = GlueState.Self.DraggedTreeNode;
+            AddBookmark(node);
+        }
 
+        public void AddBookmark(ITreeNode node)
+        {
             if (node != null)
             {
                 var path = node.GetRelativeTreeNodePath();
 
                 var alreadyHas = ViewModel.Bookmarks.Any(item => item.Text == path);
-                if(!alreadyHas)
+                if (!alreadyHas)
                 {
                     var bookmark = new GlueBookmark();
                     bookmark.Name = path;
 
                     var imageSource = (node as NodeViewModel).ImageSource;
 
-                    if(imageSource == NodeViewModel.ScreenStartupIcon)
+                    if (imageSource == NodeViewModel.ScreenStartupIcon)
                     {
                         // don't show the startup:
                         imageSource = NodeViewModel.ScreenIcon;
                     }
-                    if(imageSource == NodeViewModel.FileIconWildcard)
+                    if (imageSource == NodeViewModel.FileIconWildcard)
                     {
                         // Don't show wildcard, since this could change
                         imageSource = NodeViewModel.FileIcon;
