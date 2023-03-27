@@ -350,6 +350,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             else
             {
                 var menuItem = new MenuItem();
+                menuItem.Icon = item.Image;
                 menuItem.Header = item.Text;
                 menuItem.Click += (not, used) =>
                 {

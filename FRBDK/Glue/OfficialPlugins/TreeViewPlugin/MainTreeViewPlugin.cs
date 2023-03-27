@@ -12,6 +12,7 @@ using OfficialPlugins.TreeViewPlugin.Views;
 using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Text;
 using System.Windows.Forms;
@@ -42,6 +43,9 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override void StartUp()
         {
+            MainViewModel.IsBookmarkListVisible= GlueState.Self.GlueSettingsSave.IsBookmarksListVisible;
+            MainViewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
+
             var findManager = new FindManager(MainViewModel);
             GlueState.Self.Find = findManager;
             mainView = new MainTreeViewControl();
@@ -56,6 +60,21 @@ namespace OfficialPlugins.TreeViewPlugin
             pluginTab.CanClose = false;
             AssignEvents();
 
+        }
+
+        private void HandleMainViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(MainViewModel.IsBookmarkListVisible):
+                    if(GlueState.Self.GlueSettingsSave != null)
+                    {
+                        GlueState.Self.GlueSettingsSave.IsBookmarksListVisible = MainViewModel.IsBookmarkListVisible;
+                        GlueCommands.Self.GluxCommands.SaveSettings();
+
+                    }
+                    break;
+            }
         }
 
         private void AssignEvents()
@@ -290,10 +309,14 @@ namespace OfficialPlugins.TreeViewPlugin
             mainView.FocusSearchBox();
         }
 
+        #region Bookmarks
+
         public void AddBookmark(ITreeNode treeNode)
         {
             mainView.AddBookmark(treeNode);
             MainViewModel.IsBookmarkListVisible = true;
         }
+
+        #endregion
     }
 }

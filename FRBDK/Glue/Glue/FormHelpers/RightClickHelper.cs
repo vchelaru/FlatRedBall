@@ -47,6 +47,7 @@ using FlatRedBall.Glue.Utilities;
 using GlueFormsCore.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Security.Cryptography;
+using System.Windows.Media.Imaging;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
@@ -536,12 +537,20 @@ namespace FlatRedBall.Glue.FormHelpers
         static List<GeneralToolStripMenuItem> ListToAddTo = null;
         #endregion
 
+
+        #region Images
+
+        static System.Windows.Controls.Image BookmarkImage;
+
+        #endregion
+
         private static void PopulateRightClickMenuItemsShared(ITreeNode targetNode, MenuShowingAction menuShowingAction, ITreeNode draggedNode)
         {
+            CreateImages();
 
             #region All Nodes
 
-            Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode));
+            Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), image: BookmarkImage);
 
 
             #endregion
@@ -989,6 +998,32 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
+        static bool HasCreatedImages = false;
+        private static void CreateImages()
+        {
+            if(!HasCreatedImages)
+            {
+                
+                BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
+                
+
+                HasCreatedImages = true;
+            }
+            System.Windows.Controls.Image MakeImage(string sourceName)
+            {
+                var bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
+                bitmapImage.EndInit();
+
+                return new System.Windows.Controls.Image()
+                {
+                    Source = bitmapImage
+                };
+            }
+
+        }
+
         private static void HandleOpen(ITreeNode targetNode)
         {
             if(targetNode.Tag is ReferencedFileSave rfs)
@@ -1024,7 +1059,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         #region Utility Methods
 
-        static void Add(string text, Action action, string shortcutDisplay = null)
+        static void Add(string text, Action action, string shortcutDisplay = null, System.Windows.Controls.Image image = null)
         {
             if (ListToAddTo != null)
             {
@@ -1034,6 +1069,8 @@ namespace FlatRedBall.Glue.FormHelpers
                     Click = (not, used) => action(),
                     ShortcutKeyDisplayString = shortcutDisplay
                 };
+
+                item.Image = image;
 
                 ListToAddTo.Add(item);
             }
