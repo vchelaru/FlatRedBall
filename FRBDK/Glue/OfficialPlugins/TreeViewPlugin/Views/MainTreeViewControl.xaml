@@ -75,7 +75,9 @@
                  SelectionChanged="Bookmarks_SelectionChanged"
                  KeyDown="Bookmarks_KeyDown"
                  LostFocus="Bookmarks_LostFocus"
-                 ItemsSource="{Binding Bookmarks}">
+                 ItemsSource="{Binding Bookmarks}"
+                 SelectedItem="{Binding SelectedBookmark}"
+                 >
             <ListBox.Resources>
 
                 <!--Defines a context menu-->

@@ -56,7 +56,7 @@ namespace FlatRedBall.Glue.Controls
         {
             UpdateExternalBuildDirectory();
 
-            ProjectManager.GlueSettingsSave.Save();
+            GlueCommands.Self.GluxCommands.SaveSettings();
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
             this.Close();

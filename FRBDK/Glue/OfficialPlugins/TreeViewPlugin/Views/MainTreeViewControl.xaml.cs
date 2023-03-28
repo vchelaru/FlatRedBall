@@ -437,11 +437,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void CollapseAllClicked(object sender, RoutedEventArgs e)
         {
+            ViewModel.SelectedBookmark = null;
             ViewModel.CollapseAll();
         }
 
         private void CollapseToDefinitionsClicked(object sender, RoutedEventArgs e)
         {
+            ViewModel.SelectedBookmark = null;
             ViewModel.CollapseToDefinitions();
         }
 
@@ -600,8 +602,9 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
                     // don't focus because if we do that, the right-click menu on this disappears
                     SelectionLogic.SuppressFocus = true;
+                    node.ExpandParentsRecursively();
+                    node.IsExpanded = true;
                     GlueState.Self.CurrentTreeNode = node;
-                    node.IsExpanded= true;
                     SelectionLogic.SuppressFocus = false;
 
                 }

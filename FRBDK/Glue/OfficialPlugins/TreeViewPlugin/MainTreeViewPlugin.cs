@@ -43,7 +43,14 @@ namespace OfficialPlugins.TreeViewPlugin
 
         public override void StartUp()
         {
-            MainViewModel.IsBookmarkListVisible= GlueState.Self.GlueSettingsSave.IsBookmarksListVisible;
+            var pixelHeight = GlueState.Self.GlueSettingsSave.BookmarkRowHeight > 0
+                ? GlueState.Self.GlueSettingsSave.BookmarkRowHeight
+                : 100;
+            MainViewModel.OldBookmarkRowHeight = new System.Windows.GridLength(
+                pixelHeight, System.Windows.GridUnitType.Pixel);
+
+            MainViewModel.IsBookmarkListVisible = GlueState.Self.GlueSettingsSave.IsBookmarksListVisible;
+
             MainViewModel.PropertyChanged += HandleMainViewModelPropertyChanged;
 
             var findManager = new FindManager(MainViewModel);
@@ -67,9 +74,18 @@ namespace OfficialPlugins.TreeViewPlugin
             switch(e.PropertyName)
             {
                 case nameof(MainViewModel.IsBookmarkListVisible):
+                case nameof(MainViewModel.BookmarkRowHeight):
                     if(GlueState.Self.GlueSettingsSave != null)
                     {
                         GlueState.Self.GlueSettingsSave.IsBookmarksListVisible = MainViewModel.IsBookmarkListVisible;
+                        if(MainViewModel.IsBookmarkListVisible)
+                        {
+                            GlueState.Self.GlueSettingsSave.BookmarkRowHeight = MainViewModel.BookmarkRowHeight.Value;
+                        }
+                        else
+                        {
+                            GlueState.Self.GlueSettingsSave.BookmarkRowHeight = MainViewModel.OldBookmarkRowHeight.Value;
+                        }
                         GlueCommands.Self.GluxCommands.SaveSettings();
 
                     }

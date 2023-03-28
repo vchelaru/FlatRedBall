@@ -292,7 +292,7 @@ namespace FlatRedBall.Glue.IO
         public void GetCsprojToLoad(out string csprojToLoad)
         {
             csprojToLoad = CommandLineManager.Self.ProjectToLoad;
-            var settingsSave = ProjectManager.GlueSettingsSave;
+            var settingsSave = GlueState.Self.GlueSettingsSave;
 
             bool shouldTryLoadingFromSettings = string.IsNullOrEmpty(csprojToLoad) &&
                 (Control.ModifierKeys & Keys.Shift) == 0;

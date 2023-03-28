@@ -588,7 +588,7 @@ namespace Glue
                 
                 if (!didErrorOccur)
                 {
-                    ProjectManager.GlueSettingsSave = settingsSave;
+                    GlueState.Self.GlueSettingsSave = settingsSave;
 
                     string csprojToLoad;
                     ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);

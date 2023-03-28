@@ -3299,7 +3299,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void SaveSettings()
         {
-            ProjectManager.GlueSettingsSave.Save();
+            GlueState.Self.GlueSettingsSave.Save();
         }
 
     }

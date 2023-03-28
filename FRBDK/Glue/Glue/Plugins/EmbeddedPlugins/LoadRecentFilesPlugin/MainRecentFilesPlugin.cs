@@ -103,7 +103,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             if(GlueState.Self.GlueSettingsSave == null)
             {
                 // This should probably not be the responsibility of the plugin. It should be handled elsewhere before this hapens.
-                ProjectManager.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
+                GlueState.Self.GlueSettingsSave = new SaveClasses.GlueSettingsSave();
             }
 
             if(GlueSettings.RecentFileList == null)

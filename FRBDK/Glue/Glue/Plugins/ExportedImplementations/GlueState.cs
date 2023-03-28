@@ -310,11 +310,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         /// <summary>
         /// The global glue settings for the current user, not tied to a particular project.
         /// </summary>
-        public GlueSettingsSave GlueSettingsSave => ProjectManager.GlueSettingsSave; 
+        public GlueSettingsSave GlueSettingsSave
+        {
+            get => ProjectManager.GlueSettingsSave;
+            set => ProjectManager.GlueSettingsSave = value;
+        }
 
         #endregion
 
-        #region Sub-containers and Self
+            #region Sub-containers and Self
 
         static GlueState mSelf;
         public static GlueState Self

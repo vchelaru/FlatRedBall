@@ -194,11 +194,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     if(value== false)
                     {
+                        OldBookmarkRowHeight = BookmarkRowHeight;
                         BookmarkRowHeight = new GridLength(0, GridUnitType.Pixel);
                     }
                     else
                     {
-                        BookmarkRowHeight = new GridLength(100, GridUnitType.Pixel);
+                        BookmarkRowHeight = OldBookmarkRowHeight;
                     }
                 }
             }
@@ -208,6 +209,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public Visibility BookmarkListVisibility => IsBookmarkListVisible.ToVisibility();
 
         public ObservableCollection<BookmarkViewModel> Bookmarks { get; private set; } = new ObservableCollection<BookmarkViewModel>();
+
+        public BookmarkViewModel SelectedBookmark
+        {
+            get => Get<BookmarkViewModel>();
+            set => Set(value);
+        }
+
+        public GridLength OldBookmarkRowHeight { get; set; }
 
         public GridLength BookmarkRowHeight
         {
