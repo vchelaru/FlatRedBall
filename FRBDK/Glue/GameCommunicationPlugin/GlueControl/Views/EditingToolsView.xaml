@@ -20,7 +20,7 @@
                         <Button.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="View Preview in Explorer" Command="{Binding ViewInExplorerCommand}" />
-                                <MenuItem Header="Select Preview File">
+                                <MenuItem Header="Set Preview File">
                                     <MenuItem Header="From Custom File..."  Command="{Binding SelectPreviewFileCommand}"></MenuItem>
                                     <MenuItem Header="From Entity..." Command="{Binding SelectPreviewFromEntityCommand}"></MenuItem>
                                 </MenuItem> 
