@@ -48,6 +48,11 @@ namespace GlueFormsCore.Controls
 
         private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
         {
+            var vm = ViewModel;
+            if(vm != null)
+            {
+                vm.SearchBoxText = null;
+            }
             ClearSearchButtonClicked?.Invoke();
         }
 

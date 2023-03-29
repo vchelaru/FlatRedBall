@@ -177,7 +177,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         private static async void HandleSelectPreviewFromEntity(ToolbarEntityAndStateViewModel viewModel)
         {
             var window = new ListBoxWindowWpf();
-
+            window.ShowSearchBar();
             window.Message = "Select an entity. A custom PNG will be created for this named object";
 
             var label = new Label();
