@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FlatRedBall.Input
 {
@@ -172,9 +173,18 @@ namespace FlatRedBall.Input
     /// </summary>
     public abstract class MultiPressableInputBase
     {
-        protected MultiPressableInputBase(IPressableInput input1, params IPressableInput[] otherInputs)
+        protected MultiPressableInputBase(IPressableInput input1, IPressableInput input2)
         {
             AddInput(input1);
+            AddInput(input2);
+        }
+        
+        protected MultiPressableInputBase(IEnumerable<IPressableInput> otherInputs)
+        {
+            if (!otherInputs.Any())
+            {
+                throw new ArgumentException("MultiInputs must contain at least one input.");
+            }
             foreach (IPressableInput pressableInput in otherInputs)
             {
                 AddInput(pressableInput);
@@ -204,7 +214,8 @@ namespace FlatRedBall.Input
     /// </summary>
     public class AndPressableInput : MultiPressableInputBase, IRepeatPressableInput
     {
-        public AndPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
+        public AndPressableInput(IPressableInput input1, IPressableInput input2) : base(input1, input2) { }
+        public AndPressableInput(IEnumerable<IPressableInput> otherInputs) : base(otherInputs) { }
         
         public bool IsDown => Inputs.AllDown;
         public bool WasJustPressed => Inputs.AllJustPressed;
@@ -219,12 +230,13 @@ namespace FlatRedBall.Input
     /// </summary>
     public class OrPressableInput : MultiPressableInputBase, IRepeatPressableInput
     {
-        public OrPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
+        public OrPressableInput(IPressableInput input1, IPressableInput input2) : base(input1, input2) { }
+        public OrPressableInput(IEnumerable<IPressableInput> otherInputs) : base(otherInputs) { }
 
-        public bool IsDown => Inputs.SomeDown;
-        public bool WasJustPressed => Inputs.SomeJustPressed;
-        public bool WasJustReleased => Inputs.SomeJustReleased;
-        public bool WasJustPressedOrRepeated => WasJustPressed || RepeatableInputs.SomePressedOrRepeated;
+        public bool IsDown => Inputs.AnyDown;
+        public bool WasJustPressed => Inputs.AnyJustPressed;
+        public bool WasJustReleased => Inputs.AnyJustReleased;
+        public bool WasJustPressedOrRepeated => WasJustPressed || RepeatableInputs.AnyJustPressedOrRepeated;
     }
 
     /// <summary>
@@ -247,7 +259,7 @@ namespace FlatRedBall.Input
     }
 
     /// <summary>
-    /// Stores 
+    /// Stores pressable inputs and does basic queries to see if any or all of the inputs are active.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PressableInputCollection<T> : HashSet<T> where T : IPressableInput
@@ -303,7 +315,7 @@ namespace FlatRedBall.Input
             }
         }
         
-        public bool SomeJustPressed
+        public bool AnyJustPressed
         {
             get
             {
@@ -320,7 +332,7 @@ namespace FlatRedBall.Input
             }
         }
         
-        public bool SomeJustReleased
+        public bool AnyJustReleased
         {
             get
             {
@@ -337,7 +349,7 @@ namespace FlatRedBall.Input
             }
         }
         
-        public bool SomeDown
+        public bool AnyDown
         {
             get
             {
@@ -357,23 +369,6 @@ namespace FlatRedBall.Input
 
     public class RepeatPressableInputCollection : PressableInputCollection<IRepeatPressableInput>
     {
-        public bool SomePressedOrRepeated
-        {
-            get
-            {
-                if (Count == 0) throw new InvalidOperationException();
-                
-                foreach(var repeatPressableInput in this)
-                {
-                    if(repeatPressableInput.WasJustPressedOrRepeated)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-        
         public bool AllPressedOrRepeated
         {
             get
@@ -388,6 +383,23 @@ namespace FlatRedBall.Input
                     }
                 }
                 return true;
+            }
+        }
+        
+        public bool AnyJustPressedOrRepeated
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach(var repeatPressableInput in this)
+                {
+                    if(repeatPressableInput.WasJustPressedOrRepeated)
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
         }
     }
