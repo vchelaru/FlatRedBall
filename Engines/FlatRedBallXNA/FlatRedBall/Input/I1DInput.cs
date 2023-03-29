@@ -64,9 +64,9 @@ namespace FlatRedBall.Input
         public static Multiple1DInputs Or(this I1DInput thisInput, I1DInput input)
         {
             Multiple1DInputs toReturn;
-            if (thisInput is MultiplePressableInputs)
+            if (thisInput is Multiple1DInputs inputs)
             {
-                toReturn = (Multiple1DInputs)thisInput;
+                toReturn = inputs;
             }
             else
             {
