@@ -181,6 +181,10 @@ namespace FlatRedBall.Input
             }
         }
 
+        /// <summary>
+        /// Use to add another input to this existing MultiInput. Automatically detects <see cref="IRepeatPressableInput"/>s
+        ///   and adds them accordingly.
+        /// </summary>
         public void AddInput(IPressableInput input)
         {
             if (input is IRepeatPressableInput repeatInput)
@@ -190,19 +194,14 @@ namespace FlatRedBall.Input
             Inputs.Add(input);
         }
 
-        /// <summary>
-        /// The list of inputs to be used for an action.
-        /// </summary>
-        /// <example>
-        /// // The following shows how to add the space bar and the enter key:
-        /// var jumpInput = new MultiplePressableInputs();
-        /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Space));
-        /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Enter));
-        /// </example>
-        protected InputList<IPressableInput> Inputs { get; } = new InputList<IPressableInput>();
-        protected RepeatableInputList RepeatableInputs { get; } = new RepeatableInputList();
+        protected PressableInputCollection<IPressableInput> Inputs { get; } = new PressableInputCollection<IPressableInput>();
+        protected RepeatPressableInputCollection RepeatableInputs { get; } = new RepeatPressableInputCollection();
     }
 
+    /// <summary>
+    /// <inheritdoc cref="MultiPressableInputBase"/>
+    /// <br/>This input requires all contained inputs to be true for it to be true.
+    /// </summary>
     public class AndPressableInput : MultiPressableInputBase, IRepeatPressableInput
     {
         public AndPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
@@ -213,6 +212,11 @@ namespace FlatRedBall.Input
         public bool WasJustPressedOrRepeated => WasJustPressed || RepeatableInputs.AllPressedOrRepeated;
     }
 
+
+    /// <summary>
+    /// <inheritdoc cref="MultiPressableInputBase"/>
+    /// <br/>This input requires at least one of the contained inputs to be true for it to be true.
+    /// </summary>
     public class OrPressableInput : MultiPressableInputBase, IRepeatPressableInput
     {
         public OrPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
@@ -242,7 +246,11 @@ namespace FlatRedBall.Input
         public bool WasJustReleased => Input.WasJustReleased & !NotInput.WasJustReleased;
     }
 
-    public class InputList<T> : HashSet<T> where T : IPressableInput
+    /// <summary>
+    /// Stores 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class PressableInputCollection<T> : HashSet<T> where T : IPressableInput
     {
         public bool AllJustPressed
         {
@@ -347,7 +355,7 @@ namespace FlatRedBall.Input
         }
     }
 
-    public class RepeatableInputList : InputList<IRepeatPressableInput>
+    public class RepeatPressableInputCollection : PressableInputCollection<IRepeatPressableInput>
     {
         public bool SomePressedOrRepeated
         {
