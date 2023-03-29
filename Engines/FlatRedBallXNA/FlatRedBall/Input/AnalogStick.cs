@@ -25,6 +25,9 @@ namespace FlatRedBall.Input
         Vector2 mVelocity;
         double mMagnitude;
         double mAngle;
+        
+        double mTimeAfterPush = DefaultTimeAfterPush;
+        double mTimeBetweenRepeating = DefaultTimeBetweenRepeating;
 
         AnalogButton leftAsButton;
         AnalogButton rightAsButton;
@@ -45,6 +48,9 @@ namespace FlatRedBall.Input
         #endregion
         internal const float DPadOnValue = .550f;
         internal const float DPadOffValue = .450f;
+
+        public const double DefaultTimeAfterPush = .35;
+        public const double DefaultTimeBetweenRepeating = .12;
 
         bool[] mLastDPadDown = new bool[4];
         bool[] mCurrentDPadDown = new bool[4];
@@ -131,6 +137,16 @@ namespace FlatRedBall.Input
         /// Value is between 0 and 1, where 0 is the neutral position.
         /// </summary>
         public double Magnitude => mMagnitude; 
+        
+        /// <summary>
+        /// The time between a button is first pressed and the button starts repeating its input.
+        /// </summary>
+        public double TimeAfterPush { get => mTimeAfterPush; set => mTimeAfterPush = value; }
+        
+        /// <summary>
+        /// The time between repeat presses once a button has been held down.
+        /// </summary>
+        public double TimeBetweenRepeating { get => mTimeBetweenRepeating; set => mTimeBetweenRepeating = value; }
         
 
         #region XML Docs
@@ -235,7 +251,7 @@ namespace FlatRedBall.Input
         public bool AsDPadPushedRepeatRate(Xbox360GamePad.DPadDirection direction)
         {
             // Ignoring is performed inside this call.
-            return AsDPadPushedRepeatRate(direction, .35, .12);
+            return AsDPadPushedRepeatRate(direction, mTimeAfterPush, mTimeBetweenRepeating);
         }
 
 

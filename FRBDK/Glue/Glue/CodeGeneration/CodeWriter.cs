@@ -118,7 +118,7 @@ namespace FlatRedBallAddOns.Entities
     public partial class GlueEntityTemplate
     {
         /// <summary>
-        /// Initialization logic which is execute only one time for this Entity (unless the Entity is pooled).
+        /// Initialization logic which is executed only one time for this Entity (unless the Entity is pooled).
         /// This method is called when the Entity is added to managers. Entities which are instantiated but not
         /// added to managers will not have this method called.
         /// </summary>
