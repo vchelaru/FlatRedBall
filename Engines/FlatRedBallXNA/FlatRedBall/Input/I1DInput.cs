@@ -5,7 +5,7 @@ namespace FlatRedBall.Input
 {
     /// <summary>
     /// Interface defining an input device which can return a single value. Typically this value will range between
-    /// 0 to +1 for analog buttons and -1 to +1 for direcitonal input devices such as analog sticks.
+    /// 0 to +1 for analog buttons and -1 to +1 for directional input devices such as analog sticks.
     /// </summary>
 	public interface I1DInput
 	{
