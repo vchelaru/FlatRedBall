@@ -306,6 +306,14 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                     await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addObjectModel,
                     container, listToAddTo: null);
 
+                var indexToInsertAfter = GetIndexToInsertAfter(newNos, container);
+
+                if(indexToInsertAfter != null)
+                {
+                    container.NamedObjects.Remove(newNos);
+                    container.NamedObjects.Insert(indexToInsertAfter.Value + 1, newNos);
+                }
+
                 // if this is an always-colliding relationship, the user will typically want this
                 // to be at the beginning before all other relationships. Therefore, let's remove
                 // and re-add it:
@@ -361,6 +369,27 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }, $"Creating collision relationships between {firstNosName} and {secondNosName}", doOnUiThread:true);
 
             return newNos;
+        }
+
+        private static int? GetIndexToInsertAfter(NamedObjectSave newNos, GlueElement container)
+        {
+            var newNosFirst = newNos.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+
+            for(int i = container.NamedObjects.Count - 1; i >= 0; i--)
+            {
+                var candidate = container.NamedObjects[i];
+
+                if (candidate == newNos) continue;
+
+                var candidateFirst = candidate.Properties.GetValue<string>(nameof(CollisionRelationshipViewModel.FirstCollisionName));
+
+                if(candidateFirst == newNosFirst)
+                {
+                    return i;
+                }
+            }
+
+            return null;
         }
     }
 }

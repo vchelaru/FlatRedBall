@@ -548,12 +548,7 @@ namespace FlatRedBall.Glue.FormHelpers
         {
             CreateImages();
 
-            #region All Nodes
 
-            Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), image: BookmarkImage);
-
-
-            #endregion
 
             #region IsScreenNode
 
@@ -993,6 +988,16 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 AddRemoveFromProjectItems();
 
+            }
+
+            #endregion
+
+            #region All Nodes
+
+            if(menuShowingAction == MenuShowingAction.RegularRightClick)
+            {
+                AddSeparator();
+                Add("Bookmark", () => PluginManager.CallPluginMethod("Tree View Plugin", "AddBookmark", targetNode), image: BookmarkImage);
             }
 
             #endregion
