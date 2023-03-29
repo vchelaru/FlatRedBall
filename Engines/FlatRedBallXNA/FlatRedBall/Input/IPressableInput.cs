@@ -94,43 +94,66 @@ namespace FlatRedBall.Input
     public static class IPressableInputExtensions
     {
         /// <summary>
-        /// Allows making a single PressableInput (of type MultiplePressableInputs) for inputs that combine more than one IPressableInput instance.
+        /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
+        ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
+        ///   and so on.
+        /// <br/>Does not support repeatable inputs.
         /// </summary>
-        /// <param name="thisInput">The calling IPressableInput</param>
-        /// <param name="input">The second IPressableInput to add when creating a MultiplePressableInputs</param>
-        /// <returns>The resulting IPressableInput which contains the caller and the argument input.</returns>
-        public static MultiplePressableInputs Or(this IPressableInput thisInput, IPressableInput input)
+        public static AndPressableInput And(this IPressableInput thisInput, IPressableInput otherInput)
         {
-            MultiplePressableInputs toReturn;
-            if(thisInput is MultiplePressableInputs)
+            if (thisInput is AndPressableInput andInput1)
             {
-                toReturn = (MultiplePressableInputs)thisInput;
+                andInput1.AddInput(otherInput);
+                return andInput1;
             }
-            else
+            
+            if (otherInput is AndPressableInput andInput2)
             {
-                toReturn = new MultiplePressableInputs();
-                toReturn.Inputs.Add(thisInput);
-
-                if(thisInput is IRepeatPressableInput thisAsRepeatable)
-                {
-                    toReturn.RepeatPressableInputs.Add(thisAsRepeatable);
-                }
+                andInput2.AddInput(otherInput);
+                return andInput2;
             }
-
-            toReturn.Inputs.Add(input);
-            if(input is IRepeatPressableInput inputAsRepeatable)
-            {
-                toReturn.Inputs.Add(inputAsRepeatable);
-            }
-
-            return toReturn;
+            
+            return new AndPressableInput(thisInput, otherInput);
         }
-
+        
+        /// <summary>
+        /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
+        ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
+        ///   and so on.
+        /// <br/>Does not support repeatable inputs.
+        /// </summary>
+        public static OrPressableInput Or(this IPressableInput thisInput, IPressableInput otherInput)
+        {
+            if (thisInput is OrPressableInput orInput1)
+            {
+                orInput1.AddInput(otherInput);
+                return orInput1;
+            }
+            
+            if (otherInput is OrPressableInput orInput2)
+            {
+                orInput2.AddInput(otherInput);
+                return orInput2;
+            }
+            
+            return new OrPressableInput(thisInput, otherInput);
+        }
+        
+        /// <summary>
+        /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
+        ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
+        ///   and so on.
+        /// <br/>Does not support repeatable inputs.
+        /// </summary>
+        public static AndNotPressableInput AndNot(this IPressableInput thisInput, IPressableInput otherInput)
+        {
+            return new AndNotPressableInput(thisInput, otherInput);
+        }
 
         /// <summary>
         /// Creates a new I2DInput from the calling IPressableInput which returns a Value of 0 if not pressed, and 1 if pressed.
         /// </summary>
-        /// <param name="thisInput">The IpressableInput to use as a 1DInput</param>
+        /// <param name="thisInput">The IPressableInput to use as a 1DInput</param>
         /// <returns>The resulting I1DInput.</returns>
         public static I1DInput To1DInput(this IPressableInput thisInput)
         {
@@ -147,8 +170,26 @@ namespace FlatRedBall.Input
     /// An IPressableInput interface which can contain multiple IPressableInputs. This is useful if a particular action can be
     /// performed with multiple inputs, such as both the space bar and a game pad's A button being used to make a character jump.
     /// </summary>
-    public class MultiplePressableInputs : IRepeatPressableInput
+    public abstract class MultiPressableInputBase
     {
+        protected MultiPressableInputBase(IPressableInput input1, params IPressableInput[] otherInputs)
+        {
+            AddInput(input1);
+            foreach (IPressableInput pressableInput in otherInputs)
+            {
+                AddInput(pressableInput);
+            }
+        }
+
+        public void AddInput(IPressableInput input)
+        {
+            if (input is IRepeatPressableInput repeatInput)
+            {
+                RepeatableInputs.Add(repeatInput);
+            }
+            Inputs.Add(input);
+        }
+
         /// <summary>
         /// The list of inputs to be used for an action.
         /// </summary>
@@ -158,44 +199,109 @@ namespace FlatRedBall.Input
         /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Space));
         /// jumpInput.Inputs.Add(InputManager.Keyboard.GetKey(Keys.Enter));
         /// </example>
-        public List<IPressableInput> Inputs
-        {
-            get;
-            private set;
-        }
+        protected InputList<IPressableInput> Inputs { get; } = new InputList<IPressableInput>();
+        protected RepeatableInputList RepeatableInputs { get; } = new RepeatableInputList();
+    }
 
-        public List<IRepeatPressableInput> RepeatPressableInputs
-        {
-            get;
-            private set;
-        }
+    public class AndPressableInput : MultiPressableInputBase, IRepeatPressableInput
+    {
+        public AndPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
+        
+        public bool IsDown => Inputs.AllDown;
+        public bool WasJustPressed => Inputs.AllJustPressed;
+        public bool WasJustReleased => Inputs.AllJustReleased;
+        public bool WasJustPressedOrRepeated => WasJustPressed || RepeatableInputs.AllPressedOrRepeated;
+    }
 
-        public MultiplePressableInputs()
-        {
-            Inputs = new List<IPressableInput>();
-            RepeatPressableInputs = new List<IRepeatPressableInput>();
-        }
+    public class OrPressableInput : MultiPressableInputBase, IRepeatPressableInput
+    {
+        public OrPressableInput(IPressableInput input1, params IPressableInput[] inputs) : base(input1, inputs) { }
 
-        public bool IsDown
-        {
-            get 
-            {
-                foreach (var input in Inputs)
-                {
-                    if(input.IsDown)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
+        public bool IsDown => Inputs.SomeDown;
+        public bool WasJustPressed => Inputs.SomeJustPressed;
+        public bool WasJustReleased => Inputs.SomeJustReleased;
+        public bool WasJustPressedOrRepeated => WasJustPressed || RepeatableInputs.SomePressedOrRepeated;
+    }
 
-        public bool WasJustPressed
+    /// <summary>
+    /// Holds two pressable inputs. Inputs return true if and only if the first input is true and the second input is false.
+    /// </summary>
+    public class AndNotPressableInput : IPressableInput
+    {
+        public AndNotPressableInput(IPressableInput input, IPressableInput notInput)
+        {
+            Input = input;
+            NotInput = notInput;
+        }
+        
+        protected IPressableInput Input { get; }
+        protected IPressableInput NotInput { get; }
+
+        public bool IsDown => Input.IsDown & !NotInput.IsDown;
+        public bool WasJustPressed => Input.WasJustPressed & !NotInput.WasJustPressed;
+        public bool WasJustReleased => Input.WasJustReleased & !NotInput.WasJustReleased;
+    }
+
+    public class InputList<T> : HashSet<T> where T : IPressableInput
+    {
+        public bool AllJustPressed
         {
             get
             {
-                foreach (var input in Inputs)
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
+                {
+                    if (!input.WasJustPressed)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        public bool AllJustReleased
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
+                {
+                    if (!input.WasJustReleased)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        public bool AllDown
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
+                {
+                    if (!input.IsDown)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        
+        public bool SomeJustPressed
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
                 {
                     if (input.WasJustPressed)
                     {
@@ -205,12 +311,14 @@ namespace FlatRedBall.Input
                 return false;
             }
         }
-
-        public bool WasJustReleased
+        
+        public bool SomeJustReleased
         {
             get
             {
-                foreach (var input in Inputs)
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
                 {
                     if (input.WasJustReleased)
                     {
@@ -220,27 +328,58 @@ namespace FlatRedBall.Input
                 return false;
             }
         }
-
-        public bool WasJustPressedOrRepeated
+        
+        public bool SomeDown
         {
             get
             {
-                if(WasJustPressed)
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach (var input in this)
                 {
-                    return true;
+                    if (input.IsDown)
+                    {
+                        return true;
+                    }
                 }
-                foreach(var repeatPressableInput in RepeatPressableInputs)
+                return false;
+            }
+        }
+    }
+
+    public class RepeatableInputList : InputList<IRepeatPressableInput>
+    {
+        public bool SomePressedOrRepeated
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach(var repeatPressableInput in this)
                 {
                     if(repeatPressableInput.WasJustPressedOrRepeated)
                     {
-                        if(repeatPressableInput.WasJustPressedOrRepeated)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
-
                 return false;
+            }
+        }
+        
+        public bool AllPressedOrRepeated
+        {
+            get
+            {
+                if (Count == 0) throw new InvalidOperationException();
+                
+                foreach(var repeatPressableInput in this)
+                {
+                    if(!repeatPressableInput.WasJustPressedOrRepeated)
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
     }
