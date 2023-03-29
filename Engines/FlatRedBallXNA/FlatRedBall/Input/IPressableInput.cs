@@ -38,7 +38,7 @@ namespace FlatRedBall.Input
     /// <summary>
     /// Implementation of IPressableInput which always returns false. Can be used for classes
     /// requiring an IPressableInput implementation
-    /// (like IInputDevice) which sould always return false.
+    /// (like IInputDevice) which could always return false.
     /// </summary>
     public class FalsePressableInput : IRepeatPressableInput
     {
