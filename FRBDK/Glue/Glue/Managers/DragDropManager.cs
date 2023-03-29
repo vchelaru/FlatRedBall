@@ -982,7 +982,7 @@ namespace FlatRedBall.Glue.Managers
                 targetNode = targetNode.FindByName("Files");
             }
 
-            ReferencedFileSave referencedFileSave = treeNodeMoving.Tag as ReferencedFileSave;
+            ReferencedFileSave originalReferencedFileSave = treeNodeMoving.Tag as ReferencedFileSave;
 
             if (!targetNode.IsFilesContainerNode() &&
                 !targetNode.IsFolderInFilesContainerNode() &&
@@ -993,10 +993,10 @@ namespace FlatRedBall.Glue.Managers
             {
                 response.Fail(@"Can't drop this file here");
             }
-            else if (!string.IsNullOrEmpty(referencedFileSave.SourceFile) ||
-                referencedFileSave.SourceFileCache?.Count > 0)
+            else if (!string.IsNullOrEmpty(originalReferencedFileSave.SourceFile) ||
+                originalReferencedFileSave.SourceFileCache?.Count > 0)
             {
-                response.Fail("Can't move the file\n\n" + referencedFileSave.Name + "\n\nbecause it has source-referencing files.  These sources will be broken " +
+                response.Fail("Can't move the file\n\n" + originalReferencedFileSave.Name + "\n\nbecause it has source-referencing files.  These sources will be broken " +
                     "if the file is moved.  You will need to manually move the file, modify the source references, remove this file, then add the newly-created file.");
             }
 
@@ -1007,33 +1007,33 @@ namespace FlatRedBall.Glue.Managers
                 {
                     if (treeNodeMoving.GetContainingElementTreeNode() == null)
                     {
-                        if(referencedFileSave.IsCreatedByWildcard)
+                        if(originalReferencedFileSave.IsCreatedByWildcard)
                         {
                             response.Fail("Cannot move this file because it is created by a wildcard pattern");
                         }
                         else
                         {
                             string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                            response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                            response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                         }
                     }
                     else
                     {
-                        await DragAddFileToGlobalContent(referencedFileSave);
+                        await DragAddFileToGlobalContent(originalReferencedFileSave);
                         // This means the user wants to add the file
                         // to global content.
                     }
                 }
                 else if (targetNode.IsFolderForGlobalContentFiles())
                 {
-                    if (targetNode.GetContainingElementTreeNode() == null && referencedFileSave.IsCreatedByWildcard)
+                    if (targetNode.GetContainingElementTreeNode() == null && originalReferencedFileSave.IsCreatedByWildcard)
                     {
                         response.Fail("Cannot move this file because it is created by a wildcard pattern");
                     }
                     else
                     {
                         string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                        response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                        response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                     }
 
                 }
@@ -1048,7 +1048,7 @@ namespace FlatRedBall.Glue.Managers
                     // dropping on an object in the same element
                     targetNode.GetContainingElementTreeNode() == treeNodeMoving.GetContainingElementTreeNode())
                 {
-                    response = await HandleDroppingFileOnObjectInSameElement(targetNode, referencedFileSave);
+                    response = await HandleDroppingFileOnObjectInSameElement(targetNode, originalReferencedFileSave);
 
                 }
 
@@ -1056,7 +1056,7 @@ namespace FlatRedBall.Glue.Managers
                 else
                 {
                     // See if we're moving the RFS from one Element to another
-                    IElement container = ObjectFinder.Self.GetElementContaining(referencedFileSave);
+                    IElement container = ObjectFinder.Self.GetElementContaining(originalReferencedFileSave);
                     var elementTreeNodeDroppingIn = targetNode.GetContainingElementTreeNode();
                     GlueElement elementDroppingIn = null;
                     if (elementTreeNodeDroppingIn != null)
@@ -1079,27 +1079,50 @@ namespace FlatRedBall.Glue.Managers
                         // For example, dropping a file called Level1.tmx in a screen called Level1. 
                         // This will not compile so we shouldn't allow it.
 
-                        var areNamedTheSame = elementDroppingIn.GetStrippedName() == referencedFileSave.GetInstanceName();
+                        var areNamedTheSame = elementDroppingIn.GetStrippedName() == originalReferencedFileSave.GetInstanceName();
 
                         if (areNamedTheSame)
                         {
-                            response.Fail($"The file {referencedFileSave.GetInstanceName()} has the same name as the target screen. it will not be added since this is not allowed.");
+                            response.Fail($"The file {originalReferencedFileSave.GetInstanceName()} has the same name as the target screen. it will not be added since this is not allowed.");
                         }
 
                         if (response.Succeeded)
                         {
 
-                            GlueState.Self.CurrentReferencedFileSave = referencedFileSave;
+                            GlueState.Self.CurrentReferencedFileSave = originalReferencedFileSave;
 
-                            string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(referencedFileSave);
+                            string absoluteFileName = GlueCommands.Self.GetAbsoluteFileName(originalReferencedFileSave);
                             string creationReport;
                             string errorMessage;
 
                             var newlyCreatedFile = ElementCommands.Self.CreateReferencedFileSaveForExistingFile(elementDroppingIn, null, absoluteFileName,
                                                                             PromptHandleEnum.Prompt,
-                                                                            referencedFileSave.GetAssetTypeInfo(),
+                                                                            originalReferencedFileSave.GetAssetTypeInfo(),
                                                                             out creationReport,
                                                                             out errorMessage);
+
+                            // maybe we should copy more properties here?
+                            newlyCreatedFile.DestroyOnUnload = originalReferencedFileSave.DestroyOnUnload;
+                            newlyCreatedFile.LoadedOnlyWhenReferenced = originalReferencedFileSave.LoadedOnlyWhenReferenced;
+                            newlyCreatedFile.IncludeDirectoryRelativeToContainer = originalReferencedFileSave.IncludeDirectoryRelativeToContainer;
+
+                            // copy over the properties from the source file to the new file:
+                            foreach (var originalProperty in originalReferencedFileSave.Properties)
+                            {
+                                var existing = newlyCreatedFile.Properties.FirstOrDefault(item => item.Name == originalProperty.Name);
+
+                                if(existing != null)
+                                {
+                                    existing.Value = originalProperty.Value;
+                                }
+                                else
+                                {
+                                    var clone = FileManager.CloneObject(originalProperty);
+                                    newlyCreatedFile.Properties.Add(clone);
+
+                                }
+
+                            }
 
                             if(elementDroppingIn != null)
                             {
@@ -1124,7 +1147,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                     else
                     {
-                        if(referencedFileSave.IsCreatedByWildcard)
+                        if(originalReferencedFileSave.IsCreatedByWildcard)
                         {
                             response.Fail("Cannot move this file because it is created by a wildcard pattern");
                         }
@@ -1132,18 +1155,18 @@ namespace FlatRedBall.Glue.Managers
                         {
                             var targetElementContentFolder = new FilePath( GlueCommands.Self.FileCommands.GetContentFolder(elementDroppingIn));
 
-                            var fileAbsolutePath = GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave);
+                            var fileAbsolutePath = GlueCommands.Self.GetAbsoluteFilePath(originalReferencedFileSave);
 
                             var isRelativeToElementBeforeMove = targetElementContentFolder.IsRootOf(fileAbsolutePath);
 
                             if(isRelativeToElementBeforeMove)
                             {
                                 string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                                response = MoveReferencedFileToDirectory(referencedFileSave, targetDirectory);
+                                response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                             }
                             else
                             {
-                                GlueCommands.Self.PrintOutput($"Could not move {referencedFileSave} because it is not inside the content folder for {elementDroppingIn}");
+                                GlueCommands.Self.PrintOutput($"Could not move {originalReferencedFileSave} because it is not inside the content folder for {elementDroppingIn}");
 
                             }
                         }
