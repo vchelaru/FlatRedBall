@@ -250,5 +250,15 @@ namespace FlatRedBall.Glue.Controls
             ListBoxInstance.ScrollIntoView(ViewModel.SelectedListBoxItem);
 
         }
+
+        private void ListBoxInstance_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var objectPushed = e.OriginalSource;
+            var textBlock = (objectPushed as TextBlock);
+            if (textBlock != null && ViewModel.SelectedListBoxItem != null)
+            {
+                DoAcceptLogic();
+            }
+        }
     }
 }

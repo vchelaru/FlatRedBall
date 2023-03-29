@@ -38,6 +38,7 @@
                  ItemsSource="{Binding FilteredFileList}"
                  SelectedItem="{Binding SelectedListBoxItem}"
                  SelectionChanged="ListBoxInstance_SelectionChanged"
+                 MouseDoubleClick="ListBoxInstance_MouseDoubleClick"
                  ></ListBox>
             <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
             The list above shows all files in the game's content folder. <LineBreak></LineBreak>
