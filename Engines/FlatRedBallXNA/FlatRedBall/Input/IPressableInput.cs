@@ -98,7 +98,6 @@ namespace FlatRedBall.Input
         /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
         ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
         ///   and so on.
-        /// <br/>Does not support repeatable inputs.
         /// </summary>
         public static AndPressableInput And(this IPressableInput thisInput, IPressableInput otherInput)
         {
@@ -118,10 +117,9 @@ namespace FlatRedBall.Input
         }
         
         /// <summary>
-        /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
-        ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
+        /// Returns an IPressableInput which requires any of the provided inputs to be true for its inputs to be true.
+        ///   In other words: OrPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed || input2.WasJustPressed)
         ///   and so on.
-        /// <br/>Does not support repeatable inputs.
         /// </summary>
         public static OrPressableInput Or(this IPressableInput thisInput, IPressableInput otherInput)
         {
@@ -141,10 +139,11 @@ namespace FlatRedBall.Input
         }
         
         /// <summary>
-        /// Returns an IPressableInput which requires both of the provided inputs to be true for its inputs to be true.
-        ///   In other words: AndPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; input2.WasJustPressed)
+        /// Returns an IPressableInput which requires the first of the provided inputs to be true
+        ///   and the second of the provided inputs to be false for its inputs to be true.
+        ///   In other words: AndNotPressableInput.WasJustPressed is equivalent to (input1.WasJustPressed &amp;&amp; !input2.WasJustPressed)
         ///   and so on.
-        /// <br/>Does not support repeatable inputs.
+        /// <br/>Does not support checking for repeat inputs.
         /// </summary>
         public static AndNotPressableInput AndNot(this IPressableInput thisInput, IPressableInput otherInput)
         {
