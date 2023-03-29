@@ -34,14 +34,21 @@ namespace TopDownPlugin.Logic
                 {
                     case nameof(viewModel.IsTopDownRadioChecked):
                     case nameof(viewModel.IsPlatformerRadioChecked):
-                        if(viewModel.IsPlatformerRadioChecked || viewModel.IsTopDownRadioChecked)
+                        if (viewModel.IsPlatformerRadioChecked || viewModel.IsTopDownRadioChecked)
                         {
-                            commonViewModel.IsICollidableEnabled = false;
+                            if(commonViewModel.ObjectsDisablingCollidableCheckbox.Contains(viewModel) == false)
+                            {
+                                commonViewModel.ObjectsDisablingCollidableCheckbox.Add(viewModel);
+                            }
                             commonViewModel.IsICollidableChecked = true;
                         }
                         else
                         {
-                            commonViewModel.IsICollidableEnabled = true;
+
+                            if (commonViewModel.ObjectsDisablingCollidableCheckbox.Contains(viewModel))
+                            {
+                                commonViewModel.ObjectsDisablingCollidableCheckbox.Remove(viewModel);
+                            }
                         }
                         break;
                 }

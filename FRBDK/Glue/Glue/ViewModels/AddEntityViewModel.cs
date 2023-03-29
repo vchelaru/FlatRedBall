@@ -115,10 +115,18 @@ namespace GlueFormsCore.ViewModels
         public Visibility CollisionsVisibility =>
             (HasInheritance == false).ToVisibility();
 
+        public ObservableCollection<object> ObjectsDisablingCollidableCheckbox
+        {
+            get => Get<ObservableCollection<object>>();
+            set => Set(value);
+        }
+
+        [DependsOn(nameof(ObjectsDisablingCollidableCheckbox))]
+        [DependsOn(nameof(IsIDamageableChecked))]
+        [DependsOn(nameof(IsIDamageAreaChecked))]
         public bool IsICollidableEnabled
         {
-            get => Get<bool>();
-            set => Set(value);
+            get => ObjectsDisablingCollidableCheckbox.Count == 0 && !IsIDamageableChecked && !IsIDamageAreaChecked;
         }
 
         #endregion
@@ -198,13 +206,25 @@ namespace GlueFormsCore.ViewModels
         public bool IsIDamageableChecked
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if(Set(value) && value)
+                {
+                    IsICollidableChecked = true;
+                }
+            }
         }
 
         public bool IsIDamageAreaChecked
         {
             get => Get<bool>();
-            set => Set(value);
+            set
+            {
+                if (Set(value) && value)
+                {
+                    IsICollidableChecked = true;
+                }
+            }
         }
 
         [DependsOn(nameof(IsIDamageableChecked))]
@@ -343,7 +363,7 @@ namespace GlueFormsCore.ViewModels
 
         public AddEntityViewModel()
         {
-            IsICollidableEnabled = true;
+            ObjectsDisablingCollidableCheckbox = new ObservableCollection<object>();
             IsCreateFactoryChecked = true;
 
             CustomTeamIndex = 2; // If the user picks "other" it shouldn't default to 0
