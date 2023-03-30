@@ -117,7 +117,7 @@ namespace FlatRedBall.Glue.IO
 
             if (!isIgnored)
             {
-                bool handled = await UpdateReactor.UpdateFile(file.FilePath.FullPath, file.ChangeType);
+                bool handled = await UpdateReactor.UpdateFile(file.FilePath, file.ChangeType);
                 wasAnythingChanged |= handled;
             }
             else if (reason == IgnoreReason.BuiltFile)

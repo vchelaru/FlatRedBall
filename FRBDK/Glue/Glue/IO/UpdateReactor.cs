@@ -72,38 +72,6 @@ namespace FlatRedBall.Glue.IO
                 }
             }
 
-            #region If it's a CSV, then re-generate the code for the objects
-
-            string extension = changedFile.Extension;
-
-            if (extension == "csv" ||
-                extension == "txt")
-            {
-                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
-
-                bool shouldGenerate = rfs != null &&
-                    (extension == "csv" || rfs.TreatAsCsv) &&
-                    rfs.IsDatabaseForLocalizing == false;
-
-                if (shouldGenerate)
-                {
-                    try
-                    {
-                        await CsvCodeGenerator.GenerateAndSaveDataClassAsync(rfs, rfs.CsvDelimiter);
-
-                        shouldSave = true;
-                    }
-                    catch (Exception e)
-                    {
-                        GlueCommands.Self.PrintError("Error saving Class from CSV " + rfs.Name +
-                            "\n" + e.ToString());
-                    }
-                }
-            }
-
-
-            #endregion
-
             #region If it's a file that references other content we may need to update the project
 
             if (FileHelper.DoesFileReferenceContent(changedFile.FullPath))
@@ -172,6 +140,8 @@ namespace FlatRedBall.Glue.IO
             }
 
             #endregion
+
+            var extension = changedFile.Extension;
 
             #region If it's a .cs file, we should see if we've added a new .cs file, and if so refresh the Element for it
             if (extension == "cs")

@@ -134,7 +134,16 @@ namespace EditorObjects.SaveClasses
             string arguments = GetArguments(absoluteSourceFile, absoluteDestinationFile, additionalArguments);
             if (!File.Exists(executable))
             {
-                errorString = "Could not find the tool " + executable;
+                var removed = FileManager.RemoveDotDotSlash(executable);
+
+                if(removed != executable)
+                {
+                    errorString = $"Error trying to build\n{absoluteSourceFile}\nCould not find the tool:\n{removed}\noriginal:\n{executable}";
+                }
+                else
+                {
+                    errorString = "Could not find the tool " + executable;
+                }
             }
             else
             {

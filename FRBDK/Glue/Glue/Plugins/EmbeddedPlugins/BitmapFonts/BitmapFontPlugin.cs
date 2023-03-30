@@ -61,7 +61,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.BitmapFonts
         {
             if (System.IO.File.Exists(association.BuildToolProcessed))
             {
-                var buildToolList = GlueState.Self.GlueSettingsSave.BuildTools;
+                var buildToolList = GlueState.Self.GlueSettingsSave.BuildToolAssociations;
 
                 bool found = buildToolList.Any(
                     possible => possible.ToString().ToLowerInvariant() == association.ToString().ToLowerInvariant());

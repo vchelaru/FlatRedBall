@@ -73,8 +73,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public List<RecentFileSave> RecentFileList { get; set; } = new List<RecentFileSave>();
 
-        public List<string> BuildTools = new List<string>();
-
         #endregion
 
         #region Properties

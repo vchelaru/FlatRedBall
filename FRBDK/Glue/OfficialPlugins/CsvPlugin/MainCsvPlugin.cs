@@ -1,10 +1,13 @@
 ﻿using EditorObjects.SaveClasses;
+using FlatRedBall.Glue;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
@@ -33,6 +36,41 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
             this.AddNewFileOptionsHandler += HandleAddNewFileOptions;
 
             this.ReactToLoadedGlux += HandleGluxLoad;
+
+            this.ReactToFileChange += HandleFileChange;
+        }
+
+        private async void HandleFileChange(FilePath changedFile, FileChangeType fileChangeType)
+        {
+            string extension = changedFile.Extension;
+
+            ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(changedFile);
+
+            bool shouldGenerate = rfs != null &&
+                (extension == "csv" || rfs.TreatAsCsv) &&
+                rfs.IsDatabaseForLocalizing == false;
+
+            var shouldSave = false;
+            if (shouldGenerate)
+            {
+                try
+                {
+                    await CsvCodeGenerator.GenerateAndSaveDataClassAsync(rfs, rfs.CsvDelimiter);
+
+                    shouldSave = true;
+                }
+                catch (Exception e)
+                {
+                    GlueCommands.Self.PrintError("Error saving Class from CSV " + rfs.Name +
+                        "\n" + e.ToString());
+                }
+            }
+
+            if(shouldSave)
+            {
+                GlueCommands.Self.GluxCommands.SaveGlux(FlatRedBall.Glue.Managers.TaskExecutionPreference.AddOrMoveToEnd);
+            }
+
         }
 
         private void HandleGluxLoad()
