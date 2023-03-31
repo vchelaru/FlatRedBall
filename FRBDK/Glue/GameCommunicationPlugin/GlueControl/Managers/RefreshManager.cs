@@ -1011,7 +1011,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         ViewModel.IsEditChecked = true;
                     }
 
-                }, nameof(CreateStopAndRestartTask), TaskExecutionPreference.AddOrMoveToEnd);
+                }, $"{nameof(CreateStopAndRestartTask)} : {reason}" , TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
