@@ -281,7 +281,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         handled = true;
                     }
                 }
-                if (!handled)
+                if (!handled && GlueCommands.Self.FileCommands.IsContent(fileName))
                 {
                     CreateStopAndRestartTask($"File {fileName} changed");
                 }
