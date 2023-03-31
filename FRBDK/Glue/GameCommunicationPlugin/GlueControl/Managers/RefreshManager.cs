@@ -315,7 +315,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 return false;
             }
-
+            if(string.IsNullOrEmpty(filePath.Extension))
+            {
+                return false;
+            }
 
 
             return true;
