@@ -177,6 +177,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 nodeWaitingOnSelection = nodePushed;
                 // don't select anything (yet)
                 e.Handled = true;
+
+                MainTreeView.Focus();
             }
         }
 
