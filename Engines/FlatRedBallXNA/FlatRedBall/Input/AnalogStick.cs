@@ -21,6 +21,8 @@ namespace FlatRedBall.Input
     {
         #region Fields
 
+        Vector2 mRawPosition;
+
         Vector2 mPosition;
         Vector2 mVelocity;
         double mMagnitude;
@@ -149,16 +151,14 @@ namespace FlatRedBall.Input
         public double TimeBetweenRepeating { get => mTimeBetweenRepeating; set => mTimeBetweenRepeating = value; }
         
 
-        #region XML Docs
         /// <summary>
-        /// The position of the analog stick.  The range for each component is -1 to 1.
+        /// The position of the analog stick after applying deadzone.  The range for each component is -1 to 1. 
         /// </summary>
-        #endregion
-        public Vector2 Position
-        {
-            get { return mPosition; }
-        }
+        public Vector2 Position => mPosition;
+        
 
+
+        public Vector2 RawPosition => mRawPosition;
 
         public Vector2 Velocity
         {
@@ -298,6 +298,7 @@ namespace FlatRedBall.Input
         /// <param name="newPosition">The normalized (-1 to +1) position of the analog stick.</param>
         public void Update(Vector2 newPosition)
         {
+            mRawPosition = newPosition;
             if (Deadzone > 0)
             {
                 switch (DeadzoneType)

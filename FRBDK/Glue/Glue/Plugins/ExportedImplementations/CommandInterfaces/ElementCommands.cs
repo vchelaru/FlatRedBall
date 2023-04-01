@@ -1000,7 +1000,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
                     var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
-
+                    if(element.BaseElement != null)
+                    {
+                        var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
+                        if(baseElement != null)
+                        {
+                            // Generate the root base because it may have definitions for the types that have changed... 
+                            var throwaway3 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(baseElement);
+                        }
+                    }
                 }
                 else
                 {
