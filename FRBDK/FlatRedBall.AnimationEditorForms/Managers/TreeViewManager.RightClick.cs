@@ -573,6 +573,7 @@ namespace FlatRedBall.AnimationEditorForms
                     animation.Frames.RemoveAt(frameMinusOne);
                     animation.Frames.Insert(i, frameToMove);
                 }
+                TreeViewManager.Self.RefreshTreeNode(animation);
             }
 
             PreviewManager.Self.RefreshAll();

@@ -57,5 +57,25 @@ namespace OfficialPlugins.PathPlugin.Views
         {
             ViewModel.HandleCopyClicked();
         }
+
+        private void TextBox_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var sign = Math.Sign( e.Delta);
+            if(sender == XTextBox)
+            {
+                ViewModel.X += 5 * sign;
+            }
+            else if(sender == YTextBox)
+            {
+                ViewModel.Y += 5 * sign;
+
+            }
+            else if(sender == AngleTextBox)
+            {
+                ViewModel.Angle += 5 * sign;
+
+            }
+
+        }
     }
 }

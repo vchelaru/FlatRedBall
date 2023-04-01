@@ -16,6 +16,7 @@ namespace OfficialPlugins.PathPlugin.Managers
 {
     public static class ViewModelManager
     {
+
         #region Fields/Properties
 
         public static PathViewModel MainViewModel { get; set; }
@@ -168,7 +169,10 @@ namespace OfficialPlugins.PathPlugin.Managers
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                Variable.Value = JsonConvert.SerializeObject(pathSegments);
+                if(Variable != null)
+                {
+                    Variable.Value = JsonConvert.SerializeObject(pathSegments);
+                }
             });
         }
 

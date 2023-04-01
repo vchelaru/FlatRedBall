@@ -24,7 +24,7 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center" Margin="0,0,3,0">X:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding X}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox x:Name="XTextBox" Grid.Column="1" Text="{Binding X}" KeyUp="TextBox_KeyEnterUpdate" MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="2" Margin="14,0,0,0">
             <Grid.ColumnDefinitions>
@@ -32,7 +32,7 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock  VerticalAlignment="Center"  Margin="0,0,3,0">Y:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Y}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox x:Name="YTextBox" Grid.Column="1" Text="{Binding Y}" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
         <Grid Grid.Column="3" Margin="14,0,0,0" Visibility="{Binding AngleVisibility}">
             <Grid.ColumnDefinitions>
@@ -40,7 +40,7 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
-            <TextBox Grid.Column="1" Text="{Binding Angle}" KeyUp="TextBox_KeyEnterUpdate"></TextBox>
+            <TextBox x:Name="AngleTextBox" Grid.Column="1" Text="{Binding Angle}" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
 
         <Grid Grid.Column="4" Margin="16,0,16,0">
