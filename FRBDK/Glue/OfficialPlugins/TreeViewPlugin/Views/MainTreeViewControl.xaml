@@ -75,6 +75,7 @@
                  SelectionChanged="Bookmarks_SelectionChanged"
                  KeyDown="Bookmarks_KeyDown"
                  LostFocus="Bookmarks_LostFocus"
+                 MouseDoubleClick="Bookmarks_MouseDoubleClick"
                  ItemsSource="{Binding Bookmarks}"
                  SelectedItem="{Binding SelectedBookmark}"
                  >

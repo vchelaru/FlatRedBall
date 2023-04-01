@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace OfficialPlugins.TreeViewPlugin.Views
 {
@@ -419,6 +420,23 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             }
         }
 
+        private void Bookmarks_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var objectPushed = e.OriginalSource;
+            var frameworkElementPushed = (objectPushed as FrameworkElement);
+            var nodeViewModel = frameworkElementPushed?.DataContext as BookmarkViewModel;
+            if(nodeViewModel != null)
+            {
+                var separated = nodeViewModel.Text.Split('/').ToList();
+
+                var node = GetTreeNode(separated);
+
+                if(node != null)
+                {
+                    GlueCommands.Self.TreeNodeCommands.HandleTreeNodeDoubleClicked(node);
+                }
+            }
+        }
         #endregion
 
         #region Back/Forward navigation
@@ -704,5 +722,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             Bookmarks.SelectedItem= null;
         }
+
     }
 }
