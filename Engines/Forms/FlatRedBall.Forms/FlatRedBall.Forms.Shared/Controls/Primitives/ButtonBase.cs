@@ -38,6 +38,10 @@ namespace FlatRedBall.Forms.Controls.Primitives
         public event EventHandler Push;
         public event FocusUpdateDelegate FocusUpdate;
 
+        /// <summary>
+        /// Event raised when any button is pressed on an Xbox360GamePad which is being used by the 
+        /// GuiManager.GamePadsForUiControl.
+        /// </summary>
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
 

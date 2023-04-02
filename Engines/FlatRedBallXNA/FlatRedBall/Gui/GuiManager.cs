@@ -283,6 +283,9 @@ namespace FlatRedBall.Gui
             }
         }
 
+        /// <summary>
+        /// The list of Xbox360GamePads used to control UI elements (tabbing and selecting)
+        /// </summary>
         public static List<Xbox360GamePad> GamePadsForUiControl
         {
             get; private set;
@@ -403,22 +406,6 @@ namespace FlatRedBall.Gui
             nextPushActions.Add(action);            
         }
         
-
-        internal static float GetYOffsetForModifiedAspectRatio()
-        {
-            // make 0,0 the top-left
-            float unmodifiedYEdge = UnmodifiedYEdge;
-
-            float offset = unmodifiedYEdge - GuiManager.YEdge;
-            return offset;
-        }
-
-        internal static float GetXOffsetForModifiedAspectRatio()
-        {
-            float unmodifiedXEdge = UnmodifiedXEdge;
-
-            return unmodifiedXEdge - GuiManager.XEdge;
-        }
 
         /// <summary>
         /// Adds a window as a Dominant Window.  If the window is a regular Window
