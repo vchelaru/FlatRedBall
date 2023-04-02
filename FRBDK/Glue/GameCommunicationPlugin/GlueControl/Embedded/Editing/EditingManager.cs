@@ -396,7 +396,7 @@ namespace GlueControl.Editing
                 // Vic says - not sure how much should be inside the IsActive check
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false))
+                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && FlatRedBall.Gui.GuiManager.Cursor.WindowOver == null)
                     {
                         SelectionLogic.DoDragSelectLogic();
                     }
