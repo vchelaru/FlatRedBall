@@ -263,7 +263,9 @@ namespace FlatRedBall.Input
             // If this method is called multiple times per frame this line
             // of code guarantees that the user will get true every time until
             // the next TimeManager.Update (next frame).
-            bool repeatedThisFrame = mLastDPadPush[(int)direction] == TimeManager.CurrentTime;
+            // The very first frame of FRB would have CurrentTime == 0. 
+            // The repeat cannot happen on the first frame, so we check for that:
+            bool repeatedThisFrame = TimeManager.CurrentTime > 0 && mLastDPadPush[(int)direction] == TimeManager.CurrentTime;
 
             if (repeatedThisFrame ||
                 (

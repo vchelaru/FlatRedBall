@@ -80,7 +80,9 @@ namespace FlatRedBall.Input
             {
                 const double timeAfterPush = .35;
                 const double timeBetweenRepeating = .12;
-                bool repeatedThisFrame = mLastButtonPush == TimeManager.CurrentTime;
+                // The very first frame of FRB would have CurrentTime == 0. 
+                // The repeat cannot happen on the first frame, so we check for that:
+                bool repeatedThisFrame = TimeManager.CurrentTime > 0 && mLastButtonPush == TimeManager.CurrentTime;
 
                 if (repeatedThisFrame ||
                 (

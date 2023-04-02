@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using FlatRedBall.Utilities;
 #if !FRB_MDX
@@ -28,23 +29,18 @@ namespace FlatRedBall.Graphics.Animation
 
         bool mFileRelativeTextures;
 
-#if FRB_MDX
-        FlatRedBall.TimeMeasurementUnit mTimeMeasurementUnit = TimeMeasurementUnit.Millisecond;
-#else
+
         FlatRedBall.TimeMeasurementUnit mTimeMeasurementUnit = TimeMeasurementUnit.Second;
 
-#endif
         #endregion
 
         #region Properties
 
-        #region XML Docs
         /// <summary>
         /// Gets and sets whether the AnimationChainList will save the 
         /// Texture2Ds that its AnimationFrames reference with names relative
         /// to the .achx.  Otherwise, this property is not used during runtime.
         /// </summary>
-        #endregion
         public bool FileRelativeTextures
         {
             get { return mFileRelativeTextures; }
@@ -151,6 +147,19 @@ namespace FlatRedBall.Graphics.Animation
 			// contained in the same ContentManager, and this should only be
 			// called when unloading a ContentManager.
 		}
+
+        public bool ContainsAnimation(string animationName)
+        {
+            for(int i = 0; i < this.Count; i++)
+            {
+                if (this[i].Name == animationName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
 		public void SetAllTexture(Texture2D textureToSet)
 		{
