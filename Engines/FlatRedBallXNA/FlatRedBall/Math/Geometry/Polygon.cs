@@ -1008,6 +1008,54 @@ namespace FlatRedBall.Math.Geometry
             return false;
         }
 
+        public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+#if DEBUG
+            if (thisMass == 0 && otherMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
+            }
+#endif
+            if (CollideAgainst(rectangle))
+            {
+                mVerticesForRectCollision[0].Position.X = rectangle.Left;
+                mVerticesForRectCollision[0].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[1].Position.X = rectangle.Right;
+                mVerticesForRectCollision[1].Position.Y = rectangle.Top;
+
+                mVerticesForRectCollision[2].Position.X = rectangle.Right;
+                mVerticesForRectCollision[2].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[3].Position.X = rectangle.Left;
+                mVerticesForRectCollision[3].Position.Y = rectangle.Bottom;
+
+                mVerticesForRectCollision[4] = mVerticesForRectCollision[0];
+
+                Vector3 thisMoveCollisionReposition = new Vector3();
+                Vector3 otherMoveCollisionReposition = new Vector3();
+
+                CollideAgainstMovePreview(thisMass, otherMass, ref thisMoveCollisionReposition, ref otherMoveCollisionReposition, mVerticesForRectCollision,
+                    !this.isConcaveCache && this.isClockwiseCache, true);
+
+                // Should this be pushed? Not sure...
+                //mLastMoveCollisionReposition = thisMoveCollisionReposition;
+                //rectangle.mLastMoveCollisionReposition.X = otherMoveCollisionReposition.X;
+                //rectangle.mLastMoveCollisionReposition.Y = otherMoveCollisionReposition.Y;
+
+                TopParent.Position += thisMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+                rectangle.TopParent.Position += otherMoveCollisionReposition * separationVelocity * TimeManager.SecondDifference;
+
+                // Vic asks - the other "soft" repositions don't do this, should we do it here to match Move or match Soft?
+                // Let's match Soft for now...
+                //ForceUpdateDependencies();
+                //rectangle.ForceUpdateDependencies();
+
+                return true;
+            }
+            return false;
+        }
+
         public bool CollideAgainstMoveSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
         {
 #if DEBUG
