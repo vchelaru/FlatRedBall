@@ -32,17 +32,17 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FlatRedBall.Forms">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.dll</HintPath>
+    <Reference Include="FlatRedBall.Forms.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.DesktopGlNet6.dll</HintPath>
     </Reference>
-    <Reference Include="FlatRedBallDesktopGL">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGL.dll</HintPath>
+    <Reference Include="FlatRedBallDesktopGLNet6">
+      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGLNet6.dll</HintPath>
     </Reference>
-    <Reference Include="GumCoreXnaPc">
-      <HintPath>Libraries\DesktopGl\Debug\GumCoreXnaPc.dll</HintPath>
+    <Reference Include="GumCore.DesktopGlNet6">
+      <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>
     </Reference>
-    <Reference Include="StateInterpolation">
-      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.dll</HintPath>
+    <Reference Include="StateInterpolation.DesktopNet6">
+      <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.DesktopNet6.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
