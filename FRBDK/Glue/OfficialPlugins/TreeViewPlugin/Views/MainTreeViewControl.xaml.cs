@@ -381,6 +381,60 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             nodeWaitingOnSelection = null;
         }
 
+
+        private void MainTreeView_DragOver(object sender, DragEventArgs e)
+        {
+            ListBox li = sender as ListBox;
+            ScrollViewer sv = FindVisualChild<ScrollViewer>(li);
+
+            double tolerance = 24;
+            double verticalPos = e.GetPosition(li).Y;
+
+            double topMargin = tolerance;
+            var bottomMargin = li.ActualHeight - tolerance;
+            if(sv.ComputedHorizontalScrollBarVisibility == Visibility.Visible)
+            {
+                var horizontalScrollBar = sv.Template.FindName("PART_HorizontalScrollBar", sv) as System.Windows.Controls.Primitives.ScrollBar;
+
+                if(horizontalScrollBar != null)
+                {
+                    bottomMargin -= horizontalScrollBar.ActualHeight;
+                }
+            }
+
+            double distanceToScroll = 3;
+            if (verticalPos < topMargin) // Top of visible list?
+            {
+                sv.ScrollToVerticalOffset(sv.VerticalOffset - distanceToScroll); //Scroll up.
+            }
+            else if (verticalPos > bottomMargin) //Bottom of visible list?
+            {
+                sv.ScrollToVerticalOffset(sv.VerticalOffset + distanceToScroll); //Scroll down.    
+            }
+        }
+
+        public static childItem FindVisualChild<childItem>(DependencyObject obj) where childItem : DependencyObject
+        {
+            // Search immediate children first (breadth-first)
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+
+                if (child != null && child is childItem)
+                    return (childItem)child;
+
+                else
+                {
+                    childItem childOfChild = FindVisualChild<childItem>(child);
+
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Selection
@@ -722,6 +776,5 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             Bookmarks.SelectedItem= null;
         }
-
     }
 }

@@ -164,6 +164,7 @@
                         DragLeave="MainTreeView_DragLeave"
                         Drop="MainTreeView_Drop"
                         DragEnter="MainTreeView_DragEnter"
+                        DragOver="MainTreeView_DragOver"
                         MouseDoubleClick="MainTreeView_MouseDoubleClick"
                         MouseMove="MainTreeView_MouseMove">
             
