@@ -71,9 +71,9 @@ namespace OfficialPlugins.DoorEntityPlugin
         {
             var canAdd =
                 !HasDoorEntity &&
-                !rightClickedTreeNode.IsChildOfGlobalContent() &&
-                !rightClickedTreeNode.Root.IsRootScreenNode()
-                ;
+                rightClickedTreeNode.IsRootEntityNode();
+
+
             if (canAdd)
             {
                 listToAddTo.Add("Add DoorEntity", (not, used) => AddDoorEntity());
