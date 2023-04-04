@@ -1046,7 +1046,7 @@ namespace FlatRedBall.Math.Geometry
         /// <param name="separationVelocity">The separation velocity in units per second. This value is 
         /// multiplied by the overlap amount to result in a velocity. For example, if separationVelocity is 2 and
         /// the objects overlap by 100 units, then the total separation velocity will be 2*100 = 200. 
-        /// This total separation velocity will be applied proprotionally to this and the other rectangle according
+        /// This total separation velocity will be applied proportionally to this and the other rectangle according
         /// to their relative masses. Increasing this value will make the separation happen more quickly.</param>
         /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainstMoveSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
