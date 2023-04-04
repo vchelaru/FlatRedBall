@@ -759,7 +759,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 if (canSend)
                 {
                     dto.BringIntoFocus = bringIntoFocus;
-                    dto.NamedObject = nos;
+                    dto.NamedObjects.Clear();
+                    dto.NamedObjects.Add(nos);
                     dto.ElementNameGlue = element.Name;
                     dto.StateName = forcedStateName ??
                         GlueState.Self.CurrentStateSave?.Name;

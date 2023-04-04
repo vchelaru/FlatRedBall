@@ -30,7 +30,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
         public ReferencedFileSave CurrentReferencedFileSave;
-        public NamedObjectSave CurrentNamedObjectSave;
+        public NamedObjectSave CurrentNamedObjectSave
+        {
+            get => CurrentNamedObjectSaves.FirstOrDefault();
+            set
+            {
+                if(value == null)
+                {
+                    CurrentNamedObjectSaves.Clear();
+                }
+                else if(CurrentNamedObjectSaves.Count != 1 || CurrentNamedObjectSaves[0] != value)
+                {
+                    CurrentNamedObjectSaves.Clear();
+
+                    CurrentNamedObjectSaves.Add(value);
+                }
+            }
+        }
+        public List<NamedObjectSave> CurrentNamedObjectSaves = new List<NamedObjectSave>();
         public StateSave CurrentStateSave;
         public StateSaveCategory CurrentStateSaveCategory;
         public CustomVariable CurrentCustomVariable;

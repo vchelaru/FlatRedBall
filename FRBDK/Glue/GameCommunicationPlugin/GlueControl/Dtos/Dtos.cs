@@ -76,7 +76,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region SelectObjectDto
     class SelectObjectDto : UpdateCurrentElementDto
     {
-        public NamedObjectSave NamedObject { get; set; }
+        public List<NamedObjectSave> NamedObjects { get; set; } = new List<NamedObjectSave>();
 
         public string ElementNameGlue { get; set; }
 

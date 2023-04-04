@@ -364,6 +364,31 @@ namespace GlueControl
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
 
             bool isOwnerScreen = false;
+            bool playBump = true;
+
+            // If the game does a copy/paste, the selection will echo back to the game. We don't want to play a bump
+            // if the echoed selection is already active:
+            if (matchesCurrentScreen)
+            {
+                var newSelectionCount = selectObjectDto.NamedObjects.Count;
+
+                if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
+                {
+                    playBump = true;
+                }
+                else
+                {
+                    playBump = false;
+                    for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
+                    {
+                        var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
+                        if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
+                        {
+                            playBump = true;
+                        }
+                    }
+                }
+            }
 
             try
             {
@@ -376,7 +401,7 @@ namespace GlueControl
             catch (ArgumentException e)
             {
                 var message =
-                    $"The command to select {selectObjectDto.NamedObject} in {selectObjectDto.GlueElement} " +
+                    $"The command to select {selectObjectDto.NamedObjects.Count} in {selectObjectDto.GlueElement} " +
                     $"threw an exception because the Glue object has a null object.  Inner details:{e}";
 
                 throw new ArgumentException(message);
@@ -384,9 +409,11 @@ namespace GlueControl
 
             ApplyNewNamedObjects(selectObjectDto);
 
+
+
             if (matchesCurrentScreen)
             {
-                Editing.EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                Editing.EditingManager.Self.Select(selectObjectDto.NamedObjects.FirstOrDefault(), playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                 {
@@ -407,7 +434,7 @@ namespace GlueControl
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: true);
+                        EditingManager.Self.Select(selectObjectDto.NamedObjects.FirstOrDefault(), playBump: playBump, focusCameraOnObject: true);
 
                         if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                         {
@@ -476,17 +503,18 @@ namespace GlueControl
                         EditorVisuals.DestroyContainedObjects();
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
-                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObject;
+                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObjects.FirstOrDefault();
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.NamedObject, playBump: true, focusCameraOnObject: true);
+                        EditingManager.Self.Select(selectObjectDto.NamedObjects.FirstOrDefault(), playBump: playBump, focusCameraOnObject: true);
                     }
                 }
             }
         }
+
 
 
 

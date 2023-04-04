@@ -453,17 +453,18 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     
                     if(currentEntity != null)
                     {
-                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
-                        if(nos == null && 
-                            selectObjectDto.NamedObject?.InstanceName?.StartsWith('m') == true && selectObjectDto.NamedObject?.InstanceName?.Length > 1)
+                        var instanceName = selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName;
+                        nos = currentEntity.GetNamedObjectRecursively(instanceName);
+                        if(nos == null &&
+                            instanceName?.StartsWith('m') == true && instanceName?.Length > 1)
                         {
-                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName[1..]);
+                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName[1..]);
                         }
                     }
                 }
                 else
                 {
-                    nos = screen.GetNamedObjectRecursively(selectObjectDto.NamedObject?.InstanceName);
+                    nos = screen.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName);
                 }
 
                 if(nos != null)

@@ -196,7 +196,9 @@ namespace GlueControl.Editing
                         positionable.Y = y;
                     }
 
-                    EditingManager.Self.Select(newNos, addToExistingSelection: true);
+                    var addToSelection = i != 0;
+
+                    EditingManager.Self.Select(newNos, addToExistingSelection: addToSelection);
                 }
 
                 await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(

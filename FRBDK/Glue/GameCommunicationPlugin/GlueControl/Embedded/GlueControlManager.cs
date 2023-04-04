@@ -356,8 +356,9 @@ namespace GlueControl
         private void HandleObjectSelected(INameable item)
         {
             var dto = new SelectObjectDto();
-            dto.NamedObject = new Models.NamedObjectSave();
-            dto.NamedObject.InstanceName = item.Name;
+            var nos = new Models.NamedObjectSave();
+            nos.InstanceName = item.Name;
+            dto.NamedObjects.Add(nos);
 
             string elementGameType = null;
 
