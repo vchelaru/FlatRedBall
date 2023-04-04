@@ -1719,7 +1719,7 @@ namespace FlatRedBall.Math.Geometry
 
                 for (int j = 0; j < shapeCollection.AxisAlignedRectangles.Count; j++)
                 {
-                    returnValue |= shape.CollideAgainstMoveSoft(shapeCollection.AxisAlignedRectangles[j], otherMass, thisMass, separationVelocity);
+                    returnValue |= shape.CollideAgainstMoveSoft(shapeCollection.AxisAlignedRectangles[j], thisMass, otherMass, separationVelocity);
                 }
             }
 
