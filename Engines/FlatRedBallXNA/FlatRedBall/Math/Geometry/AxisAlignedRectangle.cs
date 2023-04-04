@@ -1076,7 +1076,6 @@ namespace FlatRedBall.Math.Geometry
                 float amountToMoveThis = otherMass / (thisMass + otherMass);
                 Vector2 movementVector = new Vector2();
 
-
                 switch (side)
                 {
                     case Side.Left: movementVector.X = rectangle.X - rectangle.mScaleX - mScaleX - X; break;
@@ -1096,9 +1095,74 @@ namespace FlatRedBall.Math.Geometry
 
                 return true;
             }
+
             return false;
         }
 
+        /// <summary>
+        /// Returns whether this AxisAlignedRectangle and the argument AxisAlignedRectangle overlap, 
+        /// and repositions the two according to their relative masses and the depth of the overlap.
+        /// The more overlap, the faster the two objects will separate.
+        /// </summary>
+        /// <param name="rectangle">The other rectangle to collide against.</param>
+        /// <param name="thisMass">This mass relative to the other rectangle.</param>
+        /// <param name="otherMass">The other rectangle's mass relative to this.</param>
+        /// <param name="separationVelocity">The separation velocity in units per second. This value is 
+        /// multiplied by the overlap amount to result in a velocity. For example, if separationVelocity is 2 and
+        /// the objects overlap by 100 units, then the total separation velocity will be 2*100 = 200. 
+        /// This total separation velocity will be applied proportionally to this and the other rectangle according
+        /// to their relative masses. Increasing this value will make the separation happen more quickly.</param>
+        /// <returns>Whether collision has occurred.</returns>
+        public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+#if DEBUG
+            if (thisMass == 0 && otherMass == 0)
+            {
+                throw new ArgumentException("Both masses cannot be 0.  For equal masses pick a non-zero value");
+            }
+#endif
+            if (CollideAgainst(rectangle))
+            {
+                Side side = Side.Left; // set it to left first
+                float smallest = System.Math.Abs(X + mScaleX - (rectangle.X - rectangle.mScaleX));
+
+                float currentDistance = System.Math.Abs(X - mScaleX - (rectangle.X + rectangle.mScaleX));
+                if (currentDistance < smallest) { smallest = currentDistance; side = Side.Right; }
+
+                currentDistance = Y - mScaleY - (rectangle.Y + rectangle.mScaleY);
+                if (currentDistance < 0) currentDistance *= -1;
+                if (currentDistance < smallest) { smallest = currentDistance; side = Side.Top; }
+
+                currentDistance = Y + mScaleY - (rectangle.Y - rectangle.mScaleY);
+                if (currentDistance < 0) currentDistance *= -1;
+                if (currentDistance < smallest) { smallest = currentDistance; side = Side.Bottom; }
+
+                float amountToMoveThis = otherMass / (thisMass + otherMass);
+                Vector2 movementVector = new Vector2();
+
+                switch (side)
+                {
+                    case Side.Left: movementVector.X = rectangle.X - rectangle.mScaleX - mScaleX - X; break;
+                    case Side.Right: movementVector.X = rectangle.X + rectangle.mScaleX + mScaleX - X; break;
+                    case Side.Top: movementVector.Y = rectangle.Y + rectangle.mScaleY + mScaleY - Y; break;
+                    case Side.Bottom: movementVector.Y = rectangle.Y - rectangle.mScaleY - mScaleY - Y; break;
+                }
+
+                TopParent.X += movementVector.X * amountToMoveThis * separationVelocity * TimeManager.SecondDifference;
+                TopParent.Y += movementVector.Y * amountToMoveThis * separationVelocity * TimeManager.SecondDifference;
+
+                rectangle.TopParent.X += -movementVector.X * (1 - amountToMoveThis) * separationVelocity * TimeManager.SecondDifference;
+                rectangle.TopParent.Y += -movementVector.Y * (1 - amountToMoveThis) * separationVelocity * TimeManager.SecondDifference;
+
+                // The other "soft" repositions don't do this.
+                //ForceUpdateDependencies();
+                //rectangle.ForceUpdateDependencies();
+
+                return true;
+            }
+
+            return false;
+        }
 
         public bool CollideAgainstBounce(Polygon polygon, float thisMass, float otherMass, float elasticity)
         {

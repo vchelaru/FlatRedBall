@@ -1781,10 +1781,10 @@ namespace FlatRedBall.Math.Geometry
             mSuppressLastCollisionClear = true;
             bool returnValue = false;
 
-            //for (int i = 0; i < AxisAlignedRectangles.Count; i++)
-            //{
-            //    returnValue |= AxisAlignedRectangles[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
-            //}
+            for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            {
+                returnValue |= AxisAlignedRectangles[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
+            }
 
             for (int i = 0; i < Polygons.Count; i++)
             {
