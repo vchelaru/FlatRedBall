@@ -1001,10 +1001,25 @@ namespace FlatRedBall.Math.Geometry
             if(CollideAgainstMovePreview(polygon, thisMass, otherMass, ref thisReposition, ref otherReposition))
             {
                 TopParent.Velocity += thisReposition * separationVelocity * TimeManager.SecondDifference;
-
                 polygon.TopParent.Velocity += otherReposition * separationVelocity * TimeManager.SecondDifference;
                 return true;
             }
+
+            return false;
+        }
+
+        public bool CollideAgainstMovePositionSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            Vector3 thisReposition = Vector3.Zero;
+            Vector3 otherReposition = Vector3.Zero;
+
+            if (CollideAgainstMovePreview(polygon, thisMass, otherMass, ref thisReposition, ref otherReposition))
+            {
+                TopParent.Position += thisReposition * separationVelocity * TimeManager.SecondDifference;
+                polygon.TopParent.Position += otherReposition * separationVelocity * TimeManager.SecondDifference;
+                return true;
+            }
+
             return false;
         }
 
