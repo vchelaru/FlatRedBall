@@ -1757,6 +1757,44 @@ namespace FlatRedBall.Math.Geometry
             return returnValue;
         }
 
+        public bool CollideAgainstMovePositionSoft(Polygon polygon, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMovePositionSoft(AxisAlignedRectangles[i], otherMass, thisMass, separationVelocity);
+            }
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                returnValue |= polygon.CollideAgainstMovePositionSoft(Polygons[i], otherMass, thisMass, separationVelocity);
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
+        public bool CollideAgainstMovePositionSoft(AxisAlignedRectangle rectangle, float thisMass, float otherMass, float separationVelocity)
+        {
+            mSuppressLastCollisionClear = true;
+            bool returnValue = false;
+
+            //for (int i = 0; i < AxisAlignedRectangles.Count; i++)
+            //{
+            //    returnValue |= AxisAlignedRectangles[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
+            //}
+
+            for (int i = 0; i < Polygons.Count; i++)
+            {
+                returnValue |= Polygons[i].CollideAgainstMovePositionSoft(rectangle, thisMass, otherMass, separationVelocity);
+            }
+
+            mSuppressLastCollisionClear = false;
+            return returnValue;
+        }
+
         #endregion
 
         public bool CollideAgainstClosest(Line line, Axis? sortAxis, float? gridSize)
