@@ -1,5 +1,5 @@
 ﻿using GlueControl.Dtos;
-
+using GlueControl.Models;
 using FlatRedBall;
 using FlatRedBall.Graphics;
 using FlatRedBall.Math.Geometry;
@@ -336,7 +336,7 @@ namespace GlueControl
             List<NosVariableAssignment> nosVariableAssignments = new List<NosVariableAssignment>();
             foreach (var change in propertyChangeArgs)
             {
-                var nos = currentElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == change.Nameable.Name);
+                var nos = currentElement?.GetNamedObjectRecursively(change.Nameable.Name);
                 if (nos != null)
                 {
                     nosVariableAssignments.Add(new NosVariableAssignment
