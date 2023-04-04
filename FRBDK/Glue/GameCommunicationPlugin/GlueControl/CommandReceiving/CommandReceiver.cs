@@ -444,7 +444,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             var screen = await _commandSender.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
-                NamedObjectSave nos = null;
+                //NamedObjectSave nos = null;
+                List<NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
 
                 if(screen == null)
                 {
@@ -453,31 +454,56 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     
                     if(currentEntity != null)
                     {
-                        var instanceName = selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName;
-                        nos = currentEntity.GetNamedObjectRecursively(instanceName);
-                        if(nos == null &&
-                            instanceName?.StartsWith('m') == true && instanceName?.Length > 1)
+                        foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
                         {
-                            nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName[1..]);
+                            var instanceName = selectedNamedObject.InstanceName;
+                            var nos = currentEntity.GetNamedObjectRecursively(instanceName);
+                            if(nos == null && instanceName?.StartsWith('m') == true && instanceName?.Length > 1)
+                            {
+                                nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName[1..]);
+                            }
+                            if(nos != null)
+                            {
+                                namedObjectSaves.Add(nos);
+                            }
                         }
                     }
                 }
                 else
                 {
-                    nos = screen.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName);
+                    foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
+                    {
+                        var nos = screen.GetNamedObjectRecursively(selectedNamedObject.InstanceName);
+                        if(nos != null)
+                        { 
+                            namedObjectSaves.Add(nos);
+                        }
+                    }
                 }
 
-                if(nos != null)
+                if(namedObjectSaves.Count > 0)
                 {
                     GlueCommands.Self.DoOnUiThread(() =>
                     {
-                        if(GlueState.Self.CurrentNamedObjectSave != nos)
+                        var existingSelectionIsSame = GlueState.Self.CurrentNamedObjectSaves.Count == selectObjectDto.NamedObjects.Count;
+                        if(existingSelectionIsSame)
+                        {
+                            for(int i = 0; i < GlueState.Self.CurrentNamedObjectSaves.Count; i++)
+                            {
+                                if (GlueState.Self.CurrentNamedObjectSaves[i] != selectObjectDto.NamedObjects[i])
+                                {
+                                    existingSelectionIsSame = false;
+                                }
+                            }   
+                        }
+                        if (!existingSelectionIsSame)
                         {
                             _refreshManager.IgnoreNextObjectSelect = true;
 
-                            GlueState.Self.CurrentNamedObjectSave = nos;
+                            GlueState.Self.CurrentNamedObjectSaves = namedObjectSaves;
                         }
 
+                        var nos = namedObjectSaves.FirstOrDefault();
                         var showVariables = true;
                         var canShowPoints = nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon;
                         var alreadyShownTabs = GlueState.Self.CurrentFocusedTabs;

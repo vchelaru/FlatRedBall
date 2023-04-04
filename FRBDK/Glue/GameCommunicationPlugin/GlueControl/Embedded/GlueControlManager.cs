@@ -63,7 +63,7 @@ namespace GlueControl
             EditingManager = new GlueControl.Editing.EditingManager();
             FlatRedBallServices.AddManager(EditingManager);
             EditingManager.PropertyChanged += HandlePropertyChanged;
-            EditingManager.ObjectSelected += HandleObjectSelected;
+            EditingManager.ObjectSelected += HandleObjectsSelected;
             //listener = new TcpListener(IPAddress.Any, port);
         }
 
@@ -353,12 +353,16 @@ namespace GlueControl
 #endif
         }
 
-        private void HandleObjectSelected(INameable item)
+        private void HandleObjectsSelected(List<INameable> items)
         {
             var dto = new SelectObjectDto();
-            var nos = new Models.NamedObjectSave();
-            nos.InstanceName = item.Name;
-            dto.NamedObjects.Add(nos);
+
+            foreach (var item in items)
+            {
+                var nos = new Models.NamedObjectSave();
+                nos.InstanceName = item.Name;
+                dto.NamedObjects.Add(nos);
+            }
 
             string elementGameType = null;
 

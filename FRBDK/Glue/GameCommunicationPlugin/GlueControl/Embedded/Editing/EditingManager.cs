@@ -201,7 +201,7 @@ namespace GlueControl.Editing
         #region Delegates/Events
 
         public Action<List<PropertyChangeArgs>> PropertyChanged;
-        public Action<INameable> ObjectSelected;
+        public Action<List<INameable>> ObjectSelected;
 
         #endregion
 
@@ -417,6 +417,11 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
+                    if(GuiManager.Cursor.IsInWindow())
+                    {
+                        CameraLogic.DoCursorCameraControllingLogic();
+                    }
+
                     CameraLogic.DoCursorCameraControllingLogic();
 
                     DoForwardBackActivity();
@@ -534,7 +539,7 @@ namespace GlueControl.Editing
                         marker.CanMoveItem = item == itemGrabbed;
                     }
 
-                    ObjectSelected(itemGrabbed as INameable);
+                    ObjectSelected(new List<INameable> { itemGrabbed as INameable });
                 }
             }
         }
@@ -743,8 +748,6 @@ namespace GlueControl.Editing
                         nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
                     }
 
-                    var didSelect = false;
-
                     if (nos != null)
                     {
                         var isEditingLocked =
@@ -753,26 +756,20 @@ namespace GlueControl.Editing
                         if (isEditingLocked == false)
                         {
                             Select(nos, addToExistingSelection: isFirst == false, playBump: true);
-                            didSelect = true;
                         }
                     }
                     else
                     {
                         // this shouldn't happen, but for now we tolerate it until the current is sent
                         Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
-                        didSelect = true;
                     }
 
-                    // This pushes the selection up for the first item so that Glue can match the selection. Eventually Glue will accept a list for multi-select, but not yet...
-                    if (isFirst && didSelect)
-                    {
-                        ObjectSelected(itemOver);
-                    }
 
                     isFirst = false;
                 }
+
+                ObjectSelected(ItemsOver.ToList());
             }
-        }
 
         #endregion
 
@@ -1089,9 +1086,9 @@ namespace GlueControl.Editing
 
         public void RaiseObjectSelected()
         {
-            if (ObjectSelected != null && ItemSelected != null)
+            if (ObjectSelected != null && ItemsSelected.Count() > 0)
             {
-                ObjectSelected(ItemSelected);
+                ObjectSelected(ItemsSelected);
             }
         }
 

@@ -266,7 +266,19 @@ namespace FlatRedBall.Glue.Plugins
 
         public Action ReactToChangedStartupScreen { get; protected set; }
         public Action<FilePath> ReactToCodeFileChange { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised when a tree node is selected. If multiple tree nodes are selected, only the first is passed
+        /// to this delegate. For multi-select support, use ReactToItemsSelected;
+        /// </summary>
         public ReactToItemSelectDelegate ReactToItemSelectHandler { get; protected set; }
+
+        /// <summary>
+        /// Delegate raised when the tree node selection changes. The argument list is all of the currently-selected tree nodes.
+        /// </summary>
+        public Action<List<ITreeNode>> ReactToItemsSelected { get; protected set; }
+
+
         /// <summary>
         /// Delegate raised when a NamedObjectSave's variable or property changed. 
         /// </summary>

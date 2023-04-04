@@ -157,8 +157,8 @@ namespace GlueControl.Editing
                     }
                 }
             }
-
-            if (objectOver != null)
+            // If doing a rectangle selection, no need to also add the item over, it will be part of the rectangle:
+            else if (objectOver != null)
             {
                 itemsOverToFill.Add(objectOver);
             }

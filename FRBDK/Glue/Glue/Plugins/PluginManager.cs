@@ -1227,6 +1227,33 @@ namespace FlatRedBall.Glue.Plugins
             TabControlViewModel.IsRecordingSelection = true;
         }
 
+        internal static void ReactToItemsSelected(List<ITreeNode> selectedTreeNodes)
+        {
+            TabControlViewModel.IsRecordingSelection = false;
+            // Tabs will be added and removed here, and that can cause the selection to change.
+            // We don't want the selection change to cause the TabControlViewModel to consider these
+            // clicks, so let's tell it to ignore these for now...
+
+            var first = selectedTreeNodes.FirstOrDefault();
+
+            CallMethodOnPlugin(
+                plugin =>
+                {
+                    if(plugin.ReactToItemsSelected != null)
+                    {
+                        plugin.ReactToItemsSelected(selectedTreeNodes);
+                    }
+                    else
+                    {
+                        plugin.ReactToItemSelectHandler(first);
+                    }
+                },
+                plugin => plugin.ReactToItemSelectHandler != null || plugin.ReactToItemsSelected != null);
+
+            TabControlViewModel.UpdateToSelection(first);
+            TabControlViewModel.IsRecordingSelection = true;
+        }
+
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
             CallMethodOnPlugin(

@@ -25,7 +25,25 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
     public class GlueStateSnapshot
     {
-        public ITreeNode CurrentTreeNode;
+        public ITreeNode CurrentTreeNode
+        {
+            get => CurrentTreeNodes.FirstOrDefault();
+            set
+            {
+                if(value == null)
+                {
+                    CurrentTreeNodes.Clear();
+                }
+                else if(CurrentTreeNodes.Count != 1 || CurrentTreeNodes[0] != value)
+                {
+                    CurrentTreeNodes.Clear();
+
+                    CurrentTreeNodes.Add(value);
+                }
+            }
+        }
+        public List<ITreeNode> CurrentTreeNodes = new List<ITreeNode>();
+
         public GlueElement CurrentElement;
         public EntitySave CurrentEntitySave;
         public ScreenSave CurrentScreenSave;
@@ -67,6 +85,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             set
             {
                 UpdateToSetTreeNode(value, recordState:true);
+            }
+        }
+
+        public IReadOnlyList<ITreeNode> CurrentTreeNodes
+        {
+            get => snapshot.CurrentTreeNodes;
+            set
+            {
+                UpdateToSetTreeNode(value, recordState: true);
             }
         }
 
@@ -118,6 +145,23 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 else
                 {
                     CurrentTreeNode =  GlueState.Self.Find.TreeNodeByTag(value);
+                }
+            }
+        }
+
+        public IReadOnlyList<NamedObjectSave> CurrentNamedObjectSaves
+        {
+            get => snapshot.CurrentNamedObjectSaves;
+            set
+            {
+                if( value == null)
+                {
+                    CurrentTreeNode = null;
+                }
+                else
+                {
+                    List<ITreeNode> treeNodes = value.Select(item =>GlueState.Self.Find.TreeNodeByTag(item)).ToList();
+                    CurrentTreeNodes = treeNodes;
                 }
             }
         }
@@ -335,7 +379,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         #endregion
 
-            #region Sub-containers and Self
+        #region Sub-containers and Self
 
         static GlueState mSelf;
         public static GlueState Self
@@ -457,26 +501,42 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return list;
         }
 
-        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) =>
-            UpdateToSetTreeNode(treeNode, recordState);
+        public void SetCurrentTreeNode(ITreeNode treeNode, bool recordState) => UpdateToSetTreeNode(treeNode, recordState);
 
         private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
         {
-            var isSame = value == snapshot?.CurrentTreeNode;
+            UpdateToSetTreeNode(new List<ITreeNode> { value }, recordState);
+        }
 
-            // push before taking a snapshot, so that the "old" one is pushed
+        private void UpdateToSetTreeNode(IReadOnlyList<ITreeNode> value, bool recordState)
+        {
+            var isSame = snapshot?.CurrentTreeNodes.Count == value.Count;
+            if(isSame)
+            {
+                for(int i = 0; i < value.Count; i++)
+                {
+                    if (value[i] != snapshot.CurrentTreeNodes[i])
+                    {
+                        isSame = false;
+                        break;
+                    }
+                }
+            }
+
+            // Push to the stack for history before taking a snapshot, so that the "old" one is pushed
             if (!isSame && snapshot?.CurrentTreeNode != null && recordState)
             {
+                // todo - need to support multi select
                 TreeNodeStackManager.Self.Push(snapshot.CurrentTreeNode);
             }
 
             // Snapshot should come first so everyone can update to the snapshot
-            GlueState.Self.TakeSnapshot(value);
+            GlueState.Self.TakeSnapshot(value.FirstOrDefault());
 
             // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
             if(!isSame)
             {
-                PluginManager.ReactToItemSelect(value);
+                PluginManager.ReactToItemsSelected(value.ToList());
             }
         }
 
