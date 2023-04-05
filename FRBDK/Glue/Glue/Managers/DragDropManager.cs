@@ -752,7 +752,8 @@ namespace FlatRedBall.Glue.Managers
 
 
                     // run after generated code so plugins like level editor work off latest code
-                    PluginManager.ReactToNewObject(namedObject);
+                    // this is handled by AddNewNamedObjectToAsync
+                    //PluginManager.ReactToNewObject(namedObject);
                     PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
 
                     // Don't save the Glux, the caller of this method will take care of it
