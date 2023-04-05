@@ -678,6 +678,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         }
 
+        internal void DeselectResursively()
+        {
+            ScreenRootNode.DeselectResursively();
+            EntityRootNode.DeselectResursively();
+            GlobalContentRootNode.DeselectResursively();
+        }
+
         internal void CollapseToDefinitions()
         {
             foreach (var node in VisibleRoot)

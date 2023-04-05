@@ -150,7 +150,7 @@
         <pt:TreeListBox x:Name="MainTreeView" 
                         Visibility="{Binding MainTreeViewVisibility}"
                         Grid.Row="4" 
-                        SelectionMode="Single" 
+                        SelectionMode="Extended"
                         AllowDrop="True"
                         VirtualizingStackPanel.IsVirtualizing="False" 
                         HierarchySource="{Binding VisibleRoot}"

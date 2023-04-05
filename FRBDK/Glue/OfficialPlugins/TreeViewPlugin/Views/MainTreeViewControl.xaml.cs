@@ -322,7 +322,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                 }
                 else
                 {
-                    SelectionLogic.SelectByTag(targetNode.Tag);
+                    SelectionLogic.SelectByTag(targetNode.Tag, false);
 
                     var items = RightClickHelper.GetRightClickItems(targetNode, MenuShowingAction.RightButtonDrag, nodePushed);
 
@@ -443,6 +443,8 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             if(nodeWaitingOnSelection != null)
             {
+                ViewModel.DeselectResursively();
+
                 nodeWaitingOnSelection.IsSelected = true;
                 nodeWaitingOnSelection = null;
             }
@@ -535,7 +537,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             ViewModel.GlobalContentRootNode.IsExpanded = false;
             if (whatWasSelected != null)
             {
-                SelectionLogic.SelectByTag(whatWasSelected);
+                SelectionLogic.SelectByTag(whatWasSelected, false);
                 SelectionLogic.CurrentNode?.ExpandParentsRecursively();
             }
         }

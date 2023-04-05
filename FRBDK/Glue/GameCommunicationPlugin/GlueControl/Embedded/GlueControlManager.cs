@@ -355,13 +355,15 @@ namespace GlueControl
 
         private void HandleObjectsSelected(List<INameable> items)
         {
-            var dto = new SelectObjectDto();
+            //var dto = new SelectObjectDto();
+
+            List<Models.NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
 
             foreach (var item in items)
             {
                 var nos = new Models.NamedObjectSave();
                 nos.InstanceName = item.Name;
-                dto.NamedObjects.Add(nos);
+                namedObjectSaves.Add(nos);
             }
 
             string elementGameType = null;
@@ -382,16 +384,22 @@ namespace GlueControl
             }
             else
             {
-                elementGameType = ScreenManager.CurrentScreen?.GetType().Name;
+                elementGameType = ScreenManager.CurrentScreen?.GetType().FullName;
             }
 
-            if (!string.IsNullOrEmpty(elementGameType))
-            {
-                var split = elementGameType.Split('.').ToList().Skip(1);
-                dto.ElementNameGlue = string.Join("\\", split);
+            var elementGlueType = CommandReceiver.GameElementTypeToGlueElement(elementGameType);
 
-                SendToGlue(dto);
-            }
+            var element = ObjectFinder.Self.GetElement(elementGlueType);
+
+            //if (!string.IsNullOrEmpty(elementGameType))
+            //{
+            //    var split = elementGameType.Split('.').ToList().Skip(1);
+            //    dto.ElementNameGlue = string.Join("\\", split);
+
+            //    SendToGlue(dto);
+            //}
+
+            var throwaway = GlueState.Self.SetCurrentNamedObjectSaves(namedObjectSaves, element);
         }
 
         int nextRespondableId = 1;

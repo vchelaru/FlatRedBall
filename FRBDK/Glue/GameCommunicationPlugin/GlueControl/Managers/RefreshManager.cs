@@ -683,7 +683,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         #region Selected Object
 
-        internal async void HandleItemSelected(ITreeNode selectedTreeNode)
+        internal async void HandleItemSelected(List<ITreeNode> selectedTreeNodes)
         {
             if (IgnoreNextObjectSelect)
             {
@@ -718,10 +718,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var dto = new SelectObjectDto();
 
-            NamedObjectSave nos = null;
+            List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
             if (forcedElement == null)
             {
-                nos = GlueState.Self.CurrentNamedObjectSave;
+                namedObjects = GlueState.Self.CurrentNamedObjectSaves.ToList();
             }
 
             // Determine these values before resetting the LastDtoPushedToGame...
@@ -760,7 +760,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     dto.BringIntoFocus = bringIntoFocus;
                     dto.NamedObjects.Clear();
-                    dto.NamedObjects.Add(nos);
+                    dto.NamedObjects.AddRange(namedObjects);
                     dto.ElementNameGlue = element.Name;
                     dto.StateName = forcedStateName ??
                         GlueState.Self.CurrentStateSave?.Name;

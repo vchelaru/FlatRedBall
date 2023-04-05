@@ -505,7 +505,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         private void UpdateToSetTreeNode(ITreeNode value, bool recordState)
         {
-            UpdateToSetTreeNode(new List<ITreeNode> { value }, recordState);
+            if(value != null)
+            {
+                UpdateToSetTreeNode(new List<ITreeNode> { value }, recordState);
+            }
+            else
+            {
+                UpdateToSetTreeNode(new List<ITreeNode> (), recordState);
+            }
         }
 
         private void UpdateToSetTreeNode(IReadOnlyList<ITreeNode> value, bool recordState)
@@ -531,7 +538,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
 
             // Snapshot should come first so everyone can update to the snapshot
-            GlueState.Self.TakeSnapshot(value.FirstOrDefault());
+            GlueState.Self.TakeSnapshot(value);
 
             // If we don't check for isSame, then selecting the same tree node will result in double-selects in the game.
             if(!isSame)
@@ -546,14 +553,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             return ObjectFinder.Self.GetAllReferencedFiles();
         }
 
-        void TakeSnapshot(ITreeNode selectedTreeNode)
+        void TakeSnapshot(IReadOnlyList<ITreeNode> selectedTreeNodes)
         {
-            snapshot.CurrentTreeNode = selectedTreeNode;
+            snapshot.CurrentTreeNodes = selectedTreeNodes.ToList();
             snapshot.CurrentElement = GetCurrentElementFromSelection();
             snapshot.CurrentEntitySave = GetCurrentEntitySaveFromSelection();
             snapshot.CurrentScreenSave = GetCurrentScreenSaveFromSelection();
             snapshot.CurrentReferencedFileSave = GetCurrentReferencedFileSaveFromSelection();
-            snapshot.CurrentNamedObjectSave = GetCurrentNamedObjectSaveFromSelection();
+            snapshot.CurrentNamedObjectSaves = GetCurrentNamedObjectSavesFromSelection();
             snapshot.CurrentStateSave = GetCurrentStateSaveFromSelection();
             snapshot.CurrentStateSaveCategory = GetCurrentStateSaveCategoryFromSelection();
             snapshot.CurrentCustomVariable = GetCurrentCustomVariableFromSelection();
@@ -566,7 +573,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             EntitySave GetCurrentEntitySaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 while (treeNode != null)
                 {
@@ -585,7 +592,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             ScreenSave GetCurrentScreenSaveFromSelection()
             {
 
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 while (treeNode != null)
                 {
@@ -603,7 +610,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             ReferencedFileSave GetCurrentReferencedFileSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null && treeNode.Tag != null && treeNode.Tag is ReferencedFileSave rfs)
                 {
@@ -614,26 +621,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     return null;
                 }
             }
-            NamedObjectSave GetCurrentNamedObjectSaveFromSelection()
+            List<NamedObjectSave> GetCurrentNamedObjectSavesFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNodes = selectedTreeNodes;
 
-                if (treeNode == null)
-                {
-                    return null;
-                }
-                else if (treeNode.Tag != null && treeNode.Tag is NamedObjectSave nos)
-                {
-                    return nos;
-                }
-                else
-                {
-                    return null;
-                }
+                var noses = treeNodes.Select(item => item.Tag).Where(item => item is NamedObjectSave).Cast<NamedObjectSave>().ToList();
+
+                return noses;
             }
             StateSave GetCurrentStateSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null && treeNode.IsStateNode())
                 {
@@ -644,7 +642,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             StateSaveCategory GetCurrentStateSaveCategoryFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode != null)
                 {
@@ -663,7 +661,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             CustomVariable GetCurrentCustomVariableFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode == null)
                 {
@@ -680,7 +678,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             }
             EventResponseSave GetCurrentEventResponseSaveFromSelection()
             {
-                var treeNode = selectedTreeNode;
+                var treeNode = selectedTreeNodes.FirstOrDefault();
 
                 if (treeNode == null)
                 {

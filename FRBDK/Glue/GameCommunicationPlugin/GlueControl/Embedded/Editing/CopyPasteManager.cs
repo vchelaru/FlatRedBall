@@ -208,16 +208,11 @@ namespace GlueControl.Editing
 
             }
 
-            var newNosToSelect = newNamedObjects.FirstOrDefault();
-
-            // This currently echoes back to cause a double-select here. It's ...okay, we can deal with it later, but 
-            // we want to do this so it selects the tree node
-            if (newNosToSelect != null)
+            // It is possible for a paste to contain 0 items
+            if (newNamedObjects.Count > 0)
             {
-                // It is possible for a paste to contain 0 items
-                await GlueState.Self.SetCurrentNamedObjectSave(newNosToSelect, currentElement);
+                await GlueState.Self.SetCurrentNamedObjectSaves(newNamedObjects, currentElement);
             }
-
         }
 
         private List<NosVariableAssignment> GetAfterPasteVariableAssignments(float? offsetX, float? offsetY, Vector3 positionOnPaste, List<NamedObjectSave> newNamedObjects)

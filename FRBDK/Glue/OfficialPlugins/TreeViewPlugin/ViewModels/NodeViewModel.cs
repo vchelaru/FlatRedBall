@@ -277,6 +277,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
+        internal void DeselectResursively()
+        {
+            this.IsSelected = false;
+
+            foreach (var child in this.Children)
+            {
+                child.DeselectResursively();
+            }
+        }
+
         internal void CollapseToDefinitions()
         {
             if (this.Tag is GlueElement)

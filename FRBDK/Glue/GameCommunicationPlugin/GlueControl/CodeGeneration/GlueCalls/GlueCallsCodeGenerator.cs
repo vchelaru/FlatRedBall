@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.GenerationConfiguration;
+using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 
 namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 {
@@ -88,19 +89,17 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             {
                 if(!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody))
                 {
-                    bldr.AppendLine($"      public {prop.ReturnType} {prop.Name}");
-                    bldr.AppendLine($"      {{");
+                    var propertyBlock = new CodeBlockProperty(null, $"public {prop.ReturnType}", prop.Name);
                     if(!string.IsNullOrEmpty(prop.GetSimpleBody))
                     {
-                        bldr.AppendLine($"          get => {prop.GetSimpleBody};");
+                        propertyBlock.Get().Line($"return {prop.GetSimpleBody};");
+                        //bldr.AppendLine($"          get => {prop.GetSimpleBody};");
                     }
                     else
                     {
-                        bldr.AppendLine($"           get {{");
-                        bldr.AppendLine(prop.GetBody);
-                        bldr.AppendLine($"          }}");
+                        propertyBlock.Get().Line(prop.GetBody);
                     }
-                    bldr.AppendLine($"      }}");
+                    bldr.AppendLine(propertyBlock.ToString());
                 }
 
                 if(prop.SetMethod != null)
@@ -132,9 +131,9 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                         first = false;
                     }
 
-                    bldr.Append($")");
+                    bldr.AppendLine($")");
                     bldr.AppendLine($"      {{");
-                    bldr.Append($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
+                    bldr.AppendLine($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
 
                     if (m.Parameters[0].Dependencies.Length > 0)
                     {
@@ -153,7 +152,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                         bldr.Append($"}}");
                     }
 
-                    bldr.Append($"}};");
+                    bldr.AppendLine($"}};");
                     bldr.AppendLine();
                     bldr.AppendLine();
 

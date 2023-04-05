@@ -519,6 +519,19 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         }
                     });
                 }
+                else
+                {
+                    if(GlueState.Self.CurrentNamedObjectSave != null)
+                    {
+                        var element = GlueState.Self.CurrentElement;
+                        GlueState.Self.CurrentNamedObjectSave = null;
+
+                        if(element != null)
+                        {
+                            GlueState.Self.CurrentElement = element;
+                        }
+                    }
+                }
             }, "Selecting object from game command");
         }
 
@@ -958,7 +971,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             else if(parameter is JArray asJArray)
             {
                 int m = 3;
-                if(typeName == GetFriendlyName(typeof(List<NosVariableAssignment>)))
+                if(typeName == GetFriendlyName(typeof(List<NosVariableAssignment>)) ||
+                    typeName == GetFriendlyName(typeof(IReadOnlyList<NosVariableAssignment>)))
                 {
                     var list = new List<NosVariableAssignment>();
                     foreach(JObject item in asJArray)
@@ -982,7 +996,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                     }
                     converted = list;
                 }
-                else if(typeName == GetFriendlyName(typeof(List<NamedObjectSave>)))
+                else if(typeName == GetFriendlyName(typeof(List<NamedObjectSave>)) ||
+                    typeName == GetFriendlyName(typeof(IReadOnlyList<NamedObjectSave>))
+                    )
                 {
                     var list = new List<NamedObjectSave>();
                     foreach (JObject item in asJArray)

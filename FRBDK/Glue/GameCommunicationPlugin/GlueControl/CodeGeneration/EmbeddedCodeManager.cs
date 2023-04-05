@@ -31,6 +31,12 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
             SaveEmbeddedFile("Editing.Managers.GenerateCodeCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueCommands.cs");
             SaveEmbeddedFile("Editing.Managers.GlueCommandsStateBase.cs");
+
+            // Vic says - Scott commented these out, but I'm not sure why....
+            // I know we were going to move to a new generated solution, but I don't
+            // see this active in current projects.
+            // actually it looks like they are generated...
+            // See Editing_Managers_GlueState
             //SaveEmbeddedFile("Editing.Managers.GlueState.cs");
             //SaveEmbeddedFile("Editing.Managers.GluxCommands.cs");
             SaveEmbeddedFile("Editing.Managers.ObjectFinder.cs");

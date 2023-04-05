@@ -422,8 +422,6 @@ namespace GlueControl.Editing
                         CameraLogic.DoCursorCameraControllingLogic();
                     }
 
-                    CameraLogic.DoCursorCameraControllingLogic();
-
                     DoForwardBackActivity();
                 }
 
@@ -540,6 +538,10 @@ namespace GlueControl.Editing
                     }
 
                     ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                }
+                else
+                {
+                    ObjectSelected(new List<INameable>());
                 }
             }
         }
@@ -770,7 +772,7 @@ namespace GlueControl.Editing
 
                 ObjectSelected(ItemsOver.ToList());
             }
-
+        }
         #endregion
 
         public void UpdateDependencies()
@@ -910,6 +912,17 @@ namespace GlueControl.Editing
         #endregion
 
         #region Selection
+
+
+        internal void Select(IEnumerable<NamedObjectSave> namedObjects, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+        {
+            var isFirst = true;
+            foreach (var item in namedObjects)
+            {
+                Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject);
+                isFirst = false;
+            }
+        }
 
         internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
@@ -1088,7 +1101,7 @@ namespace GlueControl.Editing
         {
             if (ObjectSelected != null && ItemsSelected.Count() > 0)
             {
-                ObjectSelected(ItemsSelected);
+                ObjectSelected(ItemsSelected.ToList());
             }
         }
 

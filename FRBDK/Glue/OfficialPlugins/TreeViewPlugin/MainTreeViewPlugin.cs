@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -103,7 +104,7 @@ namespace OfficialPlugins.TreeViewPlugin
             RefreshDirectoryTreeNodes += HandleRefreshDirectoryTreeNodes;
             FocusOnTreeView += HandleFocusOnTreeView;
             ReactToCtrlF += HandleCtrlF;
-            ReactToItemSelectHandler += HandleItemSelected;
+            ReactToItemsSelected += HandleItemsSelected;
             TryHandleTreeNodeDoubleClicked += TryHandleTreeNodeDoubleClick;
         }
 
@@ -147,30 +148,43 @@ namespace OfficialPlugins.TreeViewPlugin
             });
         }
 
-        private async void HandleItemSelected(ITreeNode selectedTreeNode)
+        private async void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
         {
-            var tag = selectedTreeNode?.Tag;
             if(SelectionLogic.IsUpdatingThisSelectionOnGlueEvent )
             {
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
+                var wasSuppressingFocus = SelectionLogic.SuppressFocus;
+                SelectionLogic.SuppressFocus = true;
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
-                if (tag != null)
+
+                MainViewModel.DeselectResursively();
+
+                for (int i = 0; i < selectedTreeNodes.Count; i++)
                 {
-                    SelectionLogic.SelectByTag(tag);
+                    ITreeNode selectedTreeNode = selectedTreeNodes[i];
+                    var tag = selectedTreeNode.Tag;
+                    var addToSelection = i > 0;
+
+                    if (tag != null)
+                    {
+                        SelectionLogic.SelectByTag(tag, addToSelection);
+                    }
+                    else if(selectedTreeNode is NodeViewModel vm)
+                    {
+                        await SelectionLogic.SelectByTreeNode(vm, addToSelection);
+                    }
+                    else if(selectedTreeNode != null)
+                    {
+                        SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
+                    }
+                    else
+                    {
+                        await SelectionLogic.SelectByTreeNode(null, false);
+                    }
                 }
-                else if(selectedTreeNode is NodeViewModel vm)
-                {
-                    await SelectionLogic.SelectByTreeNode(vm);
-                }
-                else if(selectedTreeNode != null)
-                {
-                    SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath());
-                }
-                else
-                {
-                    await SelectionLogic.SelectByTreeNode(null);
-                }
+
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
+                SelectionLogic.SuppressFocus = wasSuppressingFocus;
 
             }
 
@@ -218,7 +232,7 @@ namespace OfficialPlugins.TreeViewPlugin
                     // If the tag changed, push it back out:
                     SelectionLogic.IsPushingSelectionOutToGlue = true;
                     var newSelection = parentNodeViewModel.Children[index];
-                    await SelectionLogic.SelectByTreeNode(newSelection);
+                    await SelectionLogic.SelectByTreeNode(newSelection, false);
                     SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
                 }
             }
@@ -286,7 +300,8 @@ namespace OfficialPlugins.TreeViewPlugin
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
-                SelectionLogic.SelectByTag(currentNode.Tag);
+                // todo - need to add currentTreeNodes (plural)
+                SelectionLogic.SelectByTag(currentNode.Tag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
                 // This can happen if the last item in a category (like a variable) is removed. If so, push
@@ -310,7 +325,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
-                SelectionLogic.SelectByTag(oldTag);
+                SelectionLogic.SelectByTag(oldTag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
             }
         }

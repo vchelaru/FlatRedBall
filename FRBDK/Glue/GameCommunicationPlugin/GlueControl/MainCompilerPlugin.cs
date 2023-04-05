@@ -230,7 +230,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToNamedObjectChangedValueList += (changeList) => _refreshManager.ReactToNamedObjectChangedValueList(changeList, AssignOrRecordOnly.Assign);
             this.ReactToNamedObjectChangedValue += HandleNamedObjectVariableOrPropertyChanged;
             this.ReactToChangedStartupScreen += ToolbarController.Self.ReactToChangedStartupScreen;
-            this.ReactToItemSelectHandler += HandleItemSelected;
+            this.ReactToItemsSelected += HandleItemsSelected;
             //this.ReactToObjectContainerChanged += _refreshManager.HandleObjectContainerChanged;
             this.ReactToObjectListContainerChanged += _refreshManager.HandleObjectListContainerChanged;
             // If a variable is added, that may be used later to control initialization.
@@ -364,9 +364,9 @@ namespace GameCommunicationPlugin.GlueControl
             _refreshManager.HandleNamedObjectVariableOrPropertyChanged(changedMember, oldValue, namedObject, Dtos.AssignOrRecordOnly.Assign);
         }
 
-        private void HandleItemSelected(ITreeNode selectedTreeNode)
+        private void HandleItemsSelected(List<ITreeNode> selectedTreeNodes)
         {
-            _refreshManager.HandleItemSelected(selectedTreeNode);
+            _refreshManager.HandleItemSelected(selectedTreeNodes);
             this.gameHostView.UpdateToItemSelected();
         }
 
