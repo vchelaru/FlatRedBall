@@ -185,7 +185,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             {
                 if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
                 {
-                    if(currentNode?.IsSelected == true && !addToSelection)
+                    if(currentNode?.IsSelected == false && !addToSelection)
                     {
                         mainViewModel.DeselectResursively();
                         // Selecting a tree node deselects the current node, but that can take some time and cause
@@ -197,6 +197,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                     if(suppressFocusCopy)
                     {
                         treeNode.SelectNoFocus();
+                        currentNode = treeNode;
                     }
                     else
                     {
