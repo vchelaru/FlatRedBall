@@ -247,7 +247,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             #endregion
 
 
-            var currentElement = GlueState.Self.CurrentElement;
+            var currentElement = GlueState.Self.CurrentElement ?? ObjectFinder.Self.GetElementContaining(nos);
             var nosName = nos.InstanceName;
             var ati = nos.GetAssetTypeInfo();
             string value;

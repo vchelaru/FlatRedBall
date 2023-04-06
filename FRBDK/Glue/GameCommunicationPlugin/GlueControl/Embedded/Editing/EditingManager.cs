@@ -394,7 +394,7 @@ namespace GlueControl.Editing
 
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive)
+                if (FlatRedBallServices.Game.IsActive && GuiManager.Cursor.IsInWindow())
                 {
                     if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && FlatRedBall.Gui.GuiManager.Cursor.WindowOver == null)
                     {
@@ -402,7 +402,10 @@ namespace GlueControl.Editing
                     }
                     SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
                 }
-
+                else
+                {
+                    SelectionLogic.DoInactiveWindowLogic();
+                }
 
                 var didChangeItemOver = itemsOverLastFrame.Any(item => !itemsOver.Contains(item)) ||
                     itemsOver.Any(item => !itemsOverLastFrame.Contains(item));
@@ -530,14 +533,22 @@ namespace GlueControl.Editing
 
                 if (itemGrabbed != null)
                 {
+                    var isAlreadySelected = false;
                     foreach (var item in itemsSelected)
                     {
+                        if (item == itemGrabbed)
+                        {
+                            isAlreadySelected = true;
+                        }
                         var marker = MarkerFor(item);
 
                         marker.CanMoveItem = item == itemGrabbed;
                     }
 
-                    ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                    if (!isAlreadySelected)
+                    {
+                        ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                    }
                 }
                 else
                 {
@@ -919,12 +930,14 @@ namespace GlueControl.Editing
             var isFirst = true;
             foreach (var item in namedObjects)
             {
-                Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject);
+                Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject, false);
                 isFirst = false;
             }
+
+            UpdateMarkers(didChangeItemOver: true);
         }
 
-        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true)
         {
             if (addToExistingSelection == false)
             {
@@ -946,15 +959,15 @@ namespace GlueControl.Editing
                     CurrentNamedObjects.Add(namedObject);
                 }
 
-                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject);
+                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers);
             }
             else
             {
-                Select((string)null, addToExistingSelection, playBump, focusCameraOnObject);
+                Select((string)null, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers);
             }
         }
 
-        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true)
         {
             INameable foundObject = string.IsNullOrEmpty(objectName)
                 ? null
@@ -995,8 +1008,11 @@ namespace GlueControl.Editing
                     MarkerFor(foundObject)?.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
                 }
 
-                // do this right away so the handles don't pop out of existance when changing selection
-                UpdateMarkers(didChangeItemOver: true);
+                if (updateMarkers)
+                {
+                    // do this right away so the handles don't pop out of existance when changing selection
+                    UpdateMarkers(didChangeItemOver: true);
+                }
 
             }
 

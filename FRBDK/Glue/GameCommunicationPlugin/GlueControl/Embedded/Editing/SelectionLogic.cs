@@ -225,6 +225,11 @@ namespace GlueControl.Editing
             }
         }
 
+        public static void DoInactiveWindowLogic()
+        {
+            PerformedRectangleSelection = false;
+        }
+
         public static IEnumerable<PositionedObject> GetAvailableObjects(ElementEditingMode elementEditingMode)
         {
             IEnumerable<PositionedObject> availableItems = null;
