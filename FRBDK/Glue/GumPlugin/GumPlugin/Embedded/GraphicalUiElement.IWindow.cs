@@ -1015,7 +1015,7 @@ namespace Gum.Wireframe
             return updated;
         }
 
-        private object ConvertValue(object value, Type desiredType, string format)
+        public static object ConvertValue(object value, Type desiredType, string format)
         {
             object convertedValue = value;
             if (desiredType == typeof(string))

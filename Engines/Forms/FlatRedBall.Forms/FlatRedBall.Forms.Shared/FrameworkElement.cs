@@ -647,6 +647,8 @@ namespace FlatRedBall.Forms.Controls
                     {
                         try
                         {
+                            var convertedValue = GraphicalUiElement.ConvertValue(vmValue, uiProperty.PropertyType, null);
+
                             uiProperty.SetValue(this, vmValue, null);
                         }
                         catch (ArgumentException ae)
