@@ -412,7 +412,10 @@ namespace GlueControl.Editing
 
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    DoGrabLogic();
+                    if (GuiManager.Cursor.IsInWindow())
+                    {
+                        DoGrabLogic();
+                    }
 
                     DoRectangleSelectLogic();
 
@@ -542,7 +545,14 @@ namespace GlueControl.Editing
 
                     if (!clickedOnSelectedItem)
                     {
-                        ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                        if (isCtrlDown)
+                        {
+                            ObjectSelected(itemsSelected);
+                        }
+                        else
+                        {
+                            ObjectSelected(new List<INameable> { itemGrabbed as INameable });
+                        }
                     }
                 }
                 else
