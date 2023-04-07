@@ -533,19 +533,14 @@ namespace GlueControl.Editing
 
                 if (itemGrabbed != null)
                 {
-                    var isAlreadySelected = false;
                     foreach (var item in itemsSelected)
                     {
-                        if (item == itemGrabbed)
-                        {
-                            isAlreadySelected = true;
-                        }
                         var marker = MarkerFor(item);
 
                         marker.CanMoveItem = item == itemGrabbed;
                     }
 
-                    if (!isAlreadySelected)
+                    if (!clickedOnSelectedItem)
                     {
                         ObjectSelected(new List<INameable> { itemGrabbed as INameable });
                     }
