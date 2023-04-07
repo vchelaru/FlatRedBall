@@ -641,7 +641,8 @@ namespace FlatRedBall.Forms.Controls
 
                     if (uiProperty.PropertyType == typeof(string))
                     {
-                        uiProperty.SetValue(this, vmValue?.ToString(), null);
+                        var stringToSet = vmValue?.ToString();
+                        uiProperty.SetValue(this, stringToSet, null);
                     }
                     else
                     {
@@ -686,7 +687,7 @@ namespace FlatRedBall.Forms.Controls
                         {
                             var convertedValue = GraphicalUiElement.ConvertValue(uiValue, vmProperty.PropertyType, null);
 
-                            vmProperty.SetValue(BindingContext, uiValue, null);
+                            vmProperty.SetValue(BindingContext, convertedValue, null);
                         }
                         catch(System.ArgumentException argumentException)
                         {

@@ -1085,6 +1085,10 @@ namespace Gum.Wireframe
                 {
                     convertedValue = (float)asDecimal;
                 }
+                else if(value is string asString)
+                {
+                    convertedValue = float.TryParse(asString, out float result) ? result : 0;
+                }
             }
             return convertedValue;
         }
