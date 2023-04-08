@@ -12,11 +12,16 @@ using FlatRedBall.Math;
 
 namespace FlatRedBall.Input
 {
-    #region XML Docs
+    public enum DeadzoneInterpolationType
+    {
+        Instant,
+        Linear,
+        Quadratic
+    }
+
     /// <summary>
     /// A two-axis input device which can return a range of values on both axes.
     /// </summary>
-    #endregion
     public class AnalogStick : I2DInput
     {
         #region Fields
@@ -36,7 +41,6 @@ namespace FlatRedBall.Input
         AnalogButton upAsButton;
         AnalogButton downAsButton;
 
-        #region XML Docs
         /// <summary>
         /// The DPadOnValue and DPadOffValue
         /// values are used to simulate D-Pad control
@@ -47,7 +51,6 @@ namespace FlatRedBall.Input
         /// one value then the user could hold the stick near the threshold
         /// and get rapid on/off values due to the inaccuracy of the analog stick. 
         /// </summary>
-        #endregion
         internal const float DPadOnValue = .550f;
         internal const float DPadOffValue = .450f;
 
@@ -150,7 +153,6 @@ namespace FlatRedBall.Input
         /// </summary>
         public double TimeBetweenRepeating { get => mTimeBetweenRepeating; set => mTimeBetweenRepeating = value; }
         
-
         /// <summary>
         /// The position of the analog stick after applying deadzone.  The range for each component is -1 to 1. 
         /// </summary>
@@ -166,7 +168,13 @@ namespace FlatRedBall.Input
         }
 
         public DeadzoneType DeadzoneType { get; set; } = DeadzoneType.Radial;// matches the behavior prior to May 22, 2022 when this property was introduced
+
         public float Deadzone { get; set; } = .1f;
+
+        /// <summary>
+        /// The type of interpolation to perform up to the max value when outside of the deadzone value.
+        /// </summary>
+        public DeadzoneInterpolationType DeadzoneInterpolation { get; set; }
 
         #endregion
 
@@ -455,8 +463,34 @@ namespace FlatRedBall.Input
             }
             else
             {
+                switch(DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        return originalValue;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = originalValue.Length() - Deadzone;
+                            return originalValue.NormalizedOrRight() * (distanceBeyondDeadzone / range);
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = originalValue.Length() - Deadzone;
+                            var ratio = (distanceBeyondDeadzone / range);
+
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            return originalValue.NormalizedOrRight() * modifiedRatio;
+                        }
+
+                }
                 return originalValue;
             }
+        }
+
+        static float EaseIn(float timeElapsed, float startingValue, float amountToAdd, float durationInSeconds)
+        {
+            return amountToAdd * (timeElapsed /= durationInSeconds) * timeElapsed + startingValue;
         }
 
         Vector2 GetCrossDeadzoneValue(Vector2 originalValue)
@@ -465,9 +499,61 @@ namespace FlatRedBall.Input
             {
                 originalValue.X = 0;
             }
+            else
+            {
+                switch(DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        // return originalValue;
+                        // do nothing
+                        break;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.X) - Deadzone;
+                            originalValue.X = System.Math.Sign(originalValue.X) * (float)(distanceBeyondDeadzone / range);
+                            break;
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.X) - Deadzone;
+                            var ratio = distanceBeyondDeadzone / range;
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            originalValue.X = System.Math.Sign(originalValue.X) * (float)modifiedRatio;
+                            break;
+                        }
+                }
+            }
+
+
             if (originalValue.Y < Deadzone && originalValue.Y > -Deadzone)
             {
                 originalValue.Y = 0;
+            }
+            else
+            {
+                switch(DeadzoneInterpolation)
+                {
+                    case DeadzoneInterpolationType.Instant:
+                        break;
+                    case DeadzoneInterpolationType.Linear:
+                        {
+                            var range = (1 - Deadzone);
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.Y) - Deadzone;
+                            originalValue.Y = System.Math.Sign(originalValue.Y) * (float)(distanceBeyondDeadzone / range);
+                            break;
+                        }
+                    case DeadzoneInterpolationType.Quadratic:
+                        {
+                            var range = 1 - Deadzone;
+                            var distanceBeyondDeadzone = System.Math.Abs(originalValue.Y) - Deadzone;
+                            var ratio = distanceBeyondDeadzone / range;
+                            var modifiedRatio = EaseIn(ratio, 0, 1, 1);
+                            originalValue.Y = System.Math.Sign(originalValue.Y) * (float)modifiedRatio;
+                            break;
+                        }
+                }
             }
             return originalValue;
         }

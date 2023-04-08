@@ -178,8 +178,24 @@ namespace FlatRedBall.Input
                 if (LeftStick != null) LeftStick.DeadzoneType = value;
                 if (RightStick != null) RightStick.DeadzoneType = value;
             }
-        } 
-            
+        }
+
+        DeadzoneInterpolationType deadzoneInterpolation;
+        public DeadzoneInterpolationType DeadzoneInterpolation 
+        { 
+            get
+            {
+                return LeftStick?.DeadzoneInterpolation ??
+                    RightStick?.DeadzoneInterpolation ??
+                    deadzoneInterpolation;
+            }
+            set
+            {
+                deadzoneInterpolation = value;
+                if (LeftStick != null) LeftStick.DeadzoneInterpolation = value;
+                if (RightStick != null) RightStick.DeadzoneInterpolation = value;
+            }
+        }
 
         public I1DInput DPadHorizontal
         {
