@@ -2112,10 +2112,19 @@ namespace FlatRedBall.Glue.Plugins
             
 
 
-        public static void ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer) =>
-            CallMethodOnPlugin(
-                plugin => plugin.ReactToObjectContainerChanged(objectMoved, newContainer),
-                plugin => plugin.ReactToObjectContainerChanged != null);
+        public static Task ReactToObjectContainerChanged(NamedObjectSave objectMoved, NamedObjectSave newContainer)
+        {
+            var wrapper = new List<ObjectContainerChange>();
+
+            var item = new ObjectContainerChange();
+            item.ObjectMoved = objectMoved;
+            item.NewContainer = newContainer;
+
+            wrapper.Add(item);
+
+            return ReactToObjectListContainerChanged(wrapper);
+
+        }
 
         public static void ReactToMainWindowMoved()
         {

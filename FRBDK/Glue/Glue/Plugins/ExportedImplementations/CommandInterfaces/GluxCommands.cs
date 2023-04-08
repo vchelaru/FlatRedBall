@@ -1448,7 +1448,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public async Task AddNamedObjectToAsync(NamedObjectSave newNos, GlueElement element, NamedObjectSave listToAddTo = null, bool selectNewNos = true,
              bool performSaveAndGenerateCode = true, bool updateUi = true)
         {
-            await TaskManager.Self.AddAsync(() =>
+            await TaskManager.Self.AddAsync(async () =>
             {
                 var ati = newNos.GetAssetTypeInfo();
 
@@ -1506,7 +1506,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 PluginManager.ReactToNewObject(newNos);
                 if (listToAddTo != null)
                 {
-                    PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
+                    await PluginManager.ReactToObjectContainerChanged(newNos, listToAddTo);
                 }
 
                 if (updateUi)
