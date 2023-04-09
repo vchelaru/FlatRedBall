@@ -183,7 +183,7 @@ namespace FlatRedBall.IO
 
         public bool IsRootOf(FilePath otherFilePath)
         {
-            return otherFilePath.Standardized.StartsWith(this.Standardized);
+            return otherFilePath.Standardized.StartsWith(this.Standardized) && otherFilePath != this;
         }
 
         public FilePath RemoveExtension()
