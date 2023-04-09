@@ -933,11 +933,19 @@ namespace GlueControl.Editing
         internal void Select(IEnumerable<NamedObjectSave> namedObjects, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false)
         {
             var isFirst = true;
-            foreach (var item in namedObjects)
+            if (namedObjects.Count() == 0)
             {
-                Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject, false);
-                isFirst = false;
+                Select((NamedObjectSave)null, false, playBump, focusCameraOnObject, false);
             }
+            else
+            {
+                foreach (var item in namedObjects)
+                {
+                    Select(item, addToExistingSelection || !isFirst, playBump, focusCameraOnObject, false);
+                    isFirst = false;
+                }
+            }
+
 
             UpdateMarkers(didChangeItemOver: true);
         }
