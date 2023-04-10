@@ -307,6 +307,22 @@ namespace GumPlugin.CodeGeneration
             codeBlock.Line(@"
     public class ContainerRuntime<T> : ContainerRuntime where T : Gum.Wireframe.GraphicalUiElement, new()
     {
+        public int ItemCount
+        {
+            get => base.Children.Count;
+            set
+            {
+                while(base.Children.Count < value)
+                {
+                    AddChild();
+                }
+                while(base.Children.Count > value)
+                {
+                    RemoveChild(base.Children.Last() as T);
+                }
+            }
+        }
+
         public new System.Collections.Generic.IEnumerable<T> Children
         {
             get
