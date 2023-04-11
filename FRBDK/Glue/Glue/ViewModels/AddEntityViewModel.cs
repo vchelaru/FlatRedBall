@@ -316,20 +316,25 @@ namespace GlueFormsCore.ViewModels
         
         [DependsOn(nameof(EffectiveTeamIndex))]
         [DependsOn(nameof(Name))]
+        [DependsOn(nameof(IsICollidableChecked))]
         public List<string> OpposingTeamCollisionListItems
         {
             get
             {
-                var fakeNos = new NamedObjectSave();
-                fakeNos.InstanceName = $"{Name}List";
-                var pairs = GlueCommands.Self.GluxCommands.ElementCommands.GetGameScreenOpposingTeamIndexCollisionPairs(
-                    EffectiveTeamIndex, fakeNos, this);
-
                 List<string> toReturn = new List<string>();
 
-                foreach(var pair in pairs)
+                if(IsICollidableChecked)
                 {
-                    toReturn.Add($"{pair.First.InstanceName} vs {pair.Second.InstanceName}");
+                    var fakeNos = new NamedObjectSave();
+                    fakeNos.InstanceName = $"{Name}List";
+                    var pairs = GlueCommands.Self.GluxCommands.ElementCommands.GetGameScreenOpposingTeamIndexCollisionPairs(
+                        EffectiveTeamIndex, fakeNos, this);
+
+                    foreach(var pair in pairs)
+                    {
+                        toReturn.Add($"{pair.First.InstanceName} vs {pair.Second.InstanceName}");
+                    }
+
                 }
 
                 return toReturn;

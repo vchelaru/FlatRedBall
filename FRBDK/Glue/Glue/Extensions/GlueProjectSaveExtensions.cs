@@ -140,9 +140,9 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 PrepareWildcardsForSaving(filePath, clone);
 
-                if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.StripRedundantDerivedData)
+                if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.RemoveRedundantDerivedData)
                 {
-                    StripRedundantDerivedData(clone);
+                    RemoveRedundantDerivedData(clone);
                 }
                 
                 RemoveAndSaveElements(filePath, clone);
@@ -185,11 +185,19 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void StripRedundantDerivedData(GlueProjectSave clone)
+        private static void RemoveRedundantDerivedData(GlueProjectSave clone)
         {
             foreach(var entity in clone.Entities)
             {
+                if(!string.IsNullOrEmpty(entity.BaseEntity ))
+                {
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(entity);
+                    if(baseElements.Count > 0)
+                    {
+                        RemoveRedundantDerivedData(entity, baseElements);
+                    }
 
+                }
             }
             foreach(var screen in clone.Screens)
             {
@@ -198,14 +206,14 @@ namespace FlatRedBall.Glue.SaveClasses
                     var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(screen);
                     if(baseElements.Count > 0)
                     {
-                        StripRedundantDerivedData(screen, baseElements);
+                        RemoveRedundantDerivedData(screen, baseElements);
                     }
 
                 }
             }
         }
 
-        private static void StripRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
+        private static void RemoveRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
         {
             var nosList = element.NamedObjects;
 
@@ -257,7 +265,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 if(shouldStrip)
                 {
-                    //nosList.RemoveAt(i);
+                    nosList.RemoveAt(i);
                 }
             }
         }

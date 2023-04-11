@@ -109,14 +109,14 @@ namespace FlatRedBall.Glue.SaveClasses
             ICollidableHasObjectsCollidedAgainst = 35,
             HasIRepeatPressableInput = 36,
             AllTiledFilesGenerated = 37,
-            StripRedundantDerivedData = 38
+            RemoveRedundantDerivedData = 38
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.StripRedundantDerivedData;
+        public const int LatestVersion = (int)GluxVersions.RemoveRedundantDerivedData;
 
         public int FileVersion { get; set; }
 
