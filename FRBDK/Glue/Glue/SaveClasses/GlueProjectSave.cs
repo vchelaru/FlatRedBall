@@ -108,14 +108,15 @@ namespace FlatRedBall.Glue.SaveClasses
             HasGame1GenerateEarly = 34,
             ICollidableHasObjectsCollidedAgainst = 35,
             HasIRepeatPressableInput = 36,
-            AllTiledFilesGenerated = 37
+            AllTiledFilesGenerated = 37,
+            StripRedundantDerivedData = 38
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.AllTiledFilesGenerated;
+        public const int LatestVersion = (int)GluxVersions.StripRedundantDerivedData;
 
         public int FileVersion { get; set; }
 

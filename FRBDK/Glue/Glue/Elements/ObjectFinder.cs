@@ -742,13 +742,13 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 
-        public List<IElement> GetAllBaseElementsRecursively(IElement derivedElement)
+        public List<GlueElement> GetAllBaseElementsRecursively(IElement derivedElement)
         {
-            var baseElements = new List<IElement>();
+            var baseElements = new List<GlueElement>();
 
             while (!string.IsNullOrEmpty(derivedElement.BaseElement))
             {
-                var baseElement = GetIElement(derivedElement.BaseElement);
+                var baseElement = GetElement(derivedElement.BaseElement);
 
                 if (baseElement == null)
                 {

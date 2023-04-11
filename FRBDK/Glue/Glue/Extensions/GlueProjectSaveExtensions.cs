@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -138,8 +139,13 @@ namespace FlatRedBall.Glue.SaveClasses
             if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
                 PrepareWildcardsForSaving(filePath, clone);
+
+                if(clone.FileVersion >= (int)GlueProjectSave.GluxVersions.StripRedundantDerivedData)
+                {
+                    StripRedundantDerivedData(clone);
+                }
                 
-                SaveAndRemoveElements(filePath, clone);
+                RemoveAndSaveElements(filePath, clone);
             }
 
             var fileName = filePath.FullPath;
@@ -179,7 +185,120 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void SaveAndRemoveElements(FilePath filePath, GlueProjectSave clone)
+        private static void StripRedundantDerivedData(GlueProjectSave clone)
+        {
+            foreach(var entity in clone.Entities)
+            {
+
+            }
+            foreach(var screen in clone.Screens)
+            {
+                if(!string.IsNullOrEmpty( screen.BaseScreen ))
+                {
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(screen);
+                    if(baseElements.Count > 0)
+                    {
+                        StripRedundantDerivedData(screen, baseElements);
+                    }
+
+                }
+            }
+        }
+
+        private static void StripRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
+        {
+            var nosList = element.NamedObjects;
+
+            for (int i = nosList.Count-1; i > -1; i--)
+            {
+                NamedObjectSave nos = nosList[i];
+                var shouldStrip = true;
+                if(!nos.DefinedByBase)
+                {
+                    shouldStrip = false;
+                }
+
+                if(shouldStrip)
+                {
+                    if(nos.InstructionSaves.Count > 0)
+                    {
+                        shouldStrip = false;
+                    }
+                }
+
+                if(shouldStrip)
+                {
+                    // see if any properties differ from the base
+                    var allBaseNamedObjects = baseElements
+                        .SelectMany(item => item.NamedObjects)
+                        .Where(item => (item.ExposedInDerived || item.SetByDerived) && item.InstanceName == nos.InstanceName);
+
+                    foreach(var baseNos in allBaseNamedObjects)
+                    {
+                        if(DoPropertiesDiffer(nos.Properties, baseNos.Properties))
+                        {
+                            shouldStrip = false;
+                            break;
+                        }
+
+                        if(DoNativePropertiesDiffer(nos, baseNos))
+                        {
+                            shouldStrip = false;
+                            break;
+                        }
+
+                        if(nos.ContainedObjects.Count > 0)
+                        {
+                            shouldStrip = false;
+                            break;
+                        }
+                    }
+                }
+
+                if(shouldStrip)
+                {
+                    //nosList.RemoveAt(i);
+                }
+            }
+        }
+
+        private static bool DoNativePropertiesDiffer(NamedObjectSave nos1, NamedObjectSave nos2)
+        {
+            var differ = nos1.SourceClassType != nos2.SourceClassType ||
+                nos1.SourceType != nos2.SourceType ||
+                nos1.SourceFile != nos2.SourceFile ||
+                nos1.SourceClassGenericType != nos2.SourceClassGenericType ||
+                nos1.AddToManagers != nos2.AddToManagers ||
+                nos1.IncludeInIVisible != nos2.IncludeInIVisible ||
+                nos1.IncludeInICollidable != nos2.IncludeInICollidable ||
+                nos1.IncludeInIClickable != nos2.IncludeInIClickable ||
+                nos1.SourceName != nos2.SourceName;
+
+            return differ;
+        }
+
+        private static bool DoPropertiesDiffer(List<PropertySave> properties1, List<PropertySave> properties2)
+        {
+            if(properties1.Count != properties2.Count)
+            {
+                return true;
+            }
+
+            for(int i = 0; i < properties1.Count; i++)
+            {
+                var first = properties1[i];
+                var second = properties2[i];
+
+                if(first.Name != second.Name || first.Type != second.Type || !object.Equals( first.Value, second.Value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void RemoveAndSaveElements(FilePath filePath, GlueProjectSave clone)
         {
             clone.EntityReferences = clone.Entities.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();
             clone.ScreenReferences = clone.Screens.Select(item => new GlueElementFileReference { Name = item.Name }).ToList();

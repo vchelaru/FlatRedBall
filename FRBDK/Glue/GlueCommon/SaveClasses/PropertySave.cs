@@ -217,6 +217,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 return string.IsNullOrEmpty((string)value);
             }
 
+            if(value == null)
+            {
+                return true;
+            }
+
             return false;
             
 
