@@ -224,8 +224,6 @@ namespace FlatRedBall.Glue.SaveClasses
             // We do this in Glue in a separate step - do we want to do it here too?
             //instance.FixEnumerationValues();
 
-            instance.FixCustomVariables();
-
             instance.FixNamedObjects();
 
             instance.SearchForDuplicateEntities();

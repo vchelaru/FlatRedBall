@@ -227,7 +227,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 }
             }
 
-            for(int i = element.CustomVariables.Count; i > -1; i--)
+            for(int i = element.CustomVariables.Count-1; i > -1; i--)
             {
                 var shouldStrip = DetermineIfShouldStripCustomVariable(baseElements, element.CustomVariables[i]);
 
@@ -288,7 +288,34 @@ namespace FlatRedBall.Glue.SaveClasses
 
         private static bool DetermineIfShouldStripCustomVariable(List<GlueElement> baseElements, CustomVariable customVariable)
         {
-            var shouldStrip = false;
+            var shouldStrip = true;
+
+            if(!customVariable.DefinedByBase)
+            {
+                shouldStrip = false;
+            }
+
+            if(shouldStrip)
+            {
+                var allBaseCustomVariables = baseElements
+                    .SelectMany(item => item.CustomVariables)
+                    .Where(item => item.SetByDerived && item.Name == customVariable.Name);
+
+                foreach(var baseVariable in allBaseCustomVariables)
+                {
+                    if(DoPropertiesDiffer(customVariable.Properties, baseVariable.Properties))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                    if(DoNativePropertiesDiffer(customVariable, baseVariable))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+                }
+            }
 
             return shouldStrip;
         }
@@ -306,6 +333,40 @@ namespace FlatRedBall.Glue.SaveClasses
                 nos1.SourceName != nos2.SourceName;
 
             return differ;
+        }
+
+        private static bool DoNativePropertiesDiffer(CustomVariable var1, CustomVariable var2)
+        {
+            var differ = Differ(var1.SourceFile, var2.SourceFile) ||
+                !object.Equals(var1.DefaultValue, var2.DefaultValue) ||
+                var1.FulfillsRequirement != var2.FulfillsRequirement ||
+                var1.SetByDerived != var2.SetByDerived ||
+                var1.IsShared != var2.IsShared ||
+                var1.SourceObject != var2.SourceObject ||
+                var1.SourceObjectProperty != var2.SourceObjectProperty ||
+                var1.Summary != var2.Summary ||
+                var1.CreatesEvent != var2.CreatesEvent ||
+                var1.PreferredDisplayerTypeName != var2.PreferredDisplayerTypeName;
+
+
+            return differ;
+        }
+
+        private static bool Differ(ReferencedFileReference sourceFile1, ReferencedFileReference sourceFile2)
+        {
+            if(sourceFile1 == null && sourceFile2 == null)
+            {
+                return false;
+            }
+            else if(sourceFile1 == null || sourceFile2 == null)
+            {
+                return true;
+            }
+            else
+            {
+                return sourceFile1.RfsName != sourceFile2.RfsName ||
+                    sourceFile1.ContainerName != sourceFile2.ContainerName;
+            }
         }
 
         private static bool DoPropertiesDiffer(List<PropertySave> properties1, List<PropertySave> properties2)
