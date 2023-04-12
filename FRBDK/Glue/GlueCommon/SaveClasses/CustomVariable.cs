@@ -281,6 +281,12 @@ namespace FlatRedBall.Glue.SaveClasses
             set => Properties.SetValue(nameof(Scope), value);
         }
 
+        // Don't XML ignore this!
+        // doing so seems to strip all
+        // categories out of objects. I
+        // didn't expect that, I thought that
+        // the Properties would handle it but it 
+        // seems like they don't. Maybe because it's a field?
         public string Category
         {
             get => Properties.GetValue<string>(nameof(Category));

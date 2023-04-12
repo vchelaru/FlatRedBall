@@ -373,7 +373,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
                         customVariable.DefinedByBase = true;
                         // We'll assume that this thing is going to be the acutal definition
-                        customVariable.SetByDerived = false;
+                        // Update April 11, 2023
+                        // Setting this to false doesn't
+                        // prevent this from being the final
+                        // definition. We want the SetByDerived
+                        // to be true so that the derived variable
+                        // can get removed when saving the .json file.
+                        //customVariable.SetByDerived = false;
+                        customVariable.SetByDerived = true;
 
                         elementToUpdate.CustomVariables.Add(customVariable);
                     }

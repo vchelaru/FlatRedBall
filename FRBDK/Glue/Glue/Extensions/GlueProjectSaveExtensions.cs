@@ -290,7 +290,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             var shouldStrip = true;
 
-            if(!customVariable.DefinedByBase)
+            if(!customVariable.DefinedByBase || customVariable.DefaultValue != null)
             {
                 shouldStrip = false;
             }
@@ -338,7 +338,6 @@ namespace FlatRedBall.Glue.SaveClasses
         private static bool DoNativePropertiesDiffer(CustomVariable var1, CustomVariable var2)
         {
             var differ = Differ(var1.SourceFile, var2.SourceFile) ||
-                !object.Equals(var1.DefaultValue, var2.DefaultValue) ||
                 var1.FulfillsRequirement != var2.FulfillsRequirement ||
                 var1.SetByDerived != var2.SetByDerived ||
                 var1.IsShared != var2.IsShared ||
