@@ -219,55 +219,78 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for (int i = nosList.Count-1; i > -1; i--)
             {
-                NamedObjectSave nos = nosList[i];
-                var shouldStrip = true;
-                if(!nos.DefinedByBase)
-                {
-                    shouldStrip = false;
-                }
+                bool shouldStrip = DetermineIfShouldStripNos(baseElements, nosList[i]);
 
-                if(shouldStrip)
-                {
-                    if(nos.InstructionSaves.Count > 0)
-                    {
-                        shouldStrip = false;
-                    }
-                }
-
-                if(shouldStrip)
-                {
-                    // see if any properties differ from the base
-                    var allBaseNamedObjects = baseElements
-                        .SelectMany(item => item.NamedObjects)
-                        .Where(item => (item.ExposedInDerived || item.SetByDerived) && item.InstanceName == nos.InstanceName);
-
-                    foreach(var baseNos in allBaseNamedObjects)
-                    {
-                        if(DoPropertiesDiffer(nos.Properties, baseNos.Properties))
-                        {
-                            shouldStrip = false;
-                            break;
-                        }
-
-                        if(DoNativePropertiesDiffer(nos, baseNos))
-                        {
-                            shouldStrip = false;
-                            break;
-                        }
-
-                        if(nos.ContainedObjects.Count > 0)
-                        {
-                            shouldStrip = false;
-                            break;
-                        }
-                    }
-                }
-
-                if(shouldStrip)
+                if (shouldStrip)
                 {
                     nosList.RemoveAt(i);
                 }
             }
+
+            for(int i = element.CustomVariables.Count; i > -1; i--)
+            {
+                var shouldStrip = DetermineIfShouldStripCustomVariable(baseElements, element.CustomVariables[i]);
+
+                if(shouldStrip)
+                {
+                    element.CustomVariables.RemoveAt(i);
+                }
+            }
+        }
+
+        private static bool DetermineIfShouldStripNos(List<GlueElement> baseElements, NamedObjectSave nos)
+        {
+            var shouldStrip = true;
+            if (!nos.DefinedByBase)
+            {
+                shouldStrip = false;
+            }
+
+            if (shouldStrip)
+            {
+                if (nos.InstructionSaves.Count > 0)
+                {
+                    shouldStrip = false;
+                }
+            }
+
+            if (shouldStrip)
+            {
+                // see if any properties differ from the base
+                var allBaseNamedObjects = baseElements
+                    .SelectMany(item => item.NamedObjects)
+                    .Where(item => (item.ExposedInDerived || item.SetByDerived) && item.InstanceName == nos.InstanceName);
+
+                foreach (var baseNos in allBaseNamedObjects)
+                {
+                    if (DoPropertiesDiffer(nos.Properties, baseNos.Properties))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                    if (DoNativePropertiesDiffer(nos, baseNos))
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+
+                    if (nos.ContainedObjects.Count > 0)
+                    {
+                        shouldStrip = false;
+                        break;
+                    }
+                }
+            }
+
+            return shouldStrip;
+        }
+
+        private static bool DetermineIfShouldStripCustomVariable(List<GlueElement> baseElements, CustomVariable customVariable)
+        {
+            var shouldStrip = false;
+
+            return shouldStrip;
         }
 
         private static bool DoNativePropertiesDiffer(NamedObjectSave nos1, NamedObjectSave nos2)
