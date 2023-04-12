@@ -148,13 +148,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region Save Glux Methods
 
-        /// <summary>
-        /// Saves the glux/gluj (and all elements) in a task.
-        /// </summary>
+        [Obsolete("Use SaveProjectAndElements since it more clearly explains what it does.")]
         public void SaveGlux(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
         {
+            SaveProjectAndElements(taskExecutionPreference);
+        }
+
+        /// <summary>
+        /// Saves the gluj (and all elements) in a task.
+        /// </summary>
+        public void SaveProjectAndElements(TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Asap)
+        { 
             TaskManager.Self.Add(
-                () => SaveGlueProjectImmediately(),
+                () => SaveProjectAndElementsImmediately(),
                 "Saving Glue Project",
                 // asap because otherwise this may get added
                 // after a reload command
@@ -226,12 +232,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
+        [Obsolete("Use SaveEverythingImmediately because it more clearly " +
+            "indicates that everything (main project and all screens/entities) are saved")]
+        public void SaveGlueProjectImmediately()
+        {
+            SaveProjectAndElementsImmediately();
+        }
+
+
         /// <summary>
         /// Saves the current project immediately - this should not 
         /// be called except in very rare circumstances as it will run right away and may result
         /// in multiple threads accessing the glux at the same time.
         /// </summary>
-        public void SaveGlueProjectImmediately()
+        public void SaveProjectAndElementsImmediately()
         {
             if (ProjectManager.GlueProjectSave != null)
             {
