@@ -34,8 +34,9 @@ namespace GlueControl
 
         public List<IDestroyable> DestroyablesAddedAtRuntime = new List<IDestroyable>();
 
-        // Do we want to support entire categories at runtime? For now just states, but we'll have to review this at some point
-        // if we want to allow entire categories added at runtime. The key is the game type (GameNamespace.Entities.EntityName)
+        /// <summary>
+        /// Dictionary of state categories added at runtime, where the key is the ElementGameType name.
+        /// </summary>
         public Dictionary<string, List<StateSaveCategory>> StatesAddedAtRuntime = new Dictionary<string, List<StateSaveCategory>>();
 
         public Dictionary<string, List<CustomVariable>> CustomVariablesAddedAtRuntime = new Dictionary<string, List<CustomVariable>>();

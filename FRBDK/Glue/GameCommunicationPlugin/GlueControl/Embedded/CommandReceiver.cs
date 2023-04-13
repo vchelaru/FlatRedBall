@@ -342,7 +342,7 @@ namespace GlueControl
 
         #endregion
 
-        #region Select Object
+        #region Select Object / State
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
@@ -515,9 +515,6 @@ namespace GlueControl
             }
         }
 
-
-
-
         private static void SelectState(string stateName, string stateCategoryName)
         {
             var currentScreen = ScreenManager.CurrentScreen;
@@ -535,6 +532,49 @@ namespace GlueControl
             var stateTypeName = entityType.FullName + "+" + stateCategoryName ?? "VariableState";
 
             var stateType = entityType.Assembly.GetType(stateTypeName);
+
+            if (stateType != null)
+            {
+                SelectStateByType(stateName, stateCategoryName, entity, stateType);
+            }
+            else
+            {
+                // this should be in the dynamic list of states
+                SelectStateAddedAtRuntime(stateName, stateCategoryName, entity);
+            }
+        }
+
+        private static void SelectStateAddedAtRuntime(string stateName, string stateCategoryName, PositionedObject entity)
+        {
+            var entityType = entity.GetType();
+
+            StateSaveCategory category = null;
+            if (InstanceLogic.Self.StatesAddedAtRuntime.ContainsKey(entityType.FullName))
+            {
+                var categories = InstanceLogic.Self.StatesAddedAtRuntime[entityType.FullName];
+
+                category = categories.FirstOrDefault(item => item.Name == stateCategoryName);
+            }
+
+            StateSave stateSave = null;
+
+            if (category != null)
+            {
+                stateSave = category.GetState(stateName);
+            }
+
+            if (stateSave != null)
+            {
+                foreach (var instruction in stateSave.InstructionSaves)
+                {
+                    InstanceLogic.Self.AssignVariable(entity, instruction, convertFileNamesToObjects: true);
+                }
+            }
+        }
+
+        private static void SelectStateByType(string stateName, string stateCategoryName, PositionedObject entity, Type stateType)
+        {
+            var entityType = entity.GetType();
 
             var dictionary = stateType.GetField("AllStates").GetValue(null) as System.Collections.IDictionary;
 
