@@ -335,17 +335,22 @@ namespace FlatRedBall.Glue.SaveClasses
             return differ;
         }
 
-        private static bool DoNativePropertiesDiffer(CustomVariable var1, CustomVariable var2)
+        private static bool DoNativePropertiesDiffer(CustomVariable derivedVar, CustomVariable baseVar)
         {
-            var differ = Differ(var1.SourceFile, var2.SourceFile) ||
-                var1.FulfillsRequirement != var2.FulfillsRequirement ||
-                var1.SetByDerived != var2.SetByDerived ||
-                var1.IsShared != var2.IsShared ||
-                var1.SourceObject != var2.SourceObject ||
-                var1.SourceObjectProperty != var2.SourceObjectProperty ||
-                var1.Summary != var2.Summary ||
-                var1.CreatesEvent != var2.CreatesEvent ||
-                var1.PreferredDisplayerTypeName != var2.PreferredDisplayerTypeName;
+            var differ =
+                derivedVar.Summary != baseVar.Summary && derivedVar != null;
+
+            if(!differ)
+            {
+                differ = Differ(derivedVar.SourceFile, baseVar.SourceFile) ||
+                    derivedVar.FulfillsRequirement != baseVar.FulfillsRequirement ||
+                    derivedVar.SetByDerived != baseVar.SetByDerived ||
+                    derivedVar.IsShared != baseVar.IsShared ||
+                    derivedVar.SourceObject != baseVar.SourceObject ||
+                    derivedVar.SourceObjectProperty != baseVar.SourceObjectProperty ||
+                    derivedVar.CreatesEvent != baseVar.CreatesEvent ||
+                    derivedVar.PreferredDisplayerTypeName != baseVar.PreferredDisplayerTypeName;
+            }
 
 
             return differ;

@@ -417,9 +417,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (AddXYZ)
             {
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "X", Type = "float" });
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Y", Type = "float" });
-                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float" });
+                entitySave.CustomVariables.Add(new CustomVariable() { Name = "X", Type = "float", SetByDerived = true });
+                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Y", Type = "float", SetByDerived = true });
+                entitySave.CustomVariables.Add(new CustomVariable() { Name = "Z", Type = "float", SetByDerived = true });
             }
 
             AddEntity(entitySave);
@@ -443,6 +443,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if(viewModel.HasInheritance)
             {
                 newElement.BaseEntity = viewModel.SelectedBaseEntity;
+
+                // make X, Y, Z DefinedByBase
+                foreach(var customVariable in newElement.CustomVariables)
+                {
+                    if(customVariable.Name == "X" || customVariable.Name == "Y" || customVariable.Name == "Z")
+                    {
+                        customVariable.DefinedByBase = true;
+                    }
+                }
 
                 //EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 //    nameof(newElement.BaseEntity), false, nameof(newElement.BaseEntity), null);
