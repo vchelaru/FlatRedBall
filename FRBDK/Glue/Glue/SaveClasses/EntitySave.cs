@@ -205,6 +205,8 @@ namespace FlatRedBall.Glue.SaveClasses
             set;
         }
 
+        // JsonIgnore because it's handled by BaseEntity
+        [JsonIgnore]
         public override string BaseElement => BaseEntity; 
 
         #region ScrollableEntityList Properties
@@ -358,30 +360,6 @@ namespace FlatRedBall.Glue.SaveClasses
         public EntitySave Clone()
         {
             return FileManager.CloneObject<EntitySave>(this);
-            /*
-            EntitySave entitySaveToReturn = (EntitySave)this.MemberwiseClone();
-
-            entitySaveToReturn.CustomVariables = new List<CustomVariable>();
-            for (int i = 0; i < CustomVariables.Count; i++)
-            {
-                entitySaveToReturn.CustomVariables.Add(CustomVariables[i].Clone());
-            }
-
-            entitySaveToReturn.NamedObjects = new List<NamedObjectSave>();
-            for (int i = 0; i < NamedObjects.Count; i++)
-            {
-                entitySaveToReturn.NamedObjects.Add(NamedObjects[i].Clone());
-            }
-
-            entitySaveToReturn.ReferencedFiles = new List<ReferencedFileSave>();
-            for (int i = 0; i < ReferencedFiles.Count; i++)
-            {
-                entitySaveToReturn.ReferencedFiles.Add(ReferencedFiles[i].Clone());
-            }
-
-
-            return entitySaveToReturn;
-             */
         }
 
 

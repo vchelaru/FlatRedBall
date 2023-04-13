@@ -62,6 +62,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage ScreenStartupIcon;
         public static BitmapImage StateIcon;
         public static BitmapImage VariableIcon;
+        public static BitmapImage VariableIconDerived;
 
         public static BitmapImage FromSource(string source)
         {
@@ -83,6 +84,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == ScreenStartupIcon.UriSource.OriginalString) return ScreenStartupIcon;
             if (source == StateIcon.UriSource.OriginalString) return StateIcon;
             if (source == VariableIcon.UriSource.OriginalString) return VariableIcon;
+            if (source == VariableIconDerived.UriSource.OriginalString) return VariableIconDerived;
 
             return null;
         }
@@ -237,6 +239,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             ScreenStartupIcon = LoadIcon("icon_screen_startup");
             StateIcon = LoadIcon("icon_state");
             VariableIcon = LoadIcon("icon_variable");
+            VariableIconDerived = LoadIcon("icon_variable_derived");
 
             BitmapImage LoadIcon(string iconName)
             {

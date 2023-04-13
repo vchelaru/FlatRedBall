@@ -852,7 +852,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(null);
-                    treeNode.ImageSource = NodeViewModel.VariableIcon;
+                    if(variable.DefinedByBase)
+                    {
+                        treeNode.ImageSource = NodeViewModel.VariableIconDerived;
+                    }
+                    else
+                    {
+                        treeNode.ImageSource = NodeViewModel.VariableIcon;
+                    }
                     treeNode.Text = variable.ToString();
                     treeNode.Tag = variable;
                     treeNode.SearchTermMatchWeight = matchWeight;

@@ -189,7 +189,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     settings.Formatting = Formatting.Indented;
                     settings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
-                    var serialized = JsonConvert.SerializeObject(element, settings);
+                    GlueElement clone = null;
+
+                    if(element is ScreenSave asScreenSave)
+                    {
+                        clone = asScreenSave.Clone();
+                    }
+                    else if(element is EntitySave asEntitySave)
+                    {
+                        clone = asEntitySave.Clone();
+                    }
+
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= 
+                        (int) GlueProjectSave.GluxVersions.RemoveRedundantDerivedData)
+                    {
+                        if (!string.IsNullOrEmpty(clone.BaseElement))
+                        {
+                            var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(clone);
+                            if (baseElements.Count > 0)
+                            {
+                                GlueProjectSaveExtensions.RemoveRedundantDerivedData(clone, baseElements);
+                            }
+
+                        }
+                    }
+
+
+                    var serialized = JsonConvert.SerializeObject(clone, settings);
 
                     var locationToSave = glueDirectory + element.Name + "." + extension;
 

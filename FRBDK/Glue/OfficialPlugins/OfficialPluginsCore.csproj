@@ -89,6 +89,7 @@
     <None Remove="TreeViewPlugin\Content\icon_screen_startup.png" />
     <None Remove="TreeViewPlugin\Content\icon_state.png" />
     <None Remove="TreeViewPlugin\Content\icon_variable.png" />
+    <None Remove="TreeViewPlugin\Content\icon_variable_derived.png" />
     <None Remove="TreeViewPlugin\Content\StarFilled.png" />
     <None Remove="Wizard\EmbeddedContent\Levels\Level1Map.tmx" />
     <None Remove="Wizard\EmbeddedContent\Levels\Level2Map.tmx" />
@@ -203,6 +204,7 @@
     <Resource Include="TreeViewPlugin\Content\icon_screen_startup.png" />
     <Resource Include="TreeViewPlugin\Content\icon_state.png" />
     <Resource Include="TreeViewPlugin\Content\icon_variable.png" />
+    <Resource Include="TreeViewPlugin\Content\icon_variable_derived.png" />
     <Resource Include="TreeViewPlugin\Content\StarFilled.png" />
     <Resource Include="Wizard\Icons\action_forms.png" />
     <Resource Include="Wizard\Icons\action_platformer.png" />

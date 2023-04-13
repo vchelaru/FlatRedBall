@@ -213,7 +213,7 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        private static void RemoveRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
+        public static void RemoveRedundantDerivedData(GlueElement element, List<GlueElement> baseElements)
         {
             var nosList = element.NamedObjects;
 
