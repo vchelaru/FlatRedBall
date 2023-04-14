@@ -881,7 +881,7 @@ namespace GlueControl.Editing
             ScreenManager.PersistentAxisAlignedRectangles.Add(boundsRectangle);
         }
 
-        public bool IsCursorOverThis()
+        public bool IsMouseOverThis()
         {
             // always say "true" because the user can paint when selecting a TileShapeCollection.
             // Let them select something else in Glue

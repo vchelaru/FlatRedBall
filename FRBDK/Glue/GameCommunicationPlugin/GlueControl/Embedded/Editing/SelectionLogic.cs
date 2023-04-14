@@ -38,10 +38,6 @@ namespace GlueControl.Editing
         public static void GetItemsOver(List<INameable> currentEntities, List<INameable> itemsOverToFill, List<ISelectionMarker> currentSelectionMarkers,
             bool punchThrough, ElementEditingMode elementEditingMode)
         {
-            if (GuiManager.Cursor.SecondaryPush)
-            {
-                int m = 3;
-            }
             if (itemsOverToFill.Count > 0)
             {
                 itemsOverToFill.Clear();
@@ -49,18 +45,18 @@ namespace GlueControl.Editing
 
             INameable objectOver = null;
 
-            var ray = GuiManager.Cursor.GetRay();
+            var ray = InputManager.Mouse.GetMouseRay(Camera.Main);
 
             if (currentEntities.Count > 0 && punchThrough == false)
             {
                 // Vic asks - why do we use the the current entities rather than the markers?
                 var currentObjectOver = currentEntities.FirstOrDefault(item =>
                 {
-                    return item is PositionedObject asPositionedObject && IsCursorOver(item as PositionedObject, ray);
+                    return item is PositionedObject asPositionedObject && IsRayIntersecting(item as PositionedObject, ray);
                 });
                 if (currentObjectOver == null)
                 {
-                    var markerOver = currentSelectionMarkers.FirstOrDefault(item => item.IsCursorOverThis());
+                    var markerOver = currentSelectionMarkers.FirstOrDefault(item => item.IsMouseOverThis());
                     if (markerOver != null)
                     {
                         var index = currentSelectionMarkers.IndexOf(markerOver);
@@ -88,7 +84,7 @@ namespace GlueControl.Editing
                     {
                         if (IsSelectable(objectAtI))
                         {
-                            if (IsCursorOver(objectAtI, ray))
+                            if (IsRayIntersecting(objectAtI, ray))
                             {
                                 var nos =
                                     GlueState.Self.CurrentElement?.AllNamedObjects.FirstOrDefault(
@@ -292,7 +288,7 @@ namespace GlueControl.Editing
 
         static PolygonFast polygonForCursorOver = new PolygonFast();
 
-        private static bool IsCursorOver(PositionedObject positionedObject, Ray ray)
+        private static bool IsRayIntersecting(PositionedObject positionedObject, Ray ray)
         {
             if (IsOverSpecificItem(positionedObject, ray))
             {
@@ -313,7 +309,7 @@ namespace GlueControl.Editing
 
                     if (shouldConsiderChild)
                     {
-                        var isOverChild = IsCursorOver(child, ray);
+                        var isOverChild = IsRayIntersecting(child, ray);
                         if (isOverChild)
                         {
                             return true;

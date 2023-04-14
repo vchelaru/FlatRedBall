@@ -628,7 +628,7 @@ namespace FlatRedBall.Math
         }
 
 
-        internal static bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Ray mouseRay,
+        public static bool IsOn3D<T>(T objectToTest, bool relativeToCamera, Ray mouseRay,
             Camera camera,
             out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
         {

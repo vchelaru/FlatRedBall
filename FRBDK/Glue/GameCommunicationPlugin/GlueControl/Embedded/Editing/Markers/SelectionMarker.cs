@@ -63,7 +63,7 @@ namespace GlueControl.Editing
         void Update();
         bool ShouldSuppress(string memberName);
 
-        bool IsCursorOverThis();
+        bool IsMouseOverThis();
         void Destroy();
     }
 
@@ -467,11 +467,11 @@ namespace GlueControl.Editing
 
         public ResizeSide GetSideOver()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             for (int i = 0; i < this.rectangles.Length; i++)
             {
-                if (rectangles[i].Visible && cursor.IsOn3D(rectangles[i]))
+                if (rectangles[i].Visible && IsOn3D(rectangles[i]))
                 {
                     return (ResizeSide)i;
                 }
@@ -479,6 +479,23 @@ namespace GlueControl.Editing
 
             return ResizeSide.None;
         }
+
+        public bool IsOn3D<T>(T objectToTest) where T : IPositionable, IRotatable, IReadOnlyScalable
+        {
+            return IsOn3D(objectToTest, false, null, out Microsoft.Xna.Framework.Vector3 vector3);
+        }
+
+        public bool IsOn3D<T>(T spriteToTest, bool relativeToCamera, FlatRedBall.Graphics.Layer layer, out Vector3 intersectionPoint) where T : IPositionable, IRotatable, IReadOnlyScalable
+        {
+            intersectionPoint = Vector3.Zero;
+            if (spriteToTest == null)
+                return false;
+
+            return MathFunctions.IsOn3D<T>(
+                spriteToTest, relativeToCamera, InputManager.Mouse.GetMouseRay(FlatRedBall.Camera.Main),
+                FlatRedBall.Camera.Main, out intersectionPoint);
+        }
+
 
         public bool GetIfSetsTextureScale(PositionedObject item)
         {
@@ -1238,10 +1255,10 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public bool IsCursorOverThis()
+        public bool IsMouseOverThis()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (cursor.IsOn3D(mainPolygon))
+            var mouse = InputManager.Mouse;
+            if (IsOn3D(mainPolygon))
             {
                 return true;
             }
@@ -1255,6 +1272,29 @@ namespace GlueControl.Editing
                 return true;
             }
             return false;
+        }
+
+        public bool IsOn3D(Polygon polygon)
+        {
+            Ray ray = InputManager.Mouse.GetMouseRay(FlatRedBall.Camera.Main);
+            Matrix inverseRotation = polygon.RotationMatrix;
+
+            Matrix.Invert(ref inverseRotation, out inverseRotation);
+
+            Plane plane = new Plane(polygon.Position, polygon.Position + polygon.RotationMatrix.Up,
+                polygon.Position + polygon.RotationMatrix.Right);
+
+            float? result = ray.Intersects(plane);
+
+            if (!result.HasValue)
+            {
+                return false;
+            }
+
+            Vector3 intersection = ray.Position + ray.Direction * result.Value;
+
+
+            return polygon.IsPointInside(ref intersection);
         }
 
         public bool ShouldSuppress(string variableName) =>
