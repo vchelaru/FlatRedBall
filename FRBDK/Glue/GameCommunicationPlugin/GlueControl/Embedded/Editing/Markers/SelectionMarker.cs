@@ -139,19 +139,19 @@ namespace GlueControl.Editing
         {
             Visible = selectionMarker.Visible;
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
 
             UpdateVisibilityConsideringResizeMode();
 
             if (Visible)
             {
-                // Update the "should resize" values if the cursor isn't down so that
+                // Update the "should resize" values if the mouse isn't down so that
                 // highlights reflect whether opposite sides will be resized. 
-                // Do not do this if the cursor is down because we want to take a snapshot
-                // of these values when the cursor is pressed and continue to use those values
+                // Do not do this if the mouse is down because we want to take a snapshot
+                // of these values when the mouse is pressed and continue to use those values
                 // during the duration of the drag.
-                if (!FlatRedBall.Gui.GuiManager.Cursor.PrimaryDown)
+                if (!mouse.ButtonDown(Mouse.MouseButtons.LeftButton))
                 {
                     bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(item);
                     // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
@@ -208,14 +208,14 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (cursor.PrimaryPush && FlatRedBallServices.Game.IsActive)
+                if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive)
                 {
-                    HandleCursorPushed(item);
+                    HandleMousePushed(item);
                 }
 
-                if (cursor.PrimaryClick)
+                if (mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
                 {
-                    HandleCursorRelease();
+                    HandleMouseRelease();
                 }
 
             }
@@ -366,10 +366,8 @@ namespace GlueControl.Editing
             }
         }
 
-        private void HandleCursorPushed(PositionedObject ownerAsPositionedObject)
+        private void HandleMousePushed(PositionedObject ownerAsPositionedObject)
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-
             ShouldResizeXFromCenter = false;
             ShouldResizeYFromCenter = false;
 
@@ -458,7 +456,7 @@ namespace GlueControl.Editing
             }
         }
 
-        private void HandleCursorRelease()
+        private void HandleMouseRelease()
         {
             SideGrabbed = ResizeSide.None;
         }
@@ -490,10 +488,14 @@ namespace GlueControl.Editing
             intersectionPoint = Vector3.Zero;
             if (spriteToTest == null)
                 return false;
+#if SupportsEditMode
 
             return MathFunctions.IsOn3D<T>(
                 spriteToTest, relativeToCamera, InputManager.Mouse.GetMouseRay(FlatRedBall.Camera.Main),
                 FlatRedBall.Camera.Main, out intersectionPoint);
+#else
+            return false;
+#endif
         }
 
 
@@ -765,8 +767,7 @@ namespace GlueControl.Editing
 
         private void DoUpdateReleasedLogic()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            if (!cursor.PrimaryClick || ownerAsPositionedObject == null)
+            if (!InputManager.Mouse.ButtonReleased(Mouse.MouseButtons.LeftButton) || ownerAsPositionedObject == null)
             {
                 return;
             }
@@ -824,10 +825,10 @@ namespace GlueControl.Editing
 
         private void DoUpdatePushedLogic()
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             ///////////Early Out////////////////
-            if (!cursor.PrimaryPush)
+            if (!InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
             {
                 return;
             }
@@ -836,7 +837,7 @@ namespace GlueControl.Editing
 
             IsGrabbed = ownerAsPositionable != null;
 
-            ScreenPointPushed = new Microsoft.Xna.Framework.Point(cursor.ScreenX, cursor.ScreenY);
+            ScreenPointPushed = new Microsoft.Xna.Framework.Point(mouse.X, mouse.Y);
             if (ownerAsPositionable != null)
             {
                 if (ownerAsPositionedObject?.Parent == null)
@@ -938,27 +939,27 @@ namespace GlueControl.Editing
 
         private void ApplyPrimaryDownDragEditing(IStaticPositionable item)
         {
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             var itemZ = item?.Z ?? 0;
 
-            if (cursor.PrimaryPush)
+            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
             {
-                lastWorldX = cursor.WorldXAt(itemZ);
-                lastWorldY = cursor.WorldYAt(itemZ);
+                lastWorldX = mouse.WorldXAt(itemZ);
+                lastWorldY = mouse.WorldYAt(itemZ);
             }
 
-            var xChangeScreenSpace = cursor.WorldXAt(itemZ) - lastWorldX;
-            var yChangeScreenSpace = cursor.WorldYAt(itemZ) - lastWorldY;
+            var xChangeScreenSpace = mouse.WorldXAt(itemZ) - lastWorldX;
+            var yChangeScreenSpace = mouse.WorldYAt(itemZ) - lastWorldY;
 
-            var didCursorMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
+            var didMouseMove = xChangeScreenSpace != 0 || yChangeScreenSpace != 0;
 
             var handledByPolygonHandles = PolygonPointHandles.PointIndexHighlighted != null;
 
-            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - cursor.ScreenX) > 4 ||
-                Math.Abs(ScreenPointPushed.Y - cursor.ScreenY) > 4;
+            var hasMovedEnough = Math.Abs(ScreenPointPushed.X - mouse.X) > 4 ||
+                Math.Abs(ScreenPointPushed.Y - mouse.Y) > 4;
 
-            if (CanMoveItem && cursor.PrimaryDown && didCursorMove && hasMovedEnough &&
+            if (CanMoveItem && mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didMouseMove && hasMovedEnough &&
                 !handledByPolygonHandles &&
                 FlatRedBallServices.Game.IsActive &&
                 // Currently only PositionedObjects can be moved. If an object is
@@ -983,8 +984,8 @@ namespace GlueControl.Editing
                 }
             }
 
-            lastWorldX = cursor.WorldXAt(itemZ);
-            lastWorldY = cursor.WorldYAt(itemZ);
+            lastWorldX = mouse.WorldXAt(itemZ);
+            lastWorldY = mouse.WorldYAt(itemZ);
         }
 
 
@@ -1138,13 +1139,13 @@ namespace GlueControl.Editing
                 heightMultiple *= 2;
             }
 
-            var cursor = FlatRedBall.Gui.GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
             var scalable = item as IScalable;
-            var cursorChange = new Vector3(cursor.WorldXChangeAt(item.Z), cursor.WorldYChangeAt(item.Z), 0);
-            cursorChange = cursorChange.RotatedBy(-item.RotationZ);
+            var mouseChange = new Vector3(mouse.WorldXChangeAt(item.Z), mouse.WorldYChangeAt(item.Z), 0);
+            mouseChange = mouseChange.RotatedBy(-item.RotationZ);
 
-            float xChangeForPosition = rotatedPositionMultiple.X * cursorChange.X;
-            float yChangeForPosition = rotatedPositionMultiple.Y * cursorChange.Y;
+            float xChangeForPosition = rotatedPositionMultiple.X * mouseChange.X;
+            float yChangeForPosition = rotatedPositionMultiple.Y * mouseChange.Y;
 
             bool setsTextureScale = ResizeHandles.GetIfSetsTextureScale(item);
 
@@ -1154,15 +1155,15 @@ namespace GlueControl.Editing
                 var currentScaleX = asSprite.ScaleX;
                 var currentScaleY = asSprite.ScaleY;
 
-                if (cursorChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && asSprite.ScaleX != 0 && widthMultiple != 0)
                 {
-                    var newRatio = (currentScaleX + 0.5f * cursorChange.X * widthMultiple) / currentScaleX;
+                    var newRatio = (currentScaleX + 0.5f * mouseChange.X * widthMultiple) / currentScaleX;
 
                     asSprite.TextureScale *= newRatio;
                 }
-                else if (cursorChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
+                else if (mouseChange.Y != 0 && asSprite.ScaleY != 0 && heightMultiple != 0)
                 {
-                    var newRatio = (currentScaleY + 0.5f * cursorChange.Y * heightMultiple) / currentScaleY;
+                    var newRatio = (currentScaleY + 0.5f * mouseChange.Y * heightMultiple) / currentScaleY;
 
                     asSprite.TextureScale *= newRatio;
                 }
@@ -1170,13 +1171,13 @@ namespace GlueControl.Editing
             else if (item is Circle asCircle)
             {
                 float? newRadius = null;
-                if (cursorChange.X != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && widthMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorChange.X * widthMultiple / 2.0f;
+                    newRadius = asCircle.Radius + mouseChange.X * widthMultiple / 2.0f;
                 }
-                else if (cursorChange.Y != 0 && heightMultiple != 0)
+                else if (mouseChange.Y != 0 && heightMultiple != 0)
                 {
-                    newRadius = asCircle.Radius + cursorChange.Y * heightMultiple / 2.0f;
+                    newRadius = asCircle.Radius + mouseChange.Y * heightMultiple / 2.0f;
                 }
                 if (newRadius != null)
                 {
@@ -1196,13 +1197,13 @@ namespace GlueControl.Editing
 
                 float scaleXChange = 0;
                 float scaleYChange = 0;
-                if (cursorChange.X != 0 && widthMultiple != 0)
+                if (mouseChange.X != 0 && widthMultiple != 0)
                 {
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
                     //scalable.ScaleX = newScaleX;
                     // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
-                    unsnappedItemSize.X = unsnappedItemSize.X + cursorChange.X * widthMultiple;
+                    unsnappedItemSize.X = unsnappedItemSize.X + mouseChange.X * widthMultiple;
                     unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
                     var newScaleX = SnapSize(unsnappedItemSize.X) / 2.0f;
@@ -1219,12 +1220,12 @@ namespace GlueControl.Editing
                 }
 
 
-                if (cursorChange.Y != 0 && heightMultiple != 0)
+                if (mouseChange.Y != 0 && heightMultiple != 0)
                 {
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
                     //scalable.ScaleY = newScaleY;
-                    unsnappedItemSize.Y = unsnappedItemSize.Y + cursorChange.Y * heightMultiple;
+                    unsnappedItemSize.Y = unsnappedItemSize.Y + mouseChange.Y * heightMultiple;
                     unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
 
                     var newScaleY = SnapSize(unsnappedItemSize.Y) / 2.0f;

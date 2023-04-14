@@ -162,11 +162,11 @@ namespace GlueControl.Editing
 
         internal static void DoDragSelectLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = InputManager.Mouse;
 
             PerformedRectangleSelection = false;
 
-            if (cursor.PrimaryDown == false && !cursor.PrimaryClick)
+            if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) == false && !mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 LeftSelect = null;
                 RightSelect = null;
@@ -174,11 +174,11 @@ namespace GlueControl.Editing
                 BottomSelect = null;
             }
 
-            if (cursor.PrimaryPush)
+            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
             {
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    PushStartLocation = cursor.WorldPosition;
+                    PushStartLocation = new Vector2(mouse.WorldXAt(0), mouse.WorldYAt(0));
                     LeftSelect = null;
                     RightSelect = null;
                     TopSelect = null;
@@ -189,13 +189,13 @@ namespace GlueControl.Editing
                     PushStartLocation = null;
                 }
             }
-            if (cursor.PrimaryDown && PushStartLocation != null)
+            if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && PushStartLocation != null)
             {
-                LeftSelect = Math.Min(PushStartLocation.Value.X, cursor.WorldX);
-                RightSelect = Math.Max(PushStartLocation.Value.X, cursor.WorldX);
+                LeftSelect = Math.Min(PushStartLocation.Value.X, mouse.WorldXAt(0));
+                RightSelect = Math.Max(PushStartLocation.Value.X, mouse.WorldXAt(0));
 
-                TopSelect = Math.Max(PushStartLocation.Value.Y, cursor.WorldY);
-                BottomSelect = Math.Min(PushStartLocation.Value.Y, cursor.WorldY);
+                TopSelect = Math.Max(PushStartLocation.Value.Y, mouse.WorldYAt(0));
+                BottomSelect = Math.Min(PushStartLocation.Value.Y, mouse.WorldYAt(0));
 
                 var centerX = (LeftSelect.Value + RightSelect.Value) / 2.0f;
                 var centerY = (TopSelect.Value + BottomSelect.Value) / 2.0f;
@@ -207,7 +207,7 @@ namespace GlueControl.Editing
 
                 EditorVisuals.Rectangle(width, height, new Vector3(centerX, centerY, 0), selectionColor);
             }
-            if (cursor.PrimaryClick)
+            if (mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 if (FlatRedBallServices.Game.IsActive == false)
                 {
@@ -325,7 +325,6 @@ namespace GlueControl.Editing
             GetShapeFor(collisionObject, out PolygonFast polygon, out Circle circle);
             if (polygon != null)
             {
-                //return polygon.IsMouseOver(GuiManager.Cursor);
                 Matrix inverseRotation = polygon.RotationMatrix;
 
                 Matrix.Invert(ref inverseRotation, out inverseRotation);
@@ -347,12 +346,34 @@ namespace GlueControl.Editing
             }
             else if (circle != null)
             {
-                return circle.IsMouseOver(GuiManager.Cursor);
+                return IsOn3D(circle);
             }
             else
             {
                 return false;
             }
+        }
+
+        static bool IsOn3D(Circle circle)
+        {
+            Ray ray = InputManager.Mouse.GetMouseRay(Camera.Main);
+            Matrix inverseRotation = circle.RotationMatrix;
+
+            Matrix.Invert(ref inverseRotation, out inverseRotation);
+
+            Plane plane = new Plane(circle.Position, circle.Position + circle.RotationMatrix.Up,
+                circle.Position + circle.RotationMatrix.Right);
+
+            float? result = ray.Intersects(plane);
+
+            if (!result.HasValue)
+            {
+                return false;
+            }
+
+            Vector3 intersection = ray.Position + ray.Direction * result.Value;
+
+            return circle.IsPointInside(ref intersection);
         }
 
         public class PolygonFast

@@ -1752,15 +1752,7 @@ namespace FlatRedBall.Gui
         {
             Ray ray = GetRay(layer);
             Matrix inverseRotation = circle.RotationMatrix;
-#if FRB_MDX
-            inverseRotation.Invert();
 
-            Plane plane = Plane.FromPointNormal(
-                circle.Position, circle.RotationMatrix.Backward());
-
-            Vector3 intersection = Plane.IntersectLine(plane, ray.Position,
-                ray.Position + ray.Direction);
-#else
             Matrix.Invert(ref inverseRotation, out inverseRotation);
 
             Plane plane = new Plane(circle.Position, circle.Position + circle.RotationMatrix.Up,
@@ -1775,7 +1767,6 @@ namespace FlatRedBall.Gui
 
             Vector3 intersection = ray.Position + ray.Direction * result.Value;
 
-#endif
             return circle.IsPointInside(ref intersection);
         }
 
