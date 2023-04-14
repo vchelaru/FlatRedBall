@@ -998,7 +998,6 @@ namespace FlatRedBall.Input
 
         }
 
-#if !XBOX360
         public float WorldXChangeAt(float zPosition)
         {
             int change = mMouseState.X - mLastFrameMouseState.X + mLastFrameRepositionX;
@@ -1020,9 +1019,8 @@ namespace FlatRedBall.Input
 
             MathFunctions.ScreenToAbsoluteDistance(0, change, out dummy, out resultY, zPosition, SpriteManager.Camera);
 
-            return resultY;
+            return -resultY;
         }
-#endif
 
         #endregion
 

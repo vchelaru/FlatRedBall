@@ -102,25 +102,26 @@ namespace GlueControl.Editing
                 return;
             }
 
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
             var camera = Camera.Main;
 
             var xBefore = camera.X;
             var yBefore = camera.Y;
 
-            if (cursor.MiddleDown)
+            if (mouse.ButtonDown(Mouse.MouseButtons.MiddleButton))
             {
-                camera.X -= cursor.WorldXChangeAt(0);
-                camera.Y -= cursor.WorldYChangeAt(0);
+                camera.X -= mouse.WorldXChangeAt(0);
+                camera.Y -= mouse.WorldYChangeAt(0);
             }
 
-            if ((cursor.PrimaryDown || cursor.SecondaryDown) && cursor.IsInWindow())
+            if ((mouse.ButtonDown(Mouse.MouseButtons.LeftButton) || mouse.ButtonDown(Mouse.MouseButtons.RightButton)) &&
+                mouse.IsInGameWindow())
             {
                 // If near the edges, move in that direction.
-                DoMouseDownScrollingLogic(cursor);
+                DoMouseDownScrollingLogic();
             }
 
-            DoMouseWheelZoomingLogic(cursor);
+            DoMouseWheelZoomingLogic();
 
             CameraXMovement = camera.X - xBefore;
             CameraYMovement = camera.Y - yBefore;
@@ -216,27 +217,30 @@ namespace GlueControl.Editing
 
         #region Zooming
 
-        private static void DoMouseWheelZoomingLogic(Cursor cursor)
+        private static void DoMouseWheelZoomingLogic()
         {
-            if (cursor.ZVelocity < 0)
+            var zVelocity = InputManager.Mouse.ScrollWheelChange;
+            if (zVelocity < 0)
             {
                 DoZoomPlus(zoomAroundCursorPosition: true);
             }
-            if (cursor.ZVelocity > 0)
+            if (zVelocity > 0)
             {
                 DoZoomMinus(zoomAroundCursorPosition: true);
             }
         }
 
-        private static void DoMouseDownScrollingLogic(Cursor cursor)
+        private static void DoMouseDownScrollingLogic()
         {
             Camera camera = Camera.Main;
 
             const float borderInPixels = 50;
             var MaxVelocity = Camera.Main.OrthogonalHeight / 3;
 
-            var screenX = cursor.ScreenX - camera.LeftDestination;
-            var screenY = cursor.ScreenY - camera.TopDestination;
+            var mouse = InputManager.Mouse;
+
+            var screenX = mouse.X - camera.LeftDestination;
+            var screenY = mouse.Y - camera.TopDestination;
 
             var screenWidthInPixels = camera.DestinationRectangle.Width;
             var screenHeightInPixels = camera.DestinationRectangle.Height;
@@ -272,9 +276,9 @@ namespace GlueControl.Editing
         }
         public static void UpdateCameraToZoomLevel(bool zoomAroundCursorPosition = true, bool forceTo100 = false)
         {
-            var cursor = GuiManager.Cursor;
-            var worldXBefore = cursor.WorldX;
-            var worldYBefore = cursor.WorldY;
+            var mouse = InputManager.Mouse;
+            var worldXBefore = mouse.WorldXAt(0);
+            var worldYBefore = mouse.WorldYAt(0);
 
             var makeDefaultCamera100 = false;
 
@@ -326,8 +330,8 @@ namespace GlueControl.Editing
 
             if (zoomAroundCursorPosition)
             {
-                var worldXAfterZoom = cursor.WorldX;
-                var worldYAfterZoom = cursor.WorldY;
+                var worldXAfterZoom = mouse.WorldXAt(0);
+                var worldYAfterZoom = mouse.WorldYAt(0);
 
                 Camera.Main.X -= worldXAfterZoom - worldXBefore;
                 Camera.Main.Y -= worldYAfterZoom - worldYBefore;
