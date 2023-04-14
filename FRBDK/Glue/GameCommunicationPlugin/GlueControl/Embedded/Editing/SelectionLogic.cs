@@ -4,6 +4,7 @@
 using FlatRedBall;
 using FlatRedBall.Entities;
 using FlatRedBall.Graphics;
+using FlatRedBall.Input;
 using FlatRedBall.Gui;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;

@@ -4,6 +4,7 @@ using {ProjectNamespace};
 
 using FlatRedBall;
 using FlatRedBall.Gui;
+using FlatRedBall.Input;
 using System;
 using System.Linq;
 using System.Collections.Generic;

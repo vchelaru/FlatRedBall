@@ -1,6 +1,7 @@
 ﻿{CompilerDirectives}
 
 using FlatRedBall;
+using FlatRedBall.Input;
 using FlatRedBall.Instructions;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Geometry;
@@ -139,7 +140,7 @@ namespace GlueControl.Editing
         {
             Visible = selectionMarker.Visible;
 
-            var mouse = InputManager.Mouse;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
 
             UpdateVisibilityConsideringResizeMode();
@@ -151,7 +152,7 @@ namespace GlueControl.Editing
                 // Do not do this if the mouse is down because we want to take a snapshot
                 // of these values when the mouse is pressed and continue to use those values
                 // during the duration of the drag.
-                if (!mouse.ButtonDown(Mouse.MouseButtons.LeftButton))
+                if (!mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton))
                 {
                     bool shouldAttemptResizeFromCenter = GetIfShouldResizeFromCenter(item);
                     // If we're resizing a rectangle on an object, we may not want to move on resize, so let's change the position
@@ -208,12 +209,12 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive)
+                if (mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive)
                 {
                     HandleMousePushed(item);
                 }
 
-                if (mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
+                if (mouse.ButtonReleased(FlatRedBall.Input.Mouse.MouseButtons.LeftButton))
                 {
                     HandleMouseRelease();
                 }
