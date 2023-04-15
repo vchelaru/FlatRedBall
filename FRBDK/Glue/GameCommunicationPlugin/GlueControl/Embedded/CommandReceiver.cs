@@ -370,24 +370,7 @@ namespace GlueControl
             // if the echoed selection is already active:
             if (matchesCurrentScreen)
             {
-                var newSelectionCount = selectObjectDto.NamedObjects.Count;
-
-                if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
-                {
-                    playBump = true;
-                }
-                else
-                {
-                    playBump = false;
-                    for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
-                    {
-                        var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
-                        if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
-                        {
-                            playBump = true;
-                        }
-                    }
-                }
+                playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
             }
 
             try
@@ -509,10 +492,37 @@ namespace GlueControl
                     }
                     else
                     {
+                        playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
+
                         EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                     }
                 }
             }
+        }
+
+        private static bool DetermineIfBumpShouldPlayBasedOnSelection(SelectObjectDto selectObjectDto)
+        {
+            bool playBump;
+            var newSelectionCount = selectObjectDto.NamedObjects.Count;
+
+            if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
+            {
+                playBump = true;
+            }
+            else
+            {
+                playBump = false;
+                for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
+                {
+                    var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
+                    if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
+                    {
+                        playBump = true;
+                    }
+                }
+            }
+
+            return playBump;
         }
 
         private static void SelectState(string stateName, string stateCategoryName)
