@@ -267,6 +267,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             var gameScreenName = await _commandSender.GetScreenName();
 
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
+            HashSet<GlueElement> modifiedGlueElements = new HashSet<GlueElement>();
             foreach (var setVariableDto in setVariableDtoList.SetVariableList)
             {
                 await HandleSetVariable(setVariableDto, sendBackToGame:false, regenerateAndSave: false);
@@ -293,11 +294,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            await _variableSendingManager.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
+            _variableSendingManager.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
 
             await TaskManager.Self.AddAsync(() =>
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+                {
+                    foreach(var item in modifiedGlueElements)
+                    {
+                        GlueCommands.Self.GluxCommands.SaveElementAsync(item);
+                    }
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                }
                 GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
 
                 HashSet<GlueElement> nosParents = new HashSet<GlueElement>();

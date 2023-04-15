@@ -232,7 +232,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
 
-            }, $"Refreshing errors for {errorReporter}");
+            }, $"Refreshing errors for {errorReporter}", TaskExecutionPreference.AddOrMoveToEnd);
         }
 
         public void RefreshDirectoryTreeNodes()

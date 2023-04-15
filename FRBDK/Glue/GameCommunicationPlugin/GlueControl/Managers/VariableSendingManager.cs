@@ -89,7 +89,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 listOfVariables.AddRange(inner);
             }
 
-            await PushVariableChangesToGame(listOfVariables, nosList);
+            PushVariableChangesToGame(listOfVariables, nosList);
         }
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
@@ -97,12 +97,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var gameScreenName = await _commandSender.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
+            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
         }
 
-        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
+        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            // The round trip takes some time. This can slow down Glue because it's sitting and waiting for a response
+            // from the game. I don't think we care about the response, so let's just fire and forget this.
+            //await TaskManager.Self.AddAsync(async () =>
+            TaskManager.Self.Add(async () =>
             {
                 try
                 {
