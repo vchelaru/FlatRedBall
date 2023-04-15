@@ -196,6 +196,8 @@ namespace GlueControl.Editing
 
         public static EditingManager Self { get; private set; }
 
+        bool wasGameActive;
+
         #endregion
 
         #region Delegates/Events
@@ -462,6 +464,9 @@ namespace GlueControl.Editing
                 itemGrabbed = null;
 
             }
+
+            wasGameActive = FlatRedBallServices.Game.IsActive;
+
 #endif
         }
 
@@ -493,7 +498,16 @@ namespace GlueControl.Editing
 
             }
 
-            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && mouse.IsInGameWindow())
+            var shouldTreatAsPush = false;
+
+            if (mouse.IsInGameWindow())
+            {
+                var didWindowActivate = !wasGameActive && FlatRedBallServices.Game.IsActive;
+
+                shouldTreatAsPush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                    (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didWindowActivate);
+            }
+            if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
