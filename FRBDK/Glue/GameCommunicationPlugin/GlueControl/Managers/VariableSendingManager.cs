@@ -102,6 +102,27 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
+            var dto = new GlueVariableSetDataList();
+            dto.Data.AddRange(listOfVariables);
+
+            foreach(var nos in namedObjectsToUpdate)
+            {
+                var container = ObjectFinder.Self.GetElementContaining(nos);
+                var namedObjectWithElement = new NamedObjectWithElementName();
+                namedObjectWithElement.NamedObjectSave = nos;
+                namedObjectWithElement.GlueElementName = container?.Name;
+                var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
+                namedObjectWithElement.ContainerName = listNos?.InstanceName;
+
+                dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
+            }
+
+            var serializedForHash = JsonConvert.SerializeObject(dto, Formatting.None);
+
+            var hash = serializedForHash.GetHashCode();
+
+            var customId = hash;
+
             // The round trip takes some time. This can slow down Glue because it's sitting and waiting for a response
             // from the game. I don't think we care about the response, so let's just fire and forget this.
             //await TaskManager.Self.AddAsync(async () =>
@@ -109,20 +130,6 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 try
                 {
-                    var dto = new GlueVariableSetDataList();
-                    dto.Data.AddRange(listOfVariables);
-
-                    foreach(var nos in namedObjectsToUpdate)
-                    {
-                        var container = ObjectFinder.Self.GetElementContaining(nos);
-                        var namedObjectWithElement = new NamedObjectWithElementName();
-                        namedObjectWithElement.NamedObjectSave = nos;
-                        namedObjectWithElement.GlueElementName = container?.Name;
-                        var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
-                        namedObjectWithElement.ContainerName = listNos?.InstanceName;
-
-                        dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
-                    }
 
                     var sendGeneralResponse = await _commandSender.Send(dto);
 
@@ -151,7 +158,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     // no biggie...
                 }
-            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap);
+            // We want this to be asap so the game feels responsive, but with things like the rotation control, values can be spammed really fast.
+            // We'll use AddOrMoveToEnd to make sure that if the user is spamming values, we'll only send the last one.
+            //}, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap, customId:$"Pushing variables with hash {hash}");
+            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.AddOrMoveToEnd, customId:$"Pushing variables with hash {hash}");
         }
 
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
