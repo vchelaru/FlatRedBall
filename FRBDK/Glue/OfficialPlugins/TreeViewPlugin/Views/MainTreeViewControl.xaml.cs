@@ -185,6 +185,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // tree nodes may get selected when they are created rather than through a click (which changes the 
+            // view model). Vic isn't sure why so this is a little bit of a hack:
+            RefreshRightClickMenu();
+
             if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
             {
                 var timeSinceLastClick = DateTime.Now - lastClick;
@@ -199,6 +203,19 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             var frameworkElementPushed = (objectPushed as FrameworkElement);
 
             nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+        }
+
+        void RefreshRightClickMenu()
+        {
+            var items = RightClickHelper.GetRightClickItems(SelectionLogic.CurrentNode, MenuShowingAction.RegularRightClick);
+
+            RightClickContextMenu.Items.Clear();
+
+            foreach (var item in items)
+            {
+                var wpfItem = CreateWpfItemFor(item);
+                RightClickContextMenu.Items.Add(wpfItem);
+            }
         }
 
         private bool ClickedOnGrid(FrameworkElement frameworkElement)
