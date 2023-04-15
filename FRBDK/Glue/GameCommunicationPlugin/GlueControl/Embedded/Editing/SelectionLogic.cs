@@ -676,7 +676,9 @@ namespace GlueControl.Editing
                 UpdateMinsAndMaxes(circle, ref minX, ref maxX, ref minY, ref maxY);
             }
 
-            if (itemOver is PositionedObject positionedObject)
+            // This section uses the children sizes to position the object. However, we don't want to do that
+            // if this is IScalable - if it is IScalable, then it determines its own size:
+            if (itemOver is PositionedObject positionedObject && itemOver is IReadOnlyScalable == false)
             {
                 for (int i = 0; i < positionedObject.Children.Count; i++)
                 {
