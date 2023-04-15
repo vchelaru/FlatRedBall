@@ -509,7 +509,7 @@ namespace GlueControl
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: true);
+                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                     }
                 }
             }

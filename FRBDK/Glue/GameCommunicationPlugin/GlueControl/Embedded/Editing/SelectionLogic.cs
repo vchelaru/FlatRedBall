@@ -621,7 +621,7 @@ namespace GlueControl.Editing
             out float minX, out float maxX, out float minY, out float maxY)
         {
             // We used to use the position as part of the min and max bounds, but this causes problems
-            // if some objects are only visible when the cursor is over them. Therefore, always use half dimension
+            // if some objects are only visible when the mouse is over them. Therefore, always use half dimension
             // width for selection:
             minX = itemOver.X;
             maxX = itemOver.X;

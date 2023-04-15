@@ -485,7 +485,7 @@ namespace GlueControl.Editing
         bool shouldPrintCurrentNamedObjectInformation = false;
         private void DoGrabLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             if (shouldPrintCurrentNamedObjectInformation)
             {
@@ -493,7 +493,7 @@ namespace GlueControl.Editing
 
             }
 
-            if (cursor.PrimaryPush && cursor.IsInWindow())
+            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) && mouse.IsInGameWindow())
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
@@ -575,10 +575,10 @@ namespace GlueControl.Editing
 
         private void DoReleaseLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             ///////Early Out
-            if (!cursor.PrimaryClick)
+            if (!mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 return;
             }
