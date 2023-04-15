@@ -392,15 +392,24 @@ namespace GlueControl.Editing
                 itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
+                var mouse = FlatRedBall.Input.InputManager.Mouse;
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive && GuiManager.Cursor.IsInWindow())
+                if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
                 {
-                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && FlatRedBall.Gui.GuiManager.Cursor.WindowOver == null)
+                    var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                    // We can use the cursor to tell if the mouse is over a FRB window, but only
+                    // if the cursor and mouse are the same thing. If the cursor is not the mouse,
+                    // then the moue and cursor may not be in the same spot, so we can't use the WindowOver check
+                    bool isOverWindow = isCursorUsingMouse &&
+                        FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null;
+
+                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && !isOverWindow)
                     {
                         SelectionLogic.DoDragSelectLogic();
                     }
-                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
                 }
                 else
                 {
@@ -412,7 +421,7 @@ namespace GlueControl.Editing
 
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    if (GuiManager.Cursor.IsInWindow())
+                    if (mouse.IsInGameWindow())
                     {
                         DoGrabLogic();
                     }
@@ -423,7 +432,7 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
-                    if(GuiManager.Cursor.IsInWindow())
+                    if(mouse.IsInGameWindow())
                     {
                         CameraLogic.DoCursorCameraControllingLogic();
                     }
