@@ -273,13 +273,18 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_Drop(object sender, DragEventArgs e)
         {
-            if(e.Data.GetDataPresent("FileDrop"))
+            var isCancelled = Keyboard.IsKeyDown(Key.Escape);
+
+            if(!isCancelled)
             {
-                HandleDropFileFromExplorerWindow(e);
-            }
-            else
-            {
-                HandleDropTreeNodeOnTreeNode(e);
+                if(e.Data.GetDataPresent("FileDrop"))
+                {
+                    HandleDropFileFromExplorerWindow(e);
+                }
+                else
+                {
+                    HandleDropTreeNodeOnTreeNode(e);
+                }
             }
         }
 
@@ -777,6 +782,23 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void Bookmarks_LostFocus(object sender, RoutedEventArgs e)
         {
             Bookmarks.SelectedItem= null;
+        }
+
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void MainTreeView_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // this doesn't work:
+            if(e.Key == Key.Escape)
+            {
+                if(GlueState.Self.DraggedTreeNode != null)
+                {
+                    GlueState.Self.DraggedTreeNode = null;
+                }
+            }
         }
     }
 }
