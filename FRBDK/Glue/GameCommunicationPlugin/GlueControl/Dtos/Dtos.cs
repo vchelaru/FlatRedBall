@@ -325,6 +325,16 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region UpdateStateSaveCategory
+
+    public class UpdateStateSaveCategory
+    {
+        public StateSaveCategory Category { get; set; }
+        public string ElementNameGame { get; set; }
+    }
+
+    #endregion
+
     #region ChangeStateVariableDto
     public class ChangeStateVariableDto
     {

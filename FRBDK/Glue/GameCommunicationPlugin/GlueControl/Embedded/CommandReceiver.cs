@@ -773,7 +773,8 @@ namespace GlueControl
 
             category.States.Add(newStateSave);
 
-            // Now create the runtime object and 
+            // If there is already a runtime State object, we need to update that object's properties
+            // in case those are set through code directly. Direct assignments in game code do not use the InstanceLogic.Self.StatesAddedAtRuntime
             var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));
             if (stateType != null)
             {
@@ -801,6 +802,18 @@ namespace GlueControl
                 {
                     InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
                 }
+            }
+        }
+
+        #endregion
+
+        #region Update Category
+
+        private static void HandleDto(UpdateStateSaveCategory dto)
+        {
+            foreach (var state in dto.Category.States)
+            {
+                ReplaceStateWithNewState(dto.ElementNameGame, dto.Category.Name, state);
             }
         }
 

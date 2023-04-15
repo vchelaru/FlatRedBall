@@ -855,12 +855,22 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         }
 
-        internal void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
+        internal async void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
         {
-            if (excludedOrIncluded == StateCategoryVariableAction.Included)
+
+            if (excludedOrIncluded == StateCategoryVariableAction.Excluded)
             {
-                // If a new state variable is included, it won't be functional. This could be confusing, so let's restart
-                CreateStopAndRestartTask($"New variable {variableName} added to category {category}");
+                CreateStopAndRestartTask($"Restarting because variable {variableName} removed from category {category}, and codegen currently assigns that value");
+            }
+            else
+            {
+                var container = ObjectFinder.Self.GetElementContaining(category);
+
+                var dto = new UpdateStateSaveCategory();
+                dto.Category =  category.Clone();
+                dto.ElementNameGame = GetGameTypeFor(container);
+
+                await _commandSender.Send(dto);
             }
         }
 
