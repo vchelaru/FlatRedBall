@@ -1174,7 +1174,7 @@ namespace GlueControl
 
         #endregion
 
-        private static GetCommandsDtoResponse GetGlueToGameCommandRerunList(GetGlueToGameCommandRerunList dto)
+        private static GetCommandsDtoResponse HandleDto(GetGlueToGameCommandRerunList dto)
         {
             var responseDto = new GetCommandsDtoResponse();
 #if SupportsEditMode
@@ -1183,7 +1183,8 @@ namespace GlueControl
 
             foreach(var item in arrayCopy)
             {
-                responseDto.Commands.Add(JsonConvert.SerializeObject(item));
+                var combined = item.GetType().Name + ":" + JsonConvert.SerializeObject(item);
+                responseDto.Commands.Add(combined);
             }
 #endif
 
