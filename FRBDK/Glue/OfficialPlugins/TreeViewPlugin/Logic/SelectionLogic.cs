@@ -132,6 +132,11 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             // since most of the time the right-click menu isn't accessed. Moved this to preview
             // right click in TMainTreeviewControl.xaml.cs
             //RefreshRightClickMenu();
+            // Update April 16, 2023
+            // We should assign this because if the user directly right-clicks on a new node,
+            // we want this to get called
+
+            mainView.RefreshRightClickMenu();
 
             IsUpdatingThisSelectionOnGlueEvent = true;
 
