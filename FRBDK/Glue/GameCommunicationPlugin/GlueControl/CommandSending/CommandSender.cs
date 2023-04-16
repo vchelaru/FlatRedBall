@@ -27,9 +27,18 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
         public CompilerViewModel CompilerViewModel { get; set; }
         public bool IsConnected { get; internal set; }
 
+        public static CommandSender Self { get; private set; }
+
         #endregion
 
+        static CommandSender()
+        {
+            Self = new CommandSender();
+        }
+        private CommandSender() { }
         #region General Send
+
+
         public async Task<ToolsUtilities.GeneralResponse<string>> Send(object dto, bool isImportant = true)
         {
             var dtoTypeName = dto.GetType().Name;

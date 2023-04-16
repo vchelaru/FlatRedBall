@@ -32,18 +32,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     class VariableSendingManager
     {
-        public VariableSendingManager(RefreshManager refreshManager, CommandSender commandSender)
+        public VariableSendingManager(RefreshManager refreshManager)
         {
             _refreshManager = refreshManager;
             _refreshManager.VariableSendingManager = this;
-            _commandSender = commandSender;
         }
 
         #region Fields/Properties
 
         List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
         private RefreshManager _refreshManager;
-        private CommandSender _commandSender;
 
         public CompilerViewModel ViewModel
         {
@@ -79,7 +77,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
             List<NamedObjectSave> nosList = new List<NamedObjectSave>();
             foreach (var variable in variableList)
@@ -94,7 +92,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
             PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
@@ -131,7 +129,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 try
                 {
 
-                    var sendGeneralResponse = await _commandSender.Send(dto);
+                    var sendGeneralResponse = await CommandSender.Self.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)
@@ -590,7 +588,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // why do we care if the GlueElement is null or not?
                 // && data.GlueElement != null)
             {
-                var sendGeneralResponse = await _commandSender.Send(data);
+                var sendGeneralResponse = await CommandSender.Self.Send(data);
                 var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
 
                 if (!string.IsNullOrEmpty(responseAsString))

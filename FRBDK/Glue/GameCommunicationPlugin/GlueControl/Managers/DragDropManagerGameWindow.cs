@@ -20,14 +20,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
     public class DragDropManagerGameWindow
     {
         private RefreshManager _refreshManager;
-        private CommandSender _commandSender;
 
         public CompilerViewModel CompilerViewModel { get; set; }
 
-        public DragDropManagerGameWindow(RefreshManager refreshManager, CommandSender commandSender)
+        public DragDropManagerGameWindow(RefreshManager refreshManager)
         {
             _refreshManager = refreshManager;
-            _commandSender = commandSender;
         }
 
 
@@ -87,7 +85,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 return;
             }
-            GlueElement element = await _commandSender.GetCurrentInGameScreen();
+            GlueElement element = await CommandSender.Self.GetCurrentInGameScreen();
             if(element == null)
             {
                 element = GlueState.Self.CurrentElement;
@@ -120,7 +118,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if(entityToDrop != null)
             { 
                 FlatRedBall.Content.Scene.CameraSave cameraSave = null;
-                cameraSave = await _commandSender.GetCameraSave();
+                cameraSave = await CommandSender.Self.GetCameraSave();
 
 
                 if(cameraSave != null)

@@ -1,4 +1,9 @@
-﻿using GameCommunicationPlugin.GlueControl.ViewModels;
+﻿using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using GameCommunicationPlugin.GlueControl.CommandSending;
+using GameCommunicationPlugin.GlueControl.Dtos;
+using GameCommunicationPlugin.GlueControl.ViewModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -116,6 +121,45 @@ namespace GameCommunicationPlugin.GlueControl.Views
             return null;
         }
 
+        private async void HandleShowGameCommandRerunList(object sender, RoutedEventArgs e)
+        {
+            string errorMessage = null;
+            if(CommandSender.Self.IsConnected)
+            {
+                var dto = new Dtos.GetGlueToGameCommandRerunList();
+                var generalResponse = await CommandSender.Self.Send(dto);
+
+                if(generalResponse.Succeeded)
+                {
+                    if(!string.IsNullOrEmpty(generalResponse.Data))
+                    {
+                        var response = JsonConvert.DeserializeObject<GetCommandsDtoResponse>(generalResponse.Data);
+
+                        var listMessageBox = new ListBoxWindowWpf();
+
+                        foreach(var item in response.Commands)
+                        {
+                            listMessageBox.AddItem(item);
+                        }
+
+                        listMessageBox.ShowDialog();
+                    }
+                    else
+                    {
+                        errorMessage = "Null string returned back from the game";
+                    }
+                }
+            }
+            else
+            {
+                errorMessage = "The game must be running to get its stored commands";
+            }
+
+            if(!string.IsNullOrEmpty(errorMessage))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
+            }
+        }
 
     }
 }

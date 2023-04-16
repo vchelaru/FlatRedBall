@@ -1174,6 +1174,22 @@ namespace GlueControl
 
         #endregion
 
+        private static GetCommandsDtoResponse GetGlueToGameCommandRerunList(GetGlueToGameCommandRerunList dto)
+        {
+            var responseDto = new GetCommandsDtoResponse();
+#if SupportsEditMode
+
+            var arrayCopy = GlobalGlueToGameCommands.ToArray();
+
+            foreach(var item in arrayCopy)
+            {
+                responseDto.Commands.Add(JsonConvert.SerializeObject(item));
+            }
+#endif
+
+            return responseDto;
+        }
+
         #region SetBorderless
 
         private static void HandleDto(SetBorderlessDto dto)

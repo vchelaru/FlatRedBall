@@ -33,18 +33,12 @@ namespace GameCommunicationPlugin.GlueControl.Views
         Dictionary<int, CroppedBitmap> CroppedBitmaps = new Dictionary<int, CroppedBitmap>();
 
         List<ToggleButton> tileToggleButtons = new List<ToggleButton>();
-        private CommandSender _commandSender;
 
         #endregion
 
         public EditingToolsView()
         {
             InitializeComponent();
-        }
-
-        public EditingToolsView(CommandSender commandSender) : this()
-        {
-            _commandSender = commandSender;
         }
 
         public void HandleGluxUnloaded()
@@ -114,7 +108,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
                 if(currentElement == null)
                 {
-                    currentElement = await _commandSender.GetCurrentInGameScreen();
+                    currentElement = await CommandSender.Self.GetCurrentInGameScreen();
                 }
                 if (currentElement != null)
                 {

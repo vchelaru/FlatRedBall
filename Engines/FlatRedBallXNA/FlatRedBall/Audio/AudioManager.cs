@@ -287,7 +287,7 @@ namespace FlatRedBall.Audio
             }
 
 #if !IOS
-            if(shouldPlay && toPlay.IsDisposed)
+            if (shouldPlay && toPlay.IsDisposed)
             {
                 shouldPlay = false;
             }
@@ -417,9 +417,9 @@ namespace FlatRedBall.Audio
             }
         }
 
-#endregion
+        #endregion
 
-#region Public Methods
+        #region SoundEffect
 
 
 
@@ -472,7 +472,7 @@ namespace FlatRedBall.Audio
                 bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
                     mSoundsPlayedThisFrame.Contains(soundEffect.Name) == false;
 
-                if(shouldPlay && MaxConcurrentSoundEffects != null)
+                if (shouldPlay && MaxConcurrentSoundEffects != null)
                 {
                     shouldPlay = ConcurrentSoundEffects < MaxConcurrentSoundEffects;
                 }
@@ -551,9 +551,9 @@ namespace FlatRedBall.Audio
         }
         public static int GetNumberOfTimesCurrentlyPlaying(SoundEffect soundEffect) =>
             mSoundEffectPlayInfos.Count(item => item.SoundEffect == soundEffect);
-#endregion
+        #endregion
 
-#region Manager methods
+        #region Manager methods
 
 
         internal static void UpdateDependencies()
@@ -619,7 +619,7 @@ namespace FlatRedBall.Audio
         }
 
 
-#endregion
+        #endregion
 
     }
 

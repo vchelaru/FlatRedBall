@@ -51,7 +51,6 @@ namespace OfficialPlugins.GameHost.Views
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
-        private CommandSender _commandSender;
         private Func<string, string, Task<string>> _eventCallerWithResult;
         private Action<string, string> _eventCaller;
 
@@ -89,12 +88,11 @@ namespace OfficialPlugins.GameHost.Views
         public event Action<ITreeNode> TreeNodedDroppedInEditBar;
         #endregion
 
-        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller, CommandSender commandSender)
+        public GameHostView(Func<string, string, Task<string>> eventCallerWithResult, Action<string, string> eventCaller)
         {
             InitializeComponent();
 
 
-            _commandSender = commandSender;
             _eventCallerWithResult = eventCallerWithResult;
             _eventCaller = eventCaller;
             winformsPanel = new System.Windows.Forms.Panel();
@@ -191,7 +189,7 @@ namespace OfficialPlugins.GameHost.Views
 
             do
             {
-                var sendResponse = await _commandSender.Send(dto);
+                var sendResponse = await CommandSender.Self.Send(dto);
                 var response = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                 succeeded = !string.IsNullOrWhiteSpace(response);
@@ -348,14 +346,14 @@ namespace OfficialPlugins.GameHost.Views
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Minus;
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private async void BottomStatusBar_ZoomPlusClick()
         {
             var dto = new ChangeZoomDto();
             dto.PlusOrMinus = PlusOrMinus.Plus;
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private void ToolsSidePanel_Drop(object sender, DragEventArgs e)
