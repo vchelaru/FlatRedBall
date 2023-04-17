@@ -63,7 +63,7 @@ namespace CompilerPlugin.Managers
         Process runningGameProcess;
 
         bool suppressNextExitCodeAnnouncement = false;
-        bool foundAlreadyRunningProcess = false;
+        bool foundExternallyRunningProcess = false;
         private Action<string, string> _eventCaller;
         private CompilerViewModel _compilerViewModel;
         System.Windows.Forms.Timer timer;
@@ -135,9 +135,9 @@ namespace CompilerPlugin.Managers
             }));
         }
 
-        public bool GetDidRunnerStartProcess()
+        public bool GetDidFrbEditorStartProcess()
         {
-            return runningGameProcess != null && foundAlreadyRunningProcess == false;
+            return runningGameProcess != null && foundExternallyRunningProcess == false;
         }
 
         //public CompilerViewModel ViewModel
@@ -213,7 +213,7 @@ namespace CompilerPlugin.Managers
 
                 if (foundProcess != null)
                 {
-                    foundAlreadyRunningProcess = true;
+                    foundExternallyRunningProcess = true;
                     runningGameProcess = foundProcess;
 
                     try
@@ -222,8 +222,11 @@ namespace CompilerPlugin.Managers
                         runningGameProcess.Exited += HandleProcessExit;
 
                         IsRunning = runningGameProcess != null;
-                        DidRunnerStartProcess = GetDidRunnerStartProcess();
-
+                        DidRunnerStartProcess = GetDidFrbEditorStartProcess();
+                        if(!DidRunnerStartProcess)
+                        {
+                            _compilerViewModel.PlayOrEdit = PlayOrEdit.Play;
+                        }
                         _compilerViewModel.HasWindowPointer = foundProcess.MainWindowHandle != IntPtr.Zero;
 
 
@@ -246,7 +249,7 @@ namespace CompilerPlugin.Managers
             {
                 // we ahve a process, so let's mark the view model as running:
                 IsRunning = runningGameProcess != null;
-                DidRunnerStartProcess = GetDidRunnerStartProcess();
+                DidRunnerStartProcess = GetDidFrbEditorStartProcess();
             }
             else if(_compilerViewModel.HasWindowPointer == false)
             {
@@ -293,7 +296,7 @@ namespace CompilerPlugin.Managers
 
             IsWaitingForGameToStart = true;
 
-            foundAlreadyRunningProcess = false;
+            foundExternallyRunningProcess = false;
             string exeLocation = GetGameExeLocation();
 
             ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
@@ -369,7 +372,7 @@ namespace CompilerPlugin.Managers
                             TaskManager.Self.OnUiThread(() =>
                             {
                                 IsRunning = runningGameProcess != null;
-                                DidRunnerStartProcess = GetDidRunnerStartProcess();
+                                DidRunnerStartProcess = GetDidFrbEditorStartProcess();
 
                                 AfterSuccessfulRun();
                             });
@@ -535,9 +538,9 @@ namespace CompilerPlugin.Managers
             //Runner.MoveWindow(process.MainWindowHandle, 0, 0, 500, 500, true);
             //Runner.GetWindowRect(id, out RECT windowRect);
 
-            if (foundAlreadyRunningProcess)
+            if (foundExternallyRunningProcess)
             {
-                foundAlreadyRunningProcess = false;
+                foundExternallyRunningProcess = false;
             }
             else if (suppressNextExitCodeAnnouncement)
             {
@@ -567,7 +570,7 @@ namespace CompilerPlugin.Managers
                     global::Glue.MainGlueWindow.Self.Invoke(() =>
                     {
                         IsRunning = runningGameProcess != null;
-                        DidRunnerStartProcess = GetDidRunnerStartProcess();
+                        DidRunnerStartProcess = GetDidFrbEditorStartProcess();
 
                     });
                 }
@@ -633,7 +636,7 @@ namespace CompilerPlugin.Managers
                         runningGameProcess = null;
                     }
                     IsRunning = false;
-                    DidRunnerStartProcess = GetDidRunnerStartProcess();
+                    DidRunnerStartProcess = GetDidFrbEditorStartProcess();
                 }
 
                 return "";
