@@ -409,7 +409,9 @@ namespace GlueControl.Editing
 
                     if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && !isOverWindow)
                     {
-                        SelectionLogic.DoDragSelectLogic();
+                        var gameBecameActive = !wasGameActive && FlatRedBallServices.Game.IsActive;
+
+                        SelectionLogic.DoDragSelectLogic(gameBecameActive);
                     }
                     SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
                 }

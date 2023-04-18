@@ -161,7 +161,7 @@ namespace GlueControl.Editing
             }
         }
 
-        internal static void DoDragSelectLogic()
+        internal static void DoDragSelectLogic(bool gameBecameActive)
         {
             var mouse = InputManager.Mouse;
 
@@ -175,7 +175,10 @@ namespace GlueControl.Editing
                 BottomSelect = null;
             }
 
-            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
+            var effectivePush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && gameBecameActive);
+
+            if (effectivePush)
             {
                 if (FlatRedBallServices.Game.IsActive)
                 {
