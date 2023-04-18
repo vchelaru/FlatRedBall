@@ -479,7 +479,7 @@ namespace FlatRedBall.Gum
         #region IDrawableBatch
 
         // This is needed in case there are multiple Gum IDBs
-        double lastTimeTimeManagerUpdateCalled = -1;
+        static double lastTimeTimeManagerUpdateCalled = -1;
 
         public void Update()
         {
