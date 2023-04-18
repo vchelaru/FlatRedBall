@@ -477,11 +477,20 @@ namespace FlatRedBall.Gum
         #endregion
 
         #region IDrawableBatch
+
+        // This is needed in case there are multiple Gum IDBs
+        double lastTimeTimeManagerUpdateCalled = -1;
+
         public void Update()
         {
             mManagers.Activity(TimeManager.CurrentTime);
 
-            global::Gum.Wireframe.TimeManager.Self.Activity();
+            if(lastTimeTimeManagerUpdateCalled != FlatRedBall.TimeManager.CurrentTime)
+            {
+                global::Gum.Wireframe.TimeManager.Self.Activity();
+                lastTimeTimeManagerUpdateCalled = FlatRedBall.TimeManager.CurrentTime;
+            }
+
         }
 
         /// <summary>
