@@ -26,6 +26,12 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             set => Set(value);
         }
 
+        public bool LogQueueChanges
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public TaskDisplayerViewModel()
         {
             TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;
@@ -38,21 +44,31 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
             if(LogTaskDetailsToOutput)
             {
-                var text = $"{addedOrRemoved} {glueTask.DisplayInfo}";
-                if(addedOrRemoved == TaskEvent.Removed)
-                {
-                    var time = glueTask.TimeEnded - glueTask.TimeStarted;
+                var shouldlog = addedOrRemoved == TaskEvent.Started || addedOrRemoved == TaskEvent.Removed;
 
-                    if(time.Minutes > 0)
-                    {
-                        text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds.ToString("000")}";
-                    }
-                    else
-                    {
-                        text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
-                    }
+                if(!shouldlog)
+                {
+                    shouldlog = LogQueueChanges;
                 }
-                PluginManager.ReceiveOutput(text);
+
+                if(shouldlog)
+                {
+                    var text = $"{addedOrRemoved} {glueTask.DisplayInfo}";
+                    if(addedOrRemoved == TaskEvent.Removed)
+                    {
+                        var time = glueTask.TimeEnded - glueTask.TimeStarted;
+
+                        if(time.Minutes > 0)
+                        {
+                            text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds.ToString("000")}";
+                        }
+                        else
+                        {
+                            text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                        }
+                    }
+                    PluginManager.ReceiveOutput(text);
+                }
             }
 
         }

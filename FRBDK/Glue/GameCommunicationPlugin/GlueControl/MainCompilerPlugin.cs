@@ -101,13 +101,12 @@ namespace GameCommunicationPlugin.GlueControl
 
         public override void StartUp()
         {
-            _commandSender = new CommandSender();
-            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, _commandSender, ReactToPluginEvent);
+            _refreshManager = new RefreshManager(ReactToPluginEventWithReturn, ReactToPluginEvent);
             _refreshManager.InitializeEvents((value) => this.ReactToPluginEvent("Compiler_Output_Standard", value), (value) => this.ReactToPluginEvent("Compiler_Output_Error", value));
 
-            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager, _commandSender);
-            _variableSendingManager = new VariableSendingManager(_refreshManager, _commandSender);
-            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager, _commandSender);
+            _dragDropManagerGameWindow = new DragDropManagerGameWindow(_refreshManager);
+            _variableSendingManager = new VariableSendingManager(_refreshManager);
+            _commandReceiver = new CommandReceiver(_refreshManager, _variableSendingManager);
 
             CreateBuildControl();
 
@@ -126,7 +125,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             // winforms stuff is here:
             // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
-            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent, _commandSender);
+            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
 
             ToolbarEntityViewModelManager.CompilerViewModel = CompilerViewModel;
             ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
@@ -173,8 +172,7 @@ namespace GameCommunicationPlugin.GlueControl
                 GlueViewSettingsViewModel,
                 glueViewSettingsTab,
                 ReactToPluginEventWithReturn,
-                _refreshManager,
-                _commandSender);
+                _refreshManager);
 
             #region Start the timer, do it after the gameHostView is created
 
@@ -430,7 +428,7 @@ namespace GameCommunicationPlugin.GlueControl
                 IsBorderless = isBorderless
             };
 
-            var sendResponse = await _commandSender.Send(dto);
+            var sendResponse = await CommandSender.Self.Send(dto);
             return sendResponse.Succeeded ? sendResponse.Data : String.Empty;
         }
 
@@ -451,7 +449,7 @@ namespace GameCommunicationPlugin.GlueControl
 
 
                         var sendResponse =
-                            await _commandSender
+                            await CommandSender.Self
                             .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
                         var response = sendResponse?.Data;
 
@@ -652,10 +650,10 @@ namespace GameCommunicationPlugin.GlueControl
             _variableSendingManager.ViewModel = CompilerViewModel;
             _variableSendingManager.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
 
-            _commandSender.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
-            _commandSender.CompilerViewModel = CompilerViewModel;
-            _commandSender.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
-            _commandSender.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
+            CommandSender.Self.GlueViewSettingsViewModel = GlueViewSettingsViewModel;
+            CommandSender.Self.CompilerViewModel = CompilerViewModel;
+            CommandSender.Self.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
+            CommandSender.Self.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
 
             //buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
             //buildTab.Show();
@@ -721,7 +719,7 @@ namespace GameCommunicationPlugin.GlueControl
                 PolygonPointSnapSize = GlueViewSettingsViewModel.PolygonPointSnapSize,
             };
 
-            await _commandSender.Send(dto);
+            await CommandSender.Self.Send(dto);
         }
 
         private async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -740,7 +738,7 @@ namespace GameCommunicationPlugin.GlueControl
 
                 case nameof(CompilerViewModel.CurrentGameSpeed):
                     var speedPercentage = int.Parse(CompilerViewModel.CurrentGameSpeed.Substring(0, CompilerViewModel.CurrentGameSpeed.Length - 1));
-                    await _commandSender.Send(new SetSpeedDto
+                    await CommandSender.Self.Send(new SetSpeedDto
                     {
                         SpeedPercentage = speedPercentage
                     });
@@ -779,7 +777,7 @@ namespace GameCommunicationPlugin.GlueControl
                 IsInEditMode = inEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
-            var response = await _commandSender.Send<Dtos.GeneralCommandResponse>(dto);
+            var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto);
 
             if (response?.Succeeded != true)
             {
@@ -794,7 +792,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
             }
-            else if (_commandSender.IsConnected == false)
+            else if (CommandSender.Self.IsConnected == false)
             {
 
             }
@@ -807,7 +805,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    var screenName = await _commandSender.GetScreenName();
+                    var screenName = await CommandSender.Self.GetScreenName();
 
                     if (!string.IsNullOrEmpty(screenName))
                     {
@@ -865,7 +863,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
             }
                     
-            await _commandSender.Send(setCameraAspectRatioDto);
+            await CommandSender.Self.Send(setCameraAspectRatioDto);
         }
 
         private SetCameraSetupDto ToDto(DisplaySettings displaySettings)
@@ -1071,7 +1069,7 @@ namespace GameCommunicationPlugin.GlueControl
 
         Process gameProcess;
         private GameHostController _gameHostController;
-        private CommandSender _commandSender;
+        
         private RefreshManager _refreshManager;
         private DragDropManagerGameWindow _dragDropManagerGameWindow;
         private VariableSendingManager _variableSendingManager;
@@ -1172,12 +1170,12 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
                 case "GameCommunication_Connected":
-                    _commandSender.IsConnected = true;
+                    CommandSender.Self.IsConnected = true;
 
                     break;
 
                 case "GameCommunication_Disconnected":
-                    _commandSender.IsConnected = false;
+                    CommandSender.Self.IsConnected = false;
 
                     break;
 

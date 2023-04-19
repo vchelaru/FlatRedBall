@@ -196,6 +196,8 @@ namespace GlueControl.Editing
 
         public static EditingManager Self { get; private set; }
 
+        bool wasGameActive;
+
         #endregion
 
         #region Delegates/Events
@@ -392,15 +394,26 @@ namespace GlueControl.Editing
                 itemsOverLastFrame.AddRange(itemsOver);
                 var itemSelectedBefore = ItemSelected;
 
+                var mouse = FlatRedBall.Input.InputManager.Mouse;
 
                 // Vic says - not sure how much should be inside the IsActive check
-                if (FlatRedBallServices.Game.IsActive && GuiManager.Cursor.IsInWindow())
+                if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
                 {
-                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && FlatRedBall.Gui.GuiManager.Cursor.WindowOver == null)
+                    var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                    // We can use the cursor to tell if the mouse is over a FRB window, but only
+                    // if the cursor and mouse are the same thing. If the cursor is not the mouse,
+                    // then the moue and cursor may not be in the same spot, so we can't use the WindowOver check
+                    bool isOverWindow = isCursorUsingMouse &&
+                        FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null;
+
+                    if (itemGrabbed == null && ItemsSelected.All(item => item is TileShapeCollection == false) && !isOverWindow)
                     {
-                        SelectionLogic.DoDragSelectLogic();
+                        var gameBecameActive = !wasGameActive && FlatRedBallServices.Game.IsActive;
+
+                        SelectionLogic.DoDragSelectLogic(gameBecameActive);
                     }
-                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, GuiManager.Cursor.PrimaryDoublePush, ElementEditingMode);
+                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
                 }
                 else
                 {
@@ -412,7 +425,7 @@ namespace GlueControl.Editing
 
                 if (FlatRedBallServices.Game.IsActive)
                 {
-                    if (GuiManager.Cursor.IsInWindow())
+                    if (mouse.IsInGameWindow())
                     {
                         DoGrabLogic();
                     }
@@ -423,7 +436,7 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
-                    if(GuiManager.Cursor.IsInWindow())
+                    if(mouse.IsInGameWindow())
                     {
                         CameraLogic.DoCursorCameraControllingLogic();
                     }
@@ -453,6 +466,9 @@ namespace GlueControl.Editing
                 itemGrabbed = null;
 
             }
+
+            wasGameActive = FlatRedBallServices.Game.IsActive;
+
 #endif
         }
 
@@ -476,7 +492,7 @@ namespace GlueControl.Editing
         bool shouldPrintCurrentNamedObjectInformation = false;
         private void DoGrabLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             if (shouldPrintCurrentNamedObjectInformation)
             {
@@ -484,7 +500,16 @@ namespace GlueControl.Editing
 
             }
 
-            if (cursor.PrimaryPush && cursor.IsInWindow())
+            var shouldTreatAsPush = false;
+
+            if (mouse.IsInGameWindow())
+            {
+                var didWindowActivate = !wasGameActive && FlatRedBallServices.Game.IsActive;
+
+                shouldTreatAsPush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                    (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && didWindowActivate);
+            }
+            if (shouldTreatAsPush)
             {
                 var itemOver = itemsOver.FirstOrDefault();
                 itemGrabbed = itemOver as IStaticPositionable;
@@ -566,10 +591,10 @@ namespace GlueControl.Editing
 
         private void DoReleaseLogic()
         {
-            var cursor = GuiManager.Cursor;
+            var mouse = FlatRedBall.Input.InputManager.Mouse;
 
             ///////Early Out
-            if (!cursor.PrimaryClick)
+            if (!mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
             {
                 return;
             }

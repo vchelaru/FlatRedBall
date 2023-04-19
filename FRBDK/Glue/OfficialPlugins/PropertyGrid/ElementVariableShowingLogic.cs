@@ -147,12 +147,20 @@ namespace OfficialPlugins.VariableDisplay
                 }
 
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
-
+                var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                if (element.BaseElement != null)
+                {
+                    var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
+                    if (baseElement != null)
+                    {
+                        // Generate the root base because it may have definitions for the types that have changed... 
+                        var throwaway3 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(baseElement);
+                    }
+                }
+                
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
+                GlueCommands.Self.RefreshCommands.RefreshVariables();
             };
 
             instanceMember.SetValueError = (newValue) =>
@@ -161,7 +169,7 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     element.GetCustomVariableRecursively(name).DefaultValue = null;
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
@@ -201,14 +209,14 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        public static void UpdateShownVariables(DataUiGrid grid, IElement element)
+        public static void UpdateShownVariables(DataUiGrid grid, GlueElement element)
         {
             grid.Categories.Clear();
 
             List<MemberCategory> categories = new List<MemberCategory>();
 
             CreateAndAddCategory(categories, "Variables");
-            CreateInstanceMembersForVariables(element as GlueElement, categories);
+            CreateInstanceMembersForVariables(element, categories);
 
             AddAlternatingColors(grid, categories);
 
@@ -261,7 +269,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     element.CustomVariables.Add(customVariable);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
                 }
             }
 
@@ -330,11 +338,11 @@ namespace OfficialPlugins.VariableDisplay
 
 
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
 
                     GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 };
 
                 instanceMember.CustomGetEvent += (instance) =>

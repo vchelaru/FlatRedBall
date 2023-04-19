@@ -245,6 +245,11 @@ namespace FlatRedBall.Gui
         List<IInputDevice> devicesControllingCursor = new List<IInputDevice>();
 
         /// <summary>
+        /// The IInputDevices controlling the cursor. By default this is the Mouse.
+        /// </summary>
+        public IReadOnlyList<IInputDevice> DevicesControllingCursor => devicesControllingCursor;
+
+        /// <summary>
         /// Reference to the camera to which the cursor belongs.
         /// </summary>
 		internal protected Camera mCamera;

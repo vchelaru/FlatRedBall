@@ -18,6 +18,13 @@ namespace FlatRedBall.Glue.Tasks
             set;
         }
 
+        public string CustomId
+        {
+            get; set;
+        }
+
+        public string EffectiveId => CustomId ?? DisplayInfo;
+
         public string TaskType
         {
             get;

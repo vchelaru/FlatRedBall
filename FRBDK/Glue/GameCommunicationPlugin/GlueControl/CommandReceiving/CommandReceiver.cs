@@ -35,7 +35,6 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
     class CommandReceiver
     {
         int _gamePortNumber;
-        private CommandSender _commandSender;
         private RefreshManager _refreshManager;
         private VariableSendingManager _variableSendingManager;
         System.Reflection.MethodInfo[] AllMethods;
@@ -43,9 +42,8 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         public CompilerViewModel CompilerViewModel { get; set; }
 
-        public CommandReceiver(RefreshManager refreshManager, VariableSendingManager variableSendingManager, CommandSender commandSender)
+        public CommandReceiver(RefreshManager refreshManager, VariableSendingManager variableSendingManager)
         {
-            _commandSender = commandSender;
             _refreshManager = refreshManager;
             _variableSendingManager = variableSendingManager;
             AllMethods = typeof(CommandReceiver).GetMethods(
@@ -178,7 +176,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         //private async void HandleRemoveObject(RemoveObjectDto removeObjectDto)
         private async void HandleDto(RemoveObjectDto removeObjectDto)
         {
-            GlueElement elementToRemoveFrom = await _commandSender.GetCurrentInGameScreen();
+            GlueElement elementToRemoveFrom = await CommandSender.Self.GetCurrentInGameScreen();
             elementToRemoveFrom = elementToRemoveFrom ?? GlueState.Self.CurrentElement;
             if(elementToRemoveFrom != null)
             {
@@ -264,9 +262,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         {
             HashSet<NamedObjectSave> modifiedObjects = new HashSet<NamedObjectSave>();
 
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
 
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
+            HashSet<GlueElement> modifiedGlueElements = new HashSet<GlueElement>();
             foreach (var setVariableDto in setVariableDtoList.SetVariableList)
             {
                 await HandleSetVariable(setVariableDto, sendBackToGame:false, regenerateAndSave: false);
@@ -293,11 +292,21 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 }
             }
 
-            await _variableSendingManager.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
+            _variableSendingManager.PushVariableChangesToGame(listOfVariables, modifiedObjects.ToList());
 
             await TaskManager.Self.AddAsync(() =>
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
+                {
+                    foreach(var item in modifiedGlueElements)
+                    {
+                        GlueCommands.Self.GluxCommands.SaveElementAsync(item);
+                    }
+                }
+                else
+                {
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+                }
                 GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
 
                 HashSet<GlueElement> nosParents = new HashSet<GlueElement>();
@@ -441,7 +450,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
         public async void HandleSelectObject(SelectObjectDto selectObjectDto)
         {
 
-            var screen = await _commandSender.GetCurrentInGameScreen();
+            var screen = await CommandSender.Self.GetCurrentInGameScreen();
             TaskManager.Self.Add(() =>
             {
                 //NamedObjectSave nos = null;
@@ -629,7 +638,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                             var playBump = true;
                             // tell the game that it should restart the screen quietly
     #pragma warning disable CS4014 // Do not await in add calls this can cause problems
-                            _commandSender.Send(new RestartScreenDto { ShowSelectionBump = playBump });
+                            CommandSender.Self.Send(new RestartScreenDto { ShowSelectionBump = playBump });
     #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         },
                         "Copy TMX and restart screen",
@@ -867,7 +876,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             {
                 response.Content = JsonConvert.SerializeObject(contentToGame);
             }
-            await _commandSender.Send(response);
+            await CommandSender.Self.Send(response);
             return response;
         }
 

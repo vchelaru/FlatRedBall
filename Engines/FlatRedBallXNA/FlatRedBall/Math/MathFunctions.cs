@@ -1207,9 +1207,18 @@ namespace FlatRedBall.Math
 
         public static void ScreenToAbsoluteDistance(int pixelX, int pixelY, out float x, out float y, float z, Camera camera)
         {
-            x = (MathFunctions.ForwardVector3.Z * (z - camera.Z) * camera.XEdge / 100.0f) * 2 * (float)pixelX / (float)FlatRedBallServices.ClientWidth;
-            // Y is inverted, so we multiply by negative 1
-            y = (MathFunctions.ForwardVector3.Z * (z - camera.Z) * camera.YEdge / 100.0f) * 2 * (float)pixelY / (float)FlatRedBallServices.ClientHeight;
+            var ratioX = pixelX / (float)camera.DestinationRectangle.Width;
+            var ratioY = pixelY / (float)camera.DestinationRectangle.Height;
+            if(camera.Orthogonal)
+            {
+                x = camera.OrthogonalWidth * ratioX;
+                y = camera.OrthogonalHeight * ratioY;
+            }
+            else
+            {
+                x = camera.RelativeXEdgeAt(z) * 2 * ratioX;
+                y = camera.RelativeYEdgeAt(z) * 2 * ratioY;
+            }
         }
 
         public static void SortAscending(List<int> integerList)

@@ -311,26 +311,27 @@ namespace FlatRedBall.Glue.Managers
         /// <summary>
         /// Force adds a task to the queue, even if already in a task. To optionally add if not in a task, see AddAsync.
         /// </summary>
-        public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public GlueTask Add(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false, string customId = null)
         {
             var glueTask = new GlueTask();
             glueTask.Action = action;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
             glueTask.DisplayInfo = displayInfo;
+            glueTask.CustomId = customId;
 
             AddInternal(glueTask);
             return glueTask;
         }
 
-        public GlueTask<T> Add<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public GlueTask<T> Add<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false, string customId = null)
         {
             var glueTask = new GlueTask<T>();
             glueTask.Func = func;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
             glueTask.DisplayInfo = displayInfo;
-
+            glueTask.CustomId=customId;
             AddInternal(glueTask);
             return glueTask;
         }
@@ -338,14 +339,14 @@ namespace FlatRedBall.Glue.Managers
         /// <summary>
         /// Force adds a task to the queue, even if already in a task
         /// </summary>
-        public GlueAsyncTask Add(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public GlueAsyncTask Add(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false, string customId = null)
         {
             var glueTask = new GlueAsyncTask();
             glueTask.Func = func;
             glueTask.DoOnUiThread = doOnUiThread;
             glueTask.TaskExecutionPreference = executionPreference;
             glueTask.DisplayInfo = displayInfo;
-
+            glueTask.CustomId = customId;
             AddInternal(glueTask);
             return glueTask;
         }
@@ -360,9 +361,9 @@ namespace FlatRedBall.Glue.Managers
         /// <param name="executionPreference">When to execute the action.</param>
         /// <param name="doOnUiThread">Whether the action must be performed on the UI thread.</param>
         /// <returns>A task which will complete once the action has finished executing.</returns>
-        public Task AddAsync(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public Task AddAsync(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false, string customId = null)
         {
-            var glueTask = AddOrRunIfTasked(action, displayInfo, executionPreference, doOnUiThread);
+            var glueTask = AddOrRunIfTasked(action, displayInfo, executionPreference, doOnUiThread, customId);
             return WaitForTaskToFinish(glueTask);
         }
 
@@ -387,7 +388,7 @@ namespace FlatRedBall.Glue.Managers
         }
 
 
-        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
+        public GlueTask AddOrRunIfTasked(Action action, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false, string customId = null)
         {
             if (IsInTask() && 
                 // If the user is moving the tasks to the end, then we will push it at the end always
@@ -399,7 +400,8 @@ namespace FlatRedBall.Glue.Managers
                     DisplayInfo = displayInfo,
                     Action = action,
                     TaskExecutionPreference = executionPreference,
-                    DoOnUiThread = doOnUiThread
+                    DoOnUiThread = doOnUiThread,
+                    CustomId = customId
                 };
 
                 RunTask(task, markAsCurrent:false).Wait();
@@ -471,7 +473,7 @@ namespace FlatRedBall.Glue.Managers
             if(glueTask.TaskExecutionPreference == TaskExecutionPreference.AddOrMoveToEnd)
             {
                 var existing = taskQueue.FirstOrDefault(item => 
-                    item.Value.DisplayInfo == glueTask.DisplayInfo &&
+                    item.Value.EffectiveId == glueTask.EffectiveId &&
                     item.Value.IsCancelled == false);
 
                 if (existing.Key != 0)

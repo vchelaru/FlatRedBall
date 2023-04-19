@@ -14,7 +14,7 @@
                 <Image MaxWidth="240" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/GameCommunicationPlugin;component/GlueControl/Icons/FirewallEnablePopup.png" ></Image>
                 <TextBlock TextWrapping="Wrap">*Running your game with edit mode enabled requires a live connection to the FlatRedBall Editor. Click Allow Access to enable the connection.</TextBlock>
             </StackPanel>
-        
+            <Button HorizontalAlignment="Left" Click="HandleShowGameCommandRerunList">Show Game Rerun Command List</Button>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

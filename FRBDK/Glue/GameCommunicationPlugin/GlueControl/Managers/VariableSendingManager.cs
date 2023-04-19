@@ -32,18 +32,16 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     class VariableSendingManager
     {
-        public VariableSendingManager(RefreshManager refreshManager, CommandSender commandSender)
+        public VariableSendingManager(RefreshManager refreshManager)
         {
             _refreshManager = refreshManager;
             _refreshManager.VariableSendingManager = this;
-            _commandSender = commandSender;
         }
 
         #region Fields/Properties
 
         List<VariableIgnoreData> Ignores = new List<VariableIgnoreData>();
         private RefreshManager _refreshManager;
-        private CommandSender _commandSender;
 
         public CompilerViewModel ViewModel
         {
@@ -79,7 +77,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async Task HandleNamedObjectVariableListChanged(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             List<GlueVariableSetData> listOfVariables = new List<GlueVariableSetData>();
             List<NamedObjectSave> nosList = new List<NamedObjectSave>();
             foreach (var variable in variableList)
@@ -89,39 +87,49 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 listOfVariables.AddRange(inner);
             }
 
-            await PushVariableChangesToGame(listOfVariables, nosList);
+            PushVariableChangesToGame(listOfVariables, nosList);
         }
 
         public async Task HandleNamedObjectVariableChanged(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, object forcedCurrentValue = null)
         {
-            var gameScreenName = await _commandSender.GetScreenName();
+            var gameScreenName = await CommandSender.Self.GetScreenName();
             var listOfVariables = GetNamedObjectValueChangedDtos(changedMember, oldValue, nos, assignOrRecordOnly, gameScreenName, forcedCurrentValue);
 
-            await PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
+            PushVariableChangesToGame(listOfVariables, new List<NamedObjectSave> { nos });
         }
 
-        public async Task PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
+        public void PushVariableChangesToGame(List<GlueVariableSetData> listOfVariables, List<NamedObjectSave> namedObjectsToUpdate)
         {
-            await TaskManager.Self.AddAsync(async () =>
+            var dto = new GlueVariableSetDataList();
+            dto.Data.AddRange(listOfVariables);
+
+            foreach(var nos in namedObjectsToUpdate)
+            {
+                var container = ObjectFinder.Self.GetElementContaining(nos);
+                var namedObjectWithElement = new NamedObjectWithElementName();
+                namedObjectWithElement.NamedObjectSave = nos;
+                namedObjectWithElement.GlueElementName = container?.Name;
+                var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
+                namedObjectWithElement.ContainerName = listNos?.InstanceName;
+
+                dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
+            }
+
+            var serializedForHash = JsonConvert.SerializeObject(dto, Formatting.None);
+
+            var hash = serializedForHash.GetHashCode();
+
+            var customId = hash;
+
+            // The round trip takes some time. This can slow down Glue because it's sitting and waiting for a response
+            // from the game. I don't think we care about the response, so let's just fire and forget this.
+            //await TaskManager.Self.AddAsync(async () =>
+            TaskManager.Self.Add(async () =>
             {
                 try
                 {
-                    var dto = new GlueVariableSetDataList();
-                    dto.Data.AddRange(listOfVariables);
 
-                    foreach(var nos in namedObjectsToUpdate)
-                    {
-                        var container = ObjectFinder.Self.GetElementContaining(nos);
-                        var namedObjectWithElement = new NamedObjectWithElementName();
-                        namedObjectWithElement.NamedObjectSave = nos;
-                        namedObjectWithElement.GlueElementName = container?.Name;
-                        var listNos = container?.NamedObjects.FirstOrDefault(item => item.ContainedObjects.Contains(nos));
-                        namedObjectWithElement.ContainerName = listNos?.InstanceName;
-
-                        dto.NamedObjectsToUpdate.Add(namedObjectWithElement);
-                    }
-
-                    var sendGeneralResponse = await _commandSender.Send(dto);
+                    var sendGeneralResponse = await CommandSender.Self.Send(dto);
 
                     GlueVariableSetDataResponseList response = null;
                     if (sendGeneralResponse.Succeeded)
@@ -148,7 +156,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     // no biggie...
                 }
-            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap);
+            // We want this to be asap so the game feels responsive, but with things like the rotation control, values can be spammed really fast.
+            // We'll use AddOrMoveToEnd to make sure that if the user is spamming values, we'll only send the last one.
+            //}, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.Asap, customId:$"Pushing variables with hash {hash}");
+            }, $"Pushing {listOfVariables.Count} variables to game", TaskExecutionPreference.AddOrMoveToEnd, customId:$"Pushing variables with hash {hash}");
         }
 
         public List<GlueVariableSetData> GetNamedObjectValueChangedDtos(string changedMember, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly, string gameScreenName, object forcedCurrentValue = null)
@@ -577,7 +588,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // why do we care if the GlueElement is null or not?
                 // && data.GlueElement != null)
             {
-                var sendGeneralResponse = await _commandSender.Send(data);
+                var sendGeneralResponse = await CommandSender.Self.Send(data);
                 var responseAsString = sendGeneralResponse.Succeeded ? sendGeneralResponse.Data : string.Empty;
 
                 if (!string.IsNullOrEmpty(responseAsString))

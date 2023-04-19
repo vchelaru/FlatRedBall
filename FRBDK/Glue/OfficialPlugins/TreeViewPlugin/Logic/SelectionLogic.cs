@@ -128,8 +128,15 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 }
             }
 
+            // We used to refresh here on a normal click. This is unnecessary
+            // since most of the time the right-click menu isn't accessed. Moved this to preview
+            // right click in TMainTreeviewControl.xaml.cs
+            //RefreshRightClickMenu();
+            // Update April 16, 2023
+            // We should assign this because if the user directly right-clicks on a new node,
+            // we want this to get called
 
-            RefreshRightClickMenu();
+            mainView.RefreshRightClickMenu();
 
             IsUpdatingThisSelectionOnGlueEvent = true;
 
@@ -139,19 +146,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         {
             var treeNode = mainViewModel.GetTreeNodeByRelativePath(path);
             await SelectByTreeNode(treeNode, addToSelection);
-        }
-
-        private static void RefreshRightClickMenu()
-        {
-            var items = RightClickHelper.GetRightClickItems(currentNode, MenuShowingAction.RegularRightClick);
-
-            mainView.RightClickContextMenu.Items.Clear();
-
-            foreach (var item in items)
-            {
-                var wpfItem = mainView.CreateWpfItemFor(item);
-                mainView.RightClickContextMenu.Items.Add(wpfItem);
-            }
         }
 
         public static async void SelectByTag(object value, bool addToSelection)

@@ -13,6 +13,7 @@ using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.IO;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using static FlatRedBall.Glue.SaveClasses.GlueProjectSave;
+using FlatRedBall.Glue.Parsing;
 
 namespace GumPlugin.Managers
 {
@@ -451,14 +452,15 @@ namespace GumPlugin.Managers
 
             if(displaySettings != null)
             {
-                if(displaySettings.FixedAspectRatio == false || displaySettings.AspectRatioHeight == 0)
+                if(displaySettings.AspectRatioBehavior != AspectRatioBehavior.FixedAspectRatio || displaySettings.AspectRatioHeight == 0)
                 {
                     toReturn += "FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = null;";
                 }
                 else
                 {
                     var aspectRatio = displaySettings.AspectRatioWidth / displaySettings.AspectRatioHeight;
-                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = {displaySettings.AspectRatioWidth}m/{displaySettings.AspectRatioHeight}m;";
+                    toReturn += $"FlatRedBall.Gum.GumIdb.FixedCanvasAspectRatio = " +
+                        $"{CodeParser.ConvertValueToCodeString(displaySettings.AspectRatioWidth)}/{CodeParser.ConvertValueToCodeString(displaySettings.AspectRatioHeight)};";
                 }
             }
 

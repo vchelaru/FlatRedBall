@@ -179,8 +179,9 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
                     RemoveReference(proj, "FlatRedBall.Forms");
                     RemoveReference(proj, "FlatRedBallDesktopGL");
                     RemoveReference(proj, "GumCoreXnaPc");
+                    RemoveReference(proj, "GumCore.DesktopGlNet6");
                     RemoveReference(proj, "StateInterpolation");
-
+                    
                     proj.Save(proj.FullFileName.FullPath);
                 }
             }

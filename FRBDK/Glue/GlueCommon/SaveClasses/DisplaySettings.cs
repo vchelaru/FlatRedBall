@@ -41,7 +41,7 @@ namespace FlatRedBall.Glue.SaveClasses
         public int ResolutionWidth { get; set; }
         public int ResolutionHeight { get; set; }
 
-        [Obsolete("Use AspectRatioBehavior")]
+        [Obsolete("Use AspectRatioBehavior, where AspectRatioehavior == AspectRatioBehavior.FixedAspectRatio if this is true")]
         public bool FixedAspectRatio
         {
             get => AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio;

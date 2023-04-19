@@ -1021,7 +1021,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
             }

@@ -185,6 +185,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
+
             if (e.ChangedButton == MouseButton.Left && e.LeftButton == MouseButtonState.Pressed)
             {
                 var timeSinceLastClick = DateTime.Now - lastClick;
@@ -199,6 +200,22 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             var frameworkElementPushed = (objectPushed as FrameworkElement);
 
             nodePushed = frameworkElementPushed?.DataContext as NodeViewModel;
+            // tree nodes may get selected when they are created rather than through a click (which changes the 
+            // view model). Vic isn't sure why so this is a little bit of a hack:
+            RefreshRightClickMenu(nodePushed);
+        }
+
+        public void RefreshRightClickMenu(ITreeNode forcedNode = null)
+        {
+            var items = RightClickHelper.GetRightClickItems(forcedNode ?? SelectionLogic.CurrentNode, MenuShowingAction.RegularRightClick);
+
+            RightClickContextMenu.Items.Clear();
+
+            foreach (var item in items)
+            {
+                var wpfItem = CreateWpfItemFor(item);
+                RightClickContextMenu.Items.Add(wpfItem);
+            }
         }
 
         private bool ClickedOnGrid(FrameworkElement frameworkElement)
@@ -273,13 +290,18 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         private void MainTreeView_Drop(object sender, DragEventArgs e)
         {
-            if(e.Data.GetDataPresent("FileDrop"))
+            var isCancelled = Keyboard.IsKeyDown(Key.Escape);
+
+            if(!isCancelled)
             {
-                HandleDropFileFromExplorerWindow(e);
-            }
-            else
-            {
-                HandleDropTreeNodeOnTreeNode(e);
+                if(e.Data.GetDataPresent("FileDrop"))
+                {
+                    HandleDropFileFromExplorerWindow(e);
+                }
+                else
+                {
+                    HandleDropTreeNodeOnTreeNode(e);
+                }
             }
         }
 
@@ -777,6 +799,23 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void Bookmarks_LostFocus(object sender, RoutedEventArgs e)
         {
             Bookmarks.SelectedItem= null;
+        }
+
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void MainTreeView_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // this doesn't work:
+            if(e.Key == Key.Escape)
+            {
+                if(GlueState.Self.DraggedTreeNode != null)
+                {
+                    GlueState.Self.DraggedTreeNode = null;
+                }
+            }
         }
     }
 }

@@ -161,7 +161,7 @@ namespace GlueControl.Editing
             }
         }
 
-        internal static void DoDragSelectLogic()
+        internal static void DoDragSelectLogic(bool gameBecameActive)
         {
             var mouse = InputManager.Mouse;
 
@@ -175,7 +175,10 @@ namespace GlueControl.Editing
                 BottomSelect = null;
             }
 
-            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
+            var effectivePush = mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && gameBecameActive);
+
+            if (effectivePush)
             {
                 if (FlatRedBallServices.Game.IsActive)
                 {
@@ -621,7 +624,7 @@ namespace GlueControl.Editing
             out float minX, out float maxX, out float minY, out float maxY)
         {
             // We used to use the position as part of the min and max bounds, but this causes problems
-            // if some objects are only visible when the cursor is over them. Therefore, always use half dimension
+            // if some objects are only visible when the mouse is over them. Therefore, always use half dimension
             // width for selection:
             minX = itemOver.X;
             maxX = itemOver.X;
@@ -676,7 +679,9 @@ namespace GlueControl.Editing
                 UpdateMinsAndMaxes(circle, ref minX, ref maxX, ref minY, ref maxY);
             }
 
-            if (itemOver is PositionedObject positionedObject)
+            // This section uses the children sizes to position the object. However, we don't want to do that
+            // if this is IScalable - if it is IScalable, then it determines its own size:
+            if (itemOver is PositionedObject positionedObject && itemOver is IReadOnlyScalable == false)
             {
                 for (int i = 0; i < positionedObject.Children.Count; i++)
                 {

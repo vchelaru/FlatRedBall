@@ -370,24 +370,7 @@ namespace GlueControl
             // if the echoed selection is already active:
             if (matchesCurrentScreen)
             {
-                var newSelectionCount = selectObjectDto.NamedObjects.Count;
-
-                if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
-                {
-                    playBump = true;
-                }
-                else
-                {
-                    playBump = false;
-                    for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
-                    {
-                        var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
-                        if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
-                        {
-                            playBump = true;
-                        }
-                    }
-                }
+                playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
             }
 
             try
@@ -509,10 +492,37 @@ namespace GlueControl
                     }
                     else
                     {
-                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: true);
+                        playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
+
+                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                     }
                 }
             }
+        }
+
+        private static bool DetermineIfBumpShouldPlayBasedOnSelection(SelectObjectDto selectObjectDto)
+        {
+            bool playBump;
+            var newSelectionCount = selectObjectDto.NamedObjects.Count;
+
+            if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
+            {
+                playBump = true;
+            }
+            else
+            {
+                playBump = false;
+                for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
+                {
+                    var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
+                    if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
+                    {
+                        playBump = true;
+                    }
+                }
+            }
+
+            return playBump;
         }
 
         private static void SelectState(string stateName, string stateCategoryName)
@@ -763,7 +773,8 @@ namespace GlueControl
 
             category.States.Add(newStateSave);
 
-            // Now create the runtime object and 
+            // If there is already a runtime State object, we need to update that object's properties
+            // in case those are set through code directly. Direct assignments in game code do not use the InstanceLogic.Self.StatesAddedAtRuntime
             var stateType = VariableAssignmentLogic.TryGetStateType(elementGameType + "." + (categoryName ?? "VariableState"));
             if (stateType != null)
             {
@@ -791,6 +802,18 @@ namespace GlueControl
                 {
                     InstanceLogic.Self.AssignVariable(existingState, instruction, convertFileNamesToObjects: false);
                 }
+            }
+        }
+
+        #endregion
+
+        #region Update Category
+
+        private static void HandleDto(UpdateStateSaveCategory dto)
+        {
+            foreach (var state in dto.Category.States)
+            {
+                ReplaceStateWithNewState(dto.ElementNameGame, dto.Category.Name, state);
             }
         }
 
@@ -1150,6 +1173,23 @@ namespace GlueControl
         }
 
         #endregion
+
+        private static GetCommandsDtoResponse HandleDto(GetGlueToGameCommandRerunList dto)
+        {
+            var responseDto = new GetCommandsDtoResponse();
+#if SupportsEditMode
+
+            var arrayCopy = GlobalGlueToGameCommands.ToArray();
+
+            foreach(var item in arrayCopy)
+            {
+                var combined = item.GetType().Name + ":" + JsonConvert.SerializeObject(item);
+                responseDto.Commands.Add(combined);
+            }
+#endif
+
+            return responseDto;
+        }
 
         #region SetBorderless
 

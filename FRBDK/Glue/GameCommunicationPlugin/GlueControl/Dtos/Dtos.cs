@@ -325,6 +325,16 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region UpdateStateSaveCategory
+
+    public class UpdateStateSaveCategory
+    {
+        public StateSaveCategory Category { get; set; }
+        public string ElementNameGame { get; set; }
+    }
+
+    #endregion
+
     #region ChangeStateVariableDto
     public class ChangeStateVariableDto
     {
@@ -429,6 +439,10 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #endregion
 
     #region GetCommandsDto
+
+    /// <summary>
+    /// Used to fetch commands that are waiting to be sent from the game back to Glue
+    /// </summary>
     public class GetCommandsDto
     {
 
@@ -439,6 +453,15 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public List<string> Commands { get; set; } = new List<string>();
     }
     #endregion
+
+    /// <summary>
+    /// Used to fetch commands that the game will re-run on
+    /// a screen reload. This is used for diagnostics.
+    /// </summary>
+    public class GetGlueToGameCommandRerunList
+    {
+
+    }
 
     #region Glue/XXXX/CommandsDto
 

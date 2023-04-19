@@ -42,10 +42,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
     public class RefreshManager
     {
-        public RefreshManager(Func<string, string, Task<string>> eventCallerWithReturn, CommandSender commandSender, Action<string, string> eventCaller)
+        public RefreshManager(Func<string, string, Task<string>> eventCallerWithReturn, Action<string, string> eventCaller)
         {
             _eventCallerWithReturn = eventCallerWithReturn;
-            _commandSender = commandSender;
             _eventCaller = eventCaller;
         }
 
@@ -225,7 +224,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                     dto.FileRelativeToProject =
                                         ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(firstRfs);
                                     dto.StrippedFileName = fileName.NoPathNoExtension;
-                                    await _commandSender.Send(dto);
+                                    await CommandSender.Self.Send(dto);
 
                                     // Typically localization is applied in custom code, so we can't
                                     // apply these changes without reloading the screen
@@ -241,7 +240,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                                 {
                                     var dto = new RestartScreenDto();
                                     dto.ReloadGlobalContent = isGlobalContent;
-                                    await _commandSender.Send(dto);
+                                    await CommandSender.Self.Send(dto);
                                 }
                             }
 
@@ -271,7 +270,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                         // it's part of global content and can be reloaded, so let's just tell
                         // it to reload:
-                        await _commandSender.Send(new ReloadGlobalContentDto
+                        await CommandSender.Self.Send(new ReloadGlobalContentDto
                         {
                             StrippedGlobalContentFileName = strippedName
                         });
@@ -345,7 +344,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 var dto = new CreateNewEntityDto();
                 dto.EntitySave = newEntity;
 
-                await _commandSender.Send(dto);
+                await CommandSender.Self.Send(dto);
 
                 // selection happens before the entity is created, so let's force push the selection to the game
                 await PushGlueSelectionToGame();
@@ -415,7 +414,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 dto.CategoryName = category?.Name;
                 dto.ElementNameGame = GetGameTypeFor(container);
 
-                await _commandSender.Send(dto);
+                await CommandSender.Self.Send(dto);
             }
         }
 
@@ -437,7 +436,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     list.Data.Add(individualDto);
                 }
 
-                var response = await _commandSender.Send<AddObjectDtoListResponse>(list);
+                var response = await CommandSender.Self.Send<AddObjectDtoListResponse>(list);
 
                 if (response.Succeeded == false ||
                     response.Data.Data == null ||
@@ -455,7 +454,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 AddObjectDto addObjectDto = CreateAddObjectDtoFor(newNamedObject);
 
-                var sendResponse = await _commandSender.Send(addObjectDto);
+                var sendResponse = await CommandSender.Self.Send(addObjectDto);
                 string addResponseAsString = null;
                 if (sendResponse.Succeeded)
                 {
@@ -571,7 +570,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var cameraPosition = Microsoft.Xna.Framework.Vector3.Zero;
 
-            cameraPosition = await _commandSender.GetCameraPosition();
+            cameraPosition = await CommandSender.Self.GetCameraPosition();
 
             var gluxCommands = GlueCommands.Self.GluxCommands;
 
@@ -656,7 +655,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 dto.ElementGameType = GetGameTypeFor(variableOwner ?? GlueState.Self.CurrentElement);
 
-                await _commandSender.Send(dto);
+                await CommandSender.Self.Send(dto);
             }
             else
             {
@@ -709,7 +708,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         // needed to determine this.
         SelectObjectDto LastDtoPushedToGame;
         private Func<string, string, Task<string>> _eventCallerWithReturn;
-        private CommandSender _commandSender;
+        
         private Action<string, string> _eventCaller;
 
         public async Task PushGlueSelectionToGame(string forcedCategoryName = null, string forcedStateName = null, GlueElement forcedElement = null, bool bringIntoFocus = false)
@@ -734,7 +733,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             if (needsScreenReload)
             {
-                await _commandSender.Send(new Dtos.RestartScreenDto());
+                await CommandSender.Self.Send(new Dtos.RestartScreenDto());
             }
             else if (element != null)
             {
@@ -771,7 +770,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     LastDtoPushedToGame = dto;
 
 
-                    await _commandSender.Send(dto);
+                    await CommandSender.Self.Send(dto);
                 }
             }
         }
@@ -840,7 +839,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             if (dto != null)
             {
-                await _commandSender.Send(dto);
+                await CommandSender.Self.Send(dto);
 
                 // This forces the game to refresh the view according to the current state.
                 if (ViewModel.IsEditChecked &&
@@ -855,12 +854,22 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         }
 
-        internal void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
+        internal async void HandleStateCategoryExcludedVariablesChanged(StateSaveCategory category, string variableName, StateCategoryVariableAction excludedOrIncluded)
         {
-            if (excludedOrIncluded == StateCategoryVariableAction.Included)
+
+            if (excludedOrIncluded == StateCategoryVariableAction.Excluded)
             {
-                // If a new state variable is included, it won't be functional. This could be confusing, so let's restart
-                CreateStopAndRestartTask($"New variable {variableName} added to category {category}");
+                CreateStopAndRestartTask($"Restarting because variable {variableName} removed from category {category}, and codegen currently assigns that value");
+            }
+            else
+            {
+                var container = ObjectFinder.Self.GetElementContaining(category);
+
+                var dto = new UpdateStateSaveCategory();
+                dto.Category =  category.Clone();
+                dto.ElementNameGame = GetGameTypeFor(container);
+
+                await CommandSender.Self.Send(dto);
             }
         }
 
@@ -902,7 +911,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
 
 
-                var sendResponse = await _commandSender.Send(changesListDto);
+                var sendResponse = await CommandSender.Self.Send(changesListDto);
                 responseAsString = sendResponse.Succeeded ? sendResponse.Data : string.Empty;
 
                 if (string.IsNullOrEmpty(responseAsString))
@@ -960,7 +969,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 dto.ObjectNames.AddRange(namedObjectNames);
                 var timeBeforeSend = DateTime.Now;
-                var sendResponse = await _commandSender.Send(dto);
+                var sendResponse = await CommandSender.Self.Send(dto);
                 var responseAsstring = sendResponse.Succeeded ? sendResponse.Data : null;
                 var timeAfterSend = DateTime.Now;
                 printOutput($"Delete send took {timeAfterSend - timeBeforeSend}\n \n ");
@@ -1034,7 +1043,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     try
                     {
-                        screenToRestartOn = await _commandSender.GetScreenName();
+                        screenToRestartOn = await CommandSender.Self.GetScreenName();
                     }
                     catch (AggregateException)
                     {
