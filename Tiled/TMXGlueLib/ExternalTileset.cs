@@ -154,7 +154,8 @@ public class wangset
         get; set;
     }
 
-    public wangcolor wangcolor { get; set; }
+    [XmlElement("wangcolor")]
+    public List<wangcolor> WangColors { get; set; } = new List<wangcolor>();
 
     [XmlElement("wangtile")]
     public List<wangtile> WangTiles { get; set; } = new List<wangtile>();
