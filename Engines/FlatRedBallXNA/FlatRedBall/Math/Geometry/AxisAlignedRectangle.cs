@@ -37,6 +37,8 @@ namespace FlatRedBall.Math.Geometry
 
         internal Vector2 mLastMoveCollisionReposition;
 
+        internal Segment mLastCollisionSegment;
+
         internal Color mColor;
 
         internal Layer mLayerBelongingTo;
@@ -268,6 +270,15 @@ namespace FlatRedBall.Math.Geometry
             get { return mLastMoveCollisionReposition; }
         }
 
+        /// <summary>
+        /// Returns the colliding <see cref="Segment"/> from the last collision checked.
+        /// The possible collision segments are the top, bottom, left and right rectangle edges.
+        /// </summary>
+        public Segment LastCollisionSegment
+        {
+            get { return mLastCollisionSegment; }
+        }
+
         #region IMouseOver
         bool IMouseOver.IsMouseOver(FlatRedBall.Gui.Cursor cursor)
         {
@@ -482,20 +493,20 @@ namespace FlatRedBall.Math.Geometry
                     }
 
                     var shouldApply = RepositionHalfSize == false;
-                    if(RepositionHalfSize)
+                    if (RepositionHalfSize)
                     {
-                        if(RepositionDirections == RepositionDirections.Right || RepositionDirections == RepositionDirections.Left)
+                        if (RepositionDirections == RepositionDirections.Right || RepositionDirections == RepositionDirections.Left)
                         {
                             shouldApply = System.Math.Abs(smallestDistance) < (circle.Radius + Width / 2);
                         }
-                        if(RepositionDirections == RepositionDirections.Up || RepositionDirections == RepositionDirections.Down)
+                        if (RepositionDirections == RepositionDirections.Up || RepositionDirections == RepositionDirections.Down)
                         {
                             shouldApply = System.Math.Abs(smallestDistance) < (circle.Radius + Height / 2);
                         }
 
                     }
 
-                    if(shouldApply)
+                    if (shouldApply)
                     {
                         float amountToMoveThis = otherMass / (thisMass + otherMass);
 

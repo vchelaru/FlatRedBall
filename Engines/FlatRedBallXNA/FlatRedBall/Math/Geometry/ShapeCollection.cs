@@ -1909,10 +1909,10 @@ namespace FlatRedBall.Math.Geometry
             }
 
             Point? intersectionPoint = null;
+            Segment? intersectionSegment = null;
 
             if (sortAxis == Axis.X)
             {
-
                 var firstIndex = 0;
                 var lastIndex = 0;
 
@@ -1937,7 +1937,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
                 else
@@ -1952,7 +1952,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
 
@@ -1979,7 +1979,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, polygon);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
 
                     }
                 }
@@ -1995,7 +1995,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, polygon);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
                 #endregion
@@ -2028,7 +2028,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
                 else
@@ -2043,7 +2043,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, rectangle);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                     }
                 }
 
@@ -2069,7 +2069,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, polygon);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
                 else
@@ -2084,7 +2084,7 @@ namespace FlatRedBall.Math.Geometry
                         }
 
                         FillSegments(currentShapeSegments, polygon);
-                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                        CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
 
@@ -2097,23 +2097,25 @@ namespace FlatRedBall.Math.Geometry
                     var rectangle = AxisAlignedRectangles[i];
 
                     FillSegments(currentShapeSegments, rectangle);
-                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, rectangle);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, rectangle);
                 }
                 for(int i = 0; i < Polygons.Count; i++)
                 {
                     var polygon = Polygons[i];
 
                     FillSegments(currentShapeSegments, polygon);
-                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, polygon);
+                    CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                 }
             }
 
             if (collidedObject is AxisAlignedRectangle collidedRectangle)
             {
+                collidedRectangle.mLastCollisionSegment = intersectionSegment ?? new Segment();
                 mLastCollisionAxisAlignedRectangles.Add(collidedRectangle);
             }
             else if (collidedObject is Polygon collidedPolygon)
             {
+                collidedPolygon.mLastCollisionSegment = intersectionSegment ?? new Segment();
                 mLastCollisionPolygons.Add(collidedPolygon);
             }
 
@@ -2122,7 +2124,7 @@ namespace FlatRedBall.Math.Geometry
             return collidedObject != null;
         }
 
-        private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, object currentShape)
+        private static void CollideAgainstSegments(Line line, ref Segment a, List<Segment> currentShapeSegments, ref object collidedShape, ref Point? intersectionPoint, ref Segment? intersectionSegment, object currentShape)
         {
             for (int segmentIndex = 0; segmentIndex < currentShapeSegments.Count; segmentIndex++)
             {
@@ -2131,8 +2133,9 @@ namespace FlatRedBall.Math.Geometry
                 {
                     if (intersectionPoint == null)
                     {
-                        intersectionPoint = tempPoint;
                         collidedShape = currentShape;
+                        intersectionPoint = tempPoint;
+                        intersectionSegment = segment;
                     }
                     else
                     {
@@ -2142,8 +2145,9 @@ namespace FlatRedBall.Math.Geometry
 
                         if (distanceToNewIntersectionSquared < distanceToOldIntersectionSquared)
                         {
-                            intersectionPoint = tempPoint;
                             collidedShape = currentShape;
+                            intersectionPoint = tempPoint;
+                            intersectionSegment = segment;
                         }
                     }
                 }

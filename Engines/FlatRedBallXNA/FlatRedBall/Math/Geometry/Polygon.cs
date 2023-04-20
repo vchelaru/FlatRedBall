@@ -79,6 +79,8 @@ namespace FlatRedBall.Math.Geometry
         // Internal so that other objects like Line can set this when performing collision
         internal Point mLastCollisionPoint;
 
+        internal Segment mLastCollisionSegment;
+
         internal Layer mLayerBelongingTo;
 
         // Whether this is concave, calculated whenever the poits are set
@@ -245,6 +247,14 @@ namespace FlatRedBall.Math.Geometry
         public Point LastCollisionPoint
         {
             get { return mLastCollisionPoint; }
+        }
+
+        /// <summary>
+        /// Returns the colliding <see cref="Segment"/> from the last collision checked.
+        /// </summary>
+        public Segment LastCollisionSegment
+        {
+            get { return mLastCollisionSegment; }
         }
 
         public Color Color
