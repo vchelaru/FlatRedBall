@@ -83,7 +83,7 @@ namespace FlatRedBall.Math.Geometry
 
         internal Layer mLayerBelongingTo;
 
-        // Whether this is concave, calculated whenever the poits are set
+        // Whether this is concave, calculated whenever the points are set
         bool isConcaveCache;
         bool isClockwiseCache;
 
@@ -242,7 +242,7 @@ namespace FlatRedBall.Math.Geometry
         }
 
         /// <summary>
-        /// The absolute position where the last collision was detected in a CollieAgainst method.
+        /// The absolute position where the last collision was detected in a CollideAgainst method.
         /// </summary>
         public Point LastCollisionPoint
         {
