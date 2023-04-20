@@ -365,12 +365,13 @@ namespace GlueControl
 
             bool isOwnerScreen = false;
             bool playBump = true;
+            bool matchesCurrentSelection = false;
 
             // If the game does a copy/paste, the selection will echo back to the game. We don't want to play a bump
             // if the echoed selection is already active:
             if (matchesCurrentScreen)
             {
-                playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
+                matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
             }
 
             try
@@ -396,7 +397,10 @@ namespace GlueControl
 
             if (matchesCurrentScreen)
             {
-                Editing.EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                if (matchesCurrentSelection == false)
+                {
+                    Editing.EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                }
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                 {
@@ -492,37 +496,39 @@ namespace GlueControl
                     }
                     else
                     {
-                        playBump = DetermineIfBumpShouldPlayBasedOnSelection(selectObjectDto);
-
-                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                        matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
+                        if (!matchesCurrentSelection)
+                        {
+                            EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                        }
                     }
                 }
             }
         }
 
-        private static bool DetermineIfBumpShouldPlayBasedOnSelection(SelectObjectDto selectObjectDto)
+        private static bool IsCurrentSelectionMatchingDto(SelectObjectDto selectObjectDto)
         {
-            bool playBump;
+            bool matchesSelection;
             var newSelectionCount = selectObjectDto.NamedObjects.Count;
 
             if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
             {
-                playBump = true;
+                matchesSelection = false;
             }
             else
             {
-                playBump = false;
+                matchesSelection = true;
                 for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
                 {
                     var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
                     if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
                     {
-                        playBump = true;
+                        matchesSelection = false;
                     }
                 }
             }
 
-            return playBump;
+            return matchesSelection;
         }
 
         private static void SelectState(string stateName, string stateCategoryName)
