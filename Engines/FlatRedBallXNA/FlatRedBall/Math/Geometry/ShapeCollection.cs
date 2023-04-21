@@ -1978,7 +1978,7 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, polygon);
+                        polygon.FillSegments(currentShapeSegments);
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
 
                     }
@@ -1994,7 +1994,7 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, polygon);
+                        polygon.FillSegments(currentShapeSegments);
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
@@ -2068,7 +2068,7 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, polygon);
+                        polygon.FillSegments(currentShapeSegments);
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
@@ -2083,7 +2083,7 @@ namespace FlatRedBall.Math.Geometry
                             break;
                         }
 
-                        FillSegments(currentShapeSegments, polygon);
+                        polygon.FillSegments(currentShapeSegments);
                         CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                     }
                 }
@@ -2103,7 +2103,7 @@ namespace FlatRedBall.Math.Geometry
                 {
                     var polygon = Polygons[i];
 
-                    FillSegments(currentShapeSegments, polygon);
+                    polygon.FillSegments(currentShapeSegments);
                     CollideAgainstSegments(line, ref a, currentShapeSegments, ref collidedObject, ref intersectionPoint, ref intersectionSegment, polygon);
                 }
             }

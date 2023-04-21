@@ -2511,6 +2511,21 @@ namespace FlatRedBall.Math.Geometry
             return vectorToReturn;
         }
 
+        /// <summary>
+        /// Fills a list with the polygon's segments. It clears the list before populating it.
+        /// </summary>
+        /// <param name="segmentsListToFill">The list to populate.</param>
+        public void FillSegments(List<Segment> segmentsListToFill)
+        {
+            segmentsListToFill.Clear();
+
+            for (int i = 0; i < mVertices.Length - 1; i++)
+            {
+                var segment = new Segment(mVertices[i].Position, mVertices[i + 1].Position);
+                segmentsListToFill.Add(segment);
+            }
+        }
+
         #endregion
 
         #region Private Methods
