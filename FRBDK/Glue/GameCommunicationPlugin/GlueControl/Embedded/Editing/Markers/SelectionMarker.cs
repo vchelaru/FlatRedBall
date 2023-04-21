@@ -935,8 +935,9 @@ namespace GlueControl.Editing
 
         #region Drag to move/resize
 
-        float lastWorldX = 0;
-        float lastWorldY = 0;
+
+        float? lastWorldX = null;
+        float? lastWorldY = null;
 
         private void ApplyPrimaryDownDragEditing(IStaticPositionable item)
         {
@@ -944,7 +945,8 @@ namespace GlueControl.Editing
 
             var itemZ = item?.Z ?? 0;
 
-            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
+            if (mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) ||
+                (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) && lastWorldX == null))
             {
                 lastWorldX = mouse.WorldXAt(itemZ);
                 lastWorldY = mouse.WorldYAt(itemZ);
@@ -981,7 +983,7 @@ namespace GlueControl.Editing
                 {
                     var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
-                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace, yChangeScreenSpace, keyboard.IsShiftDown);
+                    LastUpdateMovement = ChangePositionBy(item, xChangeScreenSpace.Value, yChangeScreenSpace.Value, keyboard.IsShiftDown);
                 }
             }
 
