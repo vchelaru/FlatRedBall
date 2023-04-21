@@ -778,6 +778,8 @@ namespace GlueControl.Editing
             }
         }
 
+        public bool IsDraggingRectangle => SelectionLogic.LeftSelect != null;
+
         private void DoRectangleSelectLogic()
         {
             if (SelectionLogic.PerformedRectangleSelection)

@@ -346,6 +346,16 @@ namespace GlueControl
 
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
+            //////////////// if the user has something grabbed, early out, we don't want any updates! //////////////////
+            ////////////////The reason is - if selection changes while something is grabbed, then when the user
+            //////////////continues to move the object, the movements will apply to the newly-selected object, rather
+            ////////////than what the user originally grabbed. 
+            if (EditingManager.Self.ItemGrabbed != null || EditingManager.Self.IsDraggingRectangle)
+            {
+                return;
+            }
+            ///////////////////////end early out//////////////////////////
+            
             if (selectObjectDto.GlueElement != null)
             {
                 selectObjectDto.GlueElement.FixAllTypes();
