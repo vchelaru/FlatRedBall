@@ -1763,7 +1763,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (performSaveAndGenerateCode)
             {
-                await GlueCommands.Self.GenerateCodeCommands
+                var throwaway = GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCode(targetElement);
             }
 
@@ -1804,7 +1804,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 }
             }

@@ -397,7 +397,7 @@ namespace GlueControl
 
             if (matchesCurrentScreen)
             {
-                if (matchesCurrentSelection == false)
+                if (matchesCurrentSelection == false || selectObjectDto.BringIntoFocus)
                 {
                     Editing.EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                 }
@@ -497,7 +497,7 @@ namespace GlueControl
                     else
                     {
                         matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
-                        if (!matchesCurrentSelection)
+                        if (!matchesCurrentSelection || selectObjectDto.BringIntoFocus)
                         {
                             EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                         }

@@ -176,7 +176,11 @@ namespace GameCommunicationPlugin.GlueControl
 
             #region Start the timer, do it after the gameHostView is created
 
-            var busyTimerFrequency = 250; // ms
+            // 250 works but you can feel the delay a bit when working in game. Let's try 150
+            //var busyTimerFrequency = 250; // ms
+            //var busyTimerFrequency = 150; // ms
+            // even faster?
+            var busyTimerFrequency = 100; // ms
             busyUpdateTimer = new Timer(busyTimerFrequency);
             busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
             busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;

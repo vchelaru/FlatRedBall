@@ -560,7 +560,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 

@@ -160,7 +160,7 @@ namespace FlatRedBall.Glue.IO
                     mChangedProjectFiles.Clear();
                 }
 
-                bool anyFlushed = false;
+                bool shouldRefreshUnreferencedFiles = false;
 
                 var distinctFiles =
                     filesToFlush.Distinct().ToArray();
@@ -183,7 +183,13 @@ namespace FlatRedBall.Glue.IO
 
                     if(!skip)
                     {
-                        anyFlushed = true;
+                        // If individual files changed, we will flush. But if a directory changed, we'll ignore that
+                        // for refreshing unreferenced files. Unreferenced files can change if a file changes or is deleted 
+                        // or added, so the specific file will appear in this list. Use that not the directory. 
+                        if(!fileCopy.FilePath.IsDirectory)
+                        {
+                            shouldRefreshUnreferencedFiles = true;
+                        }
                         TaskManager.Self.Add(async () =>
                             {
                                 var didReact = await ReactToChangedFile(fileCopy);
@@ -196,7 +202,7 @@ namespace FlatRedBall.Glue.IO
                     }
                 }
 
-                if (anyFlushed)
+                if (shouldRefreshUnreferencedFiles)
                 {
                     UnreferencedFilesManager.Self.RefreshUnreferencedFiles(async: true);
                 }
