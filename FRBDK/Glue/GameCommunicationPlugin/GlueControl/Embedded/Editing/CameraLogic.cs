@@ -26,6 +26,9 @@ namespace GlueControl.Editing
         #region Fields/Properties
         static int[] zoomLevels = new int[]
         {
+            5000,
+            3600,
+            2400,
             1600,
             1200,
             1000,
@@ -47,7 +50,10 @@ namespace GlueControl.Editing
             63  ,
             50  ,
             33  ,
-            25
+            25  ,
+            20  ,
+            15  ,
+            10  ,
         };
         // store this as a decimal, because the zoom can be inbetween when switching from game to edit mode
         static decimal currentZoomLevelIndex;
