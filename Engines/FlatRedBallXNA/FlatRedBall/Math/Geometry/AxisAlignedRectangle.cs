@@ -1497,6 +1497,33 @@ namespace FlatRedBall.Math.Geometry
             return new FloatRectangle(Top, Bottom, Left, Right);
         }
 
+        /// <summary>
+        /// Fills a list with the rectangle's segments. It clears the list before populating it.
+        /// </summary>
+        /// <param name="segmentsListToFill">The list to populate.</param>
+        public void FillSegments(List<Segment> segmentsListToFill)
+        {
+            segmentsListToFill.Clear();
+
+            Point tl = new Point(
+                Position.X - ScaleX,
+                Position.Y + ScaleY);
+            Point tr = new Point(
+                Position.X + ScaleX,
+                Position.Y + ScaleY);
+            Point bl = new Point(
+                Position.X - ScaleX,
+                Position.Y - ScaleY);
+            Point br = new Point(
+                Position.X + ScaleX,
+                Position.Y - ScaleY);
+
+            segmentsListToFill.Add(new Segment(tl, bl));
+            segmentsListToFill.Add(new Segment(bl, br));
+            segmentsListToFill.Add(new Segment(tl, tr));
+            segmentsListToFill.Add(new Segment(tr, br));
+        }
+
         public override string ToString()
         {
             return $"Left:{Left} Right:{Right} Top:{Top} Bottom:{Bottom}";
