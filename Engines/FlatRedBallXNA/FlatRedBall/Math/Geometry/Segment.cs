@@ -547,6 +547,32 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        /// <summary>
+        /// Returns a vector from the argument vector to the closest point to the segment.
+        /// </summary>
+        /// <param name="vector">The point to start from.</param>
+        /// <returns>A vector representing the distance from the argument vector to this.</returns>
+        public Vector3 VectorFrom(Vector3 position)
+        {
+            return VectorFrom(position.X, position.Y);
+        }
+
+        /// <summary>
+        /// Returns a vector from the argument vector to the closest point to the segment.
+        /// </summary>
+        /// <param name="x">The absolute X to check against the segment.</param>
+        /// <param name="y">The absolute Y to check against the segment.</param>
+        /// <returns>A vector representing the distance from the argument x, y to this.</returns>
+        public Vector3 VectorFrom(float x, float y)
+        {
+            DistanceTo(new Point(x, y), out Segment connectingSegment);
+
+            return new Vector3(
+                (float)(connectingSegment.Point2.X - connectingSegment.Point1.X),
+                (float)(connectingSegment.Point2.Y - connectingSegment.Point1.Y),
+                0);
+        }
+
         #region XML Docs
         /// <summary>
         /// Returns the length of the segment.
