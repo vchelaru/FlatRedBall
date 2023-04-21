@@ -635,7 +635,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             //string directoryOfTreeNode = EditorLogic.CurrentTreeNode.GetRelativePath();
 
-            string targetDirectory = FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.GetFullPathContentDirectory(sourceElement, directoryOfTreeNode);
+            FilePath targetDirectory = FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces.ElementCommands.GetFullPathContentDirectory(sourceElement, directoryOfTreeNode);
+
+            var isRfsRelativeToTarget = new FilePath(fileName).IsRelativeTo(targetDirectory);
+            if(isRfsRelativeToTarget)
+            {
+                targetDirectory = new FilePath(fileName).GetDirectoryContainingThis();
+            }
+
             string targetFile = fileName;
 
             string errorMessage = null;
