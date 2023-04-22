@@ -1188,6 +1188,11 @@ namespace GameCommunicationPlugin.GlueControl
                     _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
 
                     break;
+                
+                case "GameCommunicationPlugin_PacketReceived_OldDTO":
+                    var commands = new List<string> { payload };
+                    _commandReceiver.HandleCommandsFromGame(commands, GlueViewSettingsViewModel.PortNumber);
+                    break;
             }
         }
         #endregion

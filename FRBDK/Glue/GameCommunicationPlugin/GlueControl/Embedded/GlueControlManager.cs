@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System;
 using GlueControl.Editing;
 using FlatRedBall.Utilities;
+using GlueCommunication;
 
 #if SupportsEditMode
 using GlueControl.Managers;
@@ -53,6 +54,8 @@ namespace GlueControl
         ConcurrentDictionary<int, AwaitedResponse> AwaitedResponses = new ConcurrentDictionary<int, AwaitedResponse>();
 
         public static GlueControlManager Self { get; private set; }
+        
+        internal GameConnectionManager GameConnectionManager { get; set; }
 
         #endregion
 
@@ -448,7 +451,14 @@ namespace GlueControl
 
         private void SendCommandToGlue(string command)
         {
-            GameToGlueCommands.Enqueue(new GameToGlueCommand { Command = command });
+            // Send immediately to glue
+            GameConnectionManager.SendItem(new GameConnectionManager.Packet
+            {
+                Id = Guid.NewGuid(),
+                Payload = command,
+                PacketType = "OldDTO",
+                InResponseTo = null,
+            });
         }
 
         #endregion
