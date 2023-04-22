@@ -160,15 +160,23 @@ namespace FlatRedBall.Screens
 
         #region Methods
 
+        static ScreenManager()
+        {
+#if DEBUG
+            // These are high-traffic lists because the user may select a large number of objects:
+            PersistentAxisAlignedRectangles.AddInternalHashSet();
+            PersistentPolygons.AddInternalHashSet();
+#endif
+
+        }
+
         #region Public Methods
 
-        #region XML Docs
         /// <summary>
         /// Calls activity on the current screen and checks to see if screen
         /// activity is finished.  If activity is finished, the current Screen's
         /// NextScreen is loaded.
         /// </summary>
-        #endregion
         public static void Activity()
         {
             /////////////////Early Out///////////////////////////
