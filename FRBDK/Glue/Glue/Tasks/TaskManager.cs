@@ -25,6 +25,7 @@ namespace FlatRedBall.Glue.Managers
         Created,
         Queued,
         Started,
+        StartedImmediate,
         Removed,
         MovedToEnd
     }
@@ -394,6 +395,7 @@ namespace FlatRedBall.Glue.Managers
                 // If the user is moving the tasks to the end, then we will push it at the end always
                 executionPreference != TaskExecutionPreference.AddOrMoveToEnd)
             {
+
                 // we're in a task:
                 var task = new GlueTask()
                 {
@@ -404,7 +406,9 @@ namespace FlatRedBall.Glue.Managers
                     CustomId = customId
                 };
 
+                TaskAddedOrRemoved?.Invoke(TaskEvent.StartedImmediate, task);
                 RunTask(task, markAsCurrent:false).Wait();
+                TaskAddedOrRemoved?.Invoke(TaskEvent.Removed, task);
 
                 return task;
             }

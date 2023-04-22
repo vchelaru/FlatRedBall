@@ -717,10 +717,12 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             var dto = new SelectObjectDto();
 
-            List<NamedObjectSave> namedObjects = new List<NamedObjectSave>();
+            List<string> namedObjects = new List<string>();
             if (forcedElement == null)
             {
-                namedObjects = GlueState.Self.CurrentNamedObjectSaves.ToList();
+                namedObjects = GlueState.Self.CurrentNamedObjectSaves
+                    .Select(item => item.InstanceName)
+                    .ToList();
             }
 
             // Determine these values before resetting the LastDtoPushedToGame...
@@ -758,8 +760,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 if (canSend)
                 {
                     dto.BringIntoFocus = bringIntoFocus;
-                    dto.NamedObjects.Clear();
-                    dto.NamedObjects.AddRange(namedObjects);
+                    dto.NamedObjectNames.AddRange(namedObjects);
                     dto.ElementNameGlue = element.Name;
                     dto.StateName = forcedStateName ??
                         GlueState.Self.CurrentStateSave?.Name;

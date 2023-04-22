@@ -76,7 +76,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region SelectObjectDto
     class SelectObjectDto : UpdateCurrentElementDto
     {
-        public List<NamedObjectSave> NamedObjects { get; set; } = new List<NamedObjectSave>();
+        public List<string> NamedObjectNames { get; set; } = new List<string>();
 
         public string ElementNameGlue { get; set; }
 
@@ -438,21 +438,21 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
-    #region GetCommandsDto
+    //#region GetCommandsDto
 
-    /// <summary>
-    /// Used to fetch commands that are waiting to be sent from the game back to Glue
-    /// </summary>
-    public class GetCommandsDto
-    {
+    ///// <summary>
+    ///// Used to fetch commands that are waiting to be sent from the game back to Glue
+    ///// </summary>
+    //public class GetCommandsDto
+    //{
 
-    }
+    //}
 
     public class GetCommandsDtoResponse
     {
         public List<string> Commands { get; set; } = new List<string>();
     }
-    #endregion
+    //#endregion
 
     /// <summary>
     /// Used to fetch commands that the game will re-run on

@@ -115,9 +115,9 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         case nameof(SetVariableDtoList):
                             await HandleSetVariableDtoList(JsonConvert.DeserializeObject<SetVariableDtoList>(dtoSerialized));
                             break;
-                        case nameof(SelectObjectDto):
-                            HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));
-                            break;
+                        //case nameof(SelectObjectDto):
+                        //    HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(dtoSerialized));
+                        //    break;
                         case nameof(ModifyCollisionDto):
                             HandleDto(JsonConvert.DeserializeObject<ModifyCollisionDto>(dtoSerialized));
                             break;
@@ -447,102 +447,102 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
         #region Select Object
 
-        public async void HandleSelectObject(SelectObjectDto selectObjectDto)
-        {
+        //public async void HandleSelectObject(SelectObjectDto selectObjectDto)
+        //{
 
-            var screen = await CommandSender.Self.GetCurrentInGameScreen();
-            TaskManager.Self.Add(() =>
-            {
-                //NamedObjectSave nos = null;
-                List<NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
+        //    var screen = await CommandSender.Self.GetCurrentInGameScreen();
+        //    TaskManager.Self.Add(() =>
+        //    {
+        //        //NamedObjectSave nos = null;
+        //        List<NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
 
-                if(screen == null)
-                {
-                    var entityName = selectObjectDto.ElementNameGlue;
-                    EntitySave currentEntity = ObjectFinder.Self.GetEntitySave(entityName);
+        //        if(screen == null)
+        //        {
+        //            var entityName = selectObjectDto.ElementNameGlue;
+        //            EntitySave currentEntity = ObjectFinder.Self.GetEntitySave(entityName);
                     
-                    if(currentEntity != null)
-                    {
-                        foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
-                        {
-                            var instanceName = selectedNamedObject.InstanceName;
-                            var nos = currentEntity.GetNamedObjectRecursively(instanceName);
-                            if(nos == null && instanceName?.StartsWith('m') == true && instanceName?.Length > 1)
-                            {
-                                nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName[1..]);
-                            }
-                            if(nos != null)
-                            {
-                                namedObjectSaves.Add(nos);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
-                    {
-                        var nos = screen.GetNamedObjectRecursively(selectedNamedObject.InstanceName);
-                        if(nos != null)
-                        { 
-                            namedObjectSaves.Add(nos);
-                        }
-                    }
-                }
+        //            if(currentEntity != null)
+        //            {
+        //                foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
+        //                {
+        //                    var instanceName = selectedNamedObject.InstanceName;
+        //                    var nos = currentEntity.GetNamedObjectRecursively(instanceName);
+        //                    if(nos == null && instanceName?.StartsWith('m') == true && instanceName?.Length > 1)
+        //                    {
+        //                        nos = currentEntity.GetNamedObjectRecursively(selectObjectDto.NamedObjects.FirstOrDefault()?.InstanceName[1..]);
+        //                    }
+        //                    if(nos != null)
+        //                    {
+        //                        namedObjectSaves.Add(nos);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            foreach(var selectedNamedObject in selectObjectDto.NamedObjects)
+        //            {
+        //                var nos = screen.GetNamedObjectRecursively(selectedNamedObject.InstanceName);
+        //                if(nos != null)
+        //                { 
+        //                    namedObjectSaves.Add(nos);
+        //                }
+        //            }
+        //        }
 
-                if(namedObjectSaves.Count > 0)
-                {
-                    GlueCommands.Self.DoOnUiThread(() =>
-                    {
-                        var existingSelectionIsSame = GlueState.Self.CurrentNamedObjectSaves.Count == selectObjectDto.NamedObjects.Count;
-                        if(existingSelectionIsSame)
-                        {
-                            for(int i = 0; i < GlueState.Self.CurrentNamedObjectSaves.Count; i++)
-                            {
-                                if (GlueState.Self.CurrentNamedObjectSaves[i] != selectObjectDto.NamedObjects[i])
-                                {
-                                    existingSelectionIsSame = false;
-                                }
-                            }   
-                        }
-                        if (!existingSelectionIsSame)
-                        {
-                            _refreshManager.IgnoreNextObjectSelect = true;
+        //        if(namedObjectSaves.Count > 0)
+        //        {
+        //            GlueCommands.Self.DoOnUiThread(() =>
+        //            {
+        //                var existingSelectionIsSame = GlueState.Self.CurrentNamedObjectSaves.Count == selectObjectDto.NamedObjects.Count;
+        //                if(existingSelectionIsSame)
+        //                {
+        //                    for(int i = 0; i < GlueState.Self.CurrentNamedObjectSaves.Count; i++)
+        //                    {
+        //                        if (GlueState.Self.CurrentNamedObjectSaves[i] != selectObjectDto.NamedObjects[i])
+        //                        {
+        //                            existingSelectionIsSame = false;
+        //                        }
+        //                    }   
+        //                }
+        //                if (!existingSelectionIsSame)
+        //                {
+        //                    _refreshManager.IgnoreNextObjectSelect = true;
 
-                            GlueState.Self.CurrentNamedObjectSaves = namedObjectSaves;
-                        }
+        //                    GlueState.Self.CurrentNamedObjectSaves = namedObjectSaves;
+        //                }
 
-                        var nos = namedObjectSaves.FirstOrDefault();
-                        var showVariables = true;
-                        var canShowPoints = nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon;
-                        var alreadyShownTabs = GlueState.Self.CurrentFocusedTabs;
+        //                var nos = namedObjectSaves.FirstOrDefault();
+        //                var showVariables = true;
+        //                var canShowPoints = nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon;
+        //                var alreadyShownTabs = GlueState.Self.CurrentFocusedTabs;
 
-                        if(canShowPoints && alreadyShownTabs.Contains("Points"))
-                        {
-                            showVariables = false;
-                        }
+        //                if(canShowPoints && alreadyShownTabs.Contains("Points"))
+        //                {
+        //                    showVariables = false;
+        //                }
 
-                        if(showVariables && !alreadyShownTabs.Contains("Variables"))
-                        {
-                            GlueCommands.Self.DialogCommands.FocusTab("Variables");
-                        }
-                    });
-                }
-                else
-                {
-                    if(GlueState.Self.CurrentNamedObjectSave != null)
-                    {
-                        var element = GlueState.Self.CurrentElement;
-                        GlueState.Self.CurrentNamedObjectSave = null;
+        //                if(showVariables && !alreadyShownTabs.Contains("Variables"))
+        //                {
+        //                    GlueCommands.Self.DialogCommands.FocusTab("Variables");
+        //                }
+        //            });
+        //        }
+        //        else
+        //        {
+        //            if(GlueState.Self.CurrentNamedObjectSave != null)
+        //            {
+        //                var element = GlueState.Self.CurrentElement;
+        //                GlueState.Self.CurrentNamedObjectSave = null;
 
-                        if(element != null)
-                        {
-                            GlueState.Self.CurrentElement = element;
-                        }
-                    }
-                }
-            }, "Selecting object from game command");
-        }
+        //                if(element != null)
+        //                {
+        //                    GlueState.Self.CurrentElement = element;
+        //                }
+        //            }
+        //        }
+        //    }, "Selecting object from game command");
+        //}
 
         #endregion
 

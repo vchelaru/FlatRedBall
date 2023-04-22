@@ -44,7 +44,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
             if(LogTaskDetailsToOutput)
             {
-                var shouldlog = addedOrRemoved == TaskEvent.Started || addedOrRemoved == TaskEvent.Removed;
+                var shouldlog = addedOrRemoved == TaskEvent.Started || addedOrRemoved == TaskEvent.Removed ||
+                    addedOrRemoved == TaskEvent.StartedImmediate;
 
                 if(!shouldlog)
                 {
@@ -53,7 +54,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
                 if(shouldlog)
                 {
-                    var text = $"{addedOrRemoved} {glueTask.DisplayInfo}";
+                    var taskEvent = addedOrRemoved.ToString();
+                    if(addedOrRemoved == TaskEvent.StartedImmediate)
+                    {
+                        // indent it a little so we know we're inside a task already
+                        taskEvent = "  " + taskEvent;
+                    }
+                    var text = $"{taskEvent} {glueTask.DisplayInfo}";
                     if(addedOrRemoved == TaskEvent.Removed)
                     {
                         var time = glueTask.TimeEnded - glueTask.TimeStarted;

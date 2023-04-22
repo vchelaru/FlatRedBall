@@ -180,11 +180,11 @@ namespace GameCommunicationPlugin.GlueControl
             //var busyTimerFrequency = 250; // ms
             //var busyTimerFrequency = 150; // ms
             // even faster?
-            var busyTimerFrequency = 100; // ms
-            busyUpdateTimer = new Timer(busyTimerFrequency);
-            busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
-            busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
-            busyUpdateTimer.Start();
+            //var busyTimerFrequency = 100; // ms
+            //busyUpdateTimer = new Timer(busyTimerFrequency);
+            //busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
+            //busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
+            //busyUpdateTimer.Start();
 
             // This was 250 but it wasn't fast enough to feel responsive
             var dragDropTimerFrequency = 100; // ms
@@ -438,75 +438,75 @@ namespace GameCommunicationPlugin.GlueControl
 
         #endregion
 
-        private async Task DoGetCommandsTimedLogic()
-        {
-            this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-            var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
+        //private async Task DoGetCommandsTimedLogic()
+        //{
+        //    this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
+        //    var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
 
-            if (!isBusy)
-            {
-                try
-                {
-                    if (CompilerViewModel.IsRunning)
-                    {
-                        lastGetCall = DateTime.Now;
-
-
-                        var sendResponse =
-                            await CommandSender.Self
-                            .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
-                        var response = sendResponse?.Data;
+        //    if (!isBusy)
+        //    {
+        //        try
+        //        {
+        //            if (CompilerViewModel.IsRunning)
+        //            {
+        //                lastGetCall = DateTime.Now;
 
 
-                        var getTime = DateTime.Now;
-                        var getDuration = getTime - lastGetCall;
+        //                var sendResponse =
+        //                    await CommandSender.Self
+        //                    .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
+        //                var response = sendResponse?.Data;
 
-                        if (response?.Commands.Count > 0)
-                        {
-                            await _commandReceiver.HandleCommandsFromGame(response.Commands,
-                                GlueViewSettingsViewModel.PortNumber);
-                        }
-                        else
-                        {
 
-                        }
+        //                var getTime = DateTime.Now;
+        //                var getDuration = getTime - lastGetCall;
 
-                        var handleTime = DateTime.Now;
-                        var handleDuration = handleTime - getTime;
+        //                if (response?.Commands.Count > 0)
+        //                {
+        //                    await _commandReceiver.HandleCommandsFromGame(response.Commands,
+        //                        GlueViewSettingsViewModel.PortNumber);
+        //                }
+        //                else
+        //                {
 
-                        this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
+        //                }
 
-                        // Vic says - this causes problems when a game crashes. It continues to print this out
-                        // which makes it harder to see the callstack. I don't know if this is needed anymore now
-                        // that we have a more reliable communication system from glue<->game, so I'm going to comment
-                        // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
-                        //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
-                        //{
+        //                var handleTime = DateTime.Now;
+        //                var handleDuration = handleTime - getTime;
 
-                        //    MainControl.PrintOutput(
-                        //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
-                        //        $"{response?.Commands.Count}" +
-                        //        $"\n\tGet: {getDuration}" +
-                        //        $"\n\tHandle: {handleDuration}");
-                        //}
-                    }
-                }
-                catch
-                {
-                    // it's okay
-                }
-                finally
-                {
-                    getCommandsSemaphore.Release();
-                }
+        //                this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
 
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("   isBusy = true");
+        //                // Vic says - this causes problems when a game crashes. It continues to print this out
+        //                // which makes it harder to see the callstack. I don't know if this is needed anymore now
+        //                // that we have a more reliable communication system from glue<->game, so I'm going to comment
+        //                // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
+        //                //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
+        //                //{
 
-            }
-        }
+        //                //    MainControl.PrintOutput(
+        //                //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
+        //                //        $"{response?.Commands.Count}" +
+        //                //        $"\n\tGet: {getDuration}" +
+        //                //        $"\n\tHandle: {handleDuration}");
+        //                //}
+        //            }
+        //        }
+        //        catch
+        //        {
+        //            // it's okay
+        //        }
+        //        finally
+        //        {
+        //            getCommandsSemaphore.Release();
+        //        }
+
+        //    }
+        //    else
+        //    {
+        //        System.Diagnostics.Debug.WriteLine("   isBusy = true");
+
+        //    }
+        //}
 
         private void HandleGluxUnloaded()
         {
@@ -1183,11 +1183,11 @@ namespace GameCommunicationPlugin.GlueControl
 
                     break;
 
-                case "GlueControl_SelectObject":
+                //case "GlueControl_SelectObject":
 
-                    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
+                //    _commandReceiver.HandleSelectObject(JsonConvert.DeserializeObject<SelectObjectDto>(payload));
 
-                    break;
+                //    break;
                 
                 case "GameCommunicationPlugin_PacketReceived_OldDTO":
                     var commands = new List<string> { payload };

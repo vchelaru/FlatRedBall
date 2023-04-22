@@ -130,8 +130,11 @@ namespace GameCommunicationPlugin
 
         private void HandleOnPacketReceived(GameConnectionManager.PacketReceivedArgs packetReceivedArgs)
         {
-            ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
-            Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+            if(!string.IsNullOrEmpty(packetReceivedArgs.Packet.Payload))
+            {
+                ReactToPluginEvent($"GameCommunicationPlugin_PacketReceived_{packetReceivedArgs.Packet.PacketType}", packetReceivedArgs.Packet.Payload);
+                Debug.WriteLine($"Packet Type: {packetReceivedArgs.Packet.PacketType}, Payload: {packetReceivedArgs.Packet.Payload}");
+            }
         }
 
         private void HandleGluxLoaded()

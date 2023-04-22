@@ -344,6 +344,20 @@ namespace GlueControl
 
         #region Select Object / State
 
+        static List<NamedObjectSave> GetSelectedNamedObjects(SelectObjectDto selectObjectDto)
+        {
+            var names = selectObjectDto.NamedObjectNames.ToHashSet();
+            List<NamedObjectSave> selected = new List<NamedObjectSave>();
+            foreach (var nos in GlueState.Self.CurrentElement.AllNamedObjects)
+            {
+                if (names.Contains(nos.InstanceName))
+                {
+                    selected.Add(nos);
+                }
+            }
+            return selected;
+        }
+
         private static void HandleDto(SelectObjectDto selectObjectDto)
         {
             //////////////// if the user has something grabbed, early out, we don't want any updates! //////////////////
@@ -398,7 +412,7 @@ namespace GlueControl
             catch (ArgumentException e)
             {
                 var message =
-                    $"The command to select {selectObjectDto.NamedObjects.Count} in {selectObjectDto.GlueElement} " +
+                    $"The command to select {selectObjectDto.NamedObjectNames.Count} in {selectObjectDto.GlueElement} " +
                     $"threw an exception because the Glue object has a null object.  Inner details:{e}";
 
                 throw new ArgumentException(message);
@@ -412,7 +426,7 @@ namespace GlueControl
             {
                 if (matchesCurrentSelection == false || selectObjectDto.BringIntoFocus)
                 {
-                    Editing.EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                    Editing.EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                 }
                 Editing.EditingManager.Self.ElementEditingMode = GlueControl.Editing.ElementEditingMode.EditingScreen;
                 if (!string.IsNullOrEmpty(selectObjectDto.StateName))
@@ -434,7 +448,7 @@ namespace GlueControl
                     void AfterInitializeLogic(Screen screen)
                     {
                         // Select this even if it's null so the EditingManager deselects 
-                        EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: true);
+                        EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: true);
 
                         if (!string.IsNullOrEmpty(selectObjectDto.StateName))
                         {
@@ -503,7 +517,7 @@ namespace GlueControl
                         EditorVisuals.DestroyContainedObjects();
 
                         Screens.EntityViewingScreen.GameElementTypeToCreate = GlueToGameElementName(elementNameGlue);
-                        Screens.EntityViewingScreen.InstanceToSelect = selectObjectDto.NamedObjects.FirstOrDefault();
+                        Screens.EntityViewingScreen.InstanceToSelect = GetSelectedNamedObjects(selectObjectDto).FirstOrDefault();
                         ScreenManager.CurrentScreen.MoveToScreen(typeof(Screens.EntityViewingScreen));
 #endif
                     }
@@ -512,7 +526,7 @@ namespace GlueControl
                         matchesCurrentSelection = IsCurrentSelectionMatchingDto(selectObjectDto);
                         if (!matchesCurrentSelection || selectObjectDto.BringIntoFocus)
                         {
-                            EditingManager.Self.Select(selectObjectDto.NamedObjects, playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
+                            EditingManager.Self.Select(GetSelectedNamedObjects(selectObjectDto), playBump: playBump, focusCameraOnObject: selectObjectDto.BringIntoFocus);
                         }
                     }
                 }
@@ -522,7 +536,7 @@ namespace GlueControl
         private static bool IsCurrentSelectionMatchingDto(SelectObjectDto selectObjectDto)
         {
             bool matchesSelection;
-            var newSelectionCount = selectObjectDto.NamedObjects.Count;
+            var newSelectionCount = selectObjectDto.NamedObjectNames.Count;
 
             if (Editing.EditingManager.Self.CurrentNamedObjects.Count != newSelectionCount)
             {
@@ -534,7 +548,7 @@ namespace GlueControl
                 for (int i = 0; i < Editing.EditingManager.Self.CurrentNamedObjects.Count; i++)
                 {
                     var currentNamedObject = Editing.EditingManager.Self.CurrentNamedObjects[i];
-                    if (currentNamedObject.InstanceName != selectObjectDto.NamedObjects[i].InstanceName)
+                    if (currentNamedObject.InstanceName != selectObjectDto.NamedObjectNames[i])
                     {
                         matchesSelection = false;
                     }
@@ -1175,21 +1189,21 @@ namespace GlueControl
 
         #region Get Commands
 
-        private static GetCommandsDtoResponse HandleDto(GetCommandsDto dto)
-        {
-            var responseDto = new GetCommandsDtoResponse();
-#if SupportsEditMode
-            if (GlueControlManager.GameToGlueCommands.Count != 0)
-            {
-                while (GlueControlManager.GameToGlueCommands.TryDequeue(out GlueControlManager.GameToGlueCommand gameToGlueCommand))
-                {
-                    responseDto.Commands.Add(gameToGlueCommand.Command);
-                }
-            }
-#endif
+//        private static GetCommandsDtoResponse HandleDto(GetCommandsDto dto)
+//        {
+//            var responseDto = new GetCommandsDtoResponse();
+//#if SupportsEditMode
+//            if (GlueControlManager.GameToGlueCommands.Count != 0)
+//            {
+//                while (GlueControlManager.GameToGlueCommands.TryDequeue(out GlueControlManager.GameToGlueCommand gameToGlueCommand))
+//                {
+//                    responseDto.Commands.Add(gameToGlueCommand.Command);
+//                }
+//            }
+//#endif
 
-            return responseDto;
-        }
+//            return responseDto;
+//        }
 
         #endregion
 
