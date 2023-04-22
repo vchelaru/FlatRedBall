@@ -293,11 +293,12 @@ namespace GlueControl.Editing
         {
             var desiredMarkerCount = itemsSelected.Count;
 
+            var itemsSelectedHash = itemsSelected.ToHashSet();
 
             for (int i = SelectedMarkers.Count - 1; i > -1; i--)
             {
                 var marker = SelectedMarkers[i];
-                var hasSelectedItem = itemsSelected.Contains(marker.Owner);
+                var hasSelectedItem = itemsSelectedHash.Contains(marker.Owner);
 
                 if (!hasSelectedItem)
                 {
@@ -793,6 +794,7 @@ namespace GlueControl.Editing
         {
             if (SelectionLogic.PerformedRectangleSelection)
             {
+
                 // let's make a dictionary to make this faster:
                 Dictionary<string, NamedObjectSave> namedObjectSaveDictionary = new Dictionary<string, NamedObjectSave>();
                 var all = CurrentGlueElement?.AllNamedObjects;
@@ -805,6 +807,10 @@ namespace GlueControl.Editing
                 }
 
                 var isFirst = true;
+
+                var cache = SelectionLogic.GetAvailableObjects(ElementEditingMode).ToArray();
+
+
                 foreach (var itemOver in ItemsOver)
                 {
                     NamedObjectSave nos = null;
@@ -820,23 +826,31 @@ namespace GlueControl.Editing
                                 nos, nameof(nos.IsEditingLocked));
                         if (isEditingLocked == false)
                         {
-                            Select(nos, addToExistingSelection: isFirst == false, playBump: true, updateMarkers: false);
+                            Select(nos, addToExistingSelection: isFirst == false, playBump: false, updateMarkers: false, availablePositionedObjectCache: cache);
                         }
                     }
                     else
                     {
                         // this shouldn't happen, but for now we tolerate it until the current is sent
-                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true, updateMarkers: false);
+                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: false, updateMarkers: false);
                     }
 
-                    UpdateMarkers(didChangeItemOver: true);
 
                     isFirst = false;
                 }
 
+                AddAndDestroyMarkersAccordingToItemsSelected();
+
+
+                foreach (var marker in SelectedMarkers)
+                {
+                    marker.PlayBumpAnimation(SelectedItemExtraPadding, isSynchronized: false);
+                }
+
+                UpdateMarkers(didChangeItemOver: true);
+
                 ObjectSelected(ItemsOver.ToList());
             }
-        }
         #endregion
 
         public void UpdateDependencies()
@@ -998,7 +1012,7 @@ namespace GlueControl.Editing
             UpdateMarkers(didChangeItemOver: true);
         }
 
-        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true)
+        internal void Select(NamedObjectSave namedObject, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true, PositionedObject[] availablePositionedObjectCache = null)
         {
             if (addToExistingSelection == false)
             {
@@ -1008,7 +1022,7 @@ namespace GlueControl.Editing
             bool isSelectable = true;
             if (namedObject != null)
             {
-                INameable foundObject = GetObjectByName(namedObject?.InstanceName);
+                INameable foundObject = GetObjectByName(namedObject?.InstanceName, availablePositionedObjectCache);
                 isSelectable = foundObject != null &&
                     SelectionLogic.IsSelectable(foundObject);
             }
@@ -1020,7 +1034,7 @@ namespace GlueControl.Editing
                     CurrentNamedObjects.Add(namedObject);
                 }
 
-                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers);
+                Select(namedObject?.InstanceName, addToExistingSelection, playBump, focusCameraOnObject, updateMarkers, availablePositionedObjectCache);
             }
             else
             {
@@ -1028,11 +1042,11 @@ namespace GlueControl.Editing
             }
         }
 
-        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true)
+        internal void Select(string objectName, bool addToExistingSelection = false, bool playBump = true, bool focusCameraOnObject = false, bool updateMarkers = true, PositionedObject[] availablePositionedObjectCache = null)
         {
             INameable foundObject = string.IsNullOrEmpty(objectName)
                 ? null
-                : GetObjectByName(objectName);
+                : GetObjectByName(objectName, availablePositionedObjectCache);
 
             //if (!string.IsNullOrEmpty(objectName))
             //{
@@ -1062,7 +1076,10 @@ namespace GlueControl.Editing
                     itemsSelected.Add(foundObject);
                 }
 
-                AddAndDestroyMarkersAccordingToItemsSelected();
+                if (updateMarkers)
+                {
+                    AddAndDestroyMarkersAccordingToItemsSelected();
+                }
 
                 if (playBump)
                 {
@@ -1085,16 +1102,28 @@ namespace GlueControl.Editing
         }
 
 
-        public INameable GetObjectByName(string objectName)
+        public INameable GetObjectByName(string objectName, PositionedObject[] availablePositionedObjectCache = null)
         {
             INameable foundObject = null;
             object foundObjectAsObject = null;
             if (!string.IsNullOrEmpty(objectName))
             {
-                var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
-                foundObject = allAvailableObjects?.FirstOrDefault(item => item.Name == objectName);
-
-
+                if(availablePositionedObjectCache != null)
+                {
+                    for(int i = 0; i < availablePositionedObjectCache.Length; i++)
+                    {
+                        if (availablePositionedObjectCache[i].Name ==  objectName)
+                        {
+                            foundObject = availablePositionedObjectCache[i];
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    var allAvailableObjects = SelectionLogic.GetAvailableObjects(ElementEditingMode);
+                    foundObject = allAvailableObjects?.FirstOrDefault(item => item.Name == objectName);
+                }
                 if (foundObject == null)
                 {
                     var screen = ScreenManager.CurrentScreen;
