@@ -386,11 +386,14 @@ namespace GlueControl
 
             try
             {
-                if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+                if (FlatRedBall.Screens.ScreenManager.IsInEditMode && selectObjectDto.GlueElement != null)
                 {
                     ObjectFinder.Self.Replace(selectObjectDto.GlueElement);
                 }
-                Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
+                if (selectObjectDto.GlueElement != null)
+                {
+                    Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
+                }
             }
             catch (ArgumentException e)
             {

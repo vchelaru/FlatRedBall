@@ -1009,6 +1009,7 @@ namespace GlueControl.Editing
                 }
             }
 
+            AddAndDestroyMarkersAccordingToItemsSelected();
 
             UpdateMarkers(didChangeItemOver: true);
         }
