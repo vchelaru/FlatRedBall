@@ -861,6 +861,12 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 var parameter = dto.Parameters[0];
                 var converted = Convert(parameter, property.PropertyType);
 
+                if(dto.SetPropertyName == "CurrentNamedObjectSaves")
+                {
+                    // ignore the next selection
+                    _refreshManager.IgnoreNextObjectSelect = true;
+                }
+
                 property.SetValue(target, converted);
 
                 await SendResponseBackToGame(dto, null);

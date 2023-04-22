@@ -730,6 +730,8 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 !string.IsNullOrEmpty(LastDtoPushedToGame?.StateName) &&
                 string.IsNullOrEmpty(forcedStateName ?? GlueState.Self.CurrentStateSave?.Name);
 
+            var shouldPushElement = LastDtoPushedToGame?.ElementNameGlue != element?.Name;
+
             // ... now reset it
             LastDtoPushedToGame = null;
 
@@ -740,8 +742,11 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             else if (element != null)
             {
                 // Let's try this to go faster...
-                //dto.ScreenSave = element as ScreenSave;
-                //dto.EntitySave = element as EntitySave;
+                if(shouldPushElement)
+                {
+                    dto.ScreenSave = element as ScreenSave;
+                    dto.EntitySave = element as EntitySave;
+                }
 
                 bool isAbstract = IsAbstract(element);
 
@@ -760,6 +765,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 // If its abstract and there's no derived, don't try to select it
                 if (canSend)
                 {
+                    
                     dto.BringIntoFocus = bringIntoFocus;
                     dto.NamedObjectNames.AddRange(namedObjects);
                     dto.ElementNameGlue = element.Name;
