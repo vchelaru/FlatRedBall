@@ -54,6 +54,8 @@ namespace GlueControl.Editing
             20  ,
             15  ,
             10  ,
+            7   ,
+            5   
         };
         // store this as a decimal, because the zoom can be inbetween when switching from game to edit mode
         static decimal currentZoomLevelIndex;

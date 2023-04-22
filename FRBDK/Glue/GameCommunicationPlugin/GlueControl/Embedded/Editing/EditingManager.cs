@@ -293,6 +293,7 @@ namespace GlueControl.Editing
         {
             var desiredMarkerCount = itemsSelected.Count;
 
+
             for (int i = SelectedMarkers.Count - 1; i > -1; i--)
             {
                 var marker = SelectedMarkers[i];
@@ -305,10 +306,16 @@ namespace GlueControl.Editing
                 }
             }
 
+            HashSet<INameable> markerItems = new HashSet<INameable>();
+            for (int i = 0; i < SelectedMarkers.Count; i++)
+            {
+                markerItems.Add(SelectedMarkers[i].Owner);
+            }
+
             for (int i = 0; i < itemsSelected.Count; i++)
             {
                 var owner = itemsSelected[i];
-                var hasMarker = SelectedMarkers.Any(item => item.Owner == owner);
+                var hasMarker = markerItems.Contains(owner);
 
                 if (!hasMarker)
                 {
@@ -318,6 +325,8 @@ namespace GlueControl.Editing
                         newMarker.FadingSeed = SelectedMarkers[0].FadingSeed;
                     }
                     SelectedMarkers.Add(newMarker);
+                    markerItems.Add(owner);
+
                 }
             }
         }
@@ -784,13 +793,24 @@ namespace GlueControl.Editing
         {
             if (SelectionLogic.PerformedRectangleSelection)
             {
+                // let's make a dictionary to make this faster:
+                Dictionary<string, NamedObjectSave> namedObjectSaveDictionary = new Dictionary<string, NamedObjectSave>();
+                var all = CurrentGlueElement?.AllNamedObjects;
+                if (all != null)
+                {
+                    foreach (var item in all)
+                    {
+                        namedObjectSaveDictionary.Add(item.InstanceName, item);
+                    }
+                }
+
                 var isFirst = true;
                 foreach (var itemOver in ItemsOver)
                 {
                     NamedObjectSave nos = null;
-                    if (itemOver?.Name != null)
+                    if (itemOver?.Name != null && namedObjectSaveDictionary.ContainsKey(itemOver.Name))
                     {
-                        nos = CurrentGlueElement?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == itemOver.Name);
+                        nos = namedObjectSaveDictionary[itemOver.Name];
                     }
 
                     if (nos != null)
@@ -800,15 +820,16 @@ namespace GlueControl.Editing
                                 nos, nameof(nos.IsEditingLocked));
                         if (isEditingLocked == false)
                         {
-                            Select(nos, addToExistingSelection: isFirst == false, playBump: true);
+                            Select(nos, addToExistingSelection: isFirst == false, playBump: true, updateMarkers: false);
                         }
                     }
                     else
                     {
                         // this shouldn't happen, but for now we tolerate it until the current is sent
-                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true);
+                        Select(itemOver?.Name, addToExistingSelection: isFirst == false, playBump: true, updateMarkers: false);
                     }
 
+                    UpdateMarkers(didChangeItemOver: true);
 
                     isFirst = false;
                 }
