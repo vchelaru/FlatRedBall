@@ -851,6 +851,7 @@ namespace GlueControl.Editing
 
                 ObjectSelected(ItemsOver.ToList());
             }
+        }
         #endregion
 
         public void UpdateDependencies()
