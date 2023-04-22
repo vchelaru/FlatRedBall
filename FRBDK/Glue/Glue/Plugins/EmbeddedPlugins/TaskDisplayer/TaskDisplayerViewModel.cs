@@ -32,9 +32,37 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
             set => Set(value);
         }
 
+        public bool LogPluginCalls
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public TaskDisplayerViewModel()
         {
             TaskManager.Self.TaskAddedOrRemoved += HandleSyncTaskAddedOrRemoved;
+            PluginManager.PluginMethodCalled += HandlePluginMethodCalled;
+        }
+
+        private void HandlePluginMethodCalled(string plugin, TimeSpan time)
+        {
+            const double MillisecondThreshold = 3;
+            if(LogPluginCalls && time.TotalMilliseconds > MillisecondThreshold)
+            {
+
+                var text = plugin;
+                if (time.Minutes > 0)
+                {
+                    text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds.ToString("000")}";
+                }
+                else
+                {
+                    text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                }
+
+                PluginManager.ReceiveOutput(text);
+
+            }
         }
 
         private void HandleSyncTaskAddedOrRemoved(TaskEvent addedOrRemoved, GlueTaskBase glueTask)

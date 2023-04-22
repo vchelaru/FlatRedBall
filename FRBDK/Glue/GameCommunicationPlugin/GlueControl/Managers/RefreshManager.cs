@@ -739,8 +739,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
             else if (element != null)
             {
-                dto.ScreenSave = element as ScreenSave;
-                dto.EntitySave = element as EntitySave;
+                // Let's try this to go faster...
+                //dto.ScreenSave = element as ScreenSave;
+                //dto.EntitySave = element as EntitySave;
 
                 bool isAbstract = IsAbstract(element);
 

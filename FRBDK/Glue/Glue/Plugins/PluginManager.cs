@@ -1787,7 +1787,7 @@ namespace FlatRedBall.Glue.Plugins
             
         }
 
-
+        public static event Action<string, TimeSpan> PluginMethodCalled;
 
         static void CallMethodOnPlugin(Action<PluginBase> methodToCall, Predicate<PluginBase> predicate, [CallerMemberName] string methodName = null, bool doOnUiThread = true)
         {
@@ -1810,10 +1810,17 @@ namespace FlatRedBall.Glue.Plugins
 
                     if (container.IsEnabled)
                     {
+                        var start = DateTime.Now;
                         PluginCommand(() =>
                             {
                                 methodToCall(plugin);
                             },container, "Failed in " + methodName, doOnUiThread);
+
+                        var end = DateTime.Now;
+
+                        PluginMethodCalled?.Invoke(plugin.FriendlyName + ":" + methodName, end - start);
+
+
                     }
                 }
             }
