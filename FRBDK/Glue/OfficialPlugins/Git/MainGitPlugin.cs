@@ -91,7 +91,7 @@ namespace OfficialPlugins.Git
 
         private IEnumerable<string> GetNecessaryLines()
         {
-            // accoding to this:
+            // according to this:
             // https://stackoverflow.com/questions/8783093/gitignore-syntax-bin-vs-bin-vs-bin-vs-bin#:~:text=Since%20the%20earlier%20ignores%20the%20directory%20as%20a,%28ahem%29%20ignoresit%20if%20you%20ignored%20the%20parent%20directory%21
             // we will not append * at the end of ignores like "bin/"
 
@@ -109,6 +109,8 @@ namespace OfficialPlugins.Git
             yield return "*.Generated.cs";
             yield return "*.Generated.Event.cs";
             yield return "*.generatedpreview.png";
+            
+            yield return "*.ods#";
 
             yield return "TiledObjects.Generated.xml";
 
