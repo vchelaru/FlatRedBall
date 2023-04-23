@@ -427,6 +427,10 @@ namespace GlueControl.Editing
                 }
                 else
                 {
+                    if(!mouse.IsInGameWindow())
+                    {
+                        itemsOver.Clear();
+                    }
                     SelectionLogic.DoInactiveWindowLogic();
                 }
 
