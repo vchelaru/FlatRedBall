@@ -61,7 +61,7 @@ namespace GlueControl.Editing
 
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
-        void Update();
+        void Update(bool didGameBecomeActive);
         bool ShouldSuppress(string memberName);
 
         bool IsMouseOverThis();
@@ -136,7 +136,7 @@ namespace GlueControl.Editing
 
         #region Update
 
-        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
+        public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker, bool didGameBecomeActive)
         {
             Visible = selectionMarker.Visible;
 
@@ -209,7 +209,10 @@ namespace GlueControl.Editing
                     }
                 }
 
-                if (mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive)
+                var shouldHandlePush =
+                    (mouse.ButtonPushed(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && FlatRedBallServices.Game.IsActive) ||
+                    (mouse.ButtonDown(FlatRedBall.Input.Mouse.MouseButtons.LeftButton) && didGameBecomeActive);
+                if (shouldHandlePush)
                 {
                     HandleMousePushed(item);
                 }
@@ -738,7 +741,7 @@ namespace GlueControl.Editing
             };
         }
 
-        public void Update()
+        public void Update(bool didGameBecomeActive)
         {
             LastUpdateMovement = Vector3.Zero;
 
@@ -754,7 +757,7 @@ namespace GlueControl.Editing
 
             if (ownerAsPositionedObject != null)
             {
-                ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
+                ResizeHandles.EveryFrameUpdate(ownerAsPositionedObject, this, didGameBecomeActive);
             }
             PolygonPointHandles.EveryFrameUpdate(ownerAsPositionedObject, this);
 

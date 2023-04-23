@@ -152,7 +152,7 @@ namespace GlueControl.Editing
 
         #endregion
 
-        public void Update()
+        public void Update(bool didGameBecomeActive)
         {
             ////////////////early out//////////////////////////////
             if (map == null)

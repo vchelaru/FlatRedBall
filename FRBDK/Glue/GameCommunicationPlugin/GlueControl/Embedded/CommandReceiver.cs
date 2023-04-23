@@ -408,6 +408,14 @@ namespace GlueControl
                 {
                     Editing.EditingManager.Self.SetCurrentGlueElement(selectObjectDto.GlueElement);
                 }
+                else if (Editing.EditingManager.Self.CurrentGlueElement == null)
+                {
+                    var element = ObjectFinder.Self.GetElement(selectObjectDto.ElementNameGlue);
+                    if (element != null)
+                    {
+                        Editing.EditingManager.Self.SetCurrentGlueElement(element);
+                    }
+                }
             }
             catch (ArgumentException e)
             {

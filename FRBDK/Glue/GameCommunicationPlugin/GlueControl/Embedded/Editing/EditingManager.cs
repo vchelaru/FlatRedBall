@@ -240,7 +240,7 @@ namespace GlueControl.Editing
             HighlightMarker.ExtraPaddingInPixels = 4;
             // do we want to show multiple highlights? Probably?
             HighlightMarker.Owner = itemsOver.FirstOrDefault();
-            HighlightMarker.Update();
+            HighlightMarker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
 
             UpdateSelectedMarkers();
 
