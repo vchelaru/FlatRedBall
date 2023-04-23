@@ -77,7 +77,9 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(isTileShapeCollection)
             {
                 // only against collidables:
-                collidables = container.AllNamedObjects
+                // See update below on why we don't use AllNamedObjects
+                //collidables = container.AllNamedObjects
+                collidables = container.NamedObjects
                     .Where(item =>
                     {
                         var entity = CollisionRelationshipViewModelController.GetEntitySaveReferencedBy(item);
@@ -87,7 +89,17 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
             else
             {
-                collidables = container.AllNamedObjects
+                // Update April 23, 23
+                // We used to use AllNamedObjects
+                // but now that instances are directly
+                // added to Glue (such as coins in a Mario
+                // game), lists can get HUGE and this view becomes
+                // pointless and slow. Typically relationships are created
+                // between lists and other lists. Soemtimes individual objects
+                // can be collided too, but rarely are these inside of lists. Therefore
+                // let's speed things up and only use the top-level objects and not All:
+                //collidables = container.AllNamedObjects
+                collidables = container.NamedObjects
                     .Where(item =>
                     {
                         return CollisionRelationshipViewModelController.GetIfCanBeReferencedByRelationship(item);
@@ -104,6 +116,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
 
+            // Why do we use "all" here? CollisionRelationships cannot be
+            // added to lists, so they are always at the top level. Using all 
+            // means we look through all of the items inside of lists which can be 
+            // slower for large entities.
+            //var relationships = container.AllNamedObjects
             var relationships = container.AllNamedObjects
                 .Where(item =>
                 {
