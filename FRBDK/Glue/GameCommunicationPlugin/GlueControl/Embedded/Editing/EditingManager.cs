@@ -261,7 +261,8 @@ namespace GlueControl.Editing
                 var marker = SelectedMarkers[i];
                 var item = itemsSelected[i];
 
-                marker.Update();
+                marker.Update(!wasGameActive && FlatRedBallServices.Game.IsActive);
+
                 if (item == itemGrabbed)
                 {
                     moveVector = marker.LastUpdateMovement;
