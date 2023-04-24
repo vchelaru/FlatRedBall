@@ -165,7 +165,7 @@ namespace GumPlugin.CodeGeneration
                         {
                             foreach(var state in category.States)
                             {
-                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.Name}.{state.MemberNameInCode()};");
+                                elseIf.Line($"if(state.Name == \"{state.Name}\") this.mCurrent{category.Name}State = {category.EnumNameInCode()}.{state.MemberNameInCode()};");
                             }
                         }
                     }
@@ -192,7 +192,7 @@ namespace GumPlugin.CodeGeneration
             // loop through categories:
             foreach (var category in stateContainer.Categories)
             {
-                string categoryName = enumNamePrefix + category.Name;
+                string categoryName = enumNamePrefix + category.EnumNameInCode();
                 var states = category.States;
                 GenerateEnumsForCategory(currentBlock, categoryName, states);
 
@@ -232,7 +232,7 @@ namespace GumPlugin.CodeGeneration
             foreach (var category in elementSave.Categories)
             {
                 propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
+                propertyType = category.EnumNameInCode();
 
                 // Make these nullable because categorized states may not be set at all
                 currentBlock.Line($"{propertyType}? m{propertyName};");
@@ -339,7 +339,7 @@ namespace GumPlugin.CodeGeneration
             foreach (var category in elementSave.Categories)
             {
                 propertyName = "Current" + category.Name + "State";
-                propertyType = category.Name;
+                propertyType = category.EnumNameInCode();
                 states = category.States;
 
                 GeneratePropertyForCurrentState(currentBlock, propertyType, propertyName, states, elementSave, isNullable:true);
@@ -508,16 +508,16 @@ namespace GumPlugin.CodeGeneration
 
             foreach (var category in elementSave.Categories)
             {
-                categoryName = category.Name;
+                var categoryType = category.EnumNameInCode();
                 states = category.States;
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:false);
-                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryName, states, addValues:true);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:false);
+                GenerateGetCurrentValuesOnStateForCategory(currentBlock, elementSave, categoryType, states, addValues:true);
             }
 
             currentBlock.Line("#endregion");
         }
 
-        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryName, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
+        private void GenerateGetCurrentValuesOnStateForCategory(ICodeBlock currentBlock, ElementSave container, string categoryType, List<Gum.DataTypes.Variables.StateSave> states, bool addValues = false)
         {
             string methodName = "GetCurrentValuesOnState";
 
@@ -526,7 +526,7 @@ namespace GumPlugin.CodeGeneration
                 methodName = "AddToCurrentValuesWithState";
             }
 
-            currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryName + " state");
+            currentBlock = currentBlock.Function("private Gum.DataTypes.Variables.StateSave", methodName, categoryType + " state");
 
             currentBlock.Line("Gum.DataTypes.Variables.StateSave newState = new Gum.DataTypes.Variables.StateSave();");
 
@@ -534,7 +534,7 @@ namespace GumPlugin.CodeGeneration
             {
                 foreach (var state in states)
                 {
-                    var caseBlock = switchBlock.Case(categoryName + "." + state.MemberNameInCode());
+                    var caseBlock = switchBlock.Case(categoryType + "." + state.MemberNameInCode());
                     {
                         var instanceNames = container.Instances.Select(item => item.Name).ToList();
                         var orderedVariables = state.Variables
