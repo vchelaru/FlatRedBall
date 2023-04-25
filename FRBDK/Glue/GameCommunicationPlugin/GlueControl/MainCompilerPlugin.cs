@@ -689,6 +689,7 @@ namespace GameCommunicationPlugin.GlueControl
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowGrid):
+                case nameof(ViewModels.GlueViewSettingsViewModel.GridAlpha):
                 case nameof(ViewModels.GlueViewSettingsViewModel.GridSize):
                 case nameof(ViewModels.GlueViewSettingsViewModel.SetBackgroundColor):
                 case nameof(ViewModels.GlueViewSettingsViewModel.BackgroundRed):
@@ -712,6 +713,7 @@ namespace GameCommunicationPlugin.GlueControl
             var dto = new Dtos.GlueViewSettingsDto
             {
                 ShowGrid = GlueViewSettingsViewModel.ShowGrid,
+                GridAlpha = GlueViewSettingsViewModel.GridAlpha,
                 GridSize = GlueViewSettingsViewModel.GridSize,
                 ShowScreenBoundsWhenViewingEntities = GlueViewSettingsViewModel.ShowScreenBoundsWhenViewingEntities,
                 SetBackgroundColor = GlueViewSettingsViewModel.SetBackgroundColor,

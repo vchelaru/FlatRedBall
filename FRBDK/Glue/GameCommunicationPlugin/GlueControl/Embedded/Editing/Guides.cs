@@ -19,15 +19,17 @@ namespace GlueControl.Editing
         Line HorizontalLine;
         Line VerticalLine;
 
+
         public float GridSpacing { get; set; } = 32;
+
         List<Line> verticalLines = new List<Line>();
         List<Line> horizontalLines = new List<Line>();
 
         Color centerLineColor = new Color(new Microsoft.Xna.Framework.Vector4
             (.5f, .5f, .5f, .5f));
 
-        Color smallGridLineColor = new Color(new Microsoft.Xna.Framework.Vector4
-            (.3f, .3f, .3f, .3f));
+        public Color SmallGridLineColor = new Color(new Microsoft.Xna.Framework.Vector4
+            (.15f, .15f, .15f, .15f));
         bool visible;
         public bool Visible
         {
@@ -75,6 +77,22 @@ namespace GlueControl.Editing
 #endif
         }
 
+        public void RefreshColors()
+        {
+            for (int i = 0; i < verticalLines.Count; i++)
+            {
+                var line = verticalLines[i];
+                line.Color = SmallGridLineColor;
+            }
+
+            for (int i = 0; i < horizontalLines.Count; i++)
+            {
+                var line = horizontalLines[i];
+                line.Color = SmallGridLineColor;
+            }
+        }
+
+
         public void UpdateGridLines()
         {
             ////////Early Out////////////
@@ -111,7 +129,7 @@ namespace GlueControl.Editing
                 var line = new Line();
                 ScreenManager.PersistentLines.Add(line);
                 line.Visible = true;
-                line.Color = smallGridLineColor;
+                line.Color = SmallGridLineColor;
                 verticalLines.Add(line);
             }
             while(verticalLines.Count > numberOfVerticalLines)
@@ -149,7 +167,7 @@ namespace GlueControl.Editing
                 var line = new Line();
                 ScreenManager.PersistentLines.Add(line);
                 line.Visible = true;
-                line.Color = smallGridLineColor;
+                line.Color = SmallGridLineColor;
                 horizontalLines.Add(line);
             }
             while(horizontalLines.Count > numberOfHorizontalLines)

@@ -110,6 +110,24 @@ namespace GlueControl.Editing
             }
         }
 
+        decimal gridAlpha;
+        public decimal GridAlpha
+        {
+            get => gridAlpha;
+            set
+            {
+                gridAlpha = value;
+
+                Guides.SmallGridLineColor.R = premultValue;
+                Guides.SmallGridLineColor.G = premultValue;
+                Guides.SmallGridLineColor.B = premultValue;
+                Guides.SmallGridLineColor.A = premultValue;
+
+                Guides.RefreshColors();
+
+            }
+        }
+
         public float GuidesGridSpacing
         {
             get => Guides.GridSpacing;

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows;
 
@@ -65,6 +66,12 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
+        public decimal GridAlpha
+        {
+            get => Get<decimal>();
+            set => Set(value);
+        }
+
         public decimal GridSize
         {
             get => Get<decimal>();
@@ -112,6 +119,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
 
             this.ShowGrid = model.ShowGrid;
+            this.GridAlpha = model.GridAlpha;
             this.GridSize = model.GridSize;
             this.SetBackgroundColor = model.SetBackgroundColor;
             this.BackgroundRed = model.BackgroundRed;
@@ -132,6 +140,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
 
             compilerSettings.ShowGrid = this.ShowGrid;
+            compilerSettings.GridAlpha = this.GridAlpha;
             compilerSettings.GridSize = this.GridSize;
 
             compilerSettings.SetBackgroundColor = this.SetBackgroundColor;

@@ -417,6 +417,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
 
         public bool ShowGrid { get; set; }
+        public decimal GridAlpha { get; set; }
         public decimal GridSize { get; set; }
 
         public bool SetBackgroundColor { get; set; }

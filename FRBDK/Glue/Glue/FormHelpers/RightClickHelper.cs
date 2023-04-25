@@ -554,6 +554,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (targetNode.IsScreenNode())
             {
+                var screen = targetNode.Tag as ScreenSave;
                 if (menuShowingAction == MenuShowingAction.RightButtonDrag)
                 {
                     if (draggedNode.IsEntityNode())
@@ -565,7 +566,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 else
                 {
                     Add("Set as StartUp Screen", SetStartupScreen);
-                    AddEvent(GlueState.Self.CurrentScreenSave.IsRequiredAtStartup
+                    AddEvent(screen.IsRequiredAtStartup
                         ? "Remove StartUp Requirement"
                         : "Make Required at StartUp", ToggleRequiredAtStartupClick);
 

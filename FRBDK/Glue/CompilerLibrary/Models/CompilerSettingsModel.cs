@@ -25,6 +25,7 @@ namespace CompilerLibrary.Models
 
         public bool ShowGrid { get; set; } = true;
         public decimal GridSize { get; set; } = 32;
+        public decimal GridAlpha { get; set; } = .15m;
 
         public bool EnableSnapping { get; set; }
         public decimal SnapSize { get; set; }

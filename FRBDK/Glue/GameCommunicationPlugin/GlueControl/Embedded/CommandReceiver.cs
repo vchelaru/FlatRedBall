@@ -1251,6 +1251,7 @@ namespace GlueControl
         private static void HandleDto(GlueViewSettingsDto dto)
         {
             EditingManager.Self.ShowGrid = dto.ShowGrid;
+            EditingManager.Self.GridAlpha = dto.GridAlpha;
             EditingManager.Self.GuidesGridSpacing = (float)dto.GridSize;
             Screens.EntityViewingScreen.ShowScreenBounds = dto.ShowScreenBoundsWhenViewingEntities;
 
