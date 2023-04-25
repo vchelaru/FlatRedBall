@@ -118,6 +118,8 @@ namespace GlueControl.Editing
             {
                 gridAlpha = value;
 
+                var premultValue = (byte)(value * 255);
+
                 Guides.SmallGridLineColor.R = premultValue;
                 Guides.SmallGridLineColor.G = premultValue;
                 Guides.SmallGridLineColor.B = premultValue;
