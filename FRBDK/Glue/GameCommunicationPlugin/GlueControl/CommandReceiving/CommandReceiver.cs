@@ -566,6 +566,10 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
             var didChange = false;
 
+            if(mapLayer == null)
+            {
+                GlueCommands.Self.PrintOutput("Tried to paint files, but could not find map layer");
+            }
             if (mapLayer != null)
             {
 

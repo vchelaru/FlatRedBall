@@ -595,7 +595,7 @@ namespace GlueControl.Editing
                         }
                     }
                 }
-                else
+                else if (!clickedOnSelectedItem)
                 {
                     ObjectSelected(new List<INameable>());
                 }
