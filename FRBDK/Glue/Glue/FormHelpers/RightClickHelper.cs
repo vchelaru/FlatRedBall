@@ -1174,7 +1174,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 ccw.ShowDialog(MainGlueWindow.Self);
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             };
 
 
@@ -1235,7 +1235,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         }
                     }
                     StringFunctions.RemoveDuplicates(nos.VariablesToReset);
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
                 }
