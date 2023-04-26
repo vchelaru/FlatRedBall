@@ -169,6 +169,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task SaveElementAsync(GlueElement element)
         {
+            if(element == null)
+            {
+                throw new ArgumentNullException(nameof(element));
+            }
+
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SeparateJsonFilesForElements)
             {
                 await TaskManager.Self.AddAsync(async () =>
@@ -1581,13 +1586,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
             bool updateUi = true, List<string> additionalFilesToRemove = null)
         {
+            var element = namedObjectToRemove.GetContainer();
+
+            ///////////////////////////////////Early Out///////////////////////////////////////
+            // By deleting very quickly it is possible to re-delete the same object 2x. The first
+            // time it is deleted, it is removed from its element. The 2nd time, it is no longer
+            // a part of th eelement, so element is null. In that case, just return so we don't
+            // have null reference problems below
+            if (element == null)
+            {
+                return;
+            }
+            //////////////////////////////////End Early Out/////////////////////////////////////
+
+
             StringBuilder removalInformation = new StringBuilder();
 
             var wasSelected = GlueState.Self.CurrentNamedObjectSave == namedObjectToRemove;
 
             int indexInChild = -1;
             NamedObjectSave containerOfRemoved = null;
-            var element = namedObjectToRemove.GetContainer();
             if (wasSelected)
             {
                 if (element.NamedObjects.Contains(namedObjectToRemove))
@@ -1604,7 +1622,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
-
+            
             // The additionalFilesToRemove is included for consistency with other methods.  It may be used later
 
             // There are the following things that need to happen:

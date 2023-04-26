@@ -487,7 +487,7 @@ namespace FlatRedBall.Glue.Parsing
             if(EntitySave.PooledByFactory)
             {
                 codeBlock.Line($"static PoolList<{entityClassName}> mPool = new PoolList<{entityClassName}>();");
-                codeBlock.Line("public static int PoolCount => mPool.Count;");
+                codeBlock.Line("public static int PoolCount = mPool.Count;");
             }
 
             // January 9, 2022
