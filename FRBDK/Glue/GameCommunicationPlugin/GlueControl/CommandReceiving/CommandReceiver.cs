@@ -96,7 +96,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
             }
 
             string outputText = dto is FacadeCommandBase facadeCommandBase
-                ? $"Processing command of type {dtoTypeName}.{facadeCommandBase.Method}"
+                ? $"Processing command of type {dtoTypeName}.{facadeCommandBase.Method ?? facadeCommandBase.GetPropertyName ?? facadeCommandBase.SetPropertyName}"
                 : $"Processing command of type {dtoTypeName}";
 
             await TaskManager.Self.AddAsync(async () =>

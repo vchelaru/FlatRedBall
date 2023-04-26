@@ -158,7 +158,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         public static bool SuppressFocus = false;
 
-        public static async Task SelectByTreeNode(NodeViewModel treeNode, bool addToSelection)
+        public static async Task SelectByTreeNode(NodeViewModel treeNode, bool addToSelection, bool selectAndScroll = true)
         {
             // record the value here since we delay on this method
             var suppressFocusCopy = SuppressFocus;
@@ -198,19 +198,26 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                         treeNode.IsSelected = true;
                     }
 
-                    treeNode.ExpandParentsRecursively();
+                    if(selectAndScroll)
+                    {
+                        treeNode.ExpandParentsRecursively();
+                    }
                 }
-                // If we don't do this, sometimes it doesn't scroll into view...
-                await System.Threading.Tasks.Task.Delay(120);
 
-                mainView.MainTreeView.UpdateLayout();
-
-                mainView.MainTreeView.ScrollIntoView(treeNode);
-
-                // Do this after the delay
-                if(treeNode?.IsSelected == true && !suppressFocusCopy)
+                if (selectAndScroll)
                 {
-                    treeNode.Focus(mainView);
+                    // If we don't do this, sometimes it doesn't scroll into view...
+                    await System.Threading.Tasks.Task.Delay(120);
+
+                    mainView.MainTreeView.UpdateLayout();
+
+                    mainView.MainTreeView.ScrollIntoView(treeNode);
+
+                    // Do this after the delay
+                    if(treeNode?.IsSelected == true && !suppressFocusCopy)
+                    {
+                        treeNode.Focus(mainView);
+                    }
                 }
             }
         }

@@ -1768,11 +1768,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(targetElement);
             }
 
-            if (performSaveAndGenerateCode)
-            {
-                var throwaway = GlueCommands.Self.GenerateCodeCommands
-                    .GenerateElementAndReferencedObjectCode(targetElement);
-            }
 
             var newNosList = toReturn.Select(item => item.Data).Where(item => item != null).ToList();
 
@@ -1814,6 +1809,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 }
+
+                // generate code after all other plugins have responded so that the game doesn't have to wait for this task to have started before it tries
+                // to send the copy command back...
+                var throwaway = GlueCommands.Self.GenerateCodeCommands
+                    .GenerateElementAndReferencedObjectCode(targetElement);
             }
             return toReturn;
         }

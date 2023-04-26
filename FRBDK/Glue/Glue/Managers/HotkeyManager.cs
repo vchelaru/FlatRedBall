@@ -173,7 +173,7 @@ namespace FlatRedBall.Glue.Managers
                 // we want them to bubble up to native text box handling (CTRL+C). Therefore, let's create a list of keys that 
                 // are not handled by the plugin manager
                 var shouldHandleByPlugin = true;
-                if(key == Key.C || key == Key.X || key == Key.V)
+                if(key == Key.C || key == Key.X || key == Key.V || key == Key.A)
                 {
                     shouldHandleByPlugin = !isTextBoxFocused;
                 }

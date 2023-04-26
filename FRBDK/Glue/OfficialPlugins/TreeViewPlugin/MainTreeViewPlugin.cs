@@ -162,16 +162,16 @@ namespace OfficialPlugins.TreeViewPlugin
                 for (int i = 0; i < selectedTreeNodes.Count; i++)
                 {
                     ITreeNode selectedTreeNode = selectedTreeNodes[i];
-                    var tag = selectedTreeNode.Tag;
                     var addToSelection = i > 0;
+                    var isLast = i == selectedTreeNodes.Count - 1;
 
-                    if (tag != null)
+                    if(selectedTreeNode is NodeViewModel vm)
                     {
-                        SelectionLogic.SelectByTag(tag, addToSelection);
+                        _ = SelectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
                     }
-                    else if(selectedTreeNode is NodeViewModel vm)
+                    else if (selectedTreeNode.Tag != null)
                     {
-                        await SelectionLogic.SelectByTreeNode(vm, addToSelection);
+                        SelectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
                     }
                     else if(selectedTreeNode != null)
                     {

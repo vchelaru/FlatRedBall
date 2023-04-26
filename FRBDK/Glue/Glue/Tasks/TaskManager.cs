@@ -375,7 +375,8 @@ namespace FlatRedBall.Glue.Managers
         }
 
         /// <summary>
-        /// Adds a function which returns a Task. The returned task will be completed when the internal operation is executed and completes. 
+        /// Adds a function which returns a Task. If the callstack is already part of a task, 
+        /// then the action is executed immediately.The returned task will be completed when the internal operation is executed and completes.  
         /// </summary>
         /// <param name="func">The function to add to the internal queue.</param>
         /// <param name="displayInfo">The information to display to the user.</param>
@@ -420,7 +421,9 @@ namespace FlatRedBall.Glue.Managers
 
         public async Task<GlueAsyncTask> AddOrRunIfTasked(Func<Task> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
-            if (IsInTask())
+            if (IsInTask() &&
+                // If the user is moving the tasks to the end, then we will push it at the end always
+                executionPreference != TaskExecutionPreference.AddOrMoveToEnd)
             {
                 // we're in a task:
                 var task = new GlueAsyncTask()
@@ -443,7 +446,9 @@ namespace FlatRedBall.Glue.Managers
 
         public GlueTask<T> AddOrRunIfTasked<T>(Func<T> func, string displayInfo, TaskExecutionPreference executionPreference = TaskExecutionPreference.Fifo, bool doOnUiThread = false)
         {
-            if (IsInTask())
+            if (IsInTask() &&
+                // If the user is moving the tasks to the end, then we will push it at the end always
+                executionPreference != TaskExecutionPreference.AddOrMoveToEnd)
             {
                 // we're in a task:
                 var task = new GlueTask<T>()
