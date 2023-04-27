@@ -115,21 +115,33 @@ namespace FlatRedBall.Forms.Controls.Popups
                 // the PNG for the first time:
                 await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
                 {
-                    toast = new FlatRedBall.Forms.Controls.Popups.Toast();
+                    try
+                    {
+                        toast = new FlatRedBall.Forms.Controls.Popups.Toast();
+                    }
+                    // If the user doesn't have any toast implemented in Gum, this will error. 
+                    // This causes problems in edit mode, so let's just consume it:
+                    catch
+                    {
+
+                    }
                 });
 
-                toast.Text = message.Message;
-                liveToasts.Add(toast);
-                toast.Show(message.FrbLayer ?? DefaultToastLayer);
-                await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
-                toast.Close();
-                liveToasts.Remove(toast);
-                await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
+                if(toast != null)
                 {
-                    toast.Visual.RemoveFromManagers();
-                });
-                // so there's a small gap between toasts
-                await Task.Delay(msDelayBetweenToasts);
+                    toast.Text = message.Message;
+                    liveToasts.Add(toast);
+                    toast.Show(message.FrbLayer ?? DefaultToastLayer);
+                    await Task.Delay( TimeSpan.FromSeconds(message.DurationInSeconds) );
+                    toast.Close();
+                    liveToasts.Remove(toast);
+                    await Instructions.InstructionManager.DoOnMainThreadAsync(() =>
+                    {
+                        toast.Visual.RemoveFromManagers();
+                    });
+                    // so there's a small gap between toasts
+                    await Task.Delay(msDelayBetweenToasts);
+                }
             }
         }
     }
