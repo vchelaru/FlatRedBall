@@ -422,9 +422,17 @@ namespace FlatRedBall.Glue.Elements
 
         bool IsContainedInListOrAsChild(List<NamedObjectSave> namedObjects, NamedObjectSave objectToFind)
         {
-            foreach (NamedObjectSave nos in namedObjects.ToArray())
+            // This was done before to prevent access of objects during tasks.
+            // This makes things slower and the task system is way better than before
+            // so let's remove ToArray and go faster.
+            //foreach (NamedObjectSave nos in namedObjects.ToArray())
+            foreach (NamedObjectSave nos in namedObjects)
             {
-                if (nos == objectToFind || IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
+                if (nos == objectToFind)
+                {
+                    return true;
+                }
+                else if(nos.IsList && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
                 {
                     return true;
                 }

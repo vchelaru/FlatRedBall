@@ -259,6 +259,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static AssetTypeInfo GetAssetTypeInfo(this NamedObjectSave instance)
         {
+            if(instance.SourceType == SourceType.Entity)
+            {
+                return null;
+            }
+
             if(instance == null)
             {
                 throw new ArgumentNullException(nameof(instance));

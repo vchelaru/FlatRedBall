@@ -71,8 +71,10 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns>The found property value, or the default for the type if not found.</returns>
         public static T GetValue<T>(this List<PropertySave> propertySaveList, string nameToSearchFor)
         {
-            var copy = propertySaveList.ToArray();
-            foreach (PropertySave propertySave in copy)
+            // ToArray is slow, and now that we have better tasks we may not need it, so let's remove that and get faster:
+            //var copy = propertySaveList.ToArray();
+            //foreach (PropertySave propertySave in copy)
+            foreach (PropertySave propertySave in propertySaveList)
             {
                 if (propertySave.Name == nameToSearchFor)
                 {

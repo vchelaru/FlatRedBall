@@ -311,7 +311,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// </summary>
         /// <param name="namedObject"></param>
         /// <param name="codeBlock"></param>
-        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void GenerateVariableAssignment(NamedObjectSave namedObject, ICodeBlock codeBlock, GlueElement container)
         {
 
             List<CustomVariableInNamedObject> variables = namedObject.InstructionSaves;
@@ -342,23 +342,23 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             foreach (var instructionSave in variables)
             {
-                GlueElement element = null;
+                GlueElement nosTypeElement = null;
 
                 if (namedObject.SourceType == SourceType.Entity)
                 {
-                    element = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
+                    nosTypeElement = ObjectFinder.Self.GetElement(namedObject.SourceClassType);
                 }
 
                 var shouldGenerateVariableAssignment =
                     ExposedVariableManager.IsExposedVariable(instructionSave.Member, namedObject) ||
-                    (element != null && element.GetCustomVariableRecursively(instructionSave.Member) != null) ||
+                    (nosTypeElement != null && nosTypeElement.GetCustomVariableRecursively(instructionSave.Member) != null) ||
                     // Could be something set by container:
-                    (element != null && element.GetNamedObjectRecursively(instructionSave.Member) != null) ||
+                    (nosTypeElement != null && nosTypeElement.GetNamedObjectRecursively(instructionSave.Member) != null) ||
                     variableDefinitions?.Any(item => item.Name == instructionSave.Member) == true;
 
                 if (shouldGenerateVariableAssignment)
                 {
-                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave);
+                    CustomVariableCodeGenerator.AppendAssignmentForCustomVariableInInstance(namedObject, codeBlock, instructionSave, container);
                 }
             }
         }
@@ -1297,26 +1297,22 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetQualifiedTypeName(NamedObjectSave namedObjectSave)
         {
+            AssetTypeInfo ati = null;
             if (namedObjectSave.SourceType == SaveClasses.SourceType.Entity &&
                 !string.IsNullOrEmpty(namedObjectSave.SourceClassType))
             {
 
                 return ProjectManager.ProjectNamespace + '.' + namedObjectSave.SourceClassType.Replace('\\', '.');
             }
-            else if (namedObjectSave.GetAssetTypeInfo() != null)
+            else if(namedObjectSave.IsList)
             {
-                var ati = namedObjectSave.GetAssetTypeInfo();
-
-                if(ati == AvailableAssetTypes.CommonAtis.PositionedObjectList)
-                {
-                    return GetQualifiedClassType(namedObjectSave);
-                }
-                else
-                {
-                    return
-                        ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
-                        ati.QualifiedRuntimeTypeName.QualifiedType;             }
-                }
+                return GetQualifiedClassType(namedObjectSave);
+            }
+            else if ((ati = namedObjectSave.GetAssetTypeInfo()) != null)
+            {
+                return
+                    ati.QualifiedRuntimeTypeName.PlatformFunc?.Invoke(namedObjectSave) ?? 
+                    ati.QualifiedRuntimeTypeName.QualifiedType;             }
             else
             {
                 return GetQualifiedClassType(namedObjectSave);
@@ -1603,7 +1599,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             AddEndIfIfNecessary(codeBlock, namedObjectSave);
         }
 
-        public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, IElement element)
+        public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, GlueElement element)
         {
             try
             {
@@ -1667,7 +1663,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             WriteAttachTo(nos, codeBlock, ReusableEntireFileRfses, rfsReferenced, element);
                         }
 
-                        GetPostInitializeForNamedObjectList(nos, codeBlock);
+                        GetPostInitializeForNamedObjectList(nos, codeBlock, element);
 
                         GetPostInitializeForNamedObjectList(nos, nos.ContainedObjects, codeBlock, element);
                         if (wrappInIf)
@@ -1780,7 +1776,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        static void GetPostInitializeForNamedObjectList(NamedObjectSave namedObject, ICodeBlock codeBlock)
+        static void GetPostInitializeForNamedObjectList(NamedObjectSave namedObject, ICodeBlock codeBlock, GlueElement container)
         {
             if (!namedObject.IsDisabled && namedObject.Instantiate)
             {
@@ -1812,7 +1808,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 AddIfConditionalSymbolIfNecesssary(codeBlock, namedObject);
 
-                GenerateVariableAssignment(namedObject, codeBlock);
+                GenerateVariableAssignment(namedObject, codeBlock, container);
 
                 if (!namedObject.SetByDerived && !namedObject.SetByContainer)
                 {
@@ -2253,7 +2249,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             // after the caller has added itself to managers
 
 
-            GenerateVariableAssignment(namedObject, codeBlock);
+            GenerateVariableAssignment(namedObject, codeBlock, element as GlueElement);
 
 
             #endregion

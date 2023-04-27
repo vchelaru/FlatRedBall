@@ -2091,7 +2091,7 @@ namespace FlatRedBallAddOns.Entities
             NamedObjectSaveCodeGenerator.GetPostInitializeForNamedObjectList(null, 
                 // There may be a race condition so handle it by to-listing it
                 saveObject.NamedObjects.ToList(), 
-                currentBlock, saveObject);
+                currentBlock, saveObject as GlueElement);
 
             // July 24, 2013
             // Victor Chelaru

@@ -1321,7 +1321,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         public static ICodeBlock AppendAssignmentForCustomVariableInInstance(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            InstructionSave instructionSave)
+            InstructionSave instructionSave, GlueElement nosOwner)
         {
             // We don't support assigning lists yet, and lists are generic, so we're going to test for generic assignments
             // Eventually I may need to make this a little more accurate.
@@ -1342,7 +1342,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 usesStandardCodeGen = false;
             }
 
-            var nosOwner = ObjectFinder.Self.GetElementContaining(namedObject);
             if(foundVariableDefinition?.CustomGenerationFunc != null)
             {
                 if(nosOwner != null)
