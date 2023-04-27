@@ -115,6 +115,7 @@
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
 		<None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<None Remove="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
 		<None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
@@ -236,6 +237,7 @@
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+		<Resource Include="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
 		<Resource Include="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />

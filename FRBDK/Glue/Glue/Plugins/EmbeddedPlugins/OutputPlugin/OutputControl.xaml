@@ -13,7 +13,10 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button Click="Button_Click">
-                <Image IsHitTestVisible="False" Source="/Content/Icons/Delete.png" Width="25" ></Image>
+                <Button.ToolTip>
+                    <TextBlock>Clear Output</TextBlock>
+                </Button.ToolTip>
+                <Image IsHitTestVisible="False" Source="/Plugins/EmbeddedPlugins/OutputPlugin/DeleteOutput.png" Width="25" ></Image>
             </Button>
         </StackPanel>
         <RichTextBox x:Name="TextBox" ScrollViewer.VerticalScrollBarVisibility="Auto" Grid.Row="1">
