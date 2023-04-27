@@ -39,7 +39,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
             foreach(var item in recentFiles.Where(item => item.IsFavorite))
             {
                 var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
-                recentFilesMenuItem.DropDownItems.Add(name, null, async (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+            }
+
+            var nonFavorites = recentFiles.Where(item => !item.IsFavorite).ToArray();
+
+            var hasNonFavorites = nonFavorites.Length > 0;
+
+            if(hasNonFavorites)
+            {
+                recentFilesMenuItem.DropDownItems.Add("-");
+
+                foreach(var item in nonFavorites.Take(5))
+                {
+                    var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
+
+                    recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                }
+
+
             }
 
             recentFilesMenuItem.DropDownItems.Add("More...", null, HandleLoadRecentClicked);
