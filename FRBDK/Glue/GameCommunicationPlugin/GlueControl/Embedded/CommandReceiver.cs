@@ -753,7 +753,7 @@ namespace GlueControl
             ApplyNewNamedObjects(dto);
 
             var createdObject =
-                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedItem: null);
+                GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedParent: null);
             valueToReturn.WasObjectCreated = createdObject != null;
 
             // internally this decides what to add to, so we don't have to sort the DTOs

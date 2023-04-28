@@ -141,7 +141,10 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 // objects created in CustomInitialize cannot be modified by level editor.
                 codeBlock.Line("FlatRedBall.Screens.ScreenManager.BeforeScreenCustomInitialize += (newScreen) => ");
                 var innerBlock = codeBlock.Block();
-                innerBlock.Line("glueControlManager.ReRunAllGlueToGameCommands();");
+
+                innerBlock.Line("// for info on why we have this if-check, see this issue: https://github.com/vchelaru/FlatRedBall/issues/1046");
+                innerBlock.If("newScreen.GetType().Name != \"EntityViewingScreen\"")
+                    .Line("glueControlManager.ReRunAllGlueToGameCommands();");
                 var isFirst = true;
                 foreach (var entity in GlueState.Self.CurrentGlueProject.Entities)
                 {
