@@ -175,6 +175,13 @@ namespace GlueControl.Editing
                     var x = snappedLeft + offsetFromMinX;
                     var y = snappedBottom + offsetFromMinY;
 
+                    var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
+                    if (newINameable is PositionedObject newPositionedObject && newPositionedObject.Parent != null)
+                    {
+                        x = x - newPositionedObject.Parent.X;
+                        y = y - newPositionedObject.Parent.Y;
+                    }
+
                     // place this where the cursor is - assuming the cursor is in the window
                     variableAssignments.Add(new NosVariableAssignment
                     {
@@ -189,11 +196,18 @@ namespace GlueControl.Editing
                         Value = y
                     });
 
-                    var newINameable = EditingManager.Self.GetObjectByName(newNos.InstanceName);
                     if (newINameable is IStaticPositionable positionable)
                     {
-                        positionable.X = x;
-                        positionable.Y = y;
+                        if (positionable is PositionedObject positionedObject && positionedObject.Parent != null)
+                        {
+                            positionedObject.RelativeX = x;
+                            positionedObject.RelativeY = y;
+                        }
+                        else
+                        {
+                            positionable.X = x;
+                            positionable.Y = y;
+                        }
                     }
 
                     var addToSelection = i != 0;
