@@ -82,7 +82,7 @@ namespace GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedItem = null)
+        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedParent = null)
         {
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
@@ -102,11 +102,11 @@ namespace GlueControl
 
             if (addedToEntity)
             {
-                if (forcedItem != null)
+                if (forcedParent != null)
                 {
-                    if (CommandReceiver.DoTypesMatch(forcedItem, elementGameType))
+                    if (CommandReceiver.DoTypesMatch(forcedParent, elementGameType))
                     {
-                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedItem);
+                        newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, forcedParent);
                     }
                 }
                 else
@@ -122,7 +122,7 @@ namespace GlueControl
                     }
                 }
             }
-            else if (forcedItem == null &&
+            else if (forcedParent == null &&
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
                 // it's added to the base screen, so just add it to null
