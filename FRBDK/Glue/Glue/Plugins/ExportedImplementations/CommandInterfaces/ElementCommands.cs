@@ -638,8 +638,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 });
                 //var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
                 // Bases need to be generated because they may now contain the Type 
-                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(ObjectFinder.Self.GetRootBaseElement( newElement ));
-                GluxCommands.Self.SaveGlux();
+                _ = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(ObjectFinder.Self.GetRootBaseElement( newElement ));
+
+                if (newElement.CreatedByOtherEntities && viewModel.IncludeListsInScreens)
+                {
+                    var allScreens = GlueState.Self.CurrentGlueProject.Screens;
+
+                    foreach (var screen in allScreens)
+                    {
+                        var needsList = GetIfScreenNeedsList(screen);
+
+                        if(needsList)
+                        {
+                            _ = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
+                        }
+                    }
+                }
+
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
 
