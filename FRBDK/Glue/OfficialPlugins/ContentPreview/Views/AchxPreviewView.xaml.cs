@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.IO;
+using OfficialPlugins.ContentPreview.Managers.AnimationChains;
 using OfficialPlugins.ContentPreview.ViewModels;
 using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
 using OfficialPlugins.SpritePlugin.Managers;
@@ -7,6 +8,7 @@ using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -73,6 +75,27 @@ namespace OfficialPlugins.ContentPreview.Views
             InitializeComponent();
 
             this.Loaded += HandleLoaded;
+
+            this.DataContextChanged += HandleDataContextChanged;
+            //MemberCategoryManager.SetMemberCategories(PropertyGrid);
+        }
+
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
+            }
+        }
+
+        private void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(ViewModel.SelectedAnimationChain))
+            {
+                RefreshOutlines();
+
+                GumCanvas.InvalidateVisual();
+            }
         }
 
         public void ForceRefreshAchx(FilePath achxFilePath)
@@ -90,7 +113,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             RefreshTexture(achxFilePath, animationChain);
 
-            RefreshOutlines(animationChain);
+            RefreshOutlines();
 
             RefreshTreeView(animationChain);
 
@@ -105,8 +128,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
             foreach(var animation in animationChain.AnimationChains)
             {
-                var animationViewModel = new AnimationEditorNodeViewModel();
-                animationViewModel.Text = animation.Name;
+                var animationViewModel = new AnimationChainViewModel();
+                animationViewModel.SetFrom(animation);
                 ViewModel.VisibleRoot.Add(animationViewModel);
             }
         }
@@ -134,20 +157,37 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void RefreshOutlines(AnimationChainListSave animationChain)
+        private void RefreshOutlines()
         {
+            foreach(var outline in Outlines)
+            {
+                GumCanvas.Children.Remove(outline);
+            }
             Outlines.Clear();
             var texture = MainSprite.Texture;
-            if (texture != null && animationChain != null)
+            if (texture != null && ViewModel != null)
             {
-                foreach (var animation in animationChain.AnimationChains)
+                if(ViewModel.SelectedAnimationChain == null)
                 {
-                    foreach (var frame in animation.Frames)
+                    foreach (var animationVm in ViewModel.VisibleRoot)
                     {
-                        PolygonRuntime outline = CreateOutlinePolygon(frame);
-                        Outlines.Add(outline);
-                        GumCanvas.Children.Add(outline);
+                        CreatePolygonsFor(animationVm.BackingModel);
                     }
+                }
+                else
+                {
+                    CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
+                }
+
+            }
+
+            void CreatePolygonsFor(AnimationChainSave animation)
+            {
+                foreach (var frame in animation.Frames)
+                {
+                    PolygonRuntime outline = CreateOutlinePolygon(frame);
+                    Outlines.Add(outline);
+                    GumCanvas.Children.Add(outline);
                 }
             }
         }
@@ -294,6 +334,13 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        internal void ShowInPropertyGrid(AnimationChainViewModel selectedAnimationChain)
+        {
+            PropertyGrid.Instance = selectedAnimationChain;
+            MemberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationChain);
+            PropertyGrid.Refresh();
         }
     }
 }

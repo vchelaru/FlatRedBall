@@ -4,11 +4,12 @@ using OfficialPlugins.ContentPreview.ViewModels;
 using OfficialPlugins.ContentPreview.Views;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficialPlugins.ContentPreview.Managers
+namespace OfficialPlugins.ContentPreview.Managers.AnimationChains
 {
     internal class AchxManager
     {
@@ -39,8 +40,19 @@ namespace OfficialPlugins.ContentPreview.Managers
             {
                 View = new AchxPreviewView();
                 ViewModel = new AchxViewModel();
+                ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 View.DataContext = ViewModel;
                 View.Initialize(new SpritePlugin.Managers.CameraLogic());
+            }
+        }
+
+        private static void HandleViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ViewModel.SelectedAnimationChain):
+                    View.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
+                    break;
             }
         }
 
@@ -53,12 +65,12 @@ namespace OfficialPlugins.ContentPreview.Managers
 
         internal static void ShowTab(FilePath filePath)
         {
-            var view = AchxManager.GetView();
+            var view = GetView();
             var changedFilePath = view.AchxFilePath != filePath;
 
 
             view.AchxFilePath = filePath;
-            var vm = AchxManager.ViewModel;
+            var vm = ViewModel;
             vm.ResolutionWidth = view.Texture?.Width ?? 0;
             vm.ResolutionHeight = view.Texture?.Height ?? 0;
             if (changedFilePath)

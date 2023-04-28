@@ -44,8 +44,14 @@ namespace OfficialPlugins.ContentPreview.ViewModels
         [DependsOn(nameof(ResolutionHeight))]
         public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
 
-        public ObservableCollection<AnimationEditorNodeViewModel> VisibleRoot { get; private set; } = new ObservableCollection<AnimationEditorNodeViewModel>();
+        public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; } 
+            = new ObservableCollection<AnimationChainViewModel>();
 
+        public AnimationChainViewModel SelectedAnimationChain
+        {
+            get => Get<AnimationChainViewModel>();
+            set => Set(value);
+        }
 
         public AchxViewModel()
         {

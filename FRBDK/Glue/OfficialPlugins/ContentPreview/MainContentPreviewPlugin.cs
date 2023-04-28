@@ -6,6 +6,7 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.ContentPreview.Managers;
+using OfficialPlugins.ContentPreview.Managers.AnimationChains;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;

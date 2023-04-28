@@ -42,7 +42,7 @@ namespace FlatRedBall.Content.AnimationChain
         public string TextureName;
 
         /// <summary>
-        /// The amount of time in seconds the AnimationFrame should be shown for.
+        /// The frame duration in seconds.
         /// </summary>
         public float FrameLength;
 

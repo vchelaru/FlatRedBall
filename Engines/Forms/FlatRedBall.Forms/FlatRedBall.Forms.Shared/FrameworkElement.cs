@@ -299,7 +299,7 @@ namespace FlatRedBall.Forms.Controls
             return GetGraphicalUiElementForFrameworkElement(type);
         }
 
-        private static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
+        public static GraphicalUiElement GetGraphicalUiElementForFrameworkElement(Type type)
         {
             if (DefaultFormsComponents.ContainsKey(type))
             {

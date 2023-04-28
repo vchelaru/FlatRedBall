@@ -5,23 +5,36 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:pt="http://propertytools.org/wpf" 
              
-             xmlns:local="clr-namespace:OfficialPlugins.ContentPreview.Views" xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.Net6"
+             xmlns:local="clr-namespace:OfficialPlugins.ContentPreview.Views" xmlns:wpf1="clr-namespace:SkiaGum.Wpf;assembly=SkiaGum.Wpf.Net6" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="170"></ColumnDefinition>
             <ColumnDefinition Width="5"></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <pt:TreeListBox
-            HierarchySource="{Binding VisibleRoot}"
-            ChildrenPath="VisibleChildren"
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <pt:TreeListBox
+                HierarchySource="{Binding VisibleRoot}"
+                ChildrenPath="VisibleChildren"
+                SelectedItem="{Binding SelectedAnimationChain}"
+                >
             
-            >
-            
-        </pt:TreeListBox>
+            </pt:TreeListBox>
+            <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
+            <wpfdataui:DataUiGrid x:Name="PropertyGrid" Grid.Row="2" Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+        </Grid>
+
         <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+
+
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>

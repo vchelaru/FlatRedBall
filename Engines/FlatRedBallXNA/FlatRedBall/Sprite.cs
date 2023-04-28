@@ -1029,6 +1029,11 @@ namespace FlatRedBall
             set => mIgnoreAnimationChainTextureFlip = !value;
         }
 
+        /// <summary>
+        /// The number of seconds that have passed since the beginning of the animation. 
+        /// This is effectively the same as setting the CurrentFrameIndex, but allows controlling
+        /// the position by time rather than by frame.
+        /// </summary>
         public double TimeIntoAnimation
         {
             get
