@@ -3,6 +3,7 @@ using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
+using Microsoft.VisualBasic.ApplicationServices;
 using OfficialPlugins.FrbSourcePlugin.ViewModels;
 using PluginTestbed.GlobalContentManagerPlugins;
 using System;
@@ -72,6 +73,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
             new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBallDesktopGLNet6\\FlatRedBallDesktopGLNet6.csproj", ProjectRootType = FrbOrGum.Frb},
             new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGlNet6\\FlatRedBall.Forms.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Frb},
             new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.DesktopGlNet6\\GumCore.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Gum},
+                                                                       
 
             new ProjectReference()
             {
@@ -176,12 +178,13 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
 
                 if (addGeneralResponse.Succeeded)
                 {
-                    RemoveReference(proj, "FlatRedBall.Forms");
-                    RemoveReference(proj, "FlatRedBallDesktopGL");
-                    RemoveReference(proj, "GumCoreXnaPc");
-                    RemoveReference(proj, "GumCore.DesktopGlNet6");
-                    RemoveReference(proj, "StateInterpolation");
-                    
+                    RemoveDllReference(proj, "FlatRedBall.Forms");
+                    RemoveDllReference(proj, "FlatRedBallDesktopGL");
+                    RemoveDllReference(proj, "GumCoreXnaPc");
+                    RemoveDllReference(proj, "GumCore.DesktopGlNet6");
+                    RemoveDllReference(proj, "StateInterpolation");
+                    RemoveDllReference(proj, "SkiaInGum");
+
                     proj.Save(proj.FullFileName.FullPath);
                 }
             }
@@ -287,7 +290,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
             }
         }
 
-        private static void RemoveReference(VisualStudioProject project, string referenceName)
+        private static void RemoveDllReference(VisualStudioProject project, string referenceName)
         {
             if (project.EvaluatedItems.Any(item => item.ItemType == "Reference" && item.EvaluatedInclude.StartsWith(referenceName)))
             {
