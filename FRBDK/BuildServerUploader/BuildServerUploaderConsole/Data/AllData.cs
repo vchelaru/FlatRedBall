@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace BuildServerUploaderConsole.Data
 {
@@ -203,7 +205,10 @@ namespace BuildServerUploaderConsole.Data
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
                 engine.TemplateFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
-
+                                       
+                // This is the built folder when building FlatRedBall.Forms sln
+                // All files below (DebugFiles and ReleaseFiles) should be contained
+                // in that output folder because the project should reference those files
                 var debugBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Debug\net6.0\";
                 var releaseBinFolder = @"FlatRedBall\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.DesktopGlNet6\bin\Release\net6.0\";
 
@@ -220,6 +225,10 @@ namespace BuildServerUploaderConsole.Data
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.dll");
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.pdb");
 
+                engine.DebugFiles.Add($"{debugBinFolder}SkiaInGum.dll");
+                engine.DebugFiles.Add($"{debugBinFolder}SkiaInGum.pdb");
+
+
                 engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.dll");
                 engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.pdb");
 
@@ -231,6 +240,10 @@ namespace BuildServerUploaderConsole.Data
 
                 engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.dll");
                 engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.pdb");
+
+                engine.DebugFiles.Add($"{releaseBinFolder}SkiaInGum.dll");
+                engine.DebugFiles.Add($"{releaseBinFolder}SkiaInGum.pdb");
+
 
                 Engines.Add(engine);
 

@@ -42,6 +42,9 @@
     <Reference Include="GumCore.DesktopGlNet6">
       <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>
     </Reference>
+    <Reference Include="SkiaInGum">
+      <HintPath>Libraries\DesktopGl\Debug\SkiaInGum.dll</HintPath>
+    </Reference>
     <Reference Include="StateInterpolation.DesktopNet6">
       <HintPath>Libraries\DesktopGl\Debug\StateInterpolation.DesktopNet6.dll</HintPath>
     </Reference>

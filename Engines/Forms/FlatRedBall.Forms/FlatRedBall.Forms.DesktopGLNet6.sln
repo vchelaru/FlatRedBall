@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StateInterpolation.DesktopN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatRedBall.Forms.DesktopGlNet6", "FlatRedBall.Forms.DesktopGlNet6\FlatRedBall.Forms.DesktopGlNet6.csproj", "{346E0CC5-D25F-4E9F-970F-678F4D019C9F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkiaInGum", "..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj", "{7AE61851-BDC2-4B77-B159-BFF52550C423}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AutomatedBuild|Any CPU = AutomatedBuild|Any CPU
@@ -205,6 +207,46 @@ Global
 		{346E0CC5-D25F-4E9F-970F-678F4D019C9F}.UnitTests|Any CPU.Build.0 = Debug|Any CPU
 		{346E0CC5-D25F-4E9F-970F-678F4D019C9F}.UnitTests|x86.ActiveCfg = Debug|Any CPU
 		{346E0CC5-D25F-4E9F-970F-678F4D019C9F}.UnitTests|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.AutomatedBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.AutomatedBuild|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.AutomatedBuild|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.AutomatedBuild|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug Docs|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug Docs|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug Docs|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug Docs|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug2|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug2|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug2|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Debug2|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.DebugProfile|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.DebugProfile|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.DebugProfile|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.DebugProfile|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Profile|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Profile|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Profile|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Profile|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Release|x86.ActiveCfg = Release|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Release|x86.Build.0 = Release|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission Phone|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission Phone|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission Phone|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission Phone|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.Submission|x86.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.UnitTests|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.UnitTests|Any CPU.Build.0 = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.UnitTests|x86.ActiveCfg = Debug|Any CPU
+		{7AE61851-BDC2-4B77-B159-BFF52550C423}.UnitTests|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.DesktopGlNet6\GumCore.DesktopGlNet6.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj" />
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
 </Project>
