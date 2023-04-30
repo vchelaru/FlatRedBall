@@ -993,7 +993,16 @@ namespace FlatRedBallAddOns.Entities
             }
             #endregion
 
-
+            if(isScreen)
+            {
+                // Screen.cs (in FlatRedBall Engine) assign mTimeScreenWasCreated. Unfortunately
+                // that happens in the base class after all instances in the derived screen are created
+                // and after their CustomInitialize is called. That CustomInitialize may use the TimeManager.CurrentScreenTime
+                // which depends on the mTimeScreenWasCreated value being set. Therefore we'll force set this here. It may get set
+                // multiple times but that should be okay:
+                currentBlock.Line("mAccumulatedPausedTime = TimeManager.CurrentTime;");
+                currentBlock.Line("mTimeScreenWasCreated = FlatRedBall.TimeManager.CurrentTime;");
+            }
 
             PerformancePluginCodeGenerator.SaveObject = saveObject;
             PerformancePluginCodeGenerator.CodeBlock = currentBlock;
@@ -1021,13 +1030,10 @@ namespace FlatRedBallAddOns.Entities
 
             #region Generate layer if a screen
 
-            if (IsOnOwnLayer(saveObject))
+            // Only Screens need to define a layer.  Otherwise, the layer is fed to the Entity
+            if (IsOnOwnLayer(saveObject) && isScreen)
             {
-                // Only Screens need to define a layer.  Otherwise, the layer is fed to the Entity
-                if (isScreen)
-                {
-                    currentBlock.Line("mLayer = SpriteManager.AddLayer();");
-                }
+                currentBlock.Line("mLayer = SpriteManager.AddLayer();");
             }
 
             #endregion
