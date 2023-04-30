@@ -218,8 +218,8 @@ namespace FlatRedBall.Screens
                         $"You can specify the next screen by calling MoveToScreen or by manually setting the NextScreen";
                 }
 #endif
-                var isFullyQualified = type.Contains(".");
-                if(!isFullyQualified)
+                var isFullyQualified = type?.Contains(".") == true;
+                if(!isFullyQualified && !string.IsNullOrEmpty(type))
                 {
                     // try to prepend the current type to make the next screen fully qualified:
                     var prepend = mCurrentScreen.GetType().Namespace;

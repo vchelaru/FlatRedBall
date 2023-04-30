@@ -943,7 +943,14 @@ namespace FlatRedBall
 
                         if (mAnimationChains.Count == 0)
                         {
-                            error += "\nThis sprite has no animations";
+                            if(string.IsNullOrEmpty(this.Name))
+                            {
+                                error += "\nThis sprite has no animations";
+                            }
+                            else
+                            {
+                                error += $"\nThe sprite named {this.Name} has no animations";
+                            }
                         }
                         else
                         {

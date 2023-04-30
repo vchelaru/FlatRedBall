@@ -3324,7 +3324,6 @@ namespace FlatRedBall
             }
         }
 
-
         static private void UpdateMaxParticleCount(int Count)
         {
 
