@@ -1260,7 +1260,14 @@ namespace FlatRedBall.Graphics
             }
 
 
-            if(mCurrentEffect == null)
+
+
+#if MONOGAME_381
+            valueAsString += "_" + FlatRedBallServices.GraphicsOptions.TextureFilter;
+#endif
+
+
+            if (mCurrentEffect == null)
             {
                 mCurrentEffect = mEffect;
             }

@@ -2,12 +2,22 @@ float4x4 ViewProj : VIEWPROJ; //our world view projection matrix
 uniform extern texture CurrentTexture;
 
 
-sampler textureSampler = sampler_state
-{
-    Texture = <CurrentTexture>;
-    mipfilter = LINEAR; 
-};
+ sampler linearTextureSampler = sampler_state
+ {
+     Texture = <CurrentTexture>;
+     MipFilter = Linear;
+     MinFilter = Linear;
+     MagFilter = Linear;
+ };
 
+
+ sampler pointTextureSampler = sampler_state
+ {
+     Texture = <CurrentTexture>;
+     MipFilter = Point;
+     MinFilter = Point;
+     MagFilter = Point;
+ };
 
 //application to vertex structure
 struct a2v
@@ -34,9 +44,11 @@ void vs( in a2v IN, out v2p OUT )
     OUT.texCoord = IN.texCoord;
 }
 
-float4 TexturePixelShader(a2v IN ) : COLOR
+/////////////////////////////////Pixel Shaders///////////////////////////////////
+
+float4 TexturePixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     
 	
 	// premult requires this
@@ -49,9 +61,9 @@ float4 TexturePixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 AddPixelShader(a2v IN ) : COLOR
+float4 AddPixelShader_Point(a2v IN ) : COLOR
 {
-    float4 fromTexture =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 fromTexture =  tex2D(pointTextureSampler, IN.texCoord).rgba;
 
     fromTexture[0] = (fromTexture[0] + IN.color[0] * fromTexture[3]) * IN.color[3];
     fromTexture[1] = (fromTexture[1] + IN.color[1] * fromTexture[3]) * IN.color[3];
@@ -61,9 +73,9 @@ float4 AddPixelShader(a2v IN ) : COLOR
 	return fromTexture;
 }
 
-float4 SubtractPixelShader(a2v IN ) : COLOR
+float4 SubtractPixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     color[0] = (color[0] - IN.color[0]) * IN.color[3];
     color[1] = (color[1] - IN.color[1]) * IN.color[3];
     color[2] = (color[2] - IN.color[2]) * IN.color[3];
@@ -72,9 +84,9 @@ float4 SubtractPixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 ModulatePixelShader(a2v IN ) : COLOR
+float4 ModulatePixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     color[0] = (color[0] * IN.color[0]) * IN.color[3];
     color[1] = (color[1] * IN.color[1]) * IN.color[3];
     color[2] = (color[2] * IN.color[2]) * IN.color[3];
@@ -83,9 +95,9 @@ float4 ModulatePixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 Modulate2XPixelShader(a2v IN ) : COLOR
+float4 Modulate2XPixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     color[0] = (2 * color[0] * IN.color[0]) * IN.color[3];
     color[1] = (2 * color[1] * IN.color[1]) * IN.color[3];
     color[2] = (2 * color[2] * IN.color[2]) * IN.color[3];
@@ -94,9 +106,9 @@ float4 Modulate2XPixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 Modulate4XPixelShader(a2v IN ) : COLOR
+float4 Modulate4XPixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     color[0] = (4 * color[0] * IN.color[0]) * IN.color[3];
     color[1] = (4 * color[1] * IN.color[1]) * IN.color[3];
     color[2] = (4 * color[2] * IN.color[2]) * IN.color[3];
@@ -105,9 +117,9 @@ float4 Modulate4XPixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 InversePixelShader(a2v IN ) : COLOR
+float4 InversePixelShader_Point(a2v IN ) : COLOR
 {
-    float4 color =  tex2D(textureSampler, IN.texCoord).rgba;
+    float4 color =  tex2D(pointTextureSampler, IN.texCoord).rgba;
     color[0] = (1 - color[0]) * IN.color[3];
     color[1] = (1 - color[1]) * IN.color[3];
     color[2] = (1 - color[2]) * IN.color[3];
@@ -122,10 +134,10 @@ float4 ColorPixelShader(a2v IN ) : COLOR
     return IN.color;
 }
 
-float4 ColorTextureAlphaPixelShader(a2v IN ) : COLOR
+float4 ColorTextureAlphaPixelShader_Point(a2v IN ) : COLOR
 {
 	float4 color = IN.color;
-	float alphaFromTexture = tex2D(textureSampler, IN.texCoord).a;
+	float alphaFromTexture = tex2D(pointTextureSampler, IN.texCoord).a;
 	color[0] = color[0] * IN.color[3] * alphaFromTexture;
 
 	color[1] = color[1] * IN.color[3] * alphaFromTexture;
@@ -137,83 +149,199 @@ float4 ColorTextureAlphaPixelShader(a2v IN ) : COLOR
 	return color;
 }
 
-float4 InterpolateColorPixelShader(a2v IN ) :COLOR
+float4 InterpolateColorPixelShader_Point(a2v IN ) :COLOR
 {
 	float4 color = IN.color;
 
-	color = (color[3] * tex2D(textureSampler, IN.texCoord)) + (1 - color[3])*(color);
+	color = (color[3] * tex2D(pointTextureSampler, IN.texCoord)) + (1 - color[3])*(color);
 	
-	color[3] = tex2D(textureSampler, IN.texCoord).a;
+	color[3] = tex2D(pointTextureSampler, IN.texCoord).a;
 	clip(color[3] - .001);
 	//color[3] = color[3] * tex2D(textureSampler, IN.texCoord).a;
 	return color;	
 
 }
 
-technique Texture
+
+//------------------------------Linear-------------------------------------------------------
+
+float4 TexturePixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    
+	
+	// premult requires this
+
+	color[0] = color[0] * IN.color[3];  
+	color[1] = color[1] * IN.color[3];
+	color[2] = color[2] * IN.color[3];
+	color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);    
+	return color;
+}
+
+float4 AddPixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 fromTexture =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+
+    fromTexture[0] = (fromTexture[0] + IN.color[0] * fromTexture[3]) * IN.color[3];
+    fromTexture[1] = (fromTexture[1] + IN.color[1] * fromTexture[3]) * IN.color[3];
+    fromTexture[2] = (fromTexture[2] + IN.color[2] * fromTexture[3]) * IN.color[3];
+    fromTexture[3] = fromTexture[3] * IN.color[3];
+	clip(fromTexture[3] - .001);
+	return fromTexture;
+}
+
+float4 SubtractPixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    color[0] = (color[0] - IN.color[0]) * IN.color[3];
+    color[1] = (color[1] - IN.color[1]) * IN.color[3];
+    color[2] = (color[2] - IN.color[2]) * IN.color[3];
+    color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 ModulatePixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    color[0] = (color[0] * IN.color[0]) * IN.color[3];
+    color[1] = (color[1] * IN.color[1]) * IN.color[3];
+    color[2] = (color[2] * IN.color[2]) * IN.color[3];
+    color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 Modulate2XPixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    color[0] = (2 * color[0] * IN.color[0]) * IN.color[3];
+    color[1] = (2 * color[1] * IN.color[1]) * IN.color[3];
+    color[2] = (2 * color[2] * IN.color[2]) * IN.color[3];
+    color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 Modulate4XPixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    color[0] = (4 * color[0] * IN.color[0]) * IN.color[3];
+    color[1] = (4 * color[1] * IN.color[1]) * IN.color[3];
+    color[2] = (4 * color[2] * IN.color[2]) * IN.color[3];
+    color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 InversePixelShader_Linear(a2v IN ) : COLOR
+{
+    float4 color =  tex2D(linearTextureSampler, IN.texCoord).rgba;
+    color[0] = (1 - color[0]) * IN.color[3];
+    color[1] = (1 - color[1]) * IN.color[3];
+    color[2] = (1 - color[2]) * IN.color[3];
+    color[3] = color[3] * IN.color[3];
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 ColorTextureAlphaPixelShader_Linear(a2v IN ) : COLOR
+{
+	float4 color = IN.color;
+	float alphaFromTexture = tex2D(linearTextureSampler, IN.texCoord).a;
+	color[0] = color[0] * IN.color[3] * alphaFromTexture;
+
+	color[1] = color[1] * IN.color[3] * alphaFromTexture;
+
+	color[2] = color[2] * IN.color[3] * alphaFromTexture;
+
+	color[3] = color[3] * alphaFromTexture;
+	clip(color[3] - .001);
+	return color;
+}
+
+float4 InterpolateColorPixelShader_Linear(a2v IN ) :COLOR
+{
+	float4 color = IN.color;
+
+	color = (color[3] * tex2D(linearTextureSampler, IN.texCoord)) + (1 - color[3])*(color);
+	
+	color[3] = tex2D(linearTextureSampler, IN.texCoord).a;
+	clip(color[3] - .001);
+	//color[3] = color[3] * tex2D(textureSampler, IN.texCoord).a;
+	return color;	
+
+}
+
+
+////////////////////////////////////Techniques//////////////////////////////////////////////////
+
+technique Texture_Point
 {
     pass p0
     {
         vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 TexturePixelShader();
+        pixelshader = compile ps_2_0 TexturePixelShader_Point();
     }
 }
 
-technique Add
+technique Add_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 AddPixelShader();
+		pixelshader = compile ps_2_0 AddPixelShader_Point();
 	}
 }
 
-technique Subtract
+technique Subtract_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 SubtractPixelShader();
+		pixelshader = compile ps_2_0 SubtractPixelShader_Point();
 	}
 }
 
-technique Modulate
+technique Modulate_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 ModulatePixelShader();
+		pixelshader = compile ps_2_0 ModulatePixelShader_Point();
 	}
 }
 
-technique Modulate2X
+technique Modulate2X_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 Modulate2XPixelShader();
+		pixelshader = compile ps_2_0 Modulate2XPixelShader_Point();
 	}
 }
 
-technique Modulate4X
+technique Modulate4X_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 Modulate4XPixelShader();
+		pixelshader = compile ps_2_0 Modulate4XPixelShader_Point();
 	}
 }
 
-technique InverseTexture
+technique InverseTexture_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 InversePixelShader();
+		pixelshader = compile ps_2_0 InversePixelShader_Point();
 	}
 }
 
-technique Color
+technique Color_Point
 {
 	pass p0
 	{
@@ -222,22 +350,115 @@ technique Color
 	}
 }
 
-technique ColorTextureAlpha
+technique ColorTextureAlpha_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();
-		pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader();
+		pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Point();
 	}
 }
 
-technique InterpolateColor
+technique InterpolateColor_Point
 {
 	pass p0
 	{
 		vertexshader = compile vs_1_1 vs();	
-		pixelshader = compile ps_2_0 InterpolateColorPixelShader();			
+		pixelshader = compile ps_2_0 InterpolateColorPixelShader_Point();			
+	}
+}
+
+//------------------------Linear-----------------------------------------
+
+
+
+technique Texture_Linear
+{
+    pass p0
+    {
+        vertexshader = compile vs_1_1 vs();
+        pixelshader = compile ps_2_0 TexturePixelShader_Linear();
+    }
+}
+
+technique Add_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 AddPixelShader_Linear();
+	}
+}
+
+technique Subtract_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 SubtractPixelShader_Linear();
+	}
+}
+
+technique Modulate_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 ModulatePixelShader_Linear();
+	}
+}
+
+technique Modulate2X_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 Modulate2XPixelShader_Linear();
+	}
+}
+
+technique Modulate4X_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 Modulate4XPixelShader_Linear();
+	}
+}
+
+technique InverseTexture_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 InversePixelShader_Linear();
+	}
+}
+
+technique Color_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 ColorPixelShader();
+	}
+}
+
+technique ColorTextureAlpha_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();
+		pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Linear();
+	}
+}
+
+technique InterpolateColor_Linear
+{
+	pass p0
+	{
+		vertexshader = compile vs_1_1 vs();	
+		pixelshader = compile ps_2_0 InterpolateColorPixelShader_Linear();			
 	}
 
 }
-
