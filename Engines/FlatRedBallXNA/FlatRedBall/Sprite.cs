@@ -1,4 +1,5 @@
-#if WINDOWS
+#if WINDOWS|| MONOGAME_381
+
 #define USE_CUSTOM_SHADER
 #endif
 using System;

@@ -767,8 +767,8 @@ namespace FlatRedBall
             // MonoGame 3.7 (pre-release) has at least one bug related to shaders
             // which impact rendering. That is, point filtering isn't working.
             // So I'm going to revert monogame back to the old way for now
-            //var preInitGlobalContent = new ContentManager(mServices);
-            //Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+            var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
+            Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
 #endif
         }
 

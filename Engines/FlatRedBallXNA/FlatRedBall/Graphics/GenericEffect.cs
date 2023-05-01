@@ -12,9 +12,7 @@ using System.Windows.Media.Effects;
 namespace FlatRedBall.Graphics
 {
     public class GenericEffect
-#if !SILVERLIGHT
         : IEffectFog, IEffectLights, IEffectMatrices, IDisposable
-#endif
     {
         #region Enum
         public enum DefaultShaderType
