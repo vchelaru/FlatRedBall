@@ -731,12 +731,17 @@ namespace FlatRedBall.Math
 
         public static Vector3 Reflect(Vector3 vectorToReflect, Vector3 surfaceNormal)
         {
-            surfaceNormal.Normalize();
-
-
-            Vector3 projected = surfaceNormal * Vector3.Dot(vectorToReflect, surfaceNormal);
-
-            return -(vectorToReflect - projected) + projected;
+            if(surfaceNormal != Vector3.Zero)
+            {
+                surfaceNormal.Normalize();
+                Vector3 projected = surfaceNormal * Vector3.Dot(vectorToReflect, surfaceNormal);
+                return -(vectorToReflect - projected) + projected;
+            }
+            // no reflection possible
+            else
+            {
+                return vectorToReflect;
+            }
 
         }
 

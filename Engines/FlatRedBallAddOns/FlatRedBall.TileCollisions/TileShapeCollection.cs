@@ -284,6 +284,11 @@ namespace FlatRedBall.TileCollisions
             return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);
         }
 
+        public bool CollideAgainstMove(Circle circle)
+        {
+            return mShapes.CollideAgainstMove(circle, 1, 0);
+        }
+
         public bool CollideAgainstMove(ICollidable collidable)
         {
             return mShapes.CollideAgainstMove(collidable.Collision, 1, 0);
