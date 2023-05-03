@@ -734,8 +734,18 @@ namespace FlatRedBall.Math
             if(surfaceNormal != Vector3.Zero)
             {
                 surfaceNormal.Normalize();
-                Vector3 projected = surfaceNormal * Vector3.Dot(vectorToReflect, surfaceNormal);
-                return -(vectorToReflect - projected) + projected;
+
+                var dotProduct = Vector3.Dot(vectorToReflect, surfaceNormal);
+
+                if(dotProduct < 0) // they are opposing
+                {
+                    Vector3 projected = surfaceNormal * dotProduct;
+                    return vectorToReflect - 2 * projected;
+                }
+                else
+                {
+                    return vectorToReflect;
+                }
             }
             // no reflection possible
             else

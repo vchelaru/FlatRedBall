@@ -98,7 +98,7 @@ namespace GlueCommunication
 
                         _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                        Debug.WriteLine($"Connecting on port {Port}");
+                        //Debug.WriteLine($"Connecting on port {Port}");
                         _server.Connect(EndPoint);
 
                         Connected();
@@ -106,7 +106,7 @@ namespace GlueCommunication
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Listening Error: {ex}");
+                    //Debug.WriteLine($"Listening Error: {ex}");
                 }
                 finally
                 {
