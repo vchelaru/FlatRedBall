@@ -475,9 +475,35 @@ namespace GlueControl
                 else
                 {
                     // just instantiate it using reflection?
-                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGameType)
+                    var typeName = entityNameGameType;
+                    bool ignoreCase = false;
+                    var bindingFlags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
+                    System.Reflection.Binder binder = null;
+
+                    string contentManagerName = FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName;
+
+                    if (ScreenManager.IsInEditMode)
+                    {
+                        var entityType = this.GetType().Assembly.GetType(entityNameGameType);
+                        var hasBeenLoadedProperty = entityType.GetProperty("HasBeenLoadedWithGlobalContentManager");
+                        if (hasBeenLoadedProperty != null)
+                        {
+                            var hasBeenLoaded = (bool)hasBeenLoadedProperty.GetValue(null);
+                            if (hasBeenLoaded)
+                            {
+                                contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;
+                            }
+                        }
+                    }
+
+                    object[] args = new object[]
+                    {
+                        contentManagerName, // content manager
+                        true // add to managers
+                    };
+
+                    newPositionedObject = this.GetType().Assembly.CreateInstance(entityNameGameType, ignoreCase, bindingFlags, binder, args, culture: null, activationAttributes: null)
                          as PositionedObject;
-                    //newPositionedObject = ownerType.GetConstructor(new System.Type[0]).Invoke(new object[0]);
                 }
                 if (newPositionedObject != null && newPositionedObject is IDestroyable asDestroyable)
                 {

@@ -45,7 +45,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 .Line("HasBeenLoadedWithGlobalContentManager = true;");
             
             codeBlock.ElseIf("HasBeenLoadedWithGlobalContentManager")
-                .Line("throw new System.Exception(\"This type has been loaded with a Global content manager, then loaded with a non-global.  This can lead to a lot of bugs\");");
+                .Line("throw new System.Exception( \"" + element.ClassName + " has been loaded with a Global content manager, then loaded with a non-global.  This can lead to a lot of bugs\");");
 
             codeBlock.Line("#endif");
             
