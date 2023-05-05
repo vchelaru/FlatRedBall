@@ -50,6 +50,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage EntityIcon;
         public static BitmapImage EntityDerivedIcon;
         public static BitmapImage EntityInstanceIcon;
+        public static BitmapImage EntityInstanceIsContainerIcon;
         public static BitmapImage EntityInstanceListIcon;
         public static BitmapImage EventIcon;
         public static BitmapImage FileIcon;
@@ -227,6 +228,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityIcon = LoadIcon("icon_entity");
             EntityDerivedIcon = LoadIcon("icon_entity_derived");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
+            EntityInstanceIsContainerIcon = LoadIcon("icon_entity_instance_iscontainer");
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");

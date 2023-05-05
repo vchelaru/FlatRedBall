@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
 
 namespace OfficialPlugins.TreeViewPlugin.ViewModels
 {
@@ -258,22 +259,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             treeNode.Text = namedObject.InstanceName;
 
-            if(namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)
-            {
-                treeNode.ImageSource = LayerIcon;
-            }
-            else if(namedObject.IsCollisionRelationship())
-            {
-                treeNode.ImageSource = CollisionIcon;
-            }
-            else if (namedObject.IsList)
-            {
-                treeNode.ImageSource = NodeViewModel.EntityInstanceListIcon;
-            }
-            else
-            {
-                treeNode.ImageSource = EntityInstanceIcon;
-            }
+            BitmapImage imageSource = GetIcon(namedObject);
+
+            treeNode.ImageSource = imageSource;
             //treeNode.SelectedImageKey = "object.png";
             //treeNode.ImageKey = "object.png";
 
@@ -281,6 +269,30 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             parentNode.Children.Insert(i, treeNode);
             return treeNode;
+        }
+
+        public static BitmapImage GetIcon(NamedObjectSave namedObject)
+        {
+            var imageSource = EntityInstanceIcon;
+
+            if(namedObject.IsContainer)
+            {
+                imageSource = EntityInstanceIsContainerIcon;
+            }
+            else if (namedObject.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Layer)
+            {
+                imageSource = LayerIcon;
+            }
+            else if (namedObject.IsCollisionRelationship())
+            {
+                imageSource = CollisionIcon;
+            }
+            else if (namedObject.IsList)
+            {
+                imageSource = NodeViewModel.EntityInstanceListIcon;
+            }
+
+            return imageSource;
         }
 
         private static void UpdateTreeNodeForNamedObjectAtIndex(NodeViewModel currentNode, int i, NamedObjectSave namedObject, NodeViewModel treeNode)

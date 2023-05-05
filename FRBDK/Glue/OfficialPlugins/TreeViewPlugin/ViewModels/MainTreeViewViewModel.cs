@@ -788,22 +788,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 if (matchWeight > 0)
                 {
                     var node = new NodeViewModel();
-                    if (nos.IsLayer)
-                    {
-                        node.ImageSource = NodeViewModel.LayerIcon;
-                    }
-                    else if (nos.IsCollisionRelationship())
-                    {
-                        node.ImageSource = NodeViewModel.CollisionIcon;
-                    }
-                    else if (nos.IsList)
-                    {
-                        node.ImageSource = NodeViewModel.EntityInstanceListIcon;
-                    }
-                    else
-                    {
-                        node.ImageSource = NodeViewModel.EntityInstanceIcon;
-                    }
+
+                    node.ImageSource = NamedObjectsRootNodeViewModel.GetIcon(nos);
+
                     // ToString leads with the type not the name, so let's lead with the name instead
                     //node.Text = nos.ToString();
                     // don't use field name, that has the 'm' prefix in some cases
