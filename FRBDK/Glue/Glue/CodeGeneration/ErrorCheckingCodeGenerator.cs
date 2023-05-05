@@ -7,7 +7,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, SaveClasses.IElement element)
         {
             codeBlock.Line("#if DEBUG");
-            codeBlock.Line("static bool HasBeenLoadedWithGlobalContentManager = false;");
+            codeBlock.Line("public static bool HasBeenLoadedWithGlobalContentManager { get; private set; }= false;");
             codeBlock.Line("#endif");
 
             return codeBlock;

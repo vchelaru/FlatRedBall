@@ -80,7 +80,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
 
                     if(fileForCandidate == changedFile || fileForCandidate.IsRelativeTo(changedFile))
                     {
-                        var fireAndForget = GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(file, null);
+                        await GlueCommands.Self.GluxCommands.RemoveReferencedFileAsync(file, null);
                     }
                 }
             }
