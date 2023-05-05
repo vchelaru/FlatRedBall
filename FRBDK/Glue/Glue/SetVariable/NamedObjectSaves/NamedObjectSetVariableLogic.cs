@@ -463,7 +463,7 @@ namespace FlatRedBall.Glue.SetVariable
         }
 
 
-        private void HandleChangedIsContainer(NamedObjectSave nos, IElement element)
+        private void HandleChangedIsContainer(NamedObjectSave nos, GlueElement element)
         {
             if (nos.IsContainer)
             {
@@ -529,6 +529,8 @@ namespace FlatRedBall.Glue.SetVariable
                 }
 
             }
+
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
         }
 
         private void ReactToChangedNosSourceName(NamedObjectSave namedObjectSave, string oldValue)

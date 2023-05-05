@@ -321,6 +321,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 currentNode.Children.Insert(i, treeNode);
                 treeNode.Parent = currentNode;
             }
+
+            treeNode.ImageSource = GetIcon(namedObject);
         }
 
     }

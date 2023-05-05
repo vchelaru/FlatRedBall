@@ -94,13 +94,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else if (Tag is EntitySave asEntitySave)
             {
-                if (string.IsNullOrEmpty(asEntitySave.BaseEntity))
+                var isDerived = !string.IsNullOrEmpty(asEntitySave.BaseEntity) &&
+                    (asEntitySave.BaseEntity.StartsWith("Entities\\") ||
+                      asEntitySave.BaseEntity.StartsWith("Entities/"));
+
+                if(isDerived)
                 {
-                    ImageSource = EntityIcon;
+                    ImageSource = EntityDerivedIcon;
                 }
                 else
                 {
-                    ImageSource = EntityDerivedIcon;
+                    ImageSource = EntityIcon;
                 }
             }
 
