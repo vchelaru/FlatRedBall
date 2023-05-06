@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PluginLibraries\PluginLibraries.csproj" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="IF NOT EXIST &quot;$(SolutionDir)Glue\bin\Debug\Plugins\$(ProjectName)\&quot; md &quot;$(SolutionDir)Glue\bin\Debug\Plugins\$(ProjectName)\&quot;&#xD;&#xA;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)Glue\bin\Debug\Plugins\$(ProjectName)\$(TargetFileName)&quot;" />
+	</Target>
+
+</Project>
