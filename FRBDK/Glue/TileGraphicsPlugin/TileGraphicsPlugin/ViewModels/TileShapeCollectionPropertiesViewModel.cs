@@ -18,10 +18,10 @@ namespace TileGraphicsPlugin.ViewModels
     public enum CollisionCreationOptions
     {
         Empty = 0,
-        FillCompletely,
+        FillCompletely = 1,
         BorderOutline,
         FromProperties,
-        FromType,
+        FromType = 4,
         FromLayer,
         /// <summary>
         /// Uses the Collision object inside the TMX, enabling the use of partial shapes instead of full square shapes

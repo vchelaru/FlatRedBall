@@ -144,7 +144,13 @@ namespace GlueControl.Editing
             }
             var sourceTmxObject = namedObjectSave.Properties.FirstOrDefault(item => item.Name == "SourceTmxName")?.Value as string;
 
-            if (collisionCreationOptions == 4 && !string.IsNullOrEmpty(sourceTmxObject))
+            var isUsingFromTypeCollisionOptions =
+                // FromType = 4,
+                collisionCreationOptions == 4 ||
+                // FromMapCollision = 6
+                collisionCreationOptions == 6;
+
+            if (isUsingFromTypeCollisionOptions && !string.IsNullOrEmpty(sourceTmxObject))
             {
                 map = EditingManager.Self.GetObjectByName(sourceTmxObject) as FlatRedBall.TileGraphics.LayeredTileMap;
             }

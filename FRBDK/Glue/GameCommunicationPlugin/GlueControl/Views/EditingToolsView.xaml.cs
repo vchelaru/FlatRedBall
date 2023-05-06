@@ -51,18 +51,33 @@ namespace GameCommunicationPlugin.GlueControl.Views
             //var filePath = asdf;
             var tilesetImage = GlueState.Self.TiledCache.StandardTilesetImage;
             var tileset = GlueState.Self.TiledCache.StandardTileset;
+
+            List<mapTilesetTile> tilesWithType = GetTilesWithType(tilesetImage, tileset);
+
+            foreach (var tile in tilesWithType)
+            {
+                var button = CreateButtonForTilesetTile(tile, tilesetImage);
+                button.Visibility = Visibility.Collapsed;
+            }
+
+        }
+
+        private static List<mapTilesetTile> GetTilesWithType(BitmapImage tilesetImage, Tileset tileset)
+        {
+            List<mapTilesetTile> tilesWithType = new List<mapTilesetTile>();
+
             if (tilesetImage != null)
             {
-                foreach(var tile in tileset.Tiles)
+                foreach (var tile in tileset.Tiles)
                 {
-                    if(!string.IsNullOrEmpty(tile.Type))
+                    if (!string.IsNullOrEmpty(tile.Type))
                     {
-                        var button = CreateButtonForTilesetTile(tile, tilesetImage);
-                        button.Visibility = Visibility.Collapsed;
+                        tilesWithType.Add(tile);
                     }
                 }
             }
 
+            return tilesWithType;
         }
 
         private ToggleButton CreateButtonForTilesetTile(mapTilesetTile tile, BitmapImage standardTilesetImage)
@@ -142,11 +157,25 @@ namespace GameCommunicationPlugin.GlueControl.Views
                         var properties = item.Properties;
                         var collisionCreationOptions = properties.GetValue("CollisionCreationOptions");
                         var type = properties.GetValue<string>("CollisionTileTypeName");
-                        if (collisionCreationOptions?.ToString() == "FromType" || collisionCreationOptions?.ToString() == "4")
+                        var tmxCollisionName = properties.GetValue<string>("TmxCollisionName");
+
+                        if (collisionCreationOptions?.ToString() == "FromType" || 
+                            // FromType = 4
+                            collisionCreationOptions?.ToString() == "4" ||
+                            // FromMapCollision = 6
+                            collisionCreationOptions?.ToString() == "6" 
+                            )
                         {
                             var tilesetTile = button.Tag as mapTilesetTile;
-                            return tilesetTile.Type == type;
 
+                            if(!string.IsNullOrEmpty(type))
+                            {
+                                return tilesetTile.Type == type;
+                            }
+                            else
+                            {
+                                return tilesetTile.Type == tmxCollisionName;
+                            }
                         }
                     }
                     return false;
