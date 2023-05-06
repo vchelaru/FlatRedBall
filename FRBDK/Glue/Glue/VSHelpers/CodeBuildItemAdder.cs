@@ -32,6 +32,8 @@ namespace FlatRedBall.Glue.VSHelpers
     {
         public string ResourceName { get; set; }
 
+        public Assembly Assembly { get; set; }
+
         public Func<string, string> ModifyString;
     }
 
@@ -50,7 +52,6 @@ namespace FlatRedBall.Glue.VSHelpers
         public bool IsVerbose { get; set; } = false;
 
         #endregion
-
 
         #region Properties
         public string OutputFolderInProject
@@ -82,13 +83,14 @@ namespace FlatRedBall.Glue.VSHelpers
         /// </summary>
         /// <param name="resourceName">The name of the resource.  This is usally in the format of
         /// ProjectNamespace.Folder.FileName.cs</param>
-        public ResourceAddInfo Add(string resourceName)
+        public ResourceAddInfo Add(string resourceName, Assembly assembly = null)
         {
             lock(mFilesToAdd)
             {
                 var item = new ResourceAddInfo
                 {
                     ResourceName = resourceName,
+                    Assembly = assembly,
                 };
                 mFilesToAdd.Add(item);
                 return item;
@@ -106,7 +108,8 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     var item = new ResourceAddInfo
                     {
-                        ResourceName = file
+                        ResourceName = file,
+                        Assembly = assembly
                     };
 
                     mFilesToAdd.Add(item);
@@ -136,7 +139,7 @@ namespace FlatRedBall.Glue.VSHelpers
             return filesInFolder;
         }
 
-        public void PerformAddAndSaveTask(Assembly assemblyContainingResource)
+        public void PerformAddAndSaveTask(Assembly assemblyContainingResource = null)
         {
             TaskManager.Self.Add(() =>
             {
@@ -146,7 +149,7 @@ namespace FlatRedBall.Glue.VSHelpers
             "Adding and saving files...");
         }
 
-        private bool PerformAddInternal(Assembly assemblyContainingResource)
+        private bool PerformAddInternal(Assembly assemblyContainingResource = null)
         { 
             bool succeeded = true;
             bool preserveCase = FileManager.PreserveCase;
@@ -162,9 +165,14 @@ namespace FlatRedBall.Glue.VSHelpers
                 {
                     var resourceName = resourceInfo.ResourceName;
 
+                    var effectiveAssembly = resourceInfo.Assembly ?? assemblyContainingResource;
 
+                    if(effectiveAssembly == null)
+                    {
+                        throw new InvalidOperationException($"No assembly was provided to the PerformAddAndSaveTask call, and the resource name {resourceName} was added without a referenced assembly.");
+                    }
 
-                    succeeded = SaveResourceFileToProject(assemblyContainingResource, succeeded, filesToAddToProject, resourceName);
+                    succeeded = SaveResourceFileToProject(effectiveAssembly, succeeded, filesToAddToProject, resourceName);
                 }
                 else
                 {
