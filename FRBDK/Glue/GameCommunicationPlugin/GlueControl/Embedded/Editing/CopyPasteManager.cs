@@ -47,7 +47,18 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
-                    HandlePaste(itemGrabbed, selectedNamedObjects);
+                    HandlePaste(itemGrabbed, selectedNamedObjects, CopiedNamedObjects, CopiedObjects, CopiedObjectsOwner);
+                }
+                if (keyboard.KeyPushed(Keys.D) && selectedNamedObjects.Count > 0)
+                {
+                    var tempCopiedNamedObjects = new List<NamedObjectSave>();
+                    tempCopiedNamedObjects.AddRange(selectedNamedObjects);
+
+                    // create a temp list for the selected named objects
+                    var tempCopiedObjects = new List<INameable>();
+                    tempCopiedObjects.AddRange(selectedObjects);
+
+                    HandlePaste(itemGrabbed, selectedNamedObjects, tempCopiedNamedObjects, tempCopiedObjects, GlueState.Self.CurrentElement);
                 }
             }
         }
@@ -99,7 +110,7 @@ namespace GlueControl.Editing
             return (x, y);
         }
 
-        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects)
+        private async void HandlePaste(IStaticPositionable itemGrabbed, List<NamedObjectSave> selectedNamedObjects, List<NamedObjectSave> copiedNamedObjects, List<INameable> copiedObjects, GlueElement copiedObjectsOwner)
         {
             var currentElement = GlueState.Self.CurrentElement;
 
@@ -107,7 +118,7 @@ namespace GlueControl.Editing
 
             List<Task> tasksToWait = new List<Task>();
 
-            Debug.WriteLine($"Looping through CopiedNamedObjects with count {CopiedNamedObjects.Count}");
+            Debug.WriteLine($"Looping through CopiedNamedObjects with count {copiedNamedObjects.Count}");
 
             var positionOnPaste =
                                 new Vector3(FlatRedBall.Gui.GuiManager.Cursor.WorldXAt(0), FlatRedBall.Gui.GuiManager.Cursor.WorldYAt(0), 0); // todo - make this better for 3D
@@ -123,8 +134,8 @@ namespace GlueControl.Editing
 
 
             var copyResponse = await GlueCommands.Self.GluxCommands.CopyNamedObjectListIntoElement(
-                CopiedNamedObjects,
-                CopiedObjectsOwner,
+                copiedNamedObjects,
+                copiedObjectsOwner,
                 currentElement);
 
             var newNamedObjects = copyResponse
@@ -136,7 +147,7 @@ namespace GlueControl.Editing
                 $" with offset {offsetX}, {offsetY}");
 
             List<Vector3> newPositionedOrdered = new List<Vector3>();
-            var oldPositionables = CopiedObjects
+            var oldPositionables = copiedObjects
                 .Select(item => item as IStaticPositionable)
                 .ToArray();
 
@@ -218,7 +229,7 @@ namespace GlueControl.Editing
                 await Managers.GlueCommands.Self.GluxCommands.SetVariableOnList(
                     variableAssignments,
                     currentElement,
-                    performSaveAndGenerateCode: true, updateUi: true, recordUndo:true, echoToGame: true);
+                    performSaveAndGenerateCode: true, updateUi: true, recordUndo: true, echoToGame: true);
 
             }
 
@@ -292,8 +303,5 @@ namespace GlueControl.Editing
         }
 
         #endregion
-
-
-
     }
 }
