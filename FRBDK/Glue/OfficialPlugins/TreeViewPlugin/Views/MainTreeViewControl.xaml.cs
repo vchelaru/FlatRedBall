@@ -590,6 +590,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             if (foundSomething)
             {
                 ViewModel.SearchBoxText = String.Empty;
+                SelectionLogic.CurrentNode.Focus(this);
             }
         }
 
@@ -612,7 +613,10 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             if(FlatList.SelectedItem != null)
             {
-                SelectSearchNode(FlatList.SelectedItem as NodeViewModel);
+                var node = FlatList.SelectedItem as NodeViewModel;
+                SelectSearchNode(node);
+
+
             }
         }
 
