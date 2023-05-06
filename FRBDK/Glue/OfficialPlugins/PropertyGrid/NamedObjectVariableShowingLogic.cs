@@ -302,6 +302,7 @@ namespace OfficialPlugins.VariableDisplay
                             }
                             memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember?.CustomTypeName, 
                                 nameOnInstance: nameOnInstance);
+                            memberAsNamedObjectSaveVariableDataGridItem.DetailText = newMember.DetailText;
                         }
                         else
                         {
@@ -366,10 +367,17 @@ namespace OfficialPlugins.VariableDisplay
         {
             var xVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "X");
             var yVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Y");
-            string subtext = string.Empty;
+            var zVariable = categories.SelectMany(item => item.Members).FirstOrDefault(item => item.DisplayName == "Z");
+
+            string subtext = null;
+
+            bool setZ = false;
+
             if (assetTypeInfo == AvailableAssetTypes.CommonAtis.Sprite)
             {
                 // could this be plugin somehow?
+                #region Check if the Sprite has animations:
+
                 var animationChainsVariable = instance.GetCustomVariable("AnimationChains");
                 var useAnimationPositionVariable = instance.GetCustomVariable("UseAnimationRelativePosition");
                 var useAnimationPosition = useAnimationPositionVariable == null || (useAnimationPositionVariable.Value is bool asBool && asBool);
@@ -378,7 +386,17 @@ namespace OfficialPlugins.VariableDisplay
                 {
                     subtext = "This value may be overwritten by the Sprite's animation";
                 }
+
+                #endregion
+
             }
+
+            if(assetTypeInfo.IsPositionedObject && instance.IsContainer)
+            {
+                subtext = "This value may not be applied since this object has IsContainer set to true";
+                setZ = true;
+            }
+
 
             if (xVariable != null)
             { xVariable.DetailText = subtext; }
@@ -386,6 +404,11 @@ namespace OfficialPlugins.VariableDisplay
 
             if (yVariable != null)
             { yVariable.DetailText = subtext; }
+
+            if (zVariable != null && setZ)
+            {
+                zVariable.DetailText = subtext;
+            }
         }
 
         private static void SetAlternatingColors(DataUiGrid grid, List<MemberCategory> categories)
