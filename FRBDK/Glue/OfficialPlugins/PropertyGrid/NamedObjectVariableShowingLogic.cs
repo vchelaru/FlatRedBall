@@ -391,7 +391,7 @@ namespace OfficialPlugins.VariableDisplay
 
             }
 
-            if(assetTypeInfo.IsPositionedObject && instance.IsContainer)
+            if(assetTypeInfo?.IsPositionedObject == true && instance.IsContainer)
             {
                 subtext = "This value may not be applied since this object has IsContainer set to true";
                 setZ = true;
