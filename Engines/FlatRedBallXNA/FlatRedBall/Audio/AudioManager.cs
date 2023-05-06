@@ -9,6 +9,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Instructions;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using FlatRedBall.Screens;
 
 namespace FlatRedBall.Audio
 {
@@ -466,75 +467,79 @@ namespace FlatRedBall.Audio
                 throw new ArgumentException("Argument SoundEffect is disposed");
             }
 #endif
-
-            if (AreSoundEffectsEnabled)
+            ///////////////////Early Out////////////////////////////////
+            if(!AreSongsEnabled || ScreenManager.IsInEditMode)
             {
-                bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
-                    mSoundsPlayedThisFrame.Contains(soundEffect.Name) == false;
+                return;
+            }
 
-                if (shouldPlay && MaxConcurrentSoundEffects != null)
-                {
-                    shouldPlay = ConcurrentSoundEffects < MaxConcurrentSoundEffects;
-                }
+            ///////////////End Early Out////////////////////////////////
 
-                if (shouldPlay)
-                {
+            bool shouldPlay = SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.PlayAlways ||
+                mSoundsPlayedThisFrame.Contains(soundEffect.Name) == false;
+
+            if (shouldPlay && MaxConcurrentSoundEffects != null)
+            {
+                shouldPlay = ConcurrentSoundEffects < MaxConcurrentSoundEffects;
+            }
+
+            if (shouldPlay)
+            {
 #if MONODROID
-                    _lastPlay = DateTime.Now;
+                _lastPlay = DateTime.Now;
 #endif
 
 
 #if ANDROID && !DEBUG
 
-					try
+				try
+				{
+					if (volume < 1 || pitch != 0.0f || pan != 0.0f)
 					{
-						if (volume < 1 || pitch != 0.0f || pan != 0.0f)
-					    {
-						    soundEffect.Play(volume, pitch, pan);
-					    }
-						else
-						{
-							soundEffect.Play();
-						}
+						soundEffect.Play(volume, pitch, pan);
 					}
-					catch
+					else
 					{
-					// Sept 28, 2015
-					// Monogame 3.4 (and probably 3.5) does not support 
-					// playing Sounds on ARM 64 devices. It crashes. We will
-					// catch it in release in case someone releases a FRB game
-					// and doesn't test it on these devices - better to be quiet
-					// than to crash. In debug it will crash like normal (see below)
+						soundEffect.Play();
 					}
+				}
+				catch
+				{
+				// Sept 28, 2015
+				// Monogame 3.4 (and probably 3.5) does not support 
+				// playing Sounds on ARM 64 devices. It crashes. We will
+				// catch it in release in case someone releases a FRB game
+				// and doesn't test it on these devices - better to be quiet
+				// than to crash. In debug it will crash like normal (see below)
+				}
 
 
 #else
-                    if (volume < 1 || pitch != 0.0f || pan != 0.0f)
-                    {
-                        soundEffect.Play(volume, pitch, pan);
-                    }
-                    else
-                    {
-                        soundEffect.Play();
-                    }
+                if (volume < 1 || pitch != 0.0f || pan != 0.0f)
+                {
+                    soundEffect.Play(volume, pitch, pan);
+                }
+                else
+                {
+                    soundEffect.Play();
+                }
 
 
 #endif
 
 
 #if DEBUG
-                    NumberOfSoundEffectPlays++;
+                NumberOfSoundEffectPlays++;
 #endif
-                    if (SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.OncePerFrame)
-                    {
-                        mSoundsPlayedThisFrame.Add(soundEffect.Name);
-                    }
-
-                    SoundEffectPlayInfo sepi = new SoundEffectPlayInfo();
-                    sepi.LastPlayTime = TimeManager.CurrentTime;
-                    sepi.SoundEffect = soundEffect;
-                    mSoundEffectPlayInfos.Add(sepi);
+                if (SoundEffectPlayingBehavior == Audio.SoundEffectPlayingBehavior.OncePerFrame)
+                {
+                    mSoundsPlayedThisFrame.Add(soundEffect.Name);
                 }
+
+                SoundEffectPlayInfo sepi = new SoundEffectPlayInfo();
+                sepi.LastPlayTime = TimeManager.CurrentTime;
+                sepi.SoundEffect = soundEffect;
+                mSoundEffectPlayInfos.Add(sepi);
             }
         }
 
