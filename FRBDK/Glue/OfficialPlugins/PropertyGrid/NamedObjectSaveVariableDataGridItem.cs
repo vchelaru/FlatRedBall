@@ -376,7 +376,7 @@ namespace OfficialPlugins.PropertyGrid
 
                     newVariable.Category = VariableDefinition?.Category;
 
-                    GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(newVariable, Container);
+                    _ = GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(newVariable, Container);
 
                 };
             }

@@ -914,7 +914,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         public void AddCustomVariableToCurrentElement(CustomVariable newVariable, bool save = true)
         {
             var element = GlueState.Self.CurrentElement;
-            AddCustomVariableToElement(newVariable, element, save);
+            AddCustomVariableToElementImmediate(newVariable, element, save);
         }
 
         public async Task AddStateCategoryCustomVariableToElementAsync(StateSaveCategory category, GlueElement element, bool save = true)
@@ -926,14 +926,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 customVariable.Type = category.Name;
                 customVariable.Name = "Current" + category.Name + "State";
+                customVariable.SetByDerived = true;
 
-                GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElement(
+                AddCustomVariableToElementImmediate(
                     customVariable, element, save);
 
             }, $"Adding category {category} as variable to {element}");
         }
 
-        public void AddCustomVariableToElement(CustomVariable newVariable, GlueElement element, bool save = true)
+        void AddCustomVariableToElementImmediate(CustomVariable newVariable, GlueElement element, bool save = true)
         { 
             element.CustomVariables.Add(newVariable);
 
@@ -972,14 +973,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (save)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }
 
         public async Task AddCustomVariableToElementAsync(CustomVariable newVariable, GlueElement element, bool save = true)
         {
-            await TaskManager.Self.AddAsync(() => AddCustomVariableToElement(newVariable, element, save),
+            await TaskManager.Self.AddAsync(() => AddCustomVariableToElementImmediate(newVariable, element, save),
                 $"Adding variable {newVariable.Name} to {element}");
         }
 
