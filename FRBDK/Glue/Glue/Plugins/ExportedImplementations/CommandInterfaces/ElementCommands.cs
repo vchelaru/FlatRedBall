@@ -178,7 +178,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         foreach (var element in elementsToRegenerate)
                         {
-                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                         }
 
                         GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
@@ -386,7 +386,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // Refresh tree node after plugin manager has a chance to make changes according to the screen
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
@@ -638,7 +638,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 });
                 //var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(newElement);
                 // Bases need to be generated because they may now contain the Type 
-                _ = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(ObjectFinder.Self.GetRootBaseElement( newElement ));
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(ObjectFinder.Self.GetRootBaseElement( newElement ));
 
                 if (newElement.CreatedByOtherEntities && viewModel.IncludeListsInScreens)
                 {
@@ -650,7 +650,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         if(needsList)
                         {
-                            _ = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
                         }
                     }
                 }
@@ -693,7 +693,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.PrintOutput(
                         $"Tiled Plugin added {addObjectViewModel.ObjectName} to {screen}");
 
-                    var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screen);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screen);
                 }
             }
         }
@@ -1024,14 +1024,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if(element != null)
                 {
                     var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
-                    var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     if(element.BaseElement != null)
                     {
                         var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
                         if(baseElement != null)
                         {
                             // Generate the root base because it may have definitions for the types that have changed... 
-                            var throwaway3 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(baseElement);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
                         }
                     }
                 }

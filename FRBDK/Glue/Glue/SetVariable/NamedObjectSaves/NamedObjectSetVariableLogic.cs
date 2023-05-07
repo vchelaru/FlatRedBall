@@ -807,7 +807,7 @@ namespace FlatRedBall.Glue.SetVariable
                 }
             }
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(currentElement);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
 
             var changedDerived = false;
             if(namedObjectSave.ExposedInDerived || namedObjectSave.SetByDerived)

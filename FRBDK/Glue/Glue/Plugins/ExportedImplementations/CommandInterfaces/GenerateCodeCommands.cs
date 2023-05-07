@@ -81,25 +81,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public Task GenerateElementCodeAsync(GlueElement element)
-        {
-            string taskName = nameof(GenerateElementCode) + " " + element.ToString();
-
-            // February 5, 2023
-            // Calling AddAsync only
-            // creates a new task if not
-            // already in a task. However,
-            // we always want a task for this
-            // because most of the time we never
-            // want to await it, so we want the task
-            // added to the end so we can move on.
-            //return TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-            return TaskManager.Self.AddAsync(async () => await CodeGeneratorIElement.GenerateElementAndDerivedCode(element),
-                taskName,
-                TaskExecutionPreference.AddOrMoveToEnd);
-        }
-
-        public async Task GenerateElementAndReferencedObjectCode(GlueElement element)
+        public void GenerateElementAndReferencedObjectCode(GlueElement element)
         {
             HashSet<GlueElement> toRegenerateHashSet = new HashSet<GlueElement>();
             if (element != null)
@@ -118,7 +100,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             foreach(var elementToRegenerate in toRegenerateHashSet)
             {
-                await GenerateElementCodeAsync(elementToRegenerate);
+                TaskManager.Self.Add(
+                    () => CodeGeneratorIElement.GenerateSpecificElement(elementToRegenerate),
+                    nameof(GenerateElementCode) + " " + elementToRegenerate.ToString(),
+                    TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 

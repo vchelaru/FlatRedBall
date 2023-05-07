@@ -212,14 +212,14 @@ namespace FlatRedBall.Glue.Factories
                 StringFunctions.RemoveDuplicates(nos.VariablesToReset);
             }
 
-            await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
             foreach(var element in entitySave.GetAllBaseEntities())
             {
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         internal void RemoveResetVariablesForEntitySave(EntitySave entitySave)

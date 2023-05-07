@@ -247,7 +247,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
 
                         GlueCommands.Self.GluxCommands.SaveGlux();
                         GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
-                        await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(nosParent);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
                     }
 
                 }

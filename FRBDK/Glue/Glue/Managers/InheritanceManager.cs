@@ -56,7 +56,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
                     }
                 }
 
@@ -68,7 +68,7 @@ namespace GlueFormsCore.Managers
 
                     if (element != null && regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
 
                 }
@@ -86,7 +86,7 @@ namespace GlueFormsCore.Managers
 
                     if (regenerateCode)
                     {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(screenSave);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
                     }
                 }
             }

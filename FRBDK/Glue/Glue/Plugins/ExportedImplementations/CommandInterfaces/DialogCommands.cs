@@ -338,12 +338,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         reallyRemoveResult = showDialogResult == true ? DialogResult.Yes : DialogResult.No;
                     }
-
-
-                    //string message = "Are you sure you want to remove this:\n\n" + namedObjectToRemove.ToString();
-
-                    //reallyRemoveResult =
-                    //    MessageBox.Show(message, "Remove?", MessageBoxButtons.YesNo);
                 }
             }
 

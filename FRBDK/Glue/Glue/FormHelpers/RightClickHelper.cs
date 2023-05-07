@@ -1985,7 +1985,7 @@ namespace FlatRedBall.Glue.FormHelpers
                         {
                             if (GlueState.Self.CurrentElement != null)
                             {
-                                var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(GlueState.Self.CurrentElement);
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(GlueState.Self.CurrentElement);
                             }
                             else if (GlueState.Self.CurrentReferencedFileSave != null)
                             {

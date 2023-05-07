@@ -148,14 +148,14 @@ namespace OfficialPlugins.VariableDisplay
 
 
                 var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
-                var throwaway2 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 if (element.BaseElement != null)
                 {
                     var baseElement = ObjectFinder.Self.GetRootBaseElement(element);
                     if (baseElement != null)
                     {
                         // Generate the root base because it may have definitions for the types that have changed... 
-                        var throwaway3 = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(baseElement);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
                     }
                 }
                 

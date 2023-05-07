@@ -405,7 +405,7 @@ namespace FlatRedBall.Glue.IO
                             // so finding references during
                             // codegen will not work correctly.
                             //GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(oldElement);
-                            var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(replacementElement);
+                            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(replacementElement);
                         }
 					}
                     else if(oldFile != null && replacementFile != null && fileIndexInOld == fileIndexInNew)

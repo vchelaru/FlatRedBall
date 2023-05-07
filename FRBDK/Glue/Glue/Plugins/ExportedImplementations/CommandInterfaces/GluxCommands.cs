@@ -1121,7 +1121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 if (regenerateAndSave && container != null)
                 {
-                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(container);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                 }
 
             }
@@ -1147,7 +1147,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     foreach (var element in elements)
                     {
-                        await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                        GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                     }
                 }
             }
@@ -1343,7 +1343,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if(performSaveAndGenerateCode)
             {
-                await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
             }
         }
@@ -1830,7 +1830,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 // generate code after all other plugins have responded so that the game doesn't have to wait for this task to have started before it tries
                 // to send the copy command back...
-                var throwaway = GlueCommands.Self.GenerateCodeCommands
+                GlueCommands.Self.GenerateCodeCommands
                     .GenerateElementAndReferencedObjectCode(targetElement);
             }
             return toReturn;
@@ -1920,7 +1920,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (performSaveAndGenerateCode)
                 {
-                    await GlueCommands.Self.GenerateCodeCommands
+                    GlueCommands.Self.GenerateCodeCommands
                         .GenerateElementAndReferencedObjectCode(targetElement);
                 }
 
@@ -1941,7 +1941,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     else
                     {
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     }
                 }
                 generalResponse.Data = newNos;
@@ -2267,7 +2267,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 if (performSaveAndGenerateCode)
                 {
-                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(nosContainer);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosContainer);
                 }
 
                 if (updateUi)

@@ -26,12 +26,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// </summary>
         /// <param name="element">The element to generate</param>
         /// <returns>Awaitable task which completes when the generation finishes.</returns>
-        Task GenerateElementCodeAsync(GlueElement element);
+        //Task GenerateElementCodeAsync(GlueElement element);
 
         void GenerateGlobalContentCode();
         void GenerateGlobalContentCodeTask();
 
-        Task GenerateElementAndReferencedObjectCode(GlueElement element);
+        void GenerateElementAndReferencedObjectCode(GlueElement element);
 
 
         string GetNamespaceForElement(GlueElement element);

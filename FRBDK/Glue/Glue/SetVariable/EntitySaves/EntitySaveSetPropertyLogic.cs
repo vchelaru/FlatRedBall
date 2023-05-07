@@ -309,7 +309,7 @@ namespace FlatRedBall.Glue.SetVariable
 
                 foreach (var element in elementsToGenerate)
                 {
-                    await GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
             }, nameof(RegenerateAllContainersForNamedObjectsThatUseEntity));
         }

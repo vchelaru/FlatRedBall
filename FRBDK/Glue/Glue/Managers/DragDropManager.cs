@@ -760,7 +760,7 @@ namespace FlatRedBall.Glue.Managers
                     // GluxCommands.Self.SaveGlux();
                     newTreeNode = GlueState.Self.Find.TreeNodeByTag(namedObject);
 
-                    var throwaway = GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(targetElement);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);
                 }
 
             }
@@ -788,9 +788,7 @@ namespace FlatRedBall.Glue.Managers
 
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
 
-                //var intentionallyNotAwaiting = CodeWriter.GenerateCode(entitySave);
-                var intentionallyNotAwaiting = 
-                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCodeAsync(entitySave);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
                 GluxCommands.Self.SaveGlux();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
