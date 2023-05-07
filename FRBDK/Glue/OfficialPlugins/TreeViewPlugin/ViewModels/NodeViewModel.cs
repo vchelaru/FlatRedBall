@@ -62,6 +62,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage ScreenIcon;
         public static BitmapImage ScreenStartupIcon;
         public static BitmapImage StateIcon;
+        public static BitmapImage TileShapeCollectionIcon;
         public static BitmapImage VariableIcon;
         public static BitmapImage VariableIconDerived;
 
@@ -73,6 +74,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == EntityIcon.UriSource.OriginalString) return EntityIcon;
             if (source == EntityDerivedIcon.UriSource.OriginalString) return EntityDerivedIcon;
             if (source == EntityInstanceIcon.UriSource.OriginalString) return EntityInstanceIcon;
+            if (source == EntityInstanceIsContainerIcon.UriSource.OriginalString) return EntityInstanceIsContainerIcon;
             if (source == EntityInstanceListIcon.UriSource.OriginalString) return EntityInstanceListIcon;
             if (source == EventIcon.UriSource.OriginalString) return EventIcon;
             if (source == FileIcon.UriSource.OriginalString) return FileIcon;
@@ -84,6 +86,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == ScreenIcon.UriSource.OriginalString) return ScreenIcon;
             if (source == ScreenStartupIcon.UriSource.OriginalString) return ScreenStartupIcon;
             if (source == StateIcon.UriSource.OriginalString) return StateIcon;
+            if (source == TileShapeCollectionIcon.UriSource.OriginalString) return TileShapeCollectionIcon;
             if (source == VariableIcon.UriSource.OriginalString) return VariableIcon;
             if (source == VariableIconDerived.UriSource.OriginalString) return VariableIconDerived;
 
@@ -240,6 +243,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             ScreenIcon = LoadIcon("icon_screen");
             ScreenStartupIcon = LoadIcon("icon_screen_startup");
             StateIcon = LoadIcon("icon_state");
+            TileShapeCollectionIcon = LoadIcon("icon_tile_shape_collection");
             VariableIcon = LoadIcon("icon_variable");
             VariableIconDerived = LoadIcon("icon_variable_derived");
 

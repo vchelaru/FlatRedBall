@@ -291,6 +291,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 imageSource = NodeViewModel.EntityInstanceListIcon;
             }
+            else if(namedObject.SourceClassType == "TileShapeCollection" || 
+                namedObject.SourceClassType == "FlatRedBall.TileCollisions.TileShapeCollection")
+            {
+                imageSource = TileShapeCollectionIcon;
+            }
 
             return imageSource;
         }

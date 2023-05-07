@@ -518,7 +518,7 @@ namespace TileGraphicsPlugin
                 nodeNetworkTab?.Hide();
             }
 
-            if(TileShapeCollectionsPropertiesController.Self.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))
+            if(TileShapeCollectionsPropertiesController.IsTileShapeCollection(treeNode?.Tag as NamedObjectSave))
             {
                 if(collisionTab == null)
                 {

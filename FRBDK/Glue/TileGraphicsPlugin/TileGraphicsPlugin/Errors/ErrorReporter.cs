@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using TiledPluginCore.Errors;
 using TileGraphicsPlugin;
+using TileGraphicsPlugin.Controllers;
+using TileGraphicsPlugin.ViewModels;
 using TMXGlueLib;
 
 namespace TiledPluginCore.Managers
@@ -33,13 +35,25 @@ namespace TiledPluginCore.Managers
                 }
             }
 
-            FillWithTmxFilesWithMultipleTilesetsPerLayer(tmxFiles, errors);
+            var allNamedObjects = ObjectFinder.Self.GetAllNamedObjects();
+            List<NamedObjectSave> tileShapeCollections = new List<NamedObjectSave>();
+            foreach(var namedObject in allNamedObjects)
+            {
+                if(TileShapeCollectionsPropertiesController.IsTileShapeCollection(namedObject))
+                {
+                    tileShapeCollections.Add(namedObject);
+                }
+            }
+
+            FillWithTmxFileErrors(tmxFiles, errors);
+
+            FillWithTileShapeCollectionErrors(tileShapeCollections, errors);
 
             return errors.ToArray();
         }
 
 
-        private void FillWithTmxFilesWithMultipleTilesetsPerLayer(List<FilePath> tmxFiles, List<ErrorViewModel> errors)
+        private void FillWithTmxFileErrors(List<FilePath> tmxFiles, List<ErrorViewModel> errors)
         {
 
             foreach(var filePath in tmxFiles)
@@ -83,6 +97,28 @@ namespace TiledPluginCore.Managers
                     }
                 }
 
+            }
+        }
+
+        private void FillWithTileShapeCollectionErrors(List<NamedObjectSave> namedObjects, List<ErrorViewModel> errors)
+        {
+            foreach(var nos in namedObjects)
+            {
+                if(nos.DefinedByBase == false)
+                {
+                    var collisionCreationOptions = nos.Properties.GetValue< CollisionCreationOptions>(nameof(CollisionCreationOptions));
+
+                    if(collisionCreationOptions == CollisionCreationOptions.FromMapCollision)
+                    {
+                        var tmxCollisionName = nos.Properties.GetValue<string>(nameof(TileShapeCollectionPropertiesViewModel.TmxCollisionName));
+
+                        if(tmxCollisionName != null && tmxCollisionName != nos.InstanceName)
+                        {
+                            var vm = new TileShapeCollectionMapShapeCollectionNameMismatchViewModel(nos);
+                            errors.Add(vm);
+                        }
+                    }
+                }
             }
         }
     }

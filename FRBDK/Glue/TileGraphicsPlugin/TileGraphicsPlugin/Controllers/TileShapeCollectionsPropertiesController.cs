@@ -221,7 +221,7 @@ namespace TileGraphicsPlugin.Controllers
         }
 
 
-        public bool IsTileShapeCollection(NamedObjectSave namedObject)
+        public static bool IsTileShapeCollection(NamedObjectSave namedObject)
         {
             var isTileShapeCollection = false;
 
