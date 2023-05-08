@@ -4,6 +4,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using Gum.DataTypes;
 using Gum.DataTypes.Variables;
+using GumPluginCore.CodeGeneration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -277,21 +278,9 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
         {
-            if(standardElementSave.Name == "Sprite")
-            {
-                var textureCoordinatesMethodBlock = classBodyBlock.Function("public void", "SetTextureCoordinatesFrom", "FlatRedBall.Graphics.Animation.AnimationFrame frbAnimationFrame");
+            SpriteCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
 
-                textureCoordinatesMethodBlock.Line("this.Texture = frbAnimationFrame.Texture;");
-                textureCoordinatesMethodBlock.Line("this.TextureAddress = Gum.Managers.TextureAddress.Custom;");
-                textureCoordinatesMethodBlock.Line("this.TextureLeft = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.LeftCoordinate * frbAnimationFrame.Texture.Width);");
-                textureCoordinatesMethodBlock.Line("this.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.RightCoordinate - frbAnimationFrame.LeftCoordinate) * frbAnimationFrame.Texture.Width);");
-                textureCoordinatesMethodBlock.Line("this.TextureTop = FlatRedBall.Math.MathFunctions.RoundToInt(frbAnimationFrame.TopCoordinate * frbAnimationFrame.Texture.Height);");
-                textureCoordinatesMethodBlock.Line("this.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt((frbAnimationFrame.BottomCoordinate - frbAnimationFrame.TopCoordinate) * frbAnimationFrame.Texture.Height);");
-
-                var sourceFileNameProperty = classBodyBlock.Property("public string", "SourceFileName");
-                sourceFileNameProperty.Line("set => base.SetProperty(\"SourceFile\", value);");
-            }
-            else if(standardElementSave.Name == "Text")
+            if(standardElementSave.Name == "Text")
             {
                 if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
                 {
