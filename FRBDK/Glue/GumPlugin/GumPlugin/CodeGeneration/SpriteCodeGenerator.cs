@@ -39,8 +39,12 @@ namespace GumPluginCore.CodeGeneration
                 if (hasProtectedAnimationProperties)
                 {
                     foreachBlock.Line("mTimeIntoAnimation = 0;");
+                    foreachBlock.Line("mCurrentFrameIndex = 0;");
                 }
-                foreachBlock.Line("await FlatRedBall.TimeManager.DelaySeconds(CurrentChain.TotalLength);");
+
+                foreachBlock.Line("UpdateToCurrentAnimationFrame();");
+                foreachBlock.Line("// subtract second difference to prevent it from looping once if it happens to fall mid-frame");
+                foreachBlock.Line("await FlatRedBall.TimeManager.DelaySeconds(CurrentChain.TotalLength - FlatRedBall.TimeManager.SecondDifference);");
 
 
             }

@@ -62,6 +62,25 @@ namespace StateInterpolationPlugin
             //tweener.Ended += () => mTweeners.Remove(tweener);
         }
 
+        public async Task TweenAsync(object owner, Action<float> assignmentAction, float from, float to,
+            float during, InterpolationType interpolation = InterpolationType.Quadratic, Easing easing = Easing.Out)
+        {
+            Tweener tweener = new Tweener(from, to, during, interpolation, easing);
+
+            // wrap it to allow assignment...
+            tweener.PositionChanged = (newValue => assignmentAction(newValue));
+
+            tweener.Owner = owner;
+
+            Add(tweener);
+            var didFinish = false;
+            tweener.Ended += () => didFinish = true;
+            tweener.Start();
+            //return tweener;
+            await TimeManager.DelayUntil(() => didFinish || tweener.Running == false);
+
+        }
+
         public void StopAllTweenersOwnedBy(object owner)
         {
             for (int i = mTweeners.Count - 1; i > -1; i--)
@@ -260,7 +279,9 @@ namespace StateInterpolationPlugin
             await TimeManager.DelayUntil(() => didFinish || tweener.Running == false);
 
         }
+
     }
+
 
     public struct TweenerHolder : ITweenerTween, ITweenerTo, ITweenerDuring, ITweenerUsing
     {
