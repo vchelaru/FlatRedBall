@@ -23,8 +23,8 @@ namespace OfficialPlugins.Git
         public override void StartUp()
         {
             this.ReactToLoadedGlux += HandleGluxLoaded;
+            this.ReactToUnloadedGlux += HandleUnloadedGlux;
         }
-
 
         void HandleGluxLoaded()
         {
@@ -44,6 +44,11 @@ namespace OfficialPlugins.Git
             //    this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
             //}
 
+        }
+
+        private void HandleUnloadedGlux()
+        {
+            this.RemoveAllMenuItems();
         }
 
         public void AddGitIgnore()
