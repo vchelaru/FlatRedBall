@@ -109,9 +109,12 @@ namespace TMXGlueLib
                                 var properties = tileset.TileDictionary[item.gid.Value - tileset.Firstgid];
                                 if (!string.IsNullOrEmpty(properties.Type))
                                 {
-
-                                    item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
-                                    item.PropertyDictionary["Type"] = properties.Type;
+                                    if(item.PropertyDictionary.ContainsKey("Type")) {
+                                        //If it already has a Type, it's overridden in tiled so we don't want the base tileset Type
+                                    } else {
+                                        item.properties.Add(new property { name = "Type", Type = "string", value = properties.Type });
+                                        item.PropertyDictionary["Type"] = properties.Type;
+                                    }
                                 }
                             }
 
@@ -682,7 +685,7 @@ namespace TMXGlueLib
 
                 MapLayer mLayer = mapLayer;
                 int mLayerCount = layercount;
-                Parallel.For(0, mapLayer.data[0].tiles.Count, count =>
+                Parallel.For(0, mapLayer.data[0].tiles.Length, count =>
                 {
                     uint gid = mLayer.data[0].tiles[count];
 
@@ -693,14 +696,14 @@ namespace TMXGlueLib
 
                         //int tileWidth = requireTile ? tileSet.tilewidth : tilewidth;
                         //int tileHeight = requireTile ? tileSet.tileheight : tileheight;
-                        int x = count % this.Width;
-                        int y = count / this.Width;
+                        int x = (int)count % this.Width;
+                        int y = (int)count / this.Width;
 
                         float nodex;
                         float nodey;
                         float nodez;
 
-                        CalculateWorldCoordinates(mLayerCount, count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
+                        CalculateWorldCoordinates(mLayerCount, (int)count, tilewidth, tileheight, mLayer.width, out nodex, out nodey, out nodez);
 
                         node.X = nodex;
                         node.Y = nodey;
@@ -855,7 +858,7 @@ namespace TMXGlueLib
                     MapLayer mLayer = mapLayer;
                     int mLayerCount = layercount;
 
-                    for (int i = 0; i < mapLayer.data[0].tiles.Count; i++)
+                    for (int i = 0; i < mapLayer.data[0].tiles.Length; i++)
                     {
                         uint gid = mLayer.data[0].tiles[i];
                         if (gid > 0)
@@ -1362,8 +1365,15 @@ namespace TMXGlueLib
 
             try
             {
-                tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
-                tms.FileName = fileName;
+                if(fileName?.EndsWith(".json") == true)
+                {
+                    throw new InvalidOperationException("Could not load TMX file with .json extension");
+                }
+                else
+                {
+                    tms = FileManager.XmlDeserialize<TiledMapSave>(fileName);
+                    tms.FileName = fileName;
+                }
             }
             finally
             {

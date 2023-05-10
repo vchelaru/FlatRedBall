@@ -1,6 +1,6 @@
-"Name (System.String, required)",MaxSpeedX (System.Single),AccelerationTimeX (System.Single),DecelerationTimeX (System.Single),Gravity (System.Single),MaxFallSpeed (System.Single),JumpVelocity (System.Single),JumpApplyLength (System.Single),JumpApplyByButtonHold (System.Boolean),UsesAcceleration (System.Boolean),CanFallThroughCloudPlatforms (System.Boolean),CloudFallThroughDistance (System.Single),IsUsingCustomDeceleration (System.Boolean),CustomDecelerationValue (System.Single),MoveSameSpeedOnSlopes (System.Boolean),UphillFullSpeedSlope (System.Decimal),UphillStopSpeedSlope (System.Decimal),DownhillFullSpeedSlope (System.Decimal),DownhillMaxSpeedSlope (System.Decimal),DownhillMaxSpeedBoostPercentage (System.Decimal)
-Ground,100,0.25,0.15,900,500,230,0.2,True,True,True,16,False,0,True,0,60,0,60,50
-Air,100,0.7,0.7,900,260,0,0,False,True,True,16,False,0,True,0,0,0,0,0
-Running,150,0.3,0.2,900,500,250,0.25,True,True,True,16,False,0,True,0,0,0,0,0
-RunningAir,150,0.7,0.7,900,260,0,0,False,True,True,16,False,0,True,0,0,0,0,0
-Ducking,0,0,0,900,500,230,0.2,True,True,True,16,True,200,True,0,0,0,0,0
+"Name (System.String, required)",MaxSpeedX (System.Single),AccelerationTimeX (System.Single),DecelerationTimeX (System.Single),Gravity (System.Single),MaxFallSpeed (System.Single),JumpVelocity (System.Single),JumpApplyLength (System.Single),JumpApplyByButtonHold (System.Boolean),UsesAcceleration (System.Boolean),CanFallThroughCloudPlatforms (System.Boolean),CloudFallThroughDistance (System.Single),IsUsingCustomDeceleration (System.Boolean),CustomDecelerationValue (System.Single),MoveSameSpeedOnSlopes (System.Boolean),UphillFullSpeedSlope (System.Decimal),UphillStopSpeedSlope (System.Decimal),DownhillFullSpeedSlope (System.Decimal),DownhillMaxSpeedSlope (System.Decimal),DownhillMaxSpeedBoostPercentage (System.Decimal),CanClimb (System.Boolean),MaxClimbingSpeed (System.Single),InheritOrOverwriteAsInt (System.Int32)
+Ground,100,0.25,0.15,900,500,230,0.2,True,True,True,16,False,0,True,0,60,0,60,50,False,0,0
+Air,100,0.7,0.7,900,260,0,0,False,True,True,16,False,0,True,0,0,0,0,0,False,0,0
+Running,150,0.3,0.2,900,500,250,0.25,True,True,True,16,False,0,True,0,0,0,0,0,False,0,0
+RunningAir,150,0.7,0.7,900,260,0,0,False,True,True,16,False,0,True,0,0,0,0,0,False,0,0
+Ducking,0,0,0,900,500,230,0.2,True,True,True,16,True,200,True,0,0,0,0,0,False,0,0
