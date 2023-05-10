@@ -22,12 +22,16 @@ using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
 
 namespace FlatRedBall.TileGraphics
 {
+    #region Enums
+
     public enum SortAxis
     {
         None,
         X,
         Y
     }
+
+    #endregion
 
     public class MapDrawableBatch : PositionedObject, IVisible, IDrawableBatch
     {
@@ -100,13 +104,11 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        #region XML Docs
         /// <summary>
-        /// Here we tell the engine if we want this batch
-        /// updated every frame.  Since we have no updating to
-        /// do though, we will set this to false
+        /// Whether this batch
+        /// updated every frame.  Since MapDrawableBatches do not
+        /// have any built-in update, this value defaults to false.
         /// </summary>
-        #endregion
         public bool UpdateEveryFrame
         {
             get { return true; }
@@ -152,13 +154,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public VertexPositionTexture[] Vertices
-        {
-            get
-            {
-                return mVertices;
-            }
-        }
+        public VertexPositionTexture[] Vertices => mVertices;
 
         public Texture2D Texture
         {
@@ -200,8 +196,8 @@ namespace FlatRedBall.TileGraphics
         /// </summary>
         public float ParallaxMultiplierX
         {
-            get { return -_parallaxMultiplierX + 1; }
-            set { _parallaxMultiplierX = 1 - value; }
+            get => -_parallaxMultiplierX + 1;
+            set => _parallaxMultiplierX = 1 - value;
         }
 
         private float _parallaxMultiplierY;
@@ -247,11 +243,14 @@ namespace FlatRedBall.TileGraphics
             mIndices = new int[6 * numberOfTiles];
         }
 
-        #region XML Docs
         /// <summary>
-        /// Create and initialize all assets
+        /// Create a new MapDrawableBatch with vertices to hold numberOfTiles. This creates a new Tileset which 
+        /// stores the argument texture which can be used to add or paint tiles.
         /// </summary>
-        #endregion
+        /// <remarks>
+        /// Although maps typically have fixed dimensions, this is not required. Tiles can be added anywhere so
+        /// no dimension parameters are required.
+        /// </remarks>
         public MapDrawableBatch(int numberOfTiles, int textureTileDimensionWidth, int textureTileDimensionHeight, Texture2D texture)
             : base()
         {
@@ -874,6 +873,81 @@ namespace FlatRedBall.TileGraphics
             textureY = vector.Y;
         }
 
+        public float GetRotationZForOrderedTile(int orderedTileIndex)
+        {
+            // The order is:
+            // 3   2
+            //
+            // 0   1
+
+            // So that means 
+            // 3           2
+            // ^
+            // |
+            // Y
+            // |
+            // 0 ---X--->  1
+
+            // We can't use positions because for rotated tiles the positions stay the same, but the
+            // texture coordiantes do not. So we should use the texture coordiantes.
+            // A tile's texture coordiantes may look like this:
+            // (0, 0)       (1, 0)
+            //
+            //
+            //
+            //
+            // (0, 1)       (1, 1)
+            // 
+
+            // The X Axis is set by finding the pair of texture coordinates where
+            // the Y value is the same, and the X value is increasing
+            // There may be a more elegant way to do this (mathematically)
+            // but I'm not sure what that is so we'll just brute force it:
+            var startIndex = orderedTileIndex * 4;
+
+            var bottomLeft = mVertices[startIndex];
+            var bottomRight = mVertices[startIndex + 1];
+            var topRight = mVertices[startIndex + 2];
+            var topLeft = mVertices[startIndex + 3];
+
+            Vector3 xAxis = Vector3.UnitX;
+
+            if (bottomLeft.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+            {
+                if (bottomRight.TextureCoordinate.X > bottomLeft.TextureCoordinate.X)
+                {
+                    xAxis = bottomRight.Position - bottomLeft.Position;
+                }
+                else
+                {
+                    xAxis = bottomLeft.Position - bottomRight.Position;
+                }
+            }
+            else
+            {
+                // use top right and bottom right
+                if (topRight.TextureCoordinate.Y == bottomRight.TextureCoordinate.Y)
+                {
+                    if (topRight.TextureCoordinate.X > bottomRight.TextureCoordinate.X)
+                    {
+                        xAxis = topRight.Position - bottomRight.Position;
+                    }
+                    else
+                    {
+                        xAxis = bottomRight.Position - topRight.Position;
+                    }
+                }
+            }
+
+            var rotationZ = (float)System.Math.Atan2(xAxis.Y, xAxis.X);
+            if (rotationZ < 0)
+            {
+                rotationZ += MathHelper.TwoPi;
+            }
+
+            return rotationZ;
+        }
+
         public void GetBottomLeftWorldCoordinateForOrderedTile(int orderedTileIndex, out float x, out float y)
         {
             // The order is:
@@ -886,6 +960,56 @@ namespace FlatRedBall.TileGraphics
 
             x = vector.X;
             y = vector.Y;
+        }
+
+        /// <summary>
+        /// Returns the quad index at the argument worldX and worldY. Returns null if no quad is found at this index.
+        /// </summary>
+        /// <param name="worldX">The absolute world X position.</param>
+        /// <param name="worldY">The absolute world Y position.</param>
+        /// <returns>The index found, or null if one isn't found.</returns>
+        public int? GetQuadIndex(float worldX, float worldY)
+        {
+            if (mVertices.Length == 0)
+            {
+                return null;
+            }
+
+            var firstVertIndex = 0;
+
+            var lastVertIndexExclusive = mVertices.Length;
+
+            float tileWidth = mVertices[1].Position.X - mVertices[0].Position.X;
+
+            if (mSortAxis == SortAxis.X)
+            {
+                firstVertIndex = GetFirstAfterX(mVertices, worldX - tileWidth);
+                lastVertIndexExclusive = GetFirstAfterX(mVertices, worldX + tileWidth);
+            }
+            else if (mSortAxis == SortAxis.Y)
+            {
+                firstVertIndex = GetFirstAfterY(mVertices, worldY - tileWidth);
+                lastVertIndexExclusive = GetFirstAfterY(mVertices, worldY + tileWidth);
+            }
+
+            for (int i = firstVertIndex; i < lastVertIndexExclusive; i += 4)
+            {
+                // Coords are
+                // 3   2
+                //
+                // 0   1
+
+                if (mVertices[i + 0].Position.X <= worldX && mVertices[i + 0].Position.Y <= worldY &&
+                    mVertices[i + 1].Position.X >= worldX && mVertices[i + 1].Position.Y <= worldY &&
+                    mVertices[i + 2].Position.X >= worldX && mVertices[i + 2].Position.Y >= worldY &&
+                    mVertices[i + 3].Position.X <= worldX && mVertices[i + 3].Position.Y >= worldY)
+                {
+                    return i / 4;
+                }
+            }
+
+
+            return null;
         }
 
         /// <summary>
@@ -973,6 +1097,9 @@ namespace FlatRedBall.TileGraphics
             //////////////////End Early Out/////////////////
 
 
+            AdjustOffsetAndParallax(camera);
+
+            ForceUpdateDependencies();
 
             int firstVertIndex;
             int lastVertIndex;
@@ -1079,7 +1206,7 @@ namespace FlatRedBall.TileGraphics
             // on non-power-of-two textures.
             oldTextureAddressMode = Renderer.TextureAddressMode;
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
-            
+
             return effectTouse;
         }
 
@@ -1240,22 +1367,73 @@ namespace FlatRedBall.TileGraphics
                 return list.Length;
             }
         }
-        #region XML Docs
-        /// <summary>
-        /// Here we update our batch - but this batch doesn't
-        /// need to be updated
-        /// </summary>
-        #endregion
+
+        string GetTileNameAt(float worldX, float worldY)
+        {
+            var quadIndex = GetQuadIndex(worldX, worldY);
+
+            if (quadIndex != null)
+            {
+                // look in all the dictionaries to find which names exist at this index
+                var foundKeyValuePair = NamedTileOrderedIndexes.FirstOrDefault(item => item.Value.Contains(quadIndex.Value));
+
+                return foundKeyValuePair.Key;
+            }
+            return null;
+        }
+
+        TMXGlueLib.mapTilesetTile GetTilesetTileAt(float worldX, float worldY, LayeredTileMap map)
+        {
+            TMXGlueLib.mapTilesetTile tilesetTile = null;
+
+            var quadIndex = GetQuadIndex(worldX, worldY);
+
+            if (quadIndex != null)
+            {
+                // look in all the dictionaries to find which names exist at this index
+                var foundKeyValuePair = NamedTileOrderedIndexes.FirstOrDefault(item => item.Value.Contains(quadIndex.Value));
+
+                if (foundKeyValuePair.Key != null)
+                {
+                    var name = foundKeyValuePair.Key;
+
+                    foreach (var tileset in map.Tilesets)
+                    {
+                        tilesetTile = GetTilesetTile(tileset, name);
+
+                        if (tilesetTile != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return tilesetTile;
+        }
+
+        private TMXGlueLib.mapTilesetTile GetTilesetTile(TMXGlueLib.Tileset tileset, string name)
+        {
+            foreach (var kvp in tileset.TileDictionary)
+            {
+                var candidate = kvp.Value;
+                var nameProperty = candidate.properties.FirstOrDefault(item => item.StrippedNameLower == "name");
+
+                if (nameProperty?.value == name)
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+
+
         public void Update()
         {
-            float leftView = Camera.Main.AbsoluteLeftXEdgeAt(0);
-            float topView = Camera.Main.AbsoluteTopYEdgeAt(0);
-
-            float cameraOffsetX = leftView - CameraOriginX;
-            float cameraOffsetY = topView - CameraOriginY;
-
-            this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
-            this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            var camera = Camera.Main;
+            AdjustOffsetAndParallax(camera);
 
             this.TimedActivity(TimeManager.SecondDifference, TimeManager.SecondDifferenceSquaredDividedByTwo, TimeManager.LastSecondDifference);
 
@@ -1266,6 +1444,34 @@ namespace FlatRedBall.TileGraphics
             // be adding this to the SpriteManager's PositionedObjectList.  This is an improvement so we'll do it for
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
+        }
+
+        private void AdjustOffsetAndParallax(Camera camera)
+        {
+            float leftView = camera.AbsoluteLeftXEdgeAt(0);
+            float topView = camera.AbsoluteTopYEdgeAt(0);
+
+            float cameraOffsetX = leftView - CameraOriginX;
+            float cameraOffsetY = topView - CameraOriginY;
+
+            if (camera.Orthogonal)
+            {
+                var zoom = camera.DestinationRectangle.Height / camera.OrthogonalHeight;
+
+                var pixelRoundingValue = 1 / zoom;
+                pixelRoundingValue = System.Math.Min(1, pixelRoundingValue);
+
+                this.RelativeX = MathFunctions.RoundFloat(cameraOffsetX * _parallaxMultiplierX, pixelRoundingValue);
+                this.RelativeY = MathFunctions.RoundFloat(cameraOffsetY * _parallaxMultiplierY, pixelRoundingValue);
+
+
+            }
+
+            else
+            {
+                this.RelativeX = cameraOffsetX * _parallaxMultiplierX;
+                this.RelativeY = cameraOffsetY * _parallaxMultiplierY;
+            }
         }
 
         // TODO: I would like to somehow make this a property on the LayeredTileMap, but right now it is easier to put them here
@@ -1455,9 +1661,9 @@ namespace FlatRedBall.TileGraphics
                     newIndexes[destinationIndexIndex + 5] =
                         destinationVertIndex - firstVert + layerToCopyFrom.mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex/4))
+                    if (invertedDictionaries[layerIndexToCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
-                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex/4];
+                        var newName = invertedDictionaries[layerIndexToCopyFrom][sourceVertIndex / 4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
@@ -1569,16 +1775,16 @@ namespace FlatRedBall.TileGraphics
                     newIndexes[destinationIndexIndex + 5] =
                         destinationVertIndex - firstVert + layers[toCopyFrom].mIndices[sourceIndexIndex + 5];
 
-                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex/4))
+                    if (invertedDictionaries[toCopyFrom].ContainsKey(sourceVertIndex / 4))
                     {
-                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex/4];
+                        var newName = invertedDictionaries[toCopyFrom][sourceVertIndex / 4];
 
                         if (newNameIndexDictionary.ContainsKey(newName) == false)
                         {
                             newNameIndexDictionary[newName] = new List<int>();
                         }
 
-                        newNameIndexDictionary[newName].Add(destinationVertIndex/4);
+                        newNameIndexDictionary[newName].Add(destinationVertIndex / 4);
                     }
 
                     destinationVertIndex += 4;
@@ -1655,7 +1861,50 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
+        public void SortQuadsOnAxis(SortAxis sortAxis)
+        {
+            this.SortAxis = sortAxis;
 
+            List<Quad> quads = new List<Quad>();
+
+            for (int i = 0; i < Vertices.Count(); i += 4)
+            {
+                var quad = new Quad();
+                quad.Vertices[0] = Vertices[i + 0];
+                quad.Vertices[1] = Vertices[i + 1];
+                quad.Vertices[2] = Vertices[i + 2];
+                quad.Vertices[3] = Vertices[i + 3];
+
+                quads.Add(quad);
+            }
+
+            Quad[] sortedQuads = null;
+            if (sortAxis == SortAxis.X)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.X).ToArray();
+            }
+            else if (sortAxis == SortAxis.Y)
+            {
+                sortedQuads = quads.OrderBy(item => item.Position.Y).ToArray();
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid sort axis: {sortAxis}");
+            }
+
+            for (int i = 0; i < sortedQuads.Length; i++)
+            {
+                Vertices[i * 4 + 0] = sortedQuads[i].Vertices[0];
+                Vertices[i * 4 + 1] = sortedQuads[i].Vertices[1];
+                Vertices[i * 4 + 2] = sortedQuads[i].Vertices[2];
+                Vertices[i * 4 + 3] = sortedQuads[i].Vertices[3];
+            }
+        }
+
+        /// <summary>
+        /// Removes quads from the TileMap using the argument QuadIndexes
+        /// </summary>
+        /// <param name="quadIndexes">The indexes of the quads</param>
         public void RemoveQuads(IEnumerable<int> quadIndexes)
         {
             var vertList = mVertices.ToList();
@@ -1722,8 +1971,14 @@ namespace FlatRedBall.TileGraphics
         #endregion
     }
 
+    #region Additional Classes
 
+    public class Quad
+    {
+        public Vector3 Position => Vertices[0].Position;
 
+        public VertexType[] Vertices = new VertexType[4];
+    }
 
     public static class MapDrawableBatchExtensionMethods
     {
@@ -1731,5 +1986,5 @@ namespace FlatRedBall.TileGraphics
 
     }
 
-
+    #endregion
 }
