@@ -95,6 +95,13 @@ namespace TopDownPlugin.Controllers
             switch (e.PropertyName)
             {
                 case nameof(TopDownEntityViewModel.IsTopDown):
+
+                    if(viewModel.IsTopDown && entity.ImplementsICollidable == false)
+                    {
+                        entity.ImplementsICollidable = true;
+                        await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(entity, nameof(entity.ImplementsICollidable), false);
+                    }
+
                     HandleIsTopDownPropertyChanged(viewModel);
                     break;
                 // already handled in a dedicated method
@@ -139,7 +146,7 @@ namespace TopDownPlugin.Controllers
 
             if (shouldGenerateCsv || shouldGenerateEntity || shouldAddTopDownVariables)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 await TaskManager.Self.AddAsync(
                     () =>
                     {

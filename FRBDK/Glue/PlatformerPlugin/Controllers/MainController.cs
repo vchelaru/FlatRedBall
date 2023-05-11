@@ -125,12 +125,22 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             ///////////// end early out ///////////
 
             var entity = GlueState.Self.CurrentEntitySave;
-            var element = GlueState.Self.CurrentElement;
             var viewModel = sender as PlatformerEntityViewModel;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel, 
                 out shouldGenerateCsv, out shouldGenerateEntity, out shouldAddPlatformerVariables);
+
+            switch(e.PropertyName)
+            {
+                case nameof(PlatformerEntityViewModel.IsPlatformer):
+                    if(viewModel.IsPlatformer && entity.ImplementsICollidable == false)
+                    {
+                        entity.ImplementsICollidable = true;
+                        await GlueCommands.Self.GluxCommands.ElementCommands.ReactToPropertyChanged(entity, nameof(entity.ImplementsICollidable), false);
+                    }
+                    break;
+            }
 
             if (shouldGenerateCsv)
             {
@@ -170,9 +180,9 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             if(shouldAddPlatformerVariables)
             {
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-                if(element != null)
+                if(entity != null)
                 {
-                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+                    GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(entity);
                 }
             }
 
