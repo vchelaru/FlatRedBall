@@ -3,6 +3,7 @@ using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
+using PropertyTools.Wpf;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
@@ -98,8 +99,11 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        public void ForceRefreshAchx(FilePath achxFilePath)
+        public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)
         {
+            var previouslySelected = ViewModel.SelectedAnimationChain;
+
+            achxFilePath = achxFilePath ?? this.AchxFilePath;
             foreach (var outline in Outlines)
             {
                 GumCanvas.Children.Remove(outline);
@@ -116,6 +120,12 @@ namespace OfficialPlugins.ContentPreview.Views
             RefreshOutlines();
 
             RefreshTreeView(animationChain);
+
+            if(preserveSelection && previouslySelected != null)
+            {
+                ViewModel.SelectedAnimationChain = ViewModel.VisibleRoot
+                    .FirstOrDefault(item => item.Name == previouslySelected.Name);
+            }
 
             GumCanvas.InvalidateVisual();
         }
@@ -341,6 +351,49 @@ namespace OfficialPlugins.ContentPreview.Views
             PropertyGrid.Instance = selectedAnimationChain;
             MemberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationChain);
             PropertyGrid.Refresh();
+        }
+
+        private void TreeListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DependencyObject originalSource = e.OriginalSource as DependencyObject;
+            var treeViewItem = GetTreeViewItemFromOriginalSource(originalSource);
+
+            if (treeViewItem != null)
+            {
+                var viewModel = treeViewItem.DataContext as AnimationChainViewModel;
+                if(viewModel != null)
+                {
+                    FocusAnimation(viewModel.BackingModel);
+                }
+            }
+        }
+
+        private void FocusAnimation(AnimationChainSave backingModel)
+        {
+            if(backingModel.Frames.Count > 0)
+            {
+                var firstFrame = backingModel.Frames[0];
+                var centerX = (firstFrame.LeftCoordinate + firstFrame.RightCoordinate) / 2.0f;
+                var centerY = (firstFrame.TopCoordinate + firstFrame.BottomCoordinate) / 2.0f;
+
+                var camera = GumCanvas.SystemManagers.Renderer.Camera;
+
+                ViewModel.CurrentZoomPercent = 100;
+                camera.X = centerX - GumCanvas.CanvasSize.Width / 2f;
+                camera.Y = centerY - GumCanvas.CanvasSize.Height / 2f;
+
+                CameraLogic.RefreshCameraZoomToViewModel();
+            }
+        }
+
+        private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)
+        {
+            while (originalSource != null && !(originalSource is TreeListBoxItem) && !(originalSource is TreeView))
+            {
+                originalSource = VisualTreeHelper.GetParent(originalSource);
+            }
+
+            return originalSource as TreeListBoxItem;
         }
     }
 }

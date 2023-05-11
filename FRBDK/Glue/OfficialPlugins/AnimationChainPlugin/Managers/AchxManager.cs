@@ -89,6 +89,6 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
 
         internal static void ForceRefreshAchx(FilePath filePath) =>
-            View.ForceRefreshMainSpriteTexture(filePath);
+            View.ForceRefreshAchx(filePath, preserveSelection:true);
     }
 }

@@ -25,6 +25,7 @@
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
                 SelectedItem="{Binding SelectedAnimationChain}"
+                MouseDoubleClick="TreeListBox_MouseDoubleClick"
                 >
             
             </pt:TreeListBox>
