@@ -1,6 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using OfficialPlugins.Common.ViewModels;
-using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficialPlugins.ContentPreview.ViewModels
+namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
     internal class AchxViewModel : ViewModel, ICameraZoomViewModel
     {
@@ -44,7 +43,7 @@ namespace OfficialPlugins.ContentPreview.ViewModels
         [DependsOn(nameof(ResolutionHeight))]
         public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
 
-        public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; } 
+        public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; }
             = new ObservableCollection<AnimationChainViewModel>();
 
         public AnimationChainViewModel SelectedAnimationChain

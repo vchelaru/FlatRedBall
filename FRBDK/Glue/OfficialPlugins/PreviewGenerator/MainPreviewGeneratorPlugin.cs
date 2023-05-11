@@ -21,10 +21,6 @@ namespace OfficialPlugins.PreviewGenerator
     {
         public override string FriendlyName => "Preview Generator";
 
-        public override Version Version => new Version(1, 0);
-
-        // I dont' think we need this anymore:
-        //PluginTab previewPreviewTab;
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -34,7 +30,6 @@ namespace OfficialPlugins.PreviewGenerator
         public override void StartUp()
         {
             var view = new MainPreviewGeneratorControl();
-            //previewPreviewTab = this.CreateTab(view, "Preview Preview");
 
             this.ReactToItemSelectHandler = HandleReactToItemSelectHandler;
         }

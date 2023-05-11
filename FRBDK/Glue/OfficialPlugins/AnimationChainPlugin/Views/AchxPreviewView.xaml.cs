@@ -1,8 +1,7 @@
 ﻿using FlatRedBall.Content.AnimationChain;
 using FlatRedBall.IO;
-using OfficialPlugins.ContentPreview.Managers.AnimationChains;
-using OfficialPlugins.ContentPreview.ViewModels;
-using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
+using OfficialPlugins.AnimationChainPlugin.Managers;
+using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
@@ -54,6 +53,7 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 if(value != achxFilePath)
                 {
+                    achxFilePath = value;
                     ForceRefreshAchx(value);
                 }
             }

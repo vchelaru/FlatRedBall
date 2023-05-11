@@ -1,6 +1,6 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.IO;
-using OfficialPlugins.ContentPreview.ViewModels;
+using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.ContentPreview.Views;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficialPlugins.ContentPreview.Managers.AnimationChains
+namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
     internal class AchxManager
     {

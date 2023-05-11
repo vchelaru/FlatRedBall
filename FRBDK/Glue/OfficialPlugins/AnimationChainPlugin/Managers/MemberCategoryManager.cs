@@ -1,4 +1,4 @@
-﻿using OfficialPlugins.ContentPreview.ViewModels.AnimationChains;
+﻿using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
 
-namespace OfficialPlugins.ContentPreview.Managers.AnimationChains
+namespace OfficialPlugins.AnimationChainPlugin.Managers
 {
     internal static class MemberCategoryManager
     {
