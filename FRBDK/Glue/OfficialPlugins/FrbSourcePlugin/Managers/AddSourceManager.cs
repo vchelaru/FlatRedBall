@@ -22,13 +22,8 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
     {
         #region DesktopGlNetFramework Projects
 
-        public static List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
+        public static List<ProjectReference> SharedShprojReferences = new List<ProjectReference>
         {
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
-            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", ProjectRootType = FrbOrGum.Gum},
-
             new ProjectReference()
             {
                 RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallShared.shproj",
@@ -61,6 +56,24 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
                 ProjectId = Guid.Parse("0ee8a96c-a754-453d-9e65-19a24e9a5e76"),
                 ProjectRootType = FrbOrGum.Frb
             },
+
+            new ProjectReference()
+            {
+                RelativeProjectFilePath = $"FRBDK\\Glue\\StateInterpolationPlugin\\StateInterpolationPlugin\\StateInterpolationShared.shproj",
+                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
+                ProjectId = Guid.Parse("d00d287d-385b-42fb-bf5f-04401e7d37d0"),
+                ProjectRootType = FrbOrGum.Frb
+            },
+
+        };
+
+        public static List<ProjectReference> DesktopGlNetFramework = new List<ProjectReference>
+        {
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallDesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGL.csproj", ProjectRootType = FrbOrGum.Frb},
+            new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreDesktopGL.csproj", ProjectRootType = FrbOrGum.Gum},
+
         };
 
         #endregion
@@ -73,40 +86,6 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
             new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBallDesktopGLNet6\\FlatRedBallDesktopGLNet6.csproj", ProjectRootType = FrbOrGum.Frb},
             new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.DesktopGlNet6\\FlatRedBall.Forms.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Frb},
             new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.DesktopGlNet6\\GumCore.DesktopGlNet6.csproj", ProjectRootType = FrbOrGum.Gum},
-                                                                       
-
-            new ProjectReference()
-            {
-                RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallShared.shproj",
-                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
-                ProjectId = Guid.Parse("0BB8CBE3-8503-46C1-9272-D98E153A230E"),
-                ProjectRootType = FrbOrGum.Frb
-            },
-
-            new ProjectReference()
-            {
-                RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Shared\\FlatRedBall.Forms.Shared.shproj",
-                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
-                ProjectId = Guid.Parse("728151F0-03E0-4253-94FE-46B9C77EDEA6"),
-                ProjectRootType = FrbOrGum.Frb
-            },
-
-            new ProjectReference()
-            {
-                RelativeProjectFilePath = $"GumCoreShared.shproj",
-                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
-                ProjectId = Guid.Parse("F919C045-EAC7-4806-9A1F-CE421F923E97"),
-                ProjectRootType = FrbOrGum.Gum
-
-            },
-
-            new ProjectReference()
-            {
-                RelativeProjectFilePath = $"FRBDK\\Glue\\GumPlugin\\GumPlugin\\GumCoreShared.FlatRedBall.shproj",
-                ProjectTypeId = Guid.Parse("D954291E-2A0B-460D-934E-DC6B0785DB48"),
-                ProjectId = Guid.Parse("0ee8a96c-a754-453d-9e65-19a24e9a5e76"),
-                ProjectRootType = FrbOrGum.Frb
-            },
         };
 
         static ProjectReference GumSkia = new ProjectReference
@@ -195,11 +174,11 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
         {
             if (GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6)
             {
-                return DesktopGlNet6;
+                return DesktopGlNet6.Concat(SharedShprojReferences).ToList();
             }
             else
             {
-                return DesktopGlNetFramework;
+                return DesktopGlNetFramework.Concat(SharedShprojReferences).ToList();
             }
         }
 

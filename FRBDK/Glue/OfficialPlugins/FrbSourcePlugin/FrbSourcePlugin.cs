@@ -48,6 +48,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
     [Export(typeof(PluginBase))]
     public class FrbSourcePlugin : PluginBase
     {
+        #region Fields/Properties
+
         private PluginTab Tab;
         private AddFrbSourceView control;
 
@@ -55,7 +57,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override string FriendlyName => "FRB Source";
 
-        public override Version Version => new Version(1, 0);
+        #endregion
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
