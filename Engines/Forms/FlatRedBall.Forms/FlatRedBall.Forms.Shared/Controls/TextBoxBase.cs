@@ -77,7 +77,7 @@ namespace FlatRedBall.Forms.Controls
                 base.IsEnabled = value;
                 if (!IsEnabled)
                 {
-                    HasFocus = false;
+                    IsFocused = false;
                 }
                 UpdateState();
             }
