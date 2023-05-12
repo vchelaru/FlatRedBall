@@ -56,7 +56,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             var Content = AddTopLevelMenuItem("Content");
             {
-                var AdditionalContent = Content.Add("Additional Content", (Action)null) ;
+                var AdditionalContent = Content.Add("Additional Content", (Action)null);
                 {
                     var ViewAdditionalContent = AdditionalContent.Add("View Additional Content Types", (Action)null);
                     {
@@ -74,7 +74,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             var Settings = AddTopLevelMenuItem("Settings");
             {
                 Settings.Add(
-                    "File Associations", 
+                    "File Associations",
                     () => new FileAssociationWindow().ShowDialog(MainGlueWindow.Self));
 
                 Settings.Add(
@@ -126,7 +126,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             }
             catch
             {
-                var message = 
+                var message =
                     $"Could not open a browser to the URL:\n\n{url}\n\nTry entering the address in a browser manually.";
 
                 GlueCommands.Self.DialogCommands.ShowMessageBox(message);
@@ -237,15 +237,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             ComboBox comboBox = new ComboBox();
 
             // project-specific CSVs are always named ProjectSpecificContent.csv
-            //const string allProjects = "For all projects";
-            //const string thisProjectOnly = "For this project only";
+            const string allProjects = "For all projects";
+            const string thisProjectOnly = "For this project only";
 
-            //comboBox.Items.Add(allProjects);
-            //comboBox.Text = allProjects;
-            //comboBox.Items.Add(thisProjectOnly);
-            //comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            //comboBox.Width = 136;
-            //tiw.AddControl(comboBox);
+            comboBox.Items.Add(allProjects);
+            comboBox.Items.Add(thisProjectOnly);
+            // May 11 2023 - probably want to default to this project
+            comboBox.Text = thisProjectOnly;
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox.Width = 136;
+            tiw.AddControl(comboBox);
 
             DialogResult result = tiw.ShowDialog();
 
@@ -261,14 +262,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 GlobalOrProjectSpecific globalOrProjectSpecific;
 
-                //if (comboBox.SelectedItem == allProjects)
-                //{
-                globalOrProjectSpecific = GlobalOrProjectSpecific.Global;
-                //}
-                //else
-                //{
-                //    globalOrProjectSpecific = GlobalOrProjectSpecific.ProjectSpecific;
-                //}
+                if (comboBox.SelectedItem is string asString && asString == allProjects)
+                {
+                    globalOrProjectSpecific = GlobalOrProjectSpecific.Global;
+                }
+                else
+                {
+                    globalOrProjectSpecific = GlobalOrProjectSpecific.ProjectSpecific;
+                }
 
                 AvailableAssetTypes.Self.CreateAdditionalCsvFile(tiw.Result, globalOrProjectSpecific);
 
@@ -302,7 +303,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             if (System.IO.Directory.Exists(whatToView))
             {
-                Process.Start(whatToView);
+                GlueCommands.Self.FileCommands.ViewInExplorer(whatToView);
             }
             else
             {
@@ -353,7 +354,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         {
             var newItem = new ToolStripMenuItem(text);
 
-            if(action != null)
+            if (action != null)
             {
                 newItem.Click += (not, used) => action();
             }

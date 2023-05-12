@@ -100,7 +100,7 @@ namespace FlatRedBall.Glue.Elements
         }
 
         /// <summary>
-        /// A list of extensiosn to treat as content. This is reset every time a project is loaded
+        /// A list of extensions to treat as content. This is reset every time a project is loaded
         /// so plugins should add to this in their Glux load event handlers.
         /// </summary>
         public List<string> AdditionalExtensionsToTreatAsAssets
