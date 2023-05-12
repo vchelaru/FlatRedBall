@@ -755,7 +755,7 @@ namespace FlatRedBall
             Renderer.Effect = mResourceContentManager.Load<Effect>("FlatRedBallShader");
 #endif
 
-#if DESKTOP_GL
+#if MONOGAME_381
 
             // We'll make a content manager that is never disposed. At this
             // point the FRB engine is not initialized so we can't use the global
