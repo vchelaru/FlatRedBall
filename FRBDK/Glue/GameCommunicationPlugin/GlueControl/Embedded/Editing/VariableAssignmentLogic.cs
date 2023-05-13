@@ -1290,7 +1290,14 @@ namespace GlueControl.Editing
                     {
                         return (T)(object)parsedInt;
                     }
-                    return default(T);
+                    else if (Enum.TryParse(typeof(T), asString, out object parsedAsObject))
+                    {
+                        return (T)parsedAsObject;
+                    }
+                    else
+                    {
+                        return default(T);
+                    }
                 }
             }
 

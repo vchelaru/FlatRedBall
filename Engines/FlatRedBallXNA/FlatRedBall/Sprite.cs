@@ -1774,6 +1774,9 @@ namespace FlatRedBall
             }
         }
 
+#if DEBUG
+        double lastTimeAnimated= 0;
+#endif
         /// <summary>
         /// Performs the every-frame logic for updating the current AnimationFrame index.  If the
         /// Sprite is part of the SpriteManager then this is automatically called.
@@ -1781,6 +1784,14 @@ namespace FlatRedBall
         /// <param name="currentTime">The number of seconds that have passed since the game has started running.</param>
         public void AnimateSelf(double currentTime)
         {
+#if DEBUG
+            if(lastTimeAnimated > 0 && lastTimeAnimated == TimeManager.CurrentTime)
+            {
+                int m = 3;
+            }
+
+            lastTimeAnimated = TimeManager.CurrentTime;
+#endif
             mJustChangedFrame = false;
             mJustCycled = false;
             if (mAnimate == false || mCurrentChainIndex == -1 || mAnimationChains.Count == 0 || mCurrentChainIndex >= mAnimationChains.Count || mAnimationChains[mCurrentChainIndex].Count == 0) return;

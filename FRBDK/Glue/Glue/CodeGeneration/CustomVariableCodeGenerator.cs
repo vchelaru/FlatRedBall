@@ -199,7 +199,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                                 if(category != null)
                                 {
                                     var categoryElement = ObjectFinder.Self.GetElementContaining(category);
-                                    type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
+
+                                    if(categoryElement != null)
+                                    {
+                                        type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
+
+                                    }
+
                                 }
                                 variableAssignment = type + "." + customVariable.DefaultValue;
                             }
