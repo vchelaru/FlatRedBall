@@ -198,6 +198,8 @@ namespace GlueControl.Editing
             sprite.SetAnimationChain(animationChain);
             sprite.Position = position;
             sprite.TextureScale = textureScale;
+            sprite.ColorOperation = ColorOperation.Texture;
+            sprite.Alpha = 1;
 
             nextSprite++;
 
