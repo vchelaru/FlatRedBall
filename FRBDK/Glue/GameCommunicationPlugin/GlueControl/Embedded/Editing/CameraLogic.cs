@@ -104,7 +104,7 @@ namespace GlueControl.Editing
             }
         }
 
-        public static void DoCursorCameraControllingLogic()
+        public static void DoCursorCameraControllingLogic(bool wasPushedInWindow)
         {
             if (!FlatRedBallServices.Game.IsActive)
             {
@@ -124,7 +124,7 @@ namespace GlueControl.Editing
             }
 
             if ((mouse.ButtonDown(Mouse.MouseButtons.LeftButton) || mouse.ButtonDown(Mouse.MouseButtons.RightButton)) &&
-                mouse.IsInGameWindow())
+                (wasPushedInWindow || mouse.IsInGameWindow()))
             {
                 // If near the edges, move in that direction.
                 DoMouseDownScrollingLogic();

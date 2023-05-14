@@ -431,12 +431,12 @@ namespace GlueControl.Editing
                 var mouse = FlatRedBall.Input.InputManager.Mouse;
 
                 if(!mouse.ButtonDown(Mouse.MouseButtons.LeftButton) &&
-                    !mouse.ButtonDown(Mouse.MouseButtons.LeftButton) &&
-                    !mouse.ButtonDown(Mouse.MouseButtons.LeftButton))
+                    !mouse.ButtonDown(Mouse.MouseButtons.RightButton) &&
+                    !mouse.ButtonDown(Mouse.MouseButtons.MiddleButton))
                 {
                     wasPushedInWindow = false;
                 }
-                else
+                else if(mouse.AnyButtonPushed())
                 {
                     wasPushedInWindow = mouse.IsInGameWindow();
                 }
@@ -487,7 +487,7 @@ namespace GlueControl.Editing
 
                     if(mouse.IsInGameWindow() || wasPushedInWindow)
                     {
-                        CameraLogic.DoCursorCameraControllingLogic();
+                        CameraLogic.DoCursorCameraControllingLogic(wasPushedInWindow);
                     }
 
                     DoForwardBackActivity();
