@@ -218,6 +218,9 @@ namespace GlueControl.Editing
 
         bool wasGameActive;
 
+        bool wasPushedInWindow;
+
+
         #endregion
 
         #region Delegates/Events
@@ -427,6 +430,17 @@ namespace GlueControl.Editing
 
                 var mouse = FlatRedBall.Input.InputManager.Mouse;
 
+                if(!mouse.ButtonDown(Mouse.MouseButtons.LeftButton) &&
+                    !mouse.ButtonDown(Mouse.MouseButtons.LeftButton) &&
+                    !mouse.ButtonDown(Mouse.MouseButtons.LeftButton))
+                {
+                    wasPushedInWindow = false;
+                }
+                else
+                {
+                    wasPushedInWindow = mouse.IsInGameWindow();
+                }
+
                 // Vic says - not sure how much should be inside the IsActive check
                 if (FlatRedBallServices.Game.IsActive && mouse.IsInGameWindow())
                 {
@@ -471,7 +485,7 @@ namespace GlueControl.Editing
 
                     DoHotkeyLogic();
 
-                    if(mouse.IsInGameWindow())
+                    if(mouse.IsInGameWindow() || wasPushedInWindow)
                     {
                         CameraLogic.DoCursorCameraControllingLogic();
                     }
