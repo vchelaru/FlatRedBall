@@ -566,6 +566,59 @@ namespace GumPlugin.CodeGeneration
                     currentBlock.Line($"{exposedChildEvent.Name} += (unused) => {exposedChildEvent.ExposedAsName}?.Invoke(this);");
                 }
 
+                var qualifiedElementName = elementSave.Name;
+                if (elementSave is ComponentSave)
+                {
+                    qualifiedElementName = "Components/" + elementSave.Name;
+                }
+                else if (elementSave is Gum.DataTypes.ScreenSave)
+                {
+                    qualifiedElementName = "Screens/" + elementSave.Name;
+                }
+                else if (elementSave is StandardElementSave)
+                {
+                    qualifiedElementName = "StandardElements/" + elementSave.Name;
+                }
+
+                // for now we'll just support variable references in default state
+                foreach(var variableList in elementSave.DefaultState.VariableLists)
+                {
+                    if(variableList.GetRootName() == "VariableReferences" && variableList.ValueAsIList?.Count > 0)
+                    {
+                        string receiverOfReference = variableList.SourceObject ?? "this";
+                        foreach(string value in variableList.ValueAsIList)
+                        {
+                            
+                            if(value?.Contains(".") == true)
+                            {
+                                var valueLeftOfEquals = value.Substring(0, value.IndexOf("=")).Trim();
+                                var valueRightOfEquals = value.Substring(value.IndexOf("=") + 1).Trim(); ;
+
+                                // for now we only care about internal references...
+                                if(valueRightOfEquals.Contains("/") && valueRightOfEquals.StartsWith(qualifiedElementName))
+                                {
+                                    // it's qualified, so let's see if it starts with the name of this element
+                                    valueRightOfEquals = valueRightOfEquals.Substring(qualifiedElementName.Length + 1);
+                                }
+
+                                // make sure it is no longer qualified
+                                if(!valueRightOfEquals.Contains("/"))
+                                {
+                                    var instanceOwningReferencedVariable = valueRightOfEquals.Substring(0, valueRightOfEquals.IndexOf("."));
+                                    var valueWithoutVariable = valueRightOfEquals.Substring(valueRightOfEquals.IndexOf(".") + 1);
+
+                                    // for now a new event += per reference. Later we can combine these.
+                                    var eventBlock = currentBlock.Line($"{instanceOwningReferencedVariable}.PropertyChanged += (sender, args) =>");
+                                    eventBlock = eventBlock.Block();
+                                    eventBlock.If("args.PropertyName == nameof(" + valueWithoutVariable + ")")
+                                        .Line($"{receiverOfReference}.{valueLeftOfEquals} = {instanceOwningReferencedVariable}.{valueWithoutVariable};");
+                                    currentBlock.Line(";");
+                                }
+                            }
+                        }
+                    }
+                }
+
                 string controlType;
                 var shouldGenerate = GetIfShouldGenerateFormsCode(elementSave, out controlType);
 

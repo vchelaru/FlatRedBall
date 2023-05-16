@@ -58,6 +58,11 @@ namespace GumPlugin.CodeGeneration
 
                 codeBlock.Line("ContainedText.RawText = value;");
 
+                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+                {
+                    codeBlock.Line("NotifyPropertyChanged();");
+                }
+
                 codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
 
                 codeBlock.Line("if (shouldUpdate)");
