@@ -279,16 +279,7 @@ namespace GumPlugin.CodeGeneration
         private void GenerateAdditionalMethods(StandardElementSave standardElementSave, ICodeBlock classBodyBlock)
         {
             SpriteCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
-
-            if(standardElementSave.Name == "Text")
-            {
-                if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumDefaults2)
-                {
-                    var overrideTextRenderingPositionModeProperty = classBodyBlock.Property("public RenderingLibrary.Graphics.TextRenderingPositionMode?", "OverrideTextRenderingPositionMode");
-                    overrideTextRenderingPositionModeProperty.Line("get => mContainedText.OverrideTextRenderingPositionMode;");
-                    overrideTextRenderingPositionModeProperty.Line("set => mContainedText.OverrideTextRenderingPositionMode = value;");
-                }
-            }
+            TextCodeGenerator.Self.GenerateAdditionalMethods(standardElementSave, classBodyBlock);
         }
 
         private void GenerateGenericContainerCode(ICodeBlock codeBlock)
@@ -405,20 +396,8 @@ namespace GumPlugin.CodeGeneration
                 }
             }
 
-            if(standardElementSave.Name == "Text")
-            {
-                // generate text-specific properties here:
-                GenerateVariable(currentBlock, containedGraphicalObjectName, 
-                    new VariableSave { Name = "BitmapFont", Type = "RenderingLibrary.Graphics.BitmapFont" }, 
-                    standardElementSave);
-                
-                GenerateVariable(currentBlock, containedGraphicalObjectName,
-                    new VariableSave { Name = "WrappedText", Type = "System.Collections.Generic.List<string>" },
-                    standardElementSave,
-                    generateSetter:false);
-
-            }
-            else if(standardElementSave.Name == "Sprite")
+            TextCodeGenerator.Self.GenerateVariableProperties(standardElementSave, currentBlock, containedGraphicalObjectName);
+            if(standardElementSave.Name == "Sprite")
             {
                 GenerateVariable(currentBlock, containedGraphicalObjectName,
                     new VariableSave { Name = "Texture", Type = "Microsoft.Xna.Framework.Graphics.Texture2D" },
@@ -502,7 +481,7 @@ namespace GumPlugin.CodeGeneration
             return true;
         }
 
-        private void GenerateVariable(ICodeBlock currentBlock, string containedGraphicalObjectName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave, 
+        public void GenerateVariable(ICodeBlock currentBlock, string containedGraphicalObjectName, Gum.DataTypes.Variables.VariableSave variable, ElementSave elementSave, 
             bool generateSetter = true)
         {
             #region Get Variable Type
@@ -542,11 +521,11 @@ namespace GumPlugin.CodeGeneration
 
             if(generateSetter)
             {
-                GenerateSetter(containedGraphicalObjectName, variable, propertyCodeBlock, variableName, whatToGetOrSet, elementSave);
+                GenerateSetter(containedGraphicalObjectName, variable, propertyCodeBlock, whatToGetOrSet, elementSave);
             }
         }
 
-        private void GenerateSetter(string propertyName, VariableSave variable, ICodeBlock property, string variableName, string whatToGetOrSet, ElementSave elementSave)
+        private void GenerateSetter(string propertyName, VariableSave variable, ICodeBlock property, string whatToGetOrSet, ElementSave elementSave)
         {
             var setter = property.Set();
             bool wasHandled = TryHandleCustomSetter(variable, elementSave, setter);
@@ -565,6 +544,12 @@ namespace GumPlugin.CodeGeneration
                     rightSide = AdjustStandardElementVariableSetIfNecessary(variable, rightSide);
 
                     setter.Line(whatToGetOrSet + " = " + rightSide + ";");
+
+                    if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GlueProjectSave.GluxVersions.GraphicalUiElementINotifyPropertyChanged)
+                    {
+                        // notify it changing...
+                        setter.Line("NotifyPropertyChanged();");
+                    }
                 }
 
                 if(variablesToCallLayoutAfter.Contains(variable.Name))
