@@ -317,7 +317,13 @@ namespace GlueControl.Editing
         {
             var desiredMarkerCount = itemsSelected.Count;
 
+#if MONOGAME_381
+
             var itemsSelectedHash = itemsSelected.ToHashSet();
+#else
+            var itemsSelectedHash = itemsSelected;
+
+#endif
 
             for (int i = SelectedMarkers.Count - 1; i > -1; i--)
             {

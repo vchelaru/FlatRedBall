@@ -346,7 +346,11 @@ namespace GlueControl
 
         static List<NamedObjectSave> GetSelectedNamedObjects(SelectObjectDto selectObjectDto)
         {
+#if MONOGAME_381
             var names = selectObjectDto.NamedObjectNames.ToHashSet();
+#else
+            var names = selectObjectDto.NamedObjectNames;
+#endif
             List<NamedObjectSave> selected = new List<NamedObjectSave>();
             foreach (var nos in GlueState.Self.CurrentElement.AllNamedObjects)
             {
