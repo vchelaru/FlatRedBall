@@ -44,7 +44,8 @@ namespace GumPluginCore.CodeGeneration
 
                 foreachBlock.Line("UpdateToCurrentAnimationFrame();");
                 foreachBlock.Line("// subtract second difference to prevent it from looping once if it happens to fall mid-frame");
-                foreachBlock.Line("await FlatRedBall.TimeManager.DelaySeconds(CurrentChain.TotalLength - FlatRedBall.TimeManager.SecondDifference);");
+                foreachBlock.Line("// Due to frame order, we need to delay one frame less, and multiply by 1.1 to fix possible accuracy issues");
+                foreachBlock.Line("await FlatRedBall.TimeManager.DelaySeconds(CurrentChain.TotalLength - FlatRedBall.TimeManager.SecondDifference*1.1f);");
 
 
             }
