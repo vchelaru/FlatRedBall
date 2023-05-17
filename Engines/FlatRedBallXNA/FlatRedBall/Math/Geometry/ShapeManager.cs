@@ -211,12 +211,10 @@ namespace FlatRedBall.Math.Geometry
             get { return mCapsule2DsReadOnlyCollection; }
         }
 
-        #region XML Docs
         /// <summary>
         /// A read-only list of shapes updated by the ShapeManager.
         /// </summary>
-        #endregion
-        static public ReadOnlyCollection<PositionedObject> AutomaticallyUpdatedShapes
+        public static ReadOnlyCollection<PositionedObject> AutomaticallyUpdatedShapes
         {
             get { return mAutomaticallyUpdatedReadOnlyCollection; }
         }

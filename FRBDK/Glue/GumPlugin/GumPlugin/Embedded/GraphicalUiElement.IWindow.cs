@@ -24,6 +24,8 @@ namespace Gum.Wireframe
             public string VmProperty;
             public string UiProperty;
 
+            public Delegate? Delegate;
+
             public string ToStringFormat;
 
             public override string ToString()
@@ -780,6 +782,7 @@ namespace Gum.Wireframe
         // migrate this to the common Gum code but we'll
         // see
         Dictionary<string, VmToUiProperty> vmPropsToUiProps = new Dictionary<string, VmToUiProperty>();
+        Dictionary<string, VmToUiProperty> vmEventsToUiMethods = new Dictionary<string, VmToUiProperty>();
 
         object mInheritedBindingContext;
         internal object InheritedBindingContext
@@ -817,7 +820,7 @@ namespace Gum.Wireframe
         {
             if (oldBindingContext is INotifyPropertyChanged oldViewModel)
             {
-                oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+                UnsubscribeEventsOnOldViewModel(oldViewModel);
             }
             if (EffectiveBindingContext is INotifyPropertyChanged viewModel)
             {
@@ -872,6 +875,20 @@ namespace Gum.Wireframe
                 }
             }
             BindingContextChanged?.Invoke(this, args);
+        }
+
+        private void UnsubscribeEventsOnOldViewModel(INotifyPropertyChanged oldViewModel)
+        {
+            oldViewModel.PropertyChanged -= HandleViewModelPropertyChanged;
+
+            foreach(var eventItem in vmEventsToUiMethods.Values)
+            {
+                var delegateToRemove = eventItem.Delegate;
+
+                var foundEvent = oldViewModel.GetType().GetEvent(eventItem.VmProperty);
+
+                foundEvent.RemoveEventHandler(oldViewModel, delegateToRemove);
+            }
         }
 
         public object BindingContextBindingPropertyOwner { get; private set; }
@@ -965,22 +982,29 @@ namespace Gum.Wireframe
                 var bindingContextObjectToUse = BindingContextBinding == vmPropertyName ?
                     BindingContextBindingPropertyOwner : EffectiveBindingContext;
 
+                var bindingContextObjectType = bindingContextObjectToUse?.GetType();
+
 #if UWP
-                var vmProperty = bindingContextObjectToUse?.GetType().GetTypeInfo().GetDeclaredProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectType?.GetTypeInfo().GetDeclaredProperty(vmPropertyName);
 #else
-                var vmProperty = bindingContextObjectToUse?.GetType().GetProperty(vmPropertyName);
+                var vmProperty = bindingContextObjectType?.GetProperty(vmPropertyName);
 #endif
                 FieldInfo vmField = null;
                 
                 if (vmProperty == null)
                 {
-                    vmField = bindingContextObjectToUse?.GetType().GetField(vmPropertyName);
+                    vmField = bindingContextObjectType?.GetField(vmPropertyName);
                 }
 
+                var foundEvent = bindingContextObjectType.GetEvent(vmPropertyName);
 
-                if (vmProperty == null && vmField == null)
+                if (vmProperty == null && vmField == null && foundEvent == null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Could not find field or property {vmPropertyName} in {bindingContextObjectToUse?.GetType()}");
+                    System.Diagnostics.Debug.WriteLine($"Could not find field, property, or event {vmPropertyName} in {bindingContextObjectToUse?.GetType()}");
+                }
+                else if(foundEvent != null)
+                {
+                    BindEvent(vmPropertyName, bindingContextObjectToUse, foundEvent);
                 }
                 else
                 {
@@ -1015,6 +1039,17 @@ namespace Gum.Wireframe
             return updated;
         }
 
+        private void BindEvent(string vmPropertyName, object bindingContextObjectToUse, EventInfo foundEvent)
+        {
+            var binding = vmPropsToUiProps[vmPropertyName];
+
+            var delegateInstance = Delegate.CreateDelegate(foundEvent.EventHandlerType, this, binding.UiProperty);
+
+            vmEventsToUiMethods.Add(vmPropertyName, new VmToUiProperty { UiProperty = binding.UiProperty, VmProperty = vmPropertyName, Delegate = delegateInstance });
+
+            foundEvent.AddEventHandler(bindingContextObjectToUse, delegateInstance);
+        }
+
         public static object ConvertValue(object value, Type desiredType, string format)
         {
             object convertedValue = value;
@@ -1039,6 +1074,13 @@ namespace Gum.Wireframe
                 {
                     // do we round? 
                     convertedValue = (int)asDecimal;
+                }
+                else if(value is string asString)
+                {
+                    if (int.TryParse(asString, out int asInt))
+                    {
+                        convertedValue = asInt;
+                    }
                 }
             }
             else if (desiredType == typeof(double))
