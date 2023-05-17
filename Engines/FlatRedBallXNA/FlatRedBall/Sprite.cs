@@ -85,7 +85,10 @@ namespace FlatRedBall
         #endregion
 
         #region Texture and pixel size
-        internal Texture2D mTexture; // made internal to avoid a getter in tight loops
+        // Made mTexture protected to avoid a getter in tight loops and
+        // also to allow users to swap the texture without altering the
+        // sprite's internal states in derived classes.
+        protected Texture2D mTexture; 
         internal float mPixelSize;
         bool mFlipHorizontal;
         bool mFlipVertical;
