@@ -818,6 +818,14 @@ namespace Gum.Wireframe
 
         private void HandleBindingContextChangedInternal(object oldBindingContext)
         {
+            // early out - this isn't technically necessary as 
+            // the subscription code below can be called multiple
+            // times, but it does make debgging easier.
+            if(oldBindingContext == EffectiveBindingContext)
+            {
+                return;
+            }
+
             if (oldBindingContext is INotifyPropertyChanged oldViewModel)
             {
                 UnsubscribeEventsOnOldViewModel(oldViewModel);
