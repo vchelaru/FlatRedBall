@@ -1043,11 +1043,17 @@ namespace Gum.Wireframe
         {
             var binding = vmPropsToUiProps[vmPropertyName];
 
-            var delegateInstance = Delegate.CreateDelegate(foundEvent.EventHandlerType, this, binding.UiProperty);
+            var isAlreadyBound = vmEventsToUiMethods.ContainsKey(vmPropertyName);
 
-            vmEventsToUiMethods.Add(vmPropertyName, new VmToUiProperty { UiProperty = binding.UiProperty, VmProperty = vmPropertyName, Delegate = delegateInstance });
+            if(!isAlreadyBound)
+            {
+                var delegateInstance = Delegate.CreateDelegate(foundEvent.EventHandlerType, this, binding.UiProperty);
 
-            foundEvent.AddEventHandler(bindingContextObjectToUse, delegateInstance);
+                vmEventsToUiMethods.Add(vmPropertyName, new VmToUiProperty { UiProperty = binding.UiProperty, VmProperty = vmPropertyName, Delegate = delegateInstance });
+
+                foundEvent.AddEventHandler(bindingContextObjectToUse, delegateInstance);
+            }
+
         }
 
         public static object ConvertValue(object value, Type desiredType, string format)
