@@ -33,7 +33,6 @@ namespace FlatRedBall.Forms.MVVM
         {
             return $"Depends on {ParentProperty}";
         }
-
     }
 
     public enum TypeMismatchBehavior
@@ -46,6 +45,10 @@ namespace FlatRedBall.Forms.MVVM
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
         private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
+
+
+        private Dictionary<string, object> oldValueDictionary = new Dictionary<string, object>();
+
         private List<string> dependsOnOwners;
 
         public static TypeMismatchBehavior DefaultTypeMismatchBehavior = TypeMismatchBehavior.IgnoreError;
@@ -150,7 +153,6 @@ namespace FlatRedBall.Forms.MVVM
             return didSet;
         }
 
-
         public ViewModel()
         {
             var derivedType = this.GetType();
@@ -208,6 +210,7 @@ namespace FlatRedBall.Forms.MVVM
             }
 
         }
+
         protected void ChangeAndNotify<T>(ref T property, T value, [CallerMemberName] string propertyName = null)
         {
             if (EqualityComparer<T>.Default.Equals(property, value) == false)
@@ -240,7 +243,32 @@ namespace FlatRedBall.Forms.MVVM
                         ? oldValue
                         // we don't know the old value...
                         : null;
-                    NotifyPropertyChanged(childPropertyName, oldChildPropertyValue, newChildPropertyValue);
+
+                    var shouldNotify = true;
+                    if(oldValueDictionary.ContainsKey(childPropertyName))
+                    {
+                        var lastValue = oldValueDictionary[childPropertyName];
+
+                        //if (EqualityComparer<T>.Default.Equals(oldValue, propertyValue) == false)
+                        if(lastValue == null && newChildPropertyValue == null)
+                        {
+                            shouldNotify = false;
+                        }
+                        else if(lastValue == null || newChildPropertyValue == null)
+                        {
+                            shouldNotify = true;
+                        }
+                        else
+                        {
+                            shouldNotify = !lastValue.Equals(newChildPropertyValue);
+                        }
+                    }
+                    oldValueDictionary[childPropertyName] = newChildPropertyValue;
+
+                    if(shouldNotify)
+                    {
+                        NotifyPropertyChanged(childPropertyName, oldChildPropertyValue, newChildPropertyValue);
+                    }
                 }
             }
 
