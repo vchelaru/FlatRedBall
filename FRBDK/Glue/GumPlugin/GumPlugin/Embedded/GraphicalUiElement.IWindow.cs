@@ -895,7 +895,7 @@ namespace Gum.Wireframe
 
                 var foundEvent = oldViewModel.GetType().GetEvent(eventItem.VmProperty);
 
-                foundEvent.RemoveEventHandler(oldViewModel, delegateToRemove);
+                foundEvent?.RemoveEventHandler(oldViewModel, delegateToRemove);
             }
         }
 
