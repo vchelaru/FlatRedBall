@@ -121,7 +121,8 @@ namespace TopDownPlugin.CodeGenerators
             codeBlock.Line("/// <summary>");
             codeBlock.Line("/// Whether input is read to control the movement of the character.");
             codeBlock.Line("/// This can be turned off if the player should not be able to control");
-            codeBlock.Line("/// the character.");
+            codeBlock.Line("/// the character. If false, Velocity will be preserved if assigned in custom code rather");
+            codeBlock.Line("/// than being overwritten by ");
             codeBlock.Line("/// </summary>");
             codeBlock.AutoProperty("public bool", "InputEnabled");
 
@@ -280,7 +281,7 @@ namespace TopDownPlugin.CodeGenerators
         private void ApplyMovementInput()
         {
             ////////early out/////////
-            if(mCurrentMovement == null)
+            if(mCurrentMovement == null || InputEnabled == false)
             {
                 return;
             }
