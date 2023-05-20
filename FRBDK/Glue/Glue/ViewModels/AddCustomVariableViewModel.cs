@@ -87,6 +87,38 @@ namespace GlueFormsCore.ViewModels
 
         #endregion
 
+        #region Failure/Validation
+
+        [DependsOn(nameof(NewVariableName))]
+        public string FailureText
+        {
+            get
+            {
+                string whyIsntValid = "";
+                var isValid = true;
+
+                if(DesiredVariableType == CustomVariableType.New)
+                {
+                    isValid = NameVerifier.IsCustomVariableNameValid(NewVariableName, null, Element, ref whyIsntValid);
+                }
+
+                if (!isValid)
+                {
+                    return whyIsntValid;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        [DependsOn(nameof(FailureText))]
+        public Visibility FailureTextVisibility => string.IsNullOrWhiteSpace(FailureText) ?
+            Visibility.Collapsed : Visibility.Visible;
+
+        #endregion
+
         #region Expose Existing
 
         [DependsOn(nameof(IsExposedVariableChecked))]

@@ -44,7 +44,19 @@ namespace FlatRedBall.Glue.Controls
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            HandleOkClicked();
+        }
+
+        private void HandleOkClicked()
+        {
+            if(!string.IsNullOrEmpty(ViewModel.FailureText))
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox(ViewModel.FailureText);
+            }
+            else
+            {
+                this.DialogResult = true;
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -62,7 +74,7 @@ namespace FlatRedBall.Glue.Controls
             if (e.Key == Key.Enter)
             {
                 e.Handled = true;
-                this.DialogResult = true;
+                HandleOkClicked();
             }
             else if (e.Key == Key.Escape)
             {
