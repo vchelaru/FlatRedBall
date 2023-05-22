@@ -1601,8 +1601,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void GetPostInitializeForNamedObjectList(NamedObjectSave container, List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, GlueElement element)
         {
-            try
-            {
+            // why try/catch here? It messes up the callstack...
+            //try
+            //{
                 foreach (NamedObjectSave nos in namedObjectList)
                 {
                     if (!nos.IsDisabled && nos.IsFullyDefined && nos.Instantiate)
@@ -1673,14 +1674,14 @@ namespace FlatRedBall.Glue.CodeGeneration
                         AddEndIfIfNecessary(codeBlock, nos);
                     }
                 }
-            }
-            catch(Exception ex)
-            {
+            //}
+            //catch(Exception ex)
+            //{
 
 
-                System.Diagnostics.Debugger.Break();
-                throw ex;
-            }
+            //    System.Diagnostics.Debugger.Break();
+            //    throw ex;
+            //}
         }
 
         public static void WriteAddToManagersBottomUpForNamedObjectList(List<NamedObjectSave> namedObjectList, ICodeBlock codeBlock, 

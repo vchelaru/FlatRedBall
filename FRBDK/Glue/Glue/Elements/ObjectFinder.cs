@@ -1189,6 +1189,32 @@ namespace FlatRedBall.Glue.Elements
             return customVariable;
         }
 
+        public CustomVariable GetRootCustomVariable(CustomVariable customVariable)
+        {
+            var element = GetElementContaining(customVariable);
+
+            var baseVariable = GetBaseCustomVariable(customVariable, element);
+
+            if(!string.IsNullOrEmpty(baseVariable?.SourceObject))
+            {
+                var sourceObject = element.GetNamedObjectRecursively(baseVariable.SourceObject);
+                if(sourceObject != null)
+                {
+                    var sourceElement = GetElement(sourceObject);
+                    if(sourceElement != null)
+                    {
+                        var sourceVariable = sourceElement.GetCustomVariableRecursively(baseVariable.SourceObjectProperty);
+                        if(sourceVariable != null)
+                        {
+                            return GetRootCustomVariable(sourceVariable);
+                        }
+                    }
+                }
+            }
+
+            return baseVariable;
+        }
+
         /// <summary>
         /// Returns the variable (InstructionSave) value on the argument NamedObjectSave recursively.
         /// </summary>

@@ -7,6 +7,7 @@ using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections;
+using Microsoft.Xna.Framework;
 //using FlatRedBall.Gui;
 
 namespace FlatRedBall.Glue.Parsing
@@ -126,7 +127,7 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
-        public static string ConvertValueToCodeString<T>(T objectToParse)
+        public static string ConvertValueToCodeString<T>(T objectToParse, Type outputType = null)
         {
 
             string value = "";
@@ -225,6 +226,39 @@ namespace FlatRedBall.Glue.Parsing
                         isFirst = false;
                     }
                     value = "new System.Collections.Generic.List<string> { " + innerInstantiation + "}";
+                }
+                else if(objectToParse is List<Vector2> vectorList)
+                {
+                    if (outputType == typeof(List<FlatRedBall.Math.Geometry.Point>))
+                    {
+                        string innerInstantiation = String.Empty;
+                        var isFirst = true;
+                        foreach (var item in vectorList)
+                        {
+                            if (!isFirst)
+                            {
+                                innerInstantiation += ", ";
+                            }
+                            innerInstantiation += $"new FlatRedBall.Math.Geometry.Point({item.X}, {item.Y})";
+                            isFirst = false;
+                        }
+                        value = "new System.Collections.Generic.List<FlatRedBall.Math.Geometry.Point> { " + innerInstantiation + "}";
+                    }
+                    else
+                    {
+                        string innerInstantiation = String.Empty;
+                        var isFirst = true;
+                        foreach (var item in vectorList)
+                        {
+                            if (!isFirst)
+                            {
+                                innerInstantiation += ", ";
+                            }
+                            innerInstantiation += $"new Microsoft.Xna.Framework.Vector2({item.X}, {item.Y})";
+                            isFirst = false;
+                        }
+                        value = "new System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2> { " + innerInstantiation + "}";
+                    }
                 }
             }
 
