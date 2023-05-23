@@ -543,13 +543,19 @@ namespace FlatRedBall.TileGraphics
 
                 // pad before doing any rotations/flipping
                 const bool pad = true;
+                float amountToAddX =  .0000001f;
+                float amountToAddY =  .0000001f;
+                if(texture != null)
+                {
+                    amountToAddX = .037f / texture.Width;
+                    amountToAddY = .037f / texture.Height;
+                }
                 if (pad)
                 {
-                    const float amountToAdd = .0000001f;
-                    textureValues.X += amountToAdd; // Left
-                    textureValues.Y -= amountToAdd; // Right
-                    textureValues.Z += amountToAdd; // Top
-                    textureValues.W -= amountToAdd; // Bottom
+                    textureValues.X += amountToAddX; // Left
+                    textureValues.Y -= amountToAddX; // Right
+                    textureValues.Z += amountToAddY; // Top
+                    textureValues.W -= amountToAddY; // Bottom
                 }
 
                 if ((quad.FlipFlags & TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag) == TMXGlueLib.DataTypes.ReducedQuadInfo.FlippedHorizontallyFlag)

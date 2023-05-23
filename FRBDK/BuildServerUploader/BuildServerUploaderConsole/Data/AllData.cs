@@ -225,8 +225,8 @@ namespace BuildServerUploaderConsole.Data
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.dll");
                 engine.DebugFiles.Add($"{debugBinFolder}GumCore.DesktopGlNet6.pdb");
 
-                engine.DebugFiles.Add($"{debugBinFolder}SkiaInGum.dll");
-                engine.DebugFiles.Add($"{debugBinFolder}SkiaInGum.pdb");
+                engine.DebugFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Debug\net6.0\SkiaInGum.dll");
+                engine.DebugFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Debug\net6.0\SkiaInGum.pdb");
 
 
                 engine.ReleaseFiles.Add($"{releaseBinFolder}FlatRedBallDesktopGLNet6.dll");
@@ -241,8 +241,8 @@ namespace BuildServerUploaderConsole.Data
                 engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.dll");
                 engine.ReleaseFiles.Add($"{releaseBinFolder}GumCore.DesktopGlNet6.pdb");
 
-                engine.DebugFiles.Add($"{releaseBinFolder}SkiaInGum.dll");
-                engine.DebugFiles.Add($"{releaseBinFolder}SkiaInGum.pdb");
+                engine.ReleaseFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Release\net6.0\SkiaInGum.dll");
+                engine.ReleaseFiles.Add($@"Gum\SvgPlugin\SkiaInGumShared\bin\Release\net6.0\SkiaInGum.pdb");
 
 
                 Engines.Add(engine);
