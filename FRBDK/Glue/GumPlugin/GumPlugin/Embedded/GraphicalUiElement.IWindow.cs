@@ -24,7 +24,7 @@ namespace Gum.Wireframe
             public string VmProperty;
             public string UiProperty;
 
-            public Delegate? Delegate;
+            public Delegate Delegate;
 
             public string ToStringFormat;
 
