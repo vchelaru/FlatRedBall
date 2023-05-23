@@ -1035,6 +1035,12 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <returns></returns>
         public static NamedObjectSave GetNamedObjectRecursively(this INamedObjectContainer namedObjectContainer, string namedObjectName)
         {
+            ////////////////////////early out////////////////////////
+            if(string.IsNullOrEmpty(namedObjectName))
+            {
+                return null;
+            }
+            //////////////////////end early out//////////////////////
             List<NamedObjectSave> namedObjectList = namedObjectContainer.NamedObjects;
 
             NamedObjectSave foundNos = GetNamedObjectInList(namedObjectList, namedObjectName);

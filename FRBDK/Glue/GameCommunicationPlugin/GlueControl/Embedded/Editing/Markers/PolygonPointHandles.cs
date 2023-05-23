@@ -31,8 +31,10 @@ namespace GlueControl.Editing
 
         #endregion
 
+        static string pointsVariableToSet = null;
         public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
         {
+            pointsVariableToSet = null;
             var itemAsPolygon = item as Polygon;
             // special case for derived polygons, this will handle capsule polygon.
             // If in the future this is a problem, then we will add a new Glux file version:
@@ -56,6 +58,7 @@ namespace GlueControl.Editing
                     var namedObject = element.GetNamedObject(pointsTunneled.SourceObject);
                     if (namedObject.SourceType == SourceType.FlatRedBallType && (namedObject.SourceClassType == "Polygon" || namedObject.SourceClassType == "FlatRedBall.Math.Geometry.Polygon"))
                     {
+                        pointsVariableToSet = pointsTunneled.Name;
                         var polygonProperty = item.GetType().GetProperty(namedObject.InstanceName);
                         itemAsPolygon = polygonProperty?.GetValue(item) as Polygon;
                     }
@@ -319,7 +322,7 @@ namespace GlueControl.Editing
                 new NosVariableAssignment
                 {
                     NamedObjectSave = nos,
-                    VariableName = nameof(Polygon.Points),
+                    VariableName = pointsVariableToSet ?? nameof(Polygon.Points),
                     Value = newValue
                 });
 

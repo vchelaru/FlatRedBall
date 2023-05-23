@@ -15,6 +15,7 @@ using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json.Linq;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
@@ -670,11 +671,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         #region Assignment
 
-        public static string GetRightSideOfEquals(CustomVariable customVariable, GlueElement glueElement, object forcedValue = null)
+        public static string GetRightSideOfEquals(CustomVariable customVariable, GlueElement glueElement, object forcedValue = null, string forcedType = null)
         {
             string rightSide = "";
 
-            CustomVariable variableConsideringDefinedByBase = customVariable.GetDefiningCustomVariable();
+            CustomVariable variableConsideringDefinedByBase = customVariable?.GetDefiningCustomVariable();
 
             var alternative = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
 
@@ -687,105 +688,115 @@ namespace FlatRedBall.Glue.CodeGeneration
             // from it, then changes the Element
             // to no longer inherit.
 
-            if (variableConsideringDefinedByBase != null)
+            if(variableConsideringDefinedByBase != null)
             {
+                // don't pass glueElement, it may not match variableConsideringDefinedByBase's container
+                //containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
+                containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase);
+            }
 
-                containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
-
-                if (containerOfState == null)
+            if (containerOfState == null)
+            {
+                Type overridingType = null;
+                if ((forcedValue ?? variableConsideringDefinedByBase.DefaultValue) is List<Vector2>)
                 {
-                    Type overridingType = null;
-                    if (variableConsideringDefinedByBase.DefaultValue is List<Vector2>)
-                    {
-                        overridingType = typeof(List<FlatRedBall.Math.Geometry.Point>);
-                    }
-                    // this makes an assumption. The real way to do this would be to continue to go deeper and deeper until we get the root
-                    // AssetTypeInfo and see if it's a polygon...
-                    rightSide =
-                        CodeParser.ConvertValueToCodeString(forcedValue ?? customVariable.DefaultValue, overridingType);
-                    NamedObjectSave namedObject = glueElement.GetNamedObjectRecursively(variableConsideringDefinedByBase.SourceObject);
+                    overridingType = typeof(List<FlatRedBall.Math.Geometry.Point>);
+                }
+                // this makes an assumption. The real way to do this would be to continue to go deeper and deeper until we get the root
+                // AssetTypeInfo and see if it's a polygon...
+                rightSide =
+                    CodeParser.ConvertValueToCodeString(forcedValue ?? customVariable.DefaultValue, overridingType);
+                NamedObjectSave namedObject = glueElement.GetNamedObjectRecursively(variableConsideringDefinedByBase?.SourceObject);
 
 
-                    if (variableConsideringDefinedByBase.GetIsFile())
-                    {
-                        rightSide = rightSide.Replace("\"", "").Replace("-", "_");
+                if ((!string.IsNullOrEmpty(forcedType) && CustomVariableExtensionMethods.GetIsFile(forcedType)) || variableConsideringDefinedByBase?.GetIsFile() == true)
+                {
+                    rightSide = rightSide.Replace("\"", "").Replace("-", "_");
 
-                        if (rightSide == "<NONE>")
-                        {
-                            rightSide = "null";
-                        }
-                    }
-                    else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
+                    if (rightSide == "<NONE>")
                     {
-                        if (ShouldAssignToCsv(variableConsideringDefinedByBase, rightSide))
-                        {
-                            rightSide = GetAssignmentToCsvItem(customVariable, glueElement, rightSide);
-                        }
-                        else
-                        {
-                            rightSide = null;
-                        }
+                        rightSide = "null";
                     }
-                    else if (variableConsideringDefinedByBase.Type == "Color")
+                }
+                else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
+                {
+                    if (ShouldAssignToCsv(variableConsideringDefinedByBase, rightSide))
                     {
-                        rightSide = "Color." + rightSide.Replace("\"", "");
-
-                    }
-                    else if (variableConsideringDefinedByBase.Type != "string" && rightSide == "\"\"")
-                    {
-                        rightSide = null;
+                        rightSide = GetAssignmentToCsvItem(customVariable, glueElement, rightSide);
                     }
                     else
                     {
-
-                        //Not sure why this wasn't localizing variables but it caused a problem with 
-                        //variables that tunnel in to a Text's DisplayText not being localized
-                        //finish here
-
-                        // Special Case:
-                        // We don't want to
-                        // set Visible on NOS's
-                        // which are added/removed
-                        // when Visible is set on them:
-                        // Update March 7, 2014 
-                        // We do want to set it because if we don't,
-                        // then the checks inside the Visible property
-                        // don't properly detect that they've been changed.
-                        // Therefore, we're going to set it on the underlying
-                        // object 
-                        bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
-                            variableConsideringDefinedByBase.SourceObjectProperty == "Visible";
-
-                        if (shouldSetUnderlyingValue)
-                        {
-                            // Don't change the variable to assign
-                        }
-                        else
-                        {
-                            rightSide = CodeWriter.MakeLocalizedIfNecessary(namedObject, customVariable.SourceObjectProperty,
-                                (forcedValue ?? customVariable.DefaultValue), rightSide, null);
-
-                            if (namedObject?.SourceType == SourceType.Gum && variableConsideringDefinedByBase.Type?.Contains(".") == true && variableConsideringDefinedByBase.Type.EndsWith("?"))
-                            {
-                                // this is a state type, so remove the "?" and prefix it:
-                                rightSide = variableConsideringDefinedByBase.Type.Substring(0, variableConsideringDefinedByBase.Type.Length - 1) + "." + (forcedValue ?? customVariable.DefaultValue);
-                            }
-
-                            rightSide = rightSide?.Replace("+", ".");
-                        }
+                        rightSide = null;
                     }
                 }
+                else if(forcedType == "FlatRedBall.Sprite" || forcedType == "Sprite")
+                {
+                    rightSide = rightSide.Replace("\"", "");
+                }
+            
+                else if (variableConsideringDefinedByBase?.Type == "Color" || forcedType == "Color" || forcedType == "Microsoft.Xna.Framework.Color")
+                {
+                    rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
+
+                }
+                // This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
+                // for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
+                //else if ( (variableConsideringDefinedByBase?.Type != "string" || (forcedType != null && forcedType != "string")) && rightSide == "\"\"")
+                //{
+                //    rightSide = null;
+                //}
                 else
                 {
-                    string valueAsString = (string)(forcedValue ?? customVariable.DefaultValue);
 
-                    if (!string.IsNullOrEmpty(valueAsString))
+                    //Not sure why this wasn't localizing variables but it caused a problem with 
+                    //variables that tunnel in to a Text's DisplayText not being localized
+                    //finish here
+
+                    // Special Case:
+                    // We don't want to
+                    // set Visible on NOS's
+                    // which are added/removed
+                    // when Visible is set on them:
+                    // Update March 7, 2014 
+                    // We do want to set it because if we don't,
+                    // then the checks inside the Visible property
+                    // don't properly detect that they've been changed.
+                    // Therefore, we're going to set it on the underlying
+                    // object 
+                    bool shouldSetUnderlyingValue = namedObject != null && namedObject.RemoveFromManagersWhenInvisible &&
+                        variableConsideringDefinedByBase.SourceObjectProperty == "Visible";
+
+                    if (shouldSetUnderlyingValue)
                     {
-                        rightSide = StateCodeGenerator.FullyQualifyStateValue(containerOfState, (string)valueAsString, customVariable.Type);
+                        // Don't change the variable to assign
+                    }
+                    else
+                    {
+                        rightSide = CodeWriter.MakeLocalizedIfNecessary(namedObject, customVariable?.SourceObjectProperty,
+                            (forcedValue ?? customVariable.DefaultValue), rightSide, null);
+
+                        if (namedObject?.SourceType == SourceType.Gum && variableConsideringDefinedByBase.Type?.Contains(".") == true && variableConsideringDefinedByBase.Type.EndsWith("?"))
+                        {
+                            // this is a state type, so remove the "?" and prefix it:
+                            rightSide = variableConsideringDefinedByBase.Type.Substring(0, variableConsideringDefinedByBase.Type.Length - 1) + "." + (forcedValue ?? customVariable.DefaultValue);
+                        }
+
+                        rightSide = rightSide?.Replace("+", ".");
                     }
                 }
-
             }
+            else
+            {
+                string valueAsString = (string)(forcedValue ?? customVariable.DefaultValue);
+
+                if (!string.IsNullOrEmpty(valueAsString))
+                {
+                    // If the custom variable is passed, use that type because it's accurate.
+                    string type = customVariable?.Type ?? forcedValue?.GetType().Name;
+                    rightSide = StateCodeGenerator.FullyQualifyStateValue(containerOfState, (string)valueAsString, type );
+                }
+            }
+
 
             return rightSide;
         }
@@ -1204,11 +1215,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             return customVariableType;
         }
 
-        public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, IElement saveObject)
+        public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, IElement saveObject = null)
         {
 
+            saveObject = saveObject ?? ObjectFinder.Self.GetElementContaining(customVariable);
             if (customVariable.GetIsVariableState() && string.IsNullOrEmpty(customVariable.SourceObject))
-            {
+            {;
                 return saveObject;
             }
             else
@@ -1444,7 +1456,59 @@ namespace FlatRedBall.Glue.CodeGeneration
         private static void AppendCustomVariableInInstanceStandard(NamedObjectSave namedObject, ICodeBlock codeBlock, 
             InstructionSave instructionSave, AssetTypeInfo ati, IElement entitySave, CustomVariable customVariable, string rootVariable)
         {
-            var rightSide = GetRightSideOfEquals(customVariable, entitySave as GlueElement, instructionSave.Value);
+            // old code - this is replaced by GetRightSideOfEquals, but leaving this here in case anyone reports codegen errors
+            //object objectToParse = instructionSave.Value;
+            //#region Determine the right-side value to assign
+            //string value = CodeParser.ConvertValueToCodeString(objectToParse);
+            //if (CustomVariableExtensionMethods.GetIsFile(instructionSave.Type))
+            //{
+            //    value = value.Replace("\"", "").Replace("-", "_");
+            //    if (value == "<NONE>")
+            //    {
+            //        value = "null";
+            //    }
+            //}
+            //else if (ShouldAssignToCsv(customVariable, value))
+            //{
+            //    value = GetAssignmentToCsvItem(customVariable, entitySave, value);
+            //}
+            //else if (instructionSave.Type == "Color" || instructionSave.Type == "Microsoft.Xna.Framework.Color")
+            //{
+            //    value = "Microsoft.Xna.Framework.Color." + value.Replace("\"", "");
+            //}
+            //else if (instructionSave.Type == "FlatRedBall.Sprite" || instructionSave.Type == "Sprite")
+            //{
+            //    value = value.Replace("\"", "");
+            //}
+            //else if ((customVariable != null && customVariable.GetIsVariableState()) || (customVariable == null && rootVariable == "CurrentState"))
+            //{
+            //    //string type = "VariableState";
+            //    //if (customVariable != null && customVariable.Type.ToLower() != "string")
+            //    //{
+            //    //    type = customVariable.Type;
+            //    //}
+            //    value = StateCodeGenerator.GetRightSideAssignmentValueAsString(entitySave, instructionSave);
+            //}
+            //else
+            //{
+            //    value = CodeWriter.MakeLocalizedIfNecessary(namedObject, instructionSave.Member, objectToParse, value, null);
+            //}
+            //if (namedObject.DoesMemberNeedToBeSetByContainer(instructionSave.Member))
+            //{
+            //    value = value.Replace("\"", "");
+            //}
+            //#endregion
+
+
+
+
+
+            var rightSide = GetRightSideOfEquals(customVariable, entitySave as GlueElement, instructionSave.Value, instructionSave.Type);
+
+            //if(value != rightSide)
+            //{
+            //    int m = 3;
+            //}
 
             string leftSideMember = instructionSave.Member;
 
