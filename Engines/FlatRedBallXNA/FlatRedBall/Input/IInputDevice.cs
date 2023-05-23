@@ -89,4 +89,22 @@ namespace FlatRedBall.Input
         /// </summary>
         IPressableInput DefaultCancelInput { get;  }
     }
+
+    public class ZeroInputDevice : IInputDevice
+    {
+        public I2DInput Default2DInput { get; set; } = new Zero2DInput();
+        public IRepeatPressableInput DefaultUpPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultDownPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultLeftPressable { get; set; } = new FalsePressableInput();
+        public IRepeatPressableInput DefaultRightPressable { get; set; } = new FalsePressableInput();
+        public I1DInput DefaultHorizontalInput { get; set; } = new Zero1DInput();
+        public I1DInput DefaultVerticalInput { get; set; } = new Zero1DInput();
+        public IPressableInput DefaultPrimaryActionInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultSecondaryActionInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultConfirmInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultJoinInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultPauseInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultBackInput { get; set; } = new FalsePressableInput();
+        public IPressableInput DefaultCancelInput { get; set; } = new FalsePressableInput();
+    }
 }
