@@ -89,9 +89,7 @@ float4 ModulatePixelShader_Point(a2v IN) : COLOR
 float4 Modulate2XPixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = 2 * color[0] * IN.color[0];
-    color[1] = 2 * color[1] * IN.color[1];
-    color[2] = 2 * color[2] * IN.color[2];
+    color.rgb *= 2 * IN.color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
@@ -100,9 +98,7 @@ float4 Modulate2XPixelShader_Point(a2v IN) : COLOR
 float4 Modulate4XPixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = 4 * color[0] * IN.color[0];
-    color[1] = 4 * color[1] * IN.color[1];
-    color[2] = 4 * color[2] * IN.color[2];
+    color.rgb *= 4 * IN.color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
@@ -111,9 +107,7 @@ float4 Modulate4XPixelShader_Point(a2v IN) : COLOR
 float4 InversePixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = 1 - color[0];
-    color[1] = 1 - color[1];
-    color[2] = 1 - color[2];
+    color.rgb = 1 - color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
@@ -189,9 +183,7 @@ float4 ModulatePixelShader_Linear(a2v IN) : COLOR
 float4 Modulate2XPixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = 2 * color[0] * IN.color[0];
-    color[1] = 2 * color[1] * IN.color[1];
-    color[2] = 2 * color[2] * IN.color[2];
+    color.rgb *= 2 * IN.color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
@@ -200,9 +192,7 @@ float4 Modulate2XPixelShader_Linear(a2v IN) : COLOR
 float4 Modulate4XPixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = 4 * color[0] * IN.color[0];
-    color[1] = 4 * color[1] * IN.color[1];
-    color[2] = 4 * color[2] * IN.color[2];
+    color.rgb *= 4 * IN.color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
@@ -211,9 +201,7 @@ float4 Modulate4XPixelShader_Linear(a2v IN) : COLOR
 float4 InversePixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = 1 - color[0];
-    color[1] = 1 - color[1];
-    color[2] = 1 - color[2];
+    color.rgb = 1 - color.rgb;
     color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
