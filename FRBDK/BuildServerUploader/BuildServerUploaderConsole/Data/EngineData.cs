@@ -10,8 +10,14 @@ namespace BuildServerUploaderConsole.Data
     {
         public List<EngineFileData> Files { get; set; } = new List<EngineFileData>();
 
+        /// <summary>
+        /// Files used by this engine in debug mode, relative to the Github root folder.
+        /// </summary>
         public List<string> DebugFiles { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Files used by this engine in release mode, relative to the Github root folder.
+        /// </summary>
         public List<string> ReleaseFiles { get; set; } = new List<string>();
 
         public string RelativeToLibrariesDebugFolder { get; set; }

@@ -69,15 +69,15 @@ namespace FlatRedBall
         float mGreenRate;
         float mBlueRate;
 
-        internal ColorOperation mColorOperation;
-        internal BlendOperation mBlendOperation;
+        protected internal ColorOperation mColorOperation;
+        protected internal BlendOperation mBlendOperation;
 
-        // This used to only be on MonoDroid and WP7, but we need it on PC for premult alpha when using ColorOperation.Color
-        // internal to skip the property and speed things up a little
-        internal float mRed;
-        internal float mGreen;
-        internal float mBlue;
-        internal float mAlpha;
+        // This used to only be on MonoDroid and WP7, but we need it on PC for premult alpha when using ColorOperation.Color.
+        // Protected internal to skip the property and speed things up a little.
+        protected internal float mRed;
+        protected internal float mGreen;
+        protected internal float mBlue;
+        protected internal float mAlpha;
         #endregion
 
         #region ICursorSelectable
@@ -158,14 +158,15 @@ namespace FlatRedBall
         #region Internal Drawing members
         internal bool mInCameraView;
         internal bool mAutomaticallyUpdated;
-        internal VertexPositionColorTexture[] mVerticesForDrawing;
+        protected internal VertexPositionColorTexture[] mVerticesForDrawing; // Made protected internal to allow skipping the property in derived classes
         internal Vector3 mOldPosition; // used when sorting along forward vector to hold old position
         internal SpriteVertex[] mVertices;
 
         internal bool mOrdered = true;
         #endregion
 
-        bool mVisible;
+        // Made protected to allow skipping the property in derived classes
+        protected bool mVisible;
 
         #endregion
 
@@ -227,7 +228,7 @@ namespace FlatRedBall
             }
         }
 
-        private void UpdateColorsAccordingToAlpha()
+        protected void UpdateColorsAccordingToAlpha()
         {
 
             float redValue = mRed;
@@ -1364,7 +1365,7 @@ namespace FlatRedBall
                 Remove(this);
         }
 
-        internal void UpdateVertices()
+        protected internal void UpdateVertices()
         {
             // Vic says: I tried to optimize this on
             // March 6, 2011 for the windows phone - I
