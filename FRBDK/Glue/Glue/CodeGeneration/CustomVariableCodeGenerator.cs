@@ -739,12 +739,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                     rightSide = "Microsoft.Xna.Framework.Color." + rightSide.Replace("\"", "");
 
                 }
-                // This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
-                // for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
-                //else if ( (variableConsideringDefinedByBase?.Type != "string" || (forcedType != null && forcedType != "string")) && rightSide == "\"\"")
-                //{
-                //    rightSide = null;
-                //}
+                 //This code was setting the variable to "null" but if it's explicitly "", then we should leave it as that because that's what is used
+                 //for instructions. We want instructions and variables to work the same way, I think, but I'm leaving this here incase it does cause complications
+                 // Update May 23, 2023 - this is important because values of types like `decimal?` can be nullable, and so they should assign null
+                else if ( (variableConsideringDefinedByBase?.Type != "string" || (forcedType != null && forcedType != "string")) && rightSide == "\"\"")
+                {
+                    rightSide = null;
+                }
                 else
                 {
 

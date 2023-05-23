@@ -20,7 +20,7 @@ namespace OfficialPlugins.PolygonPlugin.CodeGeneration
                 {
                     var nos = element.GetNamedObjectRecursively(variable.SourceObject);
 
-                    if(nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon)
+                    if(nos?.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.Polygon && variable.SourceObjectProperty == "Points")
                     {
                         var propBlock = codeBlock.Property($"public IList<FlatRedBall.Math.Geometry.Point>", $"{variable.Name}");
                         propBlock.Get().Line($"return {nos.InstanceName}.Points;");
