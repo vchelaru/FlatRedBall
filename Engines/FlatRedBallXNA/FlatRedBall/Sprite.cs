@@ -401,7 +401,7 @@ namespace FlatRedBall
             set 
             {
 #if DEBUG
-                // Check for unsupporte color operations
+                // Check for unsupported color operations
                 if(Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.iOS) ||
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.Android) ||
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.WindowsRt))
