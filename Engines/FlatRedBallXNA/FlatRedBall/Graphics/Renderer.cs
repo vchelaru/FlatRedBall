@@ -694,27 +694,27 @@ namespace FlatRedBall.Graphics
         }
 
         // Cached effect members to avoid list lookups while rendering
-        static EffectTechnique _techniqueTexture;
-        static EffectTechnique _techniqueAdd;
-        static EffectTechnique _techniqueSubtract;
-        static EffectTechnique _techniqueModulate;
-        static EffectTechnique _techniqueModulate2X;
-        static EffectTechnique _techniqueModulate4X;
-        static EffectTechnique _techniqueInverseTexture;
-        static EffectTechnique _techniqueColor;
-        static EffectTechnique _techniqueColorTextureAlpha;
-        static EffectTechnique _techniqueInterpolateColor;
+        static EffectTechnique mTechniqueTexture;
+        static EffectTechnique mTechniqueAdd;
+        static EffectTechnique mTechniqueSubtract;
+        static EffectTechnique mTechniqueModulate;
+        static EffectTechnique mTechniqueModulate2X;
+        static EffectTechnique mTechniqueModulate4X;
+        static EffectTechnique mTechniqueInverseTexture;
+        static EffectTechnique mTechniqueColor;
+        static EffectTechnique mTechniqueColorTextureAlpha;
+        static EffectTechnique mTechniqueInterpolateColor;
 
-        static EffectTechnique _techniqueTexture_Linear;
-        static EffectTechnique _techniqueAdd_Linear;
-        static EffectTechnique _techniqueSubtract_Linear;
-        static EffectTechnique _techniqueModulate_Linear;
-        static EffectTechnique _techniqueModulate2X_Linear;
-        static EffectTechnique _techniqueModulate4X_Linear;
-        static EffectTechnique _techniqueInverseTexture_Linear;
-        static EffectTechnique _techniqueColor_Linear;
-        static EffectTechnique _techniqueColorTextureAlpha_Linear;
-        static EffectTechnique _techniqueInterpolateColor_Linear;
+        static EffectTechnique mTechniqueTexture_Linear;
+        static EffectTechnique mTechniqueAdd_Linear;
+        static EffectTechnique mTechniqueSubtract_Linear;
+        static EffectTechnique mTechniqueModulate_Linear;
+        static EffectTechnique mTechniqueModulate2X_Linear;
+        static EffectTechnique mTechniqueModulate4X_Linear;
+        static EffectTechnique mTechniqueInverseTexture_Linear;
+        static EffectTechnique mTechniqueColor_Linear;
+        static EffectTechnique mTechniqueColorTextureAlpha_Linear;
+        static EffectTechnique mTechniqueInterpolateColor_Linear;
 
         static public Effect Effect
         {
@@ -725,27 +725,27 @@ namespace FlatRedBall.Graphics
 
 #if MONOGAME_381
 
-                try { _techniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { }
-                try { _techniqueAdd = mEffect.Techniques["Add_Point"]; } catch { }
-                try { _techniqueSubtract = mEffect.Techniques["Subtract_Point"]; } catch { }
-                try { _techniqueModulate = mEffect.Techniques["Modulate_Point"]; } catch { }
-                try { _techniqueModulate2X = mEffect.Techniques["Modulate2X_Point"]; } catch { }
-                try { _techniqueModulate4X = mEffect.Techniques["Modulate4X_Point"]; } catch { }
-                try { _techniqueInverseTexture = mEffect.Techniques["InverseTexture_Point"]; } catch { }
-                try { _techniqueColor = mEffect.Techniques["Color_Point"]; } catch { }
-                try { _techniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha_Point"]; } catch { }
-                try { _techniqueInterpolateColor = mEffect.Techniques["InterpolateColor_Point"]; } catch { }
+                try { mTechniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { }
+                try { mTechniqueAdd = mEffect.Techniques["Add_Point"]; } catch { }
+                try { mTechniqueSubtract = mEffect.Techniques["Subtract_Point"]; } catch { }
+                try { mTechniqueModulate = mEffect.Techniques["Modulate_Point"]; } catch { }
+                try { mTechniqueModulate2X = mEffect.Techniques["Modulate2X_Point"]; } catch { }
+                try { mTechniqueModulate4X = mEffect.Techniques["Modulate4X_Point"]; } catch { }
+                try { mTechniqueInverseTexture = mEffect.Techniques["InverseTexture_Point"]; } catch { }
+                try { mTechniqueColor = mEffect.Techniques["Color_Point"]; } catch { }
+                try { mTechniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha_Point"]; } catch { }
+                try { mTechniqueInterpolateColor = mEffect.Techniques["InterpolateColor_Point"]; } catch { }
 
-                try { _techniqueTexture_Linear = mEffect.Techniques["Texture_Linear"]; } catch { }
-                try { _techniqueAdd_Linear = mEffect.Techniques["Add_Linear"]; } catch { }
-                try { _techniqueSubtract_Linear = mEffect.Techniques["Subtract_Linear"]; } catch { }
-                try { _techniqueModulate_Linear = mEffect.Techniques["Modulate_Linear"]; } catch { }
-                try { _techniqueModulate2X_Linear = mEffect.Techniques["Modulate2X_Linear"]; } catch { }
-                try { _techniqueModulate4X_Linear = mEffect.Techniques["Modulate4X_Linear"]; } catch { }
-                try { _techniqueInverseTexture_Linear = mEffect.Techniques["InverseTexture_Linear"]; } catch { }
-                try { _techniqueColor_Linear = mEffect.Techniques["Color_Linear"]; } catch { }
-                try { _techniqueColorTextureAlpha_Linear = mEffect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
-                try { _techniqueInterpolateColor_Linear = mEffect.Techniques["InterpolateColor_Linear"]; } catch { }
+                try { mTechniqueTexture_Linear = mEffect.Techniques["Texture_Linear"]; } catch { }
+                try { mTechniqueAdd_Linear = mEffect.Techniques["Add_Linear"]; } catch { }
+                try { mTechniqueSubtract_Linear = mEffect.Techniques["Subtract_Linear"]; } catch { }
+                try { mTechniqueModulate_Linear = mEffect.Techniques["Modulate_Linear"]; } catch { }
+                try { mTechniqueModulate2X_Linear = mEffect.Techniques["Modulate2X_Linear"]; } catch { }
+                try { mTechniqueModulate4X_Linear = mEffect.Techniques["Modulate4X_Linear"]; } catch { }
+                try { mTechniqueInverseTexture_Linear = mEffect.Techniques["InverseTexture_Linear"]; } catch { }
+                try { mTechniqueColor_Linear = mEffect.Techniques["Color_Linear"]; } catch { }
+                try { mTechniqueColorTextureAlpha_Linear = mEffect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
+                try { mTechniqueInterpolateColor_Linear = mEffect.Techniques["InterpolateColor_Linear"]; } catch { }
 #else
                 try { _techniqueTexture = mEffect.Techniques["Texture"]; } catch { }
                 try { _techniqueAdd = mEffect.Techniques["Add"]; } catch { }
@@ -1306,16 +1306,16 @@ namespace FlatRedBall.Graphics
 
             switch (value)
             {
-                case ColorOperation.Add: technique = useDefaultOrPointFilter ? _techniqueAdd : _techniqueAdd_Linear; break;
-                case ColorOperation.Color: technique = useDefaultOrPointFilter ? _techniqueColor : _techniqueColor_Linear; break;
-                case ColorOperation.ColorTextureAlpha: technique = useDefaultOrPointFilter ? _techniqueColorTextureAlpha : _techniqueColorTextureAlpha_Linear; break;
-                case ColorOperation.InverseTexture: technique = useDefaultOrPointFilter ? _techniqueInverseTexture : _techniqueInverseTexture_Linear; break;
-                case ColorOperation.Modulate: technique = useDefaultOrPointFilter ? _techniqueModulate : _techniqueModulate_Linear; break;
-                case ColorOperation.Subtract: technique = useDefaultOrPointFilter ? _techniqueSubtract : _techniqueSubtract_Linear; break;
-                case ColorOperation.Texture: technique = useDefaultOrPointFilter ? _techniqueTexture : _techniqueTexture_Linear; break;
-                case ColorOperation.Modulate2X: technique = useDefaultOrPointFilter ? _techniqueModulate2X : _techniqueModulate2X_Linear; break;
-                case ColorOperation.Modulate4X: technique = useDefaultOrPointFilter ? _techniqueModulate4X : _techniqueModulate4X_Linear; break;
-                case ColorOperation.InterpolateColor: technique = useDefaultOrPointFilter ? _techniqueInterpolateColor : _techniqueInterpolateColor_Linear; break;
+                case ColorOperation.Add: technique = useDefaultOrPointFilter ? mTechniqueAdd : mTechniqueAdd_Linear; break;
+                case ColorOperation.Color: technique = useDefaultOrPointFilter ? mTechniqueColor : mTechniqueColor_Linear; break;
+                case ColorOperation.ColorTextureAlpha: technique = useDefaultOrPointFilter ? mTechniqueColorTextureAlpha : mTechniqueColorTextureAlpha_Linear; break;
+                case ColorOperation.InverseTexture: technique = useDefaultOrPointFilter ? mTechniqueInverseTexture : mTechniqueInverseTexture_Linear; break;
+                case ColorOperation.Modulate: technique = useDefaultOrPointFilter ? mTechniqueModulate : mTechniqueModulate_Linear; break;
+                case ColorOperation.Subtract: technique = useDefaultOrPointFilter ? mTechniqueSubtract : mTechniqueSubtract_Linear; break;
+                case ColorOperation.Texture: technique = useDefaultOrPointFilter ? mTechniqueTexture : mTechniqueTexture_Linear; break;
+                case ColorOperation.Modulate2X: technique = useDefaultOrPointFilter ? mTechniqueModulate2X : mTechniqueModulate2X_Linear; break;
+                case ColorOperation.Modulate4X: technique = useDefaultOrPointFilter ? mTechniqueModulate4X : mTechniqueModulate4X_Linear; break;
+                case ColorOperation.InterpolateColor: technique = useDefaultOrPointFilter ? mTechniqueInterpolateColor : mTechniqueInterpolateColor_Linear; break;
                 default: throw new InvalidOperationException();
             }
 
