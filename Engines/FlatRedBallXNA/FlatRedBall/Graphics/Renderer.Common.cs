@@ -779,6 +779,9 @@ namespace FlatRedBall.Graphics
                 {
                     switch (sortType)
                     {
+                        case SortType.None:
+                            break;
+
                         case SortType.Z:
                         case SortType.DistanceAlongForwardVector:
                             // Sorting ascending means everything will be drawn back to front.  This
@@ -787,17 +790,17 @@ namespace FlatRedBall.Graphics
                             // is faster but will cause problems for translucency.
                             spriteList.SortZInsertionAscending();
                             break;
+
                         case SortType.DistanceFromCamera:
                             spriteList.SortCameraDistanceInsersionDescending(camera);
                             break;
+
                         case SortType.ZSecondaryParentY:
                             spriteList.SortZInsertionAscending();
-
                             spriteList.SortParentYInsertionDescendingOnZBreaks();
-
                             break;
-                        case SortType.CustomComparer:
 
+                        case SortType.CustomComparer:
                             if (mSpriteComparer != null)
                             {
                                 spriteList.Sort(mSpriteComparer);
@@ -806,12 +809,12 @@ namespace FlatRedBall.Graphics
                             {
                                 spriteList.SortZInsertionAscending();
                             }
-
                             break;
-                        case SortType.None:
-                            // This will improve render times slightly...maybe?
+
+                        case SortType.Texture:
                             spriteList.SortTextureInsertion();
                             break;
+
                         default:
                             break;
                     }
@@ -824,13 +827,18 @@ namespace FlatRedBall.Graphics
             {
                 switch (sortType)
                 {
+                    case SortType.None:
+                        break;
+
                     case SortType.Z:
                     case SortType.DistanceAlongForwardVector:
                         textList.SortZInsertionAscending();
                         break;
+
                     case SortType.DistanceFromCamera:
                         textList.SortCameraDistanceInsersionDescending(camera);
                         break;
+
                     case SortType.CustomComparer:
                         if (mTextComparer != null)
                         {
@@ -840,9 +848,8 @@ namespace FlatRedBall.Graphics
                         {
                             textList.SortZInsertionAscending();
                         }
-
-
                         break;
+
                     default:
                         break;
                 }
@@ -854,6 +861,9 @@ namespace FlatRedBall.Graphics
             {
                 switch (sortType)
                 {
+                    case SortType.None:
+                        break;
+
                     case SortType.Z:
                         // Z serves as the radius if using SortType.DistanceFromCamera.
                         // If Z represents actual Z or radius, the larger the value the further
@@ -864,16 +874,15 @@ namespace FlatRedBall.Graphics
                     case SortType.DistanceAlongForwardVector:
                         batches.Sort(new FlatRedBall.Graphics.BatchForwardVectorSorter(camera));
                         break;
+
                     case SortType.ZSecondaryParentY:
                         SortBatchesZInsertionAscending(batches);
-
                         // Even though the sort type is by parent, IDB doesn't have a Parent object, so we'll just rely on Y.
                         // May need to revisit this if it causes problems
                         SortBatchesYInsertionDescendingOnZBreaks(batches);
-
                         break;
-                    case SortType.CustomComparer:
 
+                    case SortType.CustomComparer:
                         if (mDrawableBatchComparer != null)
                         {
                             batches.Sort(mDrawableBatchComparer);
@@ -882,9 +891,7 @@ namespace FlatRedBall.Graphics
                         {
                             SortBatchesZInsertionAscending(batches);
                         }
-
                         break;
-
                 }
             }
             #endregion
