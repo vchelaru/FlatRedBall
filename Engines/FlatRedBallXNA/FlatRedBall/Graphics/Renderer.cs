@@ -724,7 +724,6 @@ namespace FlatRedBall.Graphics
                 mEffect = value;
 
 #if MONOGAME_381
-
                 try { mTechniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { }
                 try { mTechniqueAdd = mEffect.Techniques["Add_Point"]; } catch { }
                 try { mTechniqueSubtract = mEffect.Techniques["Subtract_Point"]; } catch { }
@@ -747,16 +746,16 @@ namespace FlatRedBall.Graphics
                 try { mTechniqueColorTextureAlpha_Linear = mEffect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
                 try { mTechniqueInterpolateColor_Linear = mEffect.Techniques["InterpolateColor_Linear"]; } catch { }
 #else
-                try { _techniqueTexture = mEffect.Techniques["Texture"]; } catch { }
-                try { _techniqueAdd = mEffect.Techniques["Add"]; } catch { }
-                try { _techniqueSubtract = mEffect.Techniques["Subtract"]; } catch { }
-                try { _techniqueModulate = mEffect.Techniques["Modulate"]; } catch { }
-                try { _techniqueModulate2X = mEffect.Techniques["Modulate2X"]; } catch { }
-                try { _techniqueModulate4X = mEffect.Techniques["Modulate4X"]; } catch { }
-                try { _techniqueInverseTexture = mEffect.Techniques["InverseTexture"]; } catch { }
-                try { _techniqueColor = mEffect.Techniques["Color"]; } catch { }
-                try { _techniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha"]; } catch { }
-                try { _techniqueInterpolateColor = mEffect.Techniques["InterpolateColor"]; } catch { }
+                try { mTechniqueTexture = mEffect.Techniques["Texture"]; } catch { }
+                try { mTechniqueAdd = mEffect.Techniques["Add"]; } catch { }
+                try { mTechniqueSubtract = mEffect.Techniques["Subtract"]; } catch { }
+                try { mTechniqueModulate = mEffect.Techniques["Modulate"]; } catch { }
+                try { mTechniqueModulate2X = mEffect.Techniques["Modulate2X"]; } catch { }
+                try { mTechniqueModulate4X = mEffect.Techniques["Modulate4X"]; } catch { }
+                try { mTechniqueInverseTexture = mEffect.Techniques["InverseTexture"]; } catch { }
+                try { mTechniqueColor = mEffect.Techniques["Color"]; } catch { }
+                try { mTechniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha"]; } catch { }
+                try { mTechniqueInterpolateColor = mEffect.Techniques["InterpolateColor"]; } catch { }
 #endif
             }
         }
