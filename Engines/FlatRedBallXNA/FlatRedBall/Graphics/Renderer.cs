@@ -344,7 +344,6 @@ namespace FlatRedBall.Graphics
         #region Texture Fields
 
         static Texture2D mTexture;
-        static string mColorOperation;
         static BlendOperation mBlendOperation;
         static TextureAddressMode mTextureAddressMode;
 
@@ -694,13 +693,72 @@ namespace FlatRedBall.Graphics
 			}
         }
 
+        // Cached effect members to avoid list lookups while rendering
+        static EffectTechnique _techniqueTexture;
+        static EffectTechnique _techniqueAdd;
+        static EffectTechnique _techniqueSubtract;
+        static EffectTechnique _techniqueModulate;
+        static EffectTechnique _techniqueModulate2X;
+        static EffectTechnique _techniqueModulate4X;
+        static EffectTechnique _techniqueInverseTexture;
+        static EffectTechnique _techniqueColor;
+        static EffectTechnique _techniqueColorTextureAlpha;
+        static EffectTechnique _techniqueInterpolateColor;
+
+        static EffectTechnique _techniqueTexture_Linear;
+        static EffectTechnique _techniqueAdd_Linear;
+        static EffectTechnique _techniqueSubtract_Linear;
+        static EffectTechnique _techniqueModulate_Linear;
+        static EffectTechnique _techniqueModulate2X_Linear;
+        static EffectTechnique _techniqueModulate4X_Linear;
+        static EffectTechnique _techniqueInverseTexture_Linear;
+        static EffectTechnique _techniqueColor_Linear;
+        static EffectTechnique _techniqueColorTextureAlpha_Linear;
+        static EffectTechnique _techniqueInterpolateColor_Linear;
+
         static public Effect Effect
         {
-            set 
-            { 
-                mEffect = value; 
-            }
             get { return mEffect; }
+            set
+            {
+                mEffect = value;
+
+#if MONOGAME_381
+
+                try { _techniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { }
+                try { _techniqueAdd = mEffect.Techniques["Add_Point"]; } catch { }
+                try { _techniqueSubtract = mEffect.Techniques["Subtract_Point"]; } catch { }
+                try { _techniqueModulate = mEffect.Techniques["Modulate_Point"]; } catch { }
+                try { _techniqueModulate2X = mEffect.Techniques["Modulate2X_Point"]; } catch { }
+                try { _techniqueModulate4X = mEffect.Techniques["Modulate4X_Point"]; } catch { }
+                try { _techniqueInverseTexture = mEffect.Techniques["InverseTexture_Point"]; } catch { }
+                try { _techniqueColor = mEffect.Techniques["Color_Point"]; } catch { }
+                try { _techniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha_Point"]; } catch { }
+                try { _techniqueInterpolateColor = mEffect.Techniques["InterpolateColor_Point"]; } catch { }
+
+                try { _techniqueTexture_Linear = mEffect.Techniques["Texture_Linear"]; } catch { }
+                try { _techniqueAdd_Linear = mEffect.Techniques["Add_Linear"]; } catch { }
+                try { _techniqueSubtract_Linear = mEffect.Techniques["Subtract_Linear"]; } catch { }
+                try { _techniqueModulate_Linear = mEffect.Techniques["Modulate_Linear"]; } catch { }
+                try { _techniqueModulate2X_Linear = mEffect.Techniques["Modulate2X_Linear"]; } catch { }
+                try { _techniqueModulate4X_Linear = mEffect.Techniques["Modulate4X_Linear"]; } catch { }
+                try { _techniqueInverseTexture_Linear = mEffect.Techniques["InverseTexture_Linear"]; } catch { }
+                try { _techniqueColor_Linear = mEffect.Techniques["Color_Linear"]; } catch { }
+                try { _techniqueColorTextureAlpha_Linear = mEffect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
+                try { _techniqueInterpolateColor_Linear = mEffect.Techniques["InterpolateColor_Linear"]; } catch { }
+#else
+                try { _techniqueTexture = mEffect.Techniques["Texture"]; } catch { }
+                try { _techniqueAdd = mEffect.Techniques["Add"]; } catch { }
+                try { _techniqueSubtract = mEffect.Techniques["Subtract"]; } catch { }
+                try { _techniqueModulate = mEffect.Techniques["Modulate"]; } catch { }
+                try { _techniqueModulate2X = mEffect.Techniques["Modulate2X"]; } catch { }
+                try { _techniqueModulate4X = mEffect.Techniques["Modulate4X"]; } catch { }
+                try { _techniqueInverseTexture = mEffect.Techniques["InverseTexture"]; } catch { }
+                try { _techniqueColor = mEffect.Techniques["Color"]; } catch { }
+                try { _techniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha"]; } catch { }
+                try { _techniqueInterpolateColor = mEffect.Techniques["InterpolateColor"]; } catch { }
+#endif
+            }
         }
 
         #endregion
@@ -1181,10 +1239,7 @@ namespace FlatRedBall.Graphics
 
         internal static void ForceSetColorOperation(ColorOperation value)
         {
-
             mLastColorOperationSet = value;
-
-
 
 #if !USE_CUSTOM_SHADER
             switch (value)
@@ -1242,50 +1297,45 @@ namespace FlatRedBall.Graphics
             }
 
 #else
-            string valueAsString;
+            EffectTechnique technique = null;
+            bool useDefaultOrPointFilter = true;
+
+#if MONOGAME_381
+            useDefaultOrPointFilter = FlatRedBallServices.GraphicsOptions.TextureFilter == TextureFilter.Point;
+#endif
 
             switch (value)
             {
-                case ColorOperation.Add: valueAsString = "Add"; break;
-                case ColorOperation.Color: valueAsString = "Color"; break;
-                case ColorOperation.ColorTextureAlpha: valueAsString = "ColorTextureAlpha"; break;
-                case ColorOperation.InverseTexture: valueAsString = "InverseTexture"; break;
-                case ColorOperation.Modulate: valueAsString = "Modulate"; break;
-                case ColorOperation.Subtract: valueAsString = "Subtract"; break;
-                case ColorOperation.Texture: valueAsString = "Texture"; break;
-                case ColorOperation.Modulate2X: valueAsString = "Modulate2X"; break;
-                case ColorOperation.Modulate4X: valueAsString = "Modulate4X"; break;
-                case ColorOperation.InterpolateColor: valueAsString = "InterpolateColor"; break;
+                case ColorOperation.Add: technique = useDefaultOrPointFilter ? _techniqueAdd : _techniqueAdd_Linear; break;
+                case ColorOperation.Color: technique = useDefaultOrPointFilter ? _techniqueColor : _techniqueColor_Linear; break;
+                case ColorOperation.ColorTextureAlpha: technique = useDefaultOrPointFilter ? _techniqueColorTextureAlpha : _techniqueColorTextureAlpha_Linear; break;
+                case ColorOperation.InverseTexture: technique = useDefaultOrPointFilter ? _techniqueInverseTexture : _techniqueInverseTexture_Linear; break;
+                case ColorOperation.Modulate: technique = useDefaultOrPointFilter ? _techniqueModulate : _techniqueModulate_Linear; break;
+                case ColorOperation.Subtract: technique = useDefaultOrPointFilter ? _techniqueSubtract : _techniqueSubtract_Linear; break;
+                case ColorOperation.Texture: technique = useDefaultOrPointFilter ? _techniqueTexture : _techniqueTexture_Linear; break;
+                case ColorOperation.Modulate2X: technique = useDefaultOrPointFilter ? _techniqueModulate2X : _techniqueModulate2X_Linear; break;
+                case ColorOperation.Modulate4X: technique = useDefaultOrPointFilter ? _techniqueModulate4X : _techniqueModulate4X_Linear; break;
+                case ColorOperation.InterpolateColor: technique = useDefaultOrPointFilter ? _techniqueInterpolateColor : _techniqueInterpolateColor_Linear; break;
                 default: throw new InvalidOperationException();
             }
-
-
-
-
-#if MONOGAME_381
-            valueAsString += "_" + FlatRedBallServices.GraphicsOptions.TextureFilter;
-#endif
-
-
-            if (mCurrentEffect == null)
-            {
-                mCurrentEffect = mEffect;
-            }
-            EffectTechnique technique =
-                mCurrentEffect.Techniques[valueAsString];
 
             if (technique == null)
             {
                 string errorString =
-                    "Could not find a technique named " + valueAsString +
-                    " in the current shader.  If using a custom shader verify that " +
-                    "this pixel shader technique exists.  Otherwise use a standard " +
-                    "ColorOperation.";
+                    "Could not find a technique for " + value.ToString() +
+                    ", filter: " + FlatRedBallServices.GraphicsOptions.TextureFilter +
+                    " in the current shader. If using a custom shader verify that" +
+                    " this pixel shader technique exists.";
+                throw new Exception(errorString);
             }
             else
             {
+                if (mCurrentEffect == null)
+                {
+                    mCurrentEffect = mEffect;
+                }
+
                 mCurrentEffect.CurrentTechnique = technique;
-                mColorOperation = valueAsString;
             }
 #endif
         }
