@@ -650,6 +650,29 @@ namespace FlatRedBall.Glue.Parsing
             return qualifiedName;
         }
 
+        public static string GetFriendlyGenericName(Type type)
+        {
+            string friendlyName = type?.Name;
+            if (type?.IsGenericType == true)
+            {
+                int iBacktick = friendlyName.IndexOf('`');
+                if (iBacktick > 0)
+                {
+                    friendlyName = friendlyName.Remove(iBacktick);
+                }
+                friendlyName += "<";
+                Type[] typeParameters = type.GetGenericArguments();
+                for (int i = 0; i < typeParameters.Length; ++i)
+                {
+                    string typeParamName = GetFriendlyGenericName(typeParameters[i]);
+                    friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+                }
+                friendlyName += ">";
+            }
+
+            return friendlyName;
+        }
+
 
         public static Type GetElementType(Type listType)
         {

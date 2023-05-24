@@ -719,16 +719,20 @@ namespace FlatRedBall.Glue.SaveClasses
             // so we need to have the values be fully qualified.
             //instructionSave.Type = type.Name;
 
-            if(type == typeof(List<string>))
+            // List<string> could maybe use the GetFriendlyGenericName
+            // method, but it seems to rely on lower-case string, so let's leave it at that...
+            if (type == typeof(List<string>))
             {
                 instructionSave.Type = "List<string>";
+            }
+            else if(type.IsGenericType)
+            {
+                instructionSave.Type = TypeManager.GetFriendlyGenericName(type);
             }
             else
             {
                 instructionSave.Type = type.FullName;
             }
-
-            // special case - if it's a list, then handle it here
 
             instructionSave.Type = TypeManager.GetCommonTypeName(instructionSave.Type);
             instructionSave.Member = member;
