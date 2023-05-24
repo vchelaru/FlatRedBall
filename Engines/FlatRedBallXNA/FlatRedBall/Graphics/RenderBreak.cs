@@ -21,7 +21,6 @@ namespace FlatRedBall.Graphics
 
         public int ItemNumber;
 
-        Texture2D mTexture;
         public PrimitiveType PrimitiveType;
 
         public string LayerName;
@@ -75,11 +74,7 @@ namespace FlatRedBall.Graphics
 
         public TextureFilter TextureFilter;
 
-
-        public Texture2D Texture
-        {
-            get { return mTexture; }
-        }
+        public Texture2D Texture;
 
         public TextureAddressMode TextureAddressMode;
         private static TextureFilter _originalTextureFilter;
@@ -128,7 +123,7 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException(msg);
                 }
 
-                mTexture = sprite.Texture;
+                Texture = sprite.Texture;
 
                 ColorOperation = sprite.ColorOperation;
                 BlendOperation = sprite.BlendOperation;
@@ -156,7 +151,7 @@ namespace FlatRedBall.Graphics
                 Green = 0;
                 Blue = 0;
 
-                mTexture = null;
+                Texture = null;
 
                 ColorOperation = ColorOperation.Texture;
 
@@ -201,7 +196,7 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException("Cannot create render break with disposed Texture2D");
                 }
 
-                mTexture = text.Font.Textures[textureIndex];
+                Texture = text.Font.Textures[textureIndex];
 
                 ColorOperation = text.ColorOperation;
                 BlendOperation = text.BlendOperation;
@@ -209,7 +204,7 @@ namespace FlatRedBall.Graphics
             }
             else
             {
-                mTexture = null;
+                Texture = null;
                 ColorOperation = ColorOperation.Texture;
                 BlendOperation = BlendOperation.Regular;
                 TextureAddressMode = TextureAddressMode.Clamp;
@@ -234,7 +229,7 @@ namespace FlatRedBall.Graphics
                 throw new ObjectDisposedException("Cannot create render break with disposed Texture2D");
             }
 
-            mTexture = texture;
+            Texture = texture;
             ColorOperation = colorOperation;
             BlendOperation = blendOperation;
             TextureAddressMode = textureAddressMode;

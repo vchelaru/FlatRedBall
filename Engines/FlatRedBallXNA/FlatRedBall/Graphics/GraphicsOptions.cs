@@ -98,7 +98,7 @@ namespace FlatRedBall.Graphics
 #endif
                         #endregion
 
-                        ForceRefreshSamplerState();
+                        ForceRefreshSamplerState(0);
                     }
                 }
             }
