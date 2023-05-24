@@ -1537,7 +1537,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 objectName = "base." + objectName;
             }
-            codeBlock.Line(objectName + "." + instructionSave.Member + " = " + rightSide + ";");
+
+            if(rightSide != null)
+            {
+                // If it's null, then this will be an invalid line of code
+                codeBlock.Line(objectName + "." + instructionSave.Member + " = " + rightSide + ";");
+            }
+
 
             if (needsEndif)
             {
