@@ -160,7 +160,7 @@ namespace FlatRedBall
         internal bool mAutomaticallyUpdated;
         protected internal VertexPositionColorTexture[] mVerticesForDrawing; // Made protected internal to allow skipping the property in derived classes
         internal Vector3 mOldPosition; // used when sorting along forward vector to hold old position
-        internal SpriteVertex[] mVertices;
+        protected internal SpriteVertex[] mVertices;
 
         internal bool mOrdered = true;
         #endregion
