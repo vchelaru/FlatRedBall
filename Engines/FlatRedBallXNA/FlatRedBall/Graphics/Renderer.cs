@@ -421,7 +421,7 @@ namespace FlatRedBall.Graphics
             mCurrentEffect.TextureEnabled = value != null;
             mCurrentEffect.Texture = mTexture;
 #else
-                    mCurrentEffect.Parameters["CurrentTexture"].SetValue(mTexture);
+            mParameterCurrentTexture.SetValue(mTexture);
 #endif
         }
 
@@ -716,12 +716,16 @@ namespace FlatRedBall.Graphics
         static EffectTechnique mTechniqueColorTextureAlpha_Linear;
         static EffectTechnique mTechniqueInterpolateColor_Linear;
 
+        static EffectParameter mParameterCurrentTexture;
+
         static public Effect Effect
         {
             get { return mEffect; }
             set
             {
                 mEffect = value;
+
+                mParameterCurrentTexture = mEffect.Parameters["CurrentTexture"];
 
 #if MONOGAME_381
                 try { mTechniqueTexture = mEffect.Techniques["Texture_Point"]; } catch { }

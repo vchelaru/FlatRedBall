@@ -672,7 +672,7 @@ namespace FlatRedBall.Graphics
             // reset the texture filter:
             FlatRedBallServices.GraphicsOptions.TextureFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
             ForceSetBlendOperation();
-            SetCurrentEffect(Effect, SpriteManager.Camera);
+            SetCurrentEffect(mEffect, SpriteManager.Camera);
         }
 
         private static void GetNextZValuesByCategory(List<Sprite> spriteList, SortType sortType, List<Text> textList, List<IDrawableBatch> batches, Camera camera, ref int spriteIndex, ref int textIndex, ref float nextSpriteSortValue, ref float nextTextSortValue, ref float nextBatchSortValue)
