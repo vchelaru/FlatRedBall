@@ -105,6 +105,13 @@ namespace FlatRedBall.Graphics
             set { mDrawableBatchComparer = value; }
         }
 
+        static bool mUpdateDrawableBatches = true;
+        public static bool UpdateDrawableBatches
+        {
+            get { return mUpdateDrawableBatches; }
+            set { mUpdateDrawableBatches = value; }
+        }
+
         private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section, ref RenderTarget2D lastRenderTarget)
         {
             bool hasLayerModifiedCamera = false;
@@ -384,7 +391,7 @@ namespace FlatRedBall.Graphics
                     while (batchIndex < batches.Count)
                     {
                         IDrawableBatch batchAtIndex = batches[batchIndex];
-                        if (batchAtIndex.UpdateEveryFrame)
+                        if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
                         {
                             batchAtIndex.Update();
                         }
