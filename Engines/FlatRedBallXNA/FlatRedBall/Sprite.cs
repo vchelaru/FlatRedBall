@@ -1754,8 +1754,14 @@ namespace FlatRedBall
         {
             get
             {
-                IVisible iVisibleParent = ((IVisible)this).Parent;
-                return mVisible && (iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible);
+                if (!mVisible)
+                {
+                    return false; // Early out
+                }
+
+                // The sprite is visible but we have to check the parent
+                IVisible iVisibleParent = mParent as IVisible; // Avoid the property here
+                return iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible;
             }
         }
 
