@@ -2124,102 +2124,86 @@ namespace FlatRedBall
 
             spriteToUpdate.UpdateVertices();
 
-            spriteToUpdate.mVerticesForDrawing[0].Position = spriteToUpdate.mVertices[0].Position;
-            spriteToUpdate.mVerticesForDrawing[1].Position = spriteToUpdate.mVertices[1].Position;
-            spriteToUpdate.mVerticesForDrawing[2].Position = spriteToUpdate.mVertices[2].Position;
-            spriteToUpdate.mVerticesForDrawing[3].Position = spriteToUpdate.mVertices[3].Position;
+            // Catch the variables so we avoid multiple property accesses
+            var vertices = spriteToUpdate.mVertices;
+            var verticesForDrawing = spriteToUpdate.mVerticesForDrawing;
 
+            verticesForDrawing[0].Position = vertices[0].Position;
+            verticesForDrawing[1].Position = vertices[1].Position;
+            verticesForDrawing[2].Position = vertices[2].Position;
+            verticesForDrawing[3].Position = vertices[3].Position;
 
     #if MONOGAME
             if (spriteToUpdate.Texture != null && spriteToUpdate.ColorOperation == ColorOperation.Texture)
             {
                 // In this case we'll just use the Alpha for all components (since it's premultiplied)
-                spriteToUpdate.mVerticesForDrawing[0].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 24);
+                uint alpha0 = (uint)(255 * vertices[0].Color.W);
+                uint alpha1 = (uint)(255 * vertices[1].Color.W);
+                uint alpha2 = (uint)(255 * vertices[2].Color.W);
+                uint alpha3 = (uint)(255 * vertices[3].Color.W);
 
-
-                spriteToUpdate.mVerticesForDrawing[1].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[2].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[3].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
+                verticesForDrawing[0].Color.PackedValue = alpha0 + (alpha0 << 8) + (alpha0 << 16) + (alpha0 << 24);
+                verticesForDrawing[1].Color.PackedValue = alpha1 + (alpha1 << 8) + (alpha1 << 16) + (alpha1 << 24);
+                verticesForDrawing[2].Color.PackedValue = alpha2 + (alpha2 << 8) + (alpha2 << 16) + (alpha2 << 24);
+                verticesForDrawing[3].Color.PackedValue = alpha3 + (alpha3 << 8) + (alpha3 << 16) + (alpha3 << 24);
             }
             else
     #endif
             {
+                verticesForDrawing[0].Color.PackedValue =
+                    ((uint)(255 * vertices[0].Color.X)) +
+                    (((uint)(255 * vertices[0].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[0].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[0].Color.W)) << 24);
 
-                spriteToUpdate.mVerticesForDrawing[0].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[0].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[0].Color.W)) << 24);
+                verticesForDrawing[1].Color.PackedValue =
+                    ((uint)(255 * vertices[1].Color.X)) +
+                    (((uint)(255 * vertices[1].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[1].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[1].Color.W)) << 24);
 
+                verticesForDrawing[2].Color.PackedValue =
+                    ((uint)(255 * vertices[2].Color.X)) +
+                    (((uint)(255 * vertices[2].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[2].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[2].Color.W)) << 24);
 
-                spriteToUpdate.mVerticesForDrawing[1].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[1].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[1].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[2].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[2].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[2].Color.W)) << 24);
-
-                spriteToUpdate.mVerticesForDrawing[3].Color.PackedValue =
-                    ((uint)(255 * spriteToUpdate.mVertices[3].Color.X)) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.Y)) << 8) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.Z)) << 16) +
-                    (((uint)(255 * spriteToUpdate.mVertices[3].Color.W)) << 24);
+                verticesForDrawing[3].Color.PackedValue =
+                    ((uint)(255 * vertices[3].Color.X)) +
+                    (((uint)(255 * vertices[3].Color.Y)) << 8) +
+                    (((uint)(255 * vertices[3].Color.Z)) << 16) +
+                    (((uint)(255 * vertices[3].Color.W)) << 24);
             }
 
             if (!spriteToUpdate.FlipHorizontal && !spriteToUpdate.FlipVertical)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[3].TextureCoordinate;
             }
             else if (spriteToUpdate.FlipVertical && spriteToUpdate.FlipHorizontal)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[1].TextureCoordinate;
 
             }
             else if (spriteToUpdate.FlipVertical)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
+                verticesForDrawing[0].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[2].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[0].TextureCoordinate;
             }
             else if (spriteToUpdate.FlipHorizontal)
             {
-                spriteToUpdate.mVerticesForDrawing[0].TextureCoordinate = spriteToUpdate.mVertices[1].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[1].TextureCoordinate = spriteToUpdate.mVertices[0].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[2].TextureCoordinate = spriteToUpdate.mVertices[3].TextureCoordinate;
-                spriteToUpdate.mVerticesForDrawing[3].TextureCoordinate = spriteToUpdate.mVertices[2].TextureCoordinate;
-
+                verticesForDrawing[0].TextureCoordinate = vertices[1].TextureCoordinate;
+                verticesForDrawing[1].TextureCoordinate = vertices[0].TextureCoordinate;
+                verticesForDrawing[2].TextureCoordinate = vertices[3].TextureCoordinate;
+                verticesForDrawing[3].TextureCoordinate = vertices[2].TextureCoordinate;
             }
-
         }
 
         #endregion

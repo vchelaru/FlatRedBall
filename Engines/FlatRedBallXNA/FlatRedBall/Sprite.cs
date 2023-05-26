@@ -160,7 +160,7 @@ namespace FlatRedBall
         internal bool mAutomaticallyUpdated;
         protected internal VertexPositionColorTexture[] mVerticesForDrawing; // Made protected internal to allow skipping the property in derived classes
         internal Vector3 mOldPosition; // used when sorting along forward vector to hold old position
-        internal SpriteVertex[] mVertices;
+        protected internal SpriteVertex[] mVertices;
 
         internal bool mOrdered = true;
         #endregion
@@ -401,7 +401,7 @@ namespace FlatRedBall
             set 
             {
 #if DEBUG
-                // Check for unsupporte color operations
+                // Check for unsupported color operations
                 if(Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.iOS) ||
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.Android) ||
                     Debugging.CrossPlatform.ShouldApplyRestrictionsFor(Debugging.Platform.WindowsRt))
@@ -1754,8 +1754,14 @@ namespace FlatRedBall
         {
             get
             {
-                IVisible iVisibleParent = ((IVisible)this).Parent;
-                return mVisible && (iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible);
+                if (!mVisible)
+                {
+                    return false; // Early out
+                }
+
+                // The sprite is visible but we have to check the parent
+                IVisible iVisibleParent = mParent as IVisible; // Avoid the property here
+                return iVisibleParent == null || IgnoresParentVisibility || iVisibleParent.AbsoluteVisible;
             }
         }
 

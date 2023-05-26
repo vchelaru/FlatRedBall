@@ -52,7 +52,7 @@ float4 TexturePixelShader_Point(a2v IN) : COLOR
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
     
 	// Premultiplied alpha requires this
-    color *= IN.color[3];
+	color *= IN.color[3];
 	
 	clip(color[3] - .001);
 	return color;
@@ -61,10 +61,9 @@ float4 TexturePixelShader_Point(a2v IN) : COLOR
 float4 AddPixelShader_Point(a2v IN) : COLOR
 {
     float4 fromTexture = tex2D(pointTextureSampler, IN.texCoord.xy);
-    fromTexture[0] = (fromTexture[0] + IN.color[0] * fromTexture[3]) * IN.color[3];
-    fromTexture[1] = (fromTexture[1] + IN.color[1] * fromTexture[3]) * IN.color[3];
-    fromTexture[2] = (fromTexture[2] + IN.color[2] * fromTexture[3]) * IN.color[3];
-    fromTexture[3] = fromTexture[3] * IN.color[3];
+    fromTexture.rgb += IN.color.rgb;
+    fromTexture.rgb *= fromTexture[3];
+    fromTexture *= IN.color[3];
 	clip(fromTexture[3] - .001);
 	return fromTexture;
 }
@@ -72,10 +71,8 @@ float4 AddPixelShader_Point(a2v IN) : COLOR
 float4 SubtractPixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = (color[0] - IN.color[0]) * IN.color[3];
-    color[1] = (color[1] - IN.color[1]) * IN.color[3];
-    color[2] = (color[2] - IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb -= IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -83,10 +80,8 @@ float4 SubtractPixelShader_Point(a2v IN) : COLOR
 float4 ModulatePixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = (color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -94,10 +89,8 @@ float4 ModulatePixelShader_Point(a2v IN) : COLOR
 float4 Modulate2XPixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = (2 * color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (2 * color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (2 * color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= 2 * IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -105,10 +98,8 @@ float4 Modulate2XPixelShader_Point(a2v IN) : COLOR
 float4 Modulate4XPixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = (4 * color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (4 * color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (4 * color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= 4 * IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -116,10 +107,8 @@ float4 Modulate4XPixelShader_Point(a2v IN) : COLOR
 float4 InversePixelShader_Point(a2v IN) : COLOR
 {
     float4 color =  tex2D(pointTextureSampler, IN.texCoord.xy);
-    color[0] = (1 - color[0]) * IN.color[3];
-    color[1] = (1 - color[1]) * IN.color[3];
-    color[2] = (1 - color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb = 1 - color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -134,10 +123,8 @@ float4 ColorTextureAlphaPixelShader_Point(a2v IN) : COLOR
 {
 	float4 color = IN.color;
 	float alphaFromTexture = tex2D(pointTextureSampler, IN.texCoord.xy).a;
-	color[0] = color[0] * IN.color[3] * alphaFromTexture;
-	color[1] = color[1] * IN.color[3] * alphaFromTexture;
-	color[2] = color[2] * IN.color[3] * alphaFromTexture;
-	color[3] = color[3] * alphaFromTexture;
+	color.rgb *= IN.color[3];
+	color *= alphaFromTexture;
 	clip(color[3] - .001);
 	return color;
 }
@@ -145,7 +132,7 @@ float4 ColorTextureAlphaPixelShader_Point(a2v IN) : COLOR
 float4 InterpolateColorPixelShader_Point(a2v IN) :COLOR
 {
 	float4 color = IN.color;
-	color = (color[3] * tex2D(pointTextureSampler, IN.texCoord.xy)) + (1 - color[3])*(color);
+	color = (color[3] * tex2D(pointTextureSampler, IN.texCoord.xy)) + (1 - color[3]) * (color);
 	color[3] = tex2D(pointTextureSampler, IN.texCoord.xy).a;
 	clip(color[3] - .001);
 	return color;
@@ -159,7 +146,7 @@ float4 TexturePixelShader_Linear(a2v IN) : COLOR
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
 	
 	// Premultiplied alpha requires this
-    color *= IN.color[3];
+	color *= IN.color[3];
 	
 	clip(color[3] - .001);  
 	return color;
@@ -168,10 +155,9 @@ float4 TexturePixelShader_Linear(a2v IN) : COLOR
 float4 AddPixelShader_Linear(a2v IN) : COLOR
 {
     float4 fromTexture =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    fromTexture[0] = (fromTexture[0] + IN.color[0] * fromTexture[3]) * IN.color[3];
-    fromTexture[1] = (fromTexture[1] + IN.color[1] * fromTexture[3]) * IN.color[3];
-    fromTexture[2] = (fromTexture[2] + IN.color[2] * fromTexture[3]) * IN.color[3];
-    fromTexture[3] = fromTexture[3] * IN.color[3];
+    fromTexture.rgb += IN.color.rgb;
+    fromTexture.rgb *= fromTexture[3];
+    fromTexture *= IN.color[3];
 	clip(fromTexture[3] - .001);
 	return fromTexture;
 }
@@ -179,10 +165,8 @@ float4 AddPixelShader_Linear(a2v IN) : COLOR
 float4 SubtractPixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = (color[0] - IN.color[0]) * IN.color[3];
-    color[1] = (color[1] - IN.color[1]) * IN.color[3];
-    color[2] = (color[2] - IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb -= IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -190,10 +174,8 @@ float4 SubtractPixelShader_Linear(a2v IN) : COLOR
 float4 ModulatePixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = (color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -201,10 +183,8 @@ float4 ModulatePixelShader_Linear(a2v IN) : COLOR
 float4 Modulate2XPixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = (2 * color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (2 * color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (2 * color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= 2 * IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -212,10 +192,8 @@ float4 Modulate2XPixelShader_Linear(a2v IN) : COLOR
 float4 Modulate4XPixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = (4 * color[0] * IN.color[0]) * IN.color[3];
-    color[1] = (4 * color[1] * IN.color[1]) * IN.color[3];
-    color[2] = (4 * color[2] * IN.color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb *= 4 * IN.color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -223,10 +201,8 @@ float4 Modulate4XPixelShader_Linear(a2v IN) : COLOR
 float4 InversePixelShader_Linear(a2v IN) : COLOR
 {
     float4 color =  tex2D(linearTextureSampler, IN.texCoord.xy);
-    color[0] = (1 - color[0]) * IN.color[3];
-    color[1] = (1 - color[1]) * IN.color[3];
-    color[2] = (1 - color[2]) * IN.color[3];
-    color[3] = color[3] * IN.color[3];
+    color.rgb = 1 - color.rgb;
+    color *= IN.color[3];
 	clip(color[3] - .001);
 	return color;
 }
@@ -235,10 +211,8 @@ float4 ColorTextureAlphaPixelShader_Linear(a2v IN) : COLOR
 {
 	float4 color = IN.color;
 	float alphaFromTexture = tex2D(linearTextureSampler, IN.texCoord.xy).a;
-	color[0] = color[0] * IN.color[3] * alphaFromTexture;
-	color[1] = color[1] * IN.color[3] * alphaFromTexture;
-	color[2] = color[2] * IN.color[3] * alphaFromTexture;
-	color[3] = color[3] * alphaFromTexture;
+	color.rgb *= IN.color[3];
+	color *= alphaFromTexture;
 	clip(color[3] - .001);
 	return color;
 }
@@ -246,7 +220,7 @@ float4 ColorTextureAlphaPixelShader_Linear(a2v IN) : COLOR
 float4 InterpolateColorPixelShader_Linear(a2v IN) :COLOR
 {
 	float4 color = IN.color;
-	color = (color[3] * tex2D(linearTextureSampler, IN.texCoord.xy)) + (1 - color[3])*(color);
+	color = (color[3] * tex2D(linearTextureSampler, IN.texCoord.xy)) + (1 - color[3]) * (color);
 	color[3] = tex2D(linearTextureSampler, IN.texCoord.xy).a;
 	clip(color[3] - .001);
 	return color;
