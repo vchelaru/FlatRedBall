@@ -106,6 +106,10 @@ namespace FlatRedBall.Graphics
         }
 
         static bool mUpdateDrawableBatches = true;
+
+        /// <summary>
+        /// Controls whether the renderer will update the drawable batches in the next draw call.
+        /// </summary>
         public static bool UpdateDrawableBatches
         {
             get { return mUpdateDrawableBatches; }
@@ -578,7 +582,7 @@ namespace FlatRedBall.Graphics
                     {
                         IDrawableBatch batchAtIndex = batches[batchIndex];
 
-                        if (batchAtIndex.UpdateEveryFrame)
+                        if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
                         {
                             batchAtIndex.Update();
                         }
