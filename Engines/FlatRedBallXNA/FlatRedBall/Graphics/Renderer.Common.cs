@@ -105,6 +105,17 @@ namespace FlatRedBall.Graphics
             set { mDrawableBatchComparer = value; }
         }
 
+        static bool mUpdateSorting = true;
+
+        /// <summary>
+        /// Controls whether the renderer will refresh the sorting of its internal lists in the next draw call.
+        /// </summary>
+        public static bool UpdateSorting
+        {
+            get { return mUpdateSorting; }
+            set { mUpdateSorting = value; }
+        }
+
         static bool mUpdateDrawableBatches = true;
 
         /// <summary>
@@ -267,7 +278,10 @@ namespace FlatRedBall.Graphics
                 Section.GetAndStartContextAndTime("Sort Lists");
             }
 
-            SortAllLists(spriteListUnfiltered, sortType, textListUnfiltered, batches, relativeToCamera, camera);
+            if (mUpdateSorting)
+            {
+                SortAllLists(spriteListUnfiltered, sortType, textListUnfiltered, batches, relativeToCamera, camera);
+            }
 
             mVisibleSprites.Clear();
             mVisibleTexts.Clear();
@@ -443,7 +457,7 @@ namespace FlatRedBall.Graphics
                     #region Count how many Sprites to draw and store it in numberToDraw
                     numberToDraw = 0;
 
-                    if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
+                    if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                         sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
                     else
                         sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
@@ -457,7 +471,7 @@ namespace FlatRedBall.Graphics
                             break;
                         }
 
-                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
+                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             sortingValue = mVisibleSprites[spriteIndex + numberToDraw].Position.Z;
                         else
                             sortingValue = -(camera.Position - mVisibleSprites[spriteIndex + numberToDraw].Position).LengthSquared();
@@ -493,7 +507,7 @@ namespace FlatRedBall.Graphics
                     }
                     else
                     {
-                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
+                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             nextSpriteSortValue = mVisibleSprites[spriteIndex].Position.Z;
                         else
                             nextSpriteSortValue = -(camera.Position - mVisibleSprites[spriteIndex].Position).LengthSquared();
@@ -555,7 +569,7 @@ namespace FlatRedBall.Graphics
                         nextTextSortValue = float.PositiveInfinity;
                     else
                     {
-                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY)
+                        if (sortType == SortType.Z || sortType == SortType.DistanceAlongForwardVector || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             nextTextSortValue = mVisibleTexts[textIndex].Position.Z;
                         else
                             nextTextSortValue = -(camera.Position - mVisibleTexts[textIndex].Position).LengthSquared();
@@ -611,7 +625,7 @@ namespace FlatRedBall.Graphics
                         {
                             batchAtIndex = batches[batchIndex];
 
-                            if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY)
+                            if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             {
                                 nextBatchSortValue = batchAtIndex.Z;
                             }
@@ -713,7 +727,7 @@ namespace FlatRedBall.Graphics
 
                 if (batches != null && batches.Count != 0)
                 {
-                    if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY)
+                    if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                     {
                         // The Z value of the current batch is used.  Batches are always visible
                         // to this code.
