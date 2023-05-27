@@ -859,6 +859,8 @@ namespace GlueControl.Editing
             owner = shapeCollection;
         }
 
+        public bool HandleDelete() => false;
+
         #region General ISelectionMarker implementations
 
         public void Destroy()

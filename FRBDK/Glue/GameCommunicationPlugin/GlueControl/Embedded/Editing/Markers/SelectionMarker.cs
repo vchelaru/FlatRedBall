@@ -59,6 +59,7 @@ namespace GlueControl.Editing
 
         INameable Owner { get; }
 
+        bool HandleDelete();
         void MakePersistent();
         void PlayBumpAnimation(float endingExtraPaddingBeforeZoom, bool isSynchronized);
         void Update(bool didGameBecomeActive);
@@ -1317,6 +1318,18 @@ namespace GlueControl.Editing
 
             variableName == "Radius"
             ;
+
+        public bool HandleDelete()
+        {
+            if (ownerAsPositionable is Polygon asPolygon)
+            {
+                return PolygonPointHandles.HandleDelete(asPolygon);
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public void Destroy()
         {

@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using GlueControl.Managers;
 using FlatRedBall.Math;
 using FlatRedBall.Gui;
-
+using Microsoft.Xna.Framework;
+using GlueControl.Models;
+using Point = FlatRedBall.Math.Geometry.Point;
 
 namespace GlueControl.Editing
 {
@@ -16,7 +18,7 @@ namespace GlueControl.Editing
     {
         #region Fields/Properties
 
-        List<AxisAlignedRectangle> rectangles = new List<AxisAlignedRectangle>();
+        List<AxisAlignedRectangle> pointRectangles = new List<AxisAlignedRectangle>();
 
         Microsoft.Xna.Framework.Vector3 UnsnappedPosition;
 
@@ -29,19 +31,45 @@ namespace GlueControl.Editing
 
         #endregion
 
+        static string pointsVariableToSet = null;
         public void EveryFrameUpdate(PositionedObject item, SelectionMarker selectionMarker)
         {
+            pointsVariableToSet = null;
             var itemAsPolygon = item as Polygon;
             // special case for derived polygons, this will handle capsule polygon.
             // If in the future this is a problem, then we will add a new Glux file version:
-            if (item?.GetType() != typeof(Polygon))
+            var itemType = item?.GetType();
+            if (itemType != typeof(Polygon))
             {
                 itemAsPolygon = null;
             }
 
-            Visible = selectionMarker.Visible && itemAsPolygon != null;
+            var elementName = itemType == null
+                ? (string)null
+                : CommandReceiver.GameElementTypeToGlueElement(itemType?.FullName);
 
-            if (itemAsPolygon == null)
+            if (elementName != null && itemAsPolygon == null)
+            {
+                var element = ObjectFinder.Self.GetElement(elementName);
+
+                var pointsTunneled = element?.CustomVariables.FirstOrDefault(item => item.SourceObjectProperty == "Points");
+                if (pointsTunneled != null)
+                {
+                    var namedObject = element.GetNamedObject(pointsTunneled.SourceObject);
+                    if (namedObject.SourceType == SourceType.FlatRedBallType && (namedObject.SourceClassType == "Polygon" || namedObject.SourceClassType == "FlatRedBall.Math.Geometry.Polygon"))
+                    {
+                        pointsVariableToSet = pointsTunneled.Name;
+                        var polygonProperty = item.GetType().GetProperty(namedObject.InstanceName);
+                        itemAsPolygon = polygonProperty?.GetValue(item) as Polygon;
+                    }
+                }
+            }
+
+            var isVisible = selectionMarker.Visible && itemAsPolygon != null;
+
+            Visible = isVisible;
+
+            if (!isVisible)
             {
                 UpdatePointCount(0);
             }
@@ -66,7 +94,7 @@ namespace GlueControl.Editing
             }
             if (!cursor.PrimaryDown)
             {
-                DoCursorHoverActivity();
+                DoCursorHoverActivity(itemAsPolygon);
             }
             if (cursor.PrimaryClick)
             {
@@ -76,39 +104,47 @@ namespace GlueControl.Editing
 
         private void UpdatePointCount(int count)
         {
-            while (count < rectangles.Count)
+            while (count < pointRectangles.Count)
             {
-                RemovePointRectangle(rectangles.LastOrDefault());
+                RemovePointRectangle(pointRectangles.LastOrDefault());
             }
-            while (count > rectangles.Count)
+            while (count > pointRectangles.Count)
             {
                 AddPointRectangle();
             }
         }
 
-        private void UpdatePointsToItem(Polygon itemAsPolygon, SelectionMarker selectionMarker)
+        private void UpdatePointsToItem(Polygon asPolygon, SelectionMarker selectionMarker)
         {
-            if (!selectionMarker.CanMoveItem || itemAsPolygon == null)
+            IList<Point> points = null;
+
+            points = asPolygon?.Points;
+
+            if (!selectionMarker.CanMoveItem || points == null)
             {
                 UpdatePointCount(0);
             }
             else
             {
-                UpdatePointCount(itemAsPolygon.Points.Count);
+                UpdatePointCount(points.Count);
 
-                itemAsPolygon.ForceUpdateDependencies();
+                asPolygon.ForceUpdateDependencies();
 
                 var handledLast = false;
                 // for now assume polygons have the last point overlapping:
-                for (int i = 0; i < itemAsPolygon.Points.Count; i++)
+                for (int i = 0; i < points.Count; i++)
                 {
-                    var position = itemAsPolygon.AbsolutePointPosition(i);
+                    var point = points[i];
 
-                    var rectangle = rectangles[i];
+                    var position = asPolygon.Position;
+                    position += asPolygon.RotationMatrix.Right * (float)point.X;
+                    position += asPolygon.RotationMatrix.Up * (float)point.Y;
+
+                    var rectangle = pointRectangles[i];
 
                     rectangle.Position = position;
 
-                    if (i < itemAsPolygon.Points.Count - 1 || !handledLast)
+                    if (i < points.Count - 1 || !handledLast)
                     {
                         if (i == PointIndexHighlighted)
                         {
@@ -116,7 +152,7 @@ namespace GlueControl.Editing
                             rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
                             if (i == 0)
                             {
-                                rectangle = rectangles.LastOrDefault();
+                                rectangle = pointRectangles.LastOrDefault();
                                 rectangle.Width = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
                                 rectangle.Height = ResizeHandles.HighlightedHandleDimension / CameraLogic.CurrentZoomRatio;
                                 handledLast = true;
@@ -141,23 +177,46 @@ namespace GlueControl.Editing
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Add(rectangle);
             ShapeManager.AddToLayer(rectangle, SpriteManager.TopLayer, makeAutomaticallyUpdated: false);
             rectangle.Visible = true;
-            rectangles.Add(rectangle);
+            pointRectangles.Add(rectangle);
         }
+
+        Microsoft.Xna.Framework.Input.Keys addKey = Microsoft.Xna.Framework.Input.Keys.OemPlus;
 
         private void DoCursorPushActivity(Polygon polygon)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
-            PointIndexGrabbed = null;
-            for (int i = 0; i < rectangles.Count; i++)
+            if (FlatRedBall.Input.InputManager.Keyboard.KeyDown(addKey))
             {
-                var rectangle = rectangles[i];
-                if (cursor.IsOn(rectangle))
+                var points = polygon.Points.ToList();
+
+                polygon.VectorFrom(cursor.WorldX, cursor.WorldY, out int pointIndexBefore);
+
+                FlatRedBall.Math.Geometry.Point newPoint = new FlatRedBall.Math.Geometry.Point(cursor.WorldX, cursor.WorldY);
+                newPoint.X -= polygon.X;
+                newPoint.Y -= polygon.Y;
+
+                points.Insert(pointIndexBefore + 1, newPoint);
+
+                polygon.Points = points;
+
+                PointIndexGrabbed = pointIndexBefore + 1;
+                PointIndexHighlighted = PointIndexGrabbed;
+                UnsnappedPosition = polygon.AbsolutePointPosition(PointIndexGrabbed.Value);
+            }
+            else
+            {
+                PointIndexGrabbed = null;
+                for (int i = 0; i < pointRectangles.Count; i++)
                 {
-                    PointIndexGrabbed = i;
-                    PointIndexHighlighted = i;
-                    // rectangle and point should be at the same point, but let's go to the source just in case...
-                    UnsnappedPosition = polygon.AbsolutePointPosition(i);
-                    break;
+                    var rectangle = pointRectangles[i];
+                    if (cursor.IsOn(rectangle))
+                    {
+                        PointIndexGrabbed = i;
+                        PointIndexHighlighted = i;
+                        // rectangle and point should be at the same point, but let's go to the source just in case...
+                        UnsnappedPosition = polygon.AbsolutePointPosition(i);
+                        break;
+                    }
                 }
             }
         }
@@ -212,18 +271,29 @@ namespace GlueControl.Editing
             }
         }
 
-        private void DoCursorHoverActivity()
+        private void DoCursorHoverActivity(Polygon polygon)
         {
             var cursor = FlatRedBall.Gui.GuiManager.Cursor;
             PointIndexHighlighted = null;
-            for (int i = 0; i < rectangles.Count; i++)
+            for (int i = 0; i < pointRectangles.Count; i++)
             {
-                var rectangle = rectangles[i];
+                var rectangle = pointRectangles[i];
                 if (cursor.IsOn(rectangle))
                 {
                     PointIndexHighlighted = i;
                     break;
                 }
+            }
+
+            if (FlatRedBall.Input.InputManager.Keyboard.KeyDown(addKey) && cursor.IsOn(polygon))
+            {
+                var vector = polygon.VectorFrom(cursor.WorldX, cursor.WorldY);
+
+                var rectanglePosition = cursor.WorldPosition.ToVector3() + vector.ToVector3();
+
+                var rect = EditorVisuals.Rectangle(ResizeHandles.DefaultHandleDimension, ResizeHandles.DefaultHandleDimension, rectanglePosition);
+
+
             }
         }
 
@@ -233,24 +303,30 @@ namespace GlueControl.Editing
             {
                 PointIndexGrabbed = null;
 
-                var nos = GlueState.Self.CurrentNamedObjectSave;
-                var owner = GlueState.Self.CurrentElement;
-
-                var newValue = polygon.Points
-                    .Select(item => new Microsoft.Xna.Framework.Vector2((float)item.X, (float)item.Y))
-                    .ToList();
-
-                var assignments = new List<NosVariableAssignment>();
-                assignments.Add(
-                    new NosVariableAssignment
-                    {
-                        NamedObjectSave = nos,
-                        VariableName = nameof(Polygon.Points),
-                        Value = newValue
-                    });
-
-                await GlueCommands.Self.GluxCommands.SetVariableOnList(assignments, owner);
+                await SendPolygonPointsToGlue(polygon);
             }
+        }
+
+
+        private static async Task SendPolygonPointsToGlue(Polygon polygon)
+        {
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var owner = GlueState.Self.CurrentElement;
+
+            var newValue = polygon.Points
+                .Select(item => new Microsoft.Xna.Framework.Vector2((float)item.X, (float)item.Y))
+                .ToList();
+
+            var assignments = new List<NosVariableAssignment>();
+            assignments.Add(
+                new NosVariableAssignment
+                {
+                    NamedObjectSave = nos,
+                    VariableName = pointsVariableToSet ?? nameof(Polygon.Points),
+                    Value = newValue
+                });
+
+            await GlueCommands.Self.GluxCommands.SetVariableOnList(assignments, owner);
         }
 
         public void RemovePointRectangle(AxisAlignedRectangle rectangle)
@@ -258,16 +334,36 @@ namespace GlueControl.Editing
             FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangle);
             ShapeManager.Remove(rectangle);
             rectangle.Visible = false;
-            rectangles.Remove(rectangle);
+            pointRectangles.Remove(rectangle);
         }
 
         public void Destroy()
         {
-            for (int i = 0; i < rectangles.Count; i++)
+            for (int i = 0; i < pointRectangles.Count; i++)
             {
-                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(rectangles[i]);
-                rectangles[i].Visible = false;
+                FlatRedBall.Screens.ScreenManager.PersistentAxisAlignedRectangles.Remove(pointRectangles[i]);
+                pointRectangles[i].Visible = false;
             }
+        }
+
+        public bool HandleDelete(Polygon polygon)
+        {
+            // for now we'll just delete the grabbed point
+            if (PointIndexGrabbed != null)
+            {
+                var points = polygon.Points.ToList();
+                points.RemoveAt(PointIndexGrabbed.Value);
+
+                PointIndexGrabbed = null;
+                PointIndexHighlighted = null;
+                polygon.Points = points;
+
+                SendPolygonPointsToGlue(polygon);
+
+                return true;
+            }
+
+            return false;
         }
     }
 

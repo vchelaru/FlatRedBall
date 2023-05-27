@@ -673,9 +673,23 @@ namespace GlueControl.Editing
 
             if (keyboard.KeyPushed(Microsoft.Xna.Framework.Input.Keys.Delete))
             {
-                InstanceLogic.Self.DeleteInstancesByGame(itemsSelected);
-                itemsSelected.Clear();
-                AddAndDestroyMarkersAccordingToItemsSelected();
+                var handledByMarkers = false;
+
+                foreach (var marker in SelectedMarkers)
+                {
+                    if (marker.HandleDelete())
+                    {
+                        handledByMarkers = true;
+                        break;
+                    }
+                }
+
+                if (!handledByMarkers)
+                {
+                    InstanceLogic.Self.DeleteInstancesByGame(itemsSelected);
+                    itemsSelected.Clear();
+                    AddAndDestroyMarkersAccordingToItemsSelected();
+                }
             }
 
             DoGoToDefinitionLogic();
