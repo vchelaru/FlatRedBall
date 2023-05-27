@@ -692,13 +692,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 GenerateInterpolationAdditionalMethods(codeBlock, element as GlueElement, sharedVariableStates);
 
-                GeneratePreloadStateContent(codeBlock, element, sharedVariableStates);
+                GeneratePreloadStateContent(codeBlock, element as GlueElement, sharedVariableStates);
             }
 
             return codeBlock;
         }
 
-        private void GeneratePreloadStateContent(ICodeBlock codeBlock, IElement element, List<StateSave> sharedVariableStates)
+        private void GeneratePreloadStateContent(ICodeBlock codeBlock, GlueElement element, List<StateSave> sharedVariableStates)
         {
             // For now we'll only support Entities because they have a ContentManagerName variable.  Screen content can't be shared
             // between Screens because of the hard-coded content manager name.  We'll have to revisit that if we need to share content
@@ -721,7 +721,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static ICodeBlock GeneratePreloadStateContentForStateType(ICodeBlock codeBlock, IElement element, List<StateSave> list, string variableType)
+        private static ICodeBlock GeneratePreloadStateContentForStateType(ICodeBlock codeBlock, GlueElement element, List<StateSave> list, string variableType)
         {
             if (list.Count != 0)
             {
@@ -866,7 +866,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        public static string GetRightSideAssignmentValueAsString(IElement element, InstructionSave instruction)
+        public static string GetRightSideAssignmentValueAsString(GlueElement element, InstructionSave instruction)
         {
             var value = instruction.Value;
             var memberName = instruction.Member;
@@ -875,7 +875,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         // Note - this code is very similar to CustomVariableCodeGenerator's AppendAssignmentForCustomVariableInElement
         // Unify?
-        private static string GetRightSideAssignmentValueAsString(IElement element, string memberName, object value)
+        private static string GetRightSideAssignmentValueAsString(GlueElement element, string memberName, object value)
         {
             CustomVariable customVariable = element.GetCustomVariableRecursively(memberName);
             customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);

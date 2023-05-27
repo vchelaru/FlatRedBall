@@ -19,6 +19,7 @@ using GlueControl.Dtos;
 using GlueControl.Editing;
 using GlueControl.Runtime;
 using GlueControl.Models;
+using GlueControl.Managers;
 
 namespace GlueControl
 {
@@ -539,7 +540,7 @@ namespace GlueControl
 
             foreach (var instruction in deserialized.InstructionSaves)
             {
-                AssignVariable(newObject, instruction, convertFileNamesToObjects: true);
+                AssignVariable(newObject, instruction, convertFileNamesToObjects: true, deserialized);
             }
         }
 
@@ -735,7 +736,7 @@ namespace GlueControl
 
         #endregion
 
-        public void AssignVariable(object instance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects)
+        public void AssignVariable(object newRuntimeInstance, FlatRedBall.Content.Instructions.InstructionSave instruction, bool convertFileNamesToObjects, NamedObjectSave nos = null)
         {
             string variableName = instruction.Member;
             object variableValue = instruction.Value;
@@ -844,11 +845,58 @@ namespace GlueControl
                     variableValue = (FlatRedBall.Graphics.ColorOperation)asLong;
                 }
             }
+            else if (instruction.Type == "List<Vector2>")
+            {
+                if (variableValue is Newtonsoft.Json.Linq.JArray jArray)
+                {
+                    var vectorList = new List<Microsoft.Xna.Framework.Vector2>();
+                    foreach (var item in jArray)
+                    {
+                        // does this need to be localized?
+                        var noQuotes = item.ToString().Replace("\"", "");
+                        var floatBeforeComma = float.Parse(noQuotes.Substring(0, noQuotes.IndexOf(',')));
+                        var floatAfterComma = float.Parse(noQuotes.Substring(noQuotes.IndexOf(',') + 1));
+                        var vector2 = new Microsoft.Xna.Framework.Vector2();
+                        vector2.X = floatBeforeComma;
+                        vector2.Y = floatAfterComma;
+                        vectorList.Add(vector2);
+                    }
+
+                    variableValue = vectorList;
+
+                    var isSettingPointsOnPolygon = nos.SourceClassType == "Polygon" || nos.SourceClassType == "FlatRedBall.Math.Geometry.Polygon";
+
+                    if (!isSettingPointsOnPolygon && nos.SourceType == SourceType.Entity)
+                    {
+                        var nosEntityType = ObjectFinder.Self.GetEntitySave(nos.SourceClassType);
+
+                        var member = nosEntityType.CustomVariables.Find(item => item.Name == variableName);
+
+                        var foundMember = ObjectFinder.Self.GetRootCustomVariable(member);
+
+                        if (foundMember.Name == "Points")
+                        {
+                            isSettingPointsOnPolygon = true;
+                        }
+                    }
+
+                    if (isSettingPointsOnPolygon)
+                    {
+                        // value is actually a List of FlatRedBall Points, so convert vectorList to a list of Points
+                        var pointList = new List<FlatRedBall.Math.Geometry.Point>();
+                        foreach (var vector in vectorList)
+                        {
+                            pointList.Add(new FlatRedBall.Math.Geometry.Point(vector.X, vector.Y));
+                        }
+                        variableValue = pointList;
+                    }
+                }
+            }
 
             try
             {
                 // special case X and Y if attached
-                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && instance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
+                if ((variableName == "X" || variableName == "Y" || variableName == "RotationZ") && newRuntimeInstance is PositionedObject asPositionedObject && asPositionedObject.Parent != null)
                 {
                     if (variableName == "X")
                     {
@@ -866,7 +914,7 @@ namespace GlueControl
                 }
                 else
                 {
-                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(instance, variableName, variableValue);
+                    FlatRedBall.Instructions.Reflection.LateBinder.SetValueStatic(newRuntimeInstance, variableName, variableValue);
                 }
             }
             catch (MemberAccessException)

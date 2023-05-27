@@ -209,7 +209,7 @@ namespace FlatRedBall.Glue.GuiDisplay
         {
 
 
-            IElement element = currentNamedObject.GetReferencedElement();
+            var element = currentNamedObject.GetReferencedElement();
 
             while (element != null)
             {
