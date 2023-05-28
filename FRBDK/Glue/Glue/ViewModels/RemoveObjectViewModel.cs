@@ -10,32 +10,26 @@ namespace GlueFormsCore.ViewModels
 {
     public class RemoveObjectViewModel : ViewModel
     {
-        NamedObjectSave backingObject;
-
-        public string ObjectName
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public ObservableCollection<string> ObjectsToRemove { get; private set; } = new ObservableCollection<string>();
 
         [DependsOn(nameof(ObjectsToRemove))]
         public Visibility ObjectsToRemoveVisibility => (ObjectsToRemove.Count > 0).ToVisibility();
 
-        [DependsOn(nameof(ObjectName))]
-        public string WouldYouLikeToDeleteMessage => $"Would you like to delete {ObjectName}?";
+        public string WouldYouLikeToDeleteMessage { get; private set; }
 
         public RemoveObjectViewModel()
         {
             ObjectsToRemove.CollectionChanged += (not, used) => NotifyPropertyChanged(nameof(ObjectsToRemove));
         }
 
-        public void SetFrom(NamedObjectSave nos)
+        public void SetFrom(List<NamedObjectSave> namedObjects)
         {
-            backingObject = nos;
+            WouldYouLikeToDeleteMessage = "Would you like to delete:\n";
 
-            ObjectName = nos.InstanceName;
+            foreach(var nos in namedObjects)
+            {
+                WouldYouLikeToDeleteMessage += nos.ToString() + "\n";
+            }
         }
     }
 }

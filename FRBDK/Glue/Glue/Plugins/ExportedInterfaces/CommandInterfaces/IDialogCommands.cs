@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,6 +24,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region NamedObjectSave
 
         void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true);
+
+        void AskToRemoveObjectList(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true);
+
 
         Task<NamedObjectSave> ShowAddNewObjectDialog(FlatRedBall.Glue.ViewModels.AddObjectViewModel addObjectViewModel = null);
 

@@ -281,6 +281,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void AskToRemoveObject(NamedObjectSave namedObjectToRemove, bool saveAndRegenerate = true)
         {
+            AskToRemoveObjectList(new List<NamedObjectSave>() { namedObjectToRemove }, saveAndRegenerate);
+        }
+
+        public async void AskToRemoveObjectList(List<NamedObjectSave> namedObjectsToRemove, bool saveAndRegenerate = true)
+        {
             // Search terms: removefromproject, remove from project, remove file, remove referencedfilesave
             List<string> filesToRemove = new List<string>();
 
@@ -288,42 +293,58 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             var canDelete = true;
 
-            if (namedObjectToRemove.DefinedByBase)
+            List<NamedObjectSave> baseRestrictingDeletes = new List<NamedObjectSave>();
+            foreach(NamedObjectSave namedObjectToRemove in namedObjectsToRemove)
             {
-                var definingNos = ObjectFinder.Self.GetRootDefiningObject(namedObjectToRemove);
-
-                // December 31, 2022
-                // It's possible to set
-                // ExposedInDerived and SetByDerived
-                // indepdently, but conceptually SetByDerived
-                // requires the property to be protected so it
-                // can be set. SetByDerived is a "stronger" form
-                // of ExposedInDerived, so we still want to keep the
-                // relationship in tact.
-                if (definingNos?.ExposedInDerived == true || definingNos?.SetByDerived == true)
+                if (namedObjectToRemove.DefinedByBase)
                 {
-                    var message = $"The object {namedObjectToRemove} cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived";
+                    var definingNos = ObjectFinder.Self.GetRootDefiningObject(namedObjectToRemove);
 
-                    GlueCommands.Self.DialogCommands.ShowMessageBox(message);
-
-                    canDelete = false;
+                    // December 31, 2022
+                    // It's possible to set
+                    // ExposedInDerived and SetByDerived
+                    // indepdently, but conceptually SetByDerived
+                    // requires the property to be protected so it
+                    // can be set. SetByDerived is a "stronger" form
+                    // of ExposedInDerived, so we still want to keep the
+                    // relationship in tact.
+                    if (definingNos?.ExposedInDerived == true || definingNos?.SetByDerived == true)
+                    {
+                        baseRestrictingDeletes.Add(definingNos);
+                    }
                 }
             }
+            if(baseRestrictingDeletes.Count > 0)
+            {
 
-            var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
+                var message = $"The following cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived:\n";
+
+                foreach(var item in baseRestrictingDeletes)
+                {
+                    message += $"{item}\n";
+                }
+
+                GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+
+                canDelete = false;
+            }
+
+            HashSet<GlueElement> owners = new HashSet<GlueElement>();
+
             if (canDelete)
             {
-                var askAreYouSure = true;
+                var window = new RemoveObjectWindow();
+                var viewModel = new RemoveObjectViewModel();
+                viewModel.SetFrom(namedObjectsToRemove);
 
-                if (askAreYouSure)
+                foreach(var namedObjectToRemove in namedObjectsToRemove)
                 {
-                    var window = new RemoveObjectWindow();
-                    var viewModel = new RemoveObjectViewModel();
-                    viewModel.SetFrom(namedObjectToRemove);
+                    var owner = ObjectFinder.Self.GetElementContaining(namedObjectToRemove);
                     if (owner == null)
                     { System.Diagnostics.Debugger.Break(); }
                     if (owner != null)
                     {
+                        owners.Add(owner);
                         var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(namedObjectToRemove, owner);
 
                         viewModel.ObjectsToRemove.AddRange(objectsToRemove.CustomVariables.Select(item => item.ToString()));
@@ -332,13 +353,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         viewModel.ObjectsToRemove.AddRange(objectsToRemove.DerivedNamedObjects.Select(item => item.ToString()));
                         viewModel.ObjectsToRemove.AddRange(objectsToRemove.EventResponses.Select(item => item.ToString()));
 
-                        window.DataContext = viewModel;
-
-                        var showDialogResult = window.ShowDialog();
-
-                        reallyRemoveResult = showDialogResult == true ? DialogResult.Yes : DialogResult.No;
                     }
+
                 }
+
+                window.DataContext = viewModel;
+                var showDialogResult = window.ShowDialog();
+                reallyRemoveResult = showDialogResult == true ? DialogResult.Yes : DialogResult.No;
             }
 
 
@@ -346,8 +367,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (canDelete && reallyRemoveResult == DialogResult.Yes)
             {
-                GlueCommands.Self.GluxCommands
-                    .RemoveNamedObject(namedObjectToRemove, true, true, filesToRemove);
+                await GlueCommands.Self.GluxCommands
+                    .RemoveNamedObjectListAsync(namedObjectsToRemove, true, true, filesToRemove);
 
                 if (filesToRemove.Count != 0 && true /*askToDeleteFiles*/)
                 {
@@ -418,34 +439,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     // a "refresh nodes" method is called, which may remove unneeded
                     // nodes, but event raising is suppressed. Therefore, we have to explicitly 
                     // do it here:
-                    if (owner != null)
+                    foreach(var owner in owners)
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
-                    }
-                    else
-                    {
-                        GlueCommands.Self.RefreshCommands.RefreshGlobalContent();
                     }
                 }, "Refreshing tree nodes");
 
 
                 if (saveAndRegenerate)
                 {
-                    if (owner != null)
+                    foreach (var owner in owners)
                     {
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(owner);
                     }
-                    else //if (GlueState.Self.CurrentReferencedFileSave != null)
-                    {
-                        GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCodeTask();
-
-                        // Vic asks - do we have to do anything else here?  I don't think so...
-                    }
-
 
                     GluxCommands.Self.ProjectCommands.SaveProjects();
                     //GluxCommands.Self.SaveGlux();
-                    var throwaway = GluxCommands.Self.SaveElementAsync(owner);
+                    foreach(var owner in owners)
+                    {
+                        var throwaway = GluxCommands.Self.SaveElementAsync(owner);
+                    }
                 }
             }
         }

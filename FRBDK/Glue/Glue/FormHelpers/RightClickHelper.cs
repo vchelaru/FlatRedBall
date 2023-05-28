@@ -1764,7 +1764,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (currentObject is NamedObjectSave asNos)
             {
-                GlueCommands.Self.DialogCommands.AskToRemoveObject(asNos, saveAndRegenerate);
+                GlueCommands.Self.DialogCommands.AskToRemoveObjectList(glueState.CurrentNamedObjectSaves.ToList(), saveAndRegenerate);
             }
             else
             {
