@@ -99,7 +99,7 @@ namespace FlatRedBall.Graphics
 
             if (sprite != null)
             {
-                if (sprite.Texture != null && sprite.Texture.IsDisposed)
+                if (sprite.mTexture != null && sprite.mTexture.IsDisposed)
                 {
                     var msg = "The Sprite with the name \"" + sprite.Name +
                         "\" references a disposed texture of the name " + sprite.Texture.Name +
@@ -123,13 +123,13 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException(msg);
                 }
 
-                Texture = sprite.Texture;
+                Texture = sprite.mTexture;
 
-                ColorOperation = sprite.ColorOperation;
-                BlendOperation = sprite.BlendOperation;
+                ColorOperation = sprite.mColorOperation;
+                BlendOperation = sprite.mBlendOperation;
                 TextureFilter = sprite.TextureFilter.HasValue ? sprite.TextureFilter.Value : FlatRedBallServices.GraphicsOptions.TextureFilter;
 
-                if (sprite.Texture == null)
+                if (sprite.mTexture == null)
                 {
 
                     // requirement for reach profile - this shouldn't impact anything
@@ -141,9 +141,9 @@ namespace FlatRedBall.Graphics
                 }
 
 
-                Red = sprite.Red;
-                Green = sprite.Green;
-                Blue = sprite.Blue;
+                Red = sprite.mRed;
+                Green = sprite.mGreen;
+                Blue = sprite.mBlue;
             }
             else
             {
