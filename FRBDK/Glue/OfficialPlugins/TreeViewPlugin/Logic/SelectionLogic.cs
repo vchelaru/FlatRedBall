@@ -6,6 +6,7 @@ using OfficialPlugins.TreeViewPlugin.ViewModels;
 using OfficialPlugins.TreeViewPlugin.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -19,14 +20,14 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
         static MainTreeViewViewModel mainViewModel;
         static MainTreeViewControl mainView;
 
-        static NodeViewModel currentNode;
+        static List<NodeViewModel> currentNodes = new List<NodeViewModel>();
 
         public static bool IsUpdatingThisSelectionOnGlueEvent = true;
         public static bool IsPushingSelectionOutToGlue = true;
 
         public static NodeViewModel CurrentNode
         {
-            get => currentNode;
+            get => currentNodes.FirstOrDefault();
         }
 
         public static NamedObjectSave CurrentNamedObjectSave
@@ -71,61 +72,106 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         #endregion
 
+        public static void HandleDeselection(NodeViewModel nodeViewModel)
+        {
+            if (currentNodes.Contains(nodeViewModel))
+            {
+                currentNodes.Remove(nodeViewModel);
+            }
+
+            RefreshGlueState(true);
+        }
+
         public static void HandleSelected(NodeViewModel nodeViewModel, bool focus = true)
         {
             IsUpdatingThisSelectionOnGlueEvent = false;
 
-            var didSelectionChange = currentNode?.Tag != nodeViewModel?.Tag;
-            currentNode = nodeViewModel;
+            var newTag = nodeViewModel.Tag;
 
-            if(nodeViewModel != null && nodeViewModel.IsSelected && focus)
+            bool didSelectionChange;
+            if (currentNodes?.Contains(nodeViewModel) == true)
+            {
+                didSelectionChange = false;
+            }
+            else if (currentNodes.Count == 0 && newTag == null)
+            {
+                didSelectionChange = false;
+            }
+            else if (currentNodes.Count > 0 && nodeViewModel == null)
+            {
+                didSelectionChange = true;
+            }
+            else if (currentNodes.Count == 0 && nodeViewModel != null)
+            {
+                didSelectionChange = true;
+            }
+            else
+            {
+                didSelectionChange = currentNodes.Any(item => item.Tag == nodeViewModel.Tag) == false;
+            }
+
+            if (nodeViewModel != null)
+            {
+                currentNodes.Add(nodeViewModel);
+            }
+
+            if (nodeViewModel != null && nodeViewModel.IsSelected && focus)
             {
                 nodeViewModel.Focus(mainView);
             }
 
+            RefreshGlueState(didSelectionChange);
+
+            IsUpdatingThisSelectionOnGlueEvent = true;
+
+        }
+
+        private static void RefreshGlueState(bool didSelectionChange)
+        {
             if (IsPushingSelectionOutToGlue
                 // The node can change if the user deletes a tree node and then a new one
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
                 || didSelectionChange)
             {
-                var tag = nodeViewModel.Tag;
+                //var tag = nodeViewModel.Tag;
 
-                if (tag is NamedObjectSave nos)
-                {
-                    GlueState.Self.CurrentNamedObjectSave = nos;
-                }
-                else if (tag is ReferencedFileSave rfs)
-                {
-                    GlueState.Self.CurrentReferencedFileSave = rfs;
-                }
-                else if (tag is CustomVariable variable)
-                {
-                    GlueState.Self.CurrentCustomVariable = variable;
-                }
-                else if (tag is EventResponseSave eventResponse)
-                {
-                    GlueState.Self.CurrentEventResponseSave = eventResponse;
-                }
-                else if (tag is StateSave state)
-                {
-                    GlueState.Self.CurrentStateSave = state;
-                }
-                else if (tag is StateSaveCategory stateCategory)
-                {
-                    GlueState.Self.CurrentStateSaveCategory = stateCategory;
-                }
-                else if (tag is EntitySave entitySave)
-                {
-                    GlueState.Self.CurrentEntitySave = entitySave;
-                }
-                else if (tag is ScreenSave screenSave)
-                {
-                    GlueState.Self.CurrentScreenSave = screenSave;
-                }
-                else if(tag == null)
-                {
-                    GlueState.Self.CurrentTreeNode = nodeViewModel;
-                }
+                //if (tag is NamedObjectSave nos)
+                //{
+                //    GlueState.Self.CurrentNamedObjectSave = nos;
+                //}
+                //else if (tag is ReferencedFileSave rfs)
+                //{
+                //    GlueState.Self.CurrentReferencedFileSave = rfs;
+                //}
+                //else if (tag is CustomVariable variable)
+                //{
+                //    GlueState.Self.CurrentCustomVariable = variable;
+                //}
+                //else if (tag is EventResponseSave eventResponse)
+                //{
+                //    GlueState.Self.CurrentEventResponseSave = eventResponse;
+                //}
+                //else if (tag is StateSave state)
+                //{
+                //    GlueState.Self.CurrentStateSave = state;
+                //}
+                //else if (tag is StateSaveCategory stateCategory)
+                //{
+                //    GlueState.Self.CurrentStateSaveCategory = stateCategory;
+                //}
+                //else if (tag is EntitySave entitySave)
+                //{
+                //    GlueState.Self.CurrentEntitySave = entitySave;
+                //}
+                //else if (tag is ScreenSave screenSave)
+                //{
+                //    GlueState.Self.CurrentScreenSave = screenSave;
+                //}
+                //else if (tag == null)
+                //{
+                //    GlueState.Self.CurrentTreeNode = nodeViewModel;
+                //}
+                GlueState.Self.CurrentTreeNodes = currentNodes;
             }
 
             // We used to refresh here on a normal click. This is unnecessary
@@ -137,9 +183,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             // we want this to get called
 
             mainView.RefreshRightClickMenu();
-
-            IsUpdatingThisSelectionOnGlueEvent = true;
-
         }
 
         internal static async void SelectByPath(string path, bool addToSelection)
@@ -164,34 +207,48 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             var suppressFocusCopy = SuppressFocus;
             if (treeNode == null)
             {
-                if (currentNode != null && !addToSelection)
+                if (currentNodes.Count > 0 && !addToSelection)
                 {
                     SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = false;
 
                     mainViewModel.DeselectResursively();
                     //currentNode.IsSelected = false;
-                    currentNode = null;
+                    currentNodes.Clear();
 
                     SelectionLogic.IsUpdatingThisSelectionOnGlueEvent = true;
                 }
             }
             else
             {
-                if (treeNode != null && (treeNode.IsSelected == false || treeNode != currentNode))
+                if (treeNode != null && (treeNode.IsSelected == false || currentNodes.Contains(treeNode) == false))
                 {
-                    if(currentNode?.IsSelected == false && !addToSelection)
+                    if(CurrentNode?.IsSelected == false && !addToSelection)
                     {
                         mainViewModel.DeselectResursively();
                         // Selecting a tree node deselects the current node, but that can take some time and cause
                         // some inconsistent behavior. To solve this, we will forcefully deselect the current node 
                         // so the consequence of selecting this node is immediate:
-                        currentNode.IsSelected = false;
+                        foreach(var node in currentNodes)
+                        {
+                            node.IsSelected = false;
+                        }
                         // do we null out currentNode
                     }
                     if(suppressFocusCopy)
                     {
                         treeNode.SelectNoFocus();
-                        currentNode = treeNode;
+                        if(addToSelection)
+                        {
+                            if(currentNodes.Contains(treeNode) == false)
+                            {
+                                currentNodes.Add(treeNode);
+                            }
+                        }
+                        else
+                        {
+                            currentNodes.Clear();
+                            currentNodes.Add(treeNode);
+                        }
                     }
                     else
                     {

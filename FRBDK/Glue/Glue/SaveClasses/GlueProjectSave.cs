@@ -452,28 +452,6 @@ namespace FlatRedBall.Glue.SaveClasses
             }
         }
 
-        public GlueElement GetElementContaining(CustomVariable customVariable)
-        {
-            foreach (EntitySave entitySave in Entities)
-            {
-                if (entitySave.CustomVariables.Contains(customVariable))
-                {
-                    return entitySave;
-                }
-            }
-
-
-            foreach (ScreenSave screenSave in Screens)
-            {
-                if (screenSave.CustomVariables.Contains(customVariable))
-                {
-                    return screenSave;
-                }
-            }
-
-            return null;
-
-        }
 
         public GlueElement GetElementContaining(StateSave stateSave)
         {

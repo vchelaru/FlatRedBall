@@ -956,6 +956,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         }
         #endregion
 
+
         #region Object Removed
 
         internal async Task HandleObjectListRemoved(List<GlueElement> owners, List<NamedObjectSave> namedObjects)

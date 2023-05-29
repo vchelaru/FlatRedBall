@@ -632,7 +632,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
-        private static ICodeBlock SetInterpolateBetweenValuesForStates(IElement element, string enumType, List<StateSave> states, 
+        private static ICodeBlock SetInterpolateBetweenValuesForStates(GlueElement element, string enumType, List<StateSave> states, 
             ICodeBlock curBlock, Dictionary<InstructionSave, InterpolationCharacteristic> mInterpolationCharacteristics, string firstOrSecondValue, string localStateName)
         {
             bool isElse = false;

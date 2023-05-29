@@ -207,14 +207,17 @@ namespace OfficialPlugins.TreeViewPlugin.Views
 
         public void RefreshRightClickMenu(ITreeNode forcedNode = null)
         {
-            var items = RightClickHelper.GetRightClickItems(forcedNode ?? SelectionLogic.CurrentNode, MenuShowingAction.RegularRightClick);
+            var node = forcedNode ?? SelectionLogic.CurrentNode;
 
             RightClickContextMenu.Items.Clear();
-
-            foreach (var item in items)
+            if(node != null)
             {
-                var wpfItem = CreateWpfItemFor(item);
-                RightClickContextMenu.Items.Add(wpfItem);
+                var items = RightClickHelper.GetRightClickItems(node, MenuShowingAction.RegularRightClick);
+                foreach (var item in items)
+                {
+                    var wpfItem = CreateWpfItemFor(item);
+                    RightClickContextMenu.Items.Add(wpfItem);
+                }
             }
         }
 

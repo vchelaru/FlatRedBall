@@ -234,5 +234,40 @@ namespace GlueControl.Models
             return null;
         }
 
+        public static CustomVariable GetCustomVariableRecursively(this GlueElement element, string variableName)
+        {
+            //////////////////////Early Out///////////////////////////////////
+            if (string.IsNullOrEmpty(variableName))
+            {
+                return null;
+            }
+
+            ////////////////////End Early Out//////////////////////////
+            if (variableName.StartsWith("this."))
+            {
+                variableName = variableName.Substring("this.".Length);
+            }
+            CustomVariable foundVariable = element.GetCustomVariable(variableName);
+
+            if (foundVariable != null)
+            {
+                return foundVariable;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(element.BaseObject))
+                {
+                    var baseElement = ObjectFinder.Self.GetElement(element.BaseObject);
+
+                    if (baseElement != null)
+                    {
+                        foundVariable = GetCustomVariableRecursively(baseElement, variableName);
+                    }
+                }
+
+                return foundVariable;
+            }
+        }
+
     }
 }

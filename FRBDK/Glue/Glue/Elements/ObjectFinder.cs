@@ -449,7 +449,25 @@ namespace FlatRedBall.Glue.Elements
         {
             if (GlueProject != null)
             {
-                return GlueProject.GetElementContaining(customVariable);
+
+                foreach (EntitySave entitySave in GlueProject.Entities)
+                {
+                    if (entitySave.CustomVariables.Contains(customVariable))
+                    {
+                        return entitySave;
+                    }
+                }
+
+
+                foreach (ScreenSave screenSave in GlueProject.Screens)
+                {
+                    if (screenSave.CustomVariables.Contains(customVariable))
+                    {
+                        return screenSave;
+                    }
+                }
+
+                return null;
             }
             else
             {
@@ -1050,7 +1068,7 @@ namespace FlatRedBall.Glue.Elements
 
         public IElement GetVariableContainer(CustomVariable customVariable)
         {
-            return GlueProject.GetElementContaining(customVariable);
+            return GetElementContaining(customVariable);
         }
 
         public StateSaveCategory GetStateSaveCategory(StateSave stateSave)

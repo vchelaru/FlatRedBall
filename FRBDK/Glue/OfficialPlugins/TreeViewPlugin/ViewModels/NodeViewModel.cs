@@ -201,9 +201,16 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             get => Get<bool>();
             set
             {
-                if (Set(value) && value)
+                if (Set(value))
                 {
-                    SelectionLogic.HandleSelected(this);
+                    if(value)
+                    {
+                        SelectionLogic.HandleSelected(this);
+                    }
+                    else
+                    {
+                        SelectionLogic.HandleDeselection(this);
+                    }
                 }
             }
         }

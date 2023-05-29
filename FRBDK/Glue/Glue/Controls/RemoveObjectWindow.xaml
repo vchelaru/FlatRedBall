@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlueFormsCore.Controls"
         mc:Ignorable="d"
-        Title="Delete Object?" SizeToContent="Height" Width="400" Height="250">
+        Title="Delete Object?" SizeToContent="Height" Width="550" Height="250">
     <Grid Margin="6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
