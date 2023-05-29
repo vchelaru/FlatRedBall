@@ -269,7 +269,7 @@ namespace FlatRedBall.Graphics
 
             return sprite.mTexture != Texture ||
                 sprite.mColorOperation != ColorOperation ||
-                sprite.BlendOperation != BlendOperation ||
+                sprite.mBlendOperation != BlendOperation ||
                 sprite.TextureAddressMode != TextureAddressMode ||
                 (sprite.TextureFilter != null &&
                 sprite.TextureFilter != TextureFilter) ||
@@ -298,7 +298,7 @@ namespace FlatRedBall.Graphics
             //if (Renderer.RendererDiagnosticSettings.RenderBreaksPerformStateChanges)
             {
 
-                if (ColorOperation != Graphics.ColorOperation.Color)
+                if (ColorOperation != ColorOperation.Color)
                 {
                     Renderer.Texture = Texture;
                 }
