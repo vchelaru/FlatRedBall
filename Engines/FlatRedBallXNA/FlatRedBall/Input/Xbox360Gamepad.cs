@@ -1368,17 +1368,22 @@ namespace FlatRedBall.Input
             UpdateInputManagerBack();
 
             mLastGamePadState = mGamePadState;
-
             mGamePadState = gamepadState;
 
-            if(WasConnectedThisFrame)
+            if (WasConnectedThisFrame)
             {
                 UpdateToGamepadType();
             }
 
-            UpdateAnalogStickAndTriggerValues();
-
-            UpdateLastButtonPushedValues();
+            // Only update the gamepad logic if the gamepad is actually connected.
+            // If we don't do this we would have 4 controllers constantly processing
+            // input even when none of them are actually in use. Still update if
+            // disconnected this frame so states get properly reset.
+            if (IsConnected || WasDisconnectedThisFrame)
+            {
+                UpdateAnalogStickAndTriggerValues();
+                UpdateLastButtonPushedValues();
+            }
         }
 
         private void UpdateToGamepadType()
@@ -1715,8 +1720,6 @@ namespace FlatRedBall.Input
 #endif
 
             Update(gamepadState);
-
-
         }
 
 

@@ -725,8 +725,8 @@ namespace FlatRedBall.Math.Geometry
                     // The closest point is on an endpoint, but we may have a situation where
                     // one segment is touching another one like a T.  If that's the case,
                     // let's still consider it an intersection.
-                    double distanceFromThis = this.DistanceTo(intersectionPoint);
-                    double distanceFromOther = s2.DistanceTo(intersectionPoint);
+                    double distanceFromThis = this.DistanceTo(intersectionPoint.X, intersectionPoint.Y);
+                    double distanceFromOther = s2.DistanceTo(intersectionPoint.X, intersectionPoint.Y);
 
                     if (distanceFromOther > .000000001 ||
                         distanceFromThis >  .000000001)

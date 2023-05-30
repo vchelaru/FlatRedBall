@@ -2545,20 +2545,29 @@ namespace FlatRedBall.Math.Geometry
             mBoundingRadius = (float)System.Math.Sqrt(boundingRadiusSquared);
         }
 
+        double mLastFillVertexArrayUpdate;
+
         internal void FillVertexArray()
         {
+            if (mLastFillVertexArrayUpdate == TimeManager.CurrentTime)
+            {
+                return;
+            }
+            else
+            {
+                mLastFillVertexArrayUpdate = TimeManager.CurrentTime;
+            }
+
 #if DEBUG
             if (mVertices == null && TolerateEmptyPolygons == false)
             {
                 throw new NullReferenceException("Polygon has not had its points set.");
 
             }
-
 #endif
 
             if (mVertices != null)
             {
-
                 var premultiplied = new Color();
                 premultiplied.A = mColor.A;
                 premultiplied.R = (byte)(mColor.R * mColor.A / 255);
@@ -2567,23 +2576,22 @@ namespace FlatRedBall.Math.Geometry
 
                 for (int i = 0; i < mPoints.Length; i++)
                 {
+                    double pointX = mPoints[i].X;
+                    double pointY = mPoints[i].Y;
 
                     mVertices[i].Position.X = (float)(Position.X +
-                        mRotationMatrix.M11 * mPoints[i].X +
-                        mRotationMatrix.M21 * mPoints[i].Y);
+                        mRotationMatrix.M11 * pointX +
+                        mRotationMatrix.M21 * pointY);
 
                     mVertices[i].Position.Y = (float)(Position.Y +
-                        mRotationMatrix.M12 * mPoints[i].X +
-                        mRotationMatrix.M22 * mPoints[i].Y);
+                        mRotationMatrix.M12 * pointX +
+                        mRotationMatrix.M22 * pointY);
 
                     mVertices[i].Position.Z = (float)(Position.Z +
-                        mRotationMatrix.M13 * mPoints[i].X +
-                        mRotationMatrix.M23 * mPoints[i].Y);
-
+                        mRotationMatrix.M13 * pointX +
+                        mRotationMatrix.M23 * pointY);
 
                     mVertices[i].Color = premultiplied;
-
-
                 }
             }
         }
