@@ -1004,7 +1004,7 @@ namespace Gum.Wireframe
                     vmField = bindingContextObjectType?.GetField(vmPropertyName);
                 }
 
-                var foundEvent = bindingContextObjectType.GetEvent(vmPropertyName);
+                var foundEvent = bindingContextObjectType?.GetEvent(vmPropertyName);
 
                 if (vmProperty == null && vmField == null && foundEvent == null)
                 {
