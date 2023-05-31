@@ -1578,7 +1578,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (performSaveAndGenerateCode)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }, $"Adding named object {newNos.InstanceName} to {element.Name}");
         }
@@ -2409,7 +2409,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 {
                     // This does more than notify plugins, but the "more" doesn't apply to custom variables
                     // I think this should be refactored to handle NamedObjectProperties specifically anyway
-                    EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
+                    await EditorObjects.IoC.Container.Get<NamedObjectSetVariableLogic>().ReactToNamedObjectChangedValue(
                         memberName, oldValue, namedObjectSave: nos);
                 }
 
@@ -2473,7 +2473,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (performSaveAndGenerateCode)
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                 }
             }
 

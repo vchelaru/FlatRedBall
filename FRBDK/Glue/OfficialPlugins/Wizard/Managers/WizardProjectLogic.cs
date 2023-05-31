@@ -592,7 +592,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     if (vm.PlayerControlType == GameType.Platformer)
                     {
                         // mark as platformer
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityPlatformer");
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityPlatformer", playerEntity);
 
                         if(vm.ShowAddPlayerSpritePlatformerAnimations && vm.AddPlayerSpritePlatformerAnimations)
                         {
@@ -608,7 +608,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                     else if (vm.PlayerControlType == GameType.Topdown)
                     {
                         // mark as top down
-                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeCurrentEntityTopDown");
+                        PluginManager.CallPluginMethod("Entity Input Movement Plugin", "MakeEntityTopDown", playerEntity);
                     }
                 }
 
@@ -977,6 +977,11 @@ namespace OfficialPluginsCore.Wizard.Managers
             addCameraControllerVm.ObjectName = "CameraControllingEntityInstance";
 
             var cameraNos = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToAsync(addCameraControllerVm, gameScreen, null, selectNewNos: false);
+
+            if(cameraNos == null)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {

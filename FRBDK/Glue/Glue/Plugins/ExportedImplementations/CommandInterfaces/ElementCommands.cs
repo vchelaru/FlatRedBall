@@ -306,91 +306,95 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public async Task AddScreen(ScreenSave screenSave, bool suppressAlreadyExistingFileMessage = false)
         {
-            var glueProject = GlueState.Self.CurrentGlueProject;
-
-            string screenName = FileManager.RemovePath(screenSave.Name);
-
-            string fileName = screenSave.Name + ".cs";
-
-            screenSave.Tags.Add("GLUE");
-            screenSave.Source = "GLUE";
-
-            glueProject.Screens.Add(screenSave);
-            glueProject.Screens.SortByName();
-
-            #region Create the Screen code (not the generated version)
-
-
-            var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
-            var addedScreen = 
-                GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save:false);
-
-
-            string projectNamespace = ProjectManager.ProjectNamespace;
-
-            StringBuilder stringBuilder = new StringBuilder(CodeWriter.ScreenTemplateCode);
-
-            CodeWriter.SetClassNameAndNamespace(
-                projectNamespace + ".Screens",
-                screenName,
-                stringBuilder);
-
-            string modifiedTemplate = stringBuilder.ToString();
-
-
-            if (addedScreen == null)
+            await TaskManager.Self.AddAsync(async () =>
             {
-                if (!suppressAlreadyExistingFileMessage)
+                var glueProject = GlueState.Self.CurrentGlueProject;
+
+                string screenName = FileManager.RemovePath(screenSave.Name);
+
+                string fileName = screenSave.Name + ".cs";
+
+                screenSave.Tags.Add("GLUE");
+                screenSave.Source = "GLUE";
+
+                glueProject.Screens.Add(screenSave);
+                glueProject.Screens.SortByName();
+
+                #region Create the Screen code (not the generated version)
+
+
+                var fullNonGeneratedFileName = FileManager.RelativeDirectory + fileName;
+                var addedScreen =
+                    GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save: false);
+
+
+                string projectNamespace = ProjectManager.ProjectNamespace;
+
+                StringBuilder stringBuilder = new StringBuilder(CodeWriter.ScreenTemplateCode);
+
+                CodeWriter.SetClassNameAndNamespace(
+                    projectNamespace + ".Screens",
+                    screenName,
+                    stringBuilder);
+
+                string modifiedTemplate = stringBuilder.ToString();
+
+
+                if (addedScreen == null)
                 {
-                    MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                    if (!suppressAlreadyExistingFileMessage)
+                    {
+                        MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
+                    }
                 }
-            }
-            else
-            {
+                else
+                {
 
-                FileManager.SaveText(
-                    modifiedTemplate,
-                    fullNonGeneratedFileName
-                    );
-            }
-
-
-            #endregion
-
-            #region Create <ScreenName>.Generated.cs
-
-            string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
+                    FileManager.SaveText(
+                        modifiedTemplate,
+                        fullNonGeneratedFileName
+                        );
+                }
 
 
-            #endregion
+                #endregion
 
-            // We used to set the 
-            // StartUpScreen whenever
-            // the user made a new Screen.
-            // The reason is we assumed that
-            // the user wanted to work on this
-            // Screen, so we set it as the startup
-            // so they could run the game right away.
-            // Now we only want to do it if there are no
-            // other Screens.  Otherwise they can just use
-            // GlueView.
-            if (glueProject.Screens.Count == 1)
-            {
-                GlueState.Self.CurrentGlueProject.StartUpScreen = screenSave.Name;
-                GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
-            }
-            // Plugin should react to new screen before generating or refreshing tree node so that tree nodes can show new files
-            await PluginManager.ReactToNewScreenCreated(screenSave);
+                #region Create <ScreenName>.Generated.cs
 
-            // Refresh tree node after plugin manager has a chance to make changes according to the screen
-            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
+                string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
+                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
 
-            GlueCommands.Self.ProjectCommands.SaveProjects();
+                #endregion
 
-            GluxCommands.Self.SaveGlux();
+                // We used to set the 
+                // StartUpScreen whenever
+                // the user made a new Screen.
+                // The reason is we assumed that
+                // the user wanted to work on this
+                // Screen, so we set it as the startup
+                // so they could run the game right away.
+                // Now we only want to do it if there are no
+                // other Screens.  Otherwise they can just use
+                // GlueView.
+                if (glueProject.Screens.Count == 1)
+                {
+                    GlueState.Self.CurrentGlueProject.StartUpScreen = screenSave.Name;
+                    GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
+                }
+                // Plugin should react to new screen before generating or refreshing tree node so that tree nodes can show new files
+                await PluginManager.ReactToNewScreenCreated(screenSave);
+
+                // Refresh tree node after plugin manager has a chance to make changes according to the screen
+                GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(screenSave);
+
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(screenSave);
+
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+
+                GluxCommands.Self.SaveGlux();
+            }, nameof(AddScreen));
+            
         }
 
         #endregion
