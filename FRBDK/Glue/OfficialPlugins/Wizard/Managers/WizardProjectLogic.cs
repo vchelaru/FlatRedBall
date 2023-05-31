@@ -982,6 +982,10 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 System.Diagnostics.Debugger.Break();
             }
+            else if(ObjectFinder.Self.GetElementContaining(cameraNos) == null)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
 
             if (vm.FollowPlayersWithCamera && vm.AddPlayerListToGameScreen)
             {

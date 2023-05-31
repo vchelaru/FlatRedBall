@@ -124,8 +124,8 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
             }
             ///////////// end early out ///////////
 
-            var entity = GlueState.Self.CurrentEntitySave;
             var viewModel = sender as PlatformerEntityViewModel;
+            var entity = viewModel.BackingData;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddPlatformerVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel, 
@@ -198,7 +198,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         private static void DetermineWhatToGenerate(string propertyName, PlatformerEntityViewModel viewModel, 
             out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddMovementVariables)
         {
-            var entity = GlueState.Self.CurrentEntitySave;
+            var entity = viewModel.BackingData;
             shouldGenerateCsv = false;
             shouldGenerateEntity = false;
             shouldAddMovementVariables = false;
@@ -341,6 +341,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
         static void UpdateViewModelTo(EntitySave entitySave, PlatformerEntityViewModel viewModel)
         {
             viewModel.IsPlatformer = IsPlatformer(entitySave);
+            viewModel.BackingData = entitySave;
             var inheritsFromPlatformerEntity = GetIfInheritsFromPlatformer(entitySave);
             viewModel.InheritsFromPlatformer = inheritsFromPlatformerEntity;
 

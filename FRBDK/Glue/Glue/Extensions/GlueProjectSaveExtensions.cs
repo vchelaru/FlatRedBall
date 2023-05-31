@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -127,6 +128,10 @@ namespace FlatRedBall.Glue.SaveClasses
             settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
             var serialized = JsonConvert.SerializeObject(clone, Formatting.Indented, settings);
             PluginManager.ReactToGlueJsonSaveAsync(serialized);
+
+            FileWatchManager.IgnoreNextChangeOnFile(filePath);
+
+
             FileManager.SaveText(serialized, filePath.FullPath);
         }
 

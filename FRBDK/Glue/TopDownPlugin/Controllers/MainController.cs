@@ -189,7 +189,7 @@ namespace TopDownPlugin.Controllers
 
         public void CheckForNoTopDownEntities()
         {
-            var areAnyEntitiesTopDown = GlueState.Self.CurrentGlueProject.Entities
+            var areAnyEntitiesTopDown =  GlueState.Self.CurrentGlueProject.Entities
                 .Any(item => TopDownEntityPropertyLogic.GetIfIsTopDown(item));
 
             if (!areAnyEntitiesTopDown)
@@ -214,7 +214,7 @@ namespace TopDownPlugin.Controllers
 
         private void DetermineWhatToGenerate(string propertyName, TopDownEntityViewModel viewModel, out bool shouldGenerateCsv, out bool shouldGenerateEntity, out bool shouldAddTopDownVariables)
         {
-            var entity = GlueState.Self.CurrentEntitySave;
+            var entity = viewModel.BackingData;
             shouldGenerateCsv = false;
             shouldGenerateEntity = false;
             shouldAddTopDownVariables = false;
@@ -417,7 +417,7 @@ namespace TopDownPlugin.Controllers
 
         private void SaveCurrentEntitySaveAnimationDataTask()
         {
-            var filePath = GetAnimationFilePathFor(GlueState.Self.CurrentEntitySave);
+            var filePath = GetAnimationFilePathFor(viewModel.BackingData);
 
             TaskManager.Self.Add(() =>
             {
@@ -431,7 +431,7 @@ namespace TopDownPlugin.Controllers
                     GlueCommands.Self.PrintOutput($"Saved animation file {filePath.FullPath}");
                 });
 
-            }, $"Saving animation file for {GlueState.Self.CurrentEntitySave}");
+            }, $"Saving animation file for {viewModel.BackingData}");
         }
 
         private void AddNecessaryAnimationMovementValuesFor(EntitySave currentEntitySave, ObservableCollection<TopDownValuesViewModel> topDownValues)
