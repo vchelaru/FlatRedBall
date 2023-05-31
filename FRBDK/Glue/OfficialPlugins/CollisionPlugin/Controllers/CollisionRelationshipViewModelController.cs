@@ -189,7 +189,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
         public static void RefreshViewModel(NamedObjectSave collisionRelationship)
         {
 
-            var currentElement = GlueState.Self.CurrentElement;
+            var currentElement = ObjectFinder.Self.GetElementContaining(collisionRelationship);
+                //GlueState.Self.CurrentElement;
 
             ViewModel.GlueObject = collisionRelationship;
 

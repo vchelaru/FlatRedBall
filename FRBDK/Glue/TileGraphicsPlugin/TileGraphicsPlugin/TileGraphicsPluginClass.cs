@@ -527,8 +527,14 @@ namespace TileGraphicsPlugin
                     collisionTab = base.CreateTab(view, "TileShapeCollection Properties");
                 }
 
-                TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
-                    GlueState.Self.CurrentElement);
+                var nos = treeNode?.Tag as NamedObjectSave;
+                GlueElement element = GlueState.Self.CurrentElement;
+                if(element == null && nos != null)
+                {
+                    element = ObjectFinder.Self.GetElementContaining(nos);
+                }
+
+                TileShapeCollectionsPropertiesController.Self.RefreshViewModelTo(nos,element);
 
                 collisionTab.Show();
                 GlueCommands.Self.DialogCommands.FocusTab("TileShapeCollection Properties");
@@ -547,8 +553,13 @@ namespace TileGraphicsPlugin
                     nodeNetworkTab = base.CreateTab(view, "TileNodeNetwork Properties");
                 }
 
-                TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(treeNode?.Tag as NamedObjectSave,
-                    GlueState.Self.CurrentElement);
+                var nos = treeNode?.Tag as NamedObjectSave;
+                GlueElement element = GlueState.Self.CurrentElement;
+                if (element == null && nos != null)
+                {
+                    element = ObjectFinder.Self.GetElementContaining(nos);
+                }
+                TileNodeNetworkPropertiesController.Self.RefreshViewModelTo(nos, element);
 
                 nodeNetworkTab.Show();
                 GlueCommands.Self.DialogCommands.FocusTab("TileNodeNetwork Properties");

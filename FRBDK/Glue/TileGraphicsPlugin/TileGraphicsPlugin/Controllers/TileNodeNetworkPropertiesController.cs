@@ -35,18 +35,19 @@ namespace TiledPluginCore.Controllers
             switch (e.PropertyName)
             {
                 case nameof(viewModel.SourceTmxName):
-                    RefreshAvailableTypes();
-                    RefreshAvailableLayers();
+                    var element = GlueState.Self.CurrentElement;
+                    RefreshAvailableTypes(element);
+                    RefreshAvailableLayers(element);
                     break;
             }
         }
 
-        public void RefreshAvailableTypes()
+        public void RefreshAvailableTypes(GlueElement element)
         {
             viewModel.AvailableTypes.Clear();
             var tmxName = viewModel.SourceTmxName;
 
-            var types = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableTypes(tmxName);
+            var types = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableTypes(tmxName, element);
 
             // todo - apply hashset to the view model
             foreach (var item in types)
@@ -55,12 +56,12 @@ namespace TiledPluginCore.Controllers
             }
         }
 
-        public void RefreshAvailableLayers()
+        public void RefreshAvailableLayers(GlueElement element)
         {
             viewModel.AvailableLayerNames.Clear();
             var tmxName = viewModel.SourceTmxName;
 
-            var layers = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableLayers(tmxName);
+            var layers = TileGraphicsPlugin.Controllers.TileShapeCollectionsPropertiesController.GetAvailableLayers(tmxName, element);
 
             foreach(var item in layers)
             {
@@ -83,7 +84,7 @@ namespace TiledPluginCore.Controllers
             return isTileNodeNetwork;
         }
 
-        public void RefreshViewModelTo(NamedObjectSave namedObject, IElement element)
+        public void RefreshViewModelTo(NamedObjectSave namedObject, GlueElement element)
         {
             // Disconnect the view from the view model so that 
             // changes that happen here dont' have side effects
@@ -100,8 +101,8 @@ namespace TiledPluginCore.Controllers
 
             viewModel.IsEntireViewEnabled = namedObject.DefinedByBase == false;
 
-            RefreshAvailableTypes();
-            RefreshAvailableLayers();
+            RefreshAvailableTypes(element);
+            RefreshAvailableLayers(element);
 
             view.DataContext = viewModel;
         }

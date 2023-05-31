@@ -727,6 +727,8 @@ namespace FlatRedBall.Graphics
             {
                 mEffect = value;
 
+
+#if USE_CUSTOM_SHADER
                 mParameterCurrentTexture = mEffect.Parameters["CurrentTexture"];
 
                 // Let's check if the shader has the new format (which includes
@@ -775,12 +777,13 @@ namespace FlatRedBall.Graphics
                     try { mTechniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha"]; } catch { }
                     try { mTechniqueInterpolateColor = mEffect.Techniques["InterpolateColor"]; } catch { }
                 }
+#endif
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         #region Methods
 
@@ -1159,7 +1162,7 @@ namespace FlatRedBall.Graphics
                 throw exception;
             }
 #endif
-            #endregion
+#endregion
 
             #region Make sure the GraphicsDeviceManager is not null
 #if DEBUG
@@ -1170,7 +1173,7 @@ namespace FlatRedBall.Graphics
                 throw exception;
             }
 #endif
-            #endregion
+#endregion
 
 
             if (section != null)
@@ -1600,7 +1603,7 @@ namespace FlatRedBall.Graphics
             if (layer == null)
             {
                 // reset the camera as it may have been set differently by layers
-#if  !USE_CUSTOM_SHADER
+#if !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, false);
                 camera.SetDeviceViewAndProjection( mGenericEffect, false );
 #else
@@ -1612,7 +1615,7 @@ namespace FlatRedBall.Graphics
             else
             {
 
-#if  !USE_CUSTOM_SHADER
+#if !USE_CUSTOM_SHADER
                 camera.SetDeviceViewAndProjection( mEffect, layer.RelativeToCamera);
                 camera.SetDeviceViewAndProjection( mGenericEffect, layer.RelativeToCamera );
 #else
@@ -2498,7 +2501,7 @@ namespace FlatRedBall.Graphics
 
                         }
                     }
-#elif XNA4 
+#elif XNA4
                     EffectTechnique currentTechnique = effectToUse.CurrentTechnique;
                     foreach (EffectPass pass in currentTechnique.Passes)
                     {

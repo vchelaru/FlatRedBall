@@ -85,8 +85,8 @@ namespace TopDownPlugin.Controllers
             }
             ///////////// end early out ///////////
 
-            var entity = GlueState.Self.CurrentEntitySave;
             var viewModel = sender as TopDownEntityViewModel;
+            var entity = viewModel.BackingData;// GlueState.Self.CurrentEntitySave;
             bool shouldGenerateCsv, shouldGenerateEntity, shouldAddTopDownVariables;
 
             DetermineWhatToGenerate(e.PropertyName, viewModel,
@@ -332,6 +332,7 @@ namespace TopDownPlugin.Controllers
         private void UpdateViewModelTo(EntitySave currentEntitySave)
         {
             viewModel.IsTopDown = currentEntitySave.Properties.GetValue<bool>(nameof(viewModel.IsTopDown));
+            viewModel.BackingData = currentEntitySave;
             var inheritsFromTopDownEntity = GetIfInheritsFromTopDown(currentEntitySave);
             viewModel.InheritsFromTopDown = inheritsFromTopDownEntity;
 
