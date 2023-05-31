@@ -98,7 +98,7 @@ namespace FlatRedBall.Localization
                 // assume the first row is the key:
                 var key = row[0];
 
-                var values = row.Skip(1).ToArray();
+                var values = row.ToArray();
 
                 LocalizationEntry localizationEntry;
                 if(!string.IsNullOrEmpty(key))
@@ -223,7 +223,15 @@ namespace FlatRedBall.Localization
             }
             else if (mStringDatabase.ContainsKey(stringID))
             {
-                return mStringDatabase[stringID].Rows[0][language];
+                var entry = mStringDatabase[stringID];
+                if (entry.Rows[0].Count() > language)
+                {
+                    return mStringDatabase[stringID].Rows[0][language];
+                }
+                else
+                {
+                    return $"Error accessing string {stringID} for language {language} because it is greater than the max language index of {entry.Rows[0].Count()-1}";
+                }
             }
             else if (ShouldExcludeFromTranslation(stringID))
             {
