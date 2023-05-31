@@ -14,7 +14,13 @@ namespace FlatRedBall.Input
 {
     public enum DeadzoneInterpolationType
     {
+        /// <summary>
+        /// No interpolation is performed. Values less than the deadzone are set to 0.
+        /// </summary>
         Instant,
+        /// <summary>
+        /// Linear interpolation is performed for values greater than the deadzone. 
+        /// </summary>
         Linear,
         Quadratic
     }

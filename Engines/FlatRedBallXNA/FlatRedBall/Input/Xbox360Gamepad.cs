@@ -181,6 +181,10 @@ namespace FlatRedBall.Input
         }
 
         DeadzoneInterpolationType deadzoneInterpolation;
+        /// <summary>
+        /// Sets the deadzone interpolation type for 
+        /// both the LeftStick and RightStick.
+        /// </summary>
         public DeadzoneInterpolationType DeadzoneInterpolation 
         { 
             get
@@ -1645,6 +1649,10 @@ namespace FlatRedBall.Input
         /// <summary>
         /// Sets the vibration of the game pad.
         /// </summary>
+        /// <remarks>
+        /// Note that on MonoGame 3.8.1 for Xbox360 and Xbox One controllers, this method will not vibrate the controller
+        /// until a button is pressed.
+        /// </remarks>
         /// <param name="leftMotor">The low-frequency motor.  Set between 0.0f and 1.0f</param>
         /// <param name="rightMotor">The high-frequency  motor.  Set between 0.0f and 1.0f</param>
         /// <returns>True if the vibration motors were successfully set; false if the controller
