@@ -22,6 +22,10 @@ namespace FlatRedBall.Input
         /// Linear interpolation is performed for values greater than the deadzone. 
         /// </summary>
         Linear,
+        /// <summary>
+        /// Quadratic (in) interpolation is performed for values greater than the deadzone. This increases
+        /// accuracy at lower values (values closer to the deadzone) so that small movements are easier to perform.
+        /// </summary>
         Quadratic
     }
 
