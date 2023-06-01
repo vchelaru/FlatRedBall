@@ -79,7 +79,7 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 currentNodes.Remove(nodeViewModel);
             }
 
-            RefreshGlueState(true);
+            RefreshGlueState(false);
         }
 
         public static void HandleSelected(NodeViewModel nodeViewModel, bool focus = true)
@@ -126,12 +126,12 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         }
 
-        private static void RefreshGlueState(bool didSelectionChange)
+        private static void RefreshGlueState(bool forcePushToGlue)
         {
             if (IsPushingSelectionOutToGlue
                 // The node can change if the user deletes a tree node and then a new one
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
-                || didSelectionChange)
+                || forcePushToGlue)
             {
                 //var tag = nodeViewModel.Tag;
 
@@ -185,13 +185,13 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
             mainView.RefreshRightClickMenu();
         }
 
-        internal static async void SelectByPath(string path, bool addToSelection)
+        internal static async Task SelectByPath(string path, bool addToSelection)
         {
             var treeNode = mainViewModel.GetTreeNodeByRelativePath(path);
             await SelectByTreeNode(treeNode, addToSelection);
         }
 
-        public static async void SelectByTag(object value, bool addToSelection)
+        public static async Task SelectByTag(object value, bool addToSelection)
         {
             NodeViewModel treeNode = value == null ? null : mainViewModel.GetTreeNodeByTag(value);
 

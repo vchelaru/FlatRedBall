@@ -186,6 +186,13 @@ namespace FlatRedBall.Input
         /// </summary>
         public Vector2 RawPosition => mRawPosition;
 
+        /// <summary>
+        /// The change in units per second of the analog stick, where 1 unit is the distance from the center to the edge of the analog stick.
+        /// </summary>
+        /// <remarks>
+        /// This measures the physical movement (rather than position) of the analog stick, which can be used to detect
+        /// taps for dashing, or "smash attacks" like in Super Smash Bros.
+        /// </remarks>
         public Vector2 Velocity
         {
             get { return mVelocity; }

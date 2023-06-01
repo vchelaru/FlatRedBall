@@ -577,7 +577,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
             Vector2 newPosition = new Vector2(cameraPosition.X, cameraPosition.Y);
 
-            var list = GlueState.Self.CurrentElement.NamedObjects.FirstOrDefault(item =>
+            var element = ObjectFinder.Self.GetElementContaining(newNamedObject);
+
+            var list = element?.NamedObjects.FirstOrDefault(item =>
                 item.ContainedObjects.Contains(newNamedObject));
 
             var shouldIncreasePosition = false;
@@ -585,7 +587,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 shouldIncreasePosition = false;
 
-                var listToLoopThrough = list?.ContainedObjects ?? GlueState.Self.CurrentElement.NamedObjects;
+                var listToLoopThrough = list?.ContainedObjects ?? element.NamedObjects;
 
                 const int incrementForNewObject = 16;
                 const int minimumDistanceForObjects = 3;
