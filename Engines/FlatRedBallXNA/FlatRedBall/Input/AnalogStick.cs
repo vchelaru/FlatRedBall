@@ -38,7 +38,7 @@ namespace FlatRedBall.Input
         Vector2 mVelocity;
         double mMagnitude;
         double mAngle;
-        
+
         double mTimeAfterPush = DefaultTimeAfterPush;
         double mTimeBetweenRepeating = DefaultTimeBetweenRepeating;
 
@@ -60,7 +60,14 @@ namespace FlatRedBall.Input
         internal const float DPadOnValue = .550f;
         internal const float DPadOffValue = .450f;
 
+        /// <summary>
+        /// Number of seconds to wait after a push before repeating.
+        /// </summary>
         public const double DefaultTimeAfterPush = .35;
+
+        /// <summary>
+        /// Number of seconds between repeating.
+        /// </summary>
         public const double DefaultTimeBetweenRepeating = .12;
 
         bool[] mLastDPadDown = new bool[4];
@@ -73,7 +80,7 @@ namespace FlatRedBall.Input
 
         // Start this at -1 instead of 0, otherwise the first frame will return "true" because
         // the last push on time 0 will match the TimeManager.CurrentTime
-        double[] mLastDPadPush = new double[4]{ -1, -1, -1, -1};
+        double[] mLastDPadPush = new double[4] { -1, -1, -1, -1 };
         double[] mLastDPadRepeatRate = new double[4] { -1, -1, -1, -1 };
 
         #endregion
@@ -147,25 +154,32 @@ namespace FlatRedBall.Input
         /// Gets the distance from the center position of the analog stick. 
         /// Value is between 0 and 1, where 0 is the neutral position.
         /// </summary>
-        public double Magnitude => mMagnitude; 
-        
+        public double Magnitude => mMagnitude;
+
         /// <summary>
         /// The time between a button is first pressed and the button starts repeating its input.
         /// </summary>
         public double TimeAfterPush { get => mTimeAfterPush; set => mTimeAfterPush = value; }
-        
+
         /// <summary>
         /// The time between repeat presses once a button has been held down.
         /// </summary>
         public double TimeBetweenRepeating { get => mTimeBetweenRepeating; set => mTimeBetweenRepeating = value; }
-        
+
         /// <summary>
         /// The position of the analog stick after applying deadzone.  The range for each component is -1 to 1. 
         /// </summary>
         public Vector2 Position => mPosition;
-        
 
+        /// <summary>
+        /// Whether Position values should be limited so that Position.Length is less than or equal to 1.
+        /// This is recommended for top-down games.
+        /// </summary>
+        public bool IsMaxPositionNormalized { get; set; } = false;
 
+        /// <summary>
+        /// The position of the analog stick before deadzone, deadzone interpolation, and normalization are applied.
+        /// </summary>
         public Vector2 RawPosition => mRawPosition;
 
         public Vector2 Velocity
@@ -209,7 +223,7 @@ namespace FlatRedBall.Input
                         return mPosition.X < -DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Right:
 
@@ -222,7 +236,7 @@ namespace FlatRedBall.Input
                         return mPosition.X > DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Up:
 
@@ -235,7 +249,7 @@ namespace FlatRedBall.Input
                         return mPosition.Y > DPadOnValue;
                     }
 
-                    //break;
+                //break;
 
                 case Xbox360GamePad.DPadDirection.Down:
 
@@ -248,9 +262,9 @@ namespace FlatRedBall.Input
                         return mPosition.Y < -DPadOnValue;
                     }
 
-                    //break;
+                //break;
                 default:
-                    
+
                     return false;
                     //break;
             }
@@ -329,12 +343,17 @@ namespace FlatRedBall.Input
 
             }
 
+            if (IsMaxPositionNormalized && newPosition.LengthSquared() > 1)
+            {
+                newPosition.Normalize();
+            }
+
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Up] = AsDPadDown(Xbox360GamePad.DPadDirection.Up);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Down] = AsDPadDown(Xbox360GamePad.DPadDirection.Down);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Left] = AsDPadDown(Xbox360GamePad.DPadDirection.Left);
             mLastDPadDown[(int)Xbox360GamePad.DPadDirection.Right] = AsDPadDown(Xbox360GamePad.DPadDirection.Right);
 
-            mVelocity = Vector2.Multiply((newPosition - mPosition), 1/TimeManager.SecondDifference);
+            mVelocity = Vector2.Multiply((newPosition - mPosition), 1 / TimeManager.SecondDifference);
             mPosition = newPosition;
 
             UpdateAccordingToPosition();
@@ -387,7 +406,7 @@ namespace FlatRedBall.Input
         }
 
 
-        float I2DInput.Magnitude => (float) this.mMagnitude;
+        float I2DInput.Magnitude => (float)this.mMagnitude;
 
         #endregion
 
@@ -432,7 +451,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if(vertical == null)
+                if (vertical == null)
                 {
                     vertical = new AnalogStickVertical(this);
                 }
@@ -469,7 +488,7 @@ namespace FlatRedBall.Input
             }
             else
             {
-                switch(DeadzoneInterpolation)
+                switch (DeadzoneInterpolation)
                 {
                     case DeadzoneInterpolationType.Instant:
                         return originalValue;
@@ -507,7 +526,7 @@ namespace FlatRedBall.Input
             }
             else
             {
-                switch(DeadzoneInterpolation)
+                switch (DeadzoneInterpolation)
                 {
                     case DeadzoneInterpolationType.Instant:
                         // return originalValue;
@@ -539,7 +558,7 @@ namespace FlatRedBall.Input
             }
             else
             {
-                switch(DeadzoneInterpolation)
+                switch (DeadzoneInterpolation)
                 {
                     case DeadzoneInterpolationType.Instant:
                         break;
