@@ -133,44 +133,6 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
                 // automatically gets re-selected. In this case, we do still want to push the selection out.
                 || forcePushToGlue)
             {
-                //var tag = nodeViewModel.Tag;
-
-                //if (tag is NamedObjectSave nos)
-                //{
-                //    GlueState.Self.CurrentNamedObjectSave = nos;
-                //}
-                //else if (tag is ReferencedFileSave rfs)
-                //{
-                //    GlueState.Self.CurrentReferencedFileSave = rfs;
-                //}
-                //else if (tag is CustomVariable variable)
-                //{
-                //    GlueState.Self.CurrentCustomVariable = variable;
-                //}
-                //else if (tag is EventResponseSave eventResponse)
-                //{
-                //    GlueState.Self.CurrentEventResponseSave = eventResponse;
-                //}
-                //else if (tag is StateSave state)
-                //{
-                //    GlueState.Self.CurrentStateSave = state;
-                //}
-                //else if (tag is StateSaveCategory stateCategory)
-                //{
-                //    GlueState.Self.CurrentStateSaveCategory = stateCategory;
-                //}
-                //else if (tag is EntitySave entitySave)
-                //{
-                //    GlueState.Self.CurrentEntitySave = entitySave;
-                //}
-                //else if (tag is ScreenSave screenSave)
-                //{
-                //    GlueState.Self.CurrentScreenSave = screenSave;
-                //}
-                //else if (tag == null)
-                //{
-                //    GlueState.Self.CurrentTreeNode = nodeViewModel;
-                //}
                 GlueState.Self.CurrentTreeNodes = currentNodes;
             }
 
