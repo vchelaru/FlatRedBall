@@ -41,6 +41,7 @@ using Newtonsoft.Json;
 using FlatRedBall.Entities;
 using System.Windows.Forms.Design;
 using FlatRedBall.Glue.AutomatedGlue;
+using static FlatRedBall.Debugging.Debugger;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -1702,18 +1703,34 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             bool wasSelected =
                 namedObjectListToRemove.Contains(GlueState.Self.CurrentNamedObjectSave);
 
-            List<GlueElement> ownerList = null;
+
+            HashSet<GlueElement> ownerHashSet = new HashSet<GlueElement>();
 
             await TaskManager.Self.AddAsync(() =>
-                ownerList = namedObjectListToRemove.Select(item => ObjectFinder.Self.GetElementContaining(item)).ToList(),
+            {
+                foreach(var item in namedObjectListToRemove)
+                {
+                    var itemOwner = ObjectFinder.Self.GetElementContaining(item);
+                    ownerHashSet.Add(itemOwner);
+                    var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(item, itemOwner);
+
+                    // RemoveNamedObjectAsync will recursively remove all named objects including objects in derived instances. since we are going to explicitly
+                    // call refresh/generate/save, we need to know which objects are going to have their derived objects removed. We need to do this before the 
+                    // RemoveNamedObjectAsync call.
+                    foreach(var derivedNos in objectsToRemove.DerivedNamedObjects)
+                    {
+                        ownerHashSet.Add(ObjectFinder.Self.GetElementContaining(derivedNos));
+                    }
+                }
+            },
                 "Getting list of owners");
+
 
             foreach (var item in namedObjectListToRemove)
             {
                 await RemoveNamedObjectAsync(item, performSaveAndGenerateCode: false, updateUi: false, additionalFilesToRemove: null, notifyPluginsOfRemoval: false);
             }
 
-            var ownerHashSet = ownerList.ToHashSet();
 
             if (updateUi)
             {
@@ -1754,7 +1771,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
-            await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
+            await PluginManager.ReactToObjectListRemovedAsync(ownerHashSet.ToList(), namedObjectListToRemove);
 
             if (performSaveAndGenerateCode)
             {

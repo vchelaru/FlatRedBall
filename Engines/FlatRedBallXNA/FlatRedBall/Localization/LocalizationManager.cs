@@ -13,6 +13,11 @@ namespace FlatRedBall.Localization
     {
         public string Key { get; set; }
 
+        /// <summary>
+        /// Each row represents one page of dialog. Games which do not use multiple
+        /// pages of dialog per string ID will always access Rows[0][LanguageIndex]. Games which
+        /// use multiple pages will access Rows[PageIndex][LanguageIndex]
+        /// </summary>
         public List<string[]> Rows { get; set; } = new List<string[]>();
 
         //public string[] Values { get; set; }
