@@ -128,11 +128,13 @@ namespace GumPlugin.CodeGeneration
             var idbName = rfs?.GetInstanceName();
             var rfsAssetTpe = rfs?.GetAssetTypeInfo();
             var isIdb = rfsAssetTpe == AssetTypeInfoManager.Self.ScreenIdbAti;
-            if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
-            {
-                idbName = "gumIdb";
-            }
-            else if (rfs != null && isIdb == false)
+
+            // As of June 6, 2023 we always use the self IDB:
+            //if (string.IsNullOrEmpty(idbName) && element is FlatRedBall.Glue.SaveClasses.ScreenSave)
+            //{
+            //    idbName = "gumIdb";
+            //}
+            //else if (rfs != null && isIdb == false)
             {
                 idbName = "FlatRedBall.Gum.GumIdb.Self";
             }
