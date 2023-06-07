@@ -161,6 +161,7 @@ namespace FlatRedBall.Gum
                 // For now we'll have Glue override these values, but we may eventually change it.
 
                 var idb = new GumIdb();
+                idb.Name = "Static (global) Gum IDB";
                 // We don't want the UI to be at Z=0 because it will render 
                 // at the same Z along with FRB entities and environments so UI might 
                 // be hidden. The proper way to solve this is to use Layers, but

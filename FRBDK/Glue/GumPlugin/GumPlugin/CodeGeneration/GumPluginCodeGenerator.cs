@@ -30,7 +30,14 @@ namespace GumPlugin.CodeGeneration
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
         {
             bool isGlueScreen, hasGumScreen, hasForms;
-            bool needsGumIdb = NeedsGumIdb(element, out isGlueScreen, out hasGumScreen, out hasForms);
+
+            // June 6, 2023
+            // GUMX files in Global Content load and initialize a static global GumIdb automatically.
+            // By leaving this in, we have 2 Gum IDBs as reported here:
+            // https://github.com/vchelaru/FlatRedBall/issues/1100
+            // So why do we do this? I don't think we should...
+            //bool needsGumIdb = NeedsGumIdb(element, out isGlueScreen, out hasGumScreen, out hasForms);
+            bool needsGumIdb = false;
 
             if (needsGumIdb)
             {
