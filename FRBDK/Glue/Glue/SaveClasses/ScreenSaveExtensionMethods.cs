@@ -23,11 +23,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (!string.IsNullOrEmpty(instance.BaseScreen))
             {
-                EntitySave baseEntity = ObjectFinder.Self.GetEntitySave(instance.BaseScreen);
+                var baseScreen = ObjectFinder.Self.GetScreenSave(instance.BaseScreen);
 
-                if (baseEntity != null)
+                if (baseScreen != null)
                 {
-                    return baseEntity.InheritsFrom(screen);
+                    return baseScreen.InheritsFrom(screen);
                 }
             }
 
@@ -66,7 +66,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (rfs == null && !string.IsNullOrEmpty(instance.BaseScreen))
             {
-                IElement baseElement = ObjectFinder.Self.GetIElement(instance.BaseScreen);
+                var baseElement = ObjectFinder.Self.GetElement(instance.BaseScreen);
 
                 if (baseElement != null)
                 {
