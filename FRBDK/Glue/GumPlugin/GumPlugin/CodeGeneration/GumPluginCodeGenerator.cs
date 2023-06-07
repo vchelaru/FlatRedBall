@@ -104,13 +104,14 @@ namespace GumPlugin.CodeGeneration
 
         public override ICodeBlock GenerateAddToManagers(ICodeBlock codeBlock, IElement element)
         {
-            var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
+            // We no longer do this as of June 7, 2023. Always using the global one
+            //var needsGumIdb = NeedsGumIdb(element, out bool _, out bool _, out bool _);
 
-            if (needsGumIdb)
-            {
-                // Create a generic Gum IDB to support in-code creation of Gum objects:
-                codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
-            }
+            //if (needsGumIdb)
+            //{
+            //    // Create a generic Gum IDB to support in-code creation of Gum objects:
+            //    codeBlock.Line("FlatRedBall.SpriteManager.AddDrawableBatch(gumIdb);");
+            //}
 
             return codeBlock;
         }
