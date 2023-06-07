@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Navigation;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -62,7 +63,9 @@ namespace GumPlugin.CodeGeneration
             // if it's derived, then the base will take care of it.
             var isDerivedScreen = !string.IsNullOrEmpty(element.BaseElement);
 
-            return isGlueScreen && !hasGumScreen && !isDerivedScreen && GetIfHasGumProject();
+            //return isGlueScreen && !hasGumScreen && !isDerivedScreen && GetIfHasGumProject();
+            // no more gum IDB per screen:
+            return false;
         }
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock, IElement element)
