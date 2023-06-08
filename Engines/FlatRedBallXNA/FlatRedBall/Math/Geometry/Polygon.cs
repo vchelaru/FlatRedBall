@@ -301,6 +301,10 @@ namespace FlatRedBall.Math.Geometry
         public Polygon()
         {
             Color = Color.White;
+
+            // The first frame of the game's time is 0. To allow the
+            // vertices to be updated on the first frame set this to -1.
+            mLastFillVertexArrayUpdate = -1;
         }
 
         #endregion
