@@ -698,7 +698,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             if (containerOfState == null)
             {
                 Type overridingType = null;
-                if ((forcedValue ?? variableConsideringDefinedByBase.DefaultValue) is List<Vector2>)
+                if ((forcedValue ?? variableConsideringDefinedByBase?.DefaultValue) is List<Vector2>)
                 {
                     overridingType = typeof(List<FlatRedBall.Math.Geometry.Point>);
                 }
