@@ -15,7 +15,6 @@ namespace FlatRedBall.Glue.AutomatedGlue
 
         #region Properties
 
-        // todo - move this to GlueGui
         public static MenuStrip MenuStrip
         {
             get

@@ -686,6 +686,9 @@ namespace FlatRedBall
             return (float)System.Math.Atan(modifiedDesiredYEdge / 100) * 2;
         }
 
+        /// <summary>
+        /// Returns the viewport for the Graphics Device, optionally restricted to the resolution.
+        /// </summary>
         public Viewport GetViewport()
         {
             // Viewport is a struct, so we can start with the current viewport
