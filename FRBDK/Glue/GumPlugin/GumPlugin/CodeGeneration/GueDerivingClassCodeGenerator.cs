@@ -54,7 +54,9 @@ namespace GumPlugin.CodeGeneration
 
             AddSetterReplacements();
         }
-        
+
+        #region Element/Screen Top Level Generation
+
         public string GenerateCodeFor(ElementSave elementSave)
         {
             if(elementSave == null)
@@ -111,35 +113,53 @@ namespace GumPlugin.CodeGeneration
                 throw new ArgumentNullException(nameof(elementSave));
             }
 
-            ICodeBlock currentBlock = GenerateClassHeader(codeBlock, elementSave);
+            ICodeBlock classBlock = GenerateClassHeader(codeBlock, elementSave);
 
-            StateCodeGenerator.Self.GenerateEverythingFor(elementSave, currentBlock);
+            StateCodeGenerator.Self.GenerateEverythingFor(elementSave, classBlock);
 
-            GenerateFields(elementSave, currentBlock);
+            BehaviorCodeGenerator.Self.GenerateBehaviorImplementingProperties(classBlock, elementSave);
+
+            GenerateFields(elementSave, classBlock);
             
-            GenerateProperties(elementSave, currentBlock);
+            GenerateProperties(elementSave, classBlock);
 
-            EventCodeGenerator.Self.GenerateEvents(elementSave, currentBlock);
+            EventCodeGenerator.Self.GenerateEvents(elementSave, classBlock);
 
             string runtimeClassName = GetUnqualifiedRuntimeTypeFor(elementSave);
-            GenerateConstructor(elementSave, currentBlock, runtimeClassName);
+            GenerateConstructor(elementSave, classBlock, runtimeClassName);
 
-            GenerateAssignDefaultState(elementSave, currentBlock);
+            GenerateAssignDefaultState(elementSave, classBlock);
 
-            GenerateCreateChildrenRecursively(elementSave, currentBlock);
+            GenerateCreateChildrenRecursively(elementSave, classBlock);
 
-            GenerateAssignInternalReferencesMethod(elementSave, currentBlock);
+            GenerateAssignInternalReferencesMethod(elementSave, classBlock);
 
-            GenerateAddToManagersMethod(elementSave, currentBlock);
+            GenerateAddToManagersMethod(elementSave, classBlock);
 
-            GenerateCallCustomInitialize(elementSave, currentBlock);
+            GenerateCallCustomInitialize(elementSave, classBlock);
 
-            GeneratePartialMethods(elementSave, currentBlock);
+            GeneratePartialMethods(elementSave, classBlock);
 
-            GenerateRaiseExposedEvents(elementSave, currentBlock);
+            GenerateRaiseExposedEvents(elementSave, classBlock);
 
-            GenerateFormsCode(elementSave, currentBlock);
+            GenerateFormsCode(elementSave, classBlock);
         }
+
+
+        public bool ShouldGenerateRuntimeFor(ElementSave elementSave)
+        {
+            if (elementSave is StandardElementSave)
+            {
+                if (elementSave.Name == "Component")
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
 
         #region Class Header/Name
         private ICodeBlock GenerateClassHeader(ICodeBlock codeBlock, ElementSave elementSave)
@@ -166,10 +186,21 @@ namespace GumPlugin.CodeGeneration
                         inheritance += $"<{genericType}>";
                     }
                 }
-
             }
 
-            var asComponentSave = elementSave as ComponentSave;
+            foreach(var behaviorReference in elementSave.Behaviors)
+            {
+                var behavior = ObjectFinder.Self.GetBehavior(behaviorReference);
+
+                if(behavior != null)
+                {
+                    // This could be a bad reference, so tolerate it
+                    var fullName = CodeGeneratorManager.Self.BehaviorCodeGenerator
+                        .GetFullyQualifiedBehaviorName(behavior);
+
+                    inheritance += $", {fullName}";
+                }
+            }
 
             // If it's not public then exposing an instance in a public class makes the project not compile
             //ICodeBlock currentBlock = codeBlock.Class("partial", runtimeClassName, " : " + inheritance);
@@ -728,21 +759,6 @@ namespace GumPlugin.CodeGeneration
             return shouldGenerateFormsCode;
         }
 
-        #endregion
-
-        public bool ShouldGenerateRuntimeFor(ElementSave elementSave)
-        {
-            if (elementSave is StandardElementSave)
-            {
-                if (elementSave.Name == "Component")
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public static string GetFormsControlTypeFrom(List<ElementBehaviorReference> behaviors)
         {
             string controlName = null;
@@ -775,6 +791,9 @@ namespace GumPlugin.CodeGeneration
                 return null;
             }
         }
+
+        #endregion
+
 
 
         private void GeneratePartialMethods(ElementSave elementSave, ICodeBlock currentBlock)

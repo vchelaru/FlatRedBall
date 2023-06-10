@@ -94,59 +94,54 @@ namespace GumPlugin.CodeGeneration
             // Loop through all elements to see if they...
             foreach (var element in loadedElements)
             {
-                var elementAsComponent = element as ComponentSave;
-
-                if(elementAsComponent != null)
+                // ...have behaviors...
+                foreach(var behavior in element.Behaviors)
                 {
-                    // ...have behaviors...
-                    foreach(var behavior in elementAsComponent.Behaviors)
+                    // ...which implement control.
+                    var formsControlInfo = FormsControlInfo.AllControls
+                        .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.BehaviorName);
+
+                    if(formsControlInfo != null)
                     {
-                        // ...which implement control.
-                        var formsControlInfo = FormsControlInfo.AllControls
-                            .FirstOrDefault(item => !string.IsNullOrEmpty(item.BehaviorName) && item.BehaviorName == behavior.BehaviorName);
+                        string controlType = formsControlInfo.ControlName;
 
-                        if(formsControlInfo != null)
+                        AssociationFulfillment matchingFulfillment = null;
+
+                        if (controlType != null)
                         {
-                            string controlType = formsControlInfo.ControlName;
-
-                            AssociationFulfillment matchingFulfillment = null;
-
-                            if (controlType != null)
-                            {
-                                // Is there already a matching control? We need to know so we can compare if this element fulfills the control better
-                                matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
-                            }
-
-                            // Here we try to get the "most fulfilled" version of an object to set it as the default.
-                            // For example, Button text is optional, and two Gum objects may have the Button behavior.
-                            // If one of them has text properties then we should favor that over the one that doens't.
-                            // Of course, the user can still change the defaults at runtime or manually create the visual
-                            // for a form if they don't want the default, but this will hopefully give the "best fit"
-                            // default.
-                            if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
-                            {
-                                bool isCompleteFulfillment = GetIfIsCompleteFulfillment(element, controlType);
-
-                                if(matchingFulfillment == null)
-                                {
-                                    var newFulfillment = new AssociationFulfillment();
-                                    newFulfillment.Element = element;
-                                    newFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
-                                    newFulfillment.ControlType = controlType;
-
-                                    associationFulfillments.Add(newFulfillment);
-                                }
-                                else if(isCompleteFulfillment)
-                                {
-                                    matchingFulfillment.Element = element;
-                                    matchingFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
-                                    matchingFulfillment.ControlType = controlType;
-                                }
-                            
-                            }
+                            // Is there already a matching control? We need to know so we can compare if this element fulfills the control better
+                            matchingFulfillment = associationFulfillments.FirstOrDefault(item => item.ControlType == controlType);
                         }
 
+                        // Here we try to get the "most fulfilled" version of an object to set it as the default.
+                        // For example, Button text is optional, and two Gum objects may have the Button behavior.
+                        // If one of them has text properties then we should favor that over the one that doens't.
+                        // Of course, the user can still change the defaults at runtime or manually create the visual
+                        // for a form if they don't want the default, but this will hopefully give the "best fit"
+                        // default.
+                        if(matchingFulfillment == null || matchingFulfillment.IsCompletelyFulfilled == false)
+                        {
+                            bool isCompleteFulfillment = GetIfIsCompleteFulfillment(element, controlType);
+
+                            if(matchingFulfillment == null)
+                            {
+                                var newFulfillment = new AssociationFulfillment();
+                                newFulfillment.Element = element;
+                                newFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
+                                newFulfillment.ControlType = controlType;
+
+                                associationFulfillments.Add(newFulfillment);
+                            }
+                            else if(isCompleteFulfillment)
+                            {
+                                matchingFulfillment.Element = element;
+                                matchingFulfillment.IsCompletelyFulfilled = isCompleteFulfillment;
+                                matchingFulfillment.ControlType = controlType;
+                            }
+                            
+                        }
                     }
+
                 }
             }
 

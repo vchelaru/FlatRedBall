@@ -49,7 +49,7 @@ namespace GumPlugin.Managers
         GumLayerCodeGenerator mGumLayerCodeGenerator;
         GumLayerAssociationCodeGenerator gumLayerAssociationCodeGenerator;
         GumCollidableCodeGenerator gumCollidableCodeGenerator;
-        BehaviorCodeGenerator behaviorCodeGenerator;
+        public BehaviorCodeGenerator BehaviorCodeGenerator;
         GumToFlatRedBallAttachmentCodeGenerator gumToFlatRedBallAttachmentCodeGenerator;
 
         #endregion
@@ -62,7 +62,7 @@ namespace GumPlugin.Managers
         public CodeGeneratorManager()
         {
             mGueDerivingClassCodeGenerator = new GueDerivingClassCodeGenerator();
-            behaviorCodeGenerator = new BehaviorCodeGenerator();
+            BehaviorCodeGenerator = new BehaviorCodeGenerator();
         }
 
         public void GenerateDueToFileChange(FilePath file)
@@ -625,7 +625,7 @@ namespace GumPlugin.Managers
         {
             var directoryToSave = GumBehaviorsFolder;
 
-            string generatedCode = behaviorCodeGenerator.GenerateInterfaceCodeFor(behavior);
+            string generatedCode = BehaviorCodeGenerator.GenerateInterfaceCodeFor(behavior);
 
             FilePath saveLocation = directoryToSave + "I" + behavior.Name + ".Generated.cs";
 
