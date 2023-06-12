@@ -49,6 +49,8 @@ namespace GumPlugin.CodeGeneration
             mTypeToQualifiedTypes.Add("DimensionUnitType", "Gum.DataTypes.DimensionUnitType");
             mTypeToQualifiedTypes.Add("ChildrenLayout", "Gum.Managers.ChildrenLayout");
             mTypeToQualifiedTypes.Add("GradientType", "global::RenderingLibrary.Graphics.GradientType");
+            mTypeToQualifiedTypes.Add("TextOverflowHorizontalMode", "global::RenderingLibrary.Graphics.TextOverflowHorizontalMode");
+            mTypeToQualifiedTypes.Add("TextOverflowVerticalMode", "global::RenderingLibrary.Graphics.TextOverflowVerticalMode");
 
             AddGetterReplacements();
 

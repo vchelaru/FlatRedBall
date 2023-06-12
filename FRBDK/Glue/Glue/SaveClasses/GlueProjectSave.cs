@@ -111,14 +111,15 @@ namespace FlatRedBall.Glue.SaveClasses
             AllTiledFilesGenerated = 37,
             RemoveRedundantDerivedData = 38,
             GraphicalUiElementProtectedAnimationProperties = 39,
-            GraphicalUiElementINotifyPropertyChanged = 40
+            GraphicalUiElementINotifyPropertyChanged = 40,
+            GumTextObjectsHaveTextOverflowProperties = 41
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged;
+        public const int LatestVersion = (int)GluxVersions.GumTextObjectsHaveTextOverflowProperties;
 
         public int FileVersion { get; set; }
 

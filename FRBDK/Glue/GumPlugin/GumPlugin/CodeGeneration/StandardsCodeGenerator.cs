@@ -37,52 +37,8 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-            mStandardSetterReplacements.Add("Text", (codeBlock) =>
-            {
-                //codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
-                //    .Line("// make it have no line wrap width before assignign the text:")
-                //    .Line("ContainedText.Width = 0;");
-
-                //codeBlock.Line("ContainedText.RawText = value;");
-                //codeBlock.Line("UpdateLayout();");
-
-                codeBlock.Line("var widthBefore = ContainedText.WrappedTextWidth;");
-                codeBlock.Line("var heightBefore = ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren)");
-                codeBlock.Line("{");
-                codeBlock.Line("    // make it have no line wrap width before assignign the text:");
-                codeBlock.Line("    ContainedText.Width = 0;");
-                codeBlock.Line("}");
-
-
-                codeBlock.Line("ContainedText.RawText = value;");
-
-                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GraphicalUiElementINotifyPropertyChanged)
-                {
-                    codeBlock.Line("NotifyPropertyChanged();");
-                }
-
-                codeBlock.Line("var shouldUpdate = widthBefore != ContainedText.WrappedTextWidth || heightBefore != ContainedText.WrappedTextHeight;");
-
-                codeBlock.Line("if (shouldUpdate)");
-                codeBlock.Line("{");
-                if(GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
-                {
-                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, 0);");
-                }
-                else
-                {
-                    codeBlock.Line("    UpdateLayout(true, int.MaxValue/2);");
-                }
-                codeBlock.Line("}");
-            });
-
-            mStandardSetterReplacements.Add("FontScale", (codeBlock) =>
-            {
-                codeBlock.Line("ContainedText.FontScale = value;");
-                codeBlock.Line("UpdateLayout();");
-            });
+            TextCodeGenerator.Self.AddStandardSetterReplacements(mStandardSetterReplacements);
+            TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
             {
@@ -171,8 +127,7 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Width Units");
             mVariableNamesToSkipForProperties.Add("Parent");
             mVariableNamesToSkipForProperties.Add("Guide");
-            mVariableNamesToSkipForProperties.Add("IsItalic");
-            mVariableNamesToSkipForProperties.Add("IsBold");
+
 
             mVariableNamesToSkipForProperties.Add("X Origin");
             mVariableNamesToSkipForProperties.Add("X Units");
@@ -183,16 +138,13 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("FlipHorizontal");
 
 
-            mVariableNamesToSkipForProperties.Add("Font");
-            mVariableNamesToSkipForProperties.Add("FontSize");
 
             mVariableNamesToSkipForProperties.Add("X");
             mVariableNamesToSkipForProperties.Add("Y");
             mVariableNamesToSkipForProperties.Add("Width");
             mVariableNamesToSkipForProperties.Add("Height");
             mVariableNamesToSkipForProperties.Add("Visible");
-            mVariableNamesToSkipForProperties.Add("OutlineThickness");
-            mVariableNamesToSkipForProperties.Add("UseFontSmoothing");
+
 
             mVariableNamesToSkipForProperties.Add("HasEvents");
             mVariableNamesToSkipForProperties.Add("ExposeChildrenEvents");

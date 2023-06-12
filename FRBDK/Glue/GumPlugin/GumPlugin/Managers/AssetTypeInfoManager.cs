@@ -775,6 +775,10 @@ namespace GumPlugin.Managers
                         return variable.Type;
                     case "HorizontalAlignment":
                         return "RenderingLibrary.Graphics.HorizontalAlignment";
+                    case "TextOverflowHorizontalMode":
+                        return "RenderingLibrary.Graphics.TextOverflowHorizontalMode";
+                    case "TextOverflowVerticalMode":
+                        return "RenderingLibrary.Graphics.TextOverflowVerticalMode";
                     case "VerticalAlignment":
                         return "RenderingLibrary.Graphics.VerticalAlignment";
                     case "PositionUnitType":
@@ -789,6 +793,7 @@ namespace GumPlugin.Managers
                         return "Gum.Managers.TextureAddress";
                     case "GeneralUnitType":
                         return "Gum.Converters.GeneralUnitType";
+
                 }
 
                 return variable.Type;
