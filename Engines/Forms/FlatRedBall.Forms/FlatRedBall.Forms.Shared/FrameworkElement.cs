@@ -739,8 +739,13 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        public void HandleTab(TabDirection tabDirection, FrameworkElement requestingElement)
+        public void HandleTab(TabDirection tabDirection = TabDirection.Down, FrameworkElement requestingElement = null)
         {
+            if(requestingElement == null)
+            {
+                requestingElement = this;
+            }
+
             ////////////////////Early Out/////////////////
             if(((IVisible)requestingElement.Visual).AbsoluteVisible == false)
             {
