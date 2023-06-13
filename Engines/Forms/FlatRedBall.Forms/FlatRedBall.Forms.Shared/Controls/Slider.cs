@@ -57,6 +57,9 @@ namespace FlatRedBall.Forms.Controls
             Maximum = 100;
             LargeChange = 25;
             SmallChange = 5;
+
+            // by default sliders use left/right to change the slider value
+            this.IsUsingLeftAndRightGamepadDirectionsForNavigation = false;
         }
 
         protected override void ReactToVisualChanged()
@@ -306,9 +309,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = gamepads[i];
 
-                HandleGamepadNavigation(gamepad, 
-                    // for sliders, left and right are reserved for changing the value
-                    considerLeftAndRight:false);
+                HandleGamepadNavigation(gamepad);
 
 
                 if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft) ||
@@ -343,7 +344,7 @@ namespace FlatRedBall.Forms.Controls
             {
                 var gamepad = genericGamepads[i];
 
-                HandleGamepadNavigation(gamepad, considerLeftAndRight:false);
+                HandleGamepadNavigation(gamepad);
 
                 var leftStick = gamepad.AnalogSticks.Length > 0
                     ? gamepad.AnalogSticks[0]

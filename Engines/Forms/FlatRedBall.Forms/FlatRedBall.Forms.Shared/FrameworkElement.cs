@@ -699,41 +699,45 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
-        protected void HandleGamepadNavigation(Xbox360GamePad gamepad, bool considerLeftAndRight = true)
+        /// <summary>
+        /// Whether to use left and right directions as navigation. If false, left and right directions are ignored for navigation.
+        /// </summary>
+        public bool IsUsingLeftAndRightGamepadDirectionsForNavigation { get; set; } = true;
+        protected void HandleGamepadNavigation(Xbox360GamePad gamepad)
         {
             if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadDown) ||
-                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadRight)) ||
                 gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
-                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)))
             {
                 this.HandleTab(TabDirection.Down, this);
             }
             else if (gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadUp) ||
-                (considerLeftAndRight && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.ButtonRepeatRate(FlatRedBall.Input.Xbox360GamePad.Button.DPadLeft)) ||
                 gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
-                (considerLeftAndRight && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.LeftStick.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)))
             {
                 this.HandleTab(TabDirection.Up, this);
             }
         }
 
-        protected void HandleGamepadNavigation(GenericGamePad gamepad, bool considerLeftAndRight = true)
+        protected void HandleGamepadNavigation(GenericGamePad gamepad)
         {
             AnalogStick leftStick = gamepad.AnalogSticks.Length > 0
                 ? gamepad.AnalogSticks[0]
                 : null;
 
             if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) ||
-                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right)) ||
                 leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Down) == true ||
-                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Right) == true))
             {
                 this.HandleTab(TabDirection.Down, this);
             }
             else if (gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) ||
-                (considerLeftAndRight && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)) ||
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && gamepad.DPadRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left)) ||
                 leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Up) == true||
-                (considerLeftAndRight && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true))
+                (IsUsingLeftAndRightGamepadDirectionsForNavigation && leftStick?.AsDPadPushedRepeatRate(FlatRedBall.Input.Xbox360GamePad.DPadDirection.Left) == true))
             {
                 this.HandleTab(TabDirection.Up, this);
             }
