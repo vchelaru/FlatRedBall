@@ -149,6 +149,19 @@ namespace FlatRedBall.Forms.Controls.Primitives
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Start);
                 RaiseIfPushedAndEnabled(Xbox360GamePad.Button.Back);
 
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadLeft);
+                RaiseIfPushedAndEnabled(Xbox360GamePad.Button.DPadRight);
+
+                if(IsEnabled && gamepad.LeftStick.AsDPadPushed(Xbox360GamePad.DPadDirection.Left))
+                {
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.DPadLeft);
+                }
+                if (IsEnabled && gamepad.LeftStick.AsDPadPushed(Xbox360GamePad.DPadDirection.Right))
+                {
+                    ControllerButtonPushed?.Invoke(Xbox360GamePad.Button.DPadRight);
+                }
+
+
                 if (gamepad.ButtonReleased(FlatRedBall.Input.Xbox360GamePad.Button.A))
                 {
                 }
