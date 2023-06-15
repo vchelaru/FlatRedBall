@@ -78,13 +78,29 @@ namespace Glue
             process.WaitForExit(1000);
 
             var output = process.StandardOutput.ReadToEnd();
+
+
+            if(string.IsNullOrEmpty(output) && System.IO.File.Exists(@"C:\Program Files\dotnet\dotnet.exe"))
+            {
+                startInfo = new ProcessStartInfo("&\"C:\\Program Files\\dotnet\\dotnet.exe\"", "--list-sdks")
+                {
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = @"C:\Program Files\dotnet"
+                };
+
+                process = Process.Start(startInfo);
+                process.WaitForExit(1000);
+
+                output = process.StandardOutput.ReadToEnd();
+            }
+
+
             var sdkPaths = Regex.Matches(output, "([0-9]+.[0-9]+.[0-9]+) \\[(.*)\\]")
                 .OfType<Match>()
-
-                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
                 // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
-                // "7.0.20" instead of "7.0.201"
-                .Where(item => item.Contains("7.0.20") == false)
+                // "7.0." instead of "7.0.201"
+                .Where(item => item.Value.StartsWith("7.0.") == false)
+                .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
                 .ToArray();
 
             if(sdkPaths.Count() > 0)
@@ -102,7 +118,15 @@ namespace Glue
             }
             else
             {
-                var message = "Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK";
+
+                var message = $"Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK.\ndotnet --list-sdks output:\n{output}";
+
+                if(string.IsNullOrEmpty(output))
+                {
+                    message += "\nYou may have multiple installations of .NET on your machine. More info here: https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10 . " +
+                        "Press CTRL+C on this popup to copy the text so you can paste it in an external editor and open that URL.";
+                }
+
                 GlueCommands.Self.PrintOutput(message);
 
                 MessageBox.Show(message);
