@@ -745,6 +745,15 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     else
                     {
+
+                        ifBlock.Line("#if DEBUG");
+
+                        ifBlock.If("GraphicsDeviceManager == null")
+                            .Line("throw new System.InvalidOperationException(\"ResetWindow cannot be called until SetupCamera is called first\");"); 
+
+                        ifBlock.Line("#endif");
+
+
                         // from here:
                         // http://community.monogame.net/t/how-to-implement-borderless-fullscreen-on-desktopgl-project/8359
                         ifBlock.Line("GraphicsDeviceManager.HardwareModeSwitch = false;");
