@@ -51,7 +51,7 @@ namespace GumPluginCore.CodeGeneration
                 codeBlock.Line("{");
                 if (GlueState.Self.CurrentGlueProject?.FileVersion >= (int)GluxVersions.GumTextObjectsUpdateTextWith0ChildDepth)
                 {
-                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, 0);");
+                    codeBlock.Line("    UpdateLayout(Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentWidthHeightDependOnChildren | Gum.Wireframe.GraphicalUiElement.ParentUpdateType.IfParentStacks, int.MaxValue/2);");
                 }
                 else
                 {
