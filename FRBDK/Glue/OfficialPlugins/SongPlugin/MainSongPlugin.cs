@@ -182,22 +182,22 @@ namespace OfficialPlugins.SongPlugin
         private string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
         {
             var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-            string addToManagersMethod;
+            string addToManagersMethod = $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
             if (supportsEditMode)
             {
-                addToManagersMethod =
-                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}); " +
-                    "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, ContentManagerName == \"Global\")";
-            }
-            else
-            {
-                addToManagersMethod =
+                addToManagersMethod +=
 
-                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}); " +
-                    //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, ContentManagerName == \"Global\")";
+                    "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) ";
             }
+
+            var forceGlobal = !rfs.DestroyOnUnload;
+
+            string isGlobal = 
+                forceGlobal ? "true" : "ContentManagerName == \"Global\"";
+
+            addToManagersMethod += 
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, {isGlobal});";
+
             return addToManagersMethod;
         }
 
