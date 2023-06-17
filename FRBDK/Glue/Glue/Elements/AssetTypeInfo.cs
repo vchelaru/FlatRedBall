@@ -96,17 +96,6 @@ namespace FlatRedBall.Glue.Elements
             }
         }
 		public string FriendlyName;
-        /// <summary>
-        /// Func which can be used to provide a custom AddToManagers method. The parameters are
-        /// * IElement - the containing element (screen or entity), 
-        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
-        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
-        /// * string - the name of the layer (such as "layerToAddTo")
-        /// 
-        /// The returned string is the code for adding.
-        /// </summary>
-        [XmlIgnore]
-        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
 
         /// <summary>
         /// Returns a custom function to instantiate objects. This is null by default, which means the object will be instantiated using a standard constructor call.
@@ -142,13 +131,24 @@ namespace FlatRedBall.Glue.Elements
         public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> CustomReloadFunc;
 
         /// <summary>
-        /// The generated code to include to add the object to managers.
+        /// The generated code to include to add the object to managers. For more customization use AddToManagersFunc
         /// </summary>
         /// <remarks>
         /// This list of properties should be used if the object does not support layers. If the object
         /// does support layers, the LayeredAddToManagersMethod should be used.
         /// </remarks>
         public List<string> AddToManagersMethod = new List<string>();
+        /// <summary>
+        /// Func which can be used to provide a custom AddToManagers method. The parameters are
+        /// * IElement - the containing element (screen or entity), 
+        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
+        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
+        /// * string - the name of the layer (such as "layerToAddTo")
+        /// 
+        /// The returned string is the code for adding.
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string, string> AddToManagersFunc;
 
         /// <summary>
         /// Adds an object to managers on the specified FlatRedBall layer. Glue will

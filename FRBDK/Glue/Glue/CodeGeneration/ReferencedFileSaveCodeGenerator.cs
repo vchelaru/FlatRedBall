@@ -15,12 +15,13 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 
 namespace FlatRedBall.Glue.CodeGeneration
 {
+    #region LoadType enum
     public enum LoadType
     {
         CompleteLoad,
         MaintainInstance
     }
-
+    #endregion
 
     public class ReferencedFileSaveCodeGenerator : ElementComponentCodeGenerator
     {
@@ -63,6 +64,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         }
 
+        #region Generate Fields (Static Members)
 
         public override ICodeBlock GenerateFields(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {
@@ -98,6 +100,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             return codeBlock;
         }
+
+        #endregion
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.IElement element)
         {

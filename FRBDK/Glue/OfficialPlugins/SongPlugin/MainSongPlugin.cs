@@ -110,13 +110,17 @@ namespace OfficialPlugins.SongPlugin
                     }
 
                     var fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(rfs, ati); // FlatRedBall.IO.FileManager.RemoveExtension(rfs.Name).ToLowerInvariant().Replace("\\", "/");
+                    string suffix = null;
                     if (rfs.DestroyOnUnload == false)
                     {
                         contentManager = "FlatRedBall.FlatRedBallServices.GlobalContentManager";
+                        suffix = "/*Since this song is used on multiple screens, forcing it to use global content*/";
 
                     }
+
+
                     //return $"{propertyName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@"content/screens/gamescreen/baronsong", contentManagerName);";
-                    return $"{variableName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@\"{fileName}\", {contentManager});";
+                    return $"{variableName} = FlatRedBall.FlatRedBallServices.Load<Microsoft.Xna.Framework.Media.Song>(@\"{fileName}\", {contentManager}); {suffix}";
                 };
 
             }
@@ -143,27 +147,58 @@ namespace OfficialPlugins.SongPlugin
                 // but it should only be the case *if* we are in edit mode. Otherwise, we should always play the song (don't have the if check)
                 var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
                 string addToManagersMethod = null;
-                if (supportsEditMode)
-                {
-                    addToManagersMethod =
-                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                        "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                }
-                else
-                {
-                    addToManagersMethod =
 
-                        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                        //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                }
-                if (ati.AddToManagersMethod.Count == 1)
-                {
-                    // fall back to the old load call:
-                    ati.AddToManagersMethod[0] = addToManagersMethod;
-                }
+
+                //if (rfs.DestroyOnUnload == false)
+                //{
+
+                //}
+
+                ati.AddToManagersFunc = HandleSongAddToManagers;
+
+                //if (supportsEditMode)
+                //{
+                //    addToManagersMethod =
+                //        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
+                //        "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                //        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
+                //}
+                //else
+                //{
+                //    addToManagersMethod =
+
+                //        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
+                //        //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                //        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
+                //}
+                //if (ati.AddToManagersMethod.Count == 1)
+                //{
+                //    // fall back to the old load call:
+                //    ati.AddToManagersMethod[0] = addToManagersMethod;
+                //}
             }
+        }
+
+        private string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
+        {
+            var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            string addToManagersMethod;
+            if (supportsEditMode)
+            {
+                addToManagersMethod =
+                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}); " +
+                    "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, ContentManagerName == \"Global\")";
+            }
+            else
+            {
+                addToManagersMethod =
+
+                    $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers({rfs.GetInstanceName()}); " +
+                    //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, ContentManagerName == \"Global\")";
+            }
+            return addToManagersMethod;
         }
 
         private void HandleItemSelected(ITreeNode selectedTreeNode)
