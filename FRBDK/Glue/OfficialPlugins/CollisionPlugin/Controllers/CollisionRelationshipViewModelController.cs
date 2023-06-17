@@ -390,7 +390,8 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
 
             foreach (var nos in firstEntity.AllNamedObjects)
             {
-                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection;
+                var canBeSubCollision = IsShape(nos) || nos.GetAssetTypeInfo() == AvailableAssetTypes.CommonAtis.ShapeCollection ||
+                     IsTileShapeCollection(nos);
 
                 if (canBeSubCollision)
                 {
@@ -398,6 +399,11 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 }
             }
             return availableValues;
+        }
+
+        public static bool IsTileShapeCollection(NamedObjectSave namedObject)
+        {
+            return namedObject?.GetAssetTypeInfo()?.FriendlyName == "TileShapeCollection";
         }
 
         public static void HandleGlueObjectPropertyChanged(string changedMember, object oldValue, GlueElement element)

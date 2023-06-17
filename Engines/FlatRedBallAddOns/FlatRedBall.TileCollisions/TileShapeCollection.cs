@@ -13,7 +13,7 @@ using System.Text;
 using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
 namespace FlatRedBall.TileCollisions
 {
-    public partial class TileShapeCollection : INameable
+    public partial class TileShapeCollection : INameable, ICollidable
     {
         #region Fields
 
@@ -173,7 +173,18 @@ namespace FlatRedBall.TileCollisions
 
         public bool AdjustRepositionDirectionsOnAddAndRemove { get; set; } = true;
 
-#endregion
+        ShapeCollection ICollidable.Collision => this.mShapes;
+
+        HashSet<string> ICollidable.ItemsCollidedAgainst => this.mShapes.ItemsCollidedAgainst;
+
+        HashSet<string> ICollidable.LastFrameItemsCollidedAgainst => this.mShapes.LastFrameItemsCollidedAgainst;
+
+        HashSet<object> ICollidable.ObjectsCollidedAgainst => this.mShapes.ObjectsCollidedAgainst;
+
+        HashSet<object> ICollidable.LastFrameObjectsCollidedAgainst => this.mShapes.LastFrameObjectsCollidedAgainst;
+
+
+        #endregion
 
         public TileShapeCollection()
         {
