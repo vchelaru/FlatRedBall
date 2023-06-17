@@ -81,6 +81,15 @@ namespace FlatRedBall.Forms.Controls
                         }
                     }
                 }
+                // this resolves possible stale states:
+                else
+                {
+                    if (isFocused && this is IInputReceiver inputReceiver)
+                    {
+                        FlatRedBall.Input.InputManager.InputReceiver = inputReceiver;
+                    }
+                }
+
             }
         }
 
@@ -1013,5 +1022,9 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public override string ToString()
+        {
+            return $"{this.Visual?.Name} ({this.GetType().Name})";
+        }
     }
 }
