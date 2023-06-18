@@ -1052,6 +1052,10 @@ namespace FlatRedBall.Glue.Managers
                     AddObjectViewModel viewModel = new AddObjectViewModel();
                     viewModel.SourceType = SourceType.File;
                     viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave);
+
+                    // ShowAddNewobjectDialog depends on the selected element:
+                    GlueState.Self.CurrentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+
                     await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
                 }
                 else if (targetNode.IsNamedObjectNode() &&
