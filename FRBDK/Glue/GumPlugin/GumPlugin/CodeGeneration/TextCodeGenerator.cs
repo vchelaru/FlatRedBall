@@ -17,9 +17,11 @@ namespace GumPluginCore.CodeGeneration
     internal class TextCodeGenerator : Singleton<TextCodeGenerator>
     {
 
-        public void AddStandardSetterReplacements(Dictionary<string, Action<ICodeBlock>> mStandardSetterReplacements)
+        public void AddStandardGetterSetterReplacements(
+            Dictionary<string, Action<ICodeBlock>> standardGetterReplacements,
+            Dictionary<string, Action<ICodeBlock>> standardSetterReplacements)
         {
-            mStandardSetterReplacements.Add("Text", (codeBlock) =>
+            standardSetterReplacements.Add("Text", (codeBlock) =>
             {
                 //codeBlock.If("this.WidthUnits == Gum.DataTypes.DimensionUnitType.RelativeToChildren")
                 //    .Line("// make it have no line wrap width before assignign the text:")
@@ -60,10 +62,26 @@ namespace GumPluginCore.CodeGeneration
                 codeBlock.Line("}");
             });
 
-            mStandardSetterReplacements.Add("FontScale", (codeBlock) =>
+            standardSetterReplacements.Add("FontScale", (codeBlock) =>
             {
                 codeBlock.Line("ContainedText.FontScale = value;");
                 codeBlock.Line("UpdateLayout();");
+            });
+
+
+            standardGetterReplacements.Add("TextOverflowHorizontalMode", (codeBlock) =>
+            {
+                codeBlock.Line("return ContainedText.IsTruncatingWithEllipsisOnLastLine " +
+                    "? global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter " +
+                    ": RenderingLibrary.Graphics.TextOverflowHorizontalMode.TruncateWord;");
+            });
+
+            standardSetterReplacements.Add("TextOverflowHorizontalMode", (codeBlock) =>
+            {
+                codeBlock.If("value == global::RenderingLibrary.Graphics.TextOverflowHorizontalMode.EllipsisLetter")
+                    .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = true;");
+                codeBlock.Else()
+                    .Line("ContainedText.IsTruncatingWithEllipsisOnLastLine = false;");
             });
         }
 

@@ -37,7 +37,8 @@ namespace GumPlugin.CodeGeneration
 
         public StandardsCodeGenerator()
         {
-            TextCodeGenerator.Self.AddStandardSetterReplacements(mStandardSetterReplacements);
+            TextCodeGenerator.Self.AddStandardGetterSetterReplacements(mStandardGetterReplacements, mStandardSetterReplacements);
+
             TextCodeGenerator.Self.AddVariableNamesToSkipForProperties(mVariableNamesToSkipForProperties);
 
             mStandardSetterReplacements.Add("SourceFile", codeBlock =>
@@ -583,7 +584,7 @@ namespace GumPlugin.CodeGeneration
             return false;
         }
 
-        private void GenerateGetter(string propertyName, VariableSave variable, 
+        private void GenerateGetter(string containedGraphicalObjectName, VariableSave variable, 
             ICodeBlock property, string variableName, string whatToGetOrSet, ElementSave elementSave)
         {
             var getter = property.Get();
@@ -595,7 +596,7 @@ namespace GumPlugin.CodeGeneration
 
                 if (mStandardGetterReplacements.ContainsKey(variableName))
                 {
-                    mStandardGetterReplacements[propertyName](getter);
+                    mStandardGetterReplacements[variableName](getter);
                 }
                 else
                 {
