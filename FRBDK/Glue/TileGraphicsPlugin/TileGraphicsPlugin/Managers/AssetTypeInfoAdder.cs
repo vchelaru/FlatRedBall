@@ -201,6 +201,22 @@ namespace TileGraphicsPlugin
             toReturn.QualifiedSaveTypeName = null;
             toReturn.Extension = null;
             toReturn.AddToManagersMethod = new List<string>();
+            toReturn.AddToManagersFunc = 
+                // create anonymous delegate for AddToManagersFunc
+                (element, nos, rfs, layer) =>
+                {
+                    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated)
+                    {
+                        if(nos.AddToManagers && element is EntitySave)
+                        {
+
+                            // Added June 17, 2023 to support Cthulu moving walls:
+                            return $"{nos.InstanceName}.AddToLayer({layer}, true);";
+
+                        }
+                    }
+                    return null;
+                };
             toReturn.CustomLoadMethod = null;
             toReturn.DestroyMethod = "this.Visible = false";
             toReturn.ShouldBeDisposed = false;

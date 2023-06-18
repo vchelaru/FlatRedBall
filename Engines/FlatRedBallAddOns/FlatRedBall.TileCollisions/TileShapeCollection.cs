@@ -193,7 +193,7 @@ namespace FlatRedBall.TileCollisions
         }
 
 
-        public void AddToLayer(FlatRedBall.Graphics.Layer layer)
+        public void AddToLayer(FlatRedBall.Graphics.Layer layer, bool makeAutomaticallyUpdated = false)
         {
             // Note - the makeAutomaticallyUpdated method has been added in July 2021
             // This is a necessary addition to make addition of TileshapeCollections much
@@ -206,7 +206,7 @@ namespace FlatRedBall.TileCollisions
             // 3. Re-compile your own version of the plugin for Glue and modify this code
             // 4. Remove this parameter by hand whenever this file is re-generated. This is painful!
 #if SupportsNamedSubcollisions
-            this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated: false);
+            this.mShapes.AddToManagers(layer, makeAutomaticallyUpdated);
 #else
             this.mShapes.AddToManagers(layer);
 #endif
