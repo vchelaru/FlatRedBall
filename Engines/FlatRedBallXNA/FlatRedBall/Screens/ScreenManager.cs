@@ -12,6 +12,7 @@ using FlatRedBall.Utilities;
 using FlatRedBall.IO;
 using System.Linq;
 using Microsoft.Xna.Framework.Content;
+using FlatRedBall.Input;
 #if !SILVERLIGHT
 #endif
 
@@ -243,6 +244,10 @@ namespace FlatRedBall.Screens
                 FlatRedBallServices.Game.IsFixedTimeStep = false;
                 TimeManager.TimeFactor = 0;
                 GuiManager.Cursor.IgnoreInputThisFrame = true;
+                for(int i = 0; i < InputManager.Xbox360GamePads.Count(); i++)
+                {
+                    InputManager.Xbox360GamePads[i].Clear();
+                }
                 if(Input.InputManager.InputReceiver != null)
                 {
                     Input.InputManager.InputReceiver = null;

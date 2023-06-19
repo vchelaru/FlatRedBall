@@ -130,6 +130,8 @@ namespace FlatRedBall.Input
         GamePadCapabilities mCapabilities;
 
         bool[] mButtonsIgnoredForThisFrame = new bool[NumberOfButtons];
+        public bool[] ignoredNextPushes = new bool[NumberOfButtons];
+
 
         Dictionary<Button, Xbox360ButtonReference> cachedButtons = new Dictionary<Button, Xbox360ButtonReference>();
 
@@ -838,12 +840,12 @@ namespace FlatRedBall.Input
         /// <returns>true if the button is pressed, otherwise false</returns>
         public bool ButtonPushed(Button button)
         {
-            if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended)
+            if (InputManager.mIgnorePushesThisFrame || mButtonsIgnoredForThisFrame[(int)button] || InputManager.CurrentFrameInputSuspended || ignoredNextPushes[(int)button])
                 return false;
 
             bool returnValue = false;
 
-
+            #region If it has a buttom map (keyboard simulating gamepad)
             if (this.mButtonMap != null)
             {
                 switch (button)
@@ -898,6 +900,7 @@ namespace FlatRedBall.Input
                         break;
                 }
             }
+            #endregion
 
             bool areShouldersAndTriggersFlipped = AreShoulderAndTriggersFlipped;
 
@@ -1207,6 +1210,23 @@ namespace FlatRedBall.Input
         /// </summary>
         public void Clear()
         {
+            // do these before setting the states:
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                var button = (Button)i;
+                if (ButtonDown(button))
+                {
+                    ignoredNextPushes[i] = true;
+                }
+            }
+            for (int i = 0; i < NumberOfButtons; i++)
+            {
+                var button = (Button)i;
+                if (ButtonPushed(button))
+                {
+                    IgnoreButtonForOneFrame(button);
+                }
+            }
 #if MONOGAME
             mGamePadState = GamePadState.Default;
             mLastGamePadState = GamePadState.Default;
@@ -1215,13 +1235,6 @@ namespace FlatRedBall.Input
             mGamePadState = new GamePadState();
             mLastGamePadState = new GamePadState() ;
 #endif
-            for (int i = 0; i < NumberOfButtons; i++)
-            {
-                if (ButtonPushed((Button)i))
-                {
-                    IgnoreButtonForOneFrame((Button)i);
-                }
-            }
 
             mLeftStick.Clear();
             mRightStick.Clear();
@@ -1387,6 +1400,15 @@ namespace FlatRedBall.Input
             {
                 UpdateAnalogStickAndTriggerValues();
                 UpdateLastButtonPushedValues();
+            }
+
+            // Check all buttons to see if they are not down. If they are not, set the IgnoreNextPush to false for that button
+            for (int i = 0; i < mButtonsIgnoredForThisFrame.Length; i++)
+            {
+                if (ignoredNextPushes[i] && !ButtonDown((Button)i) && !mButtonsIgnoredForThisFrame[i])
+                {
+                    ignoredNextPushes[i] = false;
+                }
             }
         }
 
