@@ -1221,13 +1221,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             saveObject = saveObject ?? ObjectFinder.Self.GetElementContaining(customVariable);
             if (customVariable.GetIsVariableState() && string.IsNullOrEmpty(customVariable.SourceObject))
-            {;
+            {
                 return saveObject;
             }
             else
             {
                 customVariable = ObjectFinder.Self.GetBaseCustomVariable(customVariable);
-                NamedObjectSave sourceNamedObjectSave = saveObject.GetNamedObjectRecursively(customVariable.SourceObject);
+                NamedObjectSave sourceNamedObjectSave = saveObject?.GetNamedObjectRecursively(customVariable.SourceObject);
 
                 if (sourceNamedObjectSave != null)
                 {
