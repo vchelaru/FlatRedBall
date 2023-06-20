@@ -353,6 +353,13 @@ namespace OfficialPlugins.ContentPreview.Views
             PropertyGrid.Refresh();
         }
 
+        internal void ShowInPropertyGrid(AnimationFrameViewModel selectedAnimationFrame)
+        {
+            PropertyGrid.Instance = selectedAnimationFrame;
+            MemberCategoryManager.SetMemberCategories(PropertyGrid, selectedAnimationFrame);
+            PropertyGrid.Refresh();
+        }
+
         private void TreeListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DependencyObject originalSource = e.OriginalSource as DependencyObject;

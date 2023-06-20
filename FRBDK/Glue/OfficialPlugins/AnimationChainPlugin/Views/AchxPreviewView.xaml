@@ -24,10 +24,28 @@
             <pt:TreeListBox
                 HierarchySource="{Binding VisibleRoot}"
                 ChildrenPath="VisibleChildren"
-                SelectedItem="{Binding SelectedAnimationChain}"
+                SelectedItem="{Binding SelectedItem}"
                 MouseDoubleClick="TreeListBox_MouseDoubleClick"
                 >
-            
+
+                <pt:TreeListBox.ItemTemplate>
+
+                    <DataTemplate>
+                        <Grid x:Name="ItemGrid">
+                            <Grid.ColumnDefinitions>
+                                <!--<ColumnDefinition Width="Auto"/>-->
+                                <!--<ColumnDefinition Width="*"/>-->
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!--<Image Grid.Column="0" Source="{Binding ImageSource}" Width="18" Margin="0 0 4 0"/>-->
+                            <TextBlock Grid.Column="1" Text="{Binding Text}" 
+                                              />
+                                              <!--IsEditing="{Binding IsEditing}"-->
+                                              <!--FontWeight="{Binding FontWeight}"--> 
+                        </Grid>
+                    </DataTemplate>
+                </pt:TreeListBox.ItemTemplate>
+
             </pt:TreeListBox>
             <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
             <wpfdataui:DataUiGrid x:Name="PropertyGrid" Grid.Row="2" Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>

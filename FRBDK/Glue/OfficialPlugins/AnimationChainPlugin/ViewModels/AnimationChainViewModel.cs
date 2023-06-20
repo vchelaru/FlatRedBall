@@ -30,7 +30,8 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
 
         // todo - this should be frames:
-        public ObservableCollection<AnimationChainViewModel> VisibleChildren { get; set; } = new ObservableCollection<AnimationChainViewModel>();
+        public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
+            new ObservableCollection<AnimationFrameViewModel>();
 
         public override string ToString() => Name;
 
@@ -39,6 +40,13 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             BackingModel = animationChain;
             Name = animationChain.Name;
             LengthInSeconds = animationChain.Frames.Sum(item => item.FrameLength);
+
+            foreach(var frame in animationChain.Frames)
+            {
+                var frameVm = new AnimationFrameViewModel();
+                frameVm.SetFrom(frame);
+                VisibleChildren.Add(frameVm);
+            }
         }
     }
 }

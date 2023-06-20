@@ -43,14 +43,43 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         [DependsOn(nameof(ResolutionHeight))]
         public string ResolutionDisplay => $"{ResolutionWidth}x{ResolutionHeight}";
 
+        public ViewModel SelectedItem
+        {
+            get => Get<ViewModel>();
+            set => Set(value);
+        }
+
         public ObservableCollection<AnimationChainViewModel> VisibleRoot { get; private set; }
             = new ObservableCollection<AnimationChainViewModel>();
 
+        [DependsOn(nameof(SelectedItem))]
         public AnimationChainViewModel SelectedAnimationChain
         {
-            get => Get<AnimationChainViewModel>();
-            set => Set(value);
+            set
+            {
+                SelectedItem = value;
+            }
+            get
+            {
+                if(SelectedItem is AnimationChainViewModel asAnimationChainViewModel)
+                {
+                    return asAnimationChainViewModel;
+                }
+                else if(SelectedItem is AnimationFrameViewModel asAnimationFrameViewModel)
+                {
+                    return asAnimationFrameViewModel.Parent;
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
         }
+
+        [DependsOn(nameof(SelectedItem))]
+        public AnimationFrameViewModel SelectedAnimationFrame => 
+            SelectedItem as AnimationFrameViewModel;
 
         public AchxViewModel()
         {

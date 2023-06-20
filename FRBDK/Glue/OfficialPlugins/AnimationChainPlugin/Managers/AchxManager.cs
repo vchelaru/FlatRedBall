@@ -51,7 +51,16 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             switch (e.PropertyName)
             {
                 case nameof(ViewModel.SelectedAnimationChain):
-                    View.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
+                case nameof(ViewModel.SelectedAnimationFrame):
+                    if(ViewModel.SelectedAnimationFrame != null)
+                    {
+                        View.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
+
+                    }
+                    else
+                    {
+                        View.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
+                    }
                     break;
             }
         }

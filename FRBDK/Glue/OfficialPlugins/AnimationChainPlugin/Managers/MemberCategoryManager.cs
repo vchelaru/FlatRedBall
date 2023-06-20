@@ -19,6 +19,21 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
             grid.Categories.AddRange(CreateMemberCategories(selectedAnimationChain));
         }
 
+        public static void SetMemberCategories(DataUiGrid grid, AnimationFrameViewModel selectedAnimationFrame)
+        {
+            grid.Categories.Clear();
+            grid.Categories.AddRange(CreateMemberCategories(selectedAnimationFrame));
+        }
+
+        private static List<MemberCategory> CreateMemberCategories(AnimationFrameViewModel animationFrameViewModel)
+        {
+            List<MemberCategory> toReturn = new List<MemberCategory>();
+
+            // todo - add more here...
+
+            return toReturn;
+        }
+
         private static List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain)
         {
             List<MemberCategory> toReturn = new List<MemberCategory>();
