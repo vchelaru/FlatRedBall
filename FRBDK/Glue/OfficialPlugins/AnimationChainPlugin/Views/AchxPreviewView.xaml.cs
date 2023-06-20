@@ -177,29 +177,37 @@ namespace OfficialPlugins.ContentPreview.Views
             var texture = MainSprite.Texture;
             if (texture != null && ViewModel != null)
             {
-                if(ViewModel.SelectedAnimationChain == null)
+                if(ViewModel.SelectedAnimationFrame != null)
+                {
+                    CreatePolygonFor(ViewModel.SelectedAnimationFrame.BackingModel);
+                }
+                else if(ViewModel.SelectedAnimationChain != null)
+                {
+                    CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
+                }
+                else //if(ViewModel.SelectedAnimationChain == null)
                 {
                     foreach (var animationVm in ViewModel.VisibleRoot)
                     {
                         CreatePolygonsFor(animationVm.BackingModel);
                     }
                 }
-                else
-                {
-                    CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
-                }
-
             }
 
             void CreatePolygonsFor(AnimationChainSave animation)
             {
                 foreach (var frame in animation.Frames)
                 {
-                    PolygonRuntime outline = CreateOutlinePolygon(frame);
-                    Outlines.Add(outline);
-                    GumCanvas.Children.Add(outline);
+                    CreatePolygonFor(frame);
                 }
             }
+        }
+
+        private void CreatePolygonFor(AnimationFrameSave frame)
+        {
+            PolygonRuntime outline = CreateOutlinePolygon(frame);
+            Outlines.Add(outline);
+            GumCanvas.Children.Add(outline);
         }
 
         private static PolygonRuntime CreateOutlinePolygon(AnimationFrameSave frame)
@@ -367,10 +375,13 @@ namespace OfficialPlugins.ContentPreview.Views
 
             if (treeViewItem != null)
             {
-                var viewModel = treeViewItem.DataContext as AnimationChainViewModel;
-                if(viewModel != null)
+                if(treeViewItem.DataContext is AnimationChainViewModel animationChainVm)
                 {
-                    FocusAnimation(viewModel.BackingModel);
+                    FocusAnimation(animationChainVm.BackingModel);
+                }
+                else if(treeViewItem.DataContext is AnimationFrameViewModel animationFrameVm)
+                {
+                    FocusFrame(animationFrameVm.BackingModel);
                 }
             }
         }
@@ -380,17 +391,26 @@ namespace OfficialPlugins.ContentPreview.Views
             if(backingModel.Frames.Count > 0)
             {
                 var firstFrame = backingModel.Frames[0];
-                var centerX = (firstFrame.LeftCoordinate + firstFrame.RightCoordinate) / 2.0f;
-                var centerY = (firstFrame.TopCoordinate + firstFrame.BottomCoordinate) / 2.0f;
-
-                var camera = GumCanvas.SystemManagers.Renderer.Camera;
-
-                ViewModel.CurrentZoomPercent = 100;
-                camera.X = centerX - GumCanvas.CanvasSize.Width / 2f;
-                camera.Y = centerY - GumCanvas.CanvasSize.Height / 2f;
-
-                CameraLogic.RefreshCameraZoomToViewModel();
+                FocusFrame(firstFrame);
             }
+        }
+
+        private void FocusFrame(AnimationFrameSave animationFrame)
+        {
+            var centerX = (animationFrame.LeftCoordinate + animationFrame.RightCoordinate) / 2.0f;
+            var centerY = (animationFrame.TopCoordinate + animationFrame.BottomCoordinate) / 2.0f;
+
+            var camera = GumCanvas.SystemManagers.Renderer.Camera;
+
+            // If already zoomed in, stay zoomed in...
+            if(ViewModel.CurrentZoomPercent < 100)
+            {
+                ViewModel.CurrentZoomPercent = 100;
+            }
+            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+
+            CameraLogic.RefreshCameraZoomToViewModel();
         }
 
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)

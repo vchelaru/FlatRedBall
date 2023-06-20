@@ -29,7 +29,6 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public AnimationChainSave BackingModel { get; private set; }
 
 
-        // todo - this should be frames:
         public ObservableCollection<AnimationFrameViewModel> VisibleChildren { get; set; } = 
             new ObservableCollection<AnimationFrameViewModel>();
 
@@ -44,7 +43,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             foreach(var frame in animationChain.Frames)
             {
                 var frameVm = new AnimationFrameViewModel();
-                frameVm.SetFrom(frame);
+                frameVm.SetFrom(this, frame);
                 VisibleChildren.Add(frameVm);
             }
         }
