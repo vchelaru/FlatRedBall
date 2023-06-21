@@ -137,7 +137,11 @@ namespace FlatRedBall.Glue.SaveClasses
 
     #endregion
 
+    #region Delegates
+
     public delegate string ReferencedFileSaveToString(ReferencedFileSave rfs);
+
+    #endregion
 
     public class ReferencedFileSave : IPropertyListContainer
     {

@@ -26,19 +26,9 @@ namespace FlatRedBall.Glue.SetVariable
     public class SetPropertyManager
     {
 
-        public void PropertyValueChanged(PropertyValueChangedEventArgs e, System.Windows.Forms.PropertyGrid mPropertyGrid)
+        public void PropertyValueChanged(PropertyValueChangedEventArgs e)
         {
             UnreferencedFilesManager.Self.ProcessRefreshOfUnreferencedFiles();
-
-            #region Check for Errors
-
-            if (mPropertyGrid == null)
-            {
-                System.Windows.Forms.MessageBox.Show("There has been an internal error in Glue related to updating the PropertyGrid.  This likely happens if there has been an earlier error in Glue.  You should probably restart Glue.");
-                MainGlueWindow.Self.HasErrorOccurred = true;
-            }
-
-            #endregion
 
             string changedMember = e.ChangedItem.PropertyDescriptor.Name;
             object oldValue = e.OldValue;

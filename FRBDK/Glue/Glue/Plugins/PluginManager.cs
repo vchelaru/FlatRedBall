@@ -1559,8 +1559,7 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     plugin.ReactToReferencedFileChangedValueHandler(changedMember, oldValue);
                 },
-                (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null,
-                nameof(PluginBase.ReactToReferencedFileChangedValueHandler));
+                (plugin) => plugin.ReactToReferencedFileChangedValueHandler != null);
         }
 
         /// <summary>

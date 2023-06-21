@@ -107,7 +107,7 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
-            EditorObjects.IoC.Container.Get<SetPropertyManager>().PropertyValueChanged(e, this.PropertyGrid);
+            EditorObjects.IoC.Container.Get<SetPropertyManager>().PropertyValueChanged(e);
 
         }
 

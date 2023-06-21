@@ -27,7 +27,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
     class ProjectCommands : IProjectCommands
     {
         /// <summary>
-        /// Saves the projects immediately if run from a task, or adds the save projects command to a task if not
+        /// Saves the main project and synced projects immediately if run from an existing task. Adds a task if not.
         /// </summary>
         public void SaveProjects()
         {
