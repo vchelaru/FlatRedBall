@@ -35,12 +35,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 
                 if(rfs != null)
                 {
-                    GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                    if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                    {
+                        wasAnythingRemoved = true;
+                    }
                 }
 
                 foreach (var ideProject in ideProjects)
                 {
-                    wasAnythingRemoved |= ProjectMembershipManager.Self.RemoveAllExcludedFiles(ideProject, glueProject);
+                    if(ProjectMembershipManager.Self.RemoveAllExcludedFiles(ideProject, glueProject))
+                    {
+                        wasAnythingRemoved = true;
+                    }
                 }
 
                 if (wasAnythingRemoved)
