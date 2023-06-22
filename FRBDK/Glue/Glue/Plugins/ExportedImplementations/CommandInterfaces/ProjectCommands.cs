@@ -137,8 +137,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         }
 
         /// <summary>
-        /// Updates the presence of the RFS in the main project.  If the RFS has project specific files, then those
-        /// files are updated in the appropriate synced project.  
+        /// Updates the presence of the RFS in the main project. If the RFS has project specific files, then those
+        /// files are updated in the appropriate synced project. If the file  
         /// </summary>
         /// <remarks>
         /// This method does not update synced projects if the synced projects use the same file.  The reason is because
@@ -157,14 +157,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!shouldSkip)
             {
 
+
                 bool useContentPipeline = referencedFileSave.UseContentPipeline || (assetTypeInfo != null && assetTypeInfo.MustBeAddedToContentPipeline);
 
-                wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
+                var projectName = GlueState.Self.CurrentMainProject.Name;
+                var isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectName);
+                if(!isExcludedFromProject)
+                {
+                    wasAnythingAdded = UpdateFileMembershipInProject(GlueState.Self.CurrentMainProject, GlueCommands.Self.GetAbsoluteFilePath(referencedFileSave), useContentPipeline, false, fileRfs: referencedFileSave);
+                }
 
                 foreach (ProjectSpecificFile projectSpecificFile in referencedFileSave.ProjectSpecificFiles)
                 {
-                    VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
-                    wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs: referencedFileSave);
+                    isExcludedFromProject = referencedFileSave.ProjectsToExcludeFrom.Contains(projectSpecificFile.ProjectName);
+                    if(!isExcludedFromProject)
+                    {
+                        VisualStudioProject foundProject = (VisualStudioProject)ProjectManager.GetProjectByName(projectSpecificFile.ProjectName);
+                        wasAnythingAdded |= UpdateFileMembershipInProject(foundProject, projectSpecificFile.File, useContentPipeline, true, fileRfs: referencedFileSave);
+                    }
                 }
             }
             return wasAnythingAdded;
