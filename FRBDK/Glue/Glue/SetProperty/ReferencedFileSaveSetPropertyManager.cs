@@ -19,6 +19,7 @@ using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -27,6 +28,7 @@ namespace FlatRedBall.Glue.SetVariable
         internal void ReactToChangedReferencedFile(string changedMember, object oldValue, ref bool updateTreeView)
         {
             ReferencedFileSave rfs = GlueState.Self.CurrentReferencedFileSave;
+            var element = GlueState.Self.CurrentElement;
 
             #region Opens With
 
@@ -273,9 +275,9 @@ namespace FlatRedBall.Glue.SetVariable
                     // and regenerate them
                     var elements = ObjectFinder.Self.GetAllElementsReferencingFile(rfs.Name);
 
-                    foreach (var element in elements)
+                    foreach (var item in elements)
                     {
-                        CodeWriter.GenerateCode(element);
+                        CodeWriter.GenerateCode(item);
                     }
                 }
                 else
@@ -298,10 +300,19 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region CreatesDictionary
 
-            else if (changedMember == "CreatesDictionary")
+            else if (changedMember == nameof(ReferencedFileSave.CreatesDictionary))
             {
                 // This could change things like the constants added to the code file, so let's generate the code now.
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentCsvCode();
+            }
+
+            #endregion
+
+            #region ProjectsToExcludeFrom
+
+            else if(changedMember == nameof(ReferencedFileSave.ProjectsToExcludeFrom))
+            {
+                // handled by ProjectExclusionPlugin
             }
 
             #endregion

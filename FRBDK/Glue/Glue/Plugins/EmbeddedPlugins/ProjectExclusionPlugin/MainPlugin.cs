@@ -6,6 +6,7 @@ using System.Text;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
 {
@@ -19,6 +20,40 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
         {
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToLoadedGlux += HandleLoadedGlux;
+            this.ReactToReferencedFileChangedValueHandler += HandleFilePropertyChange;
+        }
+
+        private void HandleFilePropertyChange(string variableName, object oldValue)
+        {
+            if(variableName == nameof(ReferencedFileSave.ProjectsToExcludeFrom))
+            {
+                var ideProjects = GlueState.Self.GetProjects();
+                var glueProject = GlueState.Self.CurrentGlueProject;
+                var wasAnythingRemoved = false;
+
+                var rfs = GlueState.Self.CurrentReferencedFileSave;
+
+                if(rfs != null)
+                {
+                    if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                    {
+                        wasAnythingRemoved = true;
+                    }
+                }
+
+                foreach (var ideProject in ideProjects)
+                {
+                    if(ProjectMembershipManager.Self.RemoveAllExcludedFiles(ideProject, glueProject))
+                    {
+                        wasAnythingRemoved = true;
+                    }
+                }
+
+                if (wasAnythingRemoved)
+                {
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                }
+            }
         }
 
         private void HandleLoadedGlux()

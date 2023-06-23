@@ -14,6 +14,11 @@ using FlatRedBall.Glue.Elements;
 using OfficialPluginsCore.PropertyGrid.Views;
 using OfficialPluginsCore.PropertyGrid.ViewModels;
 using OfficialPlugins.PropertyGrid.Managers;
+using WpfDataUi.EventArguments;
+using FlatRedBall.Glue.SetVariable;
+using GlueFormsCore.Controls;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -30,8 +35,7 @@ namespace OfficialPlugins.VariableDisplay
         PluginTab settingsTab;
         PluginTab variableTab;
 
-        const bool showSettings = false;
-
+        
         public override string FriendlyName => "Main Property Grid Plugin";
 
         #endregion
@@ -103,20 +107,56 @@ namespace OfficialPlugins.VariableDisplay
             {
                 ShowVariablesForCurrentElement();
             }
+            else if(GlueState.Self.CurrentReferencedFileSave != null)
+            {
+                ShowPropertiesForReferencedFileSave(GlueState.Self.CurrentReferencedFileSave);
+            }
             else
             {
                 variableTab?.Hide();
+                settingsTab?.Hide();
 
-                if (showSettings)
-                {
-                    settingsTab?.Hide();
-                }
+            }
+
+        }
+
+        private void ShowPropertiesForReferencedFileSave(ReferencedFileSave referencedFileSave)
+        {
+            AddOrShowSettingsGrid();
+            settingsGrid.MembersToIgnore.Clear();
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.Properties));
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.FilePath));
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.CachedInstanceName));
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.OpensWith));
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.SourceFileCache));
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.IsCreatedByWildcard));
+
+            // todo - removing this until we get the dropdown working....
+            settingsGrid.MembersToIgnore.Add(nameof(ReferencedFileSave.RuntimeType));
+
+
+
+            settingsGrid.Instance = referencedFileSave;
+
+            settingsGrid.InsertSpacesInCamelCaseMemberNames();
+            var dictionary = MainPanelControl.ResourceDictionary;
+            const byte brightness = 227;
+            var color = Color.FromRgb(brightness, brightness, brightness);
+            if (dictionary.Contains("BlackSelected"))
+            {
+                color = (Color)MainPanelControl.ResourceDictionary["BlackSelected"];
+            }
+            foreach(var category in settingsGrid.Categories)
+            {
+                category.SetAlternatingColors(
+                new SolidColorBrush(color),
+                    Brushes.Transparent);
             }
         }
 
         private void ShowVariablesForCurrentElement()
         {
-            if (showSettings)
+            if (false)
             {
                 AddOrShowSettingsGrid();
                 settingsGrid.Instance = GlueState.Self.CurrentElement;
@@ -141,7 +181,7 @@ namespace OfficialPlugins.VariableDisplay
                 return;
             }
 
-
+            var showSettings = false;
             if (showSettings)
             {
                 AddOrShowSettingsGrid();
@@ -221,12 +261,21 @@ namespace OfficialPlugins.VariableDisplay
         {
             if(settingsGrid == null)
             {
-
+                var scrollViewer = new System.Windows.Controls.ScrollViewer();
                 settingsGrid = new DataUiGrid();
-                settingsTab = this.CreateTab(settingsGrid, "Settings");
+                settingsGrid.PropertyChange += HandlePropertyChanged;
+                scrollViewer.Content = settingsGrid;
+                settingsTab = this.CreateTab(scrollViewer, "Settings (Preview)");
                 settingsTab.CanClose = false;
             }
             settingsTab.Show();
+        }
+
+        private void HandlePropertyChanged(string propertyName, PropertyChangedArgs args)
+        {
+            EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                propertyName, args.OldValue, propertyName, null);
+
         }
 
         private void AddOrShowVariableGrid()
