@@ -114,6 +114,8 @@ namespace FlatRedBall.Glue.Tiled
                 dictionary[item.Key] = item.Value;
             }
 
+            List<string> tmxErrors = new List<string>();
+
             Parallel.ForEach(tmxFiles, fileName =>
             {
                 if (!CachedTiledMapSaves.ContainsKey(fileName) && fileName.Exists())
@@ -126,7 +128,7 @@ namespace FlatRedBall.Glue.Tiled
                     }
                     catch (Exception e) 
                     {
-                        GlueCommands.Self.PrintError($"Could not load TMX file {fileName} because of error: {e.ToString()}");
+                        tmxErrors.Add($"Could not load TMX file {fileName} because of error: {e.ToString()}");
                     }
                     if(tms != null)
                     {
@@ -137,6 +139,14 @@ namespace FlatRedBall.Glue.Tiled
 
                 }
             });
+
+            foreach (var error in tmxErrors)
+            {
+                // PrintError was messing with the parallel loop making
+                // it hang indeterminately when the tmx wasn't loading
+                // so we move it outside.
+                GlueCommands.Self.PrintError(error);
+            }
 
             CachedTiledMapSaves.Clear();
             foreach (var kvp in dictionary)
