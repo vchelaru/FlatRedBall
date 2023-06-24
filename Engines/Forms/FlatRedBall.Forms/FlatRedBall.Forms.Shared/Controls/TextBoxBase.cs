@@ -10,14 +10,13 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
-
-    //
-    // Summary:
-    //     Contains arguments associated with changes to a System.Windows.Input.TextComposition.
     public class TextCompositionEventArgs : RoutedEventArgs
     {
-        public TextCompositionEventArgs(string text) { Text = text; }
+        /// <summary>
+        /// The new text value.
+        /// </summary>
         public string Text { get; }
+        public TextCompositionEventArgs(string text) { Text = text; }
     }
 
 
