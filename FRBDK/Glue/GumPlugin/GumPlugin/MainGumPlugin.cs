@@ -771,13 +771,28 @@ namespace GumPlugin
 
         private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
         {
-            await TaskManager.Self.AddAsync(async () =>
-            {
-                propertiesManager.IsReactingToProperyChanges = false;
-                var added = GumProjectManager.Self.TryAddNewGumProject();
+            var assembly = typeof(FormsControlAdder).Assembly;
+            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
 
-                if (added)
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                MessageBox.Show("You must first create a Glue project before adding a Gum project");
+                shouldSave = false;
+            }
+
+            else if (GumProjectManager.Self.GetIsGumProjectAlreadyInGlueProject())
+            {
+                MessageBox.Show("A Gum project already exists");
+                shouldSave = false;
+            }
+
+            if (shouldSave)
+            {
+                await TaskManager.Self.AddAsync(async () =>
                 {
+                    propertiesManager.IsReactingToProperyChanges = false;
+                    GumProjectManager.Self.AddNewGumProject();
+
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
                     var behavior = GetBehavior(gumRfs);
@@ -801,6 +816,7 @@ namespace GumPlugin
                     GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(gumRfs);
 
 
+
                     if (shouldAlsoAddForms == true)
                     {
                         // add forms:
@@ -810,22 +826,22 @@ namespace GumPlugin
                         //viewModel.IncludeComponentToFormsAssociation = true;
                         gumRfs.SetProperty(nameof(GumViewModel.IncludeComponentToFormsAssociation), true);
 
-                        await FormsControlAdder.SaveElements(typeof(FormsControlAdder).Assembly, askToOverwrite);
-                        await FormsControlAdder.SaveBehaviors(typeof(FormsControlAdder).Assembly);
+                        await FormsControlAdder.SaveElements(assembly);
+                        await FormsControlAdder.SaveBehaviors(assembly);
 
                         await HandleRebuildFonts();
 
                     }
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                     await CodeGeneratorManager.Self.GenerateDerivedGueRuntimesAsync(forceReload:true);
-                }
-                propertiesManager.IsReactingToProperyChanges = true;
 
-                toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
-            },
-            "Creating Gum Project");
+                    propertiesManager.IsReactingToProperyChanges = true;
 
+                    toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
+                },
+                "Creating Gum Project");
+            }
         }
 
         private void CreateGumControl()

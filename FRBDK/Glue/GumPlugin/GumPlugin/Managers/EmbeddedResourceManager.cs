@@ -20,10 +20,10 @@ namespace GumPlugin.Managers
 
         CodeBuildItemAdder mStateInterpolationItemAdder;
 
-        public void SaveEmptyProject(string directoryToSaveProjectTo)
+        public void SaveEmptyProject(FilePath directoryToSaveProjectTo)
         {
             mContextAssembly = Assembly.GetExecutingAssembly();
-            mContextDirectoryToSaveTo = directoryToSaveProjectTo;
+            mContextDirectoryToSaveTo = directoryToSaveProjectTo.FullPath;
 
             SaveGumFile("GumProject.gumx");
             SaveGumFile("Standards/Circle.gutx");
