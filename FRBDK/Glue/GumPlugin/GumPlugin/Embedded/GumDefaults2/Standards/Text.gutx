@@ -179,6 +179,20 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>TextOverflowHorizontalMode</Type>
+      <Name>TextOverflowHorizontalMode</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>TextOverflowVerticalMode</Type>
+      <Name>TextOverflowVerticalMode</Name>
+      <Value xsi:type="xsd:int">0</Value>
+      <Category>Text</Category>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>bool</Type>
       <Name>UseCustomFont</Name>
       <Value xsi:type="xsd:boolean">false</Value>
@@ -272,6 +286,7 @@
   </State>
   <Category>
     <Name>ColorCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Black</Name>
       <Variable>
@@ -560,6 +575,7 @@
   </Category>
   <Category>
     <Name>StyleCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Tiny</Name>
       <Variable>
@@ -774,4 +790,5 @@
       </Variable>
     </State>
   </Category>
+  <Behaviors />
 </StandardElementSave>

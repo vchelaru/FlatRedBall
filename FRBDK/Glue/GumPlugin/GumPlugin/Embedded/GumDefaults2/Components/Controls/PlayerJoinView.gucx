@@ -107,17 +107,6 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
-      <Type>State</Type>
-      <Name>State</Name>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
-      <Type>float</Type>
-      <Name>Width</Name>
-      <Value xsi:type="xsd:float">144</Value>
-      <SetsValue>true</SetsValue>
-    </Variable>
-    <Variable>
       <Type>string</Type>
       <Name>PlayerJoinViewItem1.Parent</Name>
       <Value xsi:type="xsd:string">InnerPanelInstance</Value>
@@ -139,6 +128,17 @@
       <Type>string</Type>
       <Name>PlayerJoinViewItem4.Parent</Name>
       <Value xsi:type="xsd:string">InnerPanelInstance</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>State</Type>
+      <Name>State</Name>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
+      <Type>float</Type>
+      <Name>Width</Name>
+      <Value xsi:type="xsd:float">144</Value>
       <SetsValue>true</SetsValue>
     </Variable>
   </State>

@@ -228,6 +228,7 @@
   </State>
   <Category>
     <Name>PlayerJoinCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>NotConnected</Name>
       <Variable>
@@ -276,6 +277,7 @@
   </Category>
   <Category>
     <Name>PlayerIndexCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Player1</Name>
     </State>
@@ -291,6 +293,7 @@
   </Category>
   <Category>
     <Name>GamepadLayoutCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Unknown</Name>
       <Variable>

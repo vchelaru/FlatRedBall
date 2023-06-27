@@ -132,6 +132,12 @@
       <SetsValue>true</SetsValue>
     </Variable>
     <Variable>
+      <Type>bool</Type>
+      <Name>Clips Children</Name>
+      <Value xsi:type="xsd:boolean">true</Value>
+      <SetsValue>true</SetsValue>
+    </Variable>
+    <Variable>
       <Type>ColorCategory</Type>
       <Name>FocusedIndicator.ColorCategoryState</Name>
       <Value xsi:type="xsd:string">Warning</Value>
@@ -431,6 +437,7 @@
   </State>
   <Category>
     <Name>TextBoxCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
       <Variable>
@@ -542,6 +549,7 @@
   </Category>
   <Category>
     <Name>LineModeCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Single</Name>
     </State>
