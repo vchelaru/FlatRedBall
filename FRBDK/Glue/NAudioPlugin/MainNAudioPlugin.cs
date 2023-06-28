@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Plugins;
+﻿using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.VSHelpers;
 using NAudioPlugin.CodeGenerators;
@@ -33,13 +35,22 @@ namespace NAudioPlugin
 
         private void HandleEmbedNAudioFiles(object sender, EventArgs e)
         {
-            var codeItemAdder = new CodeBuildItemAdder();
-            codeItemAdder.OutputFolderInProject = "NAudio";
-            var thisAssembly = this.GetType().Assembly;
+            TaskManager.Self.Add(() =>
+            {
+                var codeItemAdder = new CodeBuildItemAdder();
+                codeItemAdder.OutputFolderInProject = "NAudio";
+                var thisAssembly = this.GetType().Assembly;
 
-            codeItemAdder.AddFolder("NAudioPlugin/Embedded", thisAssembly);
+                codeItemAdder.AddFolder("NAudioPlugin/Embedded", thisAssembly);
 
-            codeItemAdder.PerformAddAndSaveTask(thisAssembly);
+                codeItemAdder.PerformAddAndSaveTask(thisAssembly);
+
+                var nugetPackageName = "NAudio";
+                GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded(nugetPackageName, "2.1.0");
+
+                GlueCommands.Self.ProjectCommands.SaveProjects();
+
+            }, nameof(HandleEmbedNAudioFiles));
 
         }
     }
