@@ -772,7 +772,11 @@ namespace GumPlugin
         private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
         {
             var assembly = typeof(FormsControlAdder).Assembly;
-            var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
+            var shouldSave = true;
+            if (askToOverwrite)
+            {
+                shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
+            }
 
             if (GlueState.Self.CurrentGlueProject == null)
             {
@@ -788,6 +792,11 @@ namespace GumPlugin
 
             if (shouldSave)
             {
+
+                if (control == null)
+                {
+                    GlueCommands.Self.DoOnUiThread(() => CreateGumControl());
+                }
                 await TaskManager.Self.AddAsync(async () =>
                 {
                     propertiesManager.IsReactingToProperyChanges = false;
@@ -796,11 +805,6 @@ namespace GumPlugin
                     var gumRfs = GumProjectManager.Self.GetRfsForGumProject();
 
                     var behavior = GetBehavior(gumRfs);
-
-                    if (control == null)
-                    {
-                        CreateGumControl();
-                    }
                     EmbeddedResourceManager.Self.UpdateCodeInProjectPresence(behavior);
 
                     // show the tab for the new file:

@@ -21,7 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
             this.ReactToItemSelectHandler += HandleItemSelected;
             this.ReactToLoadedGlux += HandleLoadedGlux;
             this.ReactToReferencedFileChangedValueHandler += HandleFilePropertyChange;
-        }
+            }
 
         private void HandleFilePropertyChange(string variableName, object oldValue)
         {

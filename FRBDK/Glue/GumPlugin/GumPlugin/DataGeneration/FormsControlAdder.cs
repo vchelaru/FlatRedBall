@@ -39,8 +39,36 @@ namespace GumPlugin.DataGeneration
 
         public static bool AskToSaveIfOverwriting(Assembly assembly)
         {
+            Dictionary<string, FilePath> resourceToFileDestinations = GetResourceFileDestinations(assembly);
+
+            var existingFiles = resourceToFileDestinations.Values.Where(item => item.Exists()).ToArray();
+
+            var shouldSave = true;
+            if (existingFiles.Length > 0)
+            {
+                var message = "The following files will be overwritten:";
+
+                foreach (var item in existingFiles)
+                {
+                    message += "\n" + item.RelativeTo(GlueState.Self.CurrentGlueProjectDirectory);
+                }
+
+                message += "\n\nSave Anyway?";
+
+                var result = System.Windows.Forms.MessageBox.Show(message,
+                    "Overwrite?",
+                    System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                shouldSave = result == System.Windows.Forms.DialogResult.Yes;
+            }
+
+            return shouldSave;
+        }
+
+        private static Dictionary<string, FilePath> GetResourceFileDestinations(Assembly assembly)
+        {
             FilePath gumDirectory = null;
-            if(GumProjectManager.Self.GetRfsForGumProject() != null)
+            if (GumProjectManager.Self.GetRfsForGumProject() != null)
             {
                 gumDirectory = GumProjectManager.Self.GetGumProjectFileName().GetDirectoryContainingThis();
             }
@@ -71,34 +99,13 @@ namespace GumPlugin.DataGeneration
 
 
             AddContentItemsToResourceFileDestinations(gumDirectory, resourceToFileDestinations);
-
-            var existingFiles = resourceToFileDestinations.Values.Where(item => item.Exists()).ToArray();
-
-            var shouldSave = true;
-            if (existingFiles.Length > 0)
-            {
-                var message = "The following files will be overwritten:";
-
-                foreach (var item in existingFiles)
-                {
-                    message += "\n" + item.RelativeTo(GlueState.Self.CurrentGlueProjectDirectory);
-                }
-
-                message += "\n\nSave Anyway?";
-
-                var result = System.Windows.Forms.MessageBox.Show(message,
-                    "Overwrite?",
-                    System.Windows.Forms.MessageBoxButtons.YesNo);
-
-                shouldSave = result == System.Windows.Forms.DialogResult.Yes;
-            }
-
-            return shouldSave;
+            return resourceToFileDestinations;
         }
 
         public static async Task SaveElements(Assembly assembly)
         {
-            Dictionary<string, FilePath> resourceToFileDestinations = new Dictionary<string, FilePath>();
+            Dictionary<string, FilePath> resourceToFileDestinations = GetResourceFileDestinations(assembly);
+
 
             bool shouldSave = true;
 

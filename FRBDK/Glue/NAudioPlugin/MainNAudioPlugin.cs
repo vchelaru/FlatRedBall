@@ -18,8 +18,8 @@ namespace NAudioPlugin
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
+            base.ShutDown(shutDownReason);
             Managers.AssetTypeInfoManager.RemoveAssetTypes();
-            UnregisterAllCodeGenerators();
             return true;
         }
 
