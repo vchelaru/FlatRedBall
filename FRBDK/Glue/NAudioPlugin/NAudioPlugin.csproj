@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Embedded\LoopStream.Generated.cs" />
     <Compile Remove="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Embedded\LoopStream.Generated.cs" />
     <EmbeddedResource Include="Embedded\NAudio_Song.Generated.cs" />
   </ItemGroup>
   <ItemGroup>

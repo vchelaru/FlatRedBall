@@ -7,9 +7,11 @@ namespace FlatRedBall.NAudio
 {
     public class NAudio_Song : IDisposable
     {
-        NAudio_LoopReader reader;
+        AudioFileReader reader;
+
         WaveOutEvent waveOut;
-        WaveChannel32 waveChannel;
+        LoopStream loopStream;
+
 
         public bool IsPlaying
         {
@@ -28,26 +30,36 @@ namespace FlatRedBall.NAudio
             set
             {
                 volume = value;
-                waveChannel.Volume = volume;
+                if (reader != null)
+                {
+                    reader.Volume = volume;
+                }
             }
         }
         public bool IsRepeating
         {
-            get => this.reader.IsRepeating;
+            get => this.loopStream.EnableLooping;
             set
             {
-                this.reader.IsRepeating = value;
+                this.loopStream.EnableLooping = value;
             }
         }
 
         public NAudio_Song(string fileName)
         {
-            this.reader = new NAudio_LoopReader(fileName);
-            this.reader.IsRepeating = true;
-            this.reader.Position = 0;
-            this.waveChannel = new WaveChannel32(this.reader, volume, 0);
-            this.waveOut = new WaveOutEvent();
-            this.waveOut.Init(this.waveChannel);
+            var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
+            if (extension == "mp3")
+            {
+                this.reader = new AudioFileReader(fileName);
+                loopStream = new LoopStream(reader);
+            }
+            else
+            {
+                throw new NotImplementedException($"The extension {extension} is not supported");
+            }
+
+            waveOut = new WaveOutEvent();
+            waveOut.Init(loopStream);
         }
 
         public void Play()
@@ -57,7 +69,10 @@ namespace FlatRedBall.NAudio
 
         public void StartOver()
         {
-            this.reader.Position = 0;
+            if (reader != null)
+            {
+                this.reader.Position = 0;
+            }
             this.waveOut.Play();
         }
 
@@ -68,12 +83,12 @@ namespace FlatRedBall.NAudio
 
             if (needsToDispose)
             {
-                waveOut.Dispose();
-                reader.Dispose();
-                waveChannel.Dispose();
+                waveOut?.Dispose();
+                reader?.Dispose();
+                loopStream?.Dispose();
                 waveOut = null;
                 reader = null;
-                waveChannel = null;
+                loopStream = null;
             }
         }
 
