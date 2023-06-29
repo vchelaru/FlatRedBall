@@ -25,15 +25,55 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
+        public float LeftCoordinate
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+
+        public float TopCoordinate
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+
+        public float RightCoordinate
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+
+        public float BottomCoordinate
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        int ResolutionWidth;
+        int ResolutionHeight;
+
         [DependsOn(nameof(LengthInSeconds))]
         public string Text => $"{LengthInSeconds.ToString("0.00")} ({StrippedTextureName})";
 
-        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame)
+        public void SetFrom(AnimationChainViewModel parent, AnimationFrameSave animationFrame, int resolutionWidth, int resolutionHeight)
         {
             BackingModel = animationFrame;
             Parent = parent;
             LengthInSeconds = animationFrame.FrameLength;
             StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
+
+            LeftCoordinate = animationFrame.LeftCoordinate;
+            TopCoordinate = animationFrame.TopCoordinate;
+            RightCoordinate = animationFrame.RightCoordinate;
+            BottomCoordinate = animationFrame.BottomCoordinate;
+
+            ResolutionWidth = resolutionWidth;
+            ResolutionHeight = resolutionHeight;
+
+
         }
     }
 }
