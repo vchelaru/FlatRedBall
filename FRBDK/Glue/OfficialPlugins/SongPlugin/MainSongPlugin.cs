@@ -243,8 +243,17 @@ namespace OfficialPlugins.SongPlugin
             }
         }
 
-        bool IsSong(ReferencedFileSave rfs) =>
+        bool IsSong(ReferencedFileSave rfs)
+        {
+            var ati = rfs?.GetAssetTypeInfo();
+
             // Use the qualified type because there are multiple ATIs this could be, so don't do an == comparison
-            rfs?.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song";
+            return ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song" 
+            // Update June 29, 2023
+            // NAudio songs are now handled by this plugin
+                || ati?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.NAudio.NAudio_Song"
+            ;
+        }
+
     }
 }
