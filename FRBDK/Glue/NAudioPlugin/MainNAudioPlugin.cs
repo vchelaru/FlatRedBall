@@ -21,16 +21,23 @@ namespace NAudioPlugin
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
             base.ShutDown(shutDownReason);
-            Managers.AssetTypeInfoManager.RemoveAssetTypes();
             return true;
         }
 
         public override void StartUp()
         {
-            Managers.AssetTypeInfoManager.AddAssetTypes();
             RegisterCodeGenerator(new ElementCodeGenerator());
 
             AddMenuItemTo("Embed NAudio Classes", HandleEmbedNAudioFiles, "Content");
+
+            this.ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
+        }
+
+        private void HandleGluxLoadedEarly()
+        {
+            // Do this on every glux load so that we can add the ati according to the glux version #
+            Managers.AssetTypeInfoManager.ResetAssetTypes();
+
         }
 
         private void HandleEmbedNAudioFiles(object sender, EventArgs e)

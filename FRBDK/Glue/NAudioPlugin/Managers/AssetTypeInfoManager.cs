@@ -1,7 +1,11 @@
 ﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.IO;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace NAudioPlugin.Managers
@@ -28,28 +32,32 @@ namespace NAudioPlugin.Managers
         //    }
         //}
 
-        static AssetTypeInfo nAudioMp3SongAti;
-        public static AssetTypeInfo NAudioMp3SongAti
+        static AssetTypeInfo GetNAudioMp3SongAti()
         {
-            get
-            {
-                if (nAudioMp3SongAti == null)
-                {
-                    nAudioMp3SongAti = CreateSongAti("mp3");
-                }
-                return nAudioMp3SongAti;
-            }
+            return CreateSongAti("mp3");
         }
+
+        public static string NAudioQualifiedType = "FlatRedBall.NAudio.NAudio_Song";
 
         private static AssetTypeInfo CreateSongAti(string extension)
         {
             var ati = new AssetTypeInfo();
 
+            // check if the GlueProjectSave file version has ISong
+            if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ISongInFrb)
+            {
+                var toClone = AvailableAssetTypes.Self.AllAssetTypes
+                    .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song" && item.Extension == "mp3");
+
+                ati = FileManager.CloneObject(toClone);
+            }
+
+
             ati.MustBeAddedToContentPipeline = false;
             ati.Extension = extension;
             ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {
-                QualifiedType = "FlatRedBall.NAudio.NAudio_Song"
+                QualifiedType = NAudioQualifiedType
             };
 
             ati.FriendlyName = $"NAudio Song (.{extension})";
@@ -60,16 +68,27 @@ namespace NAudioPlugin.Managers
             return ati;
         }
 
-        internal static void AddAssetTypes()
+        internal static void ResetAssetTypes()
         {
-            //AvailableAssetTypes.Self.AddAssetType(NAudioOggSongAti);
-            AvailableAssetTypes.Self.AddAssetType(NAudioMp3SongAti);
+            RemoveAllNAudioAtis();
+
+            AvailableAssetTypes.Self.AddAssetType(GetNAudioMp3SongAti());
+        }
+
+        private static void RemoveAllNAudioAtis()
+        {
+            var listToRemove = AvailableAssetTypes.Self.AllAssetTypes
+                .Where(item => item.QualifiedRuntimeTypeName.QualifiedType == NAudioQualifiedType);
+
+            foreach (var item in listToRemove)
+            {
+                AvailableAssetTypes.Self.RemoveAssetType(item);
+            }
         }
 
         internal static void RemoveAssetTypes()
         {
-            //AvailableAssetTypes.Self.RemoveAssetType(NAudioOggSongAti);
-            AvailableAssetTypes.Self.RemoveAssetType(NAudioMp3SongAti);
+            RemoveAllNAudioAtis();
         }
 
         private static string GetLoadSongCode(IElement screenOrEntity, NamedObjectSave namedObject, 
@@ -79,7 +98,7 @@ namespace NAudioPlugin.Managers
 
             var relativeFileName = file.Name.ToLower();
 
-            return $"{instanceName} =  new {nAudioMp3SongAti.QualifiedRuntimeTypeName.QualifiedType}(\"Content/{relativeFileName}\");";
+            return $"{instanceName} =  new {NAudioQualifiedType}(\"Content/{relativeFileName}\");";
         }
     }
 }

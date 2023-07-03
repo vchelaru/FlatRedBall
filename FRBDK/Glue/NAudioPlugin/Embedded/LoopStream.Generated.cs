@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NAudioPlugin.Embedded
+namespace FlatRedBall.NAudio
 {
     public class LoopStream : WaveStream
     {

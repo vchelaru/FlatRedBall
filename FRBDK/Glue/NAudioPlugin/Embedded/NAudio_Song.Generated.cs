@@ -1,4 +1,5 @@
-﻿using NAudio.Vorbis;
+﻿$GLUE_VERSIONS$
+using FlatRedBall.Audio;
 using NAudio.Wave;
 using System;
 using System.IO;
@@ -6,12 +7,16 @@ using System.IO;
 namespace FlatRedBall.NAudio
 {
     public class NAudio_Song : IDisposable
+#if ISongInFrb
+        , ISong
+#endif
     {
         AudioFileReader reader;
 
         WaveOutEvent waveOut;
         LoopStream loopStream;
 
+        public event EventHandler PlaybackStopped;
 
         public bool IsPlaying
         {
@@ -45,6 +50,8 @@ namespace FlatRedBall.NAudio
             }
         }
 
+        public string Name { get; set; }
+
         public NAudio_Song(string fileName)
         {
             var extension = FlatRedBall.IO.FileManager.GetExtension(fileName);
@@ -60,6 +67,12 @@ namespace FlatRedBall.NAudio
 
             waveOut = new WaveOutEvent();
             waveOut.Init(loopStream);
+            waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
+        }
+
+        private void WaveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            PlaybackStopped?.Invoke(this, null);
         }
 
         public void Play()
