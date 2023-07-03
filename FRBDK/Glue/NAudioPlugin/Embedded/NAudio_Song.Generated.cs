@@ -3,6 +3,7 @@ using FlatRedBall.Audio;
 using NAudio.Wave;
 using System;
 using System.IO;
+using NAudio.Utils;
 
 namespace FlatRedBall.NAudio
 {
@@ -117,5 +118,17 @@ namespace FlatRedBall.NAudio
         {
             TryDisposeContainedObjects();
         }
+
+        public float Position
+        {
+            get
+            {
+                var rawPosition = (float)waveOut.GetPositionTimeSpan().TotalSeconds;
+
+                return rawPosition % Duration;
+            }
+
+        }
+
     }
 }
