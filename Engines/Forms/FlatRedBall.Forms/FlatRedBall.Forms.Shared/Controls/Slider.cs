@@ -121,6 +121,7 @@ namespace FlatRedBall.Forms.Controls
 
         private void HandleTrackPush(IWindow window)
         {
+            var valueBefore = Value;
             if(IsMoveToPointEnabled)
             {
                 var left = Track.GetAbsoluteX();
@@ -153,6 +154,11 @@ namespace FlatRedBall.Forms.Controls
 
                     ApplyValueConsideringSnapToTicks(newValue);
                 }
+            }
+
+            if(valueBefore != Value)
+            {
+                RaiseValueChangedByUi();
             }
         }
 
@@ -257,6 +263,8 @@ namespace FlatRedBall.Forms.Controls
 
         protected override void UpdateThumbPositionToCursorDrag(Cursor cursor)
         {
+            var valueBefore = Value;
+
             var cursorScreenX = cursor.GumX();
 
             var cursorXRelativeToTrack = cursorScreenX - Track.GetAbsoluteX();
@@ -294,6 +302,10 @@ namespace FlatRedBall.Forms.Controls
             else
             {
                 Value = Minimum;
+            }
+            if (valueBefore != Value)
+            {
+                RaiseValueChangedByUi();
             }
         }
 
