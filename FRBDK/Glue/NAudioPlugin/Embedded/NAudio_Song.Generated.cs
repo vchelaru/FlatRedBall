@@ -19,6 +19,32 @@ namespace FlatRedBall.NAudio
 
         public event EventHandler PlaybackStopped;
 
+        public float LoopStartSeconds
+        {
+            get
+            {
+                return BytesToSeconds(loopStream.LoopStartBytes);
+            }
+        }
+
+        public int LoopStartBytes
+        {
+            get => loopStream.LoopStartBytes;
+            set
+            {
+                loopStream.LoopStartBytes = value;
+            }
+        }
+
+        public int LoopEndBytes
+        {
+            get => loopStream.LoopEndBytes;
+            set
+            {
+                loopStream.LoopEndBytes = value;
+            }
+        }
+
         public bool IsPlaying
         {
             get
@@ -123,12 +149,34 @@ namespace FlatRedBall.NAudio
         {
             get
             {
-                var rawPosition = (float)waveOut.GetPositionTimeSpan().TotalSeconds;
+                //var rawPosition = (float) loopStream..GetPositionTimeSpan().TotalSeconds;
+                //loopStream.Position 
 
-                return rawPosition % Duration;
+                // This returns the position read in the stream, but not how far
+                // the song has played:
+                //var loopPositionBytes = loopStream.Position;
+                //return BytesToSeconds(loopPositionBytes);
+
+                var rawPosition = (float)waveOut.GetPositionTimeSpan().TotalSeconds;
+                return rawPosition / (float)Duration;
             }
 
         }
 
+        private float BytesToSeconds(long bytes)
+        {
+            var timespan = TimeSpan.FromMilliseconds(
+                (double)(bytes /
+                (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)) * 1000.0 / (double)waveOut.OutputWaveFormat.SampleRate);
+
+            return (float)timespan.TotalSeconds;
+        }
+
+        private float SecondsToBytes(float seconds)
+        {
+            return (seconds * (float)waveOut.OutputWaveFormat.SampleRate * (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)) / 1000.0f;
+        }
+
+        public float Duration => (float)reader.TotalTime.TotalSeconds;
     }
 }
