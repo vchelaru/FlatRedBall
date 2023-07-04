@@ -384,7 +384,7 @@ namespace FlatRedBall.Audio
             bool shouldPlay = true;
             shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
             if (toPlay.Name != mLastSongNameRequested || forceRestart ||
-                               CurrentlyPlayingSong == null)
+                               CurrentlyPlayingISong == null)
             {
                 mISongLastRequested = toPlay;
                 mIsSongUsingGlobalContent = isSongGlobalContent;

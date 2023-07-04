@@ -24,7 +24,10 @@ namespace NAudioPlugin.CodeGenerators
 
                 var instanceName = rfs.GetInstanceName();
 
-                if (rfsAti?.QualifiedRuntimeTypeName.QualifiedType == AssetTypeInfoManager.NAudioQualifiedType)
+                var isNAudio =
+                    rfsAti?.QualifiedRuntimeTypeName.QualifiedType == AssetTypeInfoManager.NAudioQualifiedType;
+
+                if (isNAudio && rfs.DestroyOnUnload)
                 {
                     codeBlock.Line($"{instanceName}.Dispose();");
                 }

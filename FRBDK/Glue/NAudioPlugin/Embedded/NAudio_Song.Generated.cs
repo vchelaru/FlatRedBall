@@ -91,6 +91,7 @@ namespace FlatRedBall.NAudio
             {
                 throw new NotImplementedException($"The extension {extension} is not supported");
             }
+            this.Name = fileName;
 
             waveOut = new WaveOutEvent();
             waveOut.Init(loopStream);
