@@ -54,6 +54,8 @@ namespace NAudioPlugin.Managers
 
 
             ati.MustBeAddedToContentPipeline = false;
+            ati.ContentImporter = null;
+            ati.ContentProcessor = null;
             ati.Extension = extension;
             ati.QualifiedRuntimeTypeName = new PlatformSpecificType()
             {

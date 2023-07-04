@@ -19,31 +19,31 @@ namespace FlatRedBall.NAudio
 
         public event EventHandler PlaybackStopped;
 
-        public float LoopStartSeconds
-        {
-            get
-            {
-                return BytesToSeconds(loopStream.LoopStartBytes);
-            }
-        }
+        //public float LoopStartSeconds
+        //{
+        //    get
+        //    {
+        //        return BytesToSeconds(loopStream.LoopStartBytes);
+        //    }
+        //}
 
-        public int LoopStartBytes
-        {
-            get => loopStream.LoopStartBytes;
-            set
-            {
-                loopStream.LoopStartBytes = value;
-            }
-        }
+        //public int LoopStartBytes
+        //{
+        //    get => loopStream.LoopStartBytes;
+        //    set
+        //    {
+        //        loopStream.LoopStartBytes = value;
+        //    }
+        //}
 
-        public int LoopEndBytes
-        {
-            get => loopStream.LoopEndBytes;
-            set
-            {
-                loopStream.LoopEndBytes = value;
-            }
-        }
+        //public int LoopEndBytes
+        //{
+        //    get => loopStream.LoopEndBytes;
+        //    set
+        //    {
+        //        loopStream.LoopEndBytes = value;
+        //    }
+        //}
 
         public bool IsPlaying
         {
@@ -145,7 +145,7 @@ namespace FlatRedBall.NAudio
             TryDisposeContainedObjects();
         }
 
-        public float Position
+        public TimeSpan Position
         {
             get
             {
@@ -158,9 +158,13 @@ namespace FlatRedBall.NAudio
                 //return BytesToSeconds(loopPositionBytes);
 
                 var rawPosition = (float)waveOut.GetPositionTimeSpan().TotalSeconds;
-                return rawPosition / (float)Duration;
+                return TimeSpan.FromSeconds(rawPosition % Duration.TotalSeconds);
             }
-
+            set
+            {
+                var bytes = SecondsToBytes((float)value.TotalSeconds);
+                loopStream.Position = bytes;
+            }
         }
 
         private float BytesToSeconds(long bytes)
@@ -172,11 +176,11 @@ namespace FlatRedBall.NAudio
             return (float)timespan.TotalSeconds;
         }
 
-        private float SecondsToBytes(float seconds)
+        private long SecondsToBytes(float seconds)
         {
-            return (seconds * (float)waveOut.OutputWaveFormat.SampleRate * (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)) / 1000.0f;
+            return (long)((seconds * (float)waveOut.OutputWaveFormat.SampleRate * (waveOut.OutputWaveFormat.Channels * waveOut.OutputWaveFormat.BitsPerSample / 8)));
         }
 
-        public float Duration => (float)reader.TotalTime.TotalSeconds;
+        public TimeSpan Duration => reader.TotalTime;
     }
 }
