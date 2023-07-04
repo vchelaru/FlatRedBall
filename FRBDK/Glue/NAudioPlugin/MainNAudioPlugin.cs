@@ -1,12 +1,16 @@
-﻿using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Interfaces;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.Utilities;
 using FlatRedBall.Glue.VSHelpers;
 using NAudioPlugin.CodeGenerators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Text;
 
 namespace NAudioPlugin
@@ -37,6 +41,14 @@ namespace NAudioPlugin
         {
             // Do this on every glux load so that we can add the ati according to the glux version #
             Managers.AssetTypeInfoManager.ResetAssetTypes();
+
+            // Does this have any NAudio files? If so, let's embed:
+            var hasNAudioFiles = ObjectFinder.Self.GetAllReferencedFiles().Any(item => item.RuntimeType == Managers.AssetTypeInfoManager.NAudioQualifiedType);
+
+            if(hasNAudioFiles)
+            {
+                HandleEmbedNAudioFiles(null, null);
+            }
 
         }
 
