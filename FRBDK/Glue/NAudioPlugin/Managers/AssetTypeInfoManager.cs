@@ -100,7 +100,24 @@ namespace NAudioPlugin.Managers
 
             var relativeFileName = file.Name.ToLower();
 
-            return $"{instanceName} =  new {NAudioQualifiedType}(\"Content/{relativeFileName}\");";
+            var path = $"Content/{relativeFileName}";
+
+            var toReturn = 
+            @$"if(FlatRedBall.FlatRedBallServices.IsLoaded<{NAudioQualifiedType}> (""{path}"", contentManagerName))
+            {{
+                {instanceName} = FlatRedBall.FlatRedBallServices.Load<{NAudioQualifiedType}>(""{path}"", contentManagerName);
+            }}
+            else
+            {{
+                {instanceName} =  new {NAudioQualifiedType}(""{path}"");
+
+                FlatRedBall.FlatRedBallServices.AddDisposable(""{path}"", {instanceName}, contentManagerName);
+            }}";
+
+
+            return toReturn;
+
+            //return $"{instanceName} = new {NAudioQualifiedType}(\"{path}\");";
         }
     }
 }
