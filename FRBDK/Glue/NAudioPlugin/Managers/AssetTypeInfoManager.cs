@@ -64,7 +64,8 @@ namespace NAudioPlugin.Managers
 
             ati.FriendlyName = $"NAudio Song (.{extension})";
 
-            ati.DestroyMethod = null; // handled by codegen
+            // Actually not handled by codegen, we match how songs work now:
+            //ati.DestroyMethod = null; // handled by codegen
 
             ati.CustomLoadFunc = GetLoadSongCode;
             return ati;
@@ -102,16 +103,23 @@ namespace NAudioPlugin.Managers
 
             var path = $"Content/{relativeFileName}";
 
+            var contentManagerName = "contentManagerName";
+
+            if(file.DestroyOnUnload == false)
+            {
+                contentManagerName = "FlatRedBall.FlatRedBallServices.GlobalContentManager";
+            }
+
             var toReturn = 
-            @$"if(FlatRedBall.FlatRedBallServices.IsLoaded<{NAudioQualifiedType}> (""{path}"", contentManagerName))
+            @$"if(FlatRedBall.FlatRedBallServices.IsLoaded<{NAudioQualifiedType}> (""{path}"", {contentManagerName}))
             {{
-                {instanceName} = FlatRedBall.FlatRedBallServices.Load<{NAudioQualifiedType}>(""{path}"", contentManagerName);
+                {instanceName} = FlatRedBall.FlatRedBallServices.Load<{NAudioQualifiedType}>(""{path}"", {contentManagerName});
             }}
             else
             {{
                 {instanceName} =  new {NAudioQualifiedType}(""{path}"");
 
-                FlatRedBall.FlatRedBallServices.AddDisposable(""{path}"", {instanceName}, contentManagerName);
+                FlatRedBall.FlatRedBallServices.AddDisposable(""{path}"", {instanceName}, {contentManagerName});
             }}";
 
 
