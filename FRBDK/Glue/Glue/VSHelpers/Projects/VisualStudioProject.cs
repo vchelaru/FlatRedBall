@@ -18,6 +18,7 @@ using Container = EditorObjects.IoC.Container;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using System.Reflection;
 using System.IO;
+using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
 {
@@ -160,11 +161,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// </summary>
         /// <param name="absoluteFile">The absolute file name to add.</param>
         /// <returns>The ProjectItem which was created and added to the project.</returns>
-        public ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false)
+        public ProjectItem AddContentBuildItem(string absoluteFile, SyncedProjectRelativeType relativityType = SyncedProjectRelativeType.Contained, bool forceToContentPipeline = false, ReferencedFileSave rfs = null)
         {
             /////////////////////////Early Out////////////////////////////
             string extension = FileManager.GetExtension(absoluteFile);
-            var rfs = Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
+            rfs = rfs ?? Container.Get<IGlueCommands>().FileCommands.GetReferencedFile(absoluteFile);
 
             bool handledByContentPipelinePlugin = Plugins.EmbeddedPlugins.SyncedProjects.SyncedProjectLogic.Self
                 .GetIfHandledByContentPipelinePlugin(this, extension, rfs);
@@ -180,7 +181,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 ProjectItem buildItem = null;
 
                 bool addToContentPipeline = false;
-                AssetTypeInfo assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
+                AssetTypeInfo assetTypeInfo = rfs?.GetAssetTypeInfo() ?? AvailableAssetTypes.Self.GetAssetTypeFromExtension(extension);
 
                 if (assetTypeInfo != null)
                 {

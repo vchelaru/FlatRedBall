@@ -282,7 +282,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                 if (needsToBeInContentProject)
                 {
-                    AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute);
+                    AddFileToContentProject(project, useContentPipeline, shouldLink, fileToAddAbsolute, fileRfs);
                 }
                 else
                 {
@@ -389,7 +389,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return toReturn;
         }
 
-        private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline, bool shouldLink, string fileToAddAbsolute)
+        private static void AddFileToContentProject(ProjectBase project, bool useContentPipeline, bool shouldLink, string fileToAddAbsolute, ReferencedFileSave rfs)
         {
             string relativeFileName = FileManager.MakeRelative(
                 fileToAddAbsolute,
@@ -402,8 +402,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             if (!useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CompileOrContentPipeline))
             {
-                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
-
                 if (rfs != null)
                 {
                     rfs.UseContentPipeline = false;
@@ -413,8 +411,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else if (useContentPipeline && project.ContentProject.IsFilePartOfProject(fileToAddAbsolute, BuildItemMembershipType.CopyIfNewer))
             {
-                ReferencedFileSave rfs = GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile(fileToAddAbsolute);
-
                 if (rfs != null)
                 {
                     rfs.UseContentPipeline = true;
@@ -423,10 +419,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
             else
             {
-                ((VisualStudioProject)project.ContentProject).AddContentBuildItem(
+                var contentProject = (VisualStudioProject)project.ContentProject;
+                contentProject.AddContentBuildItem(
                     fileToAddAbsolute,
                     shouldLink ? SyncedProjectRelativeType.Linked : SyncedProjectRelativeType.Contained,
-                    useContentPipeline);
+                    useContentPipeline, rfs);
 
             }
 
