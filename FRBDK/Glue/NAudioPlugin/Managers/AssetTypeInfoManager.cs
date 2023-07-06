@@ -52,6 +52,7 @@ namespace NAudioPlugin.Managers
                 ati = FileManager.CloneObject(toClone);
             }
 
+            ati.AddToManagersFunc = HandleSongAddToManagers;
 
             ati.MustBeAddedToContentPipeline = false;
             ati.ContentImporter = null;
@@ -69,6 +70,28 @@ namespace NAudioPlugin.Managers
 
             ati.CustomLoadFunc = GetLoadSongCode;
             return ati;
+        }
+
+        private static string HandleSongAddToManagers(IElement element, NamedObjectSave namedObjectSave, ReferencedFileSave rfs, string layer)
+        {
+            var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
+            string addToManagersMethod = $"FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(\"{rfs.GetInstanceName()}\"); ";
+            if (supportsEditMode)
+            {
+                addToManagersMethod +=
+
+                    "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) ";
+            }
+
+            var forceGlobal = !rfs.DestroyOnUnload;
+
+            string isGlobal =
+                forceGlobal ? "true" : "ContentManagerName == \"Global\"";
+
+            addToManagersMethod +=
+                    $"FlatRedBall.Audio.AudioManager.PlaySong({rfs.GetInstanceName()}, false, {isGlobal});";
+
+            return addToManagersMethod;
         }
 
         internal static void ResetAssetTypes()

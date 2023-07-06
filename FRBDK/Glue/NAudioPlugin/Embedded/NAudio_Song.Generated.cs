@@ -12,6 +12,7 @@ namespace FlatRedBall.NAudio
         , ISong
 #endif
     {
+        public bool IsDisposed { get; private set; }
         AudioFileReader reader;
 
         WaveOutEvent waveOut;
@@ -105,11 +106,22 @@ namespace FlatRedBall.NAudio
 
         public void Play()
         {
+            CheckDisposed();
             this.waveOut.Play();
+        }
+
+        private void CheckDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new InvalidOperationException($"The NAudio_Song {Name} is disposed, so it cannot be played.");
+            }
         }
 
         public void StartOver()
         {
+            CheckDisposed();
+
             if (reader != null)
             {
                 this.reader.Position = 0;
@@ -144,6 +156,8 @@ namespace FlatRedBall.NAudio
         public void Dispose()
         {
             TryDisposeContainedObjects();
+
+            IsDisposed = true;
         }
 
         public TimeSpan Position
