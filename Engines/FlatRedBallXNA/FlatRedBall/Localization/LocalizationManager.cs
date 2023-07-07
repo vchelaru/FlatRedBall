@@ -257,7 +257,7 @@ namespace FlatRedBall.Localization
             else if (mStringDatabase.ContainsKey(stringID))
             {
                 var entry = mStringDatabase[stringID];
-                var toReturn = entry.Rows.Select(item => item[0]);
+                var toReturn = entry.Rows.Select(item => item[CurrentLanguage]);
 
                 return toReturn.ToArray();
             }
