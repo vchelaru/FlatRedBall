@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.PathPlugin.Managers;
+﻿using FlatRedBall.Attributes;
+using OfficialPlugins.PathPlugin.Managers;
 using OfficialPlugins.PathPlugin.ViewModels;
 using OfficialPlugins.VariableDisplay;
 using System;
@@ -16,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WpfDataUi;
 using WpfDataUi.DataTypes;
+using InstanceMember = WpfDataUi.DataTypes.InstanceMember;
 
 namespace OfficialPlugins.PathPlugin.Views
 {
@@ -44,13 +46,34 @@ namespace OfficialPlugins.PathPlugin.Views
             get => instanceMember;
             set
             {
+
+
+                bool instanceMemberChanged = instanceMember != value;
+                if (instanceMember != null && instanceMemberChanged)
+                {
+                    instanceMember.PropertyChanged -= HandlePropertyChange;
+                }
                 instanceMember = value;
+                if (instanceMember != null && instanceMemberChanged)
+                {
+                    instanceMember.PropertyChanged += HandlePropertyChange;
+                }
+
                 // update view model
                 var asDataGridItem = value as DataGridItem;
                 var variableName = asDataGridItem.UnmodifiedVariableName;
                 // name must be set before updating the VM
                 ViewModel.VariableName = variableName;
                 ViewModelManager.UpdateViewModelToModel();
+            }
+        }
+
+        private void HandlePropertyChange(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(InstanceMember.Value))
+            {
+                this.Refresh();
+
             }
         }
 
@@ -63,6 +86,7 @@ namespace OfficialPlugins.PathPlugin.Views
 
         public void Refresh(bool forceRefreshEvenIfFocused = false)
         {
+            ViewModelManager.UpdateViewModelToModel();
         }
 
         public ApplyValueResult TryGetValueOnUi(out object result)
