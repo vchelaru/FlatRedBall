@@ -235,6 +235,13 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AddScreenPlugin
                 {
                     newScreen.BaseScreen = gameScreen.Name;
                     GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(newScreen);
+
+                    if(gameScreen.UseGlobalContent)
+                    {
+                        // inherit
+                        newScreen.UseGlobalContent = true;
+                    }
+
                     shouldSave = true;
                 }
 
