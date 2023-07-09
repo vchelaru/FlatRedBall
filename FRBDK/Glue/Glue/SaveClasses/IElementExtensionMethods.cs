@@ -110,7 +110,12 @@ namespace FlatRedBall.Glue.SaveClasses
 
         }
 
-
+        /// <summary>
+        /// Returns the CustomVarible by the argument name. If not found, this will search the base element recursively.
+        /// </summary>
+        /// <param name="element">The element to search</param>
+        /// <param name="variableName">The variable name to search for</param>
+        /// <returns>The found variable</returns>
         public static CustomVariable GetCustomVariableRecursively(this GlueElement element, string variableName)
         {
             //////////////////////Early Out///////////////////////////////////

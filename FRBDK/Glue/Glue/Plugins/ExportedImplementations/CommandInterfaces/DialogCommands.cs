@@ -1117,16 +1117,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             else if (selectedNode.IsCustomVariable())
             {
                 CustomVariable customVariable = GlueState.Self.CurrentCustomVariable;
-
-                if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                var element = GlueState.Self.CurrentElement;
+                if (customVariable.DefinedByBase && element != null && !string.IsNullOrEmpty(element.BaseElement))
                 {
-                    NamedObjectSave namedObjectSave = GlueState.Self.CurrentElement.GetNamedObjectRecursively(customVariable.SourceObject);
+                    var baseElement = ObjectFinder.Self.GetElement(element.BaseElement);
+                    var variableInBase = baseElement?.GetCustomVariableRecursively(customVariable.Name);
+                    if(variableInBase != null)
+                    {
+                        GlueState.Self.CurrentCustomVariable = variableInBase;
+                    }
+                }
+                else if (!string.IsNullOrEmpty(customVariable.SourceObject))
+                {
+                    NamedObjectSave namedObjectSave = element.GetNamedObjectRecursively(customVariable.SourceObject);
 
                     if (namedObjectSave != null)
                     {
                         GlueState.Self.CurrentNamedObjectSave = namedObjectSave;
                     }
-
                 }
             }
 
