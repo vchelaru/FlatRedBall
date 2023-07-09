@@ -241,7 +241,7 @@ namespace FlatRedBall.Glue.Controls
             {
                 classSave.GenerateCode = GenerateDataClassComboBox.Checked;
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 
@@ -265,7 +265,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     CurrentCustomClassSave.CustomNamespace = CustomNamespaceTextbox.Text;
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }
@@ -276,7 +276,7 @@ namespace FlatRedBall.Glue.Controls
             {
                 CurrentCustomClassSave.CustomNamespace = CustomNamespaceTextbox.Text;
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 

@@ -439,7 +439,7 @@ namespace FlatRedBall.Glue.Controls
 
             if(didChange)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 

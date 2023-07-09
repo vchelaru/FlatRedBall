@@ -436,7 +436,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 customClassSave.Name = className;
                 ProjectManager.GlueProjectSave.CustomClasses.Add(customClassSave);
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
 
             }
@@ -1397,7 +1397,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     await GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContentAsync(newRfs);
                 }
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
 
                 GlueState.Self.CurrentReferencedFileSave = newRfs;
@@ -1784,7 +1784,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
                 else
                 {
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }
         }

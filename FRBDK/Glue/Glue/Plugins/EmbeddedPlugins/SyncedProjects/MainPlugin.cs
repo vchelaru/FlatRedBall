@@ -76,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                         glueProject.Properties.Add(openAutomaticallyProperty);
                     }
                     openAutomaticallyProperty.Value = toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked;
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     break;
             }
         }

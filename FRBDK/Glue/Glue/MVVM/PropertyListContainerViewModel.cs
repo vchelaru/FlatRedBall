@@ -266,7 +266,7 @@ namespace FlatRedBall.Glue.MVVM
                         "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                     }
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
                 return true;
             }

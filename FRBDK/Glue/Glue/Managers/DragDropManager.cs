@@ -491,7 +491,7 @@ namespace FlatRedBall.Glue.Managers
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
             }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
@@ -1522,7 +1522,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                 }
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 if(element!= null)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);

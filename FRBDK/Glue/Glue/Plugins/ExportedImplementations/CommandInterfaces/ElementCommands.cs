@@ -188,7 +188,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         GlueState.Self.CurrentGlueProject.Entities.SortByName();
                         GlueState.Self.CurrentGlueProject.Screens.SortByName();
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
 
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(elementToRename);

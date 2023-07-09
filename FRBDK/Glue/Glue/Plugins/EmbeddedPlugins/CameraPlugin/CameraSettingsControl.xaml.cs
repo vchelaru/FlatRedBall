@@ -159,7 +159,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
                     glueProject.AllDisplaySettings.Add(newEntry);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }, "Saving project due to camera changes");
 
                 var existingVmOption = ViewModel.AvailableOptions
@@ -197,7 +197,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                 {
                     GlueState.Self.CurrentGlueProject.AllDisplaySettings.Remove(existing);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
             }, "Removing Display Option");
         }
