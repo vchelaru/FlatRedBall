@@ -62,6 +62,28 @@ namespace FlatRedBall.Audio
             set;
         } = 1.0f;
 
+        static float? masterSongVolume = null;
+        public static float? MasterSongVolume
+        {
+            get => masterSongVolume;
+            set
+            {
+                if(value != null)
+                {
+                    masterSongVolume = System.Math.Clamp(value.Value, 0, 1);
+                    MediaPlayer.Volume = masterSongVolume.Value;
+                    if(CurrentISong != null)
+                    {
+                        CurrentISong.Volume = masterSongVolume.Value;
+                    }
+                }
+                else
+                {
+                    masterSongVolume = null;
+                }
+            }
+        }
+
         static SongPlaylist Playlist;
 
         static int playlistIndex = 0;
@@ -406,6 +428,10 @@ namespace FlatRedBall.Audio
                     {
                         toPlay.PlaybackStopped += HandleISongPlaybackStopped;
                     }
+                }
+                if(masterSongVolume != null && toPlay != null)
+                {
+                    toPlay.Volume = masterSongVolume.Value;
                 }
                 mCurrentISong = toPlay;
                 CurrentlyPlayingISong = mCurrentISong;
