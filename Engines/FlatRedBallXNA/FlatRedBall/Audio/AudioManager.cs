@@ -70,7 +70,7 @@ namespace FlatRedBall.Audio
             {
                 if(value != null)
                 {
-                    masterSongVolume = System.Math.Clamp(value.Value, 0, 1);
+
                     MediaPlayer.Volume = masterSongVolume.Value;
                     if(CurrentISong != null)
                     {
