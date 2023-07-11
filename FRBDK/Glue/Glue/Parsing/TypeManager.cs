@@ -786,8 +786,12 @@ namespace FlatRedBall.Glue.Parsing
         {
             switch (type)
             {
-                case "String":
                 case "string":
+                case "String":
+                case "string?":
+                case "String?":
+                case "Nullable<string>":
+                case "Nullable<String>":
                     return "null";
 
                 case "Boolean":
