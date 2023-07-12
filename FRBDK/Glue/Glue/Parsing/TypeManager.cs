@@ -12,6 +12,7 @@ using FlatRedBall.Glue.Elements;
 
 using System.Security.Policy;
 using System.Reflection.Metadata.Ecma335;
+using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.Parsing
 {

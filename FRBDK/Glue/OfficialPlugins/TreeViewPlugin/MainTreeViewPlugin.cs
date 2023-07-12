@@ -188,6 +188,8 @@ namespace OfficialPlugins.TreeViewPlugin
 
             }
 
+            MainViewModel.RefreshSelectedItemInfoDisplay(selectedTreeNodes);
+
             MainViewModel.IsForwardButtonEnabled = TreeNodeStackManager.Self.CanGoForward;
             MainViewModel.IsBackButtonEnabled = TreeNodeStackManager.Self.CanGoBack;
         }

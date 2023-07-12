@@ -16,6 +16,8 @@
             <RowDefinition Height="Auto" x:Name="BookmarkSplitter"></RowDefinition>
             <RowDefinition Height="Auto" x:Name="SearchBoxRow"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto" x:Name="SelectedItemsGrid"></RowDefinition>
+
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
@@ -192,5 +194,8 @@
                 </DataTemplate>
             </pt:TreeListBox.ItemTemplate>
         </pt:TreeListBox>
+        <Grid x:Name="SelectionPanel" Grid.Row="5">
+            <Label Content="{Binding SelectedItemInfoDisplay}"></Label>
+        </Grid>
     </Grid>
 </UserControl>
