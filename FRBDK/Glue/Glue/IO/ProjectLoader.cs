@@ -396,9 +396,18 @@ namespace FlatRedBall.Glue.IO
                 var allReferencedFileSaves = ObjectFinder.Self.GetAllReferencedFiles();
                 Managers.TaskManager.Self.Add(() =>
                 {
+                    var wasAnythingModified = false;
                     foreach (var rfs in allReferencedFileSaves)
                     {
-                        GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs);
+                        if(GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(rfs))
+                        {
+                            wasAnythingModified = true;
+                        }
+                    }
+
+                    if(wasAnythingModified)
+                    {
+                        GlueCommands.Self.ProjectCommands.SaveProjects();
                     }
                 },
                 $"Calling UpdateFileMembershipInProject on {allReferencedFileSaves.Count} file(s)",

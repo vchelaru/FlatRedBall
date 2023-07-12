@@ -942,6 +942,9 @@ namespace FlatRedBall.Graphics
             SetColor(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f);
         }
 
+        public void SetPixelPerfectScale(float multiple = 1) => SetPixelPerfectScale(Camera.Main, multiple);
+
+
         /// <summary>
         /// Sets the Scale and Spacing such that the Text is drawn pixel-perfect at its given Z position.
         /// </summary>

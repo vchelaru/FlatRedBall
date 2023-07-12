@@ -48,7 +48,9 @@
 
             </pt:TreeListBox>
             <GridSplitter Height="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Row="1"></GridSplitter>
-            <wpfdataui:DataUiGrid x:Name="PropertyGrid" Grid.Row="2" Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+            <ScrollViewer Grid.Row="2">
+                <wpfdataui:DataUiGrid x:Name="PropertyGrid"  Instance="{Binding SelectedAnimationChain}"></wpfdataui:DataUiGrid>
+            </ScrollViewer>
         </Grid>
 
         <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>

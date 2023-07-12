@@ -154,7 +154,9 @@ namespace FlatRedBall.Glue.Managers
 
             else
             {
-                if (movingNos.IsCollidableOrCollidableList() && targetNos.IsCollidableOrCollidableList())
+                var isMovedNosCollidableOrCollidableList = movingNos.IsCollidableOrCollidableList();
+                var isTargetCollidableOrCollidableList = targetNos.IsCollidableOrCollidableList();
+                if (isMovedNosCollidableOrCollidableList && isTargetCollidableOrCollidableList)
                 {
                     canBeCollidable = true;
                 }
@@ -191,6 +193,20 @@ namespace FlatRedBall.Glue.Managers
                     else
                     {
                         canBeMovedInList = true;
+                    }
+                }
+
+                if(isMovedNosCollidableOrCollidableList && !canBeCollidable)
+                {
+                    var canBeInShapeCollection = targetNos.CanBeInShapeCollection();
+                    // If it's a shape, let's at least give the user some info as to why this isn't possible:
+                    if(canBeInShapeCollection)
+                    {
+                        var message = 
+                            $"{movingNos.InstanceName} is a collidable object, but {targetNos.InstanceName} is not. " +
+                            $"To collide against a specific shape, add {targetNos.InstanceName} to a ShapeCollection";
+
+                        GlueCommands.Self.PrintOutput(message);
                     }
                 }
             }
@@ -491,7 +507,7 @@ namespace FlatRedBall.Glue.Managers
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(container);
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(container);
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 GlueCommands.Self.PrintOutput($"Including variable {customVariable.Name} in category {stateSaveCategory.Name}");
             }, $"Including variable {customVariable.Name} in category {stateSaveCategory.Name}", TaskExecutionPreference.Asap);
@@ -1522,7 +1538,7 @@ namespace FlatRedBall.Glue.Managers
                     }
                 }
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 if(element!= null)
                 {
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);

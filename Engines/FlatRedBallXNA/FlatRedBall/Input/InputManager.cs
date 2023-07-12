@@ -188,7 +188,8 @@ namespace FlatRedBall.Input
             get { return mReceivingInput; }
             set
             {
-                if (value != mReceivingInput)
+                var differs = value != mReceivingInput;
+                if (differs)
                 {
                     // Set this to null to prevent 
                     IInputReceiver oldReceiver = mReceivingInput;
@@ -200,9 +201,12 @@ namespace FlatRedBall.Input
                 }
                 mReceivingInputJustSet = true;
 
-                if (mReceivingInput != null)
+                if(differs)
                 {
-                    mReceivingInput.OnGainFocus();
+                    if (mReceivingInput != null)
+                    {
+                        mReceivingInput.OnGainFocus();
+                    }
                 }
 
             }

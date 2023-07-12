@@ -34,7 +34,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 
         public override string ToString() => Name;
 
-        public void SetFrom(AnimationChainSave animationChain)
+        public void SetFrom(AnimationChainSave animationChain, int resolutionWidth, int resolutionHeight)
         {
             BackingModel = animationChain;
             Name = animationChain.Name;
@@ -43,7 +43,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             foreach(var frame in animationChain.Frames)
             {
                 var frameVm = new AnimationFrameViewModel();
-                frameVm.SetFrom(this, frame);
+                frameVm.SetFrom(this, frame, resolutionWidth, resolutionHeight);
                 VisibleChildren.Add(frameVm);
             }
         }

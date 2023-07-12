@@ -1859,7 +1859,7 @@ namespace FlatRedBall.Input
 
         IPressableInput IInputDevice.DefaultConfirmInput => GetButton(Button.A);
 
-        IPressableInput IInputDevice.DefaultCancelInput => GetButton(Button.B);
+        public IPressableInput DefaultCancelInput => GetButton(Button.B);
 
         IPressableInput IInputDevice.DefaultJoinInput => GetButton(Button.Start);
 

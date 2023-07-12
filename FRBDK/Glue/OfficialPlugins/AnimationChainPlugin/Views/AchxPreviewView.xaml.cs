@@ -139,7 +139,7 @@ namespace OfficialPlugins.ContentPreview.Views
             foreach(var animation in animationChain.AnimationChains)
             {
                 var animationViewModel = new AnimationChainViewModel();
-                animationViewModel.SetFrom(animation);
+                animationViewModel.SetFrom(animation, ViewModel.ResolutionWidth, ViewModel.ResolutionHeight);
                 ViewModel.VisibleRoot.Add(animationViewModel);
             }
         }

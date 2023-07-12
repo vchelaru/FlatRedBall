@@ -37,9 +37,15 @@ namespace FlatRedBall.Audio
         private static bool mIsInitialized = false;
         private static Song mCurrentSong = null;
         private static Song mPreviousSong = null;
+
+        private static ISong mCurrentISong = null;
+        private static ISong mPreviousISong = null;
+
+
         private static bool mPreviousSongUsesGlobalContent = false;
 
         static Song mSongLastRequested;
+        static ISong mISongLastRequested;
         static string mLastSongNameRequested;
 
         static bool mAreSongsEnabled;
@@ -55,6 +61,28 @@ namespace FlatRedBall.Audio
             get;
             set;
         } = 1.0f;
+
+        static float? masterSongVolume = null;
+        public static float? MasterSongVolume
+        {
+            get => masterSongVolume;
+            set
+            {
+                if(value != null)
+                {
+                    masterSongVolume = value;
+                    MediaPlayer.Volume = masterSongVolume.Value;
+                    if(CurrentISong != null)
+                    {
+                        CurrentISong.Volume = masterSongVolume.Value;
+                    }
+                }
+                else
+                {
+                    masterSongVolume = null;
+                }
+            }
+        }
 
         static SongPlaylist Playlist;
 
@@ -72,14 +100,7 @@ namespace FlatRedBall.Audio
 
         public static bool IsCustomMusicPlaying
         {
-            get
-            {
-#if SILVERLIGHT
-                return false;
-#else
-                return Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false;
-#endif
-            }
+            get => Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false;
         }
 
         public static SoundEffectPlayingBehavior SoundEffectPlayingBehavior
@@ -88,10 +109,7 @@ namespace FlatRedBall.Audio
             set;
         }
 
-        public static bool IsInitialized
-        {
-            get { return mIsInitialized; }
-        }
+        public static bool IsInitialized => mIsInitialized; 
 
         /// <summary>
         /// Controls whether the Play function will produce any audio when called.
@@ -122,6 +140,11 @@ namespace FlatRedBall.Audio
                 {
                     StopSong();
                 }
+
+                if (CurrentlyPlayingISong != null && !mAreSongsEnabled)
+                {
+                    StopSong();
+                }
             }
         }
 
@@ -136,10 +159,10 @@ namespace FlatRedBall.Audio
         ///  music from playing.  The AudioManager remembers this to resume playing later.
         /// </summary>
 
-        public static Song CurrentSong
-        {
-            get { return mCurrentSong; }
-        }
+        public static Song CurrentSong => mCurrentSong;
+
+        public static ISong CurrentISong => mCurrentISong;
+        
 
         static bool mIsSongUsingGlobalContent;
 
@@ -161,6 +184,28 @@ namespace FlatRedBall.Audio
                 }
             }
         }
+
+        static ISong mCurrentlyPlayingISongButUsePropertyPlease;
+        /// <summary>
+        /// Represents the song that is currently playing.  If no song is playing this is null.
+        /// </summary>
+        public static ISong CurrentlyPlayingISong
+        {
+            get
+            {
+                return mCurrentlyPlayingISongButUsePropertyPlease;
+            }
+            private set
+            {
+                if (value != mCurrentlyPlayingISongButUsePropertyPlease)
+                {
+                    mCurrentlyPlayingISongButUsePropertyPlease = value;
+                }
+            }
+        }
+
+
+
 
         public static int ConcurrentSoundEffects => mSoundEffectPlayInfos.Count;
 
@@ -228,7 +273,14 @@ namespace FlatRedBall.Audio
         public static void PlaySong()
         {
             Playlist = null;
-            PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
+            if(mCurrentISong != null)
+            {
+                PlaySong(mCurrentISong, false, mIsSongUsingGlobalContent);
+            }
+            else if(mCurrentSong != null)
+            {
+                PlaySong(mCurrentSong, false, mIsSongUsingGlobalContent);
+            }
         }
 
         /// <summary>
@@ -240,6 +292,12 @@ namespace FlatRedBall.Audio
         /// <param name="isSongGlobalContent">Whether the song uses a Global content manager. This is important if StopAndDisposeCurrentSongIfNameDiffers is called.
         /// StopAndDisposeCurrentSongIfNameDiffers is called by Glue, so the isSongGlobalContent param matters even if your code is not directly calling this function.</param>
         public static void PlaySong(Song toPlay, bool forceRestart, bool isSongGlobalContent)
+        {
+            Playlist = null;
+            PlaySongInternal(toPlay, forceRestart, isSongGlobalContent);
+        }
+
+        public static void PlaySong(ISong toPlay, bool forceRestart, bool isSongGlobalContent)
         {
             Playlist = null;
             PlaySongInternal(toPlay, forceRestart, isSongGlobalContent);
@@ -343,9 +401,62 @@ namespace FlatRedBall.Audio
             }
         }
 
+        private static void PlaySongInternal(ISong toPlay, bool forceRestart, bool isSongGlobalContent)
+        {
+            bool shouldPlay = true;
+            shouldPlay = IsCustomMusicPlaying == false || (mDoesUserWantCustomSoundtrack.HasValue && mDoesUserWantCustomSoundtrack.Value == false);
+            if (toPlay.Name != mLastSongNameRequested || forceRestart ||
+                               CurrentlyPlayingISong == null)
+            {
+                mISongLastRequested = toPlay;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+                mLastSongNameRequested = toPlay.Name;
+            }
+            else
+            {
+                shouldPlay = false;
+            }
+            if (shouldPlay && AreSongsEnabled)
+            {
+                if(mCurrentISong != toPlay)
+                {
+                    if (mCurrentISong != null)
+                    {
+                        mCurrentISong.PlaybackStopped -= HandleISongPlaybackStopped;
+                    }
+                    if(toPlay != null)
+                    {
+                        toPlay.PlaybackStopped += HandleISongPlaybackStopped;
+                    }
+                }
+                if(masterSongVolume != null && toPlay != null)
+                {
+                    toPlay.Volume = masterSongVolume.Value;
+                }
+                mCurrentISong = toPlay;
+                CurrentlyPlayingISong = mCurrentISong;
+                mIsSongUsingGlobalContent = isSongGlobalContent;
+                mCurrentISong.Play();
+            }
+        }
+
+        private static void HandleISongPlaybackStopped(object sender, EventArgs e)
+        {
+            CurrentlyPlayingISong = null;
+        }
+
         public static void StopSong()
         {
-            Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+            if(mCurrentISong != null)
+            {
+                mCurrentISong.Stop();
+            }
+            else if (mCurrentSong != null)
+            {
+                Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+            }
+
+            CurrentlyPlayingISong = null;
 
             CurrentlyPlayingSong = null;
         }
@@ -366,6 +477,18 @@ namespace FlatRedBall.Audio
 
                 wasDisposed = true;
             }
+            if(CurrentlyPlayingISong != null && nameToCompareAgainst != mLastSongNameRequested)
+            {
+                ISong songToDispose = CurrentlyPlayingISong;
+                StopSong();
+                if (!mIsSongUsingGlobalContent)
+                {
+                    songToDispose.Dispose();
+                }
+                wasDisposed = true;
+            }
+
+
             return wasDisposed;
         }
 

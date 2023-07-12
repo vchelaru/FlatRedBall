@@ -339,6 +339,13 @@ namespace GlueControl.Editing
                 var points = GetPoints(path, flipHorizontally: false);
                 pathPolygon.Points = points;
             }
+            else
+            {
+                pathPolygon.Points = new List<FlatRedBall.Math.Geometry.Point>()
+                {
+                    new FlatRedBall.Math.Geometry.Point(0, 0)
+                };
+            }
 
             if (includeOffsetArrow && pathPolygon.Points.Count > 0 && (pathPolygon.Points[0].X != 0 || pathPolygon.Points[0].Y != 0))
             {

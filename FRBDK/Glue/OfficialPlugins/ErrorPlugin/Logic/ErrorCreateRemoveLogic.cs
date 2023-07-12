@@ -24,6 +24,7 @@ namespace OfficialPlugins.ErrorPlugin.Logic
             foreach(var kvp in FileReferenceManager.Self.FilesWithFailedGetReferenceCalls)
             {
                 FileParseErrorViewModel newError = new FileParseErrorViewModel(kvp.Key, kvp.Value);
+                errorList.Add(newError);
 
             }
         }

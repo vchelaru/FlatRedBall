@@ -529,7 +529,13 @@ namespace FlatRedBall.Glue.Plugins
 
         public abstract void StartUp();
 
-        public virtual bool ShutDown(PluginShutDownReason shutDownReason) => true;
+        public virtual bool ShutDown(PluginShutDownReason shutDownReason)
+        {
+            UnregisterAllCodeGenerators();
+            UnregisterAssetTypeInfos();
+            this.RemoveAllMenuItems();
+            return true;
+        }
 
         #region Menu items
 

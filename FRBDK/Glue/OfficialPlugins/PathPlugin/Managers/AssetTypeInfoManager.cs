@@ -119,6 +119,10 @@ namespace OfficialPlugins.PathPlugin.Managers
             {
                 toReturn.AppendLine($"{ownerName}.MoveToRelative({endX}, {endY});");
             }
+            else if(item.SegmentType == SegmentType.Spline)
+            {
+                toReturn.AppendLine($"{ownerName}.SplineToRelative({endX}, {endY});");
+            }
             else
             {
                 // Unknown segment type...

@@ -18,17 +18,21 @@ namespace NAudioPlugin.CodeGenerators
         }
         public override ICodeBlock GenerateDestroy(ICodeBlock codeBlock, IElement element)
         {
-            foreach(var rfs in element.ReferencedFiles)
-            {
-                var rfsAti = rfs.GetAssetTypeInfo();
+            // no more need to dispose - this is handled by the content manager
+            //foreach(var rfs in element.ReferencedFiles)
+            //{
+            //    var rfsAti = rfs.GetAssetTypeInfo();
 
-                var instanceName = rfs.GetInstanceName();
+            //    var instanceName = rfs.GetInstanceName();
 
-                if (rfsAti == AssetTypeInfoManager.NAudioSongAti)
-                {
-                    codeBlock.Line($"{instanceName}.Dispose();");
-                }
-            }
+            //    var isNAudio =
+            //        rfsAti?.QualifiedRuntimeTypeName.QualifiedType == AssetTypeInfoManager.NAudioQualifiedType;
+
+            //    if (isNAudio && rfs.DestroyOnUnload)
+            //    {
+            //        codeBlock.Line($"{instanceName}.Dispose();");
+            //    }
+            //}
             return codeBlock;
         }
     }

@@ -113,7 +113,8 @@ namespace FlatRedBall.Glue.SaveClasses
             GraphicalUiElementProtectedAnimationProperties = 39,
             GraphicalUiElementINotifyPropertyChanged = 40,
             GumTextObjectsHaveTextOverflowProperties = 41,
-            TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated = 42
+            TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated = 42,
+            ISongInFrb = 43
         }
 
         #endregion

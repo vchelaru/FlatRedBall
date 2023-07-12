@@ -30,7 +30,7 @@ namespace GumPlugin.Managers
             }
         }
 
-        bool GetIsGumProjectAlreadyInGlueProject()
+        public bool GetIsGumProjectAlreadyInGlueProject()
         {
          
             return GetRfsForGumProject() != null;
@@ -65,56 +65,35 @@ namespace GumPlugin.Managers
             }
         }
 
-        internal bool TryAddNewGumProject()
+        public FilePath DefaultGumProjectDirectory => GlueState.Self.ContentDirectory + "GumProject/";
+
+        internal void AddNewGumProject()
         {
-            bool added = false;
+            EmbeddedResourceManager.Self.SaveEmptyProject(DefaultGumProjectDirectory);
 
-            if (GlueState.Self.CurrentGlueProject == null)
-            {
-                MessageBox.Show("You must first create a Glue project before adding a Gum project");
-            }
+            GlueState.Self.CurrentTreeNode = GlueState.Self.Find.GlobalContentTreeNode;
 
-            else if (GetIsGumProjectAlreadyInGlueProject())
-            {
-                MessageBox.Show("A Gum project already exists");
-            }
-            else
-            {
-                string gumProjectDirectory = GlueState.Self.ContentDirectory + "GumProject/";
-                EmbeddedResourceManager.Self.SaveEmptyProject(gumProjectDirectory);
-
-                GlueState.Self.CurrentTreeNode = GlueState.Self.Find.GlobalContentTreeNode;
-
-                bool userCancelled = false;
-
-                // ignore changes while this is being added, because we don't want to add then remove files:
+            // ignore changes while this is being added, because we don't want to add then remove files:
 
 
-                //var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
-                //    gumProjectDirectory + "GumProject.gumx", ref userCancelled);
-                //var rfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(gumProjectDirectory + "GumProject.gumx",
-                //    "GumProject.gumx", null, null, false, null, null, null);
-                var absoluteGumFile = gumProjectDirectory + "GumProject.gumx";
-                var relativeFile = FileManager.MakeRelative(absoluteGumFile, GlueState.Self.ContentDirectory);
+            //var rfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
+            //    gumProjectDirectory + "GumProject.gumx", ref userCancelled);
+            //var rfs = GlueCommands.Self.GluxCommands.AddSingleFileTo(gumProjectDirectory + "GumProject.gumx",
+            //    "GumProject.gumx", null, null, false, null, null, null);
+            var absoluteGumFile = DefaultGumProjectDirectory + "GumProject.gumx";
+            var relativeFile = FileManager.MakeRelative(absoluteGumFile, GlueState.Self.ContentDirectory);
 
-                var rfs = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(
-                    relativeFile,
-                    false);
-                SetGumxReferencedFileSaveDefaults(rfs);
+            var rfs = GlueCommands.Self.GluxCommands.AddReferencedFileToGlobalContent(
+                relativeFile,
+                false);
+            SetGumxReferencedFileSaveDefaults(rfs);
 
-                added = !userCancelled;
 
-                if (added)
-                {
-                    GlueState.Self.CurrentReferencedFileSave = rfs;
-                    ReloadGumProject();
+            GlueState.Self.CurrentReferencedFileSave = rfs;
+            ReloadGumProject();
 
-                    GumPluginCommands.Self.UpdateGumToGlueResolution();
+            GumPluginCommands.Self.UpdateGumToGlueResolution();
 
-                }
-            }
-
-            return added;
         }
 
         /// <summary>

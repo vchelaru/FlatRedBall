@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.AnimationChainPlugin.ViewModels;
+﻿using GlueFormsCore.ViewModels;
+using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,18 +22,39 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
 
         public static void SetMemberCategories(DataUiGrid grid, AnimationFrameViewModel selectedAnimationFrame)
         {
-            grid.Categories.Clear();
-            grid.Categories.AddRange(CreateMemberCategories(selectedAnimationFrame));
+            var propertiesToShow = new string[]
+            {
+                nameof(AnimationFrameViewModel.LengthInSeconds),
+
+            };
+
+            var category = grid.Categories[0];
+            for(int i = category.Members.Count-1; i> -1; i--)
+            {
+                var member = category.Members[i];
+                if(propertiesToShow.Contains(member.Name) == false)
+                {
+                    category.Members.RemoveAt(i);
+                }
+            }
+
+            foreach(var member in category.Members)
+            {
+                // for now....
+                member.IsReadOnly = true;
+            }
+
+            grid.InsertSpacesInCamelCaseMemberNames();
         }
 
-        private static List<MemberCategory> CreateMemberCategories(AnimationFrameViewModel animationFrameViewModel)
-        {
-            List<MemberCategory> toReturn = new List<MemberCategory>();
+        //private static List<MemberCategory> CreateMemberCategories(AnimationFrameViewModel animationFrameViewModel)
+        //{
+        //    List<MemberCategory> toReturn = new List<MemberCategory>();
 
-            // todo - add more here...
+        //    // todo - add more here...
 
-            return toReturn;
-        }
+        //    return toReturn;
+        //}
 
         private static List<MemberCategory> CreateMemberCategories(AnimationChainViewModel selectedAnimationChain)
         {

@@ -1188,6 +1188,16 @@ namespace GlueControl.Editing
                             convertedValue = false;
                         }
                         break;
+                    case "bool?":
+                        if(!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = bool.Parse(variableValue.ToLowerInvariant());
+                        }
+                        else
+                        {
+                            convertedValue = (bool?)null;
+                        }
+                        break;
                     case "double":
                     case nameof(Double):
                     case "System.Double":

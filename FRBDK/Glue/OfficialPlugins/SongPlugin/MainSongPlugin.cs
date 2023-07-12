@@ -142,40 +142,8 @@ namespace OfficialPlugins.SongPlugin
 
             foreach (var ati in atis)
             {
-                // The default add to managers method is:
-                // FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == "Global")
-                // but it should only be the case *if* we are in edit mode. Otherwise, we should always play the song (don't have the if check)
-                var supportsEditMode = GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode;
-                string addToManagersMethod = null;
-
-
-                //if (rfs.DestroyOnUnload == false)
-                //{
-
-                //}
-
                 ati.AddToManagersFunc = HandleSongAddToManagers;
 
-                //if (supportsEditMode)
-                //{
-                //    addToManagersMethod =
-                //        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                //        "if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                //        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                //}
-                //else
-                //{
-                //    addToManagersMethod =
-
-                //        "FlatRedBall.Audio.AudioManager.StopAndDisposeCurrentSongIfNameDiffers(this.Name); " +
-                //        //"if(FlatRedBall.Screens.ScreenManager.IsInEditMode == false) " +
-                //        "FlatRedBall.Audio.AudioManager.PlaySong(this, false, ContentManagerName == \"Global\")";
-                //}
-                //if (ati.AddToManagersMethod.Count == 1)
-                //{
-                //    // fall back to the old load call:
-                //    ati.AddToManagersMethod[0] = addToManagersMethod;
-                //}
             }
         }
 
@@ -243,8 +211,17 @@ namespace OfficialPlugins.SongPlugin
             }
         }
 
-        bool IsSong(ReferencedFileSave rfs) =>
+        bool IsSong(ReferencedFileSave rfs)
+        {
+            var ati = rfs?.GetAssetTypeInfo();
+
             // Use the qualified type because there are multiple ATIs this could be, so don't do an == comparison
-            rfs?.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song";
+            return ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Media.Song" 
+            // Update June 29, 2023
+            // NAudio songs are now handled by this plugin
+                || ati?.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.NAudio.NAudio_Song"
+            ;
+        }
+
     }
 }

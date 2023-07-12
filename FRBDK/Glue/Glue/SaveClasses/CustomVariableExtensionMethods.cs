@@ -140,6 +140,14 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 customVariable.DefaultValue = 0.0;
             }
+            else if (type == typeof(bool))
+            {
+                customVariable.DefaultValue = false;
+            }
+            else if (type == typeof(bool?))
+            {
+                customVariable.DefaultValue = (bool?)null;
+            }
             else
             {
                 // This will be things like types defined in CSV values

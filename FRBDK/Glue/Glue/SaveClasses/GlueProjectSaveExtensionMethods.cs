@@ -182,6 +182,11 @@ namespace FlatRedBall.Glue.SaveClasses
                 // that's exactly what we're doing.
                 rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element);
 
+                if(resultAssetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType != null && rfs.RuntimeType != resultAssetTypeInfo.QualifiedRuntimeTypeName.QualifiedType)
+                {
+                    rfs.RuntimeType = resultAssetTypeInfo.QualifiedRuntimeTypeName.QualifiedType;
+                }
+
                 if (rfs == null && !userCancelled)
                 {
                     throw new NullReferenceException("The RFS shouldn't be null");

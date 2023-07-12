@@ -292,6 +292,7 @@
   </State>
   <Category>
     <Name>ListBoxCategory</Name>
+    <IsSetRecursively>false</IsSetRecursively>
     <State>
       <Name>Enabled</Name>
       <Variable>

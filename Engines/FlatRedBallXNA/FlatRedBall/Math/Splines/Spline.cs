@@ -234,7 +234,11 @@ namespace FlatRedBall.Math.Splines
 #endif
         }
 
-
+        /// <summary>
+        /// Determines the velocity (tangent) of the spline through all points except
+        /// the first and last point. The first and last point velocities will be unchanged, so they will
+        /// default to 0 unless set manually.
+        /// </summary>
         public void CalculateVelocities()
         {
             for (int i = 1; i < mSplinePoints.Count - 1; i++)
@@ -290,7 +294,6 @@ namespace FlatRedBall.Math.Splines
 
                 currentPosition = GetPositionAtTime(currentTime);
                 runningDistance += (currentPosition - lastPosition).Length();
-                System.Diagnostics.Debug.WriteLine(String.Format("Time: {0}\tDistance: {1}", currentTime, runningDistance));
                 dttr.Distance = runningDistance;
 
                 mDistanceToTimes.Add(dttr);

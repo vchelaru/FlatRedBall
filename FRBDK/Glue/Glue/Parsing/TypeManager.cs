@@ -11,7 +11,8 @@ using FlatRedBall.Glue.Elements;
 
 
 using System.Security.Policy;
-
+using System.Reflection.Metadata.Ecma335;
+using Gum.DataTypes;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -182,6 +183,10 @@ namespace FlatRedBall.Glue.Parsing
             if (typeString == "bool" || typeString == "Boolean" || typeString == "System.Boolean")
             {
                 typeToReturn = typeof(bool);
+            }
+            else if(typeString == "bool?")
+            {
+                typeToReturn = typeof(bool?);
             }
             else if (typeString == "float" || typeString == "Single")
             {
@@ -638,6 +643,11 @@ namespace FlatRedBall.Glue.Parsing
             {
                 return "int?";
             }
+
+            if (qualifiedName.StartsWith("System.Nullable`1[[System.Boolean,"))
+            {
+                return "bool?";
+            }
             else if(qualifiedName.StartsWith("System.Nullable`1[[System.Single,"))
             {
                 return "float?";
@@ -777,8 +787,12 @@ namespace FlatRedBall.Glue.Parsing
         {
             switch (type)
             {
-                case "String":
                 case "string":
+                case "String":
+                case "string?":
+                case "String?":
+                case "Nullable<string>":
+                case "Nullable<String>":
                     return "null";
 
                 case "Boolean":
@@ -818,6 +832,7 @@ namespace FlatRedBall.Glue.Parsing
                 case "long?":
                 case "byte?":
                 case "double?":
+                case "bool?":
                     return "null";
                 default:
                     throw new ArgumentException("Could not find the value for type " + type);

@@ -84,7 +84,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
                                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
                             }
 
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             GlueCommands.Self.ProjectCommands.SaveProjects();
                         },
                         "Generating element and saving projects"

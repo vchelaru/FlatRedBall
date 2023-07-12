@@ -10,6 +10,16 @@ using System.Text;
 
 namespace FlatRedBall.Forms.Controls
 {
+    public class TextCompositionEventArgs : RoutedEventArgs
+    {
+        /// <summary>
+        /// The new text value.
+        /// </summary>
+        public string Text { get; }
+        public TextCompositionEventArgs(string text) { Text = text; }
+    }
+
+
     public abstract class TextBoxBase : FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
@@ -186,6 +196,15 @@ namespace FlatRedBall.Forms.Controls
 
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
 
+        public event Action<object, TextCompositionEventArgs> PreviewTextInput;
+
+        protected TextCompositionEventArgs RaisePreviewTextInput(string newText)
+        {
+            var args = new TextCompositionEventArgs(newText);
+            PreviewTextInput?.Invoke(this, args);
+
+            return args;
+        }
 
         #endregion
 
