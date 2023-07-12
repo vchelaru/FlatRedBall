@@ -1019,6 +1019,14 @@ namespace FlatRedBall.TileGraphics
         }
 
         /// <summary>
+        /// Most pixel distortion problems can be solved by snapping the camera position 
+        /// to the pixel using MathFunctions.RoundFloat or using the Camera Controlling Entity.
+        /// For stubborn distortions only happening on Tiled maps you can use this. It won't 
+        /// do anything unless set to something different to zero.
+        /// </summary>
+        public static float TileVertexOffset { get; set; }
+
+        /// <summary>
         /// Adds a tile to the tile map
         /// </summary>
         /// <param name="bottomLeftPosition"></param>
@@ -1035,12 +1043,12 @@ namespace FlatRedBall.TileGraphics
 
             int currentIndex = mCurrentNumberOfTiles * 6; // 6 indices per tile (there are mVertices.Length/4 tiles)
 
-            float xOffset = bottomLeftPosition.X;
-            float yOffset = bottomLeftPosition.Y;
+            float xOffset = bottomLeftPosition.X + TileVertexOffset;
+            float yOffset = bottomLeftPosition.Y + TileVertexOffset;
             float zOffset = bottomLeftPosition.Z;
 
-            float width = dimensions.X;
-            float height = dimensions.Y;
+            float width = dimensions.X - (TileVertexOffset * 2f);
+            float height = dimensions.Y - (TileVertexOffset * 2f);
 
 
             // create vertices
