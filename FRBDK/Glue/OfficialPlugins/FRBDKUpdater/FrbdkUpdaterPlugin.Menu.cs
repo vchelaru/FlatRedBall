@@ -20,7 +20,7 @@ namespace OfficialPlugins.FrbdkUpdater
 
 
         private const string FrbdkSyncMenuItem = "Update FRB editor binaries";
-        private const string FrbFromCode = "Update FRB and game code in Git, build and relaunch FRB";
+        private const string FrbAndGameCode = "Update FRB and game code in Git, build and relaunch FRB";
 
         public const string PluginsMenuItem = "Update";
 
@@ -28,7 +28,7 @@ namespace OfficialPlugins.FrbdkUpdater
         {
             this.AddMenuItemTo(FrbdkSyncMenuItem, () => MenuItemClick(), "Update");
 
-            this.AddMenuItemTo(FrbFromCode, () => UpdateFrbFromCode(), "Update");
+            this.AddMenuItemTo(FrbAndGameCode, () => UpdateFrbFromCode(), "Update");
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -46,25 +46,37 @@ namespace OfficialPlugins.FrbdkUpdater
 
             await TaskManager.Self.WaitForAllTasksFinished();
 
+            var gitCommand =
+                @"git fetch & " +
+                @"git pull & " +
+                @"cd.. & " +
+                @"cd Gum & " +
+                @"git fetch & " +
+                @"git pull & " +
+                @"cd.. & " +
+                @"cd FlatRedBall & " +
+                @"git fetch & " +
+                @"git pull & ";
+
+            var processStartInfo = new ProcessStartInfo("cmd.exe");
+            processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
+            processStartInfo.Arguments = "/K " + gitCommand;
+
+            var process = Process.Start(processStartInfo);
+
+            await process.WaitForExitAsync();
+
             var command =
-@"timeout /T 4 /NOBREAK & " + 
-@"git fetch & " + 
-@"git pull & " + 
-@"cd.. & " + 
-@"cd Gum & " + 
-@"git fetch & " + 
-@"git pull & " + 
+@"timeout /T 4 /NOBREAK & " +
 @"cd.. & " + 
 @"cd FlatRedBall & " + 
-@"git fetch & " + 
-@"git pull & " + 
-@"cd FRBDK\Glue & " + 
-@"dotnet build ""Glue with All.sln"" & " + 
+@"cd FRBDK\Glue & " +
+@"dotnet build ""Glue with All.sln"" & " +
 @"cd Glue\bin\Debug\ & " +
 @"start GlueFormsCore.exe & " +
 @"exit";
 
-            var processStartInfo = new ProcessStartInfo("cmd.exe");
+            processStartInfo = new ProcessStartInfo("cmd.exe");
             processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
             processStartInfo.Arguments = "/K " + command;
 
