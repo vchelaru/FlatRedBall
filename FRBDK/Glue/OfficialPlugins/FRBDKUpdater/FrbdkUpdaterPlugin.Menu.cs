@@ -20,7 +20,7 @@ namespace OfficialPlugins.FrbdkUpdater
 
 
         private const string FrbdkSyncMenuItem = "Update FRB editor binaries";
-        private const string FrbAndGameCode = "Update FRB and game code in Git, build and relaunch FRB";
+        private const string FrbAndGameCode = "Update FRB and game code...";
 
         public const string PluginsMenuItem = "Update";
 
@@ -28,7 +28,10 @@ namespace OfficialPlugins.FrbdkUpdater
         {
             this.AddMenuItemTo(FrbdkSyncMenuItem, () => MenuItemClick(), "Update");
 
-            this.AddMenuItemTo(FrbAndGameCode, () => UpdateFrbFromCode(), "Update");
+            var menuItem = this.AddMenuItemTo(FrbAndGameCode, (Action)null, "Update");
+
+            menuItem.DropDownItems.Add(new ToolStripMenuItem("FRB and Gum", null, (_, _) => UpdateFrbFromCode(false)));
+            menuItem.DropDownItems.Add(new ToolStripMenuItem("FRB, Gum, and Game", null, (_, _) => UpdateFrbFromCode(true)));
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
@@ -36,7 +39,7 @@ namespace OfficialPlugins.FrbdkUpdater
             return true;
         }
 
-        private async void UpdateFrbFromCode()
+        private async void UpdateFrbFromCode(bool updateGame)
         {
             if(GlueState.Self.CurrentGlueProject == null)
             {
@@ -46,17 +49,31 @@ namespace OfficialPlugins.FrbdkUpdater
 
             await TaskManager.Self.WaitForAllTasksFinished();
 
-            var gitCommand =
-                @"git fetch & " +
-                @"git pull & " +
+            string gitCommand = String.Empty;
+            if(updateGame)
+            {
+                gitCommand +=
+                    $@"echo ""Pulling game {GlueState.Self.CurrentMainProject.Name}..."" & " +
+                    @"git fetch & " +
+                    @"git pull & ";
+            }
+            gitCommand +=
                 @"cd.. & " +
                 @"cd Gum & " +
+                $@"echo ""Pulling Gum..."" & " +
                 @"git fetch & " +
                 @"git pull & " +
+
                 @"cd.. & " +
                 @"cd FlatRedBall & " +
+
+                $@"echo ""Pulling FlatRedBall..."" & " +
                 @"git fetch & " +
-                @"git pull & ";
+                @"git pull & " +
+
+                $@"echo ""Close this window to build and re-launch FRB Editor"" & " 
+
+;
 
             var processStartInfo = new ProcessStartInfo("cmd.exe");
             processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
@@ -67,14 +84,13 @@ namespace OfficialPlugins.FrbdkUpdater
             await process.WaitForExitAsync();
 
             var command =
-@"timeout /T 4 /NOBREAK & " +
+@"timeout /T 3 /NOBREAK & " +
 @"cd.. & " + 
 @"cd FlatRedBall & " + 
 @"cd FRBDK\Glue & " +
 @"dotnet build ""Glue with All.sln"" & " +
 @"cd Glue\bin\Debug\ & " +
-@"start GlueFormsCore.exe & " +
-@"exit";
+@"start GlueFormsCore.exe";
 
             processStartInfo = new ProcessStartInfo("cmd.exe");
             processStartInfo.WorkingDirectory = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis().FullPath;
