@@ -54,18 +54,24 @@ namespace OfficialPlugins.FrbdkUpdater
             {
                 gitCommand +=
                     $@"echo ""Pulling game {GlueState.Self.CurrentMainProject.Name}..."" & " +
+                    @"echo %cd% & " +
                     @"git fetch & " +
                     @"git pull & ";
             }
             gitCommand +=
+                @"echo ""Moving to the Gum folder"" & " +
                 @"cd.. & " +
                 @"cd Gum & " +
+                @"echo %cd% & " + 
+
                 $@"echo ""Pulling Gum..."" & " +
                 @"git fetch & " +
                 @"git pull & " +
 
+                @"echo ""Moving to the FRB folder"" & " +
                 @"cd.. & " +
                 @"cd FlatRedBall & " +
+                @"echo %cd% & " +
 
                 $@"echo ""Pulling FlatRedBall..."" & " +
                 @"git fetch & " +
