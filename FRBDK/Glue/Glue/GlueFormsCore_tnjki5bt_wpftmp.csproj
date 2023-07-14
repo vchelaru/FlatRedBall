@@ -1,0 +1,950 @@
+<Project>
+  <PropertyGroup>
+    <AssemblyName>GlueFormsCore</AssemblyName>
+    <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <MSBuildProjectExtensionsPath>C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\</MSBuildProjectExtensionsPath>
+    <_TargetAssemblyProjectName>GlueFormsCore</_TargetAssemblyProjectName>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Platforms>AnyCPU</Platforms>
+    <Version>2022.06.27.675</Version>
+    <ApplicationIcon>Glue.ico</ApplicationIcon>
+    <RootNamespace>FlatRedBall.Glue</RootNamespace>
+    <!--<DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>-->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>TRACE;GLUE</DefineConstants>
+    <OutputPath>
+    </OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>TRACE;GLUE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="GlueView\**" />
+    <Compile Remove="Libraries\MSBuild\**" />
+    <Compile Remove="Tools\MSBuild\**" />
+    <EmbeddedResource Remove="GlueView\**" />
+    <EmbeddedResource Remove="Libraries\MSBuild\**" />
+    <EmbeddedResource Remove="Tools\MSBuild\**" />
+    <None Remove="GlueView\**" />
+    <None Remove="Libraries\MSBuild\**" />
+    <None Remove="Tools\MSBuild\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Events\EventResponseSave.cs" />
+    <Compile Remove="Events\EventSave.cs" />
+    <Compile Remove="Events\IEventContainer.cs" />
+    <Compile Remove="FormHelpers\ParameterPropertyDescriptor.cs" />
+    <Compile Remove="IO\FilePath.cs" />
+    <Compile Remove="Plugins\AvailableMessages.cs" />
+    <Compile Remove="Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.cs" />
+    <Compile Remove="Plugins\ExportedImplementations\CommandInterfaces\GlueViewCommands.cs" />
+    <Compile Remove="Plugins\GlueCommands.cs" />
+    <Compile Remove="Plugins\GlueState.cs" />
+    <Compile Remove="Plugins\IGluePlugin.cs" />
+    <Compile Remove="Plugins\IGlueState.cs" />
+    <Compile Remove="Plugins\ITreeViewPlugin.cs" />
+    <Compile Remove="Resources\CameraSetupTemplate.cs" />
+    <Compile Remove="Resources\IEntityFactory.cs" />
+    <Compile Remove="Resources\PoolList.cs" />
+    <Compile Remove="SaveClasses\CustomClassSave.cs" />
+    <Compile Remove="SaveClasses\CustomVariable.cs" />
+    <Compile Remove="SaveClasses\CustomVariableInNamedObject.cs" />
+    <Compile Remove="SaveClasses\EntitySave.cs" />
+    <Compile Remove="SaveClasses\GlobalContentSettingsSave.cs" />
+    <Compile Remove="SaveClasses\GlueProjectSave.cs" />
+    <Compile Remove="SaveClasses\IElement.cs" />
+    <Compile Remove="SaveClasses\IFileReferencer.cs" />
+    <Compile Remove="SaveClasses\INamedObjectContainer.cs" />
+    <Compile Remove="SaveClasses\NamedObjectPropertyOverride.cs" />
+    <Compile Remove="SaveClasses\NamedObjectSave.cs" />
+    <Compile Remove="SaveClasses\PerformanceSettingsSave.cs" />
+    <Compile Remove="SaveClasses\PropertySave.cs" />
+    <Compile Remove="SaveClasses\ReferencedFileSave.cs" />
+    <Compile Remove="SaveClasses\ScreenSave.cs" />
+    <Compile Remove="SaveClasses\StateSave.cs" />
+    <Compile Remove="SaveClasses\StateSaveCategory.cs" />
+    <Compile Remove="SaveClasses\TranslatedFileSave.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Content\Icons\CanInterpolate.bmp" />
+    <None Remove="Content\Icons\CantInterpolate.bmp" />
+    <None Remove="Content\Icons\code.png" />
+    <None Remove="Content\Icons\collisionRelationshipList.png" />
+    <None Remove="Content\Icons\copyIcon.png" />
+    <None Remove="Content\Icons\Delete.png" />
+    <None Remove="Content\Icons\edit_code.png" />
+    <None Remove="Content\Icons\entity.png" />
+    <None Remove="Content\Icons\file.png" />
+    <None Remove="Content\Icons\folder.png" />
+    <None Remove="Content\Icons\GlueIcon.png" />
+    <None Remove="Content\Icons\IncreaseArea.Agif" />
+    <None Remove="Content\Icons\IncreaseArea.gif" />
+    <None Remove="Content\Icons\IncreaseAreaGum.gif" />
+    <None Remove="Content\Icons\layerList.png" />
+    <None Remove="Content\Icons\master_code.png" />
+    <None Remove="Content\Icons\master_entity.png" />
+    <None Remove="Content\Icons\master_file.png" />
+    <None Remove="Content\Icons\master_object.png" />
+    <None Remove="Content\Icons\master_screen.png" />
+    <None Remove="Content\Icons\master_states.png" />
+    <None Remove="Content\Icons\master_variables.png" />
+    <None Remove="Content\Icons\NeedsInterpolateVariable.bmp" />
+    <None Remove="Content\Icons\object.png" />
+    <None Remove="Content\Icons\SaveIcon.png" />
+    <None Remove="Content\Icons\screen.png" />
+    <None Remove="Content\Icons\StarFilled.png" />
+    <None Remove="Content\Icons\StarOutline.png" />
+    <None Remove="Content\Icons\states.png" />
+    <None Remove="Content\Icons\StretchArea.agif" />
+    <None Remove="Content\Icons\StretchArea.gif" />
+    <None Remove="Content\Icons\StretchAreaGum.gif" />
+    <None Remove="Content\Icons\transparent.png" />
+    <None Remove="Content\Icons\variable.png" />
+    <None Remove="Content\logo-512.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\CameraIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\2DIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\3DIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\LinearFilter.png" />
+    <None Remove="Plugins\EmbeddedPlugins\CameraPlugin\Icons\PointFilter.png" />
+    <None Remove="Plugins\EmbeddedPlugins\OutputPlugin\DeleteOutput.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\Error.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\OpenFolder.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\VsIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\SyncedProjects\Images\XamarinIcon.png" />
+    <None Remove="Plugins\EmbeddedPlugins\UnreferencedFiles\Icons\RefreshIcon.png" />
+    <None Remove="Resources\Icons\MoveTabs\BottomTab.png" />
+    <None Remove="Resources\Icons\MoveTabs\CenterTab.png" />
+    <None Remove="Resources\Icons\MoveTabs\LeftTab.png" />
+    <None Remove="Resources\Icons\MoveTabs\RightTab.png" />
+    <None Remove="Resources\Icons\MoveTabs\TopTab.png" />
+    <None Remove="Resources\test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Gum\GumDataTypes\GumDataTypesStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\GumRuntimeStandard\GumRuntimeStandard\GumRuntimeStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\SkiaGum.Wpf.NetCore3_0\SkiaGum.Wpf.Net6.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\SkiaGumMonogame\SkiaGumMonogame.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\Gum\WpfDataUiCore\WpfDataUiCore.csproj" />
+    <ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
+    <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
+    <ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
+    <ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
+    <ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
+    <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
+    <ProjectReference Include="..\NpcWpfLib\NpcWpfLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Microsoft\XNA Game Studio\v4.0\" />
+    <Folder Include="MonoGame\v3.0\" />
+    <Folder Include="Tools\" />
+    <Folder Include="ViewModels\Interface\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CompareNETObjects" Version="4.72.0" />
+    <PackageReference Include="DotNetZip" Version="1.16.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.5.0" />
+    <PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Build" Version="17.3.1">
+      <!--<ExcludeAssets>runtime</ExcludeAssets>-->
+    </PackageReference>
+    <PackageReference Include="Microsoft.Build.Framework" Version="17.3.1" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.3.1">
+      <!--<ExcludeAssets>runtime</ExcludeAssets>-->
+    </PackageReference>
+    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="NAudio.Core" Version="2.1.0" />
+    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <!--<PackageReference Include="Microsoft.Build.Locator" Version="1.5.5" />-->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="ParallelExtensionsExtras.CrossPlatform" Version="1.0.0" />
+    <PackageReference Include="PropertyTools.Wpf" Version="3.1.0" />
+    <PackageReference Include="SharpSerializer" Version="3.0.1" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.10.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.agif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchArea.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\StretchAreaGum.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\IEntityFactory.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PoolList.cs">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Resource1.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource1.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resource1.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content\BuiltInEvents.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\ContentTypes.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\ArialFont.bmfc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\Bear.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\EmptyXml.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\IGB3Song.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\OpenOfficeSpreadsheet.ods">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\ResistanceRises.ogg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\FilesForAddNewFile\SampleSound.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Libraries\BMFont\bmfont.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft.NETFramework.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft.NETFramework.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.AvailablePlatforms.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Content.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.ContentPipeline.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Windows.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Microsoft\XNA Game Studio\v4.0\Microsoft.Xna.GameStudio.Xbox 360.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MonoGame.Build.Tasks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MonoGame.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MonoGame.Content.Builder.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MonoGame\v3.0\MonoGame.Content.Builder.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Analysis.Compatibility.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Analysis.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Analysis.Tasks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Analysis.Tasks.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Aapt.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Aapt2.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Analysis.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Application.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.AvailableItems.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.Before.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.ClassParse.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.Core.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.Documentation.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.JarToXml.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Bindings.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Build.Debugging.Tasks.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Build.Tasks.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.BuildInfo.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Cecil.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Cecil.Mdb.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Cecil.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.Before.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.Debugging.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.D8.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.DefaultOutputPaths.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Designer.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.DesignTime.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.DX.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.EmbeddedResource.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.FSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Javac.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Legacy.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.PCLSupport.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.PCLSupport.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.SkipCases.projitems">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tooling.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.Aidl.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.AndroidSdk.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.AnnotationSupport.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.ApiXmlAdjuster.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.Bytecode.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.JavadocImporter.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Tools.Versions.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.VisualBasic.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Android.Wear.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\Android\Xamarin.Installer.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Analysis.Compatibility.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Analysis.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.ImplicitFacade.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Analysis.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.AppExtension.FSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.After.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.Before.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.Before.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.FSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.HotRestart.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.HotRestart.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Local.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Local.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.After.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.Before.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.After.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.ObjCBinding.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.WatchApp.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Windows.After.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Windows.Before.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.iOS.Windows.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MacCatalyst.Common.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MacCatalyst.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MacCatalyst.FSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MacCatalyst.ObjCBinding.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Messaging.Apple.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Messaging.Build.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.MonoTouch.FSharp.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Shared.ObjCBinding.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Shared.props">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Shared.Stubs.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xamarin\iOS\Xamarin.Shared.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Tools\MSBuild**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\Accessibility.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\dotnetzip\1.16.0\lib\netstandard2.0\DotNetZip.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\excss\4.1.4\lib\net6.0\ExCSS.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\fizzler\1.2.1\lib\netstandard2.0\Fizzler.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\FlatRedBall.Plugin\bin\Debug\net6.0-windows\FlatRedBall.PluginCore.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\FlatRedBall.PropertyGrid\bin\Debug\net6.0-windows\FlatRedBall.PropertyGrid.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\bin\Debug\netstandard2.0\FlatRedBallStandard.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\GlueCommon\bin\Debug\netstandard2.0\GlueCommon.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\GumDataTypes\bin\Debug\netstandard2.0\GumDataTypesStandard.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\GumRuntimeStandard\GumRuntimeStandard\bin\Debug\netstandard2.0\GumRuntimeStandard.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\harfbuzzsharp\2.8.2.1-preview.108\lib\net6.0\HarfBuzzSharp.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\jsondiffpatch.net\2.3.0\lib\netstandard2.0\JsonDiffPatchDotNet.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\comparenetobjects\4.72.0\lib\netstandard2.1\KellermanSoftware.Compare-NET-Objects.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.bcl.asyncinterfaces\5.0.0\lib\netstandard2.1\Microsoft.Bcl.AsyncInterfaces.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.build\17.3.1\ref\net6.0\Microsoft.Build.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.build.framework\17.3.1\ref\net6.0\Microsoft.Build.Framework.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.build.utilities.core\17.3.1\ref\net6.0\Microsoft.Build.Utilities.Core.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\Microsoft.CSharp.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.extensions.objectpool\5.0.10\lib\net5.0\Microsoft.Extensions.ObjectPool.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\microsoft.net.stringtools\17.3.1\ref\net6.0\Microsoft.NET.StringTools.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\Microsoft.VisualBasic.Core.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\Microsoft.VisualBasic.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\Microsoft.VisualBasic.Forms.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\Microsoft.Win32.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\Microsoft.Win32.Registry.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\Microsoft.Win32.Registry.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\Microsoft.Win32.SystemEvents.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\monogame.framework.desktopgl.core\3.8.0.13\lib\netstandard2.0\MonoGame.Framework.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\mscorlib.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.asio\2.1.0\lib\netstandard2.0\NAudio.Asio.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.core\2.1.0\lib\netstandard2.0\NAudio.Core.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio\2.1.0\lib\net6.0-windows7.0\NAudio.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.midi\2.1.0\lib\netstandard2.0\NAudio.Midi.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.vorbis\1.5.0\lib\netstandard2.0\NAudio.Vorbis.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.wasapi\2.1.0\lib\netstandard2.0\NAudio.Wasapi.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.winforms\2.1.0\lib\netcoreapp3.1\NAudio.WinForms.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\naudio.winmm\2.1.0\lib\netstandard2.0\NAudio.WinMM.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\netstandard.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\newtonsoft.json\13.0.2\lib\net6.0\Newtonsoft.Json.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\NpcWpfLib\bin\Debug\net6.0-windows\NpcWpfLib.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\nvorbis\0.10.4\lib\netstandard2.0\NVorbis.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\parallelextensionsextras.crossplatform\1.0.0\lib\netstandard2.0\ParallelExtensionsExtras.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\sharpserializer\3.0.1\lib\netstandard1.3\Polenter.SharpSerializer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.Aero.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.Aero2.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.AeroLite.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.Classic.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.Luna.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationFramework.Royale.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\PresentationUI.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\propertytools\3.1.0\lib\netstandard2.0\PropertyTools.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\propertytools.wpf\3.1.0\lib\netcoreapp3.0\PropertyTools.Wpf.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\ReachFramework.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\shimskiasharp\0.5.18\lib\net6.0\ShimSkiaSharp.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\SkiaGum.Wpf.NetCore3_0\bin\Debug\net6.0-windows\SkiaGum.Wpf.Net6.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\SkiaGumMonogame\bin\Debug\netstandard2.0\SkiaGumMonogame.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp\2.88.2\lib\net6.0\SkiaSharp.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.extended\1.60.0\lib\netstandard2.0\SkiaSharp.Extended.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.harfbuzz\2.88.1-preview.108\lib\net6.0\SkiaSharp.HarfBuzz.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.skottie\2.88.2\lib\net6.0\SkiaSharp.SceneGraph.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.skottie\2.88.2\lib\net6.0\SkiaSharp.Skottie.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.views.desktop.common\2.88.2\lib\netcoreapp3.1\SkiaSharp.Views.Desktop.Common.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\skiasharp.views.wpf\2.88.2\lib\netcoreapp3.1\SkiaSharp.Views.WPF.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\svg.custom\0.5.18\lib\net6.0\Svg.Custom.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\svg.model\0.5.18\lib\net6.0\Svg.Model.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\svg.skia\0.5.18\lib\net6.0\Svg.Skia.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.AppContext.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Buffers.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.CodeDom.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Collections.Concurrent.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Collections.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Collections.Immutable.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Collections.NonGeneric.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Collections.Specialized.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.Annotations.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\system.componentmodel.composition\6.0.0\lib\net6.0\System.ComponentModel.Composition.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.DataAnnotations.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.EventBasedAsync.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ComponentModel.TypeConverter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Configuration.ConfigurationManager.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Configuration.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Console.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Data.Common.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.Contracts.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.Debug.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.DiagnosticSource.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.EventLog.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.FileVersionInfo.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.PerformanceCounter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.Process.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.StackTrace.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.TextWriterTraceListener.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.Tools.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.TraceSource.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Diagnostics.Tracing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.DirectoryServices.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Drawing.Common.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Drawing.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Drawing.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Dynamic.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Formats.Asn1.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Globalization.Calendars.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Globalization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Globalization.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Compression.Brotli.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Compression.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Compression.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Compression.ZipFile.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.FileSystem.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.FileSystem.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.FileSystem.DriveInfo.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.FileSystem.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.FileSystem.Watcher.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.IsolatedStorage.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.MemoryMappedFiles.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.IO.Packaging.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Pipes.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.Pipes.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.IO.UnmanagedMemoryStream.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Linq.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Linq.Expressions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Linq.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Linq.Queryable.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Memory.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Http.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Http.Json.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.HttpListener.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Mail.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.NameResolution.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.NetworkInformation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Ping.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Requests.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Security.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.ServicePoint.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.Sockets.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.WebClient.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.WebHeaderCollection.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.WebProxy.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.WebSockets.Client.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Net.WebSockets.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Numerics.Vectors.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ObjectModel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Printing.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.DispatchProxy.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Emit.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Emit.ILGeneration.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Emit.Lightweight.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Metadata.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\system.reflection.metadataloadcontext\6.0.0\lib\net6.0\System.Reflection.MetadataLoadContext.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Reflection.TypeExtensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Resources.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Resources.Reader.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Resources.ResourceManager.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Resources.Writer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.CompilerServices.Unsafe.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.CompilerServices.VisualC.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Handles.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.InteropServices.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.InteropServices.RuntimeInformation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Intrinsics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Loader.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Numerics.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Serialization.Formatters.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Serialization.Json.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Serialization.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Runtime.Serialization.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Claims.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Algorithms.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Cng.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Csp.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.OpenSsl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Pkcs.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.ProtectedData.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.X509Certificates.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Security.Cryptography.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Security.Permissions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Principal.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.Principal.Windows.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Security.SecureString.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\system.servicemodel.primitives\4.10.0\ref\net6.0\System.ServiceModel.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\system.servicemodel.primitives\4.10.0\ref\net6.0\System.ServiceModel.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ServiceModel.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ServiceProcess.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.Encoding.CodePages.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.Encoding.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.Encoding.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.Encodings.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.Json.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Text.RegularExpressions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Threading.AccessControl.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Channels.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Overlapped.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Tasks.Dataflow.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Tasks.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Tasks.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Tasks.Parallel.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Thread.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.ThreadPool.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Threading.Timer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Transactions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Transactions.Local.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.ValueTuple.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Web.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Web.HttpUtility.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Controls.Ribbon.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Windows.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Extensions.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Forms.Design.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Forms.Design.Editors.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Forms.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Forms.Primitives.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Input.Manipulations.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Windows.Presentation.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.Linq.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.ReaderWriter.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.XDocument.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.XmlDocument.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.XmlSerializer.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.XPath.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\ref\net6.0\System.Xml.XPath.XDocument.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\Tiled\TMXGlueLib\bin\Debug\netstandard2.0\TMXGlueLibCore.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\ToolsUtilities\bin\Debug\netstandard2.0\ToolsUtilitiesStandard.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\topten.richtextkit\0.4.145\lib\net5.0\Topten.RichTextKit.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\UIAutomationClient.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\UIAutomationClientSideProviders.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\UIAutomationProvider.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\UIAutomationTypes.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\FRBDKUpdater\UpdaterWpf\UpdaterWpf\bin\Debug\net6.0-windows\UpdaterWpf.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\WindowsBase.dll" />
+    <ReferencePath Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\ref\net6.0\WindowsFormsIntegration.dll" />
+    <ReferencePath Include="C:\Users\vchel\Documents\GitHub\Gum\WpfDataUiCore\bin\Debug\net6.0-windows\WpfDataUiCore.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\extended.wpf.toolkit\4.5.0\lib\net5.0\Xceed.Wpf.AvalonDock.NET5.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\extended.wpf.toolkit\4.5.0\lib\net5.0\Xceed.Wpf.AvalonDock.Themes.Aero.NET5.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\extended.wpf.toolkit\4.5.0\lib\net5.0\Xceed.Wpf.AvalonDock.Themes.Metro.NET5.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\extended.wpf.toolkit\4.5.0\lib\net5.0\Xceed.Wpf.AvalonDock.Themes.VS2010.NET5.dll" />
+    <ReferencePath Include="C:\Users\vchel\.nuget\packages\extended.wpf.toolkit\4.5.0\lib\net5.0\Xceed.Wpf.Toolkit.NET5.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\ActivitySpinner.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\AddEntityWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\AddExistingFileWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\AddVariableWindowWpf.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\CustomizableNewFileWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\CustomizableTextInputWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\InitializationWindowWpf.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\ListBoxWindowWpf.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\MainPanelControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\MultiButtonMessageBoxWpf.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\NewObjectTypeSelectionControlWpf.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\RemoveObjectWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\SearchBar.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\TilesetTileSelector.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\TilesetTileSelectorFull.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Controls\ToolbarControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\AboutPlugin\AboutControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\AddScreenPlugin\Views\AddScreenOptionsView.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\CameraPlugin\CameraSettingsControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\CameraPlugin\CameraToolbar.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\CameraPlugin\Views\AspectRatioSelectionView.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\CsprojReferenceSharer\ManualReferenceCopier.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\CsprojReferenceSharer\ReferenceCopierControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\ExplorerTabPlugin\Views\ExplorerView.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\LoadRecentFilesPlugin\Views\LoadRecentWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\LoadRecentFilesPlugin\Views\RecentFileItem.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\ManagePlugins\PluginView.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\OutputPlugin\OutputControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\ProjectExclusionPlugin\ExclusionControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\Controls\ToolbarControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\GeneralErrorControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\OrphanedItemsControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\OrphanedItemsWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\ProjectListEntry.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\ProjectReferencesWindow.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\SyncedProjects\SyncedProjectsControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\TaskDisplayer\TaskDisplayerControl.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\Plugins\EmbeddedPlugins\UnreferencedFiles\UnreferencedFilesView.g.cs" />
+    <Compile Include="C:\Users\vchel\Documents\GitHub\FlatRedBall\FRBDK\Glue\Glue\obj\Debug\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="C:\Program Files\dotnet\sdk\7.0.202\Sdks\Microsoft.NET.Sdk\targets\..\analyzers\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
+    <Analyzer Include="C:\Program Files\dotnet\sdk\7.0.202\Sdks\Microsoft.NET.Sdk\targets\..\analyzers\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
+    <Analyzer Include="C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\6.0.15\analyzers/dotnet/cs/System.Text.Json.SourceGeneration.dll" />
+    <Analyzer Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\analyzers/dotnet/System.Windows.Forms.Analyzers.dll" />
+    <Analyzer Include="C:\Program Files\dotnet\packs\Microsoft.WindowsDesktop.App.Ref\6.0.15\analyzers/dotnet/cs/System.Windows.Forms.Analyzers.CSharp.dll" />
+  </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>

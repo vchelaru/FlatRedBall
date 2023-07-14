@@ -59,6 +59,22 @@ namespace TileGraphicsPlugin.Managers
                 fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
                 fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
 
+                // manually replace floats with ',' in the name with '.'
+                var lines = fileContents.Split('\n');
+                // create a for loop that goes through each line, checks if the line contains type="float" default=", and if so, replace the comma after default with a period
+
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    if (line.Contains("type=\"float\" default=\""))
+                    {
+                        var index = line.IndexOf("default=\"");
+                        var replacementLine = line.Substring(0, index + "default=\"".Length) + line.Substring(index + "default=\"".Length).Replace(',', '.');
+                        lines[i] = replacementLine;
+                    }
+                }
+                fileContents = string.Join("\n", lines);
+
                 try
                 {
                     GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
