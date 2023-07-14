@@ -68,6 +68,7 @@ namespace FlatRedBall
         /// This value can be used to uniquely identify a frame.
         /// </remarks>
         public static double CurrentTime;
+        public static int CurrentFrame;
 
         static double mLastCurrentTime;
 
@@ -178,13 +179,7 @@ namespace FlatRedBall
         /// This value is the same as 
         /// Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime
         /// </remarks>
-        public static double CurrentScreenTime
-        {
-            get
-            {
-                return Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
-            }
-        }
+        public static double CurrentScreenTime => Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
 
         public static Dictionary<string, double> SumSectionDictionary
         {
@@ -604,6 +599,7 @@ namespace FlatRedBall
 
         }
 
+        static bool isFirstUpdate = false;
         /// <summary>
         /// Performs every-frame logic to update timing values such as CurrentTime and SecondDifference.  If this method is not called, CurrentTime will not advance.
         /// </summary>
@@ -650,7 +646,7 @@ namespace FlatRedBall
                 mCurrentTime = currentSystemTime;
                 */
 
-                if(SetNextFrameTimeTo0)
+                if (SetNextFrameTimeTo0)
                 {
                     elapsedTime = 0;
                     SetNextFrameTimeTo0 = false;
@@ -674,9 +670,22 @@ namespace FlatRedBall
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
-            
+
+            if (isFirstUpdate)
+            {
+                isFirstUpdate = false;
+            }
+            else
+            {
+                CurrentFrame++;
+            }
+        }
+
+        internal static void DoScreenTimeDelayTaskLogic()
+        {
+
             // Check if any delayed tasks should be completed
-            while (mScreenTimeDelayedTasks.Any())
+            while (mScreenTimeDelayedTasks.Count > 0)
             {
                 var first = mScreenTimeDelayedTasks.First();
                 if (first.Key <= CurrentScreenTime)
