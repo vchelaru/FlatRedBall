@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using FlatRedBall.IO;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlatRedBall
@@ -67,6 +68,7 @@ namespace FlatRedBall
         /// This value can be used to uniquely identify a frame.
         /// </remarks>
         public static double CurrentTime;
+        public static int CurrentFrame;
 
         static double mLastCurrentTime;
 
@@ -100,6 +102,9 @@ namespace FlatRedBall
 		static TimeMeasurementUnit mTimedSectionReportngUnit = TimeMeasurementUnit.Millisecond;
 
 		static float mMaxFrameTime = 0.5f;
+		
+        static readonly SortedList<double, TaskCompletionSource<object>> mScreenTimeDelayedTasks = 
+            new SortedList<double, TaskCompletionSource<object>>();
 
         #endregion
 
@@ -174,13 +179,7 @@ namespace FlatRedBall
         /// This value is the same as 
         /// Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime
         /// </remarks>
-        public static double CurrentScreenTime
-        {
-            get
-            {
-                return Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
-            }
-        }
+        public static double CurrentScreenTime => Screens.ScreenManager.CurrentScreen.PauseAdjustedCurrentTime;
 
         public static Dictionary<string, double> SumSectionDictionary
         {
@@ -567,14 +566,13 @@ namespace FlatRedBall
             return DelaySeconds(timeSpan.TotalSeconds);
         }
 
-        public static async Task DelaySeconds(double seconds)
+        public static Task DelaySeconds(double seconds)
         {
             var time = CurrentScreenTime + seconds;
-            while(CurrentScreenTime < time)
-            {
-                //await Task.Delay(1);
-                await Task.Yield();
-            }
+            var taskSource = new TaskCompletionSource<object>();
+            mScreenTimeDelayedTasks.Add(time, taskSource);
+
+            return taskSource.Task;
         }
 
         public static async Task DelayUntil(Func<bool> predicate)
@@ -601,6 +599,7 @@ namespace FlatRedBall
 
         }
 
+        static bool isFirstUpdate = false;
         /// <summary>
         /// Performs every-frame logic to update timing values such as CurrentTime and SecondDifference.  If this method is not called, CurrentTime will not advance.
         /// </summary>
@@ -611,7 +610,6 @@ namespace FlatRedBall
 
             lastSections.Clear();
             lastSectionLabels.Clear();
-
 
             for (int i = sections.Count - 1; i > -1; i--)
             {
@@ -648,7 +646,7 @@ namespace FlatRedBall
                 mCurrentTime = currentSystemTime;
                 */
 
-                if(SetNextFrameTimeTo0)
+                if (SetNextFrameTimeTo0)
                 {
                     elapsedTime = 0;
                     SetNextFrameTimeTo0 = false;
@@ -672,6 +670,35 @@ namespace FlatRedBall
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
+
+            if (isFirstUpdate)
+            {
+                isFirstUpdate = false;
+            }
+            else
+            {
+                CurrentFrame++;
+            }
+        }
+
+        internal static void DoScreenTimeDelayTaskLogic()
+        {
+
+            // Check if any delayed tasks should be completed
+            while (mScreenTimeDelayedTasks.Count > 0)
+            {
+                var first = mScreenTimeDelayedTasks.First();
+                if (first.Key <= CurrentScreenTime)
+                {
+                    mScreenTimeDelayedTasks.Remove(first.Key);
+                    first.Value.SetResult(null);
+                }
+                else
+                {
+                    // The earliest task is not ready to be completed, so we can stop checking
+                    break;
+                }
+            }
         }
 
         #endregion
