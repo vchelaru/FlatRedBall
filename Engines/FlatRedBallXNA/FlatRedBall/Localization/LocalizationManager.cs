@@ -5,7 +5,6 @@ using System.Text;
 using FlatRedBall.IO.Csv;
 using System.Collections.ObjectModel;
 using FlatRedBall.Utilities;
-using Microsoft.VisualBasic;
 
 namespace FlatRedBall.Localization
 {
