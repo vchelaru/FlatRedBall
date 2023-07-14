@@ -114,8 +114,17 @@ namespace OfficialPlugins.FrbdkUpdater
             await process.WaitForExitAsync();
 
             var command =
-@"timeout /T 3 /NOBREAK & " +
-@"cd.. & " + 
+                @"timeout /T 3 /NOBREAK & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                command +=
+                    @"cd.. & ";
+            }
+
+
+
+            command +=
 @"cd FlatRedBall & " + 
 @"cd FRBDK\Glue & " +
 @"dotnet build ""Glue with All.sln"" & " +
