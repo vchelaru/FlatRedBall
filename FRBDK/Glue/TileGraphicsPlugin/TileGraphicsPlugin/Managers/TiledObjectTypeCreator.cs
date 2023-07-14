@@ -40,11 +40,12 @@ namespace TileGraphicsPlugin.Managers
                 var newCulture = (CultureInfo)oldCulture.Clone();
                 newCulture.NumberFormat.NumberDecimalSeparator = "."; //Force use . insted of ,
                 System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
+                CultureInfo.CurrentCulture = newCulture;
 
                 FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
 
                 System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
-
+                CultureInfo.CurrentCulture = oldCulture;
 
                 // Not sure how to fix this other than this hacky solution:
                 fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
