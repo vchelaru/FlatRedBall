@@ -71,7 +71,9 @@ namespace FlatRedBall.Audio
                 if(value != null)
                 {
                     masterSongVolume = value;
+#if !IOS
                     MediaPlayer.Volume = masterSongVolume.Value;
+#endif
                     if(CurrentISong != null)
                     {
                         CurrentISong.Volume = masterSongVolume.Value;
@@ -94,7 +96,7 @@ namespace FlatRedBall.Audio
 #endif
 
 
-        #endregion
+#endregion
 
         #region Properties
 
