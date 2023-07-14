@@ -54,15 +54,40 @@ namespace OfficialPlugins.FrbdkUpdater
             {
                 gitCommand +=
                     $@"echo ""Pulling game {GlueState.Self.CurrentMainProject.Name}..."" & " +
-                    @"echo %cd% & " +
                     @"git fetch & " +
                     @"git pull & ";
             }
+
+            int numberOfCds = 0;
+            var slnPath = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
+            var currentPath = slnPath;
+
+            while(true)
+            {
+                numberOfCds++;
+                currentPath = currentPath.GetDirectoryContainingThis();
+                var directories = System.IO.Directory.GetDirectories(currentPath.FullPath);
+
+                var hasGum = directories.Any(item => item.EndsWith("Gum"));
+                var hasFrb = directories.Any(item => item.EndsWith("FlatRedBall"));
+
+                if(hasGum && hasFrb)
+                {
+                    break;
+                }
+            }
+
             gitCommand +=
-                @"echo ""Moving to the Gum folder"" & " +
-                @"cd.. & " +
+                @"echo ""Moving to the Gum folder"" & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                gitCommand +=
+                    @"cd.. & ";
+            }
+            
+            gitCommand +=
                 @"cd Gum & " +
-                @"echo %cd% & " + 
 
                 $@"echo ""Pulling Gum..."" & " +
                 @"git fetch & " +
@@ -71,7 +96,6 @@ namespace OfficialPlugins.FrbdkUpdater
                 @"echo ""Moving to the FRB folder"" & " +
                 @"cd.. & " +
                 @"cd FlatRedBall & " +
-                @"echo %cd% & " +
 
                 $@"echo ""Pulling FlatRedBall..."" & " +
                 @"git fetch & " +
