@@ -258,6 +258,7 @@ namespace FlatRedBall.Screens
                 Instructions.InstructionManager.Instructions.Clear();
 
                 FlatRedBallServices.singleThreadSynchronizationContext.Clear();
+                TimeManager.ClearTasks();
 
                 //mCurrentScreen.Destroy();
 

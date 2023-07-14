@@ -36,6 +36,12 @@ namespace FlatRedBall
         }
     }
 
+    struct TimedTasks
+    {
+        public double Time;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
     #endregion
     
     /// <summary>
@@ -102,9 +108,9 @@ namespace FlatRedBall
 		static TimeMeasurementUnit mTimedSectionReportngUnit = TimeMeasurementUnit.Millisecond;
 
 		static float mMaxFrameTime = 0.5f;
-		
-        static readonly SortedList<double, TaskCompletionSource<object>> mScreenTimeDelayedTasks = 
-            new SortedList<double, TaskCompletionSource<object>>();
+
+        static readonly List<TimedTasks> mScreenTimeDelayedTasks =
+            new List<TimedTasks>();
 
         #endregion
 
@@ -570,7 +576,18 @@ namespace FlatRedBall
         {
             var time = CurrentScreenTime + seconds;
             var taskSource = new TaskCompletionSource<object>();
-            mScreenTimeDelayedTasks.Add(time, taskSource);
+
+            var index = 0;
+            for(int i = 0; i < mScreenTimeDelayedTasks.Count; i++)
+            {
+                if (mScreenTimeDelayedTasks[i].Time > time)
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            mScreenTimeDelayedTasks.Insert(index, new TimedTasks { Time = time, TaskCompletionSource = taskSource});
 
             return taskSource.Task;
         }
@@ -687,11 +704,11 @@ namespace FlatRedBall
             // Check if any delayed tasks should be completed
             while (mScreenTimeDelayedTasks.Count > 0)
             {
-                var first = mScreenTimeDelayedTasks.First();
-                if (first.Key <= CurrentScreenTime)
+                var first = mScreenTimeDelayedTasks[0];
+                if (first.Time <= CurrentScreenTime)
                 {
-                    mScreenTimeDelayedTasks.Remove(first.Key);
-                    first.Value.SetResult(null);
+                    mScreenTimeDelayedTasks.RemoveAt(0);
+                    first.TaskCompletionSource.SetResult(null);
                 }
                 else
                 {
@@ -699,6 +716,11 @@ namespace FlatRedBall
                     break;
                 }
             }
+        }
+
+        internal static void ClearTasks()
+        {
+            mScreenTimeDelayedTasks.Clear();
         }
 
         #endregion
