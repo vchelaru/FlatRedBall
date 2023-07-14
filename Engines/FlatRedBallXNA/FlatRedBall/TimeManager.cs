@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using FlatRedBall.IO;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlatRedBall
@@ -100,6 +101,9 @@ namespace FlatRedBall
 		static TimeMeasurementUnit mTimedSectionReportngUnit = TimeMeasurementUnit.Millisecond;
 
 		static float mMaxFrameTime = 0.5f;
+		
+        static readonly SortedList<double, TaskCompletionSource<object>> mScreenTimeDelayedTasks = 
+            new SortedList<double, TaskCompletionSource<object>>();
 
         #endregion
 
@@ -567,14 +571,13 @@ namespace FlatRedBall
             return DelaySeconds(timeSpan.TotalSeconds);
         }
 
-        public static async Task DelaySeconds(double seconds)
+        public static Task DelaySeconds(double seconds)
         {
             var time = CurrentScreenTime + seconds;
-            while(CurrentScreenTime < time)
-            {
-                //await Task.Delay(1);
-                await Task.Yield();
-            }
+            var taskSource = new TaskCompletionSource<object>();
+            mScreenTimeDelayedTasks.Add(time, taskSource);
+
+            return taskSource.Task;
         }
 
         public static async Task DelayUntil(Func<bool> predicate)
@@ -611,7 +614,6 @@ namespace FlatRedBall
 
             lastSections.Clear();
             lastSectionLabels.Clear();
-
 
             for (int i = sections.Count - 1; i > -1; i--)
             {
@@ -672,6 +674,22 @@ namespace FlatRedBall
 
             mSecondDifferenceSquaredDividedByTwo = (mSecondDifference * mSecondDifference) / 2.0f;
             mCurrentTimeForTimedSections = currentSystemTime;
+            
+            // Check if any delayed tasks should be completed
+            while (mScreenTimeDelayedTasks.Any())
+            {
+                var first = mScreenTimeDelayedTasks.First();
+                if (first.Key <= CurrentScreenTime)
+                {
+                    mScreenTimeDelayedTasks.Remove(first.Key);
+                    first.Value.SetResult(null);
+                }
+                else
+                {
+                    // The earliest task is not ready to be completed, so we can stop checking
+                    break;
+                }
+            }
         }
 
         #endregion
