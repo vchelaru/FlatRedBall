@@ -577,7 +577,7 @@ namespace FlatRedBall
             var time = CurrentScreenTime + seconds;
             var taskSource = new TaskCompletionSource<object>();
 
-            var index = 0;
+            var index = mScreenTimeDelayedTasks.Count;
             for(int i = 0; i < mScreenTimeDelayedTasks.Count; i++)
             {
                 if (mScreenTimeDelayedTasks[i].Time > time)
