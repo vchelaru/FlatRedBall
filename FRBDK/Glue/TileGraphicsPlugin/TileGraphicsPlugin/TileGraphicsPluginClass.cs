@@ -304,7 +304,7 @@ namespace TileGraphicsPlugin
                 }
                 else if(glueElement != null)
                 {
-                    if (changedMember == nameof(EntitySave.CreatedByOtherEntities))
+                    if (changedMember == nameof(EntitySave.CreatedByOtherEntities) || changedMember == nameof(EntitySave.Name))
                     {
                         tiledObjectTypeCreator.RefreshFile();
                     }
@@ -335,6 +335,11 @@ namespace TileGraphicsPlugin
                 {
                     tiledObjectTypeCreator.RefreshFile();
                 }
+            };
+
+            this.NewEntityCreated += (newEntityCreated) =>
+            {
+                tiledObjectTypeCreator.RefreshFile();
             };
 
             //this.ModifyAddEntityWindow += ModifyAddEntityWindowLogic.HandleModifyAddEntityWindow;

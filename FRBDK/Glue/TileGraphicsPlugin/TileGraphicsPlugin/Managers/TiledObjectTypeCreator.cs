@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -18,44 +19,51 @@ namespace TileGraphicsPlugin.Managers
     public class TiledObjectTypeCreator
     {
 
-        public void RefreshFile()
+        public async Task RefreshFile()
         {
-            var fileName = GetTiledObjectTypeFileName();
-
-            var entities = GetEntitiesForTiledObjectTypeFile();
-            var whatToSave = CreateTiledObjectTypeListFrom(entities);
-
-            string fileContents;
-
-
-            // fix for https://github.com/vchelaru/FlatRedBall/issues/396
-            // Fix from : https://stackoverflow.com/questions/21140292/how-to-define-the-culture-that-the-xmlserializer-uses
-            var oldCulture = CultureInfo.CurrentCulture;
-            var newCulture = (CultureInfo)oldCulture.Clone();
-            newCulture.NumberFormat.NumberDecimalSeparator = "."; //Force use . insted of ,
-            System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
-
-            FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
-
-            System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
-
-
-            // Not sure how to fix this other than this hacky solution:
-            fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
-            fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
-            fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
-            fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
-
-            try
+            // Task this for 2 reasons:
+            // 1: Just to avoid any potential threading issues
+            // 2: To make sure this is processed after the rename propagates so it uses the new name.
+            await TaskManager.Self.AddAsync(() =>
             {
-                GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
-            }
-            catch(System.IO.IOException)
-            {
-                // It's probably in use, so just output that it wasn't saved, we'll try again later
-                GlueCommands.Self.PrintOutput("Could not save Tiled XML file because it is in use. Will try again later. Reload the Glue project" +
-                    "to force a regeneration.");
-            }
+                var fileName = GetTiledObjectTypeFileName();
+
+                var entities = GetEntitiesForTiledObjectTypeFile();
+                var whatToSave = CreateTiledObjectTypeListFrom(entities);
+
+                string fileContents;
+
+
+                // fix for https://github.com/vchelaru/FlatRedBall/issues/396
+                // Fix from : https://stackoverflow.com/questions/21140292/how-to-define-the-culture-that-the-xmlserializer-uses
+                var oldCulture = CultureInfo.CurrentCulture;
+                var newCulture = (CultureInfo)oldCulture.Clone();
+                newCulture.NumberFormat.NumberDecimalSeparator = "."; //Force use . insted of ,
+                System.Threading.Thread.CurrentThread.CurrentCulture = newCulture;
+
+                FlatRedBall.IO.FileManager.XmlSerialize(whatToSave, out fileContents);
+
+                System.Threading.Thread.CurrentThread.CurrentCulture = oldCulture;
+
+
+                // Not sure how to fix this other than this hacky solution:
+                fileContents = fileContents.Replace("<TiledObjectTypeSave ", "<objecttype ");
+                fileContents = fileContents.Replace("</TiledObjectTypeSave>", "</objecttype>");
+                fileContents = fileContents.Replace("<ArrayOfTiledObjectTypeSave", "<objecttypes");
+                fileContents = fileContents.Replace("</ArrayOfTiledObjectTypeSave>", "</objecttypes>");
+
+                try
+                {
+                    GlueCommands.Self.TryMultipleTimes(() => FlatRedBall.IO.FileManager.SaveText(fileContents, fileName.FullPath));
+                }
+                catch(System.IO.IOException)
+                {
+                    // It's probably in use, so just output that it wasn't saved, we'll try again later
+                    GlueCommands.Self.PrintOutput("Could not save Tiled XML file because it is in use. Will try again later. Reload the Glue project" +
+                        "to force a regeneration.");
+                }
+
+            }, "Refreshing Tiled Object Type File");    
         }
 
         public static FilePath GetTiledObjectTypeFileName()
