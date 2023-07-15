@@ -587,6 +587,10 @@ namespace FlatRedBall
 
         public static Task DelaySeconds(double seconds)
         {
+            if(seconds <= 0)
+            {
+                return Task.CompletedTask;
+            }
             var time = CurrentScreenTime + seconds;
             var taskSource = new TaskCompletionSource<object>();
 
@@ -607,6 +611,10 @@ namespace FlatRedBall
 
         public static Task DelayUntil(Func<bool> predicate)
         {
+            if(predicate())
+            {
+                return Task.CompletedTask;
+            }
             var taskSource = new TaskCompletionSource<object>();
             predicateTasks.Add(new PredicateTask { Predicate = predicate, TaskCompletionSource = taskSource });
             return taskSource.Task;
@@ -614,6 +622,10 @@ namespace FlatRedBall
 
         public static Task DelayFrames(int frameCount)
         {
+            if(frameCount < = 0)
+            {
+                return Task.CompletedTask;
+            }
             var taskSource = new TaskCompletionSource<object>();
             var index = frameTasks.Count;
             var absoluteFrame = TimeManager.CurrentFrame + frameCount;
