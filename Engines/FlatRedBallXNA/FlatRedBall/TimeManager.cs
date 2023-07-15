@@ -720,6 +720,11 @@ namespace FlatRedBall
 
         internal static void ClearTasks()
         {
+            foreach (var timedTasks in mScreenTimeDelayedTasks)
+            {
+                timedTasks.TaskCompletionSource.SetCanceled();
+            }
+            
             mScreenTimeDelayedTasks.Clear();
         }
 
