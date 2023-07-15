@@ -8,6 +8,7 @@ using FlatRedBall.IO;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace FlatRedBall
 {
@@ -42,6 +43,18 @@ namespace FlatRedBall
         public TaskCompletionSource<object> TaskCompletionSource;
     }
 
+    struct PredicateTask
+    {
+        public Func<bool> Predicate;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
+    struct FrameTask
+    {
+        public int FrameIndex;
+        public TaskCompletionSource<object> TaskCompletionSource;
+    }
+
     #endregion
     
     /// <summary>
@@ -56,7 +69,6 @@ namespace FlatRedBall
 
 
         #endregion
-
 
         #region Fields
 
@@ -109,8 +121,9 @@ namespace FlatRedBall
 
 		static float mMaxFrameTime = 0.5f;
 
-        static readonly List<TimedTasks> mScreenTimeDelayedTasks =
-            new List<TimedTasks>();
+        static readonly List<TimedTasks> screenTimeDelayedTasks = new List<TimedTasks>();
+        static readonly List<PredicateTask> predicateTasks = new List<PredicateTask>();
+        static readonly List<FrameTask> frameTasks = new List<FrameTask>();
 
         #endregion
 
@@ -577,42 +590,43 @@ namespace FlatRedBall
             var time = CurrentScreenTime + seconds;
             var taskSource = new TaskCompletionSource<object>();
 
-            var index = mScreenTimeDelayedTasks.Count;
-            for(int i = 0; i < mScreenTimeDelayedTasks.Count; i++)
+            var index = screenTimeDelayedTasks.Count;
+            for(int i = 0; i < screenTimeDelayedTasks.Count; i++)
             {
-                if (mScreenTimeDelayedTasks[i].Time > time)
+                if (screenTimeDelayedTasks[i].Time > time)
                 {
                     index = i;
                     break;
                 }
             }
 
-            mScreenTimeDelayedTasks.Insert(index, new TimedTasks { Time = time, TaskCompletionSource = taskSource});
+            screenTimeDelayedTasks.Insert(index, new TimedTasks { Time = time, TaskCompletionSource = taskSource});
 
             return taskSource.Task;
         }
 
-        public static async Task DelayUntil(Func<bool> predicate)
+        public static Task DelayUntil(Func<bool> predicate)
         {
-            while(predicate() == false)
-            {
-                await Task.Yield();
-            }
+            var taskSource = new TaskCompletionSource<object>();
+            predicateTasks.Add(new PredicateTask { Predicate = predicate, TaskCompletionSource = taskSource });
+            return taskSource.Task;
         }
 
-        public static async Task DelayFrames(int frameCount)
+        public static Task DelayFrames(int frameCount)
         {
-            var currentFrame = TimeManager.CurrentTime;
-
-            while(frameCount > 0)
+            var taskSource = new TaskCompletionSource<object>();
+            var index = frameTasks.Count;
+            var absoluteFrame = TimeManager.CurrentFrame + frameCount;
+            for (int i = 0; i < frameTasks.Count; i++)
             {
-                await Task.Yield();
-                if(currentFrame != TimeManager.CurrentTime)
+                if (frameTasks[i].FrameIndex > absoluteFrame)
                 {
-                    currentFrame = TimeManager.CurrentTime;
-                    frameCount--;
+                    index = i;
+                    break;
                 }
             }
+            frameTasks.Insert(index, new FrameTask { FrameIndex = absoluteFrame, TaskCompletionSource = taskSource });
+            return taskSource.Task;
 
         }
 
@@ -698,16 +712,16 @@ namespace FlatRedBall
             }
         }
 
-        internal static void DoScreenTimeDelayTaskLogic()
+        internal static void DoTaskLogic()
         {
 
             // Check if any delayed tasks should be completed
-            while (mScreenTimeDelayedTasks.Count > 0)
+            while (screenTimeDelayedTasks.Count > 0)
             {
-                var first = mScreenTimeDelayedTasks[0];
+                var first = screenTimeDelayedTasks[0];
                 if (first.Time <= CurrentScreenTime)
                 {
-                    mScreenTimeDelayedTasks.RemoveAt(0);
+                    screenTimeDelayedTasks.RemoveAt(0);
                     first.TaskCompletionSource.SetResult(null);
                 }
                 else
@@ -716,16 +730,54 @@ namespace FlatRedBall
                     break;
                 }
             }
+
+            // Check if any predicate tasks should be completed
+            // do a reverse loop, run the predicate, and remove them and set their result to null if the predicate is true
+            for(int i = predicateTasks.Count - 1; i > -1; i--)
+            {
+                var predicateTask = predicateTasks[i];
+                if(predicateTask.Predicate())
+                {
+                    predicateTasks.RemoveAt(i);
+                    predicateTask.TaskCompletionSource.SetResult(null);
+                }
+            }
+
+            while(frameTasks.Count > 0)
+            {
+                var first = frameTasks[0];
+                if(first.FrameIndex <= CurrentFrame)
+                {
+                    frameTasks.RemoveAt(0);
+                    first.TaskCompletionSource.SetResult(null);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
         }
 
         internal static void ClearTasks()
         {
-            foreach (var timedTasks in mScreenTimeDelayedTasks)
+            foreach (var timedTasks in screenTimeDelayedTasks)
             {
                 timedTasks.TaskCompletionSource.SetCanceled();
             }
-            
-            mScreenTimeDelayedTasks.Clear();
+            screenTimeDelayedTasks.Clear();
+
+            foreach(var predicateTask in predicateTasks)
+            {
+                predicateTask.TaskCompletionSource.SetCanceled();
+            }   
+            predicateTasks.Clear();
+
+            foreach(var frameTask in frameTasks)
+            {
+                frameTask.TaskCompletionSource.SetCanceled();
+            }
+            frameTasks.Clear();
         }
 
         #endregion
