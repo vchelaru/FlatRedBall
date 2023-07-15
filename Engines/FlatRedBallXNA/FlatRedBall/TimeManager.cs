@@ -592,7 +592,7 @@ namespace FlatRedBall
                 return Task.CompletedTask;
             }
             var time = CurrentScreenTime + seconds;
-            var taskSource = new TaskCompletionSource<object>();
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             var index = screenTimeDelayedTasks.Count;
             for(int i = 0; i < screenTimeDelayedTasks.Count; i++)
@@ -615,7 +615,7 @@ namespace FlatRedBall
             {
                 return Task.CompletedTask;
             }
-            var taskSource = new TaskCompletionSource<object>();
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             predicateTasks.Add(new PredicateTask { Predicate = predicate, TaskCompletionSource = taskSource });
             return taskSource.Task;
         }
@@ -626,7 +626,7 @@ namespace FlatRedBall
             {
                 return Task.CompletedTask;
             }
-            var taskSource = new TaskCompletionSource<object>();
+            var taskSource = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
             var index = frameTasks.Count;
             var absoluteFrame = TimeManager.CurrentFrame + frameCount;
             for (int i = 0; i < frameTasks.Count; i++)

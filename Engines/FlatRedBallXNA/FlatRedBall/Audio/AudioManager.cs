@@ -96,10 +96,6 @@ namespace FlatRedBall.Audio
 #endif
 
 
-#endregion
-
-        #region Properties
-
         public static bool IsCustomMusicPlaying
         {
             get => Microsoft.Xna.Framework.Media.MediaPlayer.GameHasControl == false;

@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Math.Geometry;
@@ -122,7 +123,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 shouldConsider = nos != null &&
                     nos.IsList &&
                     !string.IsNullOrEmpty(nos.SourceClassGenericType) &&
-                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.ImplementsICollidable == true;
+                    ObjectFinder.Self.GetEntitySave(nos.SourceClassGenericType)?.IsICollidableRecursive() == true;
             }
 
             if (!shouldConsider)
@@ -145,7 +146,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             EntitySave entity = null;
             if (nos != null)
             {
-                return GetEntitySaveReferencedBy(nos)?.ImplementsICollidable == true;
+                return GetEntitySaveReferencedBy(nos)?.IsICollidableRecursive() == true;
             }
             return false;
         }

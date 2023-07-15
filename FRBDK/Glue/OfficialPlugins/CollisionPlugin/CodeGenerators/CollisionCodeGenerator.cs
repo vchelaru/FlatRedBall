@@ -3,6 +3,7 @@ using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using OfficialPlugins.CollisionPlugin.Managers;
@@ -629,8 +630,7 @@ namespace OfficialPlugins.CollisionPlugin
 
                 var entity = ObjectFinder.Self.GetEntitySave(genericType);
 
-                // todo - what about inheritance? We may need to handle that here.
-                return entity?.ImplementsICollidable == true;
+                return entity?.IsICollidableRecursive() == true;
             }
 
             return false;

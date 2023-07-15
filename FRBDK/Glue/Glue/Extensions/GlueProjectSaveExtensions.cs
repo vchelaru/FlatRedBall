@@ -224,7 +224,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for (int i = nosList.Count-1; i > -1; i--)
             {
-                bool shouldStrip = DetermineIfShouldStripNos(baseElements, nosList[i]);
+                var nos = nosList[i];
+                bool shouldStrip = DetermineIfShouldStripNos(baseElements, nos);
 
                 if (shouldStrip)
                 {
@@ -261,6 +262,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (shouldStrip)
             {
+                if (nos.ContainedObjects.Count > 0)
+                {
+                    shouldStrip = false;
+                }
+            }
+
+            if(shouldStrip)
+            { 
                 // see if any properties differ from the base
                 var allBaseNamedObjects = baseElements
                     .SelectMany(item => item.NamedObjects)
@@ -280,11 +289,6 @@ namespace FlatRedBall.Glue.SaveClasses
                         break;
                     }
 
-                    if (nos.ContainedObjects.Count > 0)
-                    {
-                        shouldStrip = false;
-                        break;
-                    }
                 }
             }
 
