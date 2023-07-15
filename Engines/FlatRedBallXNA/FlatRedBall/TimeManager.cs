@@ -622,7 +622,7 @@ namespace FlatRedBall
 
         public static Task DelayFrames(int frameCount)
         {
-            if(frameCount < = 0)
+            if(frameCount <= 0)
             {
                 return Task.CompletedTask;
             }
