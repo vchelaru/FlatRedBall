@@ -773,19 +773,19 @@ namespace FlatRedBall
 
         internal static void ClearTasks()
         {
-            foreach (var timedTasks in screenTimeDelayedTasks)
+            foreach (var timedTasks in screenTimeDelayedTasks.ToList())
             {
                 timedTasks.TaskCompletionSource.SetCanceled();
             }
             screenTimeDelayedTasks.Clear();
 
-            foreach(var predicateTask in predicateTasks)
+            foreach(var predicateTask in predicateTasks.ToList())
             {
                 predicateTask.TaskCompletionSource.SetCanceled();
             }   
             predicateTasks.Clear();
 
-            foreach(var frameTask in frameTasks)
+            foreach(var frameTask in frameTasks.ToList())
             {
                 frameTask.TaskCompletionSource.SetCanceled();
             }

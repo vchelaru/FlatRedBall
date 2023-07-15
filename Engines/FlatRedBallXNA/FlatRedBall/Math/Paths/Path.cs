@@ -491,6 +491,9 @@ namespace FlatRedBall.Math.Paths
 
                 var startXOffset = segment.StartX - xToFlipAbout;
                 segment.StartX = xToFlipAbout - startXOffset;
+
+                segment.StartVelocity.X *= -1;
+                segment.EndVelocity.X *= -1;
             }
         }
 
