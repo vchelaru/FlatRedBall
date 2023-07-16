@@ -319,6 +319,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 element.ClassName,
                 stringBuilder);
 
+            string additionalUsings = "";
+
+            if(element is ScreenSave)
+            {
+                additionalUsings = $"using {GlueState.ProjectNamespace}.Entities;";
+            }
+
+            stringBuilder.Replace("// Additional usings", additionalUsings);
+
             string modifiedTemplate = stringBuilder.ToString();
 
             FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
