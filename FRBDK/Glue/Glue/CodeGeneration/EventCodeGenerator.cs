@@ -712,7 +712,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 PluginManager.ReceiveOutput("Forcing a regneration of " + fullFileName + " because Glue can't find it anywhere.");
 
                 // There is no shared code file for this event, so we need to make one
-                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fullFileName, true);
+                ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fullFileName, true);
             }
 
             if (!doesFileExist || forceRegenerateContents)
@@ -740,7 +740,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             // Add if it isn't part of the project
             const bool saveFile = false; // don't save it - we just want to make sure it's part of the project
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fullFileName, saveFile);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fullFileName, saveFile);
 
         }
 

@@ -328,17 +328,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(fullNonGeneratedFileName, save: false);
 
 
-                string projectNamespace = ProjectManager.ProjectNamespace;
-
-                StringBuilder stringBuilder = new StringBuilder(CodeWriter.ScreenTemplateCode);
-
-                CodeWriter.SetClassNameAndNamespace(
-                    projectNamespace + ".Screens",
-                    screenName,
-                    stringBuilder);
-
-                string modifiedTemplate = stringBuilder.ToString();
-
+                var shouldGenerateCustomCode = addedScreen != null;
 
                 if (addedScreen == null)
                 {
@@ -347,13 +337,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         MessageBox.Show("There is already a file named\n\n" + fullNonGeneratedFileName + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
                     }
                 }
-                else
+                
+                if(shouldGenerateCustomCode)
                 {
-
-                    FileManager.SaveText(
-                        modifiedTemplate,
-                        fullNonGeneratedFileName
-                        );
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(screenSave);
                 }
 
 
@@ -362,7 +349,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 #region Create <ScreenName>.Generated.cs
 
                 string generatedFileName = @"Screens\" + screenName + ".Generated.cs";
-                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
+                ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
 
                 #endregion
@@ -854,32 +841,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
             #region Create the Entity custom code file (not the generated version)
 
-
-
             var newItem = GlueCommands.Self.ProjectCommands.CreateAndAddCodeFile(
                 customCodeFilePath, false);
 
-            string projectNamespace = GlueState.Self.ProjectNamespace;
-
-
-            string directory = FileManager.GetDirectory(entitySave.Name);
-            if (!directory.ToLower().EndsWith(projectNamespace.ToLower() + "/entities/"))
-            {
-                GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-                // test this on doubly-embedded Entities.
-                projectNamespace = GlueCommands.Self.GenerateCodeCommands.GetNamespaceForElement(entitySave);
-                // += (".Entities." + FileManager.RemovePath(directory)).Replace("/", "");
-            }
-
-            StringBuilder stringBuilder = new StringBuilder(CodeWriter.EntityTemplateCode);
-
-            CodeWriter.SetClassNameAndNamespace(
-                projectNamespace,
-                entitySave.ClassName,
-                stringBuilder);
-
-            string modifiedTemplate = stringBuilder.ToString();
-
+            var shouldRewriteCode = newItem != null;
 
             if (newItem == null)
             {
@@ -888,17 +853,21 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     MessageBox.Show("There is already a file named\n\n" + customCodeFilePath + "\n\nThis file will be used instead of creating a new one just in case you have code that you want to keep there.");
                 }
             }
-            else
+
+            if(shouldRewriteCode)
             {
-                FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(entitySave);
             }
             #endregion
 
             #region Create <EntityName>.Generated.cs
 
-            string generatedFileName = FileManager.MakeRelative(directory).Replace("/", "\\") + entitySave.ClassName + ".Generated.cs";
+            var customCodePath = GlueCommands.Self.FileCommands.GetCustomCodeFilePath(entitySave);
+            var directory = customCodePath.GetDirectoryContainingThis();
 
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(generatedFileName, true);
+            string generatedFileName = FileManager.MakeRelative(directory.FullPath).Replace("/", "\\") + entitySave.ClassName + ".Generated.cs";
+
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(generatedFileName, true);
 
             #endregion
 
@@ -908,7 +877,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         #endregion

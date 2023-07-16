@@ -48,7 +48,7 @@ namespace FlatRedBall.Glue.Parsing
     {
         #region Fields
 
-        private static string mScreenTemplateCode =
+        private const string mScreenTemplateCode =
 @"using System;
 using System.Collections.Generic;
 using System.Text;
@@ -100,7 +100,7 @@ namespace FlatRedBallAddOns.Screens
 }
 ";
 
-        private static string mEntityTemplateCode =
+        private const string mEntityTemplateCode =
 @"using System;
 using System.Collections.Generic;
 using System.Text;
@@ -155,15 +155,10 @@ namespace FlatRedBallAddOns.Entities
 
         #region Properties
 
-        public static string ScreenTemplateCode
-        {
-            get { return mScreenTemplateCode; }
-        }
+        public static string ScreenTemplateCode => mScreenTemplateCode; 
 
-        public static string EntityTemplateCode
-        {
-            get { return mEntityTemplateCode; }
-        }
+        public static string EntityTemplateCode => mEntityTemplateCode; 
+        
 
         public static List<ElementComponentCodeGenerator> CodeGenerators
         {
@@ -720,7 +715,7 @@ namespace FlatRedBallAddOns.Entities
         {
             // let's make a generated file
             string fileName = saveObject.Name + ".Generated.cs";
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, true);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, true);
             PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + saveObject.Name + ".cs");
         }
 
@@ -2237,66 +2232,6 @@ namespace FlatRedBallAddOns.Entities
 
 
 
-        internal static void GenerateAndAddElementCustomCode(IElement element)
-        {
-            string fileName = element.Name + ".cs";
-
-            string elementNamespace = ProjectManager.ProjectNamespace;
-            string namespaceToAppend = FileManager.GetDirectory(fileName, RelativeType.Relative);
-            // remove the trailing '.'
-            namespaceToAppend = namespaceToAppend.Substring(0, namespaceToAppend.Length - 1);
-
-            StringBuilder stringBuilder;
-
-            if (element is EntitySave)
-            {
-                if (namespaceToAppend.Length > "Entities".Length)
-                {
-                    namespaceToAppend = ".Entities." + namespaceToAppend.Substring("Entities\\".Length).Replace("/", ".").Replace("\\", ".");
-                }
-                else
-                {
-                    // I don't know why the code is appending
-                    // a '.' at the end of "Entities", this makes
-                    // code not compile:
-                    //namespaceToAppend = ".Entities.";
-                    namespaceToAppend = ".Entities";
-                }
-
-                stringBuilder = new StringBuilder(CodeWriter.EntityTemplateCode);
-
-
-                CodeWriter.SetClassNameAndNamespace(
-                    elementNamespace + namespaceToAppend,
-                    FileManager.RemovePath(element.Name),
-                    stringBuilder);
-            }
-            else // it's a Screen
-            {
-                if (namespaceToAppend.Length > "Screens".Length)
-                {
-                    namespaceToAppend = ".Screens." + namespaceToAppend.Substring("Screens\\".Length).Replace("/", ".").Replace("\\", ".");
-                }
-                else
-                {
-                    // See above comment for why this was changed
-                    //namespaceToAppend = ".Screens.";
-                    namespaceToAppend = ".Screens";
-                }
-
-                stringBuilder = new StringBuilder(ScreenTemplateCode);
-
-                CodeWriter.SetClassNameAndNamespace(
-                    elementNamespace + namespaceToAppend,
-                    FileManager.RemovePath(element.Name),
-                    stringBuilder);
-
-            }
-
-            FileManager.SaveText(stringBuilder.ToString(), FileManager.RelativeDirectory + fileName);
-
-        }
-
         internal static void AddEventCustomCodeFileForElement(IElement element)
         {
 
@@ -2304,7 +2239,7 @@ namespace FlatRedBallAddOns.Entities
             string fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
 
             bool save = false; // we'll be doing manual saving after it's created
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
             FileWatchManager.IgnoreNextChangeOnFile(fullFileName);
             FileManager.SaveText("// Empty event file - code will be added here if events are added in Glue", fullFileName);
@@ -2317,7 +2252,7 @@ namespace FlatRedBallAddOns.Entities
             string fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
 
             bool save = false; // we'll be doing manual saving after it's created
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
             FileWatchManager.IgnoreNextChangeOnFile(fullFileName);
             FileManager.SaveText("// Empty event file - code will be added here if events are added in Glue", fullFileName);

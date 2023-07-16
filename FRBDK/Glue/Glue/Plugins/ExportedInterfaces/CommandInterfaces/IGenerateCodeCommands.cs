@@ -21,6 +21,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="element"></param>
         void GenerateElementCode(GlueElement element);
 
+        void GenerateElementCustomCode(GlueElement element);
+
         /// <summary>
         /// Generates the argument element's code and all derived element's code. Creates a task or runs immediately if already in a task.
         /// </summary>
