@@ -25,7 +25,14 @@ namespace FlatRedBall.Managers
         {
             lock (_syncHandle)
             {
-                _messagesToProcess.Enqueue(() => codeToRun(state));
+                _messagesToProcess.Enqueue(() =>
+                {
+                    try
+                    {
+                        codeToRun(state);
+                    }
+                    catch (TaskCanceledException) { }
+                });
                 SignalContinue();
             }
         }
