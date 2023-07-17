@@ -307,11 +307,96 @@ namespace GumPlugin.Managers
                 throw new ArgumentNullException(nameof(element));
             }
 
+            var shouldSaveProject = false;
+
+            // Do generated first to see if it fails. If it does (if the return values are null), then don't bother
+            // creating the custom code files.
+            string generatedGumRuntimeCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
+
+            var formsFolder = FormsFolder;
+            var shouldGeneratedFormsBeInProject = false;
+            string generatedFormsCode = FormsClassCodeGenerator.Self.GenerateCodeFor(element);
+
+
+            // Do custom before generated so the generated.cs file can be generated under custom
+            #region Custom Gum Runtime
+
+            bool shouldCustomGumBeInProject = false;
+
+            string customGumRuntimeSaveLocation = gumRuntimesFolder + element.Name + "Runtime.cs";
+            if(string.IsNullOrEmpty(generatedGumRuntimeCode))
+            {
+                resultToReturn.DidSaveCustomGumRuntime = false;
+                shouldCustomGumBeInProject = false;
+            }
+            // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
+            // custom code.
+            else if (!System.IO.File.Exists(customGumRuntimeSaveLocation) && 
+                // Standard elements don't have CustomInit  
+                (element is StandardElementSave) == false)
+            {
+                resultToReturn.DidSaveCustomGumRuntime = true;
+                shouldCustomGumBeInProject = true;
+            }
+            if (resultToReturn.DidSaveCustomGumRuntime)
+            {
+                shouldCustomGumBeInProject = true;
+                var customCode = CustomCodeGenerator.Self.GetCustomGumRuntimeCustomCode(element);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(customGumRuntimeSaveLocation, customCode));
+            }
+
+            if(shouldCustomGumBeInProject)
+            { 
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, customGumRuntimeSaveLocation);
+                if (wasAnythingAdded)
+                {
+                    shouldSaveProject = true;
+                }
+            }
+            #endregion
+
+            #region Custom Forms
+
+            string customFormsSaveLocation = formsFolder + subfolder + element.Name + "Forms.cs";
+
+            if(string.IsNullOrEmpty(generatedFormsCode))
+            {
+                resultToReturn.DidSaveCustomForms = false;
+            }
+            else if(!System.IO.File.Exists(customFormsSaveLocation))
+            {
+                resultToReturn.DidSaveCustomForms = true;
+            }
+
+            if (resultToReturn.DidSaveCustomForms)
+            {
+                var customCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
+
+                GlueCommands.Self.TryMultipleTimes(() =>
+                    System.IO.File.WriteAllText(customFormsSaveLocation, customCode));
+            }
+
+            if(shouldGeneratedFormsBeInProject)
+            { 
+                bool wasAnythingAdded =
+                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
+                    GlueState.Self.CurrentMainProject, customFormsSaveLocation);
+                if (wasAnythingAdded)
+                {
+                    shouldSaveProject = true;
+                }
+            }
+
+            #endregion
+
             #region Generated Gum Runtime
 
             bool shouldGeneratedGumBeInProject = false;
 
-            string generatedGumRuntimeCode = mGueDerivingClassCodeGenerator.GenerateCodeFor(element);
 
             FilePath generatedSaveLocation = gumRuntimesFolder + element.Name + "Runtime.Generated.cs";
 
@@ -365,59 +450,13 @@ namespace GumPlugin.Managers
 
                 if (wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    shouldSaveProject = true;
                 }
             }
 
-            #endregion
-
-            #region Custom Gum Runtime
-
-            bool shouldCustomGumBeInProject = false;
-
-            string customGumRuntimeSaveLocation = gumRuntimesFolder + element.Name + "Runtime.cs";
-            // If it doesn't exist, overwrite it. If it does exist, don't overwrite it - we might lose
-            // custom code.
-            if(string.IsNullOrEmpty(generatedGumRuntimeCode))
-            {
-                resultToReturn.DidSaveCustomGumRuntime = false;
-                shouldCustomGumBeInProject = false;
-            }
-            else if (!System.IO.File.Exists(customGumRuntimeSaveLocation) && 
-                // Standard elements don't have CustomInit  
-                (element is StandardElementSave) == false)
-            {
-                resultToReturn.DidSaveCustomGumRuntime = true;
-                shouldCustomGumBeInProject = true;
-            }
-            if (resultToReturn.DidSaveCustomGumRuntime)
-            {
-                shouldCustomGumBeInProject = true;
-                var customCode = CustomCodeGenerator.Self.GetCustomGumRuntimeCustomCode(element);
-
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(customGumRuntimeSaveLocation, customCode));
-            }
-
-            if(shouldCustomGumBeInProject)
-            { 
-                bool wasAnythingAdded =
-                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, customGumRuntimeSaveLocation);
-                if (wasAnythingAdded)
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                }
-            }
             #endregion
 
             #region Generated Forms
-
-            var formsFolder = FormsFolder;
-
-            var shouldGeneratedFormsBeInProject = false;
-
-            string generatedFormsCode = FormsClassCodeGenerator.Self.GenerateCodeFor(element);
 
             FilePath generatedFormsSaveLocation = formsFolder + subfolder +  element.Name + "Forms.Generated.cs";
 
@@ -463,45 +502,17 @@ namespace GumPlugin.Managers
 
                 if(wasAnythingAdded)
                 {
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
+                    shouldSaveProject = true;
                 }
             }
 
             #endregion
 
-            #region Custom Forms
-
-            string customFormsSaveLocation = formsFolder + subfolder + element.Name + "Forms.cs";
-
-            if(string.IsNullOrEmpty(generatedFormsCode))
+            if (shouldSaveProject)
             {
-                resultToReturn.DidSaveCustomForms = false;
+                GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
-            else if(!System.IO.File.Exists(customFormsSaveLocation))
-            {
-                resultToReturn.DidSaveCustomForms = true;
-            }
-
-            if (resultToReturn.DidSaveCustomForms)
-            {
-                var customCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
-
-                GlueCommands.Self.TryMultipleTimes(() =>
-                    System.IO.File.WriteAllText(customFormsSaveLocation, customCode));
-            }
-
-            if(shouldGeneratedFormsBeInProject)
-            { 
-                bool wasAnythingAdded =
-                    FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
-                    GlueState.Self.CurrentMainProject, customFormsSaveLocation);
-                if (wasAnythingAdded)
-                {
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                }
-            }
-
-            #endregion
 
             return resultToReturn;
         }
