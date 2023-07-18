@@ -152,6 +152,34 @@ namespace FlatRedBall.Glue.SaveClasses
             "await"
         };
 
+        public static HashSet<string> InvalidWindowsFileNames = new HashSet<string>
+        {
+            "con",
+            "prn",
+            "aux",
+            "nul",
+            "com0",
+            "com1",
+            "com2",
+            "com3",
+            "com4",
+            "com5",
+            "com6",
+            "com7",
+            "com8",
+            "com9",
+            "lpt0",
+            "lpt1",
+            "lpt2",
+            "lpt3",
+            "lpt4",
+            "lpt5",
+            "lpt6",
+            "lpt7",
+            "lpt8",
+            "lpt9",
+        };
+
         #endregion
 
         #region Directory
@@ -236,6 +264,11 @@ namespace FlatRedBall.Glue.SaveClasses
                         whyItIsntValid = "There is already a CSV file using the name " + name + ". This CSV is not using a custom class:  " + existing[0].ToString();
                     }
                 }
+            }
+
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                CheckForFileNameWindowsReserved(name, out whyItIsntValid);
             }
 
             bool returnValue = string.IsNullOrEmpty(whyItIsntValid);
@@ -347,6 +380,12 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 whyItIsntValid = "The Screen cannot be named the same as the root namespace (which is usually the same name as the project)";
             }
+
+            if(string.IsNullOrEmpty(whyItIsntValid))
+            {
+                CheckForFileNameWindowsReserved(name, out whyItIsntValid);
+            }
+
             return string.IsNullOrEmpty(whyItIsntValid);
         }
 
@@ -382,8 +421,13 @@ namespace FlatRedBall.Glue.SaveClasses
                 whyItIsntValid = "The Entity cannot be named the same as the root namespace (which is usually the same name as the project)";
             }
 
+            if (string.IsNullOrEmpty(whyItIsntValid))
+            {
+                CheckForFileNameWindowsReserved(name, out whyItIsntValid);
+            }
 
-			return string.IsNullOrEmpty(whyItIsntValid);
+
+            return string.IsNullOrEmpty(whyItIsntValid);
 		}
 
         public static bool IsStateCategoryNameValid(string name, out string whyItIsntValid)
@@ -625,7 +669,14 @@ namespace FlatRedBall.Glue.SaveClasses
             return didFailureOccur;
         }
 
-
+        private static void CheckForFileNameWindowsReserved(string name, out string whyNotValid)
+        {
+            whyNotValid = null;
+            if (InvalidWindowsFileNames.Contains(name?.ToLower()))
+            {
+                whyNotValid = $"The name {name} is a reserved file name in Windows";
+            }
+        }
 
         private static void CheckForExistingEntity(string name, ref string whyItIsntValid)
         {
