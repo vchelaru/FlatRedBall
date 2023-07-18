@@ -178,28 +178,43 @@ namespace GumPlugin.CodeGeneration
 
         #region Generate Enums
 
+        public bool SupportsEnumsInInterfaces => GlueState.Self.CurrentMainProject?.DotNetVersion?.Major >= 5;
+
         public void GenerateStateEnums(IStateContainer stateContainer, ICodeBlock currentBlock, string enumNamePrefix = null)
         {
             bool hasUncategorized = (stateContainer is BehaviorSave) == false;
 
-            currentBlock.Line("#region State Enums");
+            var canGenerate = true;
 
-            if (hasUncategorized)
+            if(stateContainer is BehaviorSave)
             {
-                string categoryName = "VariableState";
-                var states = stateContainer.UncategorizedStates;
-                GenerateEnumsForCategory(currentBlock, categoryName, states);
-            }
-            // loop through categories:
-            foreach (var category in stateContainer.Categories)
-            {
-                string categoryName = enumNamePrefix + category.EnumNameInCode();
-                var states = category.States;
-                GenerateEnumsForCategory(currentBlock, categoryName, states);
-
+                // If it's a behavior, we need to make sure we are on a version of C# that supports enums in interfaces
+                canGenerate = SupportsEnumsInInterfaces;
             }
 
-            currentBlock.Line("#endregion");
+
+            if(canGenerate)
+            {
+                currentBlock.Line("#region State Enums");
+
+                if (hasUncategorized)
+                {
+                    string categoryName = "VariableState";
+                    var states = stateContainer.UncategorizedStates;
+                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+                }
+                // loop through categories:
+                foreach (var category in stateContainer.Categories)
+                {
+                    string categoryName = enumNamePrefix + category.EnumNameInCode();
+                    var states = category.States;
+                    GenerateEnumsForCategory(currentBlock, categoryName, states);
+
+                }
+
+                currentBlock.Line("#endregion");
+            }
+
         }
 
         public void GenerateEnumsForCategory(ICodeBlock codeBlock, string categoryName, IEnumerable<StateSave> states)

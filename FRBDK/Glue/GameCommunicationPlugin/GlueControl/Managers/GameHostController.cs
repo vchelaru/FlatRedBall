@@ -203,7 +203,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
 
             // This prevents the game from stretching to the game tab in .NET 6, so don't do this in .net 6:
-            var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6;
+            var is6OrGreater = GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6;
             if (!is6OrGreater)
             {
                 var project = GlueState.Self.CurrentGlueProject;
