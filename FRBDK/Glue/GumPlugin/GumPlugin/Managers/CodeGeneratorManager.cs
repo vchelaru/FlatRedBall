@@ -352,6 +352,9 @@ namespace GumPlugin.Managers
                 shouldCustomGumBeInProject = true;
                 var customCode = CustomCodeGenerator.Self.GetCustomGumRuntimeCustomCode(element);
 
+                var directory = FileManager.GetDirectory(customGumRuntimeSaveLocation);
+                System.IO.Directory.CreateDirectory(directory);
+
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(customGumRuntimeSaveLocation, customCode));
             }
@@ -384,6 +387,9 @@ namespace GumPlugin.Managers
             if (resultToReturn.DidSaveCustomForms)
             {
                 var customCode = CustomCodeGenerator.Self.GetCustomFormsCodeTemplateCode(element);
+
+                var directory = FileManager.GetDirectory(customFormsSaveLocation);
+                System.IO.Directory.CreateDirectory(directory);
 
                 GlueCommands.Self.TryMultipleTimes(() =>
                     System.IO.File.WriteAllText(customFormsSaveLocation, customCode));
