@@ -33,7 +33,7 @@ namespace TopDownPluginCore.CodeGenerators
             string toReturn = System.Text.Encoding.UTF8.GetString(byteArray);
 
             toReturn = toReturn.Replace("$NAMESPACE$", GlueState.Self.ProjectNamespace);
-
+            toReturn = GlueCommands.Self.GenerateCodeCommands.ReplaceGlueVersionString(toReturn);
             return toReturn;
         }
     }
