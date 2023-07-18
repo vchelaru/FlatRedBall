@@ -1686,7 +1686,7 @@ namespace FlatRedBall.Math.Geometry
 
                 if (polygon.ListsBelongingTo.Contains(mAutomaticallyUpdated) == false)
                 {
-                    polygon.FillVertexArray();
+                    polygon.FillVertexArray(false);
                 }
             }
         }

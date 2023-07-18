@@ -891,7 +891,7 @@ namespace FlatRedBall.Math.Geometry
 
         private static Segment[] GetSegments(Polygon polygon)
         {
-            polygon.FillVertexArray();
+            polygon.FillVertexArray(false);
             Segment polygonSegment;
 
             Segment[] segments = new Segment[polygon.Points.Count - 1];
