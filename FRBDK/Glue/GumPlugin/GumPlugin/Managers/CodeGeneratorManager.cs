@@ -72,16 +72,18 @@ namespace GumPlugin.Managers
             {
                 foreach (var screen in ObjectFinder.Self.GumProjectSave.Screens)
                 {
-                    GenerateDueToFileChangeTask(screen);
+                    GenerateDueToFileChangeTask(screen, saveProjects:false);
                 }
                 foreach (var component in ObjectFinder.Self.GumProjectSave.Components)
                 {
-                    GenerateDueToFileChangeTask(component);
+                    GenerateDueToFileChangeTask(component, saveProjects: false);
                 }
                 foreach (var standard in ObjectFinder.Self.GumProjectSave.StandardElements)
                 {
-                    GenerateDueToFileChangeTask(standard);
+                    GenerateDueToFileChangeTask(standard, saveProjects: false);
                 }
+                GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+                GlueCommands.Self.ProjectCommands.SaveProjects();
             }
             else
             {
@@ -90,22 +92,26 @@ namespace GumPlugin.Managers
                 // Maybe the element doesn't exist - like it's a .gucx that is not part of the .gumx
                 if(changedElement != null)
                 {
-                    GenerateDueToFileChangeTask(changedElement);
+                    GenerateDueToFileChangeTask(changedElement, saveProjects: false);
+
+                    GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+                    GlueCommands.Self.ProjectCommands.SaveProjects();
+
                 }
 
             }
         }
 
-        public void GenerateDueToFileChangeTask(ElementSave element)
+        public void GenerateDueToFileChangeTask(ElementSave element, bool saveProjects)
         {
             if(AppState.Self.GumProjectSave != null)
             {
-                TaskManager.Self.Add(() => GenerateDueToFileChange(element),
+                TaskManager.Self.Add(() => GenerateDueToFileChange(element, saveProjects),
                     $"Generating Gum {element}", TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
 
-        private void GenerateDueToFileChange(ElementSave changedElement)
+        private void GenerateDueToFileChange(ElementSave changedElement, bool saveProjects)
         {
             if(changedElement == null)
             {
@@ -119,7 +125,7 @@ namespace GumPlugin.Managers
             // #1 is good if the element being generated is not being included in other elements (like Screens)
             // #2 is good if the element being generated is included in LOTS of other elements (like core elements)
 
-            var generationResult = GenerateCodeFor(changedElement);
+            var generationResult = GenerateCodeFor(changedElement, saveProjects);
 
             if (generationResult.DidSaveGeneratedGumRuntime)
             {
@@ -127,7 +133,7 @@ namespace GumPlugin.Managers
 
                 foreach (var container in whatContainsThisElement)
                 {
-                    GenerateDueToFileChangeTask(container);
+                    GenerateDueToFileChangeTask(container, saveProjects);
                 }
 
                 if(changedElement is Gum.DataTypes.ScreenSave)
@@ -136,7 +142,7 @@ namespace GumPlugin.Managers
                     {
                         if(screenSave != changedElement && screenSave.IsOfType(changedElement.Name))
                         {
-                            GenerateDueToFileChangeTask(screenSave);
+                            GenerateDueToFileChangeTask(screenSave, saveProjects);
                         }
                     }
                 }
@@ -148,7 +154,7 @@ namespace GumPlugin.Managers
                     {
                         if (component != changedElement && component.IsOfType(changedElement.Name))
                         {
-                            GenerateDueToFileChangeTask(component);
+                            GenerateDueToFileChangeTask(component, saveProjects);
                         }
                     }
                 }
@@ -257,7 +263,7 @@ namespace GumPlugin.Managers
             {
                 try
                 {
-                    GenerateDueToFileChangeTask(element);
+                    GenerateDueToFileChangeTask(element, saveProjects:false);
                 }
                 catch (Exception e)
                 {
@@ -274,6 +280,9 @@ namespace GumPlugin.Managers
                 GlueCommands.Self.PrintError(err);
             }
 
+            GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+
         }
 
         /// <summary>
@@ -282,7 +291,7 @@ namespace GumPlugin.Managers
         /// </summary>
         /// <param name="element">The element to generate.</param>
         /// <returns>Information about what was generated and saved.</returns>
-        public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element)
+        public GenerationResult GenerateCodeFor(Gum.DataTypes.ElementSave element, bool saveProjects)
         {
             GenerationResult resultToReturn = new GenerationResult();
 
@@ -508,7 +517,7 @@ namespace GumPlugin.Managers
 
             #endregion
 
-            if (shouldSaveProject)
+            if (shouldSaveProject && saveProjects)
             {
                 GlueCommands.Self.ProjectCommands.MakeGeneratedCodeItemsNested();
                 GlueCommands.Self.ProjectCommands.SaveProjects();

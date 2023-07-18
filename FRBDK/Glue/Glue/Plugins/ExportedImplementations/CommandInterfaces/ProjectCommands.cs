@@ -725,6 +725,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void MakeGeneratedCodeItemsNested()
         {
+            TaskManager.Self.AddOrRunIfTasked(MakeGeneratedCodeItemsNestedImmediately,
+                nameof(MakeGeneratedCodeItemsNested));
+        }
+
+        public void MakeGeneratedCodeItemsNestedImmediately()
+        { 
             foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
             {
 
