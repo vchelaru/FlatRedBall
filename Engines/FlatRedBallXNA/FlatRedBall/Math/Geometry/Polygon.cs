@@ -206,7 +206,7 @@ namespace FlatRedBall.Math.Geometry
                     pointCollection = new ReadOnlyCollection<Point>(mPoints);
                     OnPointsChanged(EventArgs.Empty);
 
-                    this.FillVertexArray();
+                    this.FillVertexArray(false);
                     isConcaveCache = this.IsConcave();
                     isClockwiseCache = this.IsClockwise();
                 }
@@ -1699,14 +1699,14 @@ namespace FlatRedBall.Math.Geometry
         {
             base.ForceUpdateDependencies();
 
-            FillVertexArray();
+            FillVertexArray(true);
         }
 
         public override void ForceUpdateDependenciesDeep()
         {
             base.ForceUpdateDependenciesDeep();
 
-            FillVertexArray();
+            FillVertexArray(true);
         }
 
 
@@ -2357,7 +2357,7 @@ namespace FlatRedBall.Math.Geometry
             base.UpdateDependencies(currentTime);
             if (callFillVertexArray)
             {
-                FillVertexArray();
+                FillVertexArray(false);
             }
         }
 
@@ -2551,9 +2551,9 @@ namespace FlatRedBall.Math.Geometry
 
         double mLastFillVertexArrayUpdate;
 
-        internal void FillVertexArray()
+        internal void FillVertexArray(bool forceUpdate)
         {
-            if (mLastFillVertexArrayUpdate == TimeManager.CurrentTime)
+            if (!forceUpdate && mLastFillVertexArrayUpdate == TimeManager.CurrentTime)
             {
                 return;
             }
