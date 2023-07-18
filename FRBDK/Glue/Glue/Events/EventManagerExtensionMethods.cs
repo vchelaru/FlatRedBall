@@ -36,7 +36,7 @@ namespace FlatRedBall.Glue.Events
 
                 FileManager.SaveText(startingTemplate, currentFileName);
 
-                ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(currentFileName, false);
+                ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(currentFileName, false);
                 fullFileContents = startingTemplate;
             }
             else

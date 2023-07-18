@@ -1227,14 +1227,35 @@ namespace FlatRedBall.Input
                     IgnoreButtonForOneFrame(button);
                 }
             }
+
+            // clearing should clear all input, but not connection status, so store that off
+            var isConnected = mGamePadState.IsConnected;
+            var wasConnected = mGamePadState.IsConnected;
+
 #if MONOGAME
-            mGamePadState = GamePadState.Default;
-            mLastGamePadState = GamePadState.Default;
+            // In MonoGame, calling the GamePadState constructor makes it connected.
+            if(isConnected)
+            {
+                mGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
+            }
+            else
+            {
+                mGamePadState = GamePadState.Default;
+            }
+            if(wasConnected)
+            {
+                mLastGamePadState = new GamePadState(new GamePadThumbSticks(), new GamePadTriggers(), new GamePadButtons(), new GamePadDPad());
+            }
+            else
+            {
+                mLastGamePadState = GamePadState.Default;
+            }
 #else
             // XNA doesn't have .Default
             mGamePadState = new GamePadState();
             mLastGamePadState = new GamePadState() ;
 #endif
+
 
             mLeftStick.Clear();
             mRightStick.Clear();

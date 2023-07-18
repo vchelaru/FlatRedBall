@@ -169,19 +169,38 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static void SetValuePersistIfDefault(this List<PropertySave> propertySaveList, string nameToSearchFor, object value)
         {
-            var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
-            if (existingProperty != null)
-            {
+            SetValue(propertySaveList, nameToSearchFor, value, true);
+        }
 
-                existingProperty.Value = value;
-            }
-            else
+        public static void SetValue(this List<PropertySave> propertySaveList, string nameToSearchFor, object value, bool persistIfDefault)
+        {
+            var handled = false;
+            if(!persistIfDefault)
             {
-                // If we got here then that means there isn't already something in place for this
-                PropertySave newPropertySave = new PropertySave();
-                newPropertySave.Name = nameToSearchFor;
-                newPropertySave.Value = value;
-                propertySaveList.Add(newPropertySave);
+                bool isDefault = IsValueDefault(value);
+                if (isDefault)
+                {
+                    propertySaveList.RemoveAll(item => item.Name == nameToSearchFor);
+                    handled = true;
+                }
+            }
+
+            if(!handled)
+            {
+                var existingProperty = propertySaveList.FirstOrDefault(item => item.Name == nameToSearchFor);
+                if (existingProperty != null)
+                {
+
+                    existingProperty.Value = value;
+                }
+                else
+                {
+                    // If we got here then that means there isn't already something in place for this
+                    PropertySave newPropertySave = new PropertySave();
+                    newPropertySave.Name = nameToSearchFor;
+                    newPropertySave.Value = value;
+                    propertySaveList.Add(newPropertySave);
+                }
             }
         }
 
@@ -219,9 +238,19 @@ namespace FlatRedBall.Glue.SaveClasses
                 return string.IsNullOrEmpty((string)value);
             }
 
+
             if(value == null)
             {
                 return true;
+            }
+
+            if(value is Enum)
+            {
+                var values = Enum.GetValues(value.GetType());
+                if(values.Length > 0)
+                {
+                    return values.GetValue(0).Equals(value);
+                }
             }
 
             return false;

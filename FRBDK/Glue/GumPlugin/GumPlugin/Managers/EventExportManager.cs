@@ -207,9 +207,9 @@ namespace GumPlugin.Managers
                 if(element != null)
                 {
                     // make sure it's updated:
-                    CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element);
+                    CodeGeneratorManager.Self.GenerateDueToFileChangeTask(element, saveProjects:true);
 
-                    TaskManager.Self.AddAsync(async () =>
+                    await TaskManager.Self.AddAsync(async () =>
                     {
                         try
                         {

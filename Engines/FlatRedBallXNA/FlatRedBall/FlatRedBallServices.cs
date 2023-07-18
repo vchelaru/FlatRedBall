@@ -1321,7 +1321,7 @@ namespace FlatRedBall
                     Section.EndContextAndTime();
                 }
 
-                TimeManager.DoScreenTimeDelayTaskLogic();
+                TimeManager.DoTaskLogic();
                 // Vic says = I think this needs to happen either at the very
                 // beginning of the frame or the very end of the frame. It will 
                 // contain custom user code, so we don't want this to fall in the

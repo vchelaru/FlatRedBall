@@ -57,13 +57,43 @@ namespace OfficialPlugins.FrbdkUpdater
                     @"git fetch & " +
                     @"git pull & ";
             }
+
+            int numberOfCds = 0;
+            var slnPath = new FilePath(GlueState.Self.CurrentGlueProjectDirectory).GetDirectoryContainingThis();
+            var currentPath = slnPath;
+
+            while(true)
+            {
+                numberOfCds++;
+                currentPath = currentPath.GetDirectoryContainingThis();
+                var directories = System.IO.Directory.GetDirectories(currentPath.FullPath);
+
+                var hasGum = directories.Any(item => item.EndsWith("Gum"));
+                var hasFrb = directories.Any(item => item.EndsWith("FlatRedBall"));
+
+                if(hasGum && hasFrb)
+                {
+                    break;
+                }
+            }
+
             gitCommand +=
-                @"cd.. & " +
+                @"echo ""Moving to the Gum folder"" & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                gitCommand +=
+                    @"cd.. & ";
+            }
+            
+            gitCommand +=
                 @"cd Gum & " +
+
                 $@"echo ""Pulling Gum..."" & " +
                 @"git fetch & " +
                 @"git pull & " +
 
+                @"echo ""Moving to the FRB folder"" & " +
                 @"cd.. & " +
                 @"cd FlatRedBall & " +
 
@@ -84,8 +114,17 @@ namespace OfficialPlugins.FrbdkUpdater
             await process.WaitForExitAsync();
 
             var command =
-@"timeout /T 3 /NOBREAK & " +
-@"cd.. & " + 
+                @"timeout /T 3 /NOBREAK & ";
+
+            for(int i = 0; i < numberOfCds; i++)
+            {
+                command +=
+                    @"cd.. & ";
+            }
+
+
+
+            command +=
 @"cd FlatRedBall & " + 
 @"cd FRBDK\Glue & " +
 @"dotnet build ""Glue with All.sln"" & " +

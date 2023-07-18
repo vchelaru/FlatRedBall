@@ -11,6 +11,7 @@ using FlatRedBall.Content.Instructions;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.SaveClasses;
 using Newtonsoft.Json;
+using FlatRedBall.Glue.Plugins.ICollidablePlugins;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -969,8 +970,17 @@ namespace FlatRedBall.Glue.SaveClasses
 
                 // For a more complete impl, see:
                 // CollisionRelationshipViewModelController
-                return !string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType) &&
-                    ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassGenericType)?.ImplementsICollidable == true;
+
+                if(!string.IsNullOrEmpty(namedObjectSave.SourceClassGenericType))
+                {
+                    var entitySave = ObjectFinder.Self.GetEntitySave(namedObjectSave.SourceClassGenericType);
+
+                    if(entitySave != null)
+                    {
+                        return entitySave.IsICollidableRecursive();
+                    }
+                }
+                return false;
             }
             else if (namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "FlatRedBall.TileCollisions.TileShapeCollection" ||
                 namedObjectSave.GetAssetTypeInfo()?.RuntimeTypeName == "TileShapeCollection")

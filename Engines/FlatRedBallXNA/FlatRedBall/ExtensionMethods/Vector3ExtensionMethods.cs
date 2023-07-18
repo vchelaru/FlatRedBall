@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace Microsoft.Xna.Framework
@@ -47,6 +48,18 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        public static float? AngleDegrees(this Vector3 vector)
+        {
+            if (vector.X == 0 && vector.Y == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return MathHelper.ToDegrees( (float)System.Math.Atan2(vector.Y, vector.X));
+            }
+        }
+
         /// <summary>
         /// Returns the angle in radians of the argument vector, where 0 is to the right,
         /// and increasing the angle moves counterclockwise. The Z value is ignored. If the
@@ -55,6 +68,8 @@ namespace Microsoft.Xna.Framework
         /// <param name="vector">The argument vector.</param>
         /// <returns>The angle in radians, or 0 if the vector has X and Y values both equal to 0.</returns>
         public static float AngleOrZero(this Vector3 vector) => Angle(vector) ?? 0;
+
+        public static float AngleDegreesOrZero(this Vector3 vector) => AngleDegrees(vector) ?? 0;
 
         /// <summary>
         /// Converts this Vector3 to a Vector2 by copying the X and Y values.

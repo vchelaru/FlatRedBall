@@ -837,31 +837,25 @@ namespace FlatRedBall.Glue.IO
             return hasMadeChanges;
         }
 
-        private void CheckForMissingCustomFile(IElement element)
+        private void CheckForMissingCustomFile(GlueElement element)
         {
             string fileToSearchFor = FileManager.RelativeDirectory + element.Name + ".cs";
 
             if (!System.IO.File.Exists(fileToSearchFor))
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
                 mbmb.MessageText = "The following file is missing\n\n" + fileToSearchFor + 
                     "\n\nwhich is used by\n\n" + element.ToString() + "\n\nWhat would you like to do?";
                 mbmb.AddButton("Re-create an empty custom code file", DialogResult.OK);
                 mbmb.AddButton("Ignore this problem", DialogResult.Cancel);
 
-                DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                var result = mbmb.ShowDialog();
 
-                switch (result)
+                var dialogResult = mbmb.ClickedResult;
+
+                if(dialogResult?.Equals(DialogResult.OK) == true)
                 {
-                    case DialogResult.OK:
-
-                        CodeWriter.GenerateAndAddElementCustomCode(element);
-
-                        break;
-                    case DialogResult.Cancel:
-                        // Ignore, do nothing
-                        break;
-
+                    GlueCommands.Self.GenerateCodeCommands.GenerateElementCustomCode(element);
                 }
             }
         }
