@@ -12,15 +12,6 @@ namespace BuildServerUploaderConsole.Processes
         private List<string> _excludeFiles;
         private string _destDirectory;
 
-        List<string> mXna3_1Tools = new List<string>
-        {
-            @"PrebuiltTools\AIEditor",
-
-            @"PrebuiltTools\ParticleEditor",
-            @"PrebuiltTools\PolygonEditor",
-            @"PrebuiltTools\SpriteEditor",
-        };
-
         List<string> extraTools = new List<string>
         {
             @"PrebuiltTools\MGCB"
@@ -76,12 +67,6 @@ namespace BuildServerUploaderConsole.Processes
                 Directory.CreateDirectory(frbdkForZipDirectory);
 
             _destDirectory = frbdkForZipDirectory;
-
-
-            foreach (var xna3_1tool in mXna3_1Tools)
-            {
-                CopyDirectory(DirectoryHelper.FrbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
-            }
 
             foreach(var extraTool in extraTools)
             {
