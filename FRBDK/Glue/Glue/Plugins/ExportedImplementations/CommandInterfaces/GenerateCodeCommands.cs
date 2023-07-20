@@ -321,7 +321,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             string additionalUsings = "";
 
-            if(element is ScreenSave)
+            if(element is ScreenSave && GlueState.CurrentGlueProject.Entities.Count > 0)
             {
                 additionalUsings = $"using {GlueState.ProjectNamespace}.Entities;";
             }
