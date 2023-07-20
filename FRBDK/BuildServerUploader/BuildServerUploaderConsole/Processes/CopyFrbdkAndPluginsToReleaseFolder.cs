@@ -101,10 +101,6 @@ namespace BuildServerUploaderConsole.Processes
             CopyDirectory(DirectoryHelper.GluePublishDestinationFolder, "Copied " + DirectoryHelper.GluePublishDestinationFolder);
             CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 
-            FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
-
-            Results.WriteMessage("Successfully copied Assets folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Assets");
-
             FileManager.CopyDirectory(frbdkForZipDirectory + "/Content", frbdkForZipDirectory + @"\Xna 4 Tools\Content", false, _excludeFiles, _excludedDirs);
 
             Results.WriteMessage("Successfully copied Content folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Content");
