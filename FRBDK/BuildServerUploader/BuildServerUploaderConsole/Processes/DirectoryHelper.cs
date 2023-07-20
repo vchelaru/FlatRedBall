@@ -64,13 +64,9 @@ namespace BuildServerUploaderConsole.Processes
 
         public static string AddOnsDirectory => EngineDirectory + "FlatRedBallAddOns/FlatRedBallAddOns/";
 
-        public static string ReleaseDirectory
-        {
-            get
-            {
-                return FileManager.MakeAbsolute("../../ReleaseFiles/");
-            }
-        }
+        public static string ReleaseDirectory => FileManager.MakeAbsolute("../../ReleaseFiles/");
+
+        public static string FrbdkForZipReleaseDirectory => ReleaseDirectory + @"FRBDK For Zip\";
 
         public static string FrbdkDirectory => FlatRedBallDirectory + "FRBDK/";
 

@@ -92,6 +92,9 @@ namespace BuildServerUploaderConsole
             // Maybe this should be after?
             ProcessSteps.Add(new BuildGlue(Results));
             ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
+            ProcessSteps.Add(new AddRunFlatRedBallBatch(Results));
+
+
             ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
             ProcessSteps.Add(new ZipFrbdk(Results));
             ProcessSteps.Add(new ZipGum(Results));
@@ -114,20 +117,6 @@ namespace BuildServerUploaderConsole
             }
 
             ProcessSteps.Add(new UploadFilesToFrbServer(Results, type));
-        }
-
-        // Vic asks - do we still do this? I thought the installer is dead
-        private static void CreateCopyToInstallerSteps(bool debug)
-        {
-            if (!debug)
-            {
-                ProcessSteps.Add(new CopyFrbdkAndPluginsToReleaseFolder(Results));
-                ProcessSteps.Add(new CopyBuiltEnginesToReleaseFolder(Results));
-                ProcessSteps.Add(new ZipFrbdk(Results));
-            }
-
-
-            ProcessSteps.Add(new UnzipToInstaller(Results));
         }
 
         private static void ExecuteSteps()

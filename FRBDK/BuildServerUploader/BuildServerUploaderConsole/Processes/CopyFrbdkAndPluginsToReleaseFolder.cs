@@ -57,9 +57,7 @@ namespace BuildServerUploaderConsole.Processes
         public override void ExecuteStep()
         {
             //Create Directory
-            var frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"FRBDK For Zip\";
-
-            frbdkForZipDirectory = FileManager.Standardize(frbdkForZipDirectory);
+            var frbdkForZipDirectory = DirectoryHelper.FrbdkForZipReleaseDirectory;
 
             DirectoryHelper.DeleteDirectory(frbdkForZipDirectory);
 
