@@ -14,7 +14,7 @@
     <XnaCrossPlatformGroupID>768eb751-e276-419c-bd4f-f5bb084e7730</XnaCrossPlatformGroupID>
     <XnaUpgrade>
     </XnaUpgrade>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
