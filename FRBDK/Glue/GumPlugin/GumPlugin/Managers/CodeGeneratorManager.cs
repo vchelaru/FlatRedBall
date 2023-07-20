@@ -642,12 +642,14 @@ namespace GumPlugin.Managers
             {
                 foreach (var behavior in  gumProject.Behaviors)
                 {
-                    GenerateCodeFor(behavior);
+                    GenerateCodeFor(behavior, saveProjects:false);
                 }
             }
+
+            GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
-        private void GenerateCodeFor(BehaviorSave behavior)
+        private void GenerateCodeFor(BehaviorSave behavior, bool saveProjects)
         {
             var directoryToSave = GumBehaviorsFolder;
 
@@ -682,7 +684,7 @@ namespace GumPlugin.Managers
                 var didAdd = FlatRedBall.Glue.ProjectManager.CodeProjectHelper.AddFileToCodeProjectIfNotAlreadyAdded(
                     GlueState.Self.CurrentMainProject, saveLocation.FullPath);
 
-                if(didAdd)
+                if(didAdd && saveProjects)
                 {
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
