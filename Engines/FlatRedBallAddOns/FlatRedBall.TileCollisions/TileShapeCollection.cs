@@ -265,21 +265,41 @@ namespace FlatRedBall.TileCollisions
             return toReturn;
         }
 
+        /// <summary>
+        /// Returns whether this instance collides against the argument AxisAlignedRectangle.
+        /// </summary>
+        /// <param name="rectangle">The AxisAlignedRectangle to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(AxisAlignedRectangle rectangle)
         {
             return mShapes.CollideAgainst(rectangle, true, mSortAxis);
         }
 
+        /// <summary>
+        /// Returns whether this instance collides against the argument Circle.
+        /// </summary>
+        /// <param name="circle">The Circle to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(Circle circle)
         {
             return mShapes.CollideAgainst(circle, true, mSortAxis);
         }
 
+        /// <summary>
+        /// Returns whether this instance collides against the argument Polygon.
+        /// </summary>
+        /// <param name="polygon">The Polygon to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(Polygon polygon)
         {
             return mShapes.CollideAgainst(polygon, true, mSortAxis);
         }
 
+        /// <summary>
+        /// Returns whether this instance collides against the argument Line.
+        /// </summary>
+        /// <param name="line">The Line to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(Line line)
         {
             return mShapes.CollideAgainst(line, true, mSortAxis);
@@ -290,6 +310,12 @@ namespace FlatRedBall.TileCollisions
             return mShapes.CollideAgainstClosest(line, SortAxis, GridSize);
         }
 #endif
+
+        /// <summary>
+        /// Returns whether this intance collides against the argument ICollidable.
+        /// </summary>
+        /// <param name="collidable">The ICollidable to test collision against.</param>
+        /// <returns>Whether collision has occurred.</returns>
         public bool CollideAgainst(ICollidable collidable)
         {
             return mShapes.CollideAgainst(collidable.Collision, true, mSortAxis);
