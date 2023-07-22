@@ -231,6 +231,33 @@ namespace OfficialPlugins.GameHost.Views
 
         }
 
+        static double? windowsScaleFactor = null;
+        public static double WindowsScaleFactor
+        {
+            get
+            {
+                if (windowsScaleFactor == null)
+                {
+                    // todo - fix on a computer that has scaling using:
+                    // https://stackoverflow.com/questions/68832226/get-windows-10-text-scaling-value-in-wpf/68846399#comment128365225_68846399
+
+                    // This doesn't seem to work on Windows11:
+                    //var userKey = Microsoft.Win32.Registry.CurrentUser;
+                    //var softKey = userKey.OpenSubKey("Software");
+                    //var micKey = softKey.OpenSubKey("Microsoft");
+                    //var accKey = micKey.OpenSubKey("Accessibility");
+
+                    //var factor = accKey.GetValue("TextScaleFactor");
+                    // this returns text scale, not window scale
+                    //var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                    //windowsScaleFactor = uiSettings.
+                    windowsScaleFactor =
+                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / SystemParameters.PrimaryScreenWidth;
+                }
+                return windowsScaleFactor.Value;
+            }
+        }
+
         public void SetGameToEmbeddedGameWindow()
         {
             var shouldMove =
@@ -240,8 +267,8 @@ namespace OfficialPlugins.GameHost.Views
                 gameHandle != IntPtr.Zero;
             if (shouldMove)
             {
-                var newWidth = (int)WinformsHost.ActualWidth;
-                var newHeight = (int)WinformsHost.ActualHeight;
+                var newWidth = (int)(WinformsHost.ActualWidth* WindowsScaleFactor);
+                var newHeight = (int)(WinformsHost.ActualHeight * WindowsScaleFactor);
 
                 _eventCaller("Runner_MoveWindow", JsonConvert.SerializeObject(new
                 {
