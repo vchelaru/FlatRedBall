@@ -72,13 +72,16 @@ namespace FlatRedBall.Glue.Events
 
                     if (result == DialogResult.Yes)
                     {
-                        string newMethodCode =
-                            "\r\n\t\tvoid " + methodName + "(object sender, EventArgs e)\r\n" +
-                            "\t\t{\r\n" +
-                            "\t\t\t\r\n" +
-                            "\t\t}\r\n";
+                        int indexToInsertAt = EventManager.GetLastLocationInClass(fullFileContents, startOfLine:true, out bool hasBracketNamespace);
 
-                        int indexToInsertAt = EventManager.GetLastLocationInClass(fullFileContents, startOfLine:true);
+                        var tabPrefix = hasBracketNamespace ? "\t\t" : "\t";
+
+                        string newMethodCode =
+                            $"\r\n{tabPrefix}void " + methodName + "(object sender, EventArgs e)\r\n" +
+                            $"{tabPrefix}{{\r\n" +
+                            $"{tabPrefix}\t\r\n" +
+                            $"{tabPrefix}}}\r\n";
+
 
                         fullFileContents = fullFileContents.Insert(indexToInsertAt, newMethodCode);
 

@@ -294,7 +294,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             PerformancePluginCodeGenerator.GenerateEnd();
         }
 
-        public static void AddStubsForCustomEvents(IElement element)
+        public static void AddStubsForCustomEvents(GlueElement element)
         {
             // EARLY OUT///////
             if (element.Events.Count == 0)
@@ -316,7 +316,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         try
                         {
-                            InjectTextForEventAndSaveCustomFile(element as GlueElement, ers, "");
+                            InjectTextForEventAndSaveCustomFile(element, ers, "");
                         }
                         catch(Exception e)
                         {
@@ -337,7 +337,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                             // because generated code expects this to always exist. Let's
                             // make an empty stub
 
-                            InjectTextForEventAndSaveCustomFile(element as GlueElement, ers, "");
+                            InjectTextForEventAndSaveCustomFile(element, ers, "");
                         }
                     }
                 }
@@ -660,6 +660,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             int indexToAddAt = 0;
 
+            bool hasBracketNamespace = true;
+
             if (parsedMethod != null)
             {
                 int startIndex;
@@ -676,9 +678,12 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
             else
             {
-                indexToAddAt = EventManager.GetLastLocationInClass(fileContents, startOfLine:true);
+                indexToAddAt = EventManager.GetLastLocationInClass(fileContents, startOfLine:true, out hasBracketNamespace);
             }
-            ICodeBlock codeBlock = new CodeDocument(2);
+
+            var tabCount = hasBracketNamespace ? 2 : 1;
+
+            ICodeBlock codeBlock = new CodeDocument(tabCount);
             codeBlock.TabCharacter = "    ";
 
             insideOfMethod = "" + insideOfMethod.Replace("\r\n", "\r\n            ");

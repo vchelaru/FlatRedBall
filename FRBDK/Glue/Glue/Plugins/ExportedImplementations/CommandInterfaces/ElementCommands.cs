@@ -1347,7 +1347,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
 
-            GluxCommands.Self.SaveGlux();
+            _=GluxCommands.Self.SaveElementAsync(currentElement);
 
             GlueState.Self.CurrentEventResponseSave = eventResponseSave;
         }

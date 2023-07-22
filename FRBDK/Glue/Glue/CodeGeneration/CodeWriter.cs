@@ -2233,19 +2233,6 @@ namespace FlatRedBallAddOns.Entities
 
 
 
-        internal static void AddEventCustomCodeFileForElement(IElement element)
-        {
-
-            string fileName = element.Name + ".Event.cs";
-            string fullFileName = GlueState.Self.CurrentMainProject.Directory + fileName;
-
-            bool save = false; // we'll be doing manual saving after it's created
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
-
-            FileWatchManager.IgnoreNextChangeOnFile(fullFileName);
-            FileManager.SaveText("// Empty event file - code will be added here if events are added in Glue", fullFileName);
-        }
-
         internal static void AddEventGeneratedCodeFileForElement(IElement element)
         {
 
