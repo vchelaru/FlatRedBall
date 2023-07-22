@@ -537,6 +537,19 @@ namespace GlueControl.Editing
 
                 polygon.RotationMatrix = asLine.RotationMatrix;
             }
+
+            else if (collisionObject is FlatRedBall.TileGraphics.LayeredTileMap layeredTileMap)
+            {
+                minX = layeredTileMap.X;
+                maxX = layeredTileMap.X + layeredTileMap.Width;
+
+                maxY = layeredTileMap.Y;
+                minY = layeredTileMap.Y - layeredTileMap.Height;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
+            }
 #if HasGum
             else if (collisionObject is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)
             {
