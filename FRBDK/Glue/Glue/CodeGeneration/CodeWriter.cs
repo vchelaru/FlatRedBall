@@ -448,96 +448,113 @@ namespace FlatRedBallAddOns.Entities
             return classCodeblock;
         }
 
-        #endregion
-
-        #region Load Static Content
-
-        public static void GenerateLoadStaticContent(ICodeBlock codeBlock, IElement saveObject)
+        static string GetInheritance(IElement element)
         {
-            var curBlock = codeBlock;
+            string whatToInheritFrom = null;
 
-            bool inheritsFromElement = saveObject.InheritsFromElement();
-
-            curBlock = curBlock.Function(StringHelper.SpaceStrings(
-                                                        "public",
-                                                        "static",
-                                                        inheritsFromElement ? "new" : null,
-                                                        "void"),
-                                         "LoadStaticContent",
-                                         "string contentManagerName");
-
-
-            PerformancePluginCodeGenerator.GenerateStart(saveObject, curBlock, "LoadStaticContent");
-
-            curBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
-            curBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
-
-            curBlock.If("string.IsNullOrEmpty(contentManagerName)")
-                .Line("throw new System.ArgumentException(\"contentManagerName cannot be empty or null\");")
-                .End();
-
-            #region Set the ContentManagerName ( do this BEFORE checking for IsStaticContentLoaded )
-
-            if (saveObject is EntitySave)
+            if (element is EntitySave)
             {
-                if ((saveObject as EntitySave).UseGlobalContent)
+                bool inheritsFromEntity = element.InheritsFromEntity();
+                var entitySave = element as EntitySave;
+
+                EntitySave rootEntitySave;
+                List<string> inheritanceList = 
+                    InheritanceCodeWriter.Self.GetInheritanceList(entitySave, out rootEntitySave);
+
+                foreach (string inheritance in inheritanceList)
                 {
-                    curBlock.Line("// Set to use global content");
-                    curBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
+                    if (string.IsNullOrEmpty(whatToInheritFrom))
+                    {
+                        whatToInheritFrom = inheritance;
+                    }
+                    else
+                    {
+                        whatToInheritFrom += ", " + inheritance;
+                    }
                 }
-                curBlock.Line("ContentManagerName = contentManagerName;");
+
             }
-
-            #endregion
-
-
-            if (inheritsFromElement)
+            else // Screen
             {
-                curBlock.Line(ProjectManager.ProjectNamespace + "." + saveObject.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
-            }
-
-            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
-                .OrderBy(item=>(int)item.CodeLocation))
-            {
-                curBlock = codeGenerator.GenerateLoadStaticContent(curBlock, saveObject);
-            }
-
-
-
-
-            #region Register the unload for EntitySaves
-
-            // Vic says - do we want this for Screens too?
-            // I don't think we do because Screens can just null- out stuff in their Destroy method.  There's only one of them around at a time.
-
-            if (saveObject is EntitySave)
-            {
-                if (!(saveObject as EntitySave).UseGlobalContent)
+                bool inherits = !string.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>";
+                if (inherits)
                 {
-                    var ifBlock = curBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
-                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, saveObject);
+
+                    whatToInheritFrom = FileManager.RemovePath(element.BaseElement);
+                }
+                else
+                {
+                    whatToInheritFrom = "FlatRedBall.Screens.Screen";
                 }
             }
 
-            #endregion
-
-
-
-
-            curBlock.Line("CustomLoadStaticContent(contentManagerName);");
-
-            curBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
-
-            PerformancePluginCodeGenerator.GenerateEnd(saveObject, curBlock, "LoadStaticContent");
+            return whatToInheritFrom;
         }
 
         #endregion
 
+        #region Fields/Properties
+
+        internal static ICodeBlock GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
+        {
+            if(glueElement is EntitySave)
+            {
+                if(glueElement.InheritsFromElement())
+                {
+                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + glueElement.BaseElement.Replace("\\", ".");
+
+                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
+                    codeBlock.Property("public static new string", "ContentManagerName")
+                        .Get().Line($"return {baseQualifiedName}.ContentManagerName;").End()
+                        .Set().Line($"{baseQualifiedName}.ContentManagerName = value;").End();
+                }
+                else
+                {
+                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
+                    codeBlock.AutoProperty("public static string", "ContentManagerName");
+                }
+            }
+
+            foreach (var codeGenerator in CodeWriter.CodeGenerators)
+            {
+                if (codeGenerator == null)
+                {
+                    throw new Exception("The CodeWriter contains a null code generator.  A plugin must have added this");
+                }
+
+                try
+                {
+                    codeGenerator.GenerateFields(codeBlock, glueElement);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Error generating fields in generator " + codeGenerator.GetType().Name + 
+                        "\n\n" + e.ToString());
+
+                }
+            }
+
+            PerformancePluginCodeGenerator.GenerateFields(glueElement, codeBlock);
+
+            // No need to create LayerProvidedByContainer if this inherits from another object.
+            if (glueElement is EntitySave && !glueElement.InheritsFromEntity())
+            {
+                // Add the layer that is going to get assigned in generated code
+                codeBlock.Line("protected FlatRedBall.Graphics.Layer LayerProvidedByContainer = null;");
+            }
+            
+
+            return codeBlock;
+
+
+        }
+
+        #endregion
+
+        #region Constructor
         private static void GenerateConstructors(GlueElement element, ICodeBlock codeBlock)
         {
             ICodeBlock constructor;
-
-            var whatToInheritFrom = GetInheritance(element);
 
             var elementName = FileManager.RemovePath(element.Name);
 
@@ -600,49 +617,103 @@ namespace FlatRedBallAddOns.Entities
                 }
             }
         }
+        #endregion
 
-        static string GetInheritance(IElement element)
+        #region Load Static Content
+
+        static void GenerateLoadStaticContent(ICodeBlock codeBlock, GlueElement element)
         {
-            string whatToInheritFrom = null;
+            bool inheritsFromElement = element.InheritsFromElement();
+
+            codeBlock = codeBlock.Function(StringHelper.SpaceStrings(
+                                                        "public",
+                                                        "static",
+                                                        inheritsFromElement ? "new" : null,
+                                                        "void"),
+                                         "LoadStaticContent",
+                                         "string contentManagerName");
 
             if (element is EntitySave)
             {
-                bool inheritsFromEntity = element.InheritsFromEntity();
-                var entitySave = element as EntitySave;
-
-                EntitySave rootEntitySave;
-                List<string> inheritanceList = 
-                    InheritanceCodeWriter.Self.GetInheritanceList(entitySave, out rootEntitySave);
-
-                foreach (string inheritance in inheritanceList)
-                {
-                    if (string.IsNullOrEmpty(whatToInheritFrom))
-                    {
-                        whatToInheritFrom = inheritance;
-                    }
-                    else
-                    {
-                        whatToInheritFrom += ", " + inheritance;
-                    }
-                }
-
+                // Currently only EntitySaves have access to LoadedContentManagers
+                // The reason we have this here is because if two Entities reference
+                // each other ( https://github.com/vchelaru/FlatRedBall/issues/1017 )
+                // then an infinitely recursive call can happen.  We can use LoadedContentManagers
+                // to prevent this. We do this here instead of in the ReferencedFileSave generated code
+                // because we want to exit out immediately before anything else has a chance to run. The 
+                // RFS code generator can't do this without some hacks.
+                codeBlock.If("LoadedContentManagers.Contains(contentManagerName)")
+                    .Line("return;");
             }
-            else // Screen
+
+
+            PerformancePluginCodeGenerator.GenerateStart(element, codeBlock, "LoadStaticContent");
+
+            codeBlock.Line("bool oldShapeManagerSuppressAdd = FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue;");
+            codeBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = true;");
+
+            codeBlock.If("string.IsNullOrEmpty(contentManagerName)")
+                .Line("throw new System.ArgumentException(\"contentManagerName cannot be empty or null\");")
+                .End();
+
+            #region Set the ContentManagerName ( do this BEFORE checking for IsStaticContentLoaded )
+
+            if (element is EntitySave)
             {
-                bool inherits = !string.IsNullOrEmpty(element.BaseElement) && element.BaseElement != "<NONE>";
-                if (inherits)
+                if ((element as EntitySave).UseGlobalContent)
                 {
-
-                    whatToInheritFrom = FileManager.RemovePath(element.BaseElement);
+                    codeBlock.Line("// Set to use global content");
+                    codeBlock.Line("contentManagerName = FlatRedBall.FlatRedBallServices.GlobalContentManager;");
                 }
-                else
+                codeBlock.Line("ContentManagerName = contentManagerName;");
+            }
+
+            #endregion
+
+
+            if (inheritsFromElement)
+            {
+                codeBlock.Line(ProjectManager.ProjectNamespace + "." + element.BaseElement.Replace("\\", ".")  + ".LoadStaticContent(contentManagerName);");
+            }
+
+            foreach (ElementComponentCodeGenerator codeGenerator in CodeGenerators
+                .OrderBy(item=>(int)item.CodeLocation))
+            {
+                codeBlock = codeGenerator.GenerateLoadStaticContent(codeBlock, element);
+            }
+
+
+
+
+            #region Register the unload for EntitySaves
+
+            // Vic says - do we want this for Screens too?
+            // I don't think we do because Screens can just null- out stuff in their Destroy method.  There's only one of them around at a time.
+
+            if (element is EntitySave)
+            {
+                if (!(element as EntitySave).UseGlobalContent)
                 {
-                    whatToInheritFrom = "FlatRedBall.Screens.Screen";
+                    var ifBlock = codeBlock.If("registerUnload && ContentManagerName != FlatRedBall.FlatRedBallServices.GlobalContentManager");
+                    ReferencedFileSaveCodeGenerator.AppendAddUnloadMethod(ifBlock, element);
                 }
             }
 
-            return whatToInheritFrom;
+            #endregion
+
+
+
+
+            codeBlock.Line("CustomLoadStaticContent(contentManagerName);");
+
+            codeBlock.Line("FlatRedBall.Math.Geometry.ShapeManager.SuppressAddingOnVisibilityTrue = oldShapeManagerSuppressAdd;");
+
+            PerformancePluginCodeGenerator.GenerateEnd(element, codeBlock, "LoadStaticContent");
         }
+
+        #endregion
+
+
 
 
         public static bool SaveFileContents(string fileContents, string fileName, bool tryAgain, bool standardizeNewlines = true)
@@ -740,59 +811,6 @@ namespace FlatRedBallAddOns.Entities
             NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
         }
 
-        internal static ICodeBlock GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
-        {
-            if(glueElement is EntitySave)
-            {
-                if(glueElement.InheritsFromElement())
-                {
-                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + glueElement.BaseElement.Replace("\\", ".");
-
-                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
-                    codeBlock.Property("public static new string", "ContentManagerName")
-                        .Get().Line($"return {baseQualifiedName}.ContentManagerName;").End()
-                        .Set().Line($"{baseQualifiedName}.ContentManagerName = value;").End();
-                }
-                else
-                {
-                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
-                    codeBlock.AutoProperty("public static string", "ContentManagerName");
-                }
-            }
-
-            foreach (var codeGenerator in CodeWriter.CodeGenerators)
-            {
-                if (codeGenerator == null)
-                {
-                    throw new Exception("The CodeWriter contains a null code generator.  A plugin must have added this");
-                }
-
-                try
-                {
-                    codeGenerator.GenerateFields(codeBlock, glueElement);
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("Error generating fields in generator " + codeGenerator.GetType().Name + 
-                        "\n\n" + e.ToString());
-
-                }
-            }
-
-            PerformancePluginCodeGenerator.GenerateFields(glueElement, codeBlock);
-
-            // No need to create LayerProvidedByContainer if this inherits from another object.
-            if (glueElement is EntitySave && !glueElement.InheritsFromEntity())
-            {
-                // Add the layer that is going to get assigned in generated code
-                codeBlock.Line("protected FlatRedBall.Graphics.Layer LayerProvidedByContainer = null;");
-            }
-            
-
-            return codeBlock;
-
-
-        }
         
         internal static ICodeBlock GenerateInitialize(GlueElement saveObject, ICodeBlock codeBlock)
         {
@@ -2528,7 +2546,7 @@ namespace FlatRedBallAddOns.Entities
         }
 
 
-        internal static void GenerateMethods(ICodeBlock codeBlock, IElement element)
+        static void GenerateMethods(ICodeBlock codeBlock, GlueElement element)
         {
             var currentBlock = codeBlock;
 
