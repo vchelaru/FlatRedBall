@@ -897,7 +897,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 // expose a variable that exposes the category
                 CustomVariable customVariable = new CustomVariable();
 
-                customVariable.Type = category.Name;
+                var categoryOwner = ObjectFinder.Self.GetElementContaining(category);
+
+                var name = category.Name;
+                if(categoryOwner != null && categoryOwner != element)
+                {
+                    name = categoryOwner.Name.Replace("\\", ".") + "." + name;
+                }
+
+                customVariable.Type = name;
                 customVariable.Name = "Current" + category.Name + "State";
                 customVariable.SetByDerived = true;
 

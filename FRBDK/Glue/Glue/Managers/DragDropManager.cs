@@ -622,7 +622,8 @@ namespace FlatRedBall.Glue.Managers
                 // some additional testing, but I'm putting this comment here so that
                 // in the future it's clear that this was an old rule which could be removed
                 // with proper testing.
-                if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
+                // July 23, 2023 - removing this if-check now.
+                //if (targetNode.GetContainingElementTreeNode() == nodeMoving.GetContainingElementTreeNode())
                 {
                     StateSaveCategory category = nodeMoving.Tag as StateSaveCategory;
                     var element = targetNode.GetContainingElementTreeNode().Tag as GlueElement;
