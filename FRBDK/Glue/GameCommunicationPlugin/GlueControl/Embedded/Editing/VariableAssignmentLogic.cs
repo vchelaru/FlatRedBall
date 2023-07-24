@@ -1060,6 +1060,17 @@ namespace GlueControl.Editing
             {
                 convertedValue = TryGetStateValue(type, variableValue);
             }
+            else if (GlueControl.Managers.ObjectFinder.Self.GetEntitySave(variableValue) != null)
+            {
+                // This is an entity type, so we need to convert the string to a type:
+                var entity = GlueControl.Managers.ObjectFinder.Self.GetEntitySave(variableValue);
+
+                var entityName = FlatRedBall.IO.FileManager.RemovePath(entity.Name);
+
+                // now find the type:
+                var entityTypeClass = typeof(VariableAssignmentLogic).Assembly.GetTypes().FirstOrDefault(item => item.FullName.EndsWith("." + type));
+                convertedValue = entityTypeClass?.GetMethod("FromName")?.Invoke(null, new object[] { entityName });
+            }
             else if (type == typeof(List<Microsoft.Xna.Framework.Vector2>).ToString() || type == "List<Vector2>")
             {
                 convertedValue = JsonConvert.DeserializeObject<List<Microsoft.Xna.Framework.Vector2>>(variableValue);
