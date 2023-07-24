@@ -13,6 +13,7 @@ using FlatRedBall.Glue.SaveClasses.Helpers;
 using GlueFormsCore.Managers;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
+using System.Windows.Media.Animation;
 
 namespace FlatRedBall.Glue.SetVariable;
 
@@ -561,10 +562,10 @@ public class CustomVariableSaveSetPropertyLogic
 
         var shouldProceed = true;
 
+        var variableContainer = ObjectFinder.Self.GetElementContaining(customVariable);
+
         if (customVariable.SetByDerived)
         {
-            var variableContainer = ObjectFinder.Self.GetElementContaining(customVariable);
-
             List<GlueElement> derivedList = null;
 
             if (variableContainer != null)
@@ -600,8 +601,21 @@ public class CustomVariableSaveSetPropertyLogic
 
                 shouldProceed = result == System.Windows.MessageBoxResult.Yes;
             }
-
         }
+
+        List<NamedObjectSave> instancesUsingVariable = new List<NamedObjectSave>();
+        if(variableContainer != null)
+        {
+            instancesUsingVariable.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseElement(variableContainer));
+
+            var derivedElements = ObjectFinder.Self.GetAllDerivedElementsRecursive(variableContainer);
+            foreach(var derivedElement in derivedElements)
+            {
+                instancesUsingVariable.AddRange(ObjectFinder.Self.GetAllNamedObjectsThatUseElement(derivedElement));
+            }
+        }
+
+        HashSet<GlueElement> elementsContainingChangedInstances = new HashSet<GlueElement>();
 
         if (shouldProceed)
         {
@@ -620,10 +634,33 @@ public class CustomVariableSaveSetPropertyLogic
                         {
                             derived.Type = customVariable.Type;
                             ConvertVariableValueToCurrentType(derived, oldDerivedValue, oldDerivedType);
+
                         }
                     }
                 }
+
+                foreach(var instanceUsingVariable in instancesUsingVariable)
+                {
+                    var variable = instanceUsingVariable.GetCustomVariable(customVariable.Name);
+
+                    if(variable != null && variable.Type != customVariable.Type)
+                    {
+                        variable.Type = customVariable.Type;
+                        variable.Value = ConvertVariableValueToCurrentType(customVariable.Type, variable.Value, oldType);
+                        // todo  - save?
+                        var instanceUsingOwner = ObjectFinder.Self.GetElementContaining(instanceUsingVariable);
+                        elementsContainingChangedInstances.Add(instanceUsingOwner);
+                    }
+                }
+
             }, "Converting variables according to type change");
+
+            foreach(var element in elementsContainingChangedInstances)
+            {
+                var throwaway = GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+
+                // generate code too?
+            }
 
             foreach (var element in elementsToRefresh)
             {
@@ -643,9 +680,18 @@ public class CustomVariableSaveSetPropertyLogic
 
     private static void ConvertVariableValueToCurrentType(CustomVariable customVariable, object currentValue, string oldType)
     {
+        var newValue = ConvertVariableValueToCurrentType(customVariable.Type, currentValue, oldType);
+
+        customVariable.DefaultValue = newValue;
+    }
+
+    private static object ConvertVariableValueToCurrentType(string newType, object currentValue, string oldType)
+    { 
         // This could migrate to the TypeManager but I haven't yet because the cod e here uses both old type and new type strings, which
         // the TypeManager doesn't yet handle. But we should unify that code
         bool wasAbleToConvert = false;
+
+        object newValue = null;
 
         if (currentValue != null)
         {
@@ -653,26 +699,27 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsInt = (int)currentValue;
 
-                wasAbleToConvert = TypeManager.TryCastValue(customVariable.Type, valueAsInt, out object convertedValue);
+                wasAbleToConvert = TypeManager.TryCastValue(newType, valueAsInt, out object convertedValue);
 
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "float":
                     case "float?":
-                        customVariable.DefaultValue = (float)valueAsInt;
+                        newValue = (float)valueAsInt;
                         wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = (decimal)valueAsInt;
+                        newValue = (decimal)valueAsInt;
                         wasAbleToConvert = true;
                         break;
                     case "double":
-                        customVariable.DefaultValue = (double)valueAsInt;
+                        newValue = (double)valueAsInt;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsInt.ToString();
+                        newValue = valueAsInt.ToString();
+                        wasAbleToConvert = true;
                         break;
                 }
             }
@@ -680,29 +727,29 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsDecimal = (decimal)currentValue;
 
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "float":
                     case "float?":
-                        customVariable.DefaultValue = (float)valueAsDecimal;
+                        newValue = (float)valueAsDecimal;
                         wasAbleToConvert = true;
                         break;
                     case "int":
                     case "int?":
-                        customVariable.DefaultValue = (int)valueAsDecimal;
+                        newValue = (int)valueAsDecimal;
                         wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = (decimal)valueAsDecimal;
+                        newValue = (decimal)valueAsDecimal;
                         wasAbleToConvert = true;
                         break;
                     case "double":
-                        customVariable.DefaultValue = (double)valueAsDecimal;
+                        newValue = (double)valueAsDecimal;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsDecimal.ToString();
+                        newValue = valueAsDecimal.ToString();
                         wasAbleToConvert = true;
                         break;
                 }
@@ -712,27 +759,28 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsFloat = (float)currentValue;
 
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "float?":
                         // is this necessary?
-                        customVariable.DefaultValue = (float?)valueAsFloat;
+                        newValue = (float?)valueAsFloat;
+                        wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = (decimal)valueAsFloat;
+                        newValue = (decimal)valueAsFloat;
                         wasAbleToConvert = true;
                         break;
                     case "int":
-                        customVariable.DefaultValue = (int)valueAsFloat;
+                        newValue = (int)valueAsFloat;
                         wasAbleToConvert = true;
                         break;
                     case "double":
-                        customVariable.DefaultValue = (double)valueAsFloat;
+                        newValue = (double)valueAsFloat;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsFloat.ToString();
+                        newValue = valueAsFloat.ToString();
                         wasAbleToConvert = true;
                         break;
                 }
@@ -741,24 +789,24 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsDouble = (double)currentValue;
 
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "int":
-                        customVariable.DefaultValue = (int)valueAsDouble;
+                        newValue = (int)valueAsDouble;
                         wasAbleToConvert = true;
                         break;
                     case "float":
                     case "float?":
-                        customVariable.DefaultValue = (float)valueAsDouble;
+                        newValue = (float)valueAsDouble;
                         wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = (decimal)valueAsDouble;
+                        newValue = (decimal)valueAsDouble;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsDouble.ToString();
+                        newValue = valueAsDouble.ToString();
                         wasAbleToConvert = true;
                         break;
                 }
@@ -767,71 +815,100 @@ public class CustomVariableSaveSetPropertyLogic
             {
                 var valueAsString = (string)currentValue;
 
-                switch (customVariable.Type)
+                if(newType?.Contains(".") == true)
                 {
-                    case "int":
+                    // This could be a CSV, entity type, or state.
+                    // For now just going to add entity type, but will
+                    // eventually add more:
+                    if(CustomVariableExtensionMethods.GetIsBaseElementType(newType, out GlueElement containingElement))
+                    {
+                        if(string.IsNullOrEmpty(valueAsString) || valueAsString == "<NONE>")
                         {
-                            if (int.TryParse(valueAsString, out int result))
-                            {
-                                customVariable.DefaultValue = result;
-                            }
+                            newValue = "";
+                                    wasAbleToConvert = true;
                         }
-                        break;
-                    case "float":
+                        else if(containingElement != null)
                         {
-                            if (float.TryParse(valueAsString, out float result))
-                            {
-                                customVariable.DefaultValue = result;
-                            }
+                            var entityType = ObjectFinder.Self.GetAllElementsThatInheritFrom(containingElement)
+                                .FirstOrDefault(item => item.Name.EndsWith("\\" + valueAsString));
+
+                            newValue = entityType?.Name ?? "";
+                                    wasAbleToConvert = true;
                         }
-                        break;
-                    case "decimal":
-                        {
-                            if (decimal.TryParse(valueAsString, out decimal result))
+                    }
+                }
+                else
+                {
+                    switch (newType)
+                    {
+                        case "int":
                             {
-                                customVariable.DefaultValue = result;
+                                if (int.TryParse(valueAsString, out int result))
+                                {
+                                    newValue = result;
+                                    wasAbleToConvert = true;
+                                }
                             }
-                        }
-                        break;
-                    case "double":
-                        {
-                            if (double.TryParse(valueAsString, out double result))
+                            break;
+                        case "float":
                             {
-                                customVariable.DefaultValue = result;
+                                if (float.TryParse(valueAsString, out float result))
+                                {
+                                    newValue = result;
+                                    wasAbleToConvert = true;
+                                }
                             }
-                        }
-                        break;
+                            break;
+                        case "decimal":
+                            {
+                                if (decimal.TryParse(valueAsString, out decimal result))
+                                {
+                                    newValue = result;
+                                    wasAbleToConvert = true;
+                                }
+                            }
+                            break;
+                        case "double":
+                            {
+                                if (double.TryParse(valueAsString, out double result))
+                                {
+                                    newValue = result;
+                                    wasAbleToConvert = true;
+                                }
+                            }
+                            break;
+                    }
                 }
             }
             else if (oldType == "bool")
             {
                 var valueAsBool = (bool)currentValue;
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "int":
-                        customVariable.DefaultValue = valueAsBool ? 1 : 0;
+                        newValue = valueAsBool ? 1 : 0;
                         wasAbleToConvert = true;
                         break;
                     case "float":
                     case "float?":
-                        customVariable.DefaultValue = valueAsBool ? 1.0f : 0.0f;
+                        newValue = valueAsBool ? 1.0f : 0.0f;
                         wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = valueAsBool ? 1.0m : 0.0m;
+                        newValue = valueAsBool ? 1.0m : 0.0m;
                         wasAbleToConvert = true;
                         break;
                     case "double":
-                        customVariable.DefaultValue = valueAsBool ? 1.0 : 0.0;
+                        newValue = valueAsBool ? 1.0 : 0.0;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsBool.ToString();
+                        newValue = valueAsBool.ToString();
                         wasAbleToConvert = true;
                         break;
                     case "bool?":
-                        customVariable.DefaultValue = valueAsBool;
+                        newValue = valueAsBool;
                         wasAbleToConvert = true;
                         break;
                 }
@@ -839,32 +916,32 @@ public class CustomVariableSaveSetPropertyLogic
             else if (oldType == "bool?")
             {
                 var valueAsBoolNullable = (bool?)currentValue;
-                switch (customVariable.Type)
+                switch (newType)
                 {
                     case "int":
-                        customVariable.DefaultValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1 : 0;
+                        newValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1 : 0;
                         wasAbleToConvert = true;
                         break;
                     case "float":
                     case "float?":
-                        customVariable.DefaultValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0f : 0.0f;
+                        newValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0f : 0.0f;
                         wasAbleToConvert = true;
                         break;
                     case "decimal":
                     case "decimal?":
-                        customVariable.DefaultValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0m : 0.0m;
+                        newValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0m : 0.0m;
                         wasAbleToConvert = true;
                         break;
                     case "double":
-                        customVariable.DefaultValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0 : 0.0;
+                        newValue = valueAsBoolNullable.HasValue && valueAsBoolNullable.Value ? 1.0 : 0.0;
                         wasAbleToConvert = true;
                         break;
                     case "string":
-                        customVariable.DefaultValue = valueAsBoolNullable.HasValue ? valueAsBoolNullable.Value.ToString() : "";
+                        newValue = valueAsBoolNullable.HasValue ? valueAsBoolNullable.Value.ToString() : "";
                         wasAbleToConvert = true;
                         break;
                     case "bool":
-                        customVariable.DefaultValue = valueAsBoolNullable;
+                        newValue = valueAsBoolNullable;
                         wasAbleToConvert = true;
                         break;
 
@@ -873,9 +950,11 @@ public class CustomVariableSaveSetPropertyLogic
 
             if (wasAbleToConvert == false)
             {
-                customVariable.SetDefaultValueAccordingToType(customVariable.Type);
+                newValue = CustomVariableExtensionMethods.GetDefaultValueAccordingToType(newType);
             }
         }
+
+        return newValue;
     }
 
     #endregion

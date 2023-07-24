@@ -743,9 +743,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else if(variableConsideringDefinedByBase?.GetIsBaseElementType(out GlueElement baseElement) == true)
                 {
-                    if(customVariable.DefaultValue != null && (customVariable.DefaultValue as string) != "<NONE>")
+                    var effectiveValue = forcedValue ?? customVariable.DefaultValue;
+                    if (!string.IsNullOrEmpty( effectiveValue as string) && (effectiveValue as string) != "<NONE>")
                     {
-                        var valueAfterLastBackslash = FileManager.RemovePath(customVariable.DefaultValue as string);
+                        var valueAfterLastBackslash = FileManager.RemovePath(effectiveValue as string);
                         rightSide = variableConsideringDefinedByBase.Type + "." + valueAfterLastBackslash;
                     }
                     else
