@@ -696,7 +696,15 @@ namespace FlatRedBall.Glue.CodeGeneration
             {
                 // don't pass glueElement, it may not match variableConsideringDefinedByBase's container
                 //containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
+                // Update July 24, 2023 - If the variable type is unqualified, then it may be a variable of type state. This is
+                // not recommended, but old FRB projects may still have these variables around. Therefore, if containerOfState is null
+                // and if the type is unqualified, and if glueElement is not null, let's try by passing the container:
                 containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase);
+
+                if(containerOfState == null && glueElement != null && customVariable.Type?.Contains(".") == false)
+                {
+                    containerOfState = GetElementIfCustomVariableIsVariableState(variableConsideringDefinedByBase, glueElement);
+                }   
             }
 
             if (containerOfState == null)
@@ -1236,11 +1244,11 @@ namespace FlatRedBall.Glue.CodeGeneration
             return customVariableType;
         }
 
-        public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, IElement saveObject = null)
+        public static IElement GetElementIfCustomVariableIsVariableState(CustomVariable customVariable, GlueElement saveObject = null)
         {
 
             saveObject = saveObject ?? ObjectFinder.Self.GetElementContaining(customVariable);
-            if (customVariable.GetIsVariableState() && string.IsNullOrEmpty(customVariable.SourceObject))
+            if (customVariable.GetIsVariableState(saveObject) && string.IsNullOrEmpty(customVariable.SourceObject))
             {
                 return saveObject;
             }
