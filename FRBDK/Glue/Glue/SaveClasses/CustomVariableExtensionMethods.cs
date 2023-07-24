@@ -67,6 +67,30 @@ namespace FlatRedBall.Glue.SaveClasses
             return result.IsState;
         }
 
+        public static bool GetIsBaseElementType(this CustomVariable customVariable)
+        {
+            return GetIsBaseElementType(customVariable, out _);
+        }
+
+        public static bool GetIsBaseElementType(this CustomVariable customVariable, out GlueElement element)
+        {
+            element = null;
+            if (!GlueState.CurrentGlueProject.SuppressBaseTypeGeneration && customVariable.Type.Contains("."))
+            {
+                if(customVariable.Type.StartsWith("Entities.") && customVariable.Type.EndsWith("Type"))
+                {
+                    // strip of Entities. and Type and see if there's an entity with a matching name:
+                    var entityName = customVariable.Type.Substring(0, customVariable.Type.Length - "Type".Length).Replace(".", "\\");
+
+                    element = GlueState.CurrentGlueProject.Entities.FirstOrDefault(item => item.Name == entityName);
+
+                    return element != null;
+                }
+            }
+
+            return false;
+        }
+
         public static (bool isState, StateSaveCategory category) GetIsVariableStateAndCategory(this CustomVariable customVariable, GlueElement containingElement = null)
         {
             var result = ObjectFinder.Self.GetStateSaveCategory(customVariable, containingElement);

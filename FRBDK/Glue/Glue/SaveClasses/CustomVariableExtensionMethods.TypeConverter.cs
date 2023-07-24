@@ -68,6 +68,12 @@ namespace FlatRedBall.Glue.SaveClasses
                         typeConverter = converter;
                     }
                 }
+                else if(customVariable.GetIsBaseElementType(out GlueElement element))
+                {
+                    var derived= ObjectFinder.Self.GetAllDerivedElementsRecursive(element);
+
+                    typeConverter = new AvailableDerivedElementsConverter(element);
+                }
                 else if (customVariable.GetIsCsv())
                 {
                     if (FacadeContainer.Self.ProjectValues == null)

@@ -367,6 +367,11 @@ public class CustomVariableSaveSetPropertyLogic
 
     #region IsShared
 
+    /// <summary>
+    /// Reacts to the IsShared value being set, which can make a variable `static` if true.
+    /// </summary>
+    /// <param name="customVariable"></param>
+    /// <param name="oldValue"></param>
     private static void HandleIsSharedVariableSet(CustomVariable customVariable, object oldValue)
     {
         // July 11, 2011

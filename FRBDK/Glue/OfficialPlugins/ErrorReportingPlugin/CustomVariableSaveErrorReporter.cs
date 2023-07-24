@@ -59,7 +59,7 @@ namespace OfficialPlugins.ErrorReportingPlugin
                 if (string.IsNullOrEmpty(baseDefiningVariable?.SourceObject))
                 {
                     // it better be a CSV or state
-                    var found = variable.GetIsCsv() || variable.GetIsVariableState();
+                    var found = variable.GetIsCsv() || variable.GetIsVariableState() || variable.GetIsBaseElementType();
 
                     if (!found)
                     {

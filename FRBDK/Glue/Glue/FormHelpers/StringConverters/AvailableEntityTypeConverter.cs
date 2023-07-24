@@ -8,6 +8,9 @@ using FlatRedBall.Glue.Elements;
 
 namespace FlatRedBall.Glue.FormHelpers.StringConverters
 {
+    /// <summary>
+    /// Type converter returning all available entity names excluding CurrentEntitySave
+    /// </summary>
     public class AvailableEntityTypeConverter : TypeConverter
 	{
 
@@ -35,12 +38,12 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
         }
 
 
-        List<string> stringToReturn = new List<string>();
+        List<string> stringsToReturn = new List<string>();
         public override StandardValuesCollection
                      GetStandardValues(ITypeDescriptorContext context)
         {
-            stringToReturn.Clear();
-            stringToReturn.Add("<NONE>");
+            stringsToReturn.Clear();
+            stringsToReturn.Add("<NONE>");
 
 
             for (int i = 0; i < ObjectFinder.Self.GlueProject.Entities.Count; i++)
@@ -49,11 +52,11 @@ namespace FlatRedBall.Glue.FormHelpers.StringConverters
 
                 if (entityName != CurrentEntitySave.Name)
 				{
-					stringToReturn.Add(entityName);
+					stringsToReturn.Add(entityName);
 				}
             }
 
-            return new StandardValuesCollection(stringToReturn);
+            return new StandardValuesCollection(stringsToReturn);
         } 
 	}
 }

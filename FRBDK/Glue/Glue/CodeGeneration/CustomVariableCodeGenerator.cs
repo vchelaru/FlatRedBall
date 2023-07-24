@@ -22,7 +22,7 @@ namespace FlatRedBall.Glue.CodeGeneration
     public class CustomVariableCodeGenerator : ElementComponentCodeGenerator
     {
 
-        #region Write Fields/Properties for CustomVariables
+        #region Fields/Properties
 
         public static ICodeBlock AppendCodeForMember(GlueElement saveObject, ICodeBlock codeBlock, CustomVariable customVariable, bool forceGenerateExposed = false)
         {
@@ -169,55 +169,59 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (customVariable.DefaultValue != null)
             {
+                // July 24, 2023
+                // Why not use GetRightSide?
+                // That is 
                 if (!IsTypeFromCsv(customVariable, element))
                 {
-                    variableAssignment =
-                        CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
+                    //variableAssignment =
+                    //    CodeParser.ConvertValueToCodeString(customVariable.DefaultValue);
 
-                    // If this is a file, we don't want to assign it here
-                    if (customVariable.GetIsFile())
+                    //// If this is a file, we don't want to assign it here
+                    //if (customVariable.GetIsFile())
+                    //{
+                    //    variableAssignment = null;
+                    //}
+
+                    //if (customVariable.Type == "Color")
+                    //{
+                    //    variableAssignment = "Color." + variableAssignment.Replace("\"", "");
+
+                    //}
+                    //else if (customVariable.Type != "string" && variableAssignment == "\"\"")
+                    //{
+                    //    variableAssignment = null;
+                    //}
+                    //else
+                    //{
+                    //    if (customVariable.DefaultValue != null)
+                    //    {
+                    //        (bool isState, StateSaveCategory category) =
+                    //            customVariable.GetIsVariableStateAndCategory(element as GlueElement);
+                    //        if (isState)
+                    //        {
+                    //            var type = customVariable.Type;
+                    //            if (category != null)
+                    //            {
+                    //                var categoryElement = ObjectFinder.Self.GetElementContaining(category);
+
+                    //                if (categoryElement != null)
+                    //                {
+                    //                    type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
+
+                    //                }
+
+                    //            }
+                    //            variableAssignment = type + "." + customVariable.DefaultValue;
+                    //        }
+
+                    //    }
+                    //}
+                    var variableAssignmentValue = GetRightSideOfEquals(customVariable, element);
+
+                    if (variableAssignmentValue != null)
                     {
-                        variableAssignment = null;
-                    }
-
-                    if (customVariable.Type == "Color")
-                    {
-                        variableAssignment = "Color." + variableAssignment.Replace("\"", "");
-
-                    }
-                    else if (customVariable.Type != "string" && variableAssignment == "\"\"")
-                    {
-                        variableAssignment = null;
-                    }
-                    else 
-                    {
-                        if (customVariable.DefaultValue != null)
-                        {
-                            (bool isState, StateSaveCategory category) =
-                                customVariable.GetIsVariableStateAndCategory(element as GlueElement);
-                            if (isState)
-                            {
-                                var type = customVariable.Type;
-                                if(category != null)
-                                {
-                                    var categoryElement = ObjectFinder.Self.GetElementContaining(category);
-
-                                    if(categoryElement != null)
-                                    {
-                                        type = $"{categoryElement.Name.Replace("\\", ".")}.{category.Name}";
-
-                                    }
-
-                                }
-                                variableAssignment = type + "." + customVariable.DefaultValue;
-                            }
-
-                        }
-                    }
-
-                    if (variableAssignment != null)
-                    {
-                        variableAssignment = " = " + variableAssignment;
+                        variableAssignment = " = " + variableAssignmentValue;
                     }
                 }
                 else if(!string.IsNullOrEmpty(customVariable.DefaultValue as string) && (string)customVariable.DefaultValue != "<NULL>")
@@ -718,7 +722,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         rightSide = "null";
                     }
                 }
-                else if (variableConsideringDefinedByBase != null && variableConsideringDefinedByBase.GetIsCsv())
+                else if (variableConsideringDefinedByBase?.GetIsCsv() == true)
                 {
                     if (ShouldAssignToCsv(variableConsideringDefinedByBase, rightSide))
                     {
@@ -728,6 +732,22 @@ namespace FlatRedBall.Glue.CodeGeneration
                     {
                         rightSide = null;
                     }
+                }
+                else if(variableConsideringDefinedByBase?.GetIsBaseElementType(out GlueElement baseElement) == true)
+                {
+                    if(customVariable.DefaultValue != null && (customVariable.DefaultValue as string) != "<NONE>")
+                    {
+                        var valueAfterLastBackslash = FileManager.RemovePath(customVariable.DefaultValue as string);
+                        rightSide = variableConsideringDefinedByBase.Type + "." + valueAfterLastBackslash;
+                    }
+                    else
+                    {
+                        rightSide = "null";
+                    }
+                }
+                else if(variableConsideringDefinedByBase?.GetIsBaseElementType() == true)
+                {
+                    rightSide = variableConsideringDefinedByBase.Type + "." + rightSide;
                 }
                 else if(forcedType == "FlatRedBall.Sprite" || forcedType == "Sprite")
                 {
@@ -1616,6 +1636,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         {
             if(customVariable != null && customVariable.Type != null &&
                 customVariable.GetIsVariableState(glueElement) == false &&
+                customVariable.GetIsBaseElementType() == false &&
                 customVariable.Type.Contains(".") &&
                 customVariable.GetRuntimeType() == null)
             {
