@@ -37,6 +37,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
         RenderingLibrary.Graphics.Sprite Sprite;
         List<RenderingLibrary.Graphics.Sprite> mOnionSkinSprites = new List<RenderingLibrary.Graphics.Sprite>();
+        List<RenderingLibrary.Math.Geometry.Line> mOriginGuideLines = new List<RenderingLibrary.Math.Geometry.Line>();
 
         LineRectangle outlineRectangle;
 
@@ -131,6 +132,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
             mPreviewControls = previewControls;
             mPreviewControls.OnionSkinVisibleChange += new EventHandler(HandleOnionSkinChange);
+            mPreviewControls.ShowGuidesChange += HandleGuidesChange;
             mPreviewControls.SpriteAlignmentChange += new EventHandler(HandleSpriteAlignmentChange);
             mControl = graphicsDeviceControl;
             mControl.MouseWheel += new System.Windows.Forms.MouseEventHandler(HandleMouseWheel);
@@ -211,6 +213,11 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         void HandleOnionSkinChange(object sender, EventArgs e)
         {
             UpdateOnionSkinSprites();
+        }
+
+        void HandleGuidesChange(object sender, EventArgs e)
+        {
+            UpdateGuides();
         }
 
         void HandleXnaDraw()
@@ -517,7 +524,42 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     mOnionSkinSprites.RemoveAt(0);
                 }
             }
+        }
 
+        private void UpdateGuides()
+        {
+            var shouldShow = mPreviewControls.IsShowGuidesChecked;
+
+            if(shouldShow)
+            {
+                if(mOriginGuideLines.Count == 0)
+                {
+                    var horizontalLine = new RenderingLibrary.Math.Geometry.Line(mManagers);
+                    horizontalLine.X = -3000;
+                    horizontalLine.Y = 0;
+                    horizontalLine.RelativePoint = new Microsoft.Xna.Framework.Vector2(6000, 0);
+
+                    mManagers.ShapeManager.Add(horizontalLine);
+                    mOriginGuideLines.Add(horizontalLine);
+
+                    var verticalLine = new RenderingLibrary.Math.Geometry.Line(mManagers);
+                    verticalLine.X = 0;
+                    verticalLine.Y = -3000;
+                    verticalLine.RelativePoint = new Microsoft.Xna.Framework.Vector2(0, 6000);
+                    mManagers.ShapeManager.Add(verticalLine);
+                    mOriginGuideLines.Add(verticalLine);
+
+                }
+            }
+            else
+            {
+                while(mOriginGuideLines.Count != 0)
+                {
+                    var item = mOriginGuideLines[0];
+                    mManagers.ShapeManager.Remove(item);
+                    mOriginGuideLines.RemoveAt(0);
+                }
+            }
         }
 
         public void ReactToAnimationFrameChange()

@@ -33,6 +33,7 @@
             this.ZoomComboBox = new System.Windows.Forms.ComboBox();
             this.OffsetMultiplierLabel = new System.Windows.Forms.Label();
             this.OffsetMultTextBox = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // OnionSkinCheckBox
@@ -69,7 +70,7 @@
             // OffsetMultiplierLabel
             // 
             this.OffsetMultiplierLabel.AutoSize = true;
-            this.OffsetMultiplierLabel.Location = new System.Drawing.Point(232, 4);
+            this.OffsetMultiplierLabel.Location = new System.Drawing.Point(321, 4);
             this.OffsetMultiplierLabel.Name = "OffsetMultiplierLabel";
             this.OffsetMultiplierLabel.Size = new System.Drawing.Size(60, 13);
             this.OffsetMultiplierLabel.TabIndex = 3;
@@ -77,17 +78,29 @@
             // 
             // OffsetMultTextBox
             // 
-            this.OffsetMultTextBox.Location = new System.Drawing.Point(292, 1);
+            this.OffsetMultTextBox.Location = new System.Drawing.Point(381, 1);
             this.OffsetMultTextBox.Name = "OffsetMultTextBox";
             this.OffsetMultTextBox.Size = new System.Drawing.Size(39, 20);
             this.OffsetMultTextBox.TabIndex = 4;
             this.OffsetMultTextBox.Text = "1";
             this.OffsetMultTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(227, 3);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(89, 17);
+            this.checkBox1.TabIndex = 5;
+            this.checkBox1.Text = "Show Guides";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // PreviewControls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.OffsetMultTextBox);
             this.Controls.Add(this.OffsetMultiplierLabel);
             this.Controls.Add(this.ZoomComboBox);
@@ -107,5 +120,6 @@
         private System.Windows.Forms.ComboBox ZoomComboBox;
         private System.Windows.Forms.Label OffsetMultiplierLabel;
         private System.Windows.Forms.TextBox OffsetMultTextBox;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
