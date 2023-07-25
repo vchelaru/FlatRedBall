@@ -11,7 +11,7 @@ namespace FlatRedBall.Glue.Projects
     public class CodeProjectHelper
     {
 
-        public void CreateAndAddPartialCodeFile(string generatedFileName, bool saveFile)
+        public void CreateAndAddPartialGeneratedCodeFile(string generatedFileName, bool saveFile)
         {
             // Currently unit tests don't deal with projects
 #if !TEST
@@ -45,31 +45,12 @@ namespace FlatRedBall.Glue.Projects
 
                 FlatRedBall.Glue.IO.FileWatchManager.IgnoreNextChangeOnFile(absoluteFileName);
 
-                // Try to save a few times just in case there's a hiccup
-                const int numberOfTimesToTry = 4;
-                int numberOfTries = 0;
-                bool succeeded = false;
-                while (numberOfTries < numberOfTimesToTry)
+                GlueCommands.Self.TryMultipleTimes(() =>
                 {
-                    try
-                    {
-                        FileManager.SaveText(
-                            "", // this gets generated later
-                            absoluteFileName);
-                        succeeded = true;
-                        break;
-                    }
-                    catch
-                    {
-                        System.Threading.Thread.Sleep(30);
-
-                        numberOfTries++;
-                    }
-                }
-                if (!succeeded)
-                {
-                    throw new Exception("Error trying to save file " + absoluteFileName);
-                }
+                    // this gets generated later
+                    FileManager.SaveText("", absoluteFileName);
+                });
+                
             }
         }
 

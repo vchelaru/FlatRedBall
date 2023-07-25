@@ -245,7 +245,7 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                         // this may not be the current screen:
                         var nosParent = ObjectFinder.Self.GetElementContaining(nos);
 
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         GlueCommands.Self.DoOnUiThread(GlueCommands.Self.RefreshCommands.RefreshVariables);
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(nosParent);
                     }

@@ -39,18 +39,24 @@ public class BehaviorCodeGenerator : Singleton<BehaviorCodeGenerator>
 
     private void GenerateInterface(ICodeBlock codeBlock, BehaviorSave behavior)
     {
-
-        foreach (var category in behavior.Categories)
+        var canGenerate = StateCodeGenerator.Self.SupportsEnumsInInterfaces;
+        if(canGenerate)
         {
-            string propertyName = category.Name;
+            foreach (var category in behavior.Categories)
+            {
+                string propertyName = category.Name;
 
-            codeBlock.Line($"{propertyName} Current{propertyName}State {{set;}}");
+                codeBlock.Line($"{propertyName} Current{propertyName}State {{set;}}");
+            }
         }
-
     }
 
     public void GenerateBehaviorImplementingProperties(ICodeBlock codeBlock, ElementSave elementSave)
     {
+        if(!StateCodeGenerator.Self.SupportsEnumsInInterfaces)
+        {
+            return;
+        }
         foreach(var behaviorReference in elementSave.Behaviors)
         {
             var behavior = Gum.Managers.ObjectFinder.Self.GetBehavior(behaviorReference);

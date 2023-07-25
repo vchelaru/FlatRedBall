@@ -181,6 +181,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
+        public string SelectedItemInfoDisplay
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         #endregion
 
         #region Bookmark
@@ -503,89 +509,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        #endregion
-
-        private NodeViewModel AddEntityTreeNode(EntitySave entitySave)
-        {
-            //NodeViewModel elementTreeNode = new GlueElementNodeViewModel(EntityRootNode, entitySave);
-            //EntityRootNode.Children.Add(elementTreeNode);
-            //return elementTreeNode;
-
-            string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
-
-            NodeViewModel treeNodeToAddTo;
-            if (containingDirectory == "Entities/")
-            {
-                treeNodeToAddTo = EntityRootNode;
-            }
-            else
-            {
-                string directory = containingDirectory.Substring("Entities/".Length);
-
-                treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(directory, EntityRootNode);
-                if (treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
-                {
-                    // If it's null that may mean the directory doesn't exist.  We should make it
-                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
-                    if (!Directory.Exists(absoluteDirectory))
-                    {
-                        Directory.CreateDirectory(absoluteDirectory);
-
-                    }
-                    AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode);
-
-                    // now try again
-                    treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(
-                        directory, EntityRootNode);
-                }
-            }
-
-
-            var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, entitySave, true);
-            treeNode.Text = FileManager.RemovePath(entitySave.Name);
-            treeNode.Tag = entitySave;
-
-            // Someone in the chat room got a crash on the Add call.  Not sure why
-            // so adding these to help find out what's up.
-            if (treeNodeToAddTo == null)
-            {
-                throw new NullReferenceException("treeNodeToAddTo is null.  This is bad");
-            }
-            if (treeNode == null)
-            {
-                throw new NullReferenceException("treeNode is null.  This is bad");
-            }
-
-            treeNodeToAddTo.Children.Add(treeNode);
-            treeNodeToAddTo.SortByTextConsideringDirectories();
-
-            string generatedFile = entitySave.Name + ".Generated.cs";
-
-            EntityRootNode.SortByTextConsideringDirectories();
-
-            treeNode.RefreshTreeNodes(TreeNodeRefreshType.All);
-
-            return treeNode;
-
-
-        }
-
-        public void Clear()
-        {
-            ScreenRootNode.Children.Clear();
-            EntityRootNode.Children.Clear();
-            GlobalContentRootNode.Children.Clear();
-        }
-
-        public void Select(int count)
-        {
-            var children = this.RootModel.Children as IList<NodeViewModel>;
-            for (int i = 0; i < count; i++)
-            {
-                children[i].IsSelected = true;
-            }
-        }
-
         internal void AddDirectoryNodes(string parentDirectory, NodeViewModel parentTreeNode)
         {
             if (parentTreeNode == null)
@@ -669,13 +592,94 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
         }
 
-        internal void CollapseAll()
+        internal void RefreshSelectedItemInfoDisplay(List<ITreeNode> selectedTreeNodes)
         {
-            foreach (var node in VisibleRoot)
+            if(selectedTreeNodes.Count == 0)
             {
-                node.CollapseRecursively();
+                SelectedItemInfoDisplay = string.Empty;
+            }
+            else if(selectedTreeNodes.Count == 1)
+            {
+                SelectedItemInfoDisplay = selectedTreeNodes[0].Tag?.ToString();
+            }
+            else
+            {
+                SelectedItemInfoDisplay = $"{selectedTreeNodes.Count} items selected";
+            }
+        }
+
+        #endregion
+
+        private NodeViewModel AddEntityTreeNode(EntitySave entitySave)
+        {
+            //NodeViewModel elementTreeNode = new GlueElementNodeViewModel(EntityRootNode, entitySave);
+            //EntityRootNode.Children.Add(elementTreeNode);
+            //return elementTreeNode;
+
+            string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
+
+            NodeViewModel treeNodeToAddTo;
+            if (containingDirectory == "Entities/")
+            {
+                treeNodeToAddTo = EntityRootNode;
+            }
+            else
+            {
+                string directory = containingDirectory.Substring("Entities/".Length);
+
+                treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(directory, EntityRootNode);
+                if (treeNodeToAddTo == null && !string.IsNullOrEmpty(directory))
+                {
+                    // If it's null that may mean the directory doesn't exist.  We should make it
+                    string absoluteDirectory = GlueCommands.Self.GetAbsoluteFileName(containingDirectory, false);
+                    if (!Directory.Exists(absoluteDirectory))
+                    {
+                        Directory.CreateDirectory(absoluteDirectory);
+
+                    }
+                    AddDirectoryNodes(FileManager.RelativeDirectory + "Entities/", EntityRootNode);
+
+                    // now try again
+                    treeNodeToAddTo = TreeNodeForDirectoryOrEntityNode(
+                        directory, EntityRootNode);
+                }
             }
 
+
+            var treeNode = new GlueElementNodeViewModel(treeNodeToAddTo, entitySave, true);
+            treeNode.Text = FileManager.RemovePath(entitySave.Name);
+            treeNode.Tag = entitySave;
+
+            // Someone in the chat room got a crash on the Add call.  Not sure why
+            // so adding these to help find out what's up.
+            if (treeNodeToAddTo == null)
+            {
+                throw new NullReferenceException("treeNodeToAddTo is null.  This is bad");
+            }
+            if (treeNode == null)
+            {
+                throw new NullReferenceException("treeNode is null.  This is bad");
+            }
+
+            treeNodeToAddTo.Children.Add(treeNode);
+            treeNodeToAddTo.SortByTextConsideringDirectories();
+
+            string generatedFile = entitySave.Name + ".Generated.cs";
+
+            EntityRootNode.SortByTextConsideringDirectories();
+
+            treeNode.RefreshTreeNodes(TreeNodeRefreshType.All);
+
+            return treeNode;
+
+
+        }
+
+        public void Clear()
+        {
+            ScreenRootNode.Children.Clear();
+            EntityRootNode.Children.Clear();
+            GlobalContentRootNode.Children.Clear();
         }
 
         internal void DeselectResursively()
@@ -683,6 +687,17 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             ScreenRootNode.DeselectResursively();
             EntityRootNode.DeselectResursively();
             GlobalContentRootNode.DeselectResursively();
+        }
+
+        #region Collapse
+
+        internal void CollapseAll()
+        {
+            foreach (var node in VisibleRoot)
+            {
+                node.CollapseRecursively();
+            }
+
         }
 
         internal void CollapseToDefinitions()
@@ -697,6 +712,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityRootNode.IsExpanded = true;
             GlobalContentRootNode.IsExpanded = true;
         }
+
+        #endregion
 
         #region Search for Nodes
 
@@ -1261,6 +1278,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
 
         }
+
 
     }
 }

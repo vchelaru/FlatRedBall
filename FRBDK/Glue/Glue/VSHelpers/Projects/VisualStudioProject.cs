@@ -110,7 +110,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public abstract string NeededVisualStudioVersion { get; }
 
-        public string DotNetVersion { get; private set; }
+        public string DotNetVersionString { get; private set; }
+
+        public Version DotNetVersion { get; private set; }
 
         public decimal? DotNetVersionNumber { get; private set; }
         #endregion
@@ -138,15 +140,21 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         private void GetDotNetVersion()
         {
             var property = mProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
-            DotNetVersion = property?.EvaluatedValue ?? "Unknown";
+            DotNetVersionString = property?.EvaluatedValue ?? "Unknown";
 
-            if(DotNetVersion?.StartsWith("v") == true)
+            if(DotNetVersionString?.StartsWith("v") == true)
             {
-                var afterV = DotNetVersion.Substring(1);
+                var afterV = DotNetVersionString.Substring(1);
 
                 try
                 {
                     DotNetVersionNumber = Decimal.Parse(afterV);
+                }
+                catch { }
+
+                try
+                {
+                    DotNetVersion = new Version(afterV);
                 }
                 catch { }
             }

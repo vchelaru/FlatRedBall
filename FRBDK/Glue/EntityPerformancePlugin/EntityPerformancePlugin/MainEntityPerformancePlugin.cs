@@ -301,7 +301,7 @@ namespace EntityPerformancePlugin
             }
             if(shouldSaveGlux)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             SavePerformanceData();

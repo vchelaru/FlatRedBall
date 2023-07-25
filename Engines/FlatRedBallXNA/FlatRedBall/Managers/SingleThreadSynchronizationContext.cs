@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Managers
 {
@@ -24,7 +25,14 @@ namespace FlatRedBall.Managers
         {
             lock (_syncHandle)
             {
-                _messagesToProcess.Enqueue(() => codeToRun(state));
+                _messagesToProcess.Enqueue(() =>
+                {
+                    try
+                    {
+                        codeToRun(state);
+                    }
+                    catch (TaskCanceledException) { }
+                });
                 SignalContinue();
             }
         }
@@ -64,7 +72,15 @@ namespace FlatRedBall.Managers
             while (thisFrameQueue.Count > 0)
             {
                 var actionToRun = thisFrameQueue.Dequeue();
-                actionToRun();
+                try
+                {
+                    actionToRun();
+                }
+                catch (TaskCanceledException)
+                {
+                    // Most likely the task was cancelled due to moving screens.
+                    // Nothing is to be done for cancelled tasks.
+                }
             }
         }
 

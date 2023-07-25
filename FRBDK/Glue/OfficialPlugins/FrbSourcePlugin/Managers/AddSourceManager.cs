@@ -115,7 +115,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
 
             if (viewModel.IncludeGumSkia)
             {
-                if (GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6 == false)
+                if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6 == false)
                 {
                     outerError = "GumSkia can only be added to .NET 6 and greater projects";
                 }
@@ -172,7 +172,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers
 
         private static List<ProjectReference> GetProjectReferencesForCurrentProject()
         {
-            if (GlueState.Self.CurrentMainProject.DotNetVersionNumber >= 6)
+            if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6)
             {
                 return DesktopGlNet6.Concat(SharedShprojReferences).ToList();
             }

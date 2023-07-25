@@ -149,11 +149,9 @@ namespace FlatRedBall
         #endregion
         protected internal float mRotationY;
 
-        #region XML Docs
         /// <summary>
-        /// The Z component of the object's absolute rotation.
+        /// The Z component of the object's absolute rotation in radians.
         /// </summary>
-        #endregion
         protected internal float mRotationZ;
 
         #region XML Docs

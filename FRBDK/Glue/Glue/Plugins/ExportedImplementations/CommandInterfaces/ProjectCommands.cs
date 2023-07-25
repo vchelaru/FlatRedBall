@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             var fullFileName = ProjectManager.ProjectBase.Directory + fileName;
 
             var save = false; // we'll be doing manual saving after it's created
-            ProjectManager.CodeProjectHelper.CreateAndAddPartialCodeFile(fileName, save);
+            ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, save);
 
             // Now we can save it:
             FileManager.SaveText(code, fullFileName);
@@ -725,6 +725,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void MakeGeneratedCodeItemsNested()
         {
+            TaskManager.Self.AddOrRunIfTasked(MakeGeneratedCodeItemsNestedImmediately,
+                nameof(MakeGeneratedCodeItemsNested));
+        }
+
+        public void MakeGeneratedCodeItemsNestedImmediately()
+        { 
             foreach (var bi in ProjectManager.ProjectBase.EvaluatedItems)
             {
 

@@ -62,6 +62,30 @@ namespace FlatRedBall.Audio
             set;
         } = 1.0f;
 
+        static float? masterSongVolume = null;
+        public static float? MasterSongVolume
+        {
+            get => masterSongVolume;
+            set
+            {
+                if(value != null)
+                {
+                    masterSongVolume = value;
+#if !IOS
+                    MediaPlayer.Volume = masterSongVolume.Value;
+#endif
+                    if(CurrentISong != null)
+                    {
+                        CurrentISong.Volume = masterSongVolume.Value;
+                    }
+                }
+                else
+                {
+                    masterSongVolume = null;
+                }
+            }
+        }
+
         static SongPlaylist Playlist;
 
         static int playlistIndex = 0;
@@ -71,10 +95,6 @@ namespace FlatRedBall.Audio
         private static DateTime _lastPlay = DateTime.Now;
 #endif
 
-
-        #endregion
-
-        #region Properties
 
         public static bool IsCustomMusicPlaying
         {
@@ -406,6 +426,10 @@ namespace FlatRedBall.Audio
                     {
                         toPlay.PlaybackStopped += HandleISongPlaybackStopped;
                     }
+                }
+                if(masterSongVolume != null && toPlay != null)
+                {
+                    toPlay.Volume = masterSongVolume.Value;
                 }
                 mCurrentISong = toPlay;
                 CurrentlyPlayingISong = mCurrentISong;

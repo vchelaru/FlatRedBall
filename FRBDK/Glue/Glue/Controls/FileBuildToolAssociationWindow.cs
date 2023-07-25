@@ -183,7 +183,7 @@ namespace FlatRedBall.Glue.Controls
                     {
                         ProjectManager.GlueProjectSave.ExternallyBuiltFileDirectory = relativeDirectory;
                     }
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
                 }
                 else
                 {

@@ -18,7 +18,8 @@ namespace OfficialPlugins.PathPlugin.ViewModels
         {
             SegmentType.Line,
             SegmentType.Arc,
-            SegmentType.Move
+            SegmentType.Move,
+            SegmentType.Spline
         };
 
         public IEnumerable<SegmentType> AvailableSegmentTypes => availableValuesStatic;

@@ -1780,7 +1780,11 @@ namespace FlatRedBall
             foreach(var animation in animations)
             {
                 CurrentChainName = animation;
-                await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+                try
+                {
+                    await TimeManager.DelaySeconds(CurrentChain.TotalLength);
+                }
+                catch (TaskCanceledException) { return; }
             }
         }
 

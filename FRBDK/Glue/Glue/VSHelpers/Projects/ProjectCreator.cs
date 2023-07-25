@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     else
                     {
                         var path = FileManager.GetDirectory( Environment.GetEnvironmentVariable("MSBUILD_EXE_PATH"));
-                        GlueCommands.Self.PrintOutput($"You have MonoGame installed at {monogamePath}\nIt needs to be in {path}. You can manually copy it to fix this problem.");
+                        GlueCommands.Self.PrintError($"You have MonoGame installed at {monogamePath}\nIt needs to be in {path}. You can manually copy it to fix this problem.");
                     }
 
 

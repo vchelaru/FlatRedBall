@@ -63,7 +63,6 @@ namespace GumPluginCore.Managers
 
                 AddDropshadowVariables(filledCircleState);
 
-
                 AddStrokeAndFilledVariables(filledCircleState);
 
                 filledCircleState.Variables.Add(new VariableSave { Type = "float", Value = 0.0f, Category = "Flip and Rotation", Name = "Rotation" });
@@ -144,6 +143,25 @@ namespace GumPluginCore.Managers
 
                 AddVariableReferenceList(roundedRectangleState);
                 Gum.Managers.StandardElementsManager.Self.DefaultStates.Add("RoundedRectangle", roundedRectangleState);
+            }
+
+
+            {
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                //                                                       Canvas                                                       //
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                var canvasState = new StateSave();
+                canvasState.Name = "Default";
+                AddVisibleVariable(canvasState);
+
+                StandardElementsManager.AddPositioningVariables(canvasState);
+                StandardElementsManager.AddDimensionsVariables(canvasState, 100, 100,
+                    StandardElementsManager.DimensionVariableAction.ExcludeFileOptions);
+
+                AddVariableReferenceList(canvasState);
+
+                Gum.Managers.StandardElementsManager.Self.DefaultStates.Add("Canvas", canvasState);
             }
 
         }

@@ -165,6 +165,8 @@ namespace GlueControl.Editing
         {
             var mouse = InputManager.Mouse;
 
+            FlatRedBall.Debugging.Debugger.Write(PushStartLocation?.ToString() ?? "no push start");
+
             PerformedRectangleSelection = false;
 
             if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) == false && !mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))
@@ -180,7 +182,16 @@ namespace GlueControl.Editing
 
             if (effectivePush)
             {
-                if (FlatRedBallServices.Game.IsActive)
+                var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                // We can use the cursor to tell if the mouse is over a FRB window, but only
+                // if the cursor and mouse are the same thing. If the cursor is not the mouse,
+                // then the mouse and cursor may not be in the same spot, so we can't use the WindowOver check
+                bool isOverWindow = isCursorUsingMouse &&
+                    FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null;
+
+
+                if (FlatRedBallServices.Game.IsActive && !isOverWindow)
                 {
                     PushStartLocation = new Vector2(mouse.WorldXAt(0), mouse.WorldYAt(0));
                     LeftSelect = null;
@@ -536,6 +547,19 @@ namespace GlueControl.Editing
                 polygon = polygonForCursorOver;
 
                 polygon.RotationMatrix = asLine.RotationMatrix;
+            }
+
+            else if (collisionObject is FlatRedBall.TileGraphics.LayeredTileMap layeredTileMap)
+            {
+                minX = layeredTileMap.X;
+                maxX = layeredTileMap.X + layeredTileMap.Width;
+
+                maxY = layeredTileMap.Y;
+                minY = layeredTileMap.Y - layeredTileMap.Height;
+
+                MakePolygonRectangleMinMax(minX, maxX, minY, maxY);
+                polygon = polygonForCursorOver;
+
             }
 #if HasGum
             else if (collisionObject is GumCoreShared.FlatRedBall.Embedded.PositionedObjectGueWrapper gumWrapper)

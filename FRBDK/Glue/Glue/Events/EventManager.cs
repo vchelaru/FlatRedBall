@@ -66,13 +66,31 @@ namespace FlatRedBall.Glue.Events
 
         #endregion
 
-
-
-
-        public static int GetLastLocationInClass(string fullFileContents, bool startOfLine)
+        public static int GetLastLocationInClass(string fullFileContents, bool startOfLine, out bool hasBracketNamespace)
         {
             // Get the closing bracket for the namespace
-            int indexToInsertAt = fullFileContents.LastIndexOf('}', fullFileContents.Length - 1);
+            int indexToInsertAt = fullFileContents.Length;
+
+            // Update - C# now allows for namespaces without {}'s. If we have that kind of syntax, then
+            // we need to do one-fewer calls below:
+
+            hasBracketNamespace = true;
+            var projectNamespace = GlueState.Self.ProjectNamespace;
+            var namespaceLine = fullFileContents.IndexOf($"namespace {projectNamespace}.");
+            if (namespaceLine != -1)
+            {
+                var endOfLineIndex = fullFileContents.IndexOf('\n', namespaceLine);
+                var nextSemicolon = fullFileContents.IndexOf(';', namespaceLine);
+                if (nextSemicolon != -1 && nextSemicolon < endOfLineIndex)
+                {
+                    hasBracketNamespace = false;
+                }
+            }
+
+            if(hasBracketNamespace)
+            {
+                indexToInsertAt = fullFileContents.LastIndexOf('}', indexToInsertAt - 1);
+            }
 
             // Now get the closing bracket for the class
             indexToInsertAt = fullFileContents.LastIndexOf('}', indexToInsertAt - 1);

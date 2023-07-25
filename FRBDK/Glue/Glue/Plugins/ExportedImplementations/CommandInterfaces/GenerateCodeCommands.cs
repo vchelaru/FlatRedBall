@@ -15,6 +15,8 @@ using FlatRedBall.Glue.Elements;
 using System.Threading.Tasks;
 using Xceed.Wpf.Toolkit;
 using FlatRedBall.Glue.VSHelpers;
+using System.Text;
+using System.IO;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 {
@@ -80,6 +82,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     TaskExecutionPreference.AddOrMoveToEnd);
             }
         }
+
+
 
         public void GenerateElementAndReferencedObjectCode(GlueElement element)
         {
@@ -300,5 +304,33 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             return contents;
         }
 
+        public void GenerateElementCustomCode(GlueElement element)
+        {
+            var customCodeFilePath =
+                GlueCommands.FileCommands.GetCustomCodeFilePath(element);
+            var template = element is EntitySave ? CodeWriter.EntityTemplateCode : CodeWriter.ScreenTemplateCode;
+
+            string elementNamespace = GlueCommands.GenerateCodeCommands.GetNamespaceForElement(element);
+
+            StringBuilder stringBuilder = new StringBuilder(template);
+
+            CodeWriter.SetClassNameAndNamespace(
+                elementNamespace,
+                element.ClassName,
+                stringBuilder);
+
+            string additionalUsings = "";
+
+            if(element is ScreenSave && GlueState.CurrentGlueProject.Entities.Count > 0)
+            {
+                additionalUsings = $"using {GlueState.ProjectNamespace}.Entities;";
+            }
+
+            stringBuilder.Replace("// Additional usings", additionalUsings);
+
+            string modifiedTemplate = stringBuilder.ToString();
+
+            FileManager.SaveText(modifiedTemplate, customCodeFilePath.FullPath);
+        }
     }
 }

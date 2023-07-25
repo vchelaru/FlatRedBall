@@ -20,6 +20,8 @@ namespace FlatRedBall.Forms.Controls
 
         public bool IsMoveToPointEnabled { get; set; }
 
+        public bool IsThumbGrabbed => GuiManager.Cursor.WindowPushed == this.thumb?.Visual;
+
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
         public bool TakingInput => throw new NotImplementedException();
@@ -32,12 +34,12 @@ namespace FlatRedBall.Forms.Controls
 
         #region Events
 
-        #endregion
-
         public event FocusUpdateDelegate FocusUpdate;
 
         public event Action<Xbox360GamePad.Button> ControllerButtonPushed;
         public event Action<int> GenericGamepadButtonPushed;
+
+        #endregion
 
         #region Initialize
 

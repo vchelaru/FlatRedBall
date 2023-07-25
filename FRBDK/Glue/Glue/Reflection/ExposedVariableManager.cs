@@ -36,9 +36,11 @@ namespace FlatRedBall.Glue.Reflection
             "decimal?",
             "string",
             "bool",
+            "bool?",
 
             "int",
             "int?",
+
             "double",
 
 
@@ -1079,9 +1081,27 @@ namespace FlatRedBall.Glue.Reflection
             // if screens are needed...if so
             // add them later.
 
+            if(!GlueState.Self.CurrentGlueProject.SuppressBaseTypeGeneration)
+            {
+                foreach(var entity in ObjectFinder.Self.GlueProject.Entities)
+                {
+                    var isBaseEntity = string.IsNullOrEmpty(entity.BaseElement);
+
+                    if(isBaseEntity)
+                    {
+                        var hasDerived = ObjectFinder.Self.GlueProject.Entities.Any(item => item.BaseElement == entity.Name);
+                        if(hasDerived)
+                        {
+                            var typeName = entity.Name.Replace("\\", ".") + "Type";
+                            toReturn.Add(typeName);
+                        }
+                    }
+                }
+            }
+
             if (includeStateCategories)
             {
-                foreach (IElement entity in ObjectFinder.Self.GlueProject.Entities)
+                foreach (var entity in ObjectFinder.Self.GlueProject.Entities)
                 {
                     if (entity != null)
                     {

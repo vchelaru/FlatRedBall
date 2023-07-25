@@ -1434,7 +1434,7 @@ namespace FlatRedBall.Glue.FormHelpers
                 true);
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
         }
 
@@ -1446,7 +1446,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
         }
 
         static void OnRefreshTreeNodesClick(object sender, EventArgs e) =>

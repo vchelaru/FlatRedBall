@@ -37,7 +37,18 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public bool PerformCollisionPartitioning
         {
             get => Get<bool>();
-            set => SetAndPersist(value);
+            set
+            {
+                if(SetAndPersist(value) && value)
+                {
+                    var shouldInitialize = PartitionWidthHeight == 0;
+                    if (shouldInitialize)
+                    {
+                        PartitionWidthHeight = 32;
+                        IsSortListEveryFrameChecked = true;
+                    }
+                }
+            }
         }
 
         [DependsOn(nameof(PerformCollisionPartitioning))]
@@ -49,6 +60,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
         [DefaultValue((int)Axis.X)]
+        [RemoveIfDefault]
         public Axis SortAxis
         {
             get => (Axis)Get<int>();
@@ -85,6 +97,7 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
 
         [SyncedPropertyAttribute]
         [DefaultValue(PartitioningAutomaticManual.Manual)]
+        [RemoveIfDefault]
         public PartitioningAutomaticManual PartitioningAutomaticManual 
         { 
             get => Get<PartitioningAutomaticManual>();
@@ -138,7 +151,10 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public bool IsManualTextBoxEnabled => IsManualPartitionSizeChecked;
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
-        [DefaultValue(32f)]
+        // By putting a DefaultValue on this, it gets generated all the time
+        // even if partitioning is turned off. Instead, let's check if partitioning
+        // is set to true. If so, then PartitionWidthHeight gets set in the setter
+        //[DefaultValue(32f)]
         public float PartitionWidthHeight
         {
             get => Get<float>();
@@ -146,7 +162,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         }
 
         [SyncedProperty(SyncingConditionProperty = nameof(CanBePartitioned))]
-        [DefaultValue(true)]
+        // See the comment in PartitionWidthHeight
+        //[DefaultValue(true)]
         public bool IsSortListEveryFrameChecked
         {
             get => Get<bool>();

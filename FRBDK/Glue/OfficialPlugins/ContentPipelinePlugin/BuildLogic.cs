@@ -32,7 +32,7 @@ namespace OfficialPlugins.MonoGameContent
         static string GetCommandLineBuildExe(VisualStudioProject project)
         {
 
-            if(project.DotNetVersionNumber >= 6)
+            if(project.DotNetVersion.Major >= 6)
             {
                 return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + @"\.dotnet\tools\mgcb.exe";
             }
@@ -423,7 +423,7 @@ namespace OfficialPlugins.MonoGameContent
 
         private void InstallBuilderIfNecessary(VisualStudioProject visualStudioProject)
         {
-            var needsBuilder = visualStudioProject.DotNetVersionNumber >= 6;
+            var needsBuilder = visualStudioProject.DotNetVersion.Major >= 6;
 
             ///////////Early Out//////////////////
             if(!needsBuilder)

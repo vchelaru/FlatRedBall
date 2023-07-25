@@ -59,7 +59,7 @@ namespace OfficialPlugins.ErrorReportingPlugin.ViewModels
             if (customVariable.Type.Contains("."))
             {
                 // it better be a CSV or state
-                var found = customVariable.GetIsCsv() || customVariable.GetIsVariableState();
+                var found = customVariable.GetIsCsv() || customVariable.GetIsVariableState() || customVariable.GetIsBaseElementType();
 
                 if (!found)
                 {

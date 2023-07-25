@@ -34,6 +34,16 @@ namespace FlatRedBall.Glue.MVVM
         /// </summary>
         public string SyncingConditionProperty { get; set; }
     }
+
+    /// <summary>
+    /// If this attribute is set on a PropertyListContainerViewModel property, then the property will be removed
+    /// if it is set to the default value. This can keep JSON data from getting too big, and reduces the chances
+    /// of merge conflicts.
+    /// </summary>
+    public class RemoveIfDefaultAttribute : Attribute
+    {
+    }
+
     #endregion
 
     /// <summary>
@@ -56,6 +66,7 @@ namespace FlatRedBall.Glue.MVVM
             public string OverridingPropertyName { get; set; }
             public bool IsSynced { get; set; }
             public string SyncingConditionProperty { get; set; }
+            public bool RemoveIfDefault { get; set; }
 
             public override string ToString()
             {
@@ -142,6 +153,10 @@ namespace FlatRedBall.Glue.MVVM
                         information.SyncingConditionProperty =
                             syncedPropertyAttribute.SyncingConditionProperty;
                     }
+                    else if(uncastedAttribute is RemoveIfDefaultAttribute)
+                    {
+                        information.RemoveIfDefault = true;
+                    }
                 }
             }
         }
@@ -202,7 +217,7 @@ namespace FlatRedBall.Glue.MVVM
                 //TaskManager.Self.Add(() =>
                 //{
 
-                // DestroyOnUnload cannot use
+                // DestroyOnUnload cannot used
                 // properties, and that is important
                 // enough that we need to support it.
                 // I could use reflection (which could
@@ -219,8 +234,15 @@ namespace FlatRedBall.Glue.MVVM
                 }
                 else
                 {
-                    // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
-                    GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                    if(propertyInfo.RemoveIfDefault)
+                    {
+                        GlueObject.Properties.SetValue(modelName, propertyValue, persistIfDefault:false);
+                    }
+                    else
+                    {
+                        // The default for the type may not match the default value on the view model, so force-set the underlying by calling PersistIfDefault
+                        GlueObject.Properties.SetValuePersistIfDefault(modelName, propertyValue);
+                    }
                 }
                 //},
                 NotifyPropertyChanged(modelName);
@@ -266,7 +288,7 @@ namespace FlatRedBall.Glue.MVVM
                         "Restarting due to change " + namedObject.InstanceName + "." + propertyName, TaskExecutionPreference.AddOrMoveToEnd);
                     }
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
                 return true;
             }
@@ -314,8 +336,8 @@ namespace FlatRedBall.Glue.MVVM
                     {
                         var method = this.GetType().GetMethod(nameof(SetAndPersist)).MakeGenericMethod(defaultVmValue.GetType());
 
-                        var shouldSync = true;
-                        if(!string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
+                        var shouldSync = !kvp.Value.RemoveIfDefault;
+                        if(shouldSync && !string.IsNullOrEmpty(kvp.Value.SyncingConditionProperty))
                         {
                             shouldSync = base.Get<bool>(kvp.Value.SyncingConditionProperty);
                         }

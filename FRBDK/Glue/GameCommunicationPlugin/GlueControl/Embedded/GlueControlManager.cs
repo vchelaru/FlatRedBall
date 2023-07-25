@@ -358,6 +358,8 @@ namespace GlueControl
 
         private void HandleObjectsSelected(List<INameable> items)
         {
+#if SupportsEditMode
+
             //var dto = new SelectObjectDto();
 
             List<Models.NamedObjectSave> namedObjectSaves = new List<NamedObjectSave>();
@@ -403,6 +405,7 @@ namespace GlueControl
             //}
 
             var throwaway = GlueState.Self.SetCurrentNamedObjectSaves(namedObjectSaves, element);
+#endif
         }
 
         int nextRespondableId = 1;
@@ -461,6 +464,6 @@ namespace GlueControl
             });
         }
 
-        #endregion
+#endregion
     }
 }

@@ -221,7 +221,18 @@ namespace NonGraphicalTests.Gui
             }
         }
 
+        event WindowEvent IWindow.RemovedAsPushedWindow
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
 
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public void Activity(FlatRedBall.Camera camera)
         {

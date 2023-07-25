@@ -1255,6 +1255,12 @@ namespace FlatRedBall
                 // InstructionManager Update should happen *after* InputManager.Update 
                 // in case any instructions want to override input code.
                 InstructionManager.Update();
+                // Whether instructions come before or after Task.Delay calls is somewhat arbitrary, but we'll do it after
+                // Actually, Task'ed functions should happen at the same frame time (or nearly so) as the Update call. 
+                // I'm not sure why InstructionManager.Update is so early. Perhaps because internal methods use instructions?
+                // Anyway, if we delay a frame time, and then the frames adjust after, that can cause a Sprite to show its cycled
+                // state for 1 frame which is bad. Therefore, moving this to happen after all internal managers:
+                //TimeManager.DoScreenTimeDelayTaskLogic();
 
                 if (section != null)
                 {
@@ -1315,6 +1321,7 @@ namespace FlatRedBall
                     Section.EndContextAndTime();
                 }
 
+                TimeManager.DoTaskLogic();
                 // Vic says = I think this needs to happen either at the very
                 // beginning of the frame or the very end of the frame. It will 
                 // contain custom user code, so we don't want this to fall in the

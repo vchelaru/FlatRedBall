@@ -304,6 +304,7 @@ namespace FlatRedBall.Glue.SaveClasses.Helpers
                 variableType == "Color" ||
                 customVariable.GetIsFile() ||
                 customVariable.GetIsCsv() ||
+                customVariable.GetIsBaseElementType() ||
                 (customVariable.GetRuntimeType() != null && customVariable.GetRuntimeType().IsEnum)
                 )
             {

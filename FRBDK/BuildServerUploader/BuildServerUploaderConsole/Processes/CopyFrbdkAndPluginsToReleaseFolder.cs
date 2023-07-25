@@ -12,15 +12,6 @@ namespace BuildServerUploaderConsole.Processes
         private List<string> _excludeFiles;
         private string _destDirectory;
 
-        List<string> mXna3_1Tools = new List<string>
-        {
-            @"PrebuiltTools\AIEditor",
-
-            @"PrebuiltTools\ParticleEditor",
-            @"PrebuiltTools\PolygonEditor",
-            @"PrebuiltTools\SpriteEditor",
-        };
-
         List<string> extraTools = new List<string>
         {
             @"PrebuiltTools\MGCB"
@@ -66,9 +57,7 @@ namespace BuildServerUploaderConsole.Processes
         public override void ExecuteStep()
         {
             //Create Directory
-            var frbdkForZipDirectory = DirectoryHelper.ReleaseDirectory + @"FRBDK For Zip\";
-
-            frbdkForZipDirectory = FileManager.Standardize(frbdkForZipDirectory);
+            var frbdkForZipDirectory = DirectoryHelper.FrbdkForZipReleaseDirectory;
 
             DirectoryHelper.DeleteDirectory(frbdkForZipDirectory);
 
@@ -76,12 +65,6 @@ namespace BuildServerUploaderConsole.Processes
                 Directory.CreateDirectory(frbdkForZipDirectory);
 
             _destDirectory = frbdkForZipDirectory;
-
-
-            foreach (var xna3_1tool in mXna3_1Tools)
-            {
-                CopyDirectory(DirectoryHelper.FrbdkDirectory + xna3_1tool, "Copied " + xna3_1tool);
-            }
 
             foreach(var extraTool in extraTools)
             {
@@ -116,13 +99,6 @@ namespace BuildServerUploaderConsole.Processes
             CopyDirectory(DirectoryHelper.GluePublishDestinationFolder, "Copied " + DirectoryHelper.GluePublishDestinationFolder);
             CopyDirectory(DirectoryHelper.FrbdkDirectory + GlueRegularBuildDestinationFolder + @"Plugins\", "Copied plugins to Glue", @"\Plugins\");
 
-            FileManager.CopyDirectory(frbdkForZipDirectory + @"\Assets", frbdkForZipDirectory + @"\Xna 4 Tools\Assets", false, _excludeFiles, _excludedDirs);
-
-            Results.WriteMessage("Successfully copied Assets folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Assets");
-
-            FileManager.CopyDirectory(frbdkForZipDirectory + "/Content", frbdkForZipDirectory + @"\Xna 4 Tools\Content", false, _excludeFiles, _excludedDirs);
-
-            Results.WriteMessage("Successfully copied Content folder." + @" Copied to " + frbdkForZipDirectory + @"\Xna 4 Tools\Content");
         }
 
         private void CopyDirectory(string sourceDirectory, string successfulMessage, string subdirectoryName = null)

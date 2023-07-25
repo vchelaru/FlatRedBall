@@ -341,7 +341,7 @@ namespace FlatRedBall.Glue.Controls
             {
                 CameraMainPlugin.CreateGlueProjectSettingsFor(project);
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 this.Close();
 

@@ -76,7 +76,7 @@ namespace EntityInputMovementPlugin
 
             if (didChangeGlux)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
 
             var firstPlatformerEntity = GlueState.Self.CurrentGlueProject.Entities.FirstOrDefault(item =>

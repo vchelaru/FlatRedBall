@@ -123,8 +123,14 @@ namespace GlueControl.Editing
                 camera.Y -= mouse.WorldYChangeAt(0);
             }
 
-            if ((mouse.ButtonDown(Mouse.MouseButtons.LeftButton) || mouse.ButtonDown(Mouse.MouseButtons.RightButton)) &&
-                (wasPushedInWindow || mouse.IsInGameWindow()))
+            var isEitherMouseButtonDown = mouse.ButtonDown(Mouse.MouseButtons.LeftButton) || mouse.ButtonDown(Mouse.MouseButtons.RightButton);
+            var wasOrIsInWindow = wasPushedInWindow || mouse.IsInGameWindow();
+
+
+            var didPushWindow = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse) &&
+                                FlatRedBall.Gui.GuiManager.Cursor.WindowPushed != null;
+
+            if (isEitherMouseButtonDown && wasOrIsInWindow && !didPushWindow)
             {
                 // If near the edges, move in that direction.
                 DoMouseDownScrollingLogic();

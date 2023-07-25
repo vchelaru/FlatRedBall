@@ -118,6 +118,7 @@ namespace GumPlugin.CodeGeneration
             mStandardElementToQualifiedTypes.Add("LottieAnimation", "SkiaGum.Renderables.RenderableLottieAnimation");
             mStandardElementToQualifiedTypes.Add("RoundedRectangle", "SkiaGum.Renderables.RenderableRoundedRectangle");
             mStandardElementToQualifiedTypes.Add("Svg", "SkiaGum.Renderables.RenderableSvg");
+            mStandardElementToQualifiedTypes.Add("Canvas", "SkiaGum.Renderables.RenderableCanvas");
 
 
             // What we will never support (as is)

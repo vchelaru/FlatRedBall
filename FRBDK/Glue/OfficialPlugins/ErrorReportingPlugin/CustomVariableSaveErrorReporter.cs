@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Errors;
+﻿using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -6,6 +7,7 @@ using OfficialPlugins.ErrorReportingPlugin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,12 +52,19 @@ namespace OfficialPlugins.ErrorReportingPlugin
 
             if(variable.Type.Contains("."))
             {
-                // it better be a CSV or state
-                var found = variable.GetIsCsv() || variable.GetIsVariableState();
+                var baseDefiningVariable = ObjectFinder.Self.GetRootCustomVariable(variable);
 
-                if(!found)
+                // for now we'll skip anything that is a tunneled variable because that gets way more complicated, and
+                // this check was added to catch missing CSV references
+                if (string.IsNullOrEmpty(baseDefiningVariable?.SourceObject))
                 {
-                    doesTypeExist = false;
+                    // it better be a CSV or state
+                    var found = variable.GetIsCsv() || variable.GetIsVariableState() || variable.GetIsBaseElementType();
+
+                    if (!found)
+                    {
+                        doesTypeExist = false;
+                    }
                 }
             }
 

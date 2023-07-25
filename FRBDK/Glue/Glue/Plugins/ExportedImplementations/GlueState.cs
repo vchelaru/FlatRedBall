@@ -459,7 +459,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     {
                         // todo - handle different types of projects
                         string projectReferenceName;
-                        if(CurrentMainProject.DotNetVersionNumber >= 6)
+                        if(CurrentMainProject.DotNetVersion.Major >= 6)
                         {
                             projectReferenceName = "FlatRedBallDesktopGLNet6";
                         }

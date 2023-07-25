@@ -280,7 +280,7 @@ namespace TopDownPlugin.Controllers
                     if (rfs != null && rfs.CreatesDictionary == false)
                     {
                         rfs.CreatesDictionary = true;
-                        GlueCommands.Self.GluxCommands.SaveGlux();
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                     }
 
@@ -300,7 +300,7 @@ namespace TopDownPlugin.Controllers
                         {
                             FlatRedBall.Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                         }
                     }
                 },

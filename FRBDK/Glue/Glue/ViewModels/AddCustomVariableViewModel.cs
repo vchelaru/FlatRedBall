@@ -346,7 +346,32 @@ namespace GlueFormsCore.ViewModels
 
 
         [DependsOn(nameof(SelectedNewType))]
-        public bool CanBeList => SelectedNewType == "string";
+        public bool CanBeList => 
+            SelectedNewType == "string"
+            // Adding this causes something to crash during XML serialization.
+            // I can't figure out why List<string> serializes okay, but List<float> doesn't.
+            // Serializing a List<string> serializes as shown here:
+            /*
+             *     
+    <CustomVariable>
+      <Properties>
+        <PropertySave>
+          <Name>Type</Name>
+          <ValueAsString>List&lt;string&gt;</ValueAsString>
+          <Type>String</Type>
+        </PropertySave>
+      </Properties>
+      <Name>StringList</Name>
+      <DefaultValue xsi:type="ArrayOfString">
+        <string>String2</string>
+        <string>String1</string>
+        <string>3</string>
+      </DefaultValue>
+      <SetByDerived>true</SetByDerived>
+    </CustomVariable>
+             */
+            //|| SelectedNewType == "float"
+            ;
 
         [DependsOn(nameof(CanBeList))]
         public Visibility ListCheckBoxVisibility => CanBeList
