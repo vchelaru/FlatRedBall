@@ -116,9 +116,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                             }
 
                             // Change any NamedObjects that use this as their type (whether in Entity, or as a generic class)
-                            List<NamedObjectSave> namedObjects = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
+                            List<NamedObjectSave> namedObjectsWithElementSourceClassType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntity(oldNameFull);
 
-                            foreach (NamedObjectSave nos in namedObjects)
+                            foreach (NamedObjectSave nos in namedObjectsWithElementSourceClassType)
                             {
                                 elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
                                 if (nos.SourceType == SourceType.Entity && nos.SourceClassType == oldNameFull)
@@ -136,6 +136,20 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                         "Collision Plugin",
                                         "FixNamedObjectCollisionType",
                                         new object[] { nos });
+                                }
+                            }
+
+                            List<NamedObjectSave> namedObjectsWithElementAsVariableType = ObjectFinder.Self.GetAllNamedObjectsThatUseEntityAsVariableType(oldNameFull);
+                            foreach(var nos in namedObjectsWithElementAsVariableType)
+                            {
+                                elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(nos));
+
+                                foreach (var variable in nos.InstructionSaves)
+                                {
+                                    if((variable.Value as string) == oldNameFull)
+                                    {
+                                        variable.Value = newNameFull;
+                                    }
                                 }
                             }
 
@@ -170,10 +184,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                                 GlueCommands.Self.GluxCommands.StartUpScreenName = newNameFull;
 
                             }
-
-
                             // Don't do anything with NamedObjects and Screens since they can't (currently) be named objects
+                        }
 
+                        var variablesReferencingElement = ObjectFinder.Self.GetVariablesReferencingElementType(oldNameFull);
+
+
+                        foreach(var variable in variablesReferencingElement)
+                        {
+                            variable.DefaultValue = newNameFull;
+
+                            elementsToRegenerate.Add(ObjectFinder.Self.GetElementContaining(variable));
                         }
 
                         foreach (var element in elementsToRegenerate)

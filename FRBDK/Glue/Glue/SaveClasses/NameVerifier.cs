@@ -343,7 +343,7 @@ namespace FlatRedBall.Glue.SaveClasses
             return string.IsNullOrEmpty(whyItIsntValid);
         }
 
-
+        #region Element (Screen/Entity
 
         /// <summary>
         /// Returns whether the argument name is a valid Screen name. This name should not include the "Screens\" prefix.
@@ -429,6 +429,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
             return string.IsNullOrEmpty(whyItIsntValid);
 		}
+
+        #endregion
 
         public static bool IsStateCategoryNameValid(string name, out string whyItIsntValid)
         {

@@ -1067,7 +1067,6 @@ namespace GlueControl.Editing
 
                 var entityName = FlatRedBall.IO.FileManager.RemovePath(entity.Name);
 
-                // now find the type:
                 var entityTypeClass = typeof(VariableAssignmentLogic).Assembly.GetTypes().FirstOrDefault(item => item.FullName.EndsWith("." + type));
                 convertedValue = entityTypeClass?.GetMethod("FromName")?.Invoke(null, new object[] { entityName });
             }
