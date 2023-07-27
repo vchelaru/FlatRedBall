@@ -53,7 +53,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
 
         //void SaveElement(GlueElement element);
-        Task SaveElementAsync(GlueElement element);
+        Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo);
 
         void SaveSettings();
 

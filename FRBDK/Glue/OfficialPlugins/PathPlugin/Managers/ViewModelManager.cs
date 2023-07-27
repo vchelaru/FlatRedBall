@@ -30,7 +30,7 @@ namespace OfficialPlugins.PathPlugin.Managers
 
                 var variable = nos?.GetCustomVariable(variableName);
 
-                if(variable == null && nos != null)
+                if (variable == null && nos != null)
                 {
                     variable = new CustomVariableInNamedObject();
                     variable.Member = variableName;
@@ -65,11 +65,11 @@ namespace OfficialPlugins.PathPlugin.Managers
             MainViewModel.PathSegments.Clear();
 
             var serializedSegments = PathSegmentString;
-            if(!string.IsNullOrEmpty(serializedSegments))
+            if (!string.IsNullOrEmpty(serializedSegments))
             {
                 var pathSegments = JsonConvert.DeserializeObject<List<PathSegment>>(PathSegmentString);
 
-                foreach(var segment in pathSegments)
+                foreach (var segment in pathSegments)
                 {
                     var segmentVm = new PathSegmentViewModel();
                     segmentVm.X = segment.EndX;
@@ -143,28 +143,32 @@ namespace OfficialPlugins.PathPlugin.Managers
         internal static void HandlePathSegmentsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             ////////Early Out////////////////
-            if(MainViewModel.UpdateModelOnChanges == false)
+            if (MainViewModel.UpdateModelOnChanges == false)
             {
                 return;
             }
             //////End Early Out//////////////
 
+            var element = GlueState.Self.CurrentElement;
 
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
                 SendChangeToPluginManager();
-                GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
             }, $"Modifying Segment List for {nos}");
+
+            if (element != null)
+            {
+                GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
         }
 
         private static void UpdateModelToViewModel()
         {
             List<PathSegment> pathSegments = new List<PathSegment>();
 
-            foreach(var segmentVm in MainViewModel.PathSegments)
+            foreach (var segmentVm in MainViewModel.PathSegments)
             {
                 var pathSegment = new PathSegment();
                 pathSegment.AngleUnit = AngleUnit.Degrees;
@@ -174,7 +178,7 @@ namespace OfficialPlugins.PathPlugin.Managers
 
             GlueCommands.Self.DoOnUiThread(() =>
             {
-                if(Variable != null)
+                if (Variable != null)
                 {
                     Variable.Value = JsonConvert.SerializeObject(pathSegments);
                 }
@@ -199,15 +203,20 @@ namespace OfficialPlugins.PathPlugin.Managers
             //////End Early Out//////////////
 
             var segmentVm = sender as PathSegmentViewModel;
-
+            var element = GlueState.Self.CurrentElement;
             TaskManager.Self.Add(() =>
             {
                 UpdateModelToViewModel();
                 SendChangeToPluginManager();
-                GlueCommands.Self.GluxCommands.SaveGlux();
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                //GlueCommands.Self.GluxCommands.SaveGlux();
 
             }, $"Modifying Segment for {nos}");
+
+            if (element != null)
+            {
+                GlueCommands.Self.GluxCommands.SaveElementAsync(element, TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+            }
         }
 
         private static void SendChangeToPluginManager()

@@ -79,17 +79,21 @@ namespace OfficialPlugins.PathPlugin.Views
             if(sender == XTextBox)
             {
                 ViewModel.X += 5 * sign;
+                e.Handled = true;
             }
             else if(sender == YTextBox)
             {
                 ViewModel.Y += 5 * sign;
 
+                e.Handled = true;
             }
             else if(sender == AngleTextBox)
             {
                 ViewModel.Angle += 5 * sign;
 
+                e.Handled = true;
             }
+
 
         }
 

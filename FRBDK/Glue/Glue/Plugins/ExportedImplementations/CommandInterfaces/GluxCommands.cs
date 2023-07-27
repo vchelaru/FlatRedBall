@@ -168,7 +168,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 taskExecutionPreference);
         }
 
-        public async Task SaveElementAsync(GlueElement element)
+        public async Task SaveElementAsync(GlueElement element, TaskExecutionPreference taskExecutionPreference = TaskExecutionPreference.Fifo)
         {
             if(element == null)
             {
@@ -235,12 +235,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     FileManager.SaveText(serialized, locationToSave);
 
-                }, $"{nameof(SaveElementAsync)} {element}");
+                }, $"{nameof(SaveElementAsync)} {element}", taskExecutionPreference);
             }
             else
             {
                 // fall back to saving entire project:
-                SaveGlux();
+                SaveProjectAndElements(taskExecutionPreference);
             }
         }
 
