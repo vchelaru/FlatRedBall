@@ -28,6 +28,8 @@ namespace OfficialPlugins.PathPlugin.Views
     {
         PathViewModel ViewModel => DataContext as PathViewModel;
 
+        public Action<int?> SelectIndex;
+
         public PathView()
         {
             InitializeComponent();
@@ -103,6 +105,14 @@ namespace OfficialPlugins.PathPlugin.Views
         private void AddToPathButtonClicked(object sender, RoutedEventArgs e)
         {
             ViewModelManager.CreateNewSegmentViewModel();
+        }
+
+        public void FocusIndex(int index)
+        {
+            if(ViewModel?.PathSegments.Count > index && index > -1)
+            {
+                ViewModel.PathSegments[index].RequestFocusTextBox(index);
+            }
         }
     }
 }

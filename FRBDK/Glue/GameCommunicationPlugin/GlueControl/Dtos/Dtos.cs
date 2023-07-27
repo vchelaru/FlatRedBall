@@ -90,6 +90,15 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     }
     #endregion
 
+    #region SelectSubIndex
+
+    public class SelectSubIndexDto
+    {
+        public int? Index { get; set; }
+    }
+
+    #endregion
+
     #region SelectPrevious/Next 
 
     class SelectPreviousDto { }

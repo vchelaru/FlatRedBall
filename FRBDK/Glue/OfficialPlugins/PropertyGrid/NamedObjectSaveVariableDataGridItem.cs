@@ -168,7 +168,10 @@ namespace OfficialPlugins.PropertyGrid
                 PropertiesToSetOnDisplayer[nameof(AngleSelectorDisplay.SnappingInterval)] =
                 15m;
             }
-
+            if (variableDefinition?.UiCreated != null)
+            {
+                UiCreated += (view) => variableDefinition.UiCreated(view);
+            }
 
             FirstGridLength = new System.Windows.GridLength(140);
 

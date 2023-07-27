@@ -70,6 +70,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public StateSaveCategory CurrentStateSaveCategory;
         public CustomVariable CurrentCustomVariable;
         public EventResponseSave CurrentEventResponseSave;
+        public int? SelectedSubIndex;
 
     }
 
@@ -250,6 +251,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                 });
 
                 return listToReturn.ToArray();
+            }
+        }
+
+        public int? SelectedSubIndex
+        {
+            get => snapshot.SelectedSubIndex;
+            set
+            {
+                if(snapshot.SelectedSubIndex != value)
+                {
+                    snapshot.SelectedSubIndex = value;
+                    PluginManager.ReactToSelectedSubIndexChanged(snapshot.SelectedSubIndex);
+                }
             }
         }
 
@@ -565,7 +579,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
             snapshot.CurrentStateSaveCategory = GetCurrentStateSaveCategoryFromSelection();
             snapshot.CurrentCustomVariable = GetCurrentCustomVariableFromSelection();
             snapshot.CurrentEventResponseSave = GetCurrentEventResponseSaveFromSelection();
-
+            snapshot.SelectedSubIndex = null;
 
             GlueElement GetCurrentElementFromSelection()
             {

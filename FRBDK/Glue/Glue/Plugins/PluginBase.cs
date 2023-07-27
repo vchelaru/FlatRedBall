@@ -485,6 +485,8 @@ namespace FlatRedBall.Glue.Plugins
         public Action<string, string> ReactToEntityJsonLoad;
         public Action<string> ReactToGlueJsonLoad;
 
+        public Action<int?> ReactToSelectedSubIndexChanged;
+
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
         protected void ReactToPluginEvent(string eventName, string payload)

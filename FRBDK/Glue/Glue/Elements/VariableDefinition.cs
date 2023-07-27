@@ -103,6 +103,12 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public Type PreferredDisplayer { get; set; }
 
+
+        [XmlIgnore]
+        [JsonIgnore]
+        public Action<System.Windows.Controls.UserControl> UiCreated;
+
+
         [XmlIgnore]
         [JsonIgnore]
         public Dictionary<string, object> PropertiesToSetOnDisplayer { get; private set; } = new Dictionary<string, object>();

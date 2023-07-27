@@ -22,7 +22,8 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                     GetProperty_CurrentGlueProject(),
                     GetProperty_CurrentElement(),
                     GetProperty_CurrentNamedObjectSave(),
-                    GetProperty_CurrentNamedObjectSaves()
+                    GetProperty_CurrentNamedObjectSaves(),
+                    GetProperty_SelectedSubIndex()
                 },
                 AddStaticSelfReference = true
             };
@@ -45,6 +46,29 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls.Generatio
                 Name = "CurrentGlueProject",
                 ReturnType = "GlueProjectSave",
                 GetSimpleBody = "ObjectFinder.Self.GlueProject"
+            };
+        }
+
+        private static Property GetProperty_SelectedSubIndex()
+        {
+            return new Property
+            {
+                Name = "SelectedSubIndex",
+                ReturnType = "int?",
+                IsAutomaticProperty = true,
+                SetMethod = new PropertyMethod
+                {
+                    Name = "SetSelectedSubIndex",
+                    Parameters = new[]
+                    {
+                        new Parameter
+                            {
+                                Type = "int?",
+                                Name = "index",
+                                IsParameterUsedByGlue = true
+                            }
+                    }
+                }
             };
         }
 

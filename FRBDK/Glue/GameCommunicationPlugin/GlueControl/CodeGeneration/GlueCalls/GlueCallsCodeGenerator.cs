@@ -21,7 +21,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
         public static void GenerateAll()
         {
-            foreach(var item in GlueCallsGenerated)
+            foreach (var item in GlueCallsGenerated)
             {
                 SaveGlueCommunicationGeneratedFile(item.Key, item.Value);
             }
@@ -79,7 +79,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             bldr.AppendLine();
             bldr.AppendLine("   {");
 
-            if(generationOptions.AddStaticSelfReference)
+            if (generationOptions.AddStaticSelfReference)
             {
                 bldr.AppendLine($"       public static {generationOptions.Name} Self {{ get; }}");
                 bldr.AppendLine($"       static {generationOptions.Name}() => Self = new {generationOptions.Name}();");
@@ -87,10 +87,17 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
             foreach (var prop in generationOptions.Properties)
             {
-                if(!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody))
+
+                if (!string.IsNullOrEmpty(prop.GetSimpleBody) || !string.IsNullOrEmpty(prop.GetBody) || prop.IsAutomaticProperty)
                 {
                     var propertyBlock = new CodeBlockProperty(null, $"public {prop.ReturnType}", prop.Name);
-                    if(!string.IsNullOrEmpty(prop.GetSimpleBody))
+                    if (prop.IsAutomaticProperty)
+                    {
+                        propertyBlock.AutoGet();
+                        propertyBlock.AutoSet();
+
+                    }
+                    else if (!string.IsNullOrEmpty(prop.GetSimpleBody))
                     {
                         propertyBlock.Get().Line($"return {prop.GetSimpleBody};");
                         //bldr.AppendLine($"          get => {prop.GetSimpleBody};");
@@ -99,10 +106,14 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                     {
                         propertyBlock.Get().Line(prop.GetBody);
                     }
+
+
                     bldr.AppendLine(propertyBlock.ToString());
                 }
 
-                if(prop.SetMethod != null)
+
+
+                if (prop.SetMethod != null)
                 {
                     var m = prop.SetMethod;
 
@@ -135,12 +146,12 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                     bldr.AppendLine($"      {{");
                     bldr.AppendLine($"          var parameter = new GlueCallsClassGenerationManager.GlueParameters {{ Value = {m.Parameters[0].Name}");
 
-                    if (m.Parameters[0].Dependencies.Length > 0)
+                    if (m.Parameters[0].Dependencies?.Length > 0)
                     {
                         bldr.Append($", Dependencies = new Dictionary<string, object> {{");
 
                         bool firstD = true;
-                        foreach(var d in m.Parameters[0].Dependencies)
+                        foreach (var d in m.Parameters[0].Dependencies)
                         {
                             if (!firstD)
                                 bldr.Append($",");
@@ -162,6 +173,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
                     bldr.AppendLine($"          }});");
                     bldr.AppendLine($"      }}");
                 }
+
             }
 
             foreach (var m in generationOptions.Methods)

@@ -1068,6 +1068,14 @@ namespace OfficialPluginsCore.Compiler.CommandReceiving
                 {
                     converted = (TaskExecutionPreference)asLong;
                 }
+                else if(typeName == "Nullable<Int32>")
+                {
+                    converted = (int?)asLong;
+                }
+                else
+                {
+                    int m = 3;
+                }
             }
             else if(parameter is object)
             {

@@ -545,6 +545,20 @@ namespace FlatRedBall.Math.Paths
             return new Vector2(segment.StartX, segment.StartY);
         }
 
+        public Vector2 PointAtSegmentIndexEnd(int index)
+        {
+            if(index < Segments.Count - 1)
+            {
+                var segment = Segments[index + 1];
+                return new Vector2(segment.EndX, segment.EndY);
+            }
+            else
+            {
+                return PointAtLength(this.TotalLength);
+            }
+
+        }
+
         public float LengthAtSegmentIndex(int index)
         {
             var lengthSoFar = 0f;

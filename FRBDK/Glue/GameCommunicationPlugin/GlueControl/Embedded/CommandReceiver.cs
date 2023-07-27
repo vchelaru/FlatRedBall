@@ -660,6 +660,15 @@ namespace GlueControl
 
         #endregion
 
+        #region SelectSubIndex
+
+        private static void HandleDto(SelectSubIndexDto dto)
+        {
+            GlueState.Self.SelectedSubIndex = dto.Index;
+        }
+
+        #endregion
+
         #region ChangeZoomDto
 
         private static void HandleDto(ChangeZoomDto changeZoomDto)

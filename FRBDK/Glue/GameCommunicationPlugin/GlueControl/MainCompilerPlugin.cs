@@ -257,6 +257,8 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToLoadedGlux += () => pluginTab.Show();
             this.ReactToUnloadedGlux += () => pluginTab.Hide();
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
+
+            this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
         }
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)

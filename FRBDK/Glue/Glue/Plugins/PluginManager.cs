@@ -822,14 +822,14 @@ namespace FlatRedBall.Glue.Plugins
         internal static void HandleFileReadError(FilePath filePath, GeneralResponse response)
         {
             CallMethodOnPluginNotUiThread(
-                delegate (PluginBase plugin)
+                plugin =>
                 {
                     if (plugin.ReactToFileReadError != null)
                     {
                         plugin.ReactToFileReadError(filePath, response);
                     }
                 },
-                "HandleFileReadError");
+                nameof(HandleFileReadError));
 
             ResumeRelativeDirectory("HandleFileReadError");
         }
@@ -908,16 +908,14 @@ namespace FlatRedBall.Glue.Plugins
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateVariableChanged(newState, category, variableName),
-                plugin => plugin.ReactToStateVariableChanged != null,
-                nameof(ReactToStateVariableChanged));
+                plugin => plugin.ReactToStateVariableChanged != null);
         }
 
         internal static void ReactToStateNameChange(IElement element, string oldName, string newName)
         {
             CallMethodOnPlugin(
                 plugin => plugin.ReactToStateNameChangeHandler(element, oldName, newName),
-                plugin => plugin.ReactToStateNameChangeHandler != null,
-                nameof(ReactToStateNameChange));
+                plugin => plugin.ReactToStateNameChangeHandler != null);
 
         }
 
@@ -1254,6 +1252,13 @@ namespace FlatRedBall.Glue.Plugins
             TabControlViewModel.IsRecordingSelection = true;
         }
 
+        internal static void ReactToSelectedSubIndexChanged(int? selectedSubIndex)
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToSelectedSubIndexChanged(selectedSubIndex),
+                plugin => plugin.ReactToSelectedSubIndexChanged != null);
+        }
+
         internal static void ReactToPropertyGridRightClick(System.Windows.Forms.PropertyGrid rightClickedPropertyGrid, ContextMenuStrip menuToModify)
         {
             CallMethodOnPlugin(
@@ -1261,12 +1266,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToRightClickHandler != null);
         }
 
-        internal static void ReactToChangedCodeFile(FilePath filePath)
-        {
+        internal static void ReactToChangedCodeFile(FilePath filePath) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToCodeFileChange(filePath),
                 plugin => plugin.ReactToCodeFileChange != null);
-        }
 
         internal static void ReactToChangedFile(FilePath fileName, FileChangeType changeType)
         {

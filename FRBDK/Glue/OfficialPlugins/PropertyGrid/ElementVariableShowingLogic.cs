@@ -106,6 +106,11 @@ namespace OfficialPlugins.VariableDisplay
                     variableDefinition.MinValue.Value;
             }
 
+            if(variableDefinition?.UiCreated != null)
+            {
+                instanceMember.UiCreated += (view) => variableDefinition.UiCreated(view);
+            }
+
             instanceMember.CustomSetEvent += async (intance, value) =>
             {
                 instanceMember.IsDefault = false;

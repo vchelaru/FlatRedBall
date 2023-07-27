@@ -24,6 +24,21 @@ namespace OfficialPlugins.PathPlugin.Views
         public PathSegmentView()
         {
             InitializeComponent();
+
+            DataContextChanged += HandleDataContextChanged;
+        }
+
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if(ViewModel != null)
+            {
+                ViewModel.TextBoxFocusRequested += ViewModel_TextBoxFocusRequested;
+            }
+        }
+
+        private void ViewModel_TextBoxFocusRequested(int obj)
+        {
+            XTextBox.Focus();
         }
 
         private void CloseClicked(object sender, RoutedEventArgs e)
@@ -76,6 +91,11 @@ namespace OfficialPlugins.PathPlugin.Views
 
             }
 
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            ViewModel?.HandleTextBoxFocus();
         }
     }
 }

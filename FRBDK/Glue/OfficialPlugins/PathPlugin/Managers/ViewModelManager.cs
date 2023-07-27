@@ -118,7 +118,12 @@ namespace OfficialPlugins.PathPlugin.Managers
                 newVm.SegmentType = vm.SegmentType;
                 newVm.Angle = vm.Angle;
                 MainViewModel.PathSegments.Add(newVm);
+            };
 
+            vm.TextBoxFocus += (_, _) =>
+            {
+                var index = MainViewModel.PathSegments.IndexOf(vm);
+                GlueState.Self.SelectedSubIndex = index;
             };
         }
 

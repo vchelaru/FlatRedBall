@@ -785,6 +785,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             }
         }
 
+        public async void ReactToSelectedSubIndexChanged(int? index)
+        {
+            var dto = new SelectSubIndexDto();
+            dto.Index = index;
+            await CommandSender.Self.Send(dto);
+        }
+
         #endregion
 
         #region Variable Changed
