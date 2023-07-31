@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="OfficialPlugins.CustomVariablePlugin.Views.CustomVariablePropertiesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OfficialPlugins.CustomVariablePlugin.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ScrollViewer>
+            <StackPanel>
+                <wpfdataui:DataUiGrid x:Name="MainGrid">
+                    
+                </wpfdataui:DataUiGrid>
+                <Button x:Name="AddVariableDefinitionButton" Click="AddVariableDefinitionClick">Add Variable Definition</Button>
+                <wpfdataui:DataUiGrid x:Name="VariableDefinitionGrid">
+                    
+                </wpfdataui:DataUiGrid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

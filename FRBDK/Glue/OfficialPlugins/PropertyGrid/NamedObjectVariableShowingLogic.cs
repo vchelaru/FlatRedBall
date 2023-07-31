@@ -179,6 +179,12 @@ namespace OfficialPlugins.VariableDisplay
                             baseVariableDefinition.Category = variableInElement.Category;
                             baseVariableDefinition.Type = variableInElement.Type;
 
+                            if(variableInElement.VariableDefinition != null)
+                            {
+                                baseVariableDefinition.MinValue = variableInElement.VariableDefinition.MinValue;
+                                baseVariableDefinition.MaxValue = variableInElement.VariableDefinition.MaxValue;
+                            }
+
                             if (variableInElement.CustomGetForcedOptionsFunc != null)
                             {
                                 baseVariableDefinition.CustomGetForcedOptionFunc = (element, namedObject, referencedFileSave) => variableInElement.CustomGetForcedOptionsFunc(instanceElement);

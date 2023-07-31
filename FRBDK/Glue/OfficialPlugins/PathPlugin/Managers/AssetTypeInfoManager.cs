@@ -54,7 +54,7 @@ namespace OfficialPlugins.PathPlugin.Managers
             return ati;
         }
 
-        private static void HandleUiCreated(UserControl control)
+        private static void HandleUiCreated(object control)
         {
             var pathView = control as PathView;
 

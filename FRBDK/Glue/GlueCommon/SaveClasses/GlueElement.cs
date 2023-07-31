@@ -69,7 +69,7 @@ namespace FlatRedBall.Glue.SaveClasses
         }
         public bool ShouldSerializeCustomVariables()
         {
-            return CustomVariables != null && CustomVariables.Count != 0;
+            return CustomVariables?.Count > 0;
         }
 
         [Browsable(false)]

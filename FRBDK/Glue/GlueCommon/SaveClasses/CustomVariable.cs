@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FlatRedBall.Glue.Elements;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -303,6 +304,10 @@ namespace FlatRedBall.Glue.SaveClasses
         [XmlIgnore]
         [JsonIgnore]
         public Func<GlueElement, List<string>> CustomGetForcedOptionsFunc;
+
+        public VariableDefinition VariableDefinition { get; set; }
+        public bool ShouldSerializeVariableDefinitions() => VariableDefinition != null;
+
 
         #endregion
 

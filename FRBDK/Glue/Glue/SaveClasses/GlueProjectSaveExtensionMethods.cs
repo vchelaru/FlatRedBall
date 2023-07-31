@@ -346,7 +346,7 @@ namespace FlatRedBall.Glue.SaveClasses
             });
         }
 
-        public static void FixAllTypes(this GlueProjectSave instance)
+        public static void FixAllTypesPostLoad(this GlueProjectSave instance)
         {
             foreach (EntitySave entitySave in instance.Entities)
             {
@@ -416,7 +416,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     GlueProjectSave savedOld = ObjectFinder.Self.GlueProject;
                     ObjectFinder.Self.GlueProject = otherGlueProjectSave;
-                    otherGlueProjectSave.FixAllTypes();
+                    otherGlueProjectSave.FixAllTypesPostLoad();
                     otherGlueProjectSave.FixNamedObjects();
 
 

@@ -197,29 +197,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     GlueElement clone = null;
 
-                    if(element is ScreenSave asScreenSave)
+                    if (element is ScreenSave asScreenSave)
                     {
                         clone = asScreenSave.Clone();
                     }
-                    else if(element is EntitySave asEntitySave)
+                    else if (element is EntitySave asEntitySave)
                     {
-                        clone = asEntitySave.Clone();
+                        //clone = asEntitySave.Clone();
+                        clone = asEntitySave.CloneJson();
                     }
 
-                    if(GlueState.Self.CurrentGlueProject.FileVersion >= 
-                        (int) GlueProjectSave.GluxVersions.RemoveRedundantDerivedData)
-                    {
-                        if (!string.IsNullOrEmpty(clone.BaseElement))
-                        {
-                            var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(clone);
-                            if (baseElements.Count > 0)
-                            {
-                                GlueProjectSaveExtensions.RemoveRedundantDerivedData(clone, baseElements);
-                            }
-
-                        }
-                    }
-
+                    PrepareForJsonSerialization(clone);
 
                     var serialized = JsonConvert.SerializeObject(clone, settings);
 
@@ -241,6 +229,31 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 // fall back to saving entire project:
                 SaveProjectAndElements(taskExecutionPreference);
+            }
+        }
+
+        private static void PrepareForJsonSerialization(GlueElement clone)
+        {
+            if (GlueState.Self.CurrentGlueProject.FileVersion >=
+                (int)GlueProjectSave.GluxVersions.RemoveRedundantDerivedData)
+            {
+                if (!string.IsNullOrEmpty(clone.BaseElement))
+                {
+                    var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(clone);
+                    if (baseElements.Count > 0)
+                    {
+                        GlueProjectSaveExtensions.RemoveRedundantDerivedData(clone, baseElements);
+                    }
+
+                }
+            }
+
+            foreach (var variable in clone.CustomVariables)
+            {
+                if(variable.VariableDefinition != null)
+                {
+                    variable.VariableDefinition.PreferredDisplayerName = variable.VariableDefinition?.PreferredDisplayer?.FullName.ToString();
+                }
             }
         }
 

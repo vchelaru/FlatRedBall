@@ -211,7 +211,7 @@ namespace FlatRedBall.Glue.Plugins
             set;
         }
 
-        public abstract string FriendlyName { get; }
+        public virtual string FriendlyName => GetType().Name;
         public virtual Version Version => new Version(1,0);
         public virtual string GithubRepoOwner => null;
         public virtual string GithubRepoName => null;
@@ -503,6 +503,7 @@ namespace FlatRedBall.Glue.Plugins
                 ReactToPluginEventAction(this, eventName, JsonConvert.SerializeObject(payload));
         }
 
+        public Action<CustomVariable> TryAssignPreferredDisplayerFromName;
 
         private ConcurrentDictionary<Guid, string> _pendingRequests = new ConcurrentDictionary<Guid, string>();
         protected async Task<string> ReactToPluginEventWithReturn(string eventName, string payload)

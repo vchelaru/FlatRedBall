@@ -485,7 +485,7 @@ namespace FlatRedBall.Glue.IO
                 SetInitWindowText("Generating all code", initializationWindow);
 
                 // Fix before doing any generation
-                GlueState.Self.CurrentGlueProject.FixAllTypes();
+                GlueState.Self.CurrentGlueProject.FixAllTypesPostLoad();
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
                 Section.EndContextAndTime();
 
@@ -582,7 +582,7 @@ namespace FlatRedBall.Glue.IO
             }
             catch (Exception e)
             {
-                MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBox();
                 mbmb.MessageText = "There was an error loading the .glux file.  What would you like to do?";
 
                 mbmb.AddButton("Nothing - Glue will abort loading the project.", DialogResult.None);

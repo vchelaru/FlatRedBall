@@ -58,6 +58,11 @@ namespace OfficialPlugins.VariableDisplay
                     .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
             }
 
+            if(variableDefinition == null)
+            {
+                variableDefinition = baseVariable.VariableDefinition ?? variable.VariableDefinition;
+            }
+
 
             if (!string.IsNullOrEmpty(baseVariable.PreferredDisplayerTypeName) &&
                 VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(baseVariable.PreferredDisplayerTypeName))

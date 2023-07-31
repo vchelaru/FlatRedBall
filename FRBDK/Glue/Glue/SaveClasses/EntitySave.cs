@@ -356,13 +356,32 @@ namespace FlatRedBall.Glue.SaveClasses
             Events = new List<EventResponseSave>();
         }
 
-
+        /// <summary>
+        /// Uses XML to clone, which does not support all properties. Use CloneJson
+        /// </summary>
+        /// <returns>A clone of the entity</returns>
+        [Obsolete("Use CloneJson instead")]
         public EntitySave Clone()
         {
             return FileManager.CloneObject<EntitySave>(this);
         }
 
+        public EntitySave CloneJson()
+        {
+            var serialized = JsonConvert.SerializeObject(this, Formatting.Indented);
+            
+            var clone = JsonConvert.DeserializeObject<EntitySave>(serialized);
 
+            for(int i = 0; i< this.CustomVariables.Count; i++)
+            {
+                if (CustomVariables[i].VariableDefinition != null)
+                {
+                    clone.CustomVariables[i].VariableDefinition.PreferredDisplayer = CustomVariables[i].VariableDefinition.PreferredDisplayer;
+                }
+            }
+
+            return clone;
+        }
         
 
 

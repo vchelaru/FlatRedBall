@@ -970,37 +970,23 @@ namespace FlatRedBall.Glue.Plugins
         internal static void ReactToEntityRemoved(EntitySave entity, List<string> filesToRemove)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToEntityRemoved(entity, filesToRemove),
-                (plugin) => plugin.ReactToEntityRemoved != null,
+                plugin => plugin.ReactToEntityRemoved(entity, filesToRemove),
+                plugin => plugin.ReactToEntityRemoved != null,
                 nameof(ReactToEntityRemoved));
         }
 
         internal static void ReactToScreenRemoved(ScreenSave screenSave, List<string> filesToRemove)
         {
             CallMethodOnPlugin(
-                (plugin) => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
-                plugin => plugin.ReactToScreenRemoved != null,
-                nameof(ReactToScreenRemoved));
+                plugin => plugin.ReactToScreenRemoved(screenSave, filesToRemove),
+                plugin => plugin.ReactToScreenRemoved != null);
         }
 
         internal static void ReactToElementVariableChange(IElement element, CustomVariable variable)
         {
-            foreach (PluginManager pluginManager in mInstances)
-            {
-                var plugins = pluginManager.ImportedPlugins.Where(x => x.ReactToElementVariableChange != null);
-                foreach (var plugin in plugins)
-                {
-                    var container = pluginManager.mPluginContainers[plugin];
-                    if (container.IsEnabled)
-                    {
-                        PluginBase plugin1 = plugin;
-                        PluginCommand(() =>
-                        {
-                            plugin1.ReactToElementVariableChange(element, variable);
-                        }, container, "Failed in ReactToNewObject");
-                   }
-                }
-            }
+            CallMethodOnPlugin(
+                plugin => plugin.ReactToElementVariableChange(element, variable),
+                plugin => plugin.ReactToElementVariableChange != null);
         }
 
         internal static void ReactToElementRenamed(IElement elementToRename, string oldName)
@@ -1010,12 +996,10 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToElementRenamed != null);
         }
 
-        public static void ReactToNewObject(NamedObjectSave newObject)
-        {
+        public static void ReactToNewObject(NamedObjectSave newObject) =>
             CallMethodOnPlugin(
                 plugin => plugin.ReactToNewObjectHandler(newObject),
                 plugin => plugin.ReactToNewObjectHandler != null);
-        }
 
         public static Task ReactToNewObjectListAsync(List<NamedObjectSave> newObjectList)
         {
@@ -1050,6 +1034,13 @@ namespace FlatRedBall.Glue.Plugins
             CallMethodOnPlugin(
                 plugin => plugin.ReactToObjectRemoved(element, removedObject),
                 plugin => plugin.ReactToObjectRemoved != null);
+        }
+
+        public static void TryAssignPreferredDisplayerFromName(CustomVariable customVariable)
+        {
+            CallMethodOnPlugin(
+                plugin => plugin.TryAssignPreferredDisplayerFromName(customVariable),
+                plugin => plugin.TryAssignPreferredDisplayerFromName != null);
         }
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)

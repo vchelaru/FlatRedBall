@@ -11,6 +11,8 @@ using FlatRedBall.Instructions;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using Microsoft.Xna.Framework;
+using WpfDataUi.Controls;
+using FlatRedBall.Glue.Plugins;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -213,6 +215,13 @@ namespace FlatRedBall.Glue.SaveClasses
                 var type = customVariable.Type;
                 variableValue = FixValue(variableValue, type);
                 customVariable.DefaultValue = variableValue;
+            }
+
+            if(!string.IsNullOrEmpty( customVariable.VariableDefinition?.PreferredDisplayerName))
+            {
+                // Since variable displayers can be handled by plugins, then the plugin must also handle converting the name to type
+                // since the type is not necessarily known here.:
+                PluginManager.TryAssignPreferredDisplayerFromName(customVariable);
             }
         }
 
