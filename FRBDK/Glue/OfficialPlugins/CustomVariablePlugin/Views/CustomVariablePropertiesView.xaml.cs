@@ -74,9 +74,16 @@ public partial class CustomVariablePropertiesView : UserControl
         MainGrid.Instance = customVariable;
         //MainGrid.PropertyChange += HandlePropertyChanged;
 
-        RemoveMember(nameof(CustomVariable.Properties));
-        RemoveMember(nameof(CustomVariable.DefaultValue));
-        RemoveMember(nameof(CustomVariable.VariableDefinition));
+        foreach (var category in MainGrid.Categories)
+        {
+            category.Members.RemoveAll(item => item.Name != nameof(VariableDefinition.PreferredDisplayer));
+        }
+
+        MainGrid.Categories.RemoveAll(item => item.Members.Count == 0);
+
+        //RemoveMember(nameof(CustomVariable.Properties));
+        //RemoveMember(nameof(CustomVariable.DefaultValue));
+        //RemoveMember(nameof(CustomVariable.VariableDefinition));
 
         void RemoveMember(string memberName)
         {
@@ -96,6 +103,8 @@ public partial class CustomVariablePropertiesView : UserControl
     {
         this.VariableDefinitionGrid.Instance = customVariable.VariableDefinition;
 
+
+
         RemoveMember(nameof(VariableDefinition.Name));
         RemoveMember(nameof(VariableDefinition.Type));
         RemoveMember(nameof(VariableDefinition.MinValue));
@@ -109,6 +118,8 @@ public partial class CustomVariablePropertiesView : UserControl
         RemoveMember(nameof(VariableDefinition.UsesCustomCodeGeneration));
 
         PreferredDisplayerManager.AddDisplayerUi(VariableDefinitionGrid, Variable);
+
+        VariableDefinitionGrid.Categories[0].Name = "Variable Display";
 
         var member = VariableDefinitionGrid.Categories
             .SelectMany(item => item.Members)
