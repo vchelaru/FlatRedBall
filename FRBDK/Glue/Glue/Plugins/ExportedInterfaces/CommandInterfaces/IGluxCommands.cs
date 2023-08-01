@@ -90,7 +90,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         /// <param name="includeDirectoryInGlobalContentInName">Whether to include the subdirectory 
         /// in the name of the newly-created file.</param>
         /// <returns>The new ReferencedFileSave.</returns>
-        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName);
+        ReferencedFileSave AddReferencedFileToGlobalContent(string fileToAdd, bool includeDirectoryInGlobalContentInName, AssetTypeInfo forcedAssetTypeInfo = null);
 
         /// <summary>
         /// Adds an entry to GlobalContent for a ReferencedFileSave which is already referenced in a different element.
@@ -103,8 +103,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task AddReferencedFileToGlobalContentAsync(ReferencedFileSave rfs, bool generateAndSave = true, bool updateUi = true);
         Task AddReferencedFileToElementAsync(ReferencedFileSave rfs, GlueElement element, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
-        [Obsolete("use AddReferencedFileToGlobalContentAsync")]
-        void AddReferencedFileToGlobalContent(ReferencedFileSave rfs);
+
         [Obsolete("use AddReferencedFileToElementAsync")]
         void AddReferencedFileToElement(ReferencedFileSave rfs, GlueElement element);
 
@@ -120,7 +119,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         ReferencedFileSave AddSingleFileTo(string fileName, string rfsName, string extraCommandLineArguments,
             EditorObjects.SaveClasses.BuildToolAssociation buildToolAssociation, bool isBuiltFile, object options,
-            GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true);
+            GlueElement sourceElement, string directoryOfTreeNode, bool selectFileAfterCreation = true, AssetTypeInfo forcedAssetTypeInfo = null);
 
 
         [Obsolete("Use RemoveReferencedFileAsync")]

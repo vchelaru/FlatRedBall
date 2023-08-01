@@ -99,7 +99,7 @@ namespace FlatRedBall.Glue.SaveClasses
             
         }
 
-        public static ReferencedFileSave AddReferencedFileSave(IElement element, string directoryPath, 
+        public static ReferencedFileSave AddReferencedFileSave(GlueElement element, string directoryPath, 
             string fileName, 
             AssetTypeInfo resultAssetTypeInfo, object option, out string errorMessage)
         {
@@ -180,7 +180,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 // to the code that adds existing
                 // files now that we have a file and
                 // that's exactly what we're doing.
-                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element);
+                rfs = AddExistingFileManager.Self.AddSingleFile(createdFile, ref userCancelled, option, elementToAddTo:element, forcedAti:resultAssetTypeInfo);
 
                 if(resultAssetTypeInfo?.QualifiedRuntimeTypeName.QualifiedType != null && rfs.RuntimeType != resultAssetTypeInfo.QualifiedRuntimeTypeName.QualifiedType)
                 {

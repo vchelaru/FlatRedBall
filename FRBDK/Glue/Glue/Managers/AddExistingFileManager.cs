@@ -1,5 +1,6 @@
 ﻿using EditorObjects.SaveClasses;
 using FlatRedBall.Glue.Controls;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -96,7 +97,8 @@ namespace FlatRedBall.Glue.Managers
             viewModel.RefreshFilteredList();
         }
 
-        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null, string directoryOfTreeNode = null)
+        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, object options = null, GlueElement elementToAddTo = null, string directoryOfTreeNode = null,
+            AssetTypeInfo forcedAti = null)
         {
             elementToAddTo = elementToAddTo ?? GlueState.Self.CurrentElement;
 
@@ -134,7 +136,7 @@ namespace FlatRedBall.Glue.Managers
             {
 
                 toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName.FullPath, rfsName, extraCommandLineArguments, buildToolAssociation,
-                    isBuiltFile, options, elementToAddTo as GlueElement, directoryOfTreeNode);
+                    isBuiltFile, options, elementToAddTo, directoryOfTreeNode, forcedAssetTypeInfo:forcedAti);
             }
 
 
