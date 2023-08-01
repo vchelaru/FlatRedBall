@@ -93,7 +93,7 @@ namespace FlatRedBall.Glue.IO
 
         }
 
-        void HandleNewFile(ReferencedFileSave rfs)
+        void HandleNewFile(ReferencedFileSave rfs, AssetTypeInfo assetTypeInfo)
         {
             HandleBuiltFileChange(GlueCommands.Self.GetAbsoluteFileName(rfs));
         }

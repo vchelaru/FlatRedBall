@@ -323,7 +323,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             return true;
         }
 
-        internal void HandleNewFile(ReferencedFileSave newFile)
+        internal void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             GlueCommands.Self.ProjectCommands.CopyToBuildFolder(newFile);
         }

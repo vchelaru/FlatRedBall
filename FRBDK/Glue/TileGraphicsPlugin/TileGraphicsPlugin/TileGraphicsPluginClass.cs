@@ -375,7 +375,7 @@ namespace TileGraphicsPlugin
             tiledToolbar.HighlightFirstItem();
         }
 
-        private void ReactToNewFile(ReferencedFileSave newFile)
+        private void ReactToNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             var isTmx = FileManager.GetExtension(newFile.Name) == "tmx";
 

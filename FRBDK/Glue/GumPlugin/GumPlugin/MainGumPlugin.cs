@@ -627,7 +627,7 @@ namespace GumPlugin
             UpdateMenuItemVisibility();
         }
 
-        private void HandleNewFile(ReferencedFileSave newFile)
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             string extension = FileManager.GetExtension(newFile.Name);
 

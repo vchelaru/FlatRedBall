@@ -1194,10 +1194,10 @@ namespace FlatRedBall.Glue.Plugins
         /// it's possible new files could be created without that dialog in the future).
         /// </summary>
         /// <param name="newRfs">The newly-created ReferencedFileSave/param>
-        internal static void ReactToNewFile(ReferencedFileSave newRfs)
+        internal static void ReactToNewFile(ReferencedFileSave newRfs, AssetTypeInfo ati)
         {
             CallMethodOnPlugin(
-                plugin => plugin.ReactToNewFileHandler(newRfs),
+                plugin => plugin.ReactToNewFileHandler(newRfs, ati),
                 plugin => plugin.ReactToNewFileHandler != null);
         }
 

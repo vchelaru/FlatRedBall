@@ -57,7 +57,7 @@ namespace FlatRedBall.Glue.Managers
 
                         if (existingFile == null)
                         {
-                            AddSingleFile(file, ref userCancelled, element, directoryOfTreeNode);
+                            AddSingleFile(file, ref userCancelled, elementToAddTo: element, directoryOfTreeNode: directoryOfTreeNode);
                         }
                         else
                         {
@@ -96,16 +96,10 @@ namespace FlatRedBall.Glue.Managers
             viewModel.RefreshFilteredList();
         }
 
-        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null)
+        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, object options = null, IElement elementToAddTo = null, string directoryOfTreeNode = null)
         {
-            var element = elementToAddTo ?? GlueState.Self.CurrentElement;
+            elementToAddTo = elementToAddTo ?? GlueState.Self.CurrentElement;
 
-            return AddSingleFile(fileName, ref userCancelled, element, null, options);
-        }
-
-        public ReferencedFileSave AddSingleFile(FilePath fileName, ref bool userCancelled, IElement element, 
-            string directoryOfTreeNode, object options = null)
-        {
             ReferencedFileSave toReturn = null;
 
             #region Find the BuildToolAssociation for the selected file
@@ -140,7 +134,7 @@ namespace FlatRedBall.Glue.Managers
             {
 
                 toReturn = GlueCommands.Self.GluxCommands.AddSingleFileTo(fileName.FullPath, rfsName, extraCommandLineArguments, buildToolAssociation,
-                    isBuiltFile, options, element as GlueElement, directoryOfTreeNode);
+                    isBuiltFile, options, elementToAddTo as GlueElement, directoryOfTreeNode);
             }
 
 

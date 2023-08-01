@@ -512,7 +512,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     GlueState.Self.CurrentReferencedFileSave = rfs;
 
-                    PluginManager.ReactToNewFile(rfs);
+                    PluginManager.ReactToNewFile(rfs, resultAssetTypeInfo);
 
                     GluxCommands.Self.SaveGlux();
                 }
@@ -635,7 +635,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             // Dec 22, 2022 - how did we get this far without notifying the plugin system?
             // Perhaps this is handled elsewhere? It should be here...
-            PluginManager.ReactToNewFile(referencedFileSave);
+            PluginManager.ReactToNewFile(referencedFileSave, referencedFileSave.GetAssetTypeInfo());
         }
 
 
@@ -703,6 +703,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 }
             }
 
+            AssetTypeInfo assetTypeInfo = null;
             if (!failed)
             {
                 string creationReport;
@@ -714,7 +715,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     directoryToUse = directoryOfTreeNode;
                 }
 
-                var assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile));
+                assetTypeInfo = AvailableAssetTypes.Self.GetAssetTypeFromExtension(FileManager.GetExtension(targetFile));
 
 
                 toReturn = CreateReferencedFileSaveForExistingFile(
@@ -775,7 +776,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 });
 
                 TaskManager.Self.Add(() => GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(toReturn), $"Updating file membership for file {toReturn}");
-                PluginManager.ReactToNewFile(toReturn);
+                PluginManager.ReactToNewFile(toReturn, assetTypeInfo);
                 GluxCommands.Self.SaveGlux();
                 GluxCommands.Self.ProjectCommands.SaveProjects();
 

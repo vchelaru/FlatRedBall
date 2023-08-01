@@ -1609,7 +1609,7 @@ namespace FlatRedBall.Glue.Managers
                     var element = GlueState.Self.CurrentElement;
                     FlatRedBall.Glue.Managers.TaskManager.Self.Add(() =>
                     {
-                        var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName.FullPath, ref userCancelled, element, directoryPath);
+                        var newRfs = AddExistingFileManager.Self.AddSingleFile(fileName.FullPath, ref userCancelled, elementToAddTo: element, directoryOfTreeNode: directoryPath);
 
                         GlueCommands.Self.DoOnUiThread(() => GlueCommands.Self.SelectCommands.Select(newRfs));
                     },

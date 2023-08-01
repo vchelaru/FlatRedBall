@@ -1205,7 +1205,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         GlueCommands.Self.ProjectCommands.UpdateFileMembershipInProject(referencedFileSaveToReturn);
 
-                        PluginManager.ReactToNewFile(referencedFileSaveToReturn);
+                        PluginManager.ReactToNewFile(referencedFileSaveToReturn, ati);
                         GluxCommands.Self.SaveGlux();
                         GlueCommands.Self.ProjectCommands.SaveProjects();
                         UnreferencedFilesManager.Self.RefreshUnreferencedFiles(false);

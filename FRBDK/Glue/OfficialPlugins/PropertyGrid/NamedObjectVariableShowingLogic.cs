@@ -555,22 +555,18 @@ namespace OfficialPlugins.VariableDisplay
 
                 instance.InstanceName = value as string;
 
+                var element = GlueState.Self.CurrentElement;
+
                 EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
-                    "InstanceName", oldValue, "InstanceName", null);
+                    nameof(NamedObjectSave.InstanceName), oldValue, nameof(NamedObjectSave.InstanceName), null);
 
-
-                //GlueCommands.Self.GluxCommands.SetVariableOn(
-                //    instance,
-                //    "Name",
-                //    typeof(string),
-                //    value);
-
-
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                if(element != null)
+                {
+                    GlueCommands.Self.GluxCommands.SaveElementAsync(element);
+                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+                }
 
                 GlueCommands.Self.RefreshCommands.RefreshPropertyGrid();
-
-                GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
                 oldValue = (string)value;
             };

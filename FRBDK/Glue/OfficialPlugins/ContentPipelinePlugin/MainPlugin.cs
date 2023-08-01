@@ -20,6 +20,7 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.FormHelpers;
 using FlatRedBall.Glue.IO;
+using FlatRedBall.Glue.Elements;
 
 namespace OfficialPlugins.MonoGameContent
 {
@@ -238,7 +239,7 @@ namespace OfficialPlugins.MonoGameContent
             }
         }
 
-        private void HandleNewFile(ReferencedFileSave newFile)
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
 
             if(BuildLogic.GetIfNeedsMonoGameFilesBuilt( GlueState.CurrentMainProject ))

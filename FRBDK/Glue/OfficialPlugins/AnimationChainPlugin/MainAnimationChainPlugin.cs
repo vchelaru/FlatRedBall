@@ -117,7 +117,7 @@ namespace OfficialPluginsCore.AnimationChainPlugin
             }
         }
 
-        private void HandleNewFile(ReferencedFileSave newFile)
+        private void HandleNewFile(ReferencedFileSave newFile, AssetTypeInfo assetTypeInfo)
         {
             var extension = FileManager.GetExtension(newFile.Name);
             if(extension == "achx")

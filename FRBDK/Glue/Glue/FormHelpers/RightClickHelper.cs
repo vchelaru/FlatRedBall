@@ -1133,12 +1133,6 @@ namespace FlatRedBall.Glue.FormHelpers
 
         #endregion
 
-
-        public static ReferencedFileSave AddSingleFile(string fullFileName, ref bool cancelled, IElement elementToAddTo = null)
-        {
-            return AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled, elementToAddTo: elementToAddTo);
-        }
-
         public static void Initialize()
         {
             addScreenToolStripMenuItem = new GeneralToolStripMenuItem("Add Screen");

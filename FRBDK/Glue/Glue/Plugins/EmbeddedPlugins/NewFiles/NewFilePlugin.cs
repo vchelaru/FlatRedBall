@@ -10,6 +10,8 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 {
@@ -179,9 +181,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
             return null;
         }
 
-        private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile)
+        private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile, AssetTypeInfo ati)
         {
+            if(ati == LocalizationDatabaseAti)
+            {
+                newFile.IsDatabaseForLocalizing = true;
 
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                    nameof(newFile.IsDatabaseForLocalizing), false, nameof(newFile.IsDatabaseForLocalizing), null);
+            }
         }
 
 

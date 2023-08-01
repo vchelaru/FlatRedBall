@@ -149,7 +149,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region IsDatabaseForLocalizing
 
-            else if (changedMember == "IsDatabaseForLocalizing")
+            else if (changedMember == nameof(ReferencedFileSave.IsDatabaseForLocalizing))
             {
                 updateTreeView = false;
                 bool oldValueAsBool = (bool)oldValue;

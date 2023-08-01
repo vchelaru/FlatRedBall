@@ -224,8 +224,8 @@ namespace GumPlugin.Managers
             {
                 bool cancelled = false;
 
-                var newRfs = FlatRedBall.Glue.FormHelpers.RightClickHelper.AddSingleFile(
-                    fullFileName, ref cancelled, glueScreen);
+                var newRfs =
+                    AddExistingFileManager.Self.AddSingleFile(fullFileName, ref cancelled, elementToAddTo: glueScreen);
 
                 // prior to doing any codegen, need to refresh the project specific ATIs:
                 AssetTypeInfoManager.Self.RefreshProjectSpecificAtis();
