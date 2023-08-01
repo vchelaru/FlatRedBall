@@ -95,7 +95,34 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
                 }
             }
 
-            
+
+            AddTemporaryAtis(newFileWindow);
+        }
+
+        AssetTypeInfo localizationDatabaseAti;
+        AssetTypeInfo LocalizationDatabaseAti
+        {
+            get
+            {
+                if(localizationDatabaseAti == null)
+                {
+
+                    var csvAti = AvailableAssetTypes.Self.GetAssetTypeFromExtension("csv");
+                    localizationDatabaseAti = FileManager.CloneObject(csvAti);
+                    localizationDatabaseAti.FriendlyName = "Localization Database (.csv)";
+
+                }
+                return localizationDatabaseAti;
+            }
+        }
+
+        /// <summary>
+        /// Adds ATIs to the NewFileWindow which should only exist during the creation of the new file and should not be available to the rest of Glue.
+        /// </summary>
+        /// <param name="newFileWindow">The new file window instance</param>
+        private void AddTemporaryAtis(CustomizableNewFileWindow newFileWindow)
+        {
+            newFileWindow.AddOption(LocalizationDatabaseAti);
         }
 
         private void CreateNoCodeGenerationAtiFor(string extension)
@@ -177,7 +204,20 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
         {
             string availableFile;
 
-            if (assetTypeInfo.Extension == "csv")
+            if(assetTypeInfo == LocalizationDatabaseAti)
+            {
+                string contents =
+@"""StringId (string, required)"",English (string),Spanish (string),German (string)
+T_Hello,Hello,Hola,Hallo
+T_StartGame,Start Game,Comenzar el Juego,Spiel Starten
+T_Exit,Exit,Salida,Ausfahrt
+T_HighScore,High Score,Alta Puntuación,Hohe Punktzahl
+T_Paused,Paused,En Pausa,Pausiert
+";
+
+                FileManager.SaveText(contents, createdFile);
+            }
+            else if (assetTypeInfo.Extension == "csv")
             {
                 string contents =
 

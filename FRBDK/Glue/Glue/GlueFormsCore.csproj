@@ -293,9 +293,6 @@
 		<None Update="Content\FilesForAddNewFile\IGB3Song.mp3">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Plugins\EmbeddedPlugins\NewFiles\LocalizationDatabase.csv">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="Content\FilesForAddNewFile\OpenOfficeSpreadsheet.ods">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
