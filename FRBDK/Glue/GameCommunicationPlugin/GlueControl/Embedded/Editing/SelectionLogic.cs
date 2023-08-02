@@ -165,8 +165,6 @@ namespace GlueControl.Editing
         {
             var mouse = InputManager.Mouse;
 
-            FlatRedBall.Debugging.Debugger.Write(PushStartLocation?.ToString() ?? "no push start");
-
             PerformedRectangleSelection = false;
 
             if (mouse.ButtonDown(Mouse.MouseButtons.LeftButton) == false && !mouse.ButtonReleased(Mouse.MouseButtons.LeftButton))

@@ -119,15 +119,18 @@ public partial class CustomVariablePropertiesView : UserControl
 
         PreferredDisplayerManager.AddDisplayerUi(VariableDefinitionGrid, Variable);
 
-        VariableDefinitionGrid.Categories[0].Name = "Variable Display";
+        if(VariableDefinitionGrid.Categories?.Count > 0)
+        {
+            VariableDefinitionGrid.Categories[0].Name = "Variable Display";
 
-        var member = VariableDefinitionGrid.Categories
-            .SelectMany(item => item.Members)
-            .FirstOrDefault(item => item.Name == nameof(VariableDefinition.PreferredDisplayer));
+            var member = VariableDefinitionGrid.Categories
+                .SelectMany(item => item.Members)
+                .FirstOrDefault(item => item.Name == nameof(VariableDefinition.PreferredDisplayer));
 
-        this.AddVariableDefinitionButton.Visibility = (customVariable.VariableDefinition == null).ToVisibility();
+            this.AddVariableDefinitionButton.Visibility = (customVariable.VariableDefinition == null).ToVisibility();
 
-        VariableDefinitionGrid.InsertSpacesInCamelCaseMemberNames();
+            VariableDefinitionGrid.InsertSpacesInCamelCaseMemberNames();
+        }
         void RemoveMember(string memberName)
         {
             foreach (var category in VariableDefinitionGrid.Categories)
