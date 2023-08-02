@@ -219,7 +219,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 T_Hello,Hello,Hola,Hallo
 T_StartGame,Start Game,Comenzar el Juego,Spiel Starten
 T_Exit,Exit,Salida,Ausfahrt
-T_HighScore,High Score,Alta Puntuación,Hohe Punktzahl
+T_HighScore,High Score,Puntuación Alta,Hohe Punktzahl
 T_Paused,Paused,En Pausa,Pausiert
 ";
 
