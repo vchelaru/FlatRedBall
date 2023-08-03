@@ -493,6 +493,39 @@ public class DragDropManager : Singleton<DragDropManager>
 
     #endregion
 
+    #region ... On Events root node (create an After event)
+
+
+    private static void MoveVariableOnEventsRootNode(ITreeNode targetNode, CustomVariable customVariable)
+    {
+        // The user dragged a variable onto the events node, so they want to make
+        // an event for this.  We'll assume an "after" event since I think no one makes
+        // before events
+
+
+        if (customVariable != null)
+        {
+            customVariable.CreatesEvent = true;
+
+            FlatRedBall.Glue.Events.EventResponseSave eventResponseSave = new Events.EventResponseSave();
+            eventResponseSave.EventName = "After" + customVariable.Name + "Set";
+
+            eventResponseSave.SourceObject = null;
+            eventResponseSave.SourceObjectEvent = null;
+
+            eventResponseSave.SourceVariable = customVariable.Name;
+            eventResponseSave.BeforeOrAfter = BeforeOrAfter.After;
+
+            eventResponseSave.DelegateType = null;
+
+            var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+            GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(element, eventResponseSave);
+
+        }
+    }
+
+    #endregion
+
     private static void MoveVariableOnStateCategory(CustomVariable customVariable, StateSaveCategory stateSaveCategory)
     {
         TaskManager.Self.AddOrRunIfTasked(() =>
@@ -519,30 +552,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
         if (targetNode.IsRootEventsNode())
         {
-            // The user dragged a variable onto the events node, so they want to make
-            // an event for this.  We'll assume an "after" event since I think no one makes
-            // before events
-
-
-            if (customVariable != null)
-            {
-                customVariable.CreatesEvent = true;
-
-                FlatRedBall.Glue.Events.EventResponseSave eventResponseSave = new Events.EventResponseSave();
-                eventResponseSave.EventName = "After" + customVariable.Name + "Set";
-
-                eventResponseSave.SourceObject = null;
-                eventResponseSave.SourceObjectEvent = null;
-
-                eventResponseSave.SourceVariable = customVariable.Name;
-                eventResponseSave.BeforeOrAfter = BeforeOrAfter.After;
-
-                eventResponseSave.DelegateType = null;
-
-                var element = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
-                GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(element, eventResponseSave);
-
-            }
+            MoveVariableOnEventsRootNode(targetNode, customVariable);
         }
         else if (targetNode.IsRootCustomVariablesNode())
         {
@@ -553,6 +563,7 @@ public class DragDropManager : Singleton<DragDropManager>
             MoveVariableOnStateCategory(nodeMoving.Tag as CustomVariable, targetNode.Tag as StateSaveCategory);
         }
     }
+
 
 
     #endregion

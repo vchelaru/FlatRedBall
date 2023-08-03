@@ -1372,9 +1372,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 CodeWriter.AddEventGeneratedCodeFileForElement(currentElement);
             }
 
-            GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(currentElement);
 
-            GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(currentElement);
 
             _=GluxCommands.Self.SaveElementAsync(currentElement);
 

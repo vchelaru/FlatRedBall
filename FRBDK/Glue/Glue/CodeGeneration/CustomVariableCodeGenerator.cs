@@ -115,7 +115,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (customVariable.CreatesEvent)
                 {
-                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariable.Type);
+                    EventCodeGenerator.GenerateEventsForVariable(codeBlock, customVariable.Name, customVariableType);
                 }
 
                 if (!string.IsNullOrEmpty(customVariable.OverridingPropertyType))
