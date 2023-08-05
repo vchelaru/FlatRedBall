@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
+using FlatRedBall.Glue.Managers;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -814,6 +815,8 @@ namespace FlatRedBallAddOns.Entities
         
         internal static ICodeBlock GenerateInitialize(GlueElement saveObject, ICodeBlock codeBlock)
         {
+            TaskManager.Self.WarnIfNotInTask();
+
             string initializePre = null;
             string initializeMethodCall = null;
             if (saveObject is ScreenSave)
