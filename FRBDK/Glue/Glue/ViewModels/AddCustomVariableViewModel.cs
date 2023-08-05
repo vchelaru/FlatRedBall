@@ -299,6 +299,12 @@ namespace GlueFormsCore.ViewModels
             set => Set(value);
         }
 
+        public ObservableCollection<string> AvailableCategories
+        {
+            get => Get<ObservableCollection<string>>();
+            set => Set(value);
+        }
+
         public string NewVariableSummary
         {
             get => Get<string>();
@@ -447,6 +453,7 @@ namespace GlueFormsCore.ViewModels
 
         public AddCustomVariableViewModel(GlueElement glueElement)
         {
+            AvailableCategories = new ObservableCollection<string>();
             AvailableExposedVariables = new ObservableCollection<string>();
 
             TypeConverterHelper.InitializeClasses();
