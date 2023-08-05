@@ -567,6 +567,9 @@ namespace GumPlugin
                     if(result == System.Windows.MessageBoxResult.Yes)
                     {
                         await GumPluginCommands.Self.RemoveScreen(gumScreen);
+
+                        listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.CustomRuntimeCodeLocationFor(gumScreen).FullPath);
+                        listToFillWithAdditionalFilesToRemove.Add(CodeGeneratorManager.Self.GeneratedRuntimeCodeLocationFor(gumScreen).FullPath);
                     }
 
                 }
