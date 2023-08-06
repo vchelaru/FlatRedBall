@@ -206,6 +206,7 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToNewFileHandler += _refreshManager.HandleNewFile;
             this.ReactToFileChangeHandler += manager.HandleFileChanged;
             this.ReactToCodeFileChange += _refreshManager.HandleFileChanged;
+            this.ReactToElementRenamed += ToolbarController.Self.HandleScreenRenamed;
 
             this.ReactToChangedPropertyHandler += HandlePropertyChanged;
 
