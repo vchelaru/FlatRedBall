@@ -38,6 +38,12 @@ namespace FlatRedBall.TileGraphics
         #region Fields
         protected Tileset mTileset;
 
+        /// <summary>
+        /// New rendering codepath using the same effect main FRB renderer uses. This enables
+        /// using color operations and linearization for gamma correction.
+        /// </summary>
+        public static bool UseMainRendererEffect { get; set; } = true;
+
         #region XML Docs
         /// <summary>
         /// The effect used to draw.  Shared by all instances for performance reasons
@@ -543,9 +549,9 @@ namespace FlatRedBall.TileGraphics
 
                 // pad before doing any rotations/flipping
                 const bool pad = true;
-                float amountToAddX =  .0000001f;
-                float amountToAddY =  .0000001f;
-                if(texture != null)
+                float amountToAddX = .0000001f;
+                float amountToAddY = .0000001f;
+                if (texture != null)
                 {
                     amountToAddX = .037f / texture.Width;
                     amountToAddY = .037f / texture.Height;
@@ -1197,18 +1203,34 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
-                camera.SetDeviceViewAndProjection(mBasicEffect, false);
+                if (UseMainRendererEffect)
+                {
+                    Renderer.EffectParameterCurrentTexture.SetValue(mTexture);
+                    Renderer.EffectParameterViewProj.SetValue(camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() * (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
 
-                mBasicEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
-                mBasicEffect.Texture = mTexture;
+                    effectTouse = Renderer.Effect;
 
-                mBasicEffect.DiffuseColor = new Vector3(Red, Green, Blue);
-                mBasicEffect.Alpha = Alpha;
+                    var effectTechnique = Renderer.GetTechniqueVariantFromColorOperation(ColorOperation.Texture);
+
+                    if (effectTouse.CurrentTechnique != effectTechnique)
+                        effectTouse.CurrentTechnique = effectTechnique;
+                }
+                else
+                {
+                    camera.SetDeviceViewAndProjection(mBasicEffect, false);
+
+                    mBasicEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
+                    mBasicEffect.Texture = mTexture;
+
+                    mBasicEffect.DiffuseColor = new Vector3(Red, Green, Blue);
+                    mBasicEffect.Alpha = Alpha;
 
 #if TILEMAPS_ALPHA_AND_COLOR
                 mBasicEffect.VertexColorEnabled = true;
 #endif
-                effectTouse = mBasicEffect;
+
+                    effectTouse = mBasicEffect;
+                }
             }
 
 
