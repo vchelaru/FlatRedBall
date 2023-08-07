@@ -613,7 +613,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             viewModel.SelectedTunneledVariableName = tunneledVariableName;
             viewModel.DesiredVariableType = variableType;
 
-            if(variableType == CustomVariableType.New)
+            HashSet<string> variableCategories = new HashSet<string>();
+            variableCategories.AddRange(container.CustomVariables.Select(item => item.Category).Where(item => !string.IsNullOrEmpty(item)));
+            var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
+            foreach(var element in baseElements)
+            {
+                variableCategories.AddRange(element.CustomVariables.Select(item => item.Category).Where(item => !string.IsNullOrEmpty(item)));
+            }
+            viewModel.AvailableCategories.AddRange(variableCategories);
+
+            if (variableType == CustomVariableType.New)
             {
                 viewModel.SelectedNewType = viewModel.AvailableNewVariableTypes.FirstOrDefault();
             }

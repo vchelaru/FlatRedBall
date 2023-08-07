@@ -725,7 +725,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             item.UnevaluatedInclude = unmodifiedNewName.Replace("/", "\\");
 
-            mBuildItemDictionaries.Add(newName, item);
+            // This could already exist (like in duplicate entries), so use the assignment rather than add:
+            //mBuildItemDictionaries.Add(newName, item);
+            mBuildItemDictionaries[newName] = item;
 
             if (newName.Contains(".generated.cs"))
             {

@@ -101,7 +101,7 @@
                    Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
 
                 <Label Margin="0,0,0,-4">Category:</Label>
-                <TextBox Text="{Binding NewVariableCategory}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
+                <ComboBox Text="{Binding NewVariableCategory}" ItemsSource="{Binding AvailableCategories}" IsEditable="True" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></ComboBox>
 
                 <Label Margin="0,0,0,-4">Summary:</Label>
                 <TextBox Text="{Binding NewVariableSummary}" KeyDown="TextBox_KeyDown" Margin="0,0,0,6"></TextBox>
