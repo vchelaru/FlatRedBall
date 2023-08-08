@@ -114,14 +114,15 @@ namespace FlatRedBall.Glue.SaveClasses
             GraphicalUiElementINotifyPropertyChanged = 40,
             GumTextObjectsHaveTextOverflowProperties = 41,
             TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated = 42,
-            ISongInFrb = 43
+            ISongInFrb = 43,
+            ExternalEffectManager = 44
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.TileShapeCollectionAddToLayerSupportsAutomaticallyUpdated;
+        public const int LatestVersion = (int)GluxVersions.ExternalEffectManager;
 
         public int FileVersion { get; set; }
 
