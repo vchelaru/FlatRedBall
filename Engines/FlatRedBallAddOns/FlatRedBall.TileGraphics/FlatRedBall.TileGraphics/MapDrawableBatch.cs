@@ -40,7 +40,7 @@ namespace FlatRedBall.TileGraphics
         /// Use the custom shader instead of MG's default. This enables using 
         /// color operations and linearization for gamma correction.
         /// </summary>
-        public static bool UseCustomEffect { get; set; } = true;
+        public static bool UseCustomEffect { get; set; }
 #endif
 
         /// <summary>
