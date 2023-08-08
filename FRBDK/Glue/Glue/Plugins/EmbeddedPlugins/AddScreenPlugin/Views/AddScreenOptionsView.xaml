@@ -50,7 +50,7 @@
                 </GroupBox>
                 <GroupBox Header="Entities">
                     <StackPanel>
-                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddListsForEntitiesChecked}">Add Lists for Entites</CheckBox>
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddListsForEntitiesChecked}">Add Lists for Entities</CheckBox>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>

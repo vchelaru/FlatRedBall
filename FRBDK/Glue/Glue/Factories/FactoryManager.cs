@@ -194,7 +194,7 @@ namespace FlatRedBall.Glue.Factories
                     "action is recommended.";
 
                 DialogResult result = MessageBox.Show(message,
-                    "Reset Entites inheriting from this?", MessageBoxButtons.YesNo);
+                    "Reset Entities inheriting from this?", MessageBoxButtons.YesNo);
 
                 if (result == DialogResult.Yes)
                 {
