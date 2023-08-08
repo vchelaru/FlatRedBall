@@ -285,8 +285,10 @@ namespace $NAMESPACE$.TopDown
 
             var angle = (float)System.Math.Atan2(toVector.Y - fromVector.Y, toVector.X - fromVector.X);
             lineOfSightPathFindingPolygon.RotationZ = angle;
+            lineOfSightPathFindingPolygon.ForceUpdateDependencies();
 
-            return lineOfSightPathFindingPolygon;
+
+        return lineOfSightPathFindingPolygon;
         }
 
     public void DoTargetFollowingActivity()
