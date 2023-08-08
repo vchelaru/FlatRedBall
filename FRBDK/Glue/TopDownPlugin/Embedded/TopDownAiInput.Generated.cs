@@ -94,11 +94,10 @@ namespace $NAMESPACE$.TopDown
         public virtual IPressableInput DefaultConfirmInput => throw new NotImplementedException();
         public virtual IPressableInput DefaultCancelInput => throw new NotImplementedException();
 
-        public virtual IPressableInput DefaultJoinInput => throw new NotImplementedException();
-
-        public virtual IPressableInput DefaultPauseInput => throw new NotImplementedException();
-
-        public virtual IPressableInput DefaultBackInput => throw new NotImplementedException();
+        FalsePressableInput falsePressableInput = new FalsePressableInput();
+        public virtual IPressableInput DefaultJoinInput => falsePressableInput;
+        public virtual IPressableInput DefaultPauseInput => falsePressableInput;
+        public virtual IPressableInput DefaultBackInput => falsePressableInput;
 #endregion
 
         public Vector3? NextImmediateTarget { get; set; }
