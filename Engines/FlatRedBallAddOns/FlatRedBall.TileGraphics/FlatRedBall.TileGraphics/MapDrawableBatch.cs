@@ -35,11 +35,13 @@ namespace FlatRedBall.TileGraphics
         #region Fields
         protected Tileset mTileset;
 
+#if RendererHasExternalEffectManager
         /// <summary>
         /// Use the custom shader instead of MG's default. This enables using 
         /// color operations and linearization for gamma correction.
         /// </summary>
         public static bool UseCustomEffect { get; set; } = true;
+#endif
 
         /// <summary>
         /// The effect used to draw. Shared by all instances for performance reasons
@@ -1226,6 +1228,7 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
+#if RendererHasExternalEffectManager
                 if (UseCustomEffect)
                 {
                     Renderer.ExternalEffectManager.ParameterViewProj.SetValue(
@@ -1242,6 +1245,7 @@ namespace FlatRedBall.TileGraphics
                         effectTouse.CurrentTechnique = effectTechnique;
                 }
                 else
+#endif
                 {
                     camera.SetDeviceViewAndProjection(mBasicEffect, false);
 
@@ -1506,11 +1510,13 @@ namespace FlatRedBall.TileGraphics
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
 
+#if RendererHasExternalEffectManager
             if (UseCustomEffect && mAreVertexColorsDirty)
             {
                 UpdateVertexColors();
                 mAreVertexColorsDirty = false;
             }
+#endif
         }
 
         void UpdateVertexColors()
