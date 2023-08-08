@@ -1231,15 +1231,17 @@ namespace FlatRedBall.TileGraphics
 #if RendererHasExternalEffectManager
                 if (UseCustomEffect)
                 {
-                    Renderer.ExternalEffectManager.ParameterViewProj.SetValue(
+                    var efectManager = Renderer.ExternalEffectManager;
+
+                    efectManager.ParameterViewProj.SetValue(
                         camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() *
                         (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
 
-                    Renderer.ExternalEffectManager.ParameterCurrentTexture.SetValue(mTexture);
+                    efectManager.ParameterCurrentTexture.SetValue(mTexture);
 
                     effectTouse = Renderer.ExternalEffect;
 
-                    var effectTechnique = Renderer.ExternalEffectManager.GetTechniqueVariantFromColorOperation(ColorOperation);
+                    var effectTechnique = efectManager.GetTechniqueVariantFromColorOperation(ColorOperation);
 
                     if (effectTouse.CurrentTechnique != effectTechnique)
                         effectTouse.CurrentTechnique = effectTechnique;
@@ -1549,9 +1551,9 @@ namespace FlatRedBall.TileGraphics
             else
             {
                 colorPackedValue =
-                    ((uint)(255 * mRed)) +
-                    (((uint)(255 * mGreen)) << 8) +
-                    (((uint)(255 * mBlue)) << 16) +
+                    ((uint)(255 * redValue)) +
+                    (((uint)(255 * greenValue)) << 8) +
+                    (((uint)(255 * blueValue)) << 16) +
                     (((uint)(255 * mAlpha)) << 24);
             }
 
