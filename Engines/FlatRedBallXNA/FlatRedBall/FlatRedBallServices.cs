@@ -769,6 +769,11 @@ namespace FlatRedBall
             // So I'm going to revert monogame back to the old way for now
             var preInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
             Renderer.Effect = preInitGlobalContent.Load<Effect>("Content/shader");
+
+            // We need two separate instances of the custom effect so we need another 
+            // pre initialization content manager.
+            var anotherPreInitGlobalContent = new Microsoft.Xna.Framework.Content.ContentManager(mServices);
+            Renderer.ExternalEffect = anotherPreInitGlobalContent.Load<Effect>("Content/shader");
 #endif
         }
 

@@ -15,9 +15,9 @@ using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
 
 #if TILEMAPS_ALPHA_AND_COLOR
-using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
+using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
 #else
-using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
+using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
 #endif
 
 namespace FlatRedBall.TileGraphics
@@ -39,16 +39,14 @@ namespace FlatRedBall.TileGraphics
         protected Tileset mTileset;
 
         /// <summary>
-        /// New rendering codepath using the same effect main FRB renderer uses. This enables
-        /// using color operations and linearization for gamma correction.
+        /// Use the custom shader instead of MG's default. This enables using 
+        /// color operations and linearization for gamma correction.
         /// </summary>
-        public static bool UseMainRendererEffect { get; set; } = true;
+        public static bool UseCustomEffect { get; set; } = true;
 
-        #region XML Docs
         /// <summary>
-        /// The effect used to draw.  Shared by all instances for performance reasons
+        /// The effect used to draw. Shared by all instances for performance reasons
         /// </summary>
-        #endregion
         private static BasicEffect mBasicEffect;
         private static AlphaTestEffect mAlphaTestEffect;
 
@@ -77,10 +75,34 @@ namespace FlatRedBall.TileGraphics
 
         private int mCurrentNumberOfTiles = 0;
 
-        public float Red = 1;
-        public float Green = 1;
-        public float Blue = 1;
-        public float Alpha = 1;
+        float mRed = 1;
+        float mGreen = 1;
+        float mBlue = 1;
+        float mAlpha = 1;
+
+        public float Red
+        {
+            get { return mRed; }
+            set { if (mRed != value) mAreVerticesColorDirty = true; mRed = value; }
+        }
+
+        public float Green
+        {
+            get { return mGreen; }
+            set { if (mGreen != value) mAreVerticesColorDirty = true; mGreen = value; }
+        }
+
+        public float Blue
+        {
+            get { return mBlue; }
+            set { if (mBlue != value) mAreVerticesColorDirty = true; mBlue = value; }
+        }
+
+        public float Alpha
+        {
+            get { return mAlpha; }
+            set { if (mAlpha != value) mAreVerticesColorDirty = true; mAlpha = value; }
+        }
 
         private SortAxis mSortAxis;
 
@@ -160,7 +182,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public VertexPositionTexture[] Vertices => mVertices;
+        public VertexPositionColorTexture[] Vertices => mVertices;
 
         public Texture2D Texture
         {
@@ -223,6 +245,14 @@ namespace FlatRedBall.TileGraphics
 
         public TextureFilter? TextureFilter { get; set; } = null;
 
+        bool mAreVerticesColorDirty = true;
+
+        ColorOperation mColorOperation = ColorOperation.Texture;
+        public ColorOperation ColorOperation
+        {
+            get { return mColorOperation; }
+            set { if (mColorOperation != value) mAreVerticesColorDirty = true; mColorOperation = value; }
+        }
 
         #endregion
 
@@ -231,7 +261,6 @@ namespace FlatRedBall.TileGraphics
         // this exists purely for Clone
         public MapDrawableBatch()
         {
-
         }
 
         public MapDrawableBatch(int numberOfTiles, Texture2D texture)
@@ -244,7 +273,7 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            mVertices = new VertexPositionColorTexture[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
         }
@@ -268,7 +297,7 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionTexture[4 * numberOfTiles];
+            mVertices = new VertexPositionColorTexture[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
 
@@ -350,8 +379,6 @@ namespace FlatRedBall.TileGraphics
             }
 
             RenderingScale = 1;
-
-
         }
 
         #endregion
@@ -1056,12 +1083,11 @@ namespace FlatRedBall.TileGraphics
             float width = dimensions.X - (TileVertexOffset * 2f);
             float height = dimensions.Y - (TileVertexOffset * 2f);
 
-
             // create vertices
-            mVertices[currentVertex + 0] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), new Vector2(texture.X, texture.W));
-            mVertices[currentVertex + 1] = new VertexPositionTexture(new Vector3(xOffset + width, yOffset + 0f, zOffset), new Vector2(texture.Y, texture.W));
-            mVertices[currentVertex + 2] = new VertexPositionTexture(new Vector3(xOffset + width, yOffset + height, zOffset), new Vector2(texture.Y, texture.Z));
-            mVertices[currentVertex + 3] = new VertexPositionTexture(new Vector3(xOffset + 0f, yOffset + height, zOffset), new Vector2(texture.X, texture.Z));
+            mVertices[currentVertex + 0] = new VertexPositionColorTexture(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), Color.White, new Vector2(texture.X, texture.W));
+            mVertices[currentVertex + 1] = new VertexPositionColorTexture(new Vector3(xOffset + width, yOffset + 0f, zOffset), Color.White, new Vector2(texture.Y, texture.W));
+            mVertices[currentVertex + 2] = new VertexPositionColorTexture(new Vector3(xOffset + width, yOffset + height, zOffset), Color.White, new Vector2(texture.Y, texture.Z));
+            mVertices[currentVertex + 3] = new VertexPositionColorTexture(new Vector3(xOffset + 0f, yOffset + height, zOffset), Color.White, new Vector2(texture.X, texture.Z));
 
             // create indices
             mIndices[currentIndex + 0] = currentVertex + 0;
@@ -1152,7 +1178,7 @@ namespace FlatRedBall.TileGraphics
                     // It could use DrawIndexedPrimitives instead for much faster performance,
                     // but to do that we'd have to keep VB's around and make sure to re-create them
                     // whenever the graphics device is lost.  
-                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionTexture>(
+                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColorTexture>(
                         PrimitiveType.TriangleList,
                         mVertices,
                         firstVertIndex,
@@ -1203,14 +1229,17 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
-                if (UseMainRendererEffect)
+                if (UseCustomEffect)
                 {
-                    Renderer.EffectParameterCurrentTexture.SetValue(mTexture);
-                    Renderer.EffectParameterViewProj.SetValue(camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() * (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
+                    Renderer.ExternalEffectManager.ParameterViewProj.SetValue(
+                        camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() *
+                        (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
 
-                    effectTouse = Renderer.Effect;
+                    Renderer.ExternalEffectManager.ParameterCurrentTexture.SetValue(mTexture);
 
-                    var effectTechnique = Renderer.GetTechniqueVariantFromColorOperation(ColorOperation.Texture);
+                    effectTouse = Renderer.ExternalEffect;
+
+                    var effectTechnique = Renderer.ExternalEffectManager.GetTechniqueVariantFromColorOperation(ColorOperation);
 
                     if (effectTouse.CurrentTechnique != effectTechnique)
                         effectTouse.CurrentTechnique = effectTechnique;
@@ -1228,7 +1257,6 @@ namespace FlatRedBall.TileGraphics
 #if TILEMAPS_ALPHA_AND_COLOR
                 mBasicEffect.VertexColorEnabled = true;
 #endif
-
                     effectTouse = mBasicEffect;
                 }
             }
@@ -1287,7 +1315,7 @@ namespace FlatRedBall.TileGraphics
             numberOfTriangles = (indexEndExclusive - indexStart) / 3;
         }
 
-        public static int GetFirstAfterX(VertexPositionTexture[] list, float xGreaterThan)
+        public static int GetFirstAfterX(VertexPositionColorTexture[] list, float xGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
@@ -1346,7 +1374,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public static int GetFirstAfterY(VertexPositionTexture[] list, float yGreaterThan)
+        public static int GetFirstAfterY(VertexPositionColorTexture[] list, float yGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
@@ -1480,6 +1508,54 @@ namespace FlatRedBall.TileGraphics
             // be adding this to the SpriteManager's PositionedObjectList.  This is an improvement so we'll do it for
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
+
+            if (UseCustomEffect && mAreVerticesColorDirty)
+            {
+                UpdateVertexColors();
+                mAreVerticesColorDirty = false;
+            }
+        }
+
+        void UpdateVertexColors()
+        {
+            float redValue = mRed;
+            float greenValue = mGreen;
+            float blueValue = mBlue;
+
+            if (ColorOperation == ColorOperation.Color)
+            {
+                redValue = mRed * mAlpha;
+                greenValue = mGreen * mAlpha;
+                blueValue = mBlue * mAlpha;
+            }
+            else
+            {
+                redValue = mRed;
+                greenValue = mGreen;
+                blueValue = mBlue;
+            }
+
+            uint colorPackedValue;
+
+            if (mColorOperation == ColorOperation.Texture)
+            {
+                // In this case we'll just use the Alpha for all components (since it's premultiplied)
+                uint alpha0 = (uint)(255 * mAlpha);
+                colorPackedValue = alpha0 + (alpha0 << 8) + (alpha0 << 16) + (alpha0 << 24);
+            }
+            else
+            {
+                colorPackedValue =
+                    ((uint)(255 * mRed)) +
+                    (((uint)(255 * mGreen)) << 8) +
+                    (((uint)(255 * mBlue)) << 16) +
+                    (((uint)(255 * mAlpha)) << 24);
+            }
+
+            for (int i = 0; i < mVertices.Length; i++)
+            {
+                mVertices[i].Color.PackedValue = colorPackedValue;
+            }
         }
 
         private void AdjustOffsetAndParallax(Camera camera)
