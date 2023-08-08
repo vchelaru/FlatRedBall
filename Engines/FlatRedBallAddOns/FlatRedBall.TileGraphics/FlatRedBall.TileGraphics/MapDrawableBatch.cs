@@ -78,26 +78,35 @@ namespace FlatRedBall.TileGraphics
         public float Red
         {
             get { return mRed; }
-            set { if (mRed != value) mAreVerticesColorDirty = true; mRed = value; }
+            set { if (mRed != value) mAreVertexColorsDirty = true; mRed = value; }
         }
 
         public float Green
         {
             get { return mGreen; }
-            set { if (mGreen != value) mAreVerticesColorDirty = true; mGreen = value; }
+            set { if (mGreen != value) mAreVertexColorsDirty = true; mGreen = value; }
         }
 
         public float Blue
         {
             get { return mBlue; }
-            set { if (mBlue != value) mAreVerticesColorDirty = true; mBlue = value; }
+            set { if (mBlue != value) mAreVertexColorsDirty = true; mBlue = value; }
         }
 
         public float Alpha
         {
             get { return mAlpha; }
-            set { if (mAlpha != value) mAreVerticesColorDirty = true; mAlpha = value; }
+            set { if (mAlpha != value) mAreVertexColorsDirty = true; mAlpha = value; }
         }
+
+        ColorOperation mColorOperation = ColorOperation.Texture;
+        public ColorOperation ColorOperation
+        {
+            get { return mColorOperation; }
+            set { if (mColorOperation != value) mAreVertexColorsDirty = true; mColorOperation = value; }
+        }
+
+        bool mAreVertexColorsDirty = true;
 
         private SortAxis mSortAxis;
 
@@ -239,15 +248,6 @@ namespace FlatRedBall.TileGraphics
         }
 
         public TextureFilter? TextureFilter { get; set; } = null;
-
-        bool mAreVerticesColorDirty = true;
-
-        ColorOperation mColorOperation = ColorOperation.Texture;
-        public ColorOperation ColorOperation
-        {
-            get { return mColorOperation; }
-            set { if (mColorOperation != value) mAreVerticesColorDirty = true; mColorOperation = value; }
-        }
 
         #endregion
 
@@ -1504,10 +1504,10 @@ namespace FlatRedBall.TileGraphics
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
 
-            if (UseCustomEffect && mAreVerticesColorDirty)
+            if (UseCustomEffect && mAreVertexColorsDirty)
             {
                 UpdateVertexColors();
-                mAreVerticesColorDirty = false;
+                mAreVertexColorsDirty = false;
             }
         }
 
@@ -1535,8 +1535,8 @@ namespace FlatRedBall.TileGraphics
             if (mColorOperation == ColorOperation.Texture)
             {
                 // In this case we'll just use the Alpha for all components (since it's premultiplied)
-                uint alpha0 = (uint)(255 * mAlpha);
-                colorPackedValue = alpha0 + (alpha0 << 8) + (alpha0 << 16) + (alpha0 << 24);
+                uint alpha = (uint)(255 * mAlpha);
+                colorPackedValue = alpha + (alpha << 8) + (alpha << 16) + (alpha << 24);
             }
             else
             {
