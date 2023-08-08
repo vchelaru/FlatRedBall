@@ -740,6 +740,9 @@ namespace FlatRedBall
             }
         }
 
+        /// <summary>
+        /// Controls how the Sprite's treats texture coordinates outside of the 0-1 normalized coordinates.
+        /// </summary>
         public TextureAddressMode TextureAddressMode;
 
         /// <summary>

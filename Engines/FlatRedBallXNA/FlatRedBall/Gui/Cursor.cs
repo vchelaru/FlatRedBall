@@ -265,6 +265,15 @@ namespace FlatRedBall.Gui
 
         IWindow mWindowOver;
 
+        /// <summary>
+        /// Returns the Window that this cursor is over. If the cursor is not over any Window, this value will be null.
+        /// </summary>
+        /// <remarks>
+        /// This value is usually used in two situations:
+        /// 1. To test if the cursor is over a Window to prevent clicking on objects in the game world. For example, this is checked
+        /// first, then tests against entities are performed if this value is null.
+        /// 2. To diagnose UI issues. The WindowOver can be printed to the screen to detect if which window is receiving cursor input.
+        /// </remarks>
         public IWindow WindowOver
         {
             get
