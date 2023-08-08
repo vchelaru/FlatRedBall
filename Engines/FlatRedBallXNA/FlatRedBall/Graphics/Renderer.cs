@@ -607,11 +607,21 @@ namespace FlatRedBall.Graphics
             private set { lastFrameRenderBreakList = value; }
         }
 
+        /// <summary>
+        /// When this is enabled texture colors will be translated to linear space before 
+        /// any other shader operations are performed. This is useful for games with 
+        /// lighting and other special shader effects. If the colors are left in gamma 
+        /// space the shader calculations will crush the colors and not look like natural 
+        /// lighting. Delinearization must be done by the developer in the last render 
+        /// step when rendering to the screen. This technique is called gamma correction.
+        /// Disabled by default.
+        /// </summary>
+        public static bool LinearizeTextures { get; set; }
 
         #endregion
 
         #region Internal Properties
-        
+
 
         /// <summary>
         /// Sets the color operation on the graphics device if the set value differs from the current value.
@@ -694,6 +704,7 @@ namespace FlatRedBall.Graphics
         }
 
         static EffectParameter mParameterCurrentTexture;
+        static EffectParameter mParameterViewProj;
 
         static bool mEffectHasNewformat;
 
@@ -709,6 +720,17 @@ namespace FlatRedBall.Graphics
         static EffectTechnique mTechniqueColorTextureAlpha;
         static EffectTechnique mTechniqueInterpolateColor;
 
+        static EffectTechnique mTechniqueTexture_Linearize;
+        static EffectTechnique mTechniqueAdd_Linearize;
+        static EffectTechnique mTechniqueSubtract_Linearize;
+        static EffectTechnique mTechniqueModulate_Linearize;
+        static EffectTechnique mTechniqueModulate2X_Linearize;
+        static EffectTechnique mTechniqueModulate4X_Linearize;
+        static EffectTechnique mTechniqueInverseTexture_Linearize;
+        static EffectTechnique mTechniqueColor_Linearize;
+        static EffectTechnique mTechniqueColorTextureAlpha_Linearize;
+        static EffectTechnique mTechniqueInterpolateColor_Linearize;
+
         static EffectTechnique mTechniqueTexture_Linear;
         static EffectTechnique mTechniqueAdd_Linear;
         static EffectTechnique mTechniqueSubtract_Linear;
@@ -720,7 +742,18 @@ namespace FlatRedBall.Graphics
         static EffectTechnique mTechniqueColorTextureAlpha_Linear;
         static EffectTechnique mTechniqueInterpolateColor_Linear;
 
-        static public Effect Effect
+        static EffectTechnique mTechniqueTexture_Linear_Linearize;
+        static EffectTechnique mTechniqueAdd_Linear_Linearize;
+        static EffectTechnique mTechniqueSubtract_Linear_Linearize;
+        static EffectTechnique mTechniqueModulate_Linear_Linearize;
+        static EffectTechnique mTechniqueModulate2X_Linear_Linearize;
+        static EffectTechnique mTechniqueModulate4X_Linear_Linearize;
+        static EffectTechnique mTechniqueInverseTexture_Linear_Linearize;
+        static EffectTechnique mTechniqueColor_Linear_Linearize;
+        static EffectTechnique mTechniqueColorTextureAlpha_Linear_Linearize;
+        static EffectTechnique mTechniqueInterpolateColor_Linear_Linearize;
+
+        public static Effect Effect
         {
             get { return mEffect; }
             set
@@ -729,6 +762,7 @@ namespace FlatRedBall.Graphics
 
 
 #if USE_CUSTOM_SHADER
+                mParameterViewProj = mEffect.Parameters["ViewProj"];
                 mParameterCurrentTexture = mEffect.Parameters["CurrentTexture"];
 
                 // Let's check if the shader has the new format (which includes
@@ -751,6 +785,17 @@ namespace FlatRedBall.Graphics
                     try { mTechniqueColorTextureAlpha = mEffect.Techniques["ColorTextureAlpha_Point"]; } catch { }
                     try { mTechniqueInterpolateColor = mEffect.Techniques["InterpolateColor_Point"]; } catch { }
 
+                    try { mTechniqueTexture_Linearize = mEffect.Techniques["Texture_Point_Linearize"]; } catch { }
+                    try { mTechniqueAdd_Linearize = mEffect.Techniques["Add_Point_Linearize"]; } catch { }
+                    try { mTechniqueSubtract_Linearize = mEffect.Techniques["Subtract_Point_Linearize"]; } catch { }
+                    try { mTechniqueModulate_Linearize = mEffect.Techniques["Modulate_Point_Linearize"]; } catch { }
+                    try { mTechniqueModulate2X_Linearize = mEffect.Techniques["Modulate2X_Point_Linearize"]; } catch { }
+                    try { mTechniqueModulate4X_Linearize = mEffect.Techniques["Modulate4X_Point_Linearize"]; } catch { }
+                    try { mTechniqueInverseTexture_Linearize = mEffect.Techniques["InverseTexture_Point_Linearize"]; } catch { }
+                    try { mTechniqueColor_Linearize = mEffect.Techniques["Color_Point_Linearize"]; } catch { }
+                    try { mTechniqueColorTextureAlpha_Linearize = mEffect.Techniques["ColorTextureAlpha_Point_Linearize"]; } catch { }
+                    try { mTechniqueInterpolateColor_Linearize = mEffect.Techniques["InterpolateColor_Point_Linearize"]; } catch { }
+
                     try { mTechniqueTexture_Linear = mEffect.Techniques["Texture_Linear"]; } catch { }
                     try { mTechniqueAdd_Linear = mEffect.Techniques["Add_Linear"]; } catch { }
                     try { mTechniqueSubtract_Linear = mEffect.Techniques["Subtract_Linear"]; } catch { }
@@ -761,6 +806,17 @@ namespace FlatRedBall.Graphics
                     try { mTechniqueColor_Linear = mEffect.Techniques["Color_Linear"]; } catch { }
                     try { mTechniqueColorTextureAlpha_Linear = mEffect.Techniques["ColorTextureAlpha_Linear"]; } catch { }
                     try { mTechniqueInterpolateColor_Linear = mEffect.Techniques["InterpolateColor_Linear"]; } catch { }
+
+                    try { mTechniqueTexture_Linear_Linearize = mEffect.Techniques["Texture_Linear_Linearize"]; } catch { }
+                    try { mTechniqueAdd_Linear_Linearize = mEffect.Techniques["Add_Linear_Linearize"]; } catch { }
+                    try { mTechniqueSubtract_Linear_Linearize = mEffect.Techniques["Subtract_Linear_Linearize"]; } catch { }
+                    try { mTechniqueModulate_Linear_Linearize = mEffect.Techniques["Modulate_Linear_Linearize"]; } catch { }
+                    try { mTechniqueModulate2X_Linear_Linearize = mEffect.Techniques["Modulate2X_Linear_Linearize"]; } catch { }
+                    try { mTechniqueModulate4X_Linear_Linearize = mEffect.Techniques["Modulate4X_Linear_Linearize"]; } catch { }
+                    try { mTechniqueInverseTexture_Linear_Linearize = mEffect.Techniques["InverseTexture_Linear_Linearize"]; } catch { }
+                    try { mTechniqueColor_Linear_Linearize = mEffect.Techniques["Color_Linear_Linearize"]; } catch { }
+                    try { mTechniqueColorTextureAlpha_Linear_Linearize = mEffect.Techniques["ColorTextureAlpha_Linear_Linearize"]; } catch { }
+                    try { mTechniqueInterpolateColor_Linear_Linearize = mEffect.Techniques["InterpolateColor_Linear_Linearize"]; } catch { }
                 }
                 else
                 {
@@ -781,9 +837,12 @@ namespace FlatRedBall.Graphics
             }
         }
 
-#endregion
+        public static EffectParameter EffectParameterCurrentTexture { get { return mParameterCurrentTexture; } }
+        public static EffectParameter EffectParameterViewProj { get { return mParameterViewProj; } }
 
-#endregion
+        #endregion
+
+        #endregion
 
         #region Methods
 
@@ -1257,6 +1316,72 @@ namespace FlatRedBall.Graphics
         }
 #endif
 
+        static EffectTechnique GetTechniqueVariant(bool useDefaultOrPointFilter, EffectTechnique point, EffectTechnique pointLinearized, EffectTechnique linear, EffectTechnique linearLinearized)
+        {
+            return useDefaultOrPointFilter ?
+                (LinearizeTextures ? pointLinearized : point) :
+                (LinearizeTextures ? linearLinearized : linear);
+        }
+
+        public static EffectTechnique GetTechniqueVariantFromColorOperation(ColorOperation value)
+        {
+            EffectTechnique technique = null;
+
+            bool useDefaultOrPointFilter = true;
+
+            if (mEffectHasNewformat)
+            {
+                useDefaultOrPointFilter = FlatRedBallServices.GraphicsOptions.TextureFilter == TextureFilter.Point;
+            }
+
+            switch (value)
+            {
+                case ColorOperation.Texture:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueTexture, mTechniqueTexture_Linearize, mTechniqueTexture_Linear, mTechniqueTexture_Linear_Linearize); break;
+
+                case ColorOperation.Add:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueAdd, mTechniqueAdd_Linearize, mTechniqueAdd_Linear, mTechniqueAdd_Linear_Linearize); break;
+
+                case ColorOperation.Subtract:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueSubtract, mTechniqueSubtract_Linearize, mTechniqueSubtract_Linear, mTechniqueSubtract_Linear_Linearize); break;
+
+                case ColorOperation.Modulate:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueModulate, mTechniqueModulate_Linearize, mTechniqueModulate_Linear, mTechniqueModulate_Linear_Linearize); break;
+
+                case ColorOperation.Modulate2X:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueModulate2X, mTechniqueModulate2X_Linearize, mTechniqueModulate2X_Linear, mTechniqueModulate2X_Linear_Linearize); break;
+
+                case ColorOperation.Modulate4X:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueModulate4X, mTechniqueModulate4X_Linearize, mTechniqueModulate4X_Linear, mTechniqueModulate4X_Linear_Linearize); break;
+
+                case ColorOperation.InverseTexture:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueInverseTexture, mTechniqueInverseTexture_Linearize, mTechniqueInverseTexture_Linear, mTechniqueInverseTexture_Linear_Linearize); break;
+
+                case ColorOperation.Color:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueColor, mTechniqueColor_Linearize, mTechniqueColor_Linear, mTechniqueColor_Linear_Linearize); break;
+
+                case ColorOperation.ColorTextureAlpha:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueColorTextureAlpha, mTechniqueColorTextureAlpha_Linearize, mTechniqueColorTextureAlpha_Linear, mTechniqueColorTextureAlpha_Linear_Linearize); break;
+
+                case ColorOperation.InterpolateColor:
+                    technique = GetTechniqueVariant(
+                    useDefaultOrPointFilter, mTechniqueInterpolateColor, mTechniqueInterpolateColor_Linearize, mTechniqueInterpolateColor_Linear, mTechniqueInterpolateColor_Linear_Linearize); break;
+
+                default: throw new InvalidOperationException();
+            }
+
+            return technique;
+        }
+
         internal static void ForceSetColorOperation(ColorOperation value)
         {
             mLastColorOperationSet = value;
@@ -1317,28 +1442,7 @@ namespace FlatRedBall.Graphics
             }
 
 #else
-            EffectTechnique technique = null;
-            bool useDefaultOrPointFilter = true;
-
-            if (mEffectHasNewformat)
-            {
-                useDefaultOrPointFilter = FlatRedBallServices.GraphicsOptions.TextureFilter == TextureFilter.Point;
-            }
-
-            switch (value)
-            {
-                case ColorOperation.Add: technique = useDefaultOrPointFilter ? mTechniqueAdd : mTechniqueAdd_Linear; break;
-                case ColorOperation.Color: technique = useDefaultOrPointFilter ? mTechniqueColor : mTechniqueColor_Linear; break;
-                case ColorOperation.ColorTextureAlpha: technique = useDefaultOrPointFilter ? mTechniqueColorTextureAlpha : mTechniqueColorTextureAlpha_Linear; break;
-                case ColorOperation.InverseTexture: technique = useDefaultOrPointFilter ? mTechniqueInverseTexture : mTechniqueInverseTexture_Linear; break;
-                case ColorOperation.Modulate: technique = useDefaultOrPointFilter ? mTechniqueModulate : mTechniqueModulate_Linear; break;
-                case ColorOperation.Subtract: technique = useDefaultOrPointFilter ? mTechniqueSubtract : mTechniqueSubtract_Linear; break;
-                case ColorOperation.Texture: technique = useDefaultOrPointFilter ? mTechniqueTexture : mTechniqueTexture_Linear; break;
-                case ColorOperation.Modulate2X: technique = useDefaultOrPointFilter ? mTechniqueModulate2X : mTechniqueModulate2X_Linear; break;
-                case ColorOperation.Modulate4X: technique = useDefaultOrPointFilter ? mTechniqueModulate4X : mTechniqueModulate4X_Linear; break;
-                case ColorOperation.InterpolateColor: technique = useDefaultOrPointFilter ? mTechniqueInterpolateColor : mTechniqueInterpolateColor_Linear; break;
-                default: throw new InvalidOperationException();
-            }
+            var technique = GetTechniqueVariantFromColorOperation(value);
 
             if (technique == null)
             {
