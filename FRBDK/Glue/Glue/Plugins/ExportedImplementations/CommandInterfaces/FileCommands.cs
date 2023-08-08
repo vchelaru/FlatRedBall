@@ -531,7 +531,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
 
                         var message = $"Windows does not have an association for the extension {effectiveExtension}. You must set the " +
-                            $"program to associate with this extension to open the file. Set the assocaition now?";
+                            $"program to associate with this extension to open the file. Set the association now?";
 
                         var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(message);
                         if (result == System.Windows.MessageBoxResult.Yes)
