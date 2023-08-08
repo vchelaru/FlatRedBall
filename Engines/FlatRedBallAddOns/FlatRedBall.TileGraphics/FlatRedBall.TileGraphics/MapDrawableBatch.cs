@@ -13,12 +13,7 @@ using FlatRedBall.Input;
 using FlatRedBall.Debugging;
 using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
-
-#if TILEMAPS_ALPHA_AND_COLOR
 using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
-#else
-using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
-#endif
 
 namespace FlatRedBall.TileGraphics
 {
@@ -182,7 +177,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public VertexPositionColorTexture[] Vertices => mVertices;
+        public VertexType[] Vertices => mVertices;
 
         public Texture2D Texture
         {
@@ -273,7 +268,7 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionColorTexture[4 * numberOfTiles];
+            mVertices = new VertexType[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
         }
@@ -297,7 +292,7 @@ namespace FlatRedBall.TileGraphics
             InternalInitialize();
 
             mTexture = texture;
-            mVertices = new VertexPositionColorTexture[4 * numberOfTiles];
+            mVertices = new VertexType[4 * numberOfTiles];
             FlipFlagArray = new byte[numberOfTiles];
             mIndices = new int[6 * numberOfTiles];
 
@@ -1084,10 +1079,10 @@ namespace FlatRedBall.TileGraphics
             float height = dimensions.Y - (TileVertexOffset * 2f);
 
             // create vertices
-            mVertices[currentVertex + 0] = new VertexPositionColorTexture(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), Color.White, new Vector2(texture.X, texture.W));
-            mVertices[currentVertex + 1] = new VertexPositionColorTexture(new Vector3(xOffset + width, yOffset + 0f, zOffset), Color.White, new Vector2(texture.Y, texture.W));
-            mVertices[currentVertex + 2] = new VertexPositionColorTexture(new Vector3(xOffset + width, yOffset + height, zOffset), Color.White, new Vector2(texture.Y, texture.Z));
-            mVertices[currentVertex + 3] = new VertexPositionColorTexture(new Vector3(xOffset + 0f, yOffset + height, zOffset), Color.White, new Vector2(texture.X, texture.Z));
+            mVertices[currentVertex + 0] = new VertexType(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), Color.White, new Vector2(texture.X, texture.W));
+            mVertices[currentVertex + 1] = new VertexType(new Vector3(xOffset + width, yOffset + 0f, zOffset), Color.White, new Vector2(texture.Y, texture.W));
+            mVertices[currentVertex + 2] = new VertexType(new Vector3(xOffset + width, yOffset + height, zOffset), Color.White, new Vector2(texture.Y, texture.Z));
+            mVertices[currentVertex + 3] = new VertexType(new Vector3(xOffset + 0f, yOffset + height, zOffset), Color.White, new Vector2(texture.X, texture.Z));
 
             // create indices
             mIndices[currentIndex + 0] = currentVertex + 0;
@@ -1178,7 +1173,7 @@ namespace FlatRedBall.TileGraphics
                     // It could use DrawIndexedPrimitives instead for much faster performance,
                     // but to do that we'd have to keep VB's around and make sure to re-create them
                     // whenever the graphics device is lost.  
-                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColorTexture>(
+                    FlatRedBallServices.GraphicsDevice.DrawUserIndexedPrimitives<VertexType>(
                         PrimitiveType.TriangleList,
                         mVertices,
                         firstVertIndex,
@@ -1315,7 +1310,7 @@ namespace FlatRedBall.TileGraphics
             numberOfTriangles = (indexEndExclusive - indexStart) / 3;
         }
 
-        public static int GetFirstAfterX(VertexPositionColorTexture[] list, float xGreaterThan)
+        public static int GetFirstAfterX(VertexType[] list, float xGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
@@ -1374,7 +1369,7 @@ namespace FlatRedBall.TileGraphics
             }
         }
 
-        public static int GetFirstAfterY(VertexPositionColorTexture[] list, float yGreaterThan)
+        public static int GetFirstAfterY(VertexType[] list, float yGreaterThan)
         {
             int min = 0;
             int originalMax = list.Length / 4;
