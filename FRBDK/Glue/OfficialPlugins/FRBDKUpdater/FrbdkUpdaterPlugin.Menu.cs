@@ -127,7 +127,7 @@ namespace OfficialPlugins.FrbdkUpdater
             command +=
 @"cd FlatRedBall & " + 
 @"cd FRBDK\Glue & " +
-@"dotnet build ""Glue with All.sln"" & " +
+@"dotnet build --no-incremental ""Glue with All.sln"" & " +
 @"cd Glue\bin\Debug\ & " +
 @"start GlueFormsCore.exe";
 
