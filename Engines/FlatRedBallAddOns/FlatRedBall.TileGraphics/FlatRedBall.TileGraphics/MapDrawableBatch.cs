@@ -99,7 +99,7 @@ namespace FlatRedBall.TileGraphics
             set { if (mAlpha != value) mAreVertexColorsDirty = true; mAlpha = value; }
         }
 
-        ColorOperation mColorOperation = ColorOperation.Texture;
+        ColorOperation mColorOperation = ColorOperation.Modulate;
         public ColorOperation ColorOperation
         {
             get { return mColorOperation; }
