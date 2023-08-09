@@ -115,6 +115,8 @@ namespace FlatRedBall.Forms.Controls
             }
         }
 
+        public event EventHandler<NotifyCollectionChangedEventArgs> ItemsCollectionChanged;
+
         #endregion
 
         #region Events
@@ -280,6 +282,8 @@ namespace FlatRedBall.Forms.Controls
 
                     break;
             }
+
+            ItemsCollectionChanged?.Invoke(sender, e);
         }
 
         private void ClearVisualsInternal()
