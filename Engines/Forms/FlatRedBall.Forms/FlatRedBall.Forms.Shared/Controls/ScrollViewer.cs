@@ -140,6 +140,15 @@ namespace FlatRedBall.Forms.Controls
 
         #endregion
 
+        #region Scroll Methods
+
+        public void ScrollToBottom()
+        {
+            verticalScrollBar.Value = verticalScrollBar.Maximum;
+        }
+
+        #endregion
+
         #region Event Handlers
 
         private void HandleVerticalScrollBarValueChanged(object sender, EventArgs e)
