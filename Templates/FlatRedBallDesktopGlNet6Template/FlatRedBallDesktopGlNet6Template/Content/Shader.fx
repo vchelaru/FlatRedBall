@@ -65,7 +65,6 @@ float4 PremultiplyAlpha(float4 textureColor, float4 color)
 float4 Add(float4 textureColor, float4 color)
 {
     textureColor.rgb += color.rgb;
-    textureColor.rgb *= textureColor.a;
     textureColor *= color.a;
     return textureColor;
 }
