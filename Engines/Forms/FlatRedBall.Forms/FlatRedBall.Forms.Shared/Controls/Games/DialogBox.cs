@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 
 namespace FlatRedBall.Forms.Controls.Games
 {
+    #region DialogPageTask
+
     public class DialogPageTask
     {
         public string Page { get; set; }
@@ -25,6 +27,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
     }
 
+    #endregion
+
     public class DialogBox : FrameworkElement, IInputReceiver
     {
         #region Fields/Properties
@@ -37,6 +41,8 @@ namespace FlatRedBall.Forms.Controls.Games
 
         List<DialogPageTask> Pages = new List<DialogPageTask>();
 
+        public int PagesRemaining => Pages.Count;
+
         static global::Gum.DataTypes.Variables.StateSave NoTextShownState;
 
         string currentPageText;
@@ -47,7 +53,7 @@ namespace FlatRedBall.Forms.Controls.Games
 
         public List<Keys> IgnoredKeys => throw new NotImplementedException();
 
-        public bool TakingInput => throw new NotImplementedException();
+        public bool TakingInput { get; set; } = true;
 
         public IInputReceiver NextInTabSequence { get; set; }
 
@@ -65,7 +71,15 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #region Events
 
+        /// <summary>
+        /// Raised when the dialog box finishes showing all pages.
+        /// </summary>
         public event EventHandler FinishedShowing;
+
+        /// <summary>
+        /// Raised whenever a page finishes typing out, either automatically or in response to input.
+        /// </summary>
+        public event EventHandler FinishedTypingPage;
 
         public event EventHandler PageAdvanced;
 
@@ -201,7 +215,7 @@ namespace FlatRedBall.Forms.Controls.Games
             return null;
         }
 
-        private void ShowNextPage()
+        public void ShowNextPage()
         {
             var page = Pages.FirstOrDefault();
 
@@ -238,7 +252,10 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     this.IsVisible = true;
                     // todo - do we want to always focus it?
-                    this.IsFocused = true;
+                    // Update August 9, 2023 - no, don't always 
+                    // focus it. The user may have intentionally 
+                    // unfocused:
+                    //this.IsFocused = true;
 
                     var semaphoreSlim = new SemaphoreSlim(1);
 
@@ -290,11 +307,15 @@ namespace FlatRedBall.Forms.Controls.Games
             if (continueIndicatorInstance != null)
             {
                 continueIndicatorInstance.Visible = false;
-                showLetterTweener.Ended += () =>
+            }
+            showLetterTweener.Ended += () =>
+            {
+                if (TakingInput && continueIndicatorInstance != null)
                 {
                     continueIndicatorInstance.Visible = true;
-                };
-            }
+                }
+                FinishedTypingPage?.Invoke(this, null);
+            };
         }
 
         #region Event Handler Methods
@@ -312,17 +333,26 @@ namespace FlatRedBall.Forms.Controls.Games
         bool showNextPageOnDismissedPage = true;
         private void ReactToInput()
         {
+            ////////////////////Early Out/////////////////////
+            if(!TakingInput)
+            {
+                return;
+            }
+            //////////////////End Early Out///////////////////
+            
             var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
             if (hasMoreToType)
             {
                 showLetterTweener?.Stop();
 
-                if (continueIndicatorInstance != null)
+                if (continueIndicatorInstance != null && TakingInput)
                 {
                     continueIndicatorInstance.Visible = true;
                 }
 
                 coreTextObject.MaxLettersToShow = currentPageText.Length;
+
+                FinishedTypingPage?.Invoke(this, null);
             }
             else if(Pages.Count > 0)
             {
@@ -335,12 +365,17 @@ namespace FlatRedBall.Forms.Controls.Games
             }
             else
             {
-                this.IsVisible = false;
-                LastTimeDismissed = TimeManager.CurrentTime;
-                PageAdvanced?.Invoke(this, null);
-                FinishedShowing?.Invoke(this, null);
-                IsFocused = false;
+                Dismiss();
             }
+        }
+
+        public void Dismiss()
+        {
+            this.IsVisible = false;
+            LastTimeDismissed = TimeManager.CurrentTime;
+            PageAdvanced?.Invoke(this, null);
+            FinishedShowing?.Invoke(this, null);
+            IsFocused = false;
         }
 
         #endregion
