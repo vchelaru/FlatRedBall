@@ -151,61 +151,77 @@ namespace FlatRedBall.Graphics
                 (Renderer.LinearizeTextures ? linearLinearized : linear);
         }
 
-        public EffectTechnique GetTechniqueVariantFromColorOperation(ColorOperation value)
+        public EffectTechnique GetTechniqueVariantFromColorOperation(ColorOperation value, bool? useDefaultOrPointFilter = null)
         {
             if (mEffect == null)
                 throw new Exception("The effect hasn't been set.");
 
             EffectTechnique technique = null;
 
-            bool useDefaultOrPointFilter = true;
+            bool useDefaultOrPointFilterInternal;
 
             if (mEffectHasNewformat)
             {
-                useDefaultOrPointFilter = FlatRedBallServices.GraphicsOptions.TextureFilter == TextureFilter.Point;
+                // If the shader has the new format both point and linear are available
+                if (!useDefaultOrPointFilter.HasValue)
+                {
+                    // Filter not specified, so we get the filter from options
+                    useDefaultOrPointFilterInternal = FlatRedBallServices.GraphicsOptions.TextureFilter == TextureFilter.Point;
+                }
+                else
+                {
+                    // Filter specified
+                    useDefaultOrPointFilterInternal = useDefaultOrPointFilter.Value;
+                }
+            }
+            else
+            {
+                // If the shader doesn't have the new format only one version of
+                // the techniques are available, probably using point filtering.
+                useDefaultOrPointFilterInternal = true;
             }
 
             switch (value)
             {
                 case ColorOperation.Texture:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueTexture, mTechniqueTexture_Linearize, mTechniqueTexture_Linear, mTechniqueTexture_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueTexture, mTechniqueTexture_Linearize, mTechniqueTexture_Linear, mTechniqueTexture_Linear_Linearize); break;
 
                 case ColorOperation.Add:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueAdd, mTechniqueAdd_Linearize, mTechniqueAdd_Linear, mTechniqueAdd_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueAdd, mTechniqueAdd_Linearize, mTechniqueAdd_Linear, mTechniqueAdd_Linear_Linearize); break;
 
                 case ColorOperation.Subtract:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueSubtract, mTechniqueSubtract_Linearize, mTechniqueSubtract_Linear, mTechniqueSubtract_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueSubtract, mTechniqueSubtract_Linearize, mTechniqueSubtract_Linear, mTechniqueSubtract_Linear_Linearize); break;
 
                 case ColorOperation.Modulate:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueModulate, mTechniqueModulate_Linearize, mTechniqueModulate_Linear, mTechniqueModulate_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueModulate, mTechniqueModulate_Linearize, mTechniqueModulate_Linear, mTechniqueModulate_Linear_Linearize); break;
 
                 case ColorOperation.Modulate2X:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueModulate2X, mTechniqueModulate2X_Linearize, mTechniqueModulate2X_Linear, mTechniqueModulate2X_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueModulate2X, mTechniqueModulate2X_Linearize, mTechniqueModulate2X_Linear, mTechniqueModulate2X_Linear_Linearize); break;
 
                 case ColorOperation.Modulate4X:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueModulate4X, mTechniqueModulate4X_Linearize, mTechniqueModulate4X_Linear, mTechniqueModulate4X_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueModulate4X, mTechniqueModulate4X_Linearize, mTechniqueModulate4X_Linear, mTechniqueModulate4X_Linear_Linearize); break;
 
                 case ColorOperation.InverseTexture:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueInverseTexture, mTechniqueInverseTexture_Linearize, mTechniqueInverseTexture_Linear, mTechniqueInverseTexture_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueInverseTexture, mTechniqueInverseTexture_Linearize, mTechniqueInverseTexture_Linear, mTechniqueInverseTexture_Linear_Linearize); break;
 
                 case ColorOperation.Color:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueColor, mTechniqueColor_Linearize, mTechniqueColor_Linear, mTechniqueColor_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueColor, mTechniqueColor_Linearize, mTechniqueColor_Linear, mTechniqueColor_Linear_Linearize); break;
 
                 case ColorOperation.ColorTextureAlpha:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueColorTextureAlpha, mTechniqueColorTextureAlpha_Linearize, mTechniqueColorTextureAlpha_Linear, mTechniqueColorTextureAlpha_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueColorTextureAlpha, mTechniqueColorTextureAlpha_Linearize, mTechniqueColorTextureAlpha_Linear, mTechniqueColorTextureAlpha_Linear_Linearize); break;
 
                 case ColorOperation.InterpolateColor:
                     technique = GetTechniqueVariant(
-                    useDefaultOrPointFilter, mTechniqueInterpolateColor, mTechniqueInterpolateColor_Linearize, mTechniqueInterpolateColor_Linear, mTechniqueInterpolateColor_Linear_Linearize); break;
+                    useDefaultOrPointFilterInternal, mTechniqueInterpolateColor, mTechniqueInterpolateColor_Linearize, mTechniqueInterpolateColor_Linear, mTechniqueInterpolateColor_Linear_Linearize); break;
 
                 default: throw new InvalidOperationException();
             }
