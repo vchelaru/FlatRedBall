@@ -52,6 +52,8 @@ float4 Linearize(float4 color)
 #define SAMPLE(textureSampler, a2v) tex2D(textureSampler, a2v.texCoord.xy)
 #define SAMPLE_LINEARIZE(textureSampler, a2v) Linearize(tex2D(textureSampler, a2v.texCoord.xy))
 
+#define TECHNIQUE(name, psname) \
+	technique name { pass { VertexShader = compile vs_1_1 vs(); PixelShader = compile ps_2_0 psname(); } }
 
 float4 PremultiplyAlpha(float4 textureColor, a2v IN)
 {
@@ -412,371 +414,52 @@ float4 InterpolateColorPixelShader_Linear_Linearize(a2v IN) : COLOR
 }
 
 
-////////////////////////////////////Techniques//////////////////////////////////////////////////
+// Techniques:
 
-technique Texture_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 TexturePixelShader_Point();
-    }
-}
+// Point filtering
+TECHNIQUE(Texture_Point, TexturePixelShader_Point);
+TECHNIQUE(Add_Point, AddPixelShader_Point);
+TECHNIQUE(Subtract_Point, SubtractPixelShader_Point);
+TECHNIQUE(Modulate_Point, ModulatePixelShader_Point);
+TECHNIQUE(Modulate2X_Point, Modulate2XPixelShader_Point);
+TECHNIQUE(Modulate4X_Point, Modulate4XPixelShader_Point);
+TECHNIQUE(InverseTexture_Point, InversePixelShader_Point);
+TECHNIQUE(Color_Point, ColorPixelShader);
+TECHNIQUE(ColorTextureAlpha_Point, ColorTextureAlphaPixelShader_Point);
+TECHNIQUE(InterpolateColor_Point, InterpolateColorPixelShader_Point);
 
-technique Add_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 AddPixelShader_Point();
-    }
-}
+// Point filtering, linearize texture sampling
+TECHNIQUE(Texture_Point_Linearize, TexturePixelShader_Point_Linearize);
+TECHNIQUE(Add_Point_Linearize, AddPixelShader_Point_Linearize);
+TECHNIQUE(Subtract_Point_Linearize, SubtractPixelShader_Point_Linearize);
+TECHNIQUE(Modulate_Point_Linearize, ModulatePixelShader_Point_Linearize);
+TECHNIQUE(Modulate2X_Point_Linearize, Modulate2XPixelShader_Point_Linearize);
+TECHNIQUE(Modulate4X_Point_Linearize, Modulate4XPixelShader_Point_Linearize);
+TECHNIQUE(InverseTexture_Point_Linearize, InversePixelShader_Point_Linearize);
+TECHNIQUE(Color_Point_Linearize, ColorPixelShader);
+TECHNIQUE(ColorTextureAlpha_Point_Linearize, ColorTextureAlphaPixelShader_Point_Linearize);
+TECHNIQUE(InterpolateColor_Point_Linearize, InterpolateColorPixelShader_Point_Linearize);
 
-technique Subtract_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 SubtractPixelShader_Point();
-    }
-}
+// Linear filtering
+TECHNIQUE(Texture_Linear, TexturePixelShader_Linear);
+TECHNIQUE(Add_Linear, AddPixelShader_Linear);
+TECHNIQUE(Subtract_Linear, SubtractPixelShader_Linear);
+TECHNIQUE(Modulate_Linear, ModulatePixelShader_Linear);
+TECHNIQUE(Modulate2X_Linear, Modulate2XPixelShader_Linear);
+TECHNIQUE(Modulate4X_Linear, Modulate4XPixelShader_Linear);
+TECHNIQUE(InverseTexture_Linear, InversePixelShader_Linear);
+TECHNIQUE(Color_Linear, ColorPixelShader);
+TECHNIQUE(ColorTextureAlpha_Linear, ColorTextureAlphaPixelShader_Linear);
+TECHNIQUE(InterpolateColor_Linear, InterpolateColorPixelShader_Linear);
 
-technique Modulate_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ModulatePixelShader_Point();
-    }
-}
-
-technique Modulate2X_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate2XPixelShader_Point();
-    }
-}
-
-technique Modulate4X_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate4XPixelShader_Point();
-    }
-}
-
-technique InverseTexture_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InversePixelShader_Point();
-    }
-}
-
-technique Color_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorPixelShader();
-    }
-}
-
-technique ColorTextureAlpha_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Point();
-    }
-}
-
-technique InterpolateColor_Point
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InterpolateColorPixelShader_Point();
-    }
-}
-
-
-technique Texture_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 TexturePixelShader_Point_Linearize();
-    }
-}
-
-technique Add_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 AddPixelShader_Point_Linearize();
-    }
-}
-
-technique Subtract_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 SubtractPixelShader_Point_Linearize();
-    }
-}
-
-technique Modulate_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ModulatePixelShader_Point_Linearize();
-    }
-}
-
-technique Modulate2X_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate2XPixelShader_Point_Linearize();
-    }
-}
-
-technique Modulate4X_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate4XPixelShader_Point_Linearize();
-    }
-}
-
-technique InverseTexture_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InversePixelShader_Point_Linearize();
-    }
-}
-
-technique Color_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorPixelShader();
-    }
-}
-
-technique ColorTextureAlpha_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Point_Linearize();
-    }
-}
-
-technique InterpolateColor_Point_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InterpolateColorPixelShader_Point_Linearize();
-    }
-}
-
-//------------------------Linear-----------------------------------------
-
-
-technique Texture_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 TexturePixelShader_Linear();
-    }
-}
-
-technique Add_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 AddPixelShader_Linear();
-    }
-}
-
-technique Subtract_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 SubtractPixelShader_Linear();
-    }
-}
-
-technique Modulate_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ModulatePixelShader_Linear();
-    }
-}
-
-technique Modulate2X_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate2XPixelShader_Linear();
-    }
-}
-
-technique Modulate4X_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate4XPixelShader_Linear();
-    }
-}
-
-technique InverseTexture_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InversePixelShader_Linear();
-    }
-}
-
-technique Color_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorPixelShader();
-    }
-}
-
-technique ColorTextureAlpha_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Linear();
-    }
-}
-
-technique InterpolateColor_Linear
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InterpolateColorPixelShader_Linear();
-    }
-
-}
-
-
-technique Texture_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 TexturePixelShader_Linear_Linearize();
-    }
-}
-
-technique Add_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 AddPixelShader_Linear_Linearize();
-    }
-}
-
-technique Subtract_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 SubtractPixelShader_Linear_Linearize();
-    }
-}
-
-technique Modulate_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ModulatePixelShader_Linear_Linearize();
-    }
-}
-
-technique Modulate2X_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate2XPixelShader_Linear_Linearize();
-    }
-}
-
-technique Modulate4X_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 Modulate4XPixelShader_Linear_Linearize();
-    }
-}
-
-technique InverseTexture_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InversePixelShader_Linear_Linearize();
-    }
-}
-
-technique Color_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorPixelShader();
-    }
-}
-
-technique ColorTextureAlpha_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 ColorTextureAlphaPixelShader_Linear_Linearize();
-    }
-}
-
-technique InterpolateColor_Linear_Linearize
-{
-    pass p0
-    {
-        vertexshader = compile vs_1_1 vs();
-        pixelshader = compile ps_2_0 InterpolateColorPixelShader_Linear_Linearize();
-    }
-
-}
+// Linear filtering, linearize texture sampling
+TECHNIQUE(Texture_Linear_Linearize, TexturePixelShader_Linear_Linearize);
+TECHNIQUE(Add_Linear_Linearize, AddPixelShader_Linear_Linearize);
+TECHNIQUE(Subtract_Linear_Linearize, SubtractPixelShader_Linear_Linearize);
+TECHNIQUE(Modulate_Linear_Linearize, ModulatePixelShader_Linear_Linearize);
+TECHNIQUE(Modulate2X_Linear_Linearize, Modulate2XPixelShader_Linear_Linearize);
+TECHNIQUE(Modulate4X_Linear_Linearize, Modulate4XPixelShader_Linear_Linearize);
+TECHNIQUE(InverseTexture_Linear_Linearize, InversePixelShader_Linear_Linearize);
+TECHNIQUE(Color_Linear_Linearize, ColorPixelShader);
+TECHNIQUE(ColorTextureAlpha_Linear_Linearize, ColorTextureAlphaPixelShader_Linear_Linearize);
+TECHNIQUE(InterpolateColor_Linear_Linearize, InterpolateColorPixelShader_Linear_Linearize);
