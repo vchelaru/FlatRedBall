@@ -704,6 +704,7 @@ namespace FlatRedBall.Graphics
 			}
         }
 
+#if USE_CUSTOM_SHADER
         static CustomEffectManager mEffectManager = new CustomEffectManager();
         public static CustomEffectManager ExternalEffectManager { get; } = new CustomEffectManager();
 
@@ -726,6 +727,7 @@ namespace FlatRedBall.Graphics
                 ExternalEffectManager.Effect = mEffect;
             }
         }
+#endif
 
         #endregion
 

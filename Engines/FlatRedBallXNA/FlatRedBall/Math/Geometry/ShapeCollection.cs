@@ -78,6 +78,9 @@ namespace FlatRedBall.Math.Geometry
             get { return mPolygons; }
         }
 
+        /// <summary>
+        /// Returns the list of AxisAlignedRectangles which collided with the object in the last call.
+        /// </summary>
         public List<AxisAlignedRectangle> LastCollisionAxisAlignedRectangles
         {
             get
