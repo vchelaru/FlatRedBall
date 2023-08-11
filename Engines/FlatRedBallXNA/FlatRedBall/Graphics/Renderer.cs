@@ -1265,7 +1265,7 @@ namespace FlatRedBall.Graphics
             }
 
 #else
-            var technique = mEffectManager.GetTechniqueVariantFromColorOperation(value);
+            var technique = mEffectManager.GetVertexColorTechniqueFromColorOperation(value);
 
             if (technique == null)
             {

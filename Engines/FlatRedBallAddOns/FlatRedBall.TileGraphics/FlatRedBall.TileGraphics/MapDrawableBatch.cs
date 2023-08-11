@@ -15,7 +15,7 @@ using FlatRedBall.Input;
 using FlatRedBall.Debugging;
 using FlatRedBall.Math;
 using TMXGlueLib.DataTypes;
-using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionColorTexture;
+using VertexType = Microsoft.Xna.Framework.Graphics.VertexPositionTexture;
 
 namespace FlatRedBall.TileGraphics
 {
@@ -82,35 +82,33 @@ namespace FlatRedBall.TileGraphics
         public float Red
         {
             get { return mRed; }
-            set { if (mRed != value) mAreVertexColorsDirty = true; mRed = value; }
+            set { mRed = value; }
         }
 
         public float Green
         {
             get { return mGreen; }
-            set { if (mGreen != value) mAreVertexColorsDirty = true; mGreen = value; }
+            set { mGreen = value; }
         }
 
         public float Blue
         {
             get { return mBlue; }
-            set { if (mBlue != value) mAreVertexColorsDirty = true; mBlue = value; }
+            set { mBlue = value; }
         }
 
         public float Alpha
         {
             get { return mAlpha; }
-            set { if (mAlpha != value) mAreVertexColorsDirty = true; mAlpha = value; }
+            set { mAlpha = value; }
         }
 
         ColorOperation mColorOperation = ColorOperation.Modulate;
         public ColorOperation ColorOperation
         {
             get { return mColorOperation; }
-            set { if (mColorOperation != value) mAreVertexColorsDirty = true; mColorOperation = value; }
+            set { mColorOperation = value; }
         }
-
-        bool mAreVertexColorsDirty = true;
 
         private SortAxis mSortAxis;
 
@@ -1083,10 +1081,10 @@ namespace FlatRedBall.TileGraphics
             float height = dimensions.Y - (TileVertexOffset * 2f);
 
             // create vertices
-            mVertices[currentVertex + 0] = new VertexType(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), Color.White, new Vector2(texture.X, texture.W));
-            mVertices[currentVertex + 1] = new VertexType(new Vector3(xOffset + width, yOffset + 0f, zOffset), Color.White, new Vector2(texture.Y, texture.W));
-            mVertices[currentVertex + 2] = new VertexType(new Vector3(xOffset + width, yOffset + height, zOffset), Color.White, new Vector2(texture.Y, texture.Z));
-            mVertices[currentVertex + 3] = new VertexType(new Vector3(xOffset + 0f, yOffset + height, zOffset), Color.White, new Vector2(texture.X, texture.Z));
+            mVertices[currentVertex + 0] = new VertexType(new Vector3(xOffset + 0f, yOffset + 0f, zOffset), new Vector2(texture.X, texture.W));
+            mVertices[currentVertex + 1] = new VertexType(new Vector3(xOffset + width, yOffset + 0f, zOffset), new Vector2(texture.Y, texture.W));
+            mVertices[currentVertex + 2] = new VertexType(new Vector3(xOffset + width, yOffset + height, zOffset), new Vector2(texture.Y, texture.Z));
+            mVertices[currentVertex + 3] = new VertexType(new Vector3(xOffset + 0f, yOffset + height, zOffset), new Vector2(texture.X, texture.Z));
 
             // create indices
             mIndices[currentIndex + 0] = currentVertex + 0;
@@ -1231,17 +1229,20 @@ namespace FlatRedBall.TileGraphics
 #if RendererHasExternalEffectManager
                 if (UseCustomEffect)
                 {
-                    var efectManager = Renderer.ExternalEffectManager;
+                    var effectManager = Renderer.ExternalEffectManager;
 
-                    efectManager.ParameterViewProj.SetValue(
+                    effectManager.ParameterViewProj.SetValue(
                         camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() *
                         (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
 
-                    efectManager.ParameterCurrentTexture.SetValue(mTexture);
+                    effectManager.ParameterCurrentTexture.SetValue(mTexture);
 
-                    effectTouse = Renderer.ExternalEffect;
+                    var color = CustomEffectManager.ProcessColorForColorOperation(mColorOperation, new Vector4(mRed, mGreen, mBlue, mAlpha));
+                    effectManager.ParameterColorModifier.SetValue(color);
 
-                    var effectTechnique = efectManager.GetTechniqueVariantFromColorOperation(ColorOperation);
+                    effectTouse = effectManager.Effect;
+
+                    var effectTechnique = effectManager.GetColorModifierTechniqueFromColorOperation(mColorOperation);
 
                     if (effectTouse.CurrentTechnique != effectTechnique)
                         effectTouse.CurrentTechnique = effectTechnique;
@@ -1495,8 +1496,6 @@ namespace FlatRedBall.TileGraphics
             return null;
         }
 
-
-
         public void Update()
         {
             var camera = Camera.Main;
@@ -1511,56 +1510,6 @@ namespace FlatRedBall.TileGraphics
             // be adding this to the SpriteManager's PositionedObjectList.  This is an improvement so we'll do it for
             // now and revisit this in case there's a problem in the future.
             this.UpdateDependencies(TimeManager.CurrentTime);
-
-#if RendererHasExternalEffectManager
-            if (UseCustomEffect && mAreVertexColorsDirty)
-            {
-                UpdateVertexColors();
-                mAreVertexColorsDirty = false;
-            }
-#endif
-        }
-
-        void UpdateVertexColors()
-        {
-            float redValue = mRed;
-            float greenValue = mGreen;
-            float blueValue = mBlue;
-
-            if (ColorOperation == ColorOperation.Color)
-            {
-                redValue = mRed * mAlpha;
-                greenValue = mGreen * mAlpha;
-                blueValue = mBlue * mAlpha;
-            }
-            else
-            {
-                redValue = mRed;
-                greenValue = mGreen;
-                blueValue = mBlue;
-            }
-
-            uint colorPackedValue;
-
-            if (mColorOperation == ColorOperation.Texture)
-            {
-                // In this case we'll just use the Alpha for all components (since it's premultiplied)
-                uint alpha = (uint)(255 * mAlpha);
-                colorPackedValue = alpha + (alpha << 8) + (alpha << 16) + (alpha << 24);
-            }
-            else
-            {
-                colorPackedValue =
-                    ((uint)(255 * redValue)) +
-                    (((uint)(255 * greenValue)) << 8) +
-                    (((uint)(255 * blueValue)) << 16) +
-                    (((uint)(255 * mAlpha)) << 24);
-            }
-
-            for (int i = 0; i < mVertices.Length; i++)
-            {
-                mVertices[i].Color.PackedValue = colorPackedValue;
-            }
         }
 
         private void AdjustOffsetAndParallax(Camera camera)
