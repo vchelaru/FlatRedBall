@@ -724,7 +724,7 @@ namespace FlatRedBall.Graphics
             set
             {
                 mExternalEffect = value;
-                ExternalEffectManager.Effect = mEffect;
+                ExternalEffectManager.Effect = mExternalEffect;
             }
         }
 #endif
