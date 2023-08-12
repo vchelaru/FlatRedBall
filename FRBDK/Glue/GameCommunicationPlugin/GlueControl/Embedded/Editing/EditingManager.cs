@@ -456,7 +456,23 @@ namespace GlueControl.Editing
 
                         SelectionLogic.DoDragSelectLogic(gameBecameActive);
                     }
-                    SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
+                    
+                    var isCursorUsingMouse = FlatRedBall.Gui.GuiManager.Cursor.DevicesControllingCursor.Contains(mouse);
+
+                    var isOverWindow = false;
+                    if(isCursorUsingMouse && FlatRedBall.Gui.GuiManager.Cursor.WindowOver != null)
+                    {
+                        isOverWindow = true;
+                    }
+
+                    if(!isOverWindow)
+                    {
+                        SelectionLogic.GetItemsOver(itemsSelected, itemsOver, SelectedMarkers, mouse.ButtonDoublePushed(Mouse.MouseButtons.LeftButton), ElementEditingMode);
+                    }
+                    else
+                    {
+                        itemsOver.Clear();
+                    }
                 }
                 else
                 {
