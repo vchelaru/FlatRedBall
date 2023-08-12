@@ -1235,7 +1235,9 @@ namespace FlatRedBall.TileGraphics
                         camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() *
                         (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
 
-                    effectManager.ParameterCurrentTexture.SetValue(mTexture);
+                    // This should go through the renderer to make sure it knows that the texture has changed for future assignments
+                    //effectManager.ParameterCurrentTexture.SetValue(mTexture);
+                    Renderer.Texture = mTexture;
 
                     var color = CustomEffectManager.ProcessColorForColorOperation(mColorOperation, new Vector4(mRed, mGreen, mBlue, mAlpha));
                     effectManager.ParameterColorModifier.SetValue(color);
