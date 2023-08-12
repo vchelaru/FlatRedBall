@@ -1212,7 +1212,7 @@ namespace FlatRedBall.TileGraphics
 #else
             FlatRedBall.Graphics.Renderer.BlendOperation = BlendOperation.Regular;
 #endif
-            Effect effectTouse = null;
+            Effect effectToUse = null;
 
             if (ZBuffered)
             {
@@ -1222,7 +1222,7 @@ namespace FlatRedBall.TileGraphics
                 mAlphaTestEffect.World = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
                 mAlphaTestEffect.Texture = mTexture;
 
-                effectTouse = mAlphaTestEffect;
+                effectToUse = mAlphaTestEffect;
             }
             else
             {
@@ -1231,23 +1231,27 @@ namespace FlatRedBall.TileGraphics
                 {
                     var effectManager = Renderer.ExternalEffectManager;
 
-                    effectManager.ParameterViewProj.SetValue(
-                        camera.GetLookAtMatrix(false) * camera.GetProjectionMatrix() *
-                        (Matrix.CreateScale(RenderingScale) * base.TransformationMatrix));
+                    var world = Matrix.CreateScale(RenderingScale) * base.TransformationMatrix;
+                    var view = camera.GetLookAtMatrix(false);
+                    var projection = camera.GetProjectionMatrix();
+                    var worldView = Matrix.Identity;
+                    var worldViewProj = Matrix.Identity;
 
-                    // This should go through the renderer to make sure it knows that the texture has changed for future assignments
-                    //effectManager.ParameterCurrentTexture.SetValue(mTexture);
-                    Renderer.Texture = mTexture;
+                    Matrix.Multiply(ref world, ref view, out worldView);
+                    Matrix.Multiply(ref worldView, ref projection, out worldViewProj);
+
+                    effectManager.ParameterViewProj.SetValue(worldViewProj);
+                    effectManager.ParameterCurrentTexture.SetValue(mTexture);
 
                     var color = CustomEffectManager.ProcessColorForColorOperation(mColorOperation, new Vector4(mRed, mGreen, mBlue, mAlpha));
                     effectManager.ParameterColorModifier.SetValue(color);
 
-                    effectTouse = effectManager.Effect;
+                    effectToUse = effectManager.Effect;
 
                     var effectTechnique = effectManager.GetColorModifierTechniqueFromColorOperation(mColorOperation);
 
-                    if (effectTouse.CurrentTechnique != effectTechnique)
-                        effectTouse.CurrentTechnique = effectTechnique;
+                    if (effectToUse.CurrentTechnique != effectTechnique)
+                        effectToUse.CurrentTechnique = effectTechnique;
                 }
                 else
 #endif
@@ -1263,7 +1267,7 @@ namespace FlatRedBall.TileGraphics
 #if TILEMAPS_ALPHA_AND_COLOR
                 mBasicEffect.VertexColorEnabled = true;
 #endif
-                    effectTouse = mBasicEffect;
+                    effectToUse = mBasicEffect;
                 }
             }
 
@@ -1277,7 +1281,7 @@ namespace FlatRedBall.TileGraphics
             oldTextureAddressMode = Renderer.TextureAddressMode;
             Renderer.TextureAddressMode = TextureAddressMode.Clamp;
 
-            return effectTouse;
+            return effectToUse;
         }
 
         private void GetRenderingIndexValues(Camera camera, out int firstVertIndex, out int lastVertIndex, out int indexStart, out int numberOfTriangles)
