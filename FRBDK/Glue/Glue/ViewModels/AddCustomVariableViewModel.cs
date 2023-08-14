@@ -453,7 +453,7 @@ namespace GlueFormsCore.ViewModels
 
         public AddCustomVariableViewModel(GlueElement glueElement)
         {
-            AvailableCategories = new ObservableCollection<string>();
+            AvailableCategories = new ObservableCollection<string>(); 
             AvailableExposedVariables = new ObservableCollection<string>();
 
             TypeConverterHelper.InitializeClasses();

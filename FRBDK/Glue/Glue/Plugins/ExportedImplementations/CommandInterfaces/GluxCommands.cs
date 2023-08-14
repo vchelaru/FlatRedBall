@@ -336,6 +336,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     catch (Exception e)
                     {
                         // break here because we want to look at other threads to see what's running at the same time...
+                        // Sometimes a collection modified exception occurs here. That's not a problem with the glue project, but
+                        // a problem with tasks running simultaneously. We should tolerate this, try to save again...
+                        // But what is the exception type? Need to hit this breakpoint again to see...
                         System.Diagnostics.Debugger.Break();
                         var wasAbleToSaveError = false;
                         string errorLogLocation = FileManager.UserApplicationDataForThisApplication + "ExceptionInGlue.txt";

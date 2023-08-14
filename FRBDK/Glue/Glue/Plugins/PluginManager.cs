@@ -1045,6 +1045,12 @@ namespace FlatRedBall.Glue.Plugins
 
         internal static Task ReactToObjectListRemovedAsync(List<GlueElement> ownerList, List<NamedObjectSave> removedObjects)
         {
+            if(ownerList?.Count != removedObjects?.Count)
+            {
+                throw new ArgumentException($"The owner list has {ownerList?.Count} items, but removedObjects has {removedObjects?.Count}. They should be the same;");
+            }
+
+
             return CallMethodOnPluginAsync(plugin =>
             {
                 if(plugin.ReactToObjectListRemoved != null)
