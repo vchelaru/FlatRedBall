@@ -98,10 +98,17 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-        public static Vector2 FromAngle(float angle)
+        public static Vector2 FromAngle(float angleRadians)
         {
-            return new Vector2((float)Math.Cos(angle),
-                (float)Math.Sin(angle));
+            return new Vector2((float)Math.Cos(angleRadians),
+                (float)Math.Sin(angleRadians));
+        }
+
+        public static Vector2 FromAngleDegrees(float angleDegrees)
+        {
+            var angleRadians = MathHelper.ToRadians(angleDegrees);
+            return new Vector2((float)Math.Cos(angleRadians),
+                (float)Math.Sin(angleRadians));
         }
 
         /// <summary>
@@ -120,5 +127,9 @@ namespace Microsoft.Xna.Framework
             return Vector2ExtensionMethods.FromAngle(angleRadians) * vector2.Length();
         }
 
+        public static Vector2 AtAngleDegrees(this Vector2 vector2, float angleDegrees)
+        {
+            return Vector2ExtensionMethods.FromAngleDegrees(angleDegrees) * vector2.Length();
+        }
     }
 }

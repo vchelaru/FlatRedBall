@@ -47,6 +47,12 @@ namespace Microsoft.Xna.Framework
             }
         }
 
+        /// <summary>
+        /// Returns the angle in degrees of the argument vector, where 0 is to the right,
+        /// and increasing the angle moves counterclockwise. The Z value is ignored.
+        /// </summary>
+        /// <param name="vector">The argument angle.</param>
+        /// <returns>The angle in degrees, or null if the Vector has X and Y values both equal to 0.</returns>
         public static float? AngleDegrees(this Vector3 vector)
         {
             if (vector.X == 0 && vector.Y == 0)
@@ -68,6 +74,13 @@ namespace Microsoft.Xna.Framework
         /// <returns>The angle in radians, or 0 if the vector has X and Y values both equal to 0.</returns>
         public static float AngleOrZero(this Vector3 vector) => Angle(vector) ?? 0;
 
+        /// <summary>
+        /// Returns the angle in degrees of the argument vector, where 0 is to the right,
+        /// and increasing the angle moves counterclockwise. The Z value is ignored. If the
+        /// vector is of length 0, then a value of 0 is returned.
+        /// </summary>
+        /// <param name="vector">The argument vector.</param>
+        /// <returns>The angle in degrees, or 0 if the vector has X and Y values both equal to 0.</returns>
         public static float AngleDegreesOrZero(this Vector3 vector) => AngleDegrees(vector) ?? 0;
 
         /// <summary>
