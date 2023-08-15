@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using ToolsUtilities;
 
 namespace GameCommunicationPlugin.GlueControl.Dtos
 {
@@ -230,7 +231,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     #region AddObjectDtoResponse
     public class AddObjectDtoResponse
     {
-        public bool WasObjectCreated { get; set; }
+        public OptionallyAttemptedGeneralResponse CreationResponse { get; set; }
     }
 
     public class AddObjectDtoListResponse

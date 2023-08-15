@@ -767,7 +767,11 @@ namespace GlueControl
 
             var createdObject =
                 GlueControl.InstanceLogic.Self.HandleCreateInstanceCommandFromGlue(dto, GlobalGlueToGameCommands.Count, forcedParent: null);
-            valueToReturn.WasObjectCreated = createdObject != null;
+
+            var response = new OptionallyAttemptedGeneralResponse();
+            response.Succeeded = createdObject != null;
+
+            valueToReturn.CreationResponse = response;
 
             // internally this decides what to add to, so we don't have to sort the DTOs
             //CommandReceiver.EnqueueToOwner(dto, dto.ElementNameGame);

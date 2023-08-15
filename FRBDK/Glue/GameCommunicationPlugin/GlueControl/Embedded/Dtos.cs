@@ -234,7 +234,7 @@ namespace GlueControl.Dtos
     #region AddObjectDtoResponse
     public class AddObjectDtoResponse
     {
-        public bool WasObjectCreated { get; set; }
+        public OptionallyAttemptedGeneralResponse CreationResponse { get; set; }
     }
 
     public class AddObjectDtoListResponse
@@ -486,6 +486,35 @@ namespace GlueControl.Dtos
             this.Message = generalResponse.Message;
         }
 
+    }
+
+    public class OptionallyAttemptedGeneralResponse : GeneralResponse
+    {
+        public static OptionallyAttemptedGeneralResponse SuccessfulWithoutAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = true, DidAttempt = false };
+
+        public static OptionallyAttemptedGeneralResponse UnsuccessfulWithoutAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = false, DidAttempt = false };
+
+        public static OptionallyAttemptedGeneralResponse SuccessfulAttempt =>
+            new OptionallyAttemptedGeneralResponse { Succeeded = true, DidAttempt = true };
+
+
+        public bool DidAttempt { get; set; }
+
+        public new void SetFrom(GeneralResponse generalResponse)
+        {
+            this.Message = generalResponse.Message;
+            this.Succeeded = generalResponse.Succeeded;
+            this.DidAttempt = true; // if we have a response, let's assume there was an attempt
+        }
+
+        public void SetFrom(OptionallyAttemptedGeneralResponse generalResponse)
+        {
+            this.Message = generalResponse.Message;
+            this.Succeeded = generalResponse.Succeeded;
+            this.DidAttempt = generalResponse.DidAttempt;
+        }
     }
 
     public class GeneralResponse<T> : GeneralResponse

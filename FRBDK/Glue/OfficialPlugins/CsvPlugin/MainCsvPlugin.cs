@@ -68,7 +68,7 @@ namespace OfficialPluginsCore.CsvNewFilePlugin
 
             if(shouldSave)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux(FlatRedBall.Glue.Managers.TaskExecutionPreference.AddOrMoveToEnd);
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements(FlatRedBall.Glue.Managers.TaskExecutionPreference.AddOrMoveToEnd);
             }
 
         }

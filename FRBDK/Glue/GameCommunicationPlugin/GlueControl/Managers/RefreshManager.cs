@@ -440,7 +440,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
                 if (response.Succeeded == false ||
                     response.Data.Data == null ||
-                    response.Data.Data.Any(item => item.WasObjectCreated == false))
+                    response.Data.Data.Any(item => item.CreationResponse.Succeeded == false))
                 {
                     CreateStopAndRestartTask("Restarting because the add object group failed");
                 }
@@ -474,7 +474,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     }
                 }
 
-                if (addResponse?.WasObjectCreated == true)
+                if (addResponse?.CreationResponse.Succeeded == true)
                 {
                     var isPositionedObject = newNamedObject.SourceType == SourceType.Entity ||
                         (newNamedObject.GetAssetTypeInfo()?.IsPositionedObject == true);

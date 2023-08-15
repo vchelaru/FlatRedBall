@@ -83,8 +83,9 @@ namespace GlueControl
 
         #region Create Instance from Glue
 
-        public object HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedParent = null)
+        public OptionallyAttemptedGeneralResponse HandleCreateInstanceCommandFromGlue(Dtos.AddObjectDto dto, int currentAddObjectIndex, PositionedObject forcedParent = null)
         {
+            var toReturn = new OptionallyAttemptedGeneralResponse();
             //var glueName = dto.ElementName;
             // this comes in as the game name not glue name
             var elementGameType = dto.ElementNameGame; // CommandReceiver.GlueToGameElementName(glueName);
@@ -103,6 +104,7 @@ namespace GlueControl
 
             if (addedToEntity)
             {
+                toReturn.DidAttempt = true;
                 if (forcedParent != null)
                 {
                     if (CommandReceiver.DoTypesMatch(forcedParent, elementGameType))
@@ -126,11 +128,23 @@ namespace GlueControl
             else if (forcedParent == null &&
                 (ScreenManager.CurrentScreen.GetType().FullName == elementGameType || ownerType?.IsAssignableFrom(ScreenManager.CurrentScreen.GetType()) == true))
             {
+                toReturn.DidAttempt = true;
+
                 // it's added to the base screen, so just add it to null
                 newRuntimeObject = HandleCreateInstanceCommandFromGlueInner(dto.NamedObjectSave, currentAddObjectIndex, null);
             }
+            // did not attempt
 
-            return newRuntimeObject;
+            if (toReturn.DidAttempt)
+            {
+                toReturn.Succeeded = newRuntimeObject != null;
+            }
+            else
+            {
+                // assume it will succeed since we can't really know...
+                toReturn.Succeeded = true;
+            }
+            return toReturn;
         }
 
         private object HandleCreateInstanceCommandFromGlueInner(Models.NamedObjectSave deserialized, int currentAddObjectIndex, PositionedObject owner)
