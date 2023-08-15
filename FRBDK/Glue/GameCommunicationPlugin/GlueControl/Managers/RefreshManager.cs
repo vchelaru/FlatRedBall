@@ -1000,7 +1000,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 {
                     printOutput($"Error parsing response from game:\n\n{responseAsstring}");
                 }
-                if (response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
+                // If response is null, that could be a timeout because we hit a breakpoint. Dont' kill the project, that's annoying!
+                //if (response == null || (response.DidScreenMatch && response.WasObjectRemoved == false))
+                if (response != null && response.DidScreenMatch && response.WasObjectRemoved == false)
                 {
                     CreateStopAndRestartTask(
                         $"Restarting because {namedObjects.Count} items were deleted from Glue but not from game");

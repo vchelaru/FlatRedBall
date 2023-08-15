@@ -255,6 +255,17 @@ namespace GlueControl.Models
 
         [System.Xml.Serialization.XmlIgnore]
         [JsonIgnore]
+        public bool IsList
+        {
+            get
+            {
+                return SourceType == SourceType.FlatRedBallType &&
+                    (SourceClassType == "PositionedObjectList<T>" || SourceClassType == "FlatRedBall.Math.PositionedObjectList<T>");
+            }
+        }
+
+        [System.Xml.Serialization.XmlIgnore]
+        [JsonIgnore]
         public bool IsEditingLocked
         {
             get => Properties.GetValue<bool>(nameof(IsEditingLocked));

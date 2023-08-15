@@ -459,7 +459,7 @@ namespace GlueControl.Editing
             return targetInstance;
         }
 
-        private static FlatRedBall.Utilities.INameable GetRuntimeInstanceRecursively(FlatRedBall.Screens.Screen screen, string objectAndSubObjects, object owner = null)
+        public static FlatRedBall.Utilities.INameable GetRuntimeInstanceRecursively(FlatRedBall.Screens.Screen screen, string objectAndSubObjects, object owner = null)
         {
             if (objectAndSubObjects.Contains(".") == false)
             {

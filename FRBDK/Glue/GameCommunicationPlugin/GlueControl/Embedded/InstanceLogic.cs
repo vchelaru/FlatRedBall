@@ -20,6 +20,7 @@ using GlueControl.Editing;
 using GlueControl.Runtime;
 using GlueControl.Models;
 using GlueControl.Managers;
+using {ProjectNamespace}.Performance;
 
 namespace GlueControl
 {
@@ -644,9 +645,44 @@ namespace GlueControl
                         ? GlueControl.Editing.ElementEditingMode.EditingEntity
                         : GlueControl.Editing.ElementEditingMode.EditingScreen;
 
-                    var foundObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
+                    var foundPositionedObject = GlueControl.Editing.SelectionLogic.GetAvailableObjects(editingMode)
                             .FirstOrDefault(item => item.Name == objectName);
-                    TryDeleteObject(response, foundObject);
+                    if (foundPositionedObject != null)
+                    {
+                        TryDeleteObject(response, foundPositionedObject);
+                    }
+                    if (!response.WasObjectRemoved)
+                    {
+                        var element = ObjectFinder.Self.GetElement(elementNameGlue);
+                        var nos = element?.NamedObjects.FirstOrDefault(item => item.InstanceName == objectName);
+
+                        if (nos?.IsList == true)
+                        {
+                            if (nos.DefinedByBase)
+                            {
+                                // If this is defined by base, there's really nothing to do here. The removal of the base would
+                                // result in the object actually getting removed..
+                                // Treat this as true so we don't restart the game through FRB, or run any additional logic...
+                                response.WasObjectRemoved = true;
+                            }
+                            else
+                            {
+                                var list = VariableAssignmentLogic.GetRuntimeInstanceRecursively(ScreenManager.CurrentScreen, objectName) as
+                                    System.Collections.IList;
+
+                                if (list != null)
+                                {
+                                    response.WasObjectRemoved = true;
+                                    // this list is gone, so let's remove it from the factories 
+                                    var factories = FactoryManager.GetAllFactories();
+                                    foreach (var factory in factories)
+                                    {
+                                        factory.ListsToAddTo.Remove(list);
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     if (!response.WasObjectRemoved)
                     {
