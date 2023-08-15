@@ -1602,7 +1602,7 @@ public class GluxCommands : IGluxCommands
     }
 
     public void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, List<string> additionalFilesToRemove = null)
+        bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true)
     {
         var element = namedObjectToRemove.GetContainer();
 
@@ -1650,12 +1650,12 @@ public class GluxCommands : IGluxCommands
         // 4.  Update the variables for any NamedObjects that use this element containing this NamedObject
         // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
         // 6.  Remove any events that tunnel into this.
-        TaskManager.Self.AddOrRunIfTasked(() =>
+        _ = TaskManager.Self.AddOrRunIfTasked(async () =>
         {
             // caller doesn't care, so we're going to new it here and just fill it, but throw it away
             additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
 
-            DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element);
+            await DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element, notifyPluginsOfRemoval);
         },
         "Performing object removal logic");
     }
@@ -1680,12 +1680,12 @@ public class GluxCommands : IGluxCommands
         // 4.  Update the variables for any NamedObjects that use this element containing this NamedObject
         // 5.  Find any Elements that contain NamedObjects that are DefinedByBase - if so, see if we should remove those or make them not DefinedByBase
         // 6.  Remove any events that tunnel into this.
-        await TaskManager.Self.AddAsync(() =>
+        await TaskManager.Self.AddAsync(async () =>
         {
             // caller doesn't care, so we're going to new it here and just fill it, but throw it away
             additionalFilesToRemove = additionalFilesToRemove ?? new List<string>();
 
-            DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element, notifyPluginsOfRemoval);
+            await DoRemovalInternal(namedObjectToRemove, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, removalInformation, wasSelected, indexInChild, containerOfRemoved, element, notifyPluginsOfRemoval);
         },
         "Performing object removal logic");
     }
@@ -1715,10 +1715,12 @@ public class GluxCommands : IGluxCommands
     }
 
     public async Task RemoveNamedObjectListAsync(List<NamedObjectSave> namedObjectListToRemove, bool performSaveAndGenerateCode = true,
-        bool updateUi = true, List<string> additionalFilesToRemove = null)
+        bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true)
     {
         bool wasSelected =
             namedObjectListToRemove.Contains(GlueState.Self.CurrentNamedObjectSave);
+
+        List<NamedObjectSave> objectsRemovingInludingDerived = new List<NamedObjectSave>();
 
         // HashSet containing all elements affected by this removal, to be used for generation and saving
         HashSet<GlueElement> ownerHashSet = new HashSet<GlueElement>();
@@ -1731,6 +1733,7 @@ public class GluxCommands : IGluxCommands
                 var itemOwner = ObjectFinder.Self.GetElementContaining(item);
                 ownerHashSet.Add(itemOwner);
                 ownerList.Add(itemOwner);
+                objectsRemovingInludingDerived.Add(item);
                 var objectsToRemove = GluxCommands.GetObjectsToRemoveIfRemoving(item, itemOwner);
 
                 // RemoveNamedObjectAsync will recursively remove all named objects including objects in derived instances. since we are going to explicitly
@@ -1738,7 +1741,10 @@ public class GluxCommands : IGluxCommands
                 // RemoveNamedObjectAsync call.
                 foreach(var derivedNos in objectsToRemove.DerivedNamedObjects)
                 {
-                    ownerHashSet.Add(ObjectFinder.Self.GetElementContaining(derivedNos));
+                    objectsRemovingInludingDerived.Add(derivedNos);
+                    var ownerOfDerived = ObjectFinder.Self.GetElementContaining(derivedNos);
+                    ownerList.Add(ownerOfDerived);
+                    ownerHashSet.Add(ownerOfDerived);
                 }
             }
         },
@@ -1790,7 +1796,10 @@ public class GluxCommands : IGluxCommands
             }
         }
 
-        await PluginManager.ReactToObjectListRemovedAsync(ownerList, namedObjectListToRemove);
+        if(notifyPluginsOfRemoval)
+        {
+            await PluginManager.ReactToObjectListRemovedAsync(ownerList, objectsRemovingInludingDerived);
+        }
 
         if (performSaveAndGenerateCode)
         {
@@ -2112,7 +2121,7 @@ public class GluxCommands : IGluxCommands
         }
     }
 
-    private void DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi,
+    private async Task DoRemovalInternal(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode, bool updateUi,
         List<string> additionalFilesToRemove,
         StringBuilder removalInformation, bool wasSelected,
         int indexInChild, NamedObjectSave containerOfRemoved,
@@ -2133,6 +2142,17 @@ public class GluxCommands : IGluxCommands
 
             var objectsToRemove = GetObjectsToRemoveIfRemoving(namedObjectToRemove, element);
 
+            // Get the items for plugins before we remove them:
+            List<GlueElement> ownersForPluginRemoval = new List<GlueElement>();
+            List<NamedObjectSave> objectsForPluginRemoval = new List<NamedObjectSave>();
+
+            ownersForPluginRemoval.Add(element);
+            objectsForPluginRemoval.Add(namedObjectToRemove);
+            foreach (NamedObjectSave nos in objectsToRemove.DerivedNamedObjects)
+            {
+                objectsForPluginRemoval.Add(nos);
+                ownersForPluginRemoval.Add(ObjectFinder.Self.GetElementContaining(nos));
+            }
 
             #region Remove all CustomVariables that reference the removed NamedObject
 
@@ -2168,13 +2188,13 @@ public class GluxCommands : IGluxCommands
             foreach (var derivedNamedObject in objectsToRemove.CollisionRelationships)
             {
                 // Delete it
-                RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove);
+                RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, notifyPlugins);
             }
 
             foreach (var derivedNamedObject in objectsToRemove.DerivedNamedObjects)
             {
                 // Delete it
-                RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove);
+                RemoveNamedObject(derivedNamedObject, performSaveAndGenerateCode, updateUi, additionalFilesToRemove, notifyPlugins);
             }
 
 
@@ -2224,7 +2244,7 @@ public class GluxCommands : IGluxCommands
             // want to separate these variables, but we'll link them for now.
             if (performSaveAndGenerateCode)
             {
-                CodeWriter.GenerateCode(element);
+                await CodeWriter.GenerateCode(element);
             }
 
             if (element is EntitySave)
@@ -2241,7 +2261,7 @@ public class GluxCommands : IGluxCommands
 
             if (notifyPlugins)
             {
-                PluginManager.ReactToObjectRemoved(element, namedObjectToRemove);
+                await PluginManager.ReactToObjectListRemovedAsync(ownersForPluginRemoval, objectsForPluginRemoval);
             }
         }
 

@@ -214,10 +214,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         Task<ToolsUtilities.GeneralResponse<NamedObjectSave>> CopyNamedObjectIntoElement(NamedObjectSave nos, GlueElement targetElement, bool performSaveAndGenerateCode = true, bool updateUi = true);
 
         void RemoveNamedObject(NamedObjectSave namedObjectToRemove, bool performSaveAndGenerateCode = true, bool updateUi = true,
-            List<string> additionalFilesToRemove = null);
+            List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true);
 
         Task RemoveNamedObjectListAsync(List<NamedObjectSave> namedObjectListToRemove, bool performSaveAndGenerateCode = true,
-            bool updateUi = true, List<string> additionalFilesToRemove = null);
+            bool updateUi = true, List<string> additionalFilesToRemove = null, bool notifyPluginsOfRemoval = true);
         #endregion
 
         #region Custom Variable
