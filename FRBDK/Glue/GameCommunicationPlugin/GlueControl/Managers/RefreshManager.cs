@@ -973,15 +973,14 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             var owner = owners.FirstOrDefault();
             // Assume all owners are the same, so just use the first. If we ever allow selection of multiple objects
             // in different screens, then we would want to include the lists.
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked && owner != null)
+            if (ViewModel.IsRunning && ViewModel.IsEditChecked && owners.Count > 0)
             {
                 var dto = new Dtos.RemoveObjectDto();
 
                 dto.ScreenSave = owner as ScreenSave;
                 dto.EntitySave = owner as EntitySave;
 
-                dto.ElementNameGlue = //ToGameType((GlueElement)owner);
-                    owner.Name;
+                dto.ElementNamesGlue = owners.Select(item => item.Name).ToList();
 
                 var namedObjectNames = namedObjects.Select(item => item.InstanceName).ToList();
 

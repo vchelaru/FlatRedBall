@@ -565,16 +565,17 @@ namespace GlueControl
 
         public RemoveObjectDtoResponse HandleDeleteInstanceCommandFromGlue(RemoveObjectDto removeObjectDto, PositionedObject forcedItem = null)
         {
-            var elementNameGlue = removeObjectDto.ElementNameGlue;
-
             RemoveObjectDtoResponse response = new RemoveObjectDtoResponse();
             response.DidScreenMatch = false;
             response.WasObjectRemoved = false;
 
-            foreach (var objectName in removeObjectDto.ObjectNames)
+            for (int i = 0; i < removeObjectDto.ObjectNames.Count; i++)
             {
+                var objectName = removeObjectDto.ObjectNames[i];
+                var elementNameGlue = removeObjectDto.ElementNamesGlue[i];
                 HandleDeleteObject(forcedItem, elementNameGlue, objectName, response);
             }
+
 
 
             return response;

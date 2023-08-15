@@ -33,12 +33,12 @@ namespace GlueControl.Dtos
     #region RemoveObjectDto
     public class RemoveObjectDto : UpdateCurrentElementDto
     {
-        public string ElementNameGlue { get; set; }
+        public List<string> ElementNamesGlue { get; set; }
         public List<string> ObjectNames { get; set; } = new List<string>();
 
         public override string ToString()
         {
-            string toReturn = $"Remove {ElementNameGlue}.";
+            string toReturn = $"Remove ";
 
             foreach (var name in ObjectNames)
             {
