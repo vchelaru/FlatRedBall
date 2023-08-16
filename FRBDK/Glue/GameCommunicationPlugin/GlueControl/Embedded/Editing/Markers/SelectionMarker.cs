@@ -993,7 +993,7 @@ namespace GlueControl.Editing
                 {
                     ChangeSizeBy(item as PositionedObject, sideGrabbed);
                 }
-                else
+                else if (IsGrabbed)
                 {
                     var keyboard = FlatRedBall.Input.InputManager.Keyboard;
 
