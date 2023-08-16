@@ -603,8 +603,8 @@ namespace GlueControl.Editing
         public bool CanMoveItem { get; set; }
 
         Microsoft.Xna.Framework.Point ScreenPointPushed;
-        Vector3 unsnappedItemPosition;
-        Vector2 unsnappedItemSize;
+        Vector3? unsnappedItemPosition;
+        Vector2? unsnappedItemSize;
 
 
         public float PositionSnappingSize = 8;
@@ -825,7 +825,8 @@ namespace GlueControl.Editing
             }
 
             IsGrabbed = false;
-
+            unsnappedItemPosition = null;
+            unsnappedItemSize = null;
         }
 
         private void DoUpdatePushedLogic()
@@ -845,19 +846,8 @@ namespace GlueControl.Editing
             ScreenPointPushed = new Microsoft.Xna.Framework.Point(mouse.X, mouse.Y);
             if (ownerAsPositionable != null)
             {
-                if (ownerAsPositionedObject?.Parent == null)
-                {
-                    unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
-                }
-                else
-                {
-                    unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
-                }
-
-                if (ownerAsPositionable is IScalable scalable)
-                {
-                    unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
-                }
+                SetUnsnappedPosition();
+                SetUnsnappedSizeToOwner();
 
                 GrabbedPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
 
@@ -875,6 +865,26 @@ namespace GlueControl.Editing
                 }
             }
 
+        }
+
+        private void SetUnsnappedSizeToOwner()
+        {
+            if (ownerAsPositionable is IScalable scalable)
+            {
+                unsnappedItemSize = new Vector2(scalable.ScaleX * 2, scalable.ScaleY * 2);
+            }
+        }
+
+        private void SetUnsnappedPosition()
+        {
+            if (ownerAsPositionedObject?.Parent == null)
+            {
+                unsnappedItemPosition = new Vector3(ownerAsPositionable.X, ownerAsPositionable.Y, ownerAsPositionable.Z);
+            }
+            else
+            {
+                unsnappedItemPosition = ownerAsPositionedObject.RelativePosition;
+            }
         }
 
         private void UpdateColor()
@@ -1010,17 +1020,22 @@ namespace GlueControl.Editing
                 ? MathFunctions.RoundFloat(value, PositionSnappingSize)
                 : value;
 
+            if (unsnappedItemPosition == null)
+            {
+                SetUnsnappedPosition();
+            }
 
+            var positionCopy = unsnappedItemPosition.Value;
+            positionCopy.X += xChange;
+            positionCopy.Y += yChange;
+            unsnappedItemPosition = positionCopy;
 
-            unsnappedItemPosition.X += xChange;
-            unsnappedItemPosition.Y += yChange;
-
-            var positionConsideringShift = unsnappedItemPosition;
+            var positionConsideringShift = unsnappedItemPosition.Value;
 
             if (isShiftDown)
             {
-                var xDifference = Math.Abs(unsnappedItemPosition.X - GrabbedPosition.X);
-                var yDifference = Math.Abs(unsnappedItemPosition.Y - GrabbedPosition.Y);
+                var xDifference = Math.Abs(unsnappedItemPosition.Value.X - GrabbedPosition.X);
+                var yDifference = Math.Abs(unsnappedItemPosition.Value.Y - GrabbedPosition.Y);
 
                 if (xDifference > yDifference)
                 {
@@ -1206,14 +1221,22 @@ namespace GlueControl.Editing
                 float scaleYChange = 0;
                 if (mouseChange.X != 0 && widthMultiple != 0)
                 {
+                    if (unsnappedItemSize == null)
+                    {
+                        SetUnsnappedSizeToOwner();
+                    }
                     //var newScaleX = scalable.ScaleX + cursorXChange * widthMultiple / 2.0f;
                     //newScaleX = Math.Max(0, newScaleX);
                     //scalable.ScaleX = newScaleX;
                     // Vic says - this needs more work. Didn't work like this and I don't want to dive in yet
-                    unsnappedItemSize.X = unsnappedItemSize.X + mouseChange.X * widthMultiple;
-                    unsnappedItemSize.X = Math.Max(0, unsnappedItemSize.X);
+                    var sizeX = unsnappedItemSize.Value.X;
+                    sizeX = sizeX + mouseChange.X * widthMultiple;
+                    sizeX = Math.Max(0, sizeX);
+
+                    unsnappedItemSize = new Vector2(sizeX, unsnappedItemSize.Value.Y);
+
                     //unsnappedItemSize.X = MathFunctions.RoundFloat(unsnappedItemSize.X, sizeSnappingSize);
-                    var newScaleX = SnapSize(unsnappedItemSize.X) / 2.0f;
+                    var newScaleX = SnapSize(unsnappedItemSize.Value.X) / 2.0f;
                     scaleXChange = newScaleX - scalable.ScaleX;
 
                     if (scaleXChange != 0)
@@ -1229,13 +1252,20 @@ namespace GlueControl.Editing
 
                 if (mouseChange.Y != 0 && heightMultiple != 0)
                 {
+                    if (unsnappedItemSize == null)
+                    {
+                        SetUnsnappedSizeToOwner();
+                    }
                     //var newScaleY = scalable.ScaleY + cursorYChange * heightMultiple / 2.0f;
                     //newScaleY = Math.Max(0, newScaleY);
                     //scalable.ScaleY = newScaleY;
-                    unsnappedItemSize.Y = unsnappedItemSize.Y + mouseChange.Y * heightMultiple;
-                    unsnappedItemSize.Y = Math.Max(0, unsnappedItemSize.Y);
+                    var sizeY = unsnappedItemSize.Value.Y;
+                    sizeY = sizeY + mouseChange.Y * heightMultiple;
+                    sizeY = Math.Max(0, sizeY);
 
-                    var newScaleY = SnapSize(unsnappedItemSize.Y) / 2.0f;
+                    unsnappedItemSize = new Vector2(unsnappedItemSize.Value.X, sizeY);
+
+                    var newScaleY = SnapSize(unsnappedItemSize.Value.Y) / 2.0f;
                     scaleYChange = newScaleY - scalable.ScaleY;
 
                     if (scaleYChange != 0)
