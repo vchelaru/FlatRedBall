@@ -576,7 +576,7 @@ namespace GameCommunicationPlugin.GlueControl
             GlueViewSettingsViewModel.SetFrom(model);
             glueViewSettingsView.DataUiGrid.Refresh();
 
-            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
+            CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableLiveEdit;
             ignoreViewModelChanges = false;
 
             CompilerViewModel.IsGluxVersionNewEnoughForGlueControlGeneration =
@@ -687,8 +687,8 @@ namespace GameCommunicationPlugin.GlueControl
             switch(propertyName)
             {
                 case nameof(ViewModels.GlueViewSettingsViewModel.PortNumber):
-                case nameof(ViewModels.GlueViewSettingsViewModel.EnableGameEditMode):
-                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableGameEditMode;
+                case nameof(ViewModels.GlueViewSettingsViewModel.EnableLiveEdit):
+                    CompilerViewModel.IsGenerateGlueControlManagerInGame1Checked = GlueViewSettingsViewModel.EnableLiveEdit;
                     await HandlePortOrGenerateCheckedChanged(propertyName);
                     break;
                 case nameof(ViewModels.GlueViewSettingsViewModel.ShowGrid):
@@ -906,7 +906,7 @@ namespace GameCommunicationPlugin.GlueControl
         private async Task HandlePortOrGenerateCheckedChanged(string propertyName)
         {
             ReactToPluginEvent("Compiler_Output_Standard", "Applying changes");
-            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableGameEditMode && IsFrbNewEnough();
+            game1GlueControlGenerator.IsGlueControlManagerGenerationEnabled = GlueViewSettingsViewModel.EnableLiveEdit && IsFrbNewEnough();
             game1GlueControlGenerator.PortNumber = GlueViewSettingsViewModel.PortNumber;
             _refreshManager.PortNumber = GlueViewSettingsViewModel.PortNumber;
 
@@ -919,7 +919,7 @@ namespace GameCommunicationPlugin.GlueControl
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableGameEditMode), "Generate Glue Control Code");
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableLiveEdit), "Generate Glue Control Code");
                 TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
             }
 

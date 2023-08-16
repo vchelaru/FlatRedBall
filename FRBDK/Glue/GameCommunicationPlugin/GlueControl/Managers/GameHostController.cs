@@ -258,7 +258,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                     }
                     succeeded = runResponse.Value<bool>("Succeeded");
 
-                    if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableGameEditMode)
+                    if(glueViewSettingsViewModel.EmbedGameInGameTab && glueViewSettingsViewModel.EnableLiveEdit)
                     {
                         // Sometimes the game can update the window before the window becomes borderless. If that happens, this
                         // fails to update the position. Need to delay.
