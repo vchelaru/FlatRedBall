@@ -204,7 +204,7 @@ namespace FlatRedBall
                 mVertices[3].Color.W = value;
 
                 mAlpha = value;
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
             }
         }
 
@@ -228,7 +228,10 @@ namespace FlatRedBall
             }
         }
 
-        protected void UpdateColorsAccordingToAlpha()
+        /// <summary>
+        /// Updates all vertex colors according to the current Alpha value considering the current ColorOperation.
+        /// </summary>
+        public void UpdateVertexColorsAccordingToAlpha()
         {
 
             float redValue = mRed;
@@ -318,7 +321,7 @@ namespace FlatRedBall
 
                 mRed = value;
 
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
 
             }
         }
@@ -341,7 +344,7 @@ namespace FlatRedBall
 
                 mGreen = value;
 
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
             }
         }
 
@@ -363,7 +366,7 @@ namespace FlatRedBall
 
                 mBlue = value;
 
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
             }
         }
 
@@ -420,7 +423,7 @@ namespace FlatRedBall
 
                 mColorOperation = value;
 
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
             }
         }
 
@@ -431,7 +434,7 @@ namespace FlatRedBall
             { 
                 mBlendOperation = value;
 
-                UpdateColorsAccordingToAlpha();
+                UpdateVertexColorsAccordingToAlpha();
             }
         }
 
@@ -467,7 +470,7 @@ namespace FlatRedBall
 						}
 					}
 
-					UpdateColorsAccordingToAlpha ();
+					UpdateVertexColorsAccordingToAlpha ();
 
 					UpdateScale ();            
 				}
@@ -759,8 +762,12 @@ namespace FlatRedBall
         /// on individual vertices.
         /// </summary>
         /// <remarks>
-        /// The index begins counting at the top left (index 0)
-        /// and increases moving clockwise.
+        /// The index begins counting at the bottom left (index 0)
+        /// and increases moving counterclockwise.
+        ////3----2
+        /// |    |
+        /// |    |
+        /// 0----1
         /// </remarks>
         public SpriteVertex[] Vertices => mVertices;
 
