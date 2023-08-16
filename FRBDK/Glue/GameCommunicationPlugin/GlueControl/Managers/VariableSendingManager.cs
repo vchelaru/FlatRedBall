@@ -230,6 +230,18 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                         typeName = nosElement.Name.Replace("/", ".").Replace("\\", ".") + "." + category.Name;
                     }
                 }
+                else if(changedMember?.Contains(".") == true)
+                {
+                    var beforeDot = changedMember.Substring(0, changedMember.IndexOf("."));
+                    var nosInNosElement = nosElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == beforeDot);
+                    if(nosInNosElement != null)
+                    {
+                        var afterDot = changedMember.Substring(changedMember.IndexOf(".") + 1);
+                        var innerAti = nosInNosElement.GetAssetTypeInfo();
+
+                        typeName = innerAti.VariableDefinitions.FirstOrDefault(item => item.Name == afterDot)?.Type;
+                    }
+                }
             }
 
 
@@ -279,7 +291,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if(category != null && ( value == null || value == "<NONE>"))
             {
                 // we need to un-assign the state. We can do this by looping through all variables controlled by the
-                // category and setting them to null values:
+                // category and setting them to their default values:
                 var ownerOfCategory = ObjectFinder.Self.GetElementContaining(category);
                 // Only unassign if the state is defined by the same element as the nos's element. Otherwise the variables
                 // won't apply:
