@@ -783,7 +783,7 @@ namespace GumPlugin
 
             if (GlueState.Self.CurrentGlueProject == null)
             {
-                MessageBox.Show("You must first create a Glue project before adding a Gum project");
+                MessageBox.Show("You must first create a FlatRedBall project before adding a Gum project");
                 shouldSave = false;
             }
 

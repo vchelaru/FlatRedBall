@@ -94,16 +94,24 @@ namespace FlatRedBall.Glue.Projects
 
                 await TaskManager.Self.WaitForAllTasksFinished();
 
-                if(viewModel.IsAddGitIgnoreChecked)
+                if(GlueState.Self.CurrentGlueProject == null)
                 {
-                    PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox("Could not load the project.  Check the output window for more information.");
+                }
+                else
+                {
+                    if(viewModel.IsAddGitIgnoreChecked)
+                    {
+                        PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");
+                    }
+
+                    // open the project
+                    if (viewModel.IsOpenNewProjectWizardChecked)
+                    {
+                        PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
+                    }
                 }
 
-                // open the project
-                if (viewModel.IsOpenNewProjectWizardChecked)
-                {
-                    PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
-                }
             }
         }
 

@@ -35,6 +35,14 @@ namespace OfficialPluginsCore.Wizard.Managers
 
         public async Task Apply(WizardViewModel vm)
         {
+            ///////////////////Early Out/////////////////////
+            if (GlueState.Self.CurrentGlueProject == null)
+            {
+                GlueCommands.Self.DialogCommands.ShowMessageBox("There is no project loaded, so the wizard cannot run");
+                return;
+            }
+            ////////////////End Early Out////////////////////
+
             #region Initialization and utility methods
 
             var tasks = new List<TaskItemViewModel>();
