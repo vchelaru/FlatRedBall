@@ -26,8 +26,14 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
             this.AddMenuItemTo("View Projects", HandleSyncedProjectsClick, "Project", preferredIndex:0);
 
             this.ReactToLoadedGlux += HandleGluxLoad;
+            this.ReactToUnloadedGlux += HandleGluxUnload;
 
             AddToolbarUi();
+        }
+
+        private void HandleGluxUnload()
+        {
+            toolbarControlViewModel.HasProjectLoaded = false;
         }
 
         private void HandleGluxLoad()
@@ -39,6 +45,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             var value = openAutomaticallyProperty?.Value as bool? == true;
             toolbarControlViewModel.IsOpenVisualStudioAutomaticallyChecked = value;
+            toolbarControlViewModel.HasProjectLoaded = true;
 
             if (value)
             {
