@@ -418,7 +418,7 @@ namespace FlatRedBall.Debugging
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
 
             int sameRenderBreaks = 0;
-            string? lastRenderBreak = null;
+            string lastRenderBreak = null;
 
             foreach(var renderBreak in Renderer.LastFrameRenderBreakList)
             {
