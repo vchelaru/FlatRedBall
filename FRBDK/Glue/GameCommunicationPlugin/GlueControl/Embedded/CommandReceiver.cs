@@ -234,11 +234,11 @@ namespace GlueControl
                     {
                         ObjectFinder.Self.Replace(dto.GlueElement);
                     }
-                    Editing.EditingManager.Self.SetCurrentGlueElement(dto.GlueElement);
                     if (oldName != null && newName != null)
                     {
+                        var element = ObjectFinder.Self.GetElement(dto.GlueElement?.Name);
                         var renamedNos =
-                            Editing.EditingManager.Self.CurrentGlueElement.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldName);
+                            element?.AllNamedObjects.FirstOrDefault(item => item.InstanceName == oldName);
 
                         if (renamedNos != null)
                         {
@@ -731,7 +731,8 @@ namespace GlueControl
                 ObjectFinder.Self.Replace(removeObjectDto.GlueElement);
             }
 
-            Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
+            // don't do this. When it re-runs, it can screw up state::
+            //Editing.EditingManager.Self.SetCurrentGlueElement(removeObjectDto.GlueElement);
 
             CommandReceiver.GlobalGlueToGameCommands.Add(removeObjectDto);
 

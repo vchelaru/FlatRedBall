@@ -88,11 +88,11 @@ namespace GlueControl.Editing
                 message = $"Copied {selectedNamedObjects.Count} objects to clipboard";
             }
             FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
-#endif
             if (GlueState.Self.CurrentElement == null && (CopiedNamedObjects.Count > 0 || CopiedObjects.Count > 0))
             {
                 throw new InvalidOperationException();
             }
+#endif
 
             CopiedObjectsOwner = GlueState.Self.CurrentElement;
         }
