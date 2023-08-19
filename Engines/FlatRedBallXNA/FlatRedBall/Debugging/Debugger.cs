@@ -8,6 +8,7 @@ using FlatRedBall.Graphics;
 using FlatRedBall.Math;
 using FlatRedBall.Math.Collision;
 using FlatRedBall.Math.Geometry;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 
 namespace FlatRedBall.Debugging
@@ -416,10 +417,35 @@ namespace FlatRedBall.Debugging
             stringBuilder.AppendLine();
             stringBuilder.AppendLine($"Render breaks: {Renderer.LastFrameRenderBreakList.Count}");
 
+            int sameRenderBreaks = 0;
+            string? lastRenderBreak = null;
+
             foreach(var renderBreak in Renderer.LastFrameRenderBreakList)
             {
-                stringBuilder.AppendLine(renderBreak.ToString());
+                var currentRenderBreak = renderBreak.ToString();    
+                if(currentRenderBreak == lastRenderBreak)
+                {
+                    sameRenderBreaks++;
+                }
+                else
+                {
+                    WrapUpCurrentRenderBreaks();
+                    stringBuilder.AppendLine(currentRenderBreak);
+                    lastRenderBreak = currentRenderBreak;
+                }
             }
+
+            WrapUpCurrentRenderBreaks();
+
+            void WrapUpCurrentRenderBreaks()
+            {
+                if(sameRenderBreaks != 0)
+                {
+                    stringBuilder.AppendLine($"{lastRenderBreak} x {sameRenderBreaks}");
+                }
+                sameRenderBreaks = 0;
+            }
+
             stringBuilder.AppendLine();
             var collisionInformation = GetCollisionInformation();
             stringBuilder.AppendLine(collisionInformation);

@@ -1594,16 +1594,17 @@ namespace FlatRedBall.Math.Collision
 
         private bool DoPartitionedYCollision(float? maxDistanceOnSecondaryAxis)
         {
+            bool collisionOccurred = false;
+            int startInclusive;
+            int endExclusive;
+
+            int j = 0;
+
             if (this.LoopDirection == LoopDirection.FrontToBack)
             {
                 throw new NotImplementedException("Bug Vic!");
             }
 
-            bool collisionOccurred = false;
-            int j = 0;
-
-            int startInclusive;
-            int endExclusive;
             for (int i = firstList.Count - 1; i > -1; i--)
             {
                 var first = firstList[i];
@@ -1614,6 +1615,12 @@ namespace FlatRedBall.Math.Collision
 
                 for (j = startInclusive; j > endExclusive; j--)
                 {
+                    // a collision could destroy everything:
+                    if (j >= secondList.Count)
+                    {
+                        continue;
+                    }
+
                     var second = secondList[j];
 
                     var distanceX =
