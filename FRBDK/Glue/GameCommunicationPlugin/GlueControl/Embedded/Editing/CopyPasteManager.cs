@@ -47,6 +47,10 @@ namespace GlueControl.Editing
                 }
                 if (keyboard.KeyPushed(Keys.V) && CopiedObjects != null)
                 {
+                    if (CopiedObjectsOwner == null)
+                    {
+                        throw new InvalidOperationException("The CopiedObjectsOwner should not be null...");
+                    }
                     HandlePaste(itemGrabbed, selectedNamedObjects, CopiedNamedObjects, CopiedObjects, CopiedObjectsOwner);
                 }
                 if (keyboard.KeyPushed(Keys.D) && selectedNamedObjects.Count > 0)
@@ -85,6 +89,10 @@ namespace GlueControl.Editing
             }
             FlatRedBall.Forms.Controls.Popups.ToastManager.Show(message);
 #endif
+            if (GlueState.Self.CurrentElement == null && (CopiedNamedObjects.Count > 0 || CopiedObjects.Count > 0))
+            {
+                throw new InvalidOperationException();
+            }
 
             CopiedObjectsOwner = GlueState.Self.CurrentElement;
         }
