@@ -203,13 +203,13 @@ namespace FlatRedBall.Content.Math.Geometry
 
             for (int i = 0; i < CircleSaves.Count; i++)
             {
-                CircleSave circle = this.CircleSaves[i];
+                CircleSave circleSave = this.CircleSaves[i];
                 Circle match = null;
 
                 for (int j = 0; j < shapeCollection.Circles.Count; j++)
                 {
                     var candidate = shapeCollection.Circles[j];
-                    if (candidate.Name == circle.Name)
+                    if (candidate.Name == circleSave.Name)
                     {
                         match = candidate;
                         break;
@@ -228,10 +228,10 @@ namespace FlatRedBall.Content.Math.Geometry
 
                 if(match != null)
                 {
-                    circle.SetValuesOn(match);
-                    match.RelativeX = circle.X;
-                    match.RelativeY = circle.Y;
-                    match.RelativeZ = circle.Z;
+                    circleSave.SetValuesOn(match);
+                    match.RelativeX = circleSave.X;
+                    match.RelativeY = circleSave.Y;
+                    match.RelativeZ = circleSave.Z;
                 }
             }
 

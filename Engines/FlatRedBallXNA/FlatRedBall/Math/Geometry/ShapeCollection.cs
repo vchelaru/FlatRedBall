@@ -872,6 +872,38 @@ namespace FlatRedBall.Math.Geometry
             }
         }
 
+        public void ForceUpdateDependencies()
+        {
+            for (int i = 0; i < mAxisAlignedRectangles.Count; i++)
+            {
+                mAxisAlignedRectangles[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mCircles.Count; i++)
+            {
+                mCircles[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mPolygons.Count; i++)
+            {
+                mPolygons[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mLines.Count; i++)
+            {
+                mLines[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mSpheres.Count; i++)
+            {
+                mSpheres[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mAxisAlignedCubes.Count; i++)
+            {
+                mAxisAlignedCubes[i].ForceUpdateDependencies();
+            }
+            for (int i = 0; i < mCapsule2Ds.Count; i++)
+            {
+                mCapsule2Ds[i].ForceUpdateDependencies();
+            }
+        }
+
         public void FlipHorizontally()
         {
             #region Flip the AxisAlignedRectangles
