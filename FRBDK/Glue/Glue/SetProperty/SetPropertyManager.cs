@@ -56,6 +56,8 @@ namespace FlatRedBall.Glue.SetVariable
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
+            var element = GlueState.Self.CurrentElement;
+
             bool pushReactToChangedProperty = true;
             bool updateTreeView = true;
 
@@ -192,7 +194,14 @@ namespace FlatRedBall.Glue.SetVariable
 
             mPropertyGrid.Refresh();
 
-            GluxCommands.Self.SaveGlux();
+            if(element != null)
+            {
+                _ = GluxCommands.Self.SaveElementAsync(element);
+            }
+            else
+            {
+                GluxCommands.Self.SaveProjectAndElements();
+            }
 
             // Vic says:  This was intented to refresh the variables at one point
             // but this is a messy feature.  I think we should just refresh the entire

@@ -834,7 +834,7 @@ namespace GlueControl.Editing
             var mouse = InputManager.Mouse;
 
             ///////////Early Out////////////////
-            if (!InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton))
+            if (!InputManager.Mouse.ButtonPushed(Mouse.MouseButtons.LeftButton) || mouse.IsInGameWindow() == false)
             {
                 return;
             }

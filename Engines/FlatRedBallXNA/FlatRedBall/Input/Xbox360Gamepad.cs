@@ -38,8 +38,17 @@ namespace FlatRedBall.Input
         Genesis,
         Xbox360,
         PlayStationDualShock,
-
     }
+
+    public enum ButtonPosition
+    {
+        FaceDown,
+        FaceLeft,
+        FaceUp,
+        FaceRight,
+    }
+
+
 
     #endregion
 
@@ -1202,6 +1211,69 @@ namespace FlatRedBall.Input
             }
             return cachedButtons[button];
         }
+
+        public Xbox360ButtonReference GetButton(ButtonPosition buttonPosition)
+        {
+            Button button = Button.A;
+
+            if(this.ButtonLayout == ButtonLayout.NintendoPro)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.Y;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.X;
+                        break;
+                }
+            }
+            else if(this.ButtonLayout == ButtonLayout.GameCube)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.X;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.Y;
+                        break;
+                }
+            }
+            else //if(this.ButtonLayout == ButtonLayout.Xbox)
+            {
+                switch (buttonPosition)
+                {
+                    case ButtonPosition.FaceRight:
+                        button = Button.B;
+                        break;
+                    case ButtonPosition.FaceDown:
+                        button = Button.A;
+                        break;
+                    case ButtonPosition.FaceLeft:
+                        button = Button.X;
+                        break;
+                    case ButtonPosition.FaceUp:
+                        button = Button.Y;
+                        break;
+                }
+            }
+
+            return GetButton(button);
+        }
+
         #endregion
 
         /// <summary>
