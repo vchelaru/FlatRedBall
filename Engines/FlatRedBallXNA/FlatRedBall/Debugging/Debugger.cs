@@ -1,5 +1,5 @@
 using System;
- 
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -463,7 +463,7 @@ namespace FlatRedBall.Debugging
             return stringBuilder.ToString();
         }
 
-        private static string GetCollisionInformation()
+        public static string GetCollisionInformation()
         {
             var collisionManager = Math.Collision.CollisionManager.Self;
             int numberOfCollisions = 0;
@@ -484,6 +484,50 @@ namespace FlatRedBall.Debugging
             $"Deep collisions: {Math.Collision.CollisionManager.Self.DeepCollisionsThisFrame}";
             if(collisionRelationshipWithMost != null)
             {
+                var firstCollisionObject = collisionRelationshipWithMost.FirstAsObject;
+                var secondObject = collisionRelationshipWithMost.SecondAsObject;
+
+                IEnumerable listWithoutPartition = null;
+                if(firstCollisionObject is IEnumerable firstAsIEnumerable)
+                {
+                    var isPartitioned = false;
+                    foreach(var item in CollisionManager.Self.Partitions)
+                    {
+                        if(item.PartitionedObject == firstCollisionObject)
+                        {
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if(!isPartitioned)
+                    {
+                        listWithoutPartition = firstAsIEnumerable;
+                    }
+                }
+
+                if (secondObject is IEnumerable secondAsIEnumerable)
+                {
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == secondObject)
+                        {
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = secondAsIEnumerable;
+                    }
+                }
+
+                if(listWithoutPartition != null)
+                {
+                    collisionsThisFrame += $"\n!!!!!!!{listWithoutPartition} - NOT PARTITIONED:!!!!!!!!";
+                }
                 collisionsThisFrame += 
                     $"\nHighest Relationship: {collisionRelationshipWithMost.Name} with {collisionRelationshipWithMost.DeepCollisionsThisFrame}";
             }

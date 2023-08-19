@@ -63,7 +63,15 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             BackingModel = animationFrame;
             Parent = parent;
             LengthInSeconds = animationFrame.FrameLength;
-            StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
+
+            if(!string.IsNullOrEmpty(animationFrame.TextureName))
+            {
+                StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
+            }
+            else
+            {
+                StrippedTextureName = string.Empty;
+            }
 
             LeftCoordinate = animationFrame.LeftCoordinate;
             TopCoordinate = animationFrame.TopCoordinate;
