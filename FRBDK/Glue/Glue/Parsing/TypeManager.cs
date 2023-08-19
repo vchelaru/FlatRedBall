@@ -8,8 +8,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using FlatRedBall.Math;
 using FlatRedBall.Glue.Elements;
-
-
+using FlatRedBall.Graphics;
 using System.Security.Policy;
 using System.Reflection.Metadata.Ecma335;
 using Gum.DataTypes;
@@ -825,6 +824,8 @@ namespace FlatRedBall.Glue.Parsing
 
                 case "byte":
                 case "Byte":
+                    
+                case "ColorOperation":
 
                     return "0";
                 case "float?":
