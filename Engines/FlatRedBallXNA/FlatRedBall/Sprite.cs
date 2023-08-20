@@ -1477,8 +1477,6 @@ namespace FlatRedBall
         #region Public Methods
 
 
-
-
         /// <summary>
         /// Sets the ScaleY so that the ScaleX/ScaleY ratio is the same as the source image used for the Sprite's texture.
         /// </summary>
@@ -1910,7 +1908,6 @@ namespace FlatRedBall
             }
         }
 
-
         public void SetAnimationChain(AnimationChain chainToSet, double timeIntoAnimation)
         {
             if (chainToSet != null)
@@ -1924,7 +1921,19 @@ namespace FlatRedBall
             }
         }
 
-        #region XML Docs
+        /// <summary>
+        /// Updates the shapes in the argument ICollidable to match the shapes in the Sprite's current frame. If the 
+        /// Sprite does not have a frame, or if the frame does not have shapes, then this method makes no changes to the
+        /// argument ICollidable.
+        /// </summary>
+        /// <param name="collidable">The collidable to update.</param>
+        /// <param name="createMissingShapes">Whether shapes that are part of the animation but not part of the
+        /// collidable.Collision should be created and added.</param>
+        public void SetCollisionFromAnimation(ICollidable collidable, bool createMissingShapes = false)
+        {
+            CurrentFrame?.ShapeCollectionSave?.SetValuesOn(collidable.Collision, this, createMissingShapes);
+        }
+
         /// <summary>
         /// Sets the current AnimationChain by name and keeps the CurrentFrame the same.
         /// </summary>
@@ -1938,7 +1947,6 @@ namespace FlatRedBall
         /// <seealso cref="FRB.Sprite.AnimationChains"/>
         /// </remarks>
         /// <param name="chainToSet">The name of the AnimationChain to set as current.</param>
-        #endregion
         [Obsolete("Use the CurrentChainName Property instead of this method")]
         public void SetAnimationChain(string chainToSet)
         {
@@ -1962,7 +1970,6 @@ namespace FlatRedBall
 
 
         }
-
 
         void UpdateFrameBasedOffOfTimeIntoAnimation()
         {
