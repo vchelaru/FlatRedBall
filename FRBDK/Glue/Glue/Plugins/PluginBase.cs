@@ -403,8 +403,10 @@ namespace FlatRedBall.Glue.Plugins
         public AdjustDisplayedCustomVariableDelegate AdjustDisplayedCustomVariable { get; protected set; }
 
         /// <summary>
-        /// Adjusts the properties for the selected NamedObject (not Variables window)
+        /// Adjusts the properties for the selected NamedObject (not Variables window).
         /// </summary>
+        /// <remarks>
+        /// To modify variables, the best way is to change the AssetTypeInfo. There is (currently) no way to dynamically add/remove variables from the property grid.</remarks>
         public AdjustDisplayedNamedObjectDelegate AdjustDisplayedNamedObject { get; protected set; }
 
         public Func<IElement, IEnumerable<VariableDefinition>> GetVariableDefinitionsForElement;

@@ -1745,12 +1745,11 @@ namespace FlatRedBall.Glue.Plugins
         internal static void AdjustDisplayedNamedObject(NamedObjectSave namedObject, NamedObjectPropertyGridDisplayer displayer)
         {
             CallMethodOnPlugin(
-                delegate (PluginBase plugin)
+                (PluginBase plugin) =>
                 {
                     plugin.AdjustDisplayedNamedObject(namedObject, displayer);
                 },
-                plugin => plugin.AdjustDisplayedNamedObject != null,
-                nameof(AdjustDisplayedNamedObject));
+                plugin => plugin.AdjustDisplayedNamedObject != null);
         }
 
         internal static void AdjustDisplayedReferencedFile(ReferencedFileSave referencedFileSave, ReferencedFileSavePropertyGridDisplayer displayer)
