@@ -373,7 +373,7 @@ namespace GlueControl
                 return;
             }
             ///////////////////////end early out//////////////////////////
-            
+
             if (selectObjectDto.GlueElement != null)
             {
                 selectObjectDto.GlueElement.FixAllTypes();
@@ -981,7 +981,6 @@ namespace GlueControl
 
         #endregion
 
-
         #region Move to Container
 
         private static MoveObjectToContainerDtoResponse HandleDto(MoveObjectToContainerListDto dto)
@@ -1213,25 +1212,7 @@ namespace GlueControl
 
         #endregion
 
-        #region Get Commands
-
-//        private static GetCommandsDtoResponse HandleDto(GetCommandsDto dto)
-//        {
-//            var responseDto = new GetCommandsDtoResponse();
-//#if SupportsEditMode
-//            if (GlueControlManager.GameToGlueCommands.Count != 0)
-//            {
-//                while (GlueControlManager.GameToGlueCommands.TryDequeue(out GlueControlManager.GameToGlueCommand gameToGlueCommand))
-//                {
-//                    responseDto.Commands.Add(gameToGlueCommand.Command);
-//                }
-//            }
-//#endif
-
-//            return responseDto;
-//        }
-
-        #endregion
+        #region GetGlueToGameCommandRerunList
 
         private static GetCommandsDtoResponse HandleDto(GetGlueToGameCommandRerunList dto)
         {
@@ -1250,6 +1231,8 @@ namespace GlueControl
             return responseDto;
         }
 
+        #endregion
+
         #region SetBorderless
 
         private static void HandleDto(SetBorderlessDto dto)
@@ -1259,12 +1242,16 @@ namespace GlueControl
 
         #endregion
 
+        #region ForceGameResolution
+
         private static void HandleDto(ForceGameResolution dto)
         {
             CameraSetup.Data.ResolutionWidth = dto.Width;
             CameraSetup.Data.ResolutionHeight = dto.Height;
             CameraSetup.ResetWindow();
         }
+
+        #endregion
 
         private static void HandleDto(GlueViewSettingsDto dto)
         {
@@ -1299,6 +1286,20 @@ namespace GlueControl
                 EditingManager.Self.ReplaceNamedObjectSave(update.NamedObjectSave, update.GlueElementName, update.ContainerName);
             }
         }
+
+        #region GetProfilingDataDto
+
+        private static ProfilingDataDto HandleDto(GetProfilingDataDto dto)
+        {
+            var response = new ProfilingDataDto();
+
+            response.SummaryData = FlatRedBall.Debugging.Debugger.GetFullPerformanceInformation();
+            response.CollisionData = FlatRedBall.Debugging.Debugger.GetCollisionInformation();
+
+            return response;
+        }
+
+        #endregion
     }
 
 

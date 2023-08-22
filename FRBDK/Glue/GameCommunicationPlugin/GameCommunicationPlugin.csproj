@@ -188,6 +188,7 @@
 
   <ItemGroup>
     <Folder Include="GlueControl\Models\" />
+    <Folder Include="GlueControl\Profiling\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

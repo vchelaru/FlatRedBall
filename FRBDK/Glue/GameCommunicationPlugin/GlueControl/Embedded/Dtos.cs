@@ -402,11 +402,13 @@ namespace GlueControl.Dtos
     }
     #endregion
 
+    #region ForceGameResolution
     public class ForceGameResolution
     {
         public int Width { get; set; }
         public int Height { get; set; }
     }
+    #endregion
 
     #region GlueViewSettingsDto
     public class GlueViewSettingsDto
@@ -436,21 +438,11 @@ namespace GlueControl.Dtos
     }
     #endregion
 
-    //#region GetCommandsDto
-
-    ///// <summary>
-    ///// Used to fetch commands that are waiting to be sent from the game back to Glue
-    ///// </summary>
-    //public class GetCommandsDto
-    //{
-
-    //}
-
+    #region Get Commands DTOs
     public class GetCommandsDtoResponse
     {
         public List<string> Commands { get; set; } = new List<string>();
     }
-    //#endregion
 
     /// <summary>
     /// Used to fetch commands that the game will re-run on
@@ -460,6 +452,23 @@ namespace GlueControl.Dtos
     {
 
     }
+
+    #endregion
+
+    #region Profiling
+
+    public class GetProfilingDataDto
+    {
+
+    }
+
+    public class ProfilingDataDto
+    {
+        public string SummaryData { get; set; }
+        public string CollisionData { get; set; }
+    }
+
+    #endregion
 
     #region Glue/XXXX/CommandsDto
 

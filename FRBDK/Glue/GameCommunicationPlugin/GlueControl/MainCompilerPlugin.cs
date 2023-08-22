@@ -121,79 +121,19 @@ namespace GameCommunicationPlugin.GlueControl
             this.RegisterCodeGenerator(new CompilerPluginElementCodeGenerator());
 
 
-
-
-            // winforms stuff is here:
-            // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
-            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
-
             ToolbarEntityViewModelManager.CompilerViewModel = CompilerViewModel;
             ToolbarEntityViewModelManager.ReactToPluginEventWithReturn = ReactToPluginEventWithReturn;
             ToolbarEntityViewModelManager.SaveCompilerSettingsModel = SaveCompilerSettingsModel;
 
-            gameHostView.DataContext = CompilerViewModel;
-            gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
-            {
-                // todo - handle this:
-                //if(treeNode.Tag is StateSave stateSave)
-                //{
-                //    var container = ObjectFinder.Self.GetElementContaining(stateSave);
-                //    if(container is EntitySave entitySave)
-                //    {
-                //        HandleAddToEditToolbar(stateSave, entitySave, null);
-                //    }
-                //}
-                //else 
-                if(treeNode.Tag is EntitySave entitySave)
-                {
-                    var namedObjectSave = new NamedObjectSave();
-                    namedObjectSave.SourceType = SourceType.Entity;
-                    namedObjectSave.SourceClassType = entitySave.Name;
-                    // todo finish here
-                    HandleAddToEditToolbar(namedObjectSave);
-                }
-                else if(treeNode.Tag is NamedObjectSave nos)
-                {
-                    HandleAddToEditToolbar(nos);
-                }
-            };
 
-            pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
-            pluginTab.CanClose = false;
-            pluginTab.AfterHide += (_, __) => TryKillGame();
-            //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+            CreateGameTab();
+
+            CreateProfileTab();
 
             // do this after creating the compiler, view model, and control
             AssignEvents();
 
-            _gameHostController = new GameHostController();
-            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
-                CompilerViewModel, 
-                GlueViewSettingsViewModel,
-                glueViewSettingsTab,
-                ReactToPluginEventWithReturn,
-                _refreshManager);
 
-            #region Start the timer, do it after the gameHostView is created
-
-            // 250 works but you can feel the delay a bit when working in game. Let's try 150
-            //var busyTimerFrequency = 250; // ms
-            //var busyTimerFrequency = 150; // ms
-            // even faster?
-            //var busyTimerFrequency = 100; // ms
-            //busyUpdateTimer = new Timer(busyTimerFrequency);
-            //busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
-            //busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
-            //busyUpdateTimer.Start();
-
-            // This was 250 but it wasn't fast enough to feel responsive
-            var dragDropTimerFrequency = 100; // ms
-            dragDropTimer = new Timer(dragDropTimerFrequency);
-            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
-            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
-            dragDropTimer.Start();
-
-            #endregion
         }
 
         private void AssignEvents()
@@ -441,75 +381,6 @@ namespace GameCommunicationPlugin.GlueControl
 
         #endregion
 
-        //private async Task DoGetCommandsTimedLogic()
-        //{
-        //    this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-        //    var isBusy = (await getCommandsSemaphore.WaitAsync(0)) == false;
-
-        //    if (!isBusy)
-        //    {
-        //        try
-        //        {
-        //            if (CompilerViewModel.IsRunning)
-        //            {
-        //                lastGetCall = DateTime.Now;
-
-
-        //                var sendResponse =
-        //                    await CommandSender.Self
-        //                    .Send<GetCommandsDtoResponse>(new GetCommandsDto(), isImportant: false);
-        //                var response = sendResponse?.Data;
-
-
-        //                var getTime = DateTime.Now;
-        //                var getDuration = getTime - lastGetCall;
-
-        //                if (response?.Commands.Count > 0)
-        //                {
-        //                    await _commandReceiver.HandleCommandsFromGame(response.Commands,
-        //                        GlueViewSettingsViewModel.PortNumber);
-        //                }
-        //                else
-        //                {
-
-        //                }
-
-        //                var handleTime = DateTime.Now;
-        //                var handleDuration = handleTime - getTime;
-
-        //                this.CompilerViewModel.LastWaitTimeInSeconds = (DateTime.Now - lastGetCall).TotalSeconds;
-
-        //                // Vic says - this causes problems when a game crashes. It continues to print this out
-        //                // which makes it harder to see the callstack. I don't know if this is needed anymore now
-        //                // that we have a more reliable communication system from glue<->game, so I'm going to comment
-        //                // this out. If it's needed in the future, maybe we need some way to know the game has crashed.
-        //                //if (this.CompilerViewModel.LastWaitTimeInSeconds > 1)
-        //                //{
-
-        //                //    MainControl.PrintOutput(
-        //                //        $"Warning - it took {this.CompilerViewModel.LastWaitTimeInSeconds:0.00} seconds to get " +
-        //                //        $"{response?.Commands.Count}" +
-        //                //        $"\n\tGet: {getDuration}" +
-        //                //        $"\n\tHandle: {handleDuration}");
-        //                //}
-        //            }
-        //        }
-        //        catch
-        //        {
-        //            // it's okay
-        //        }
-        //        finally
-        //        {
-        //            getCommandsSemaphore.Release();
-        //        }
-
-        //    }
-        //    else
-        //    {
-        //        System.Diagnostics.Debug.WriteLine("   isBusy = true");
-
-        //    }
-        //}
 
         private void HandleGluxUnloaded()
         {
@@ -615,6 +486,82 @@ namespace GameCommunicationPlugin.GlueControl
             gameHostView.HandleGluxLoaded();
         }
 
+        #region Game Tab
+
+        private void CreateGameTab()
+        {
+
+            // winforms stuff is here:
+            // https://social.msdn.microsoft.com/Forums/en-US/f6e28fe1-03b2-4df5-8cfd-7107c2b6d780/hosting-external-application-in-windowsformhost?forum=wpf
+            gameHostView = new GameHostView(ReactToPluginEventWithReturn, ReactToPluginEvent);
+
+
+            gameHostView.DataContext = CompilerViewModel;
+            gameHostView.TreeNodedDroppedInEditBar += (treeNode) =>
+            {
+                // todo - handle this:
+                //if(treeNode.Tag is StateSave stateSave)
+                //{
+                //    var container = ObjectFinder.Self.GetElementContaining(stateSave);
+                //    if(container is EntitySave entitySave)
+                //    {
+                //        HandleAddToEditToolbar(stateSave, entitySave, null);
+                //    }
+                //}
+                //else 
+                if (treeNode.Tag is EntitySave entitySave)
+                {
+                    var namedObjectSave = new NamedObjectSave();
+                    namedObjectSave.SourceType = SourceType.Entity;
+                    namedObjectSave.SourceClassType = entitySave.Name;
+                    // todo finish here
+                    HandleAddToEditToolbar(namedObjectSave);
+                }
+                else if (treeNode.Tag is NamedObjectSave nos)
+                {
+                    HandleAddToEditToolbar(nos);
+                }
+            };
+
+            pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
+            pluginTab.CanClose = false;
+            pluginTab.AfterHide += (_, __) => TryKillGame();
+            //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
+
+            _gameHostController = new GameHostController();
+            _gameHostController.Initialize(gameHostView, (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
+                CompilerViewModel,
+                GlueViewSettingsViewModel,
+                glueViewSettingsTab,
+                ReactToPluginEventWithReturn,
+                _refreshManager);
+
+            #region Start the timer, do it after the gameHostView is created
+
+            // 250 works but you can feel the delay a bit when working in game. Let's try 150
+            //var busyTimerFrequency = 250; // ms
+            //var busyTimerFrequency = 150; // ms
+            // even faster?
+            //var busyTimerFrequency = 100; // ms
+            //busyUpdateTimer = new Timer(busyTimerFrequency);
+            //busyUpdateTimer.Elapsed += async (not, used) => await DoGetCommandsTimedLogic();
+            //busyUpdateTimer.SynchronizingObject = MainGlueWindow.Self;
+            //busyUpdateTimer.Start();
+
+            // This was 250 but it wasn't fast enough to feel responsive
+            var dragDropTimerFrequency = 100; // ms
+            dragDropTimer = new Timer(dragDropTimerFrequency);
+            dragDropTimer.Elapsed += (not, used) => _dragDropManagerGameWindow.HandleDragDropTimerElapsed(gameHostView);
+            dragDropTimer.SynchronizingObject = MainGlueWindow.Self;
+            dragDropTimer.Start();
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Toolbar
+
         private void CreateToolbar()
         {
             var toolbar = new RunnerToolbar();
@@ -634,6 +581,22 @@ namespace GameCommunicationPlugin.GlueControl
             await BuildAndRun();
         }
 
+        #endregion
+
+        #region Profile Tab
+
+        void CreateProfileTab()
+        {
+            var control = new ProfilingControl();
+            var vm = new ProfilingControlViewModel();
+            control.DataContext = vm;
+
+            this.CreateAndAddTab(control, "Profiling", TabLocation.Bottom);
+
+            ProfilingManager.Self.Initialize(vm, CompilerViewModel);
+        }
+
+        #endregion
 
         private void CreateBuildControl()
         {
