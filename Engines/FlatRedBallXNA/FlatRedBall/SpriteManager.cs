@@ -2239,9 +2239,10 @@ namespace FlatRedBall
         /// <param name="relativeTo">The layer to move in front of.</param>
         public static void MoveLayerAboveLayer(Layer layerToMove, Layer relativeTo)
         {
+            mLayers.Remove(layerToMove);
+            
             int index = mLayers.IndexOf(relativeTo);
 
-            mLayers.Remove(layerToMove);
             mLayers.Insert(index + 1, layerToMove);
         }
 
@@ -2252,7 +2253,7 @@ namespace FlatRedBall
         public static void RemoveAllParticleSprites()
         {
             // This can be a forward loop because the Sprites in
-            // mSparticleSprites are never removed from that list.
+            // mParticleSprites are never removed from that list.
             for (int i = 0; i < mParticleSprites.Count; i++)
             {
                 if (mParticleSprites[i].mEmpty == false)
