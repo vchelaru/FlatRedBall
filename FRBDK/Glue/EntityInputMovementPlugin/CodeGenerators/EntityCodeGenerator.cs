@@ -56,6 +56,10 @@ namespace EntityInputMovementPlugin.CodeGenerators
                 }}
     ";
                 }
+                else if(inputDevice == ViewModels.InputDevice.ZeroInputDevice)
+                {
+                    return $"{movementTypeSpecificCall}(new FlatRedBall.Input.ZeroInputDevice());";
+                }
                 else
                 {
                     return null;

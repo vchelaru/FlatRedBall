@@ -40,9 +40,13 @@
                         <RadioButton.ToolTip>Generates code to use a gamepad if plugged in, otherwise to use the Keyboard.</RadioButton.ToolTip>
                         Xbox Gamepad with Keyboard Fallback
                     </RadioButton>
+                    <RadioButton IsChecked="{Binding IsZeroInputDevice}">
+                        <RadioButton.ToolTip>Generates code assigning a "zero" input device.</RadioButton.ToolTip>
+                        "Zero" InputDevice
+                    </RadioButton>
                     <RadioButton IsChecked="{Binding IsNoneInputDevice}">
-                        <RadioButton.ToolTip>Generates no input assignment code.</RadioButton.ToolTip>
-                        None (Can Assign in Code)
+                        <RadioButton.ToolTip>Generates no input assignment code, which will cause exceptions if not assigned in code.</RadioButton.ToolTip>
+                        None (Must Assign in Code)
                     </RadioButton>
                 </StackPanel>
             </GroupBox>

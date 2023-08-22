@@ -22,7 +22,8 @@ namespace EntityInputMovementPlugin.ViewModels
     public enum InputDevice
     {
         GamepadWithKeyboardFallback,
-        None
+        None,
+        ZeroInputDevice
     }
     #endregion
 
@@ -67,6 +68,19 @@ namespace EntityInputMovementPlugin.ViewModels
                 if(value)
                 {
                     InputDevice = InputDevice.GamepadWithKeyboardFallback;
+                }
+            }
+        }
+
+        [DependsOn(nameof(InputDevice))]
+        public bool IsZeroInputDevice
+        {
+            get => InputDevice == InputDevice.ZeroInputDevice;
+            set
+            {
+                if(value)
+                {
+                    InputDevice = InputDevice.ZeroInputDevice;
                 }
             }
         }
