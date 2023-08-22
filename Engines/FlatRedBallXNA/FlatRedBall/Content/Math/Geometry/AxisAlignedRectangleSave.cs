@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Serialization;
 using FlatRedBall.Math.Geometry;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -20,6 +21,20 @@ namespace FlatRedBall.Content.Math.Geometry
 
         public float ScaleX;
         public float ScaleY;
+
+        [XmlIgnore]
+        public float Width
+        {
+            get => ScaleX * 2;
+            set => ScaleX = value / 2.0f;
+        }
+
+        [XmlIgnore]
+        public float Height
+        {
+            get => ScaleY * 2;
+            set => ScaleY = value / 2.0f;
+        }
 
         public string Name;
         public string Parent;

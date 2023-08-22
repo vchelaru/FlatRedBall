@@ -50,7 +50,7 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             if (customVariable.GetIsCsv())
             {
-                string fullFileName = FacadeContainer.Self.ProjectValues.ContentDirectory + customVariable.Type;
+                string fullFileName = GlueState.ContentDirectory + customVariable.Type;
                 ReferencedFileSave foundRfs = GlueCommands.FileCommands.GetReferencedFile(fullFileName);
 
                 if (foundRfs != null)

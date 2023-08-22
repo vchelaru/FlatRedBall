@@ -41,7 +41,7 @@ public class ObjectFinder : IObjectFinder
     {
         if (FileManager.IsRelative(fileName))
         {
-            return FacadeContainer.Self.ProjectValues.ContentDirectory + fileName;
+            return GlueState.Self.ContentDirectory + fileName;
         }
         else
         {

@@ -25,7 +25,6 @@ using FlatRedBall.Glue.Errors;
 using System.Collections;
 using FlatRedBall.Glue.CodeGeneration;
 using EditorObjects.SaveClasses;
-using FlatRedBall.Glue.FacadeImplementation;
 using FlatRedBall.Glue.GuiDisplay.Facades;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Input;
@@ -66,8 +65,6 @@ namespace FlatRedBall.Glue
         #region Fields
 
 
-
-        static ProjectValues mProjectValues;
 
         static ProjectBase mProjectBase;
         //static VisualStudioProject mContentProject;
@@ -251,13 +248,7 @@ namespace FlatRedBall.Glue
         public static void Initialize()
         {
             CodeProjectHelper = new Projects.CodeProjectHelper();
-            mProjectValues = new ProjectValues();
-            FacadeContainer.Self.ProjectValues = mProjectValues;
-
-
-
             VerificationId = 0;
-
         }
 
         public static ProjectBase AddSyncedProject(FilePath fileName)

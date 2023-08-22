@@ -119,7 +119,7 @@ namespace Glue
             else
             {
 
-                var message = $"Could not find any .NET SDKs installed. Glue will not be able to load projets. We recommend installing .NET 6 SDK.\ndotnet --list-sdks output:\n{output}";
+                var message = $"Could not find any versions of .NET 6.XX SDKs installed. Glue may not be able to load projects. We recommend installing .NET 6 SDK.\ndotnet --list-sdks output:\n{output}";
 
                 if(string.IsNullOrEmpty(output))
                 {

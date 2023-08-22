@@ -43,7 +43,7 @@
                                         </StackPanel>
                                         <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding AutomaticInfoVisibility}"
                                             Width="175">
-                                            Automatic partitioning does not consider entity rotation, AnimationChain shape modifications, states, or custom code.
+                                            Automatic partitioning does not consider entity rotation, states, or custom code. Animations are considered if the Sprite is marked as setting collision.
                                         </TextBlock>
                                     </StackPanel>
                                 </RadioButton>

@@ -1,4 +1,6 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Elements;
+using FlatRedBall.Glue.GuiDisplay;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Math;
 using Microsoft.Xna.Framework;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace OfficialPlugins.CollisionPlugin.Managers
 {
@@ -43,7 +46,9 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
         private static void GetBigSmallForEntity(Axis sortAxis, EntitySave entity, ref float small, ref float big)
         {
-            var allCollisionObjects = entity?.GetAllNamedObjectsRecurisvely().Where(IsCollisionShape);
+            var allNamedObjects = entity?.GetAllNamedObjectsRecurisvely();
+
+            var allCollisionObjects = allNamedObjects.Where(IsCollisionShape);
 
             if (allCollisionObjects != null)
             {
@@ -57,7 +62,101 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                     big = Math.Max(big, bigInner);
                 }
             }
+
+            var spriteAti = AvailableAssetTypes.CommonAtis.Sprite;
+
+
+            foreach (var item in allNamedObjects)
+            {
+                if(item.GetAssetTypeInfo() == spriteAti && item.GetCustomVariable("SetCollisionFromAnimation")?.Value as bool? == true)
+                {
+                    // This uses collision, so let's try to get the AnimationChainSave
+                    AnimationChainListSave animationChainListSave =
+                        AvailableAnimationChainsStringConverter.GetReferencedAclsThroughSetVariables(entity, item, stateSave:null);
+
+                    if(animationChainListSave != null)
+                    {
+                        foreach(var animation in animationChainListSave.AnimationChains)
+                        {
+                            foreach(var frame in animation.Frames)
+                            {
+                                float smallInner;
+                                float bigInner;
+                                (smallInner, bigInner) = GetDimensionFor(frame, sortAxis);
+
+                                small = Math.Min(small, smallInner);
+                                big = Math.Max(big, bigInner);
+                            }
+                        }
+                    }
+                    
+                }
+            }
         }
+
+        private static (float small, float big) GetDimensionFor(AnimationFrameSave frame, Axis sortAxis)
+        {
+            if(frame.ShapeCollectionSave == null)
+            {
+                return (0, 0);
+            }
+
+            float big = 0;
+            float small = 0;
+
+            if(sortAxis == Axis.X)
+            {
+                foreach(var circle in frame.ShapeCollectionSave.CircleSaves)
+                {
+                    big = Math.Max(big, circle.X + circle.Radius);
+                    small = Math.Min(small, circle.X - circle.Radius);
+                }
+                foreach(var rectangle in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    big = Math.Max(big, rectangle.X + rectangle.ScaleX);
+                    small = Math.Min(small, rectangle.X - rectangle.ScaleX);
+                }
+                foreach(var polygon in frame.ShapeCollectionSave.PolygonSaves)
+                {
+                    foreach(var point in polygon.Points)
+                    {
+                        big = Math.Max(big, (float)(polygon.X + point.X));
+                        small = Math.Min(small, (float)(polygon.X - point.X));
+                    }
+                }
+                // todo:
+                //foreach(var capsule in frame.ShapeCollectionSave.CapsuleSaves)
+                //{
+                //    big = Math.Max(big, capsule.X + capsule.Radius);
+                //    small = Math.Min(small, capsule.X - capsule.Radius);
+                //}
+            }
+            else
+            {
+                // Do the same code as above, but his time use Y and ScaleY instead of X and ScaleX
+                foreach (var circle in frame.ShapeCollectionSave.CircleSaves)
+                {
+                    big = Math.Max(big, circle.Y + circle.Radius);
+                    small = Math.Min(small, circle.Y - circle.Radius);
+                }
+                foreach (var rectangle in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
+                {
+                    big = Math.Max(big, rectangle.Y + rectangle.ScaleY);
+                    small = Math.Min(small, rectangle.Y - rectangle.ScaleY);
+                }
+                foreach (var polygon in frame.ShapeCollectionSave.PolygonSaves)
+                {
+                    foreach (var point in polygon.Points)
+                    {
+                        big = Math.Max(big, (float)(polygon.Y + point.Y));
+                        small = Math.Min(small, (float)(polygon.Y - point.Y));
+                    }
+                }
+            }
+
+            return (small, big);
+        }
+
 
         private static (float small, float big) GetDimensionFor(NamedObjectSave nos, Axis sortAxis)
         {

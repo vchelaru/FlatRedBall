@@ -47,7 +47,6 @@ namespace FlatRedBall.Glue
             FacadeContainer.Self.GlueState = FlatRedBall.Glue.Plugins.ExportedImplementations.GlueState.Self;
             //FacadeContainer.Self.ObjectFinder = ObjectFinder.Self;
 
-            ReferencedFileSaveExtensionMethodsGlue.ProjectValues = FacadeContainer.Self.ProjectValues;
         }
 	}
 }
