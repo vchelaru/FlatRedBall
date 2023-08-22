@@ -160,6 +160,13 @@ public class DragDropManager : Singleton<DragDropManager>
             {
                 canBeCollidable = true;
             }
+            
+            if(!canBeCollidable && movingNos.IsList && targetNos.IsList)
+            {
+                GlueCommands.Self.PrintOutput($"Cannot create relationship between {movingNos} and {targetNode} because both must be collidables." +
+                    $"\n{movingNos.InstanceName} collidable: {isMovedNosCollidableOrCollidableList}" +
+                    $"\n{targetNos.InstanceName} collidable: {isTargetCollidableOrCollidableList}");
+            }
             //else if(IsCollidable(movingNos) && IsCollidableList(targetNos) && movingNos.CanBeInList(targetNos) == false)
             //{
             //    var response = HandleCreateCollisionRelationship(movingNos, targetNos);

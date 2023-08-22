@@ -69,6 +69,23 @@ namespace Glue
 
         private static void SetMsBuildEnvironmentVariable()
         {
+            // August 21, 2023
+            // At some point in 
+            // the past, loading
+            // .NET 6.0 projects in
+            // Glue failed. It seemed
+            // to happen on machines which
+            // only had .NET 7 installed. At
+            // one point I had a Github issue which
+            // discussed this but I can't find it anymore.
+            // This problem does not occur for older (.NET 4.7)
+            // projects, so this is only needed when loading .NET
+            // 6 projects. However, this code is run 1 time when Glue
+            // first starts up. At this point we don't know what kind of 
+            // project will be loaded. In fact, one project could get loaded
+            // then a different one could get loaded. Also, .NET 4.7 is old, and
+            // fewer and fewer projects using .NET 4.7 exist, so over time this will
+            // be for all projects. Therefore, just do the check always.
             var startInfo = new ProcessStartInfo("dotnet", "--list-sdks")
             {
                 RedirectStandardOutput = true
