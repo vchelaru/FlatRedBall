@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.MVVM
     public class ViewModel : INotifyPropertyChanged
     {
         Dictionary<string, List<string>> notifyRelationships = new Dictionary<string, List<string>>();
-        private Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
+        protected Dictionary<string, object> propertyDictionary = new Dictionary<string, object>();
 
         protected T Get<T>([CallerMemberName]string propertyName = null)
         {

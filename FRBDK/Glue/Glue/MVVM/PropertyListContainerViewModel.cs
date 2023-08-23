@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.Elements;
+﻿using ExCSS;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Interfaces;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -347,6 +348,10 @@ namespace FlatRedBall.Glue.MVVM
                             // 3rd parameter forces the persist, because if we're in here, the Glue object does not have this
                             // property
                             method.Invoke(this, new object[] { defaultVmValue, viewModelPropertyName, true });
+                        }
+                        else if(!shouldSync && kvp.Value.RemoveIfDefault && propertyDictionary.ContainsKey(viewModelPropertyName))
+                        {
+                            propertyDictionary.Remove(viewModelPropertyName);
                         }
                         handledByVmDefault = true;
                     }
