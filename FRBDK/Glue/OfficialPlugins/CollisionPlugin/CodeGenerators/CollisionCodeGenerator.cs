@@ -656,7 +656,7 @@ namespace OfficialPlugins.CollisionPlugin
                         if(automaticOrManual == PartitioningAutomaticManual.Automatic)
                         {
                             partitionWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                                nos, sortAxis);
+                                nos);
                         }
                         else
                         {

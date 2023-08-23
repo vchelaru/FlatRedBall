@@ -47,13 +47,19 @@
                                         </TextBlock>
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}" VerticalContentAlignment="Center">
+                                <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}">
+                                    <StackPanel x:Name="ManualRadioButtonStack">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock>Manual</TextBlock>
                                             <TextBox Margin="4,0,0,0" Text="{Binding PartitionWidthHeight}" IsEnabled="{Binding IsManualTextBoxEnabled}" 
                                                      VerticalContentAlignment="Center" Width="48"></TextBox>
                                         
                                         </StackPanel>
+                                        <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding ManualInfoVisibility}"
+                                            Width="175">
+                                            Enter the maximum of either width or height. This value is used for secondary partitioning, so enter the max of either dimension regardless of sort axis.
+                                        </TextBlock>
+                                    </StackPanel>
                                 </RadioButton>
                             </StackPanel>
                         </GroupBox>

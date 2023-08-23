@@ -15,7 +15,14 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 {
     public static class AutomatedCollisionSizeLogic
     {
-        public static float GetAutomaticCollisionWidthHeight(NamedObjectSave namedObject, Axis sortAxis)
+        /// <summary>
+        /// Returns the max collision width or height for the argument NamedObjectSave. This value is
+        /// used on the primary axis for partitioning, but also on the secondary axis for early-outs, so it
+        /// must consider both X and Y.
+        /// </summary>
+        /// <param name="namedObject">The argument NamedObjectSave.</param>
+        /// <returns>The max width or height (the larger of the two)</returns>
+        public static float GetAutomaticCollisionWidthHeight(NamedObjectSave namedObject)
         {
             var entityForNos = GetEntityFor(namedObject);
 
@@ -29,7 +36,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
 
                 foreach(var entity in entities)
                 {
-                    GetBigSmallForEntity(sortAxis, entity, ref small, ref big);
+                    GetBigSmallForEntity(entity, ref small, ref big);
                 }
 
             }
@@ -44,7 +51,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             }
         }
 
-        private static void GetBigSmallForEntity(Axis sortAxis, EntitySave entity, ref float small, ref float big)
+        private static void GetBigSmallForEntity(EntitySave entity, ref float small, ref float big)
         {
             var allNamedObjects = entity?.GetAllNamedObjectsRecurisvely();
 
@@ -56,7 +63,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                 {
                     float smallInner;
                     float bigInner;
-                    (smallInner, bigInner) = GetDimensionFor(item, sortAxis);
+                    (smallInner, bigInner) = GetDimensionFor(item);
 
                     small = Math.Min(small, smallInner);
                     big = Math.Max(big, bigInner);
@@ -82,7 +89,7 @@ namespace OfficialPlugins.CollisionPlugin.Managers
                             {
                                 float smallInner;
                                 float bigInner;
-                                (smallInner, bigInner) = GetDimensionFor(frame, sortAxis);
+                                (smallInner, bigInner) = GetDimensionFor(frame);
 
                                 small = Math.Min(small, smallInner);
                                 big = Math.Max(big, bigInner);
@@ -94,7 +101,12 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             }
         }
 
-        private static (float small, float big) GetDimensionFor(AnimationFrameSave frame, Axis sortAxis)
+        /// <summary>
+        /// Returns the big/small values for all shape collections in the argument frame. 
+        /// </summary>
+        /// <param name="frame">The frame which may have a shape collection</param>
+        /// <returns>The big/small values used for partitioning</returns>
+        private static (float small, float big) GetDimensionFor(AnimationFrameSave frame)
         {
             if(frame.ShapeCollectionSave == null)
             {
@@ -104,137 +116,84 @@ namespace OfficialPlugins.CollisionPlugin.Managers
             float big = 0;
             float small = 0;
 
-            if(sortAxis == Axis.X)
+            foreach(var circle in frame.ShapeCollectionSave.CircleSaves)
             {
-                foreach(var circle in frame.ShapeCollectionSave.CircleSaves)
-                {
-                    big = Math.Max(big, circle.X + circle.Radius);
-                    small = Math.Min(small, circle.X - circle.Radius);
-                }
-                foreach(var rectangle in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
-                {
-                    big = Math.Max(big, rectangle.X + rectangle.ScaleX);
-                    small = Math.Min(small, rectangle.X - rectangle.ScaleX);
-                }
-                foreach(var polygon in frame.ShapeCollectionSave.PolygonSaves)
-                {
-                    foreach(var point in polygon.Points)
-                    {
-                        big = Math.Max(big, (float)(polygon.X + point.X));
-                        small = Math.Min(small, (float)(polygon.X - point.X));
-                    }
-                }
-                // todo:
-                //foreach(var capsule in frame.ShapeCollectionSave.CapsuleSaves)
-                //{
-                //    big = Math.Max(big, capsule.X + capsule.Radius);
-                //    small = Math.Min(small, capsule.X - capsule.Radius);
-                //}
+                big = Math.Max(big, circle.X + circle.Radius);
+                small = Math.Min(small, circle.X - circle.Radius);
+                big = Math.Max(big, circle.Y + circle.Radius);
+                small = Math.Min(small, circle.Y - circle.Radius);
             }
-            else
+            foreach(var rectangle in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
             {
-                // Do the same code as above, but his time use Y and ScaleY instead of X and ScaleX
-                foreach (var circle in frame.ShapeCollectionSave.CircleSaves)
+                big = Math.Max(big, rectangle.X + rectangle.ScaleX);
+                small = Math.Min(small, rectangle.X - rectangle.ScaleX);
+                big = Math.Max(big, rectangle.Y + rectangle.ScaleY);
+                small = Math.Min(small, rectangle.Y - rectangle.ScaleY);
+            }
+            foreach(var polygon in frame.ShapeCollectionSave.PolygonSaves)
+            {
+                foreach(var point in polygon.Points)
                 {
-                    big = Math.Max(big, circle.Y + circle.Radius);
-                    small = Math.Min(small, circle.Y - circle.Radius);
-                }
-                foreach (var rectangle in frame.ShapeCollectionSave.AxisAlignedRectangleSaves)
-                {
-                    big = Math.Max(big, rectangle.Y + rectangle.ScaleY);
-                    small = Math.Min(small, rectangle.Y - rectangle.ScaleY);
-                }
-                foreach (var polygon in frame.ShapeCollectionSave.PolygonSaves)
-                {
-                    foreach (var point in polygon.Points)
-                    {
-                        big = Math.Max(big, (float)(polygon.Y + point.Y));
-                        small = Math.Min(small, (float)(polygon.Y - point.Y));
-                    }
+                    big = Math.Max(big, (float)(polygon.X + point.X));
+                    small = Math.Min(small, (float)(polygon.X - point.X));
+                    big = Math.Max(big, (float)(polygon.Y + point.Y));
+                    small = Math.Min(small, (float)(polygon.Y - point.Y));
                 }
             }
+            // todo:
+            //foreach(var capsule in frame.ShapeCollectionSave.CapsuleSaves)
+            //{
+            //    big = Math.Max(big, capsule.X + capsule.Radius);
+            //    small = Math.Min(small, capsule.X - capsule.Radius);
+            //}
 
             return (small, big);
         }
 
 
-        private static (float small, float big) GetDimensionFor(NamedObjectSave nos, Axis sortAxis)
+        private static (float small, float big) GetDimensionFor(NamedObjectSave nos)
         {
             var ati = nos.GetAssetTypeInfo();
 
             float small = 0;
             float big = 0;
 
-            if(sortAxis == Axis.X)
+            var x = Get("X");
+            var y = Get("Y");
+            if(ati == AvailableAssetTypes.CommonAtis.Circle)
             {
-                var x = Get("X");
-                if(ati == AvailableAssetTypes.CommonAtis.Circle)
-                {
-                    small = x - Get("Radius");
-                    big = x + Get("Radius");
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
-                {
-                    small = x - Get("Width") / 2.0f;
-                    big = x + Get("Width")/2.0f;
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
-                {
-                    small = x - Get("Width")/2.0f;
-                    big = x + Get("Width")/2.0f;
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.Polygon)
-                {
-                    var pointsVariable = nos.GetCustomVariable("Points");
-                    var points = pointsVariable?.Value as List<Vector2>;
+                small = Math.Min( x - Get("Radius"),  y - Get("Radius"));
+                big = Math.Min(x + Get("Radius"), y + Get("Radius"));
+            }
+            else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
+            {
+                small = Math.Min(x - Get("Width") / 2.0f, y - Get("Height") / 2);
+                big = Math.Min(x + Get("Width")/2.0f, y + Get("Height") / 2);
+            }
+            else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
+            {
+                small = Math.Min(x - Get("Width")/2.0f, y - Get("Height") / 2);
+                big = Math.Min(x + Get("Width")/2.0f, y + Get("Height") / 2);
+            }
+            else if (ati == AvailableAssetTypes.CommonAtis.Polygon)
+            {
+                var pointsVariable = nos.GetCustomVariable("Points");
+                var points = pointsVariable?.Value as List<Vector2>;
 
-                    small = x;
-                    big = x;
-                    if(points != null)
+                small = x;
+                big = x;
+                if(points != null)
+                {
+                    foreach(var point in points)
                     {
-                        foreach(var point in points)
-                        {
-                            small = Math.Min(x + point.X, small);
-                            big = Math.Max(x + point.X, big);
-                        }
+                        small = Math.Min(x + point.X, small);
+                        big = Math.Max(x + point.X, big);
+                        small = Math.Min(y + point.Y, small);
+                        big = Math.Max(y + point.Y, big);
                     }
                 }
             }
-            else // height
-            {
-                var y = Get("Y");
-                if (ati == AvailableAssetTypes.CommonAtis.Circle)
-                {
-                    small = y - Get("Radius");
-                    big = y + Get("Radius");
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
-                {
-                    small = y - Get("Height") / 2;
-                    big = y + Get("Height") / 2;
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
-                {
-                    small = y - Get("Height")/2;
-                    big = y + Get("Height")/2;
-                }
-                else if (ati == AvailableAssetTypes.CommonAtis.Polygon)
-                {
-                    
-                    var points = nos.GetCustomVariable("Points")?.Value as List<Vector2>;
 
-                    small = y;
-                    big = y;
-                    if (points != null)
-                    {
-                        foreach (var point in points)
-                        {
-                            small = Math.Min(y + point.Y, small);
-                            big = Math.Max(y + point.Y, big);
-                        }
-                    }
-                }
-            }
             return (small, big);
 
             float Get(string name)

@@ -128,6 +128,9 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         [DependsOn(nameof(IsAutomaticPartitionSizeChecked))]
         public Visibility AutomaticInfoVisibility => IsAutomaticPartitionSizeChecked.ToVisibility();
 
+        [DependsOn(nameof(IsManualPartitionSizeChecked))]
+        public Visibility ManualInfoVisibility => IsManualPartitionSizeChecked.ToVisibility();
+
         public float CalculatedParitioningWidthHeight
         {
             get => Get<float>();

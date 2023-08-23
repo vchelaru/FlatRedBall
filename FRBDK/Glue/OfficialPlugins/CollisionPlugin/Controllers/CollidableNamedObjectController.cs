@@ -33,7 +33,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 if (nos != null && ViewModel.CanBePartitioned)
                 {
                     ViewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                        nos, ViewModel.SortAxis);
+                        nos);
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             if(viewModel.CanBePartitioned)
             {
                 viewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                    thisNamedObject, viewModel.SortAxis);
+                    thisNamedObject);
             }
 
             viewModel.CollisionRelationshipsTitle =

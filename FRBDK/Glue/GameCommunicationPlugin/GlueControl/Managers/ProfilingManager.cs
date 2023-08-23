@@ -37,7 +37,7 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             var dto = new Dtos.GetProfilingDataDto();
 
-            var response = await CommandSending.CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto);
+            var response = await CommandSending.CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto, isImportant:false);
 
             if (response.Succeeded)
             {
