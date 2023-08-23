@@ -1623,6 +1623,9 @@ namespace FlatRedBall.Math.Collision
 
                     var second = secondList[j];
 
+                    // The same item could be in 2 lists
+                    if (first == second) { continue; }
+
                     var distanceX =
                         first.Position.X - second.Position.X;
 
@@ -1681,6 +1684,9 @@ namespace FlatRedBall.Math.Collision
                         continue;
                     }
                     var second = secondList[j];
+
+                    // The same item could be in 2 lists
+                    if(first == second) { continue; }
 
                     var distanceY =
                         first.Position.Y - second.Position.Y;

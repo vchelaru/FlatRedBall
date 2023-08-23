@@ -29,15 +29,48 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             if(ProfilingViewModel.IsAutoSnapshotEnabled && CompilerViewModel.IsRunning && 
                 GlueState.Self.CurrentGlueProject != null)
             {
-                var dto = new Dtos.GetProfilingDataDto();
+                await RefreshProfilingData();
+            }
+        }
 
-                var response = await CommandSending.CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto);
+        public async Task RefreshProfilingData()
+        {
+            var dto = new Dtos.GetProfilingDataDto();
 
-                if (response.Succeeded)
+            var response = await CommandSending.CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto);
+
+            if (response.Succeeded)
+            {
+                ProfilingViewModel.SummaryText = response.Data.SummaryData;
+                //ProfilingViewModel.CollisionText = response.Data.CollisionData;
+                string text = "";
+
+                var totalCollisionCount = response.Data.CollisionData.Sum(item => item.DeepCollisions);
+                text += $"Total Collisions: {totalCollisionCount}\n\n";
+
+                var ordered = response.Data.CollisionData.OrderByDescending(item => item.DeepCollisions);
+
+                foreach (var item in ordered)
                 {
-                    ProfilingViewModel.SummaryText = response.Data.SummaryData;
-                    ProfilingViewModel.CollisionText = response.Data.CollisionData;
+                    string itemCountString = null;
+                    if(item.FirstItemListCount != null && item.SecondItemListCount != null)
+                    {
+                        itemCountString = $" {item.FirstItemListCount} vs {item.SecondItemListCount}";
+                    }
+
+                    string partitionText = null;
+                    if(item.IsPartitioned == false)
+                    {
+                        partitionText = " (not partitioned)";
+                    }
+                    else if(item.FirstPartitionAxis != item.SecondPartitionAxis && item.FirstPartitionAxis != null && item.SecondPartitionAxis != null)
+                    {
+                        partitionText = $" (partition axis mismatch {item.FirstPartitionAxis} vs {item.SecondPartitionAxis})";
+                    }
+
+                    text += $"{item.DeepCollisions} - {item.RelationshipName}{itemCountString}{partitionText}\n";
                 }
+                ProfilingViewModel.CollisionText = text;
             }
         }
     }

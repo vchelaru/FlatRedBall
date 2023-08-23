@@ -1,4 +1,5 @@
 ﻿using GameCommunicationPlugin.GlueControl.CommandSending;
+using GameCommunicationPlugin.GlueControl.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,17 +27,9 @@ namespace GameCommunicationPlugin.GlueControl.Views
             InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var dto = new Dtos.GetProfilingDataDto();
-
-            var response = await CommandSender.Self.Send<Dtos.ProfilingDataDto>(dto);
-
-            if(response.Succeeded)
-            {
-                SummaryTextBlock.Text = response.Data.SummaryData;
-                CollisionTextBlock.Text = response.Data.CollisionData;
-            }
+            _ = ProfilingManager.Self.RefreshProfilingData();
         }
     }
 }

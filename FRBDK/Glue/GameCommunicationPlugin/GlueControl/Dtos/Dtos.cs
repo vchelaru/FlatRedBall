@@ -477,7 +477,18 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
     public class ProfilingDataDto
     {
         public string SummaryData { get; set; }
-        public string CollisionData { get; set; }
+        public List<CollisionRelationshipInfo> CollisionData { get; set; } = new List<CollisionRelationshipInfo>();
+    }
+
+    public class CollisionRelationshipInfo
+    {
+        public string RelationshipName { get; set; }
+        public int DeepCollisions { get; set; }
+        public bool IsPartitioned { get; set; }
+        public FlatRedBall.Math.Axis? FirstPartitionAxis { get; set; }
+        public FlatRedBall.Math.Axis? SecondPartitionAxis { get; set; }
+        public int? FirstItemListCount { get; set; }
+        public int? SecondItemListCount { get; set; }
     }
 
     #endregion

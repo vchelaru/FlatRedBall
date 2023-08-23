@@ -1294,9 +1294,76 @@ namespace GlueControl
             var response = new ProfilingDataDto();
 
             response.SummaryData = FlatRedBall.Debugging.Debugger.GetFullPerformanceInformation();
-            response.CollisionData = FlatRedBall.Debugging.Debugger.GetCollisionInformation();
+
+            response.CollisionData = GetCollisionDataDto();
 
             return response;
+        }
+
+        private static List<CollisionRelationshipInfo> GetCollisionDataDto()
+        {
+            var collisionManager = FlatRedBall.Math.Collision.CollisionManager.Self;
+            int numberOfCollisions = 0;
+            int? maxCollisions = null;
+
+            List<CollisionRelationshipInfo> toReturn = new List<CollisionRelationshipInfo>();
+            foreach (var relationship in collisionManager.Relationships)
+            {
+                numberOfCollisions += relationship.DeepCollisionsThisFrame;
+
+                var dto = new CollisionRelationshipInfo();
+                dto.DeepCollisions = relationship.DeepCollisionsThisFrame;
+                dto.RelationshipName = relationship.Name;
+
+                var firstCollisionObject = relationship.FirstAsObject;
+                var secondObject = relationship.SecondAsObject;
+
+                System.Collections.IEnumerable listWithoutPartition = null;
+                if (firstCollisionObject is System.Collections.IList firstAsIEnumerable)
+                {
+                    dto.FirstItemListCount = firstAsIEnumerable.Count;
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == firstCollisionObject)
+                        {
+                            dto.FirstPartitionAxis = item.axis;
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = firstAsIEnumerable;
+                    }
+                }
+
+                if (secondObject is System.Collections.IList secondAsIEnumerable)
+                {
+                    dto.SecondItemListCount = secondAsIEnumerable.Count;
+                    var isPartitioned = false;
+                    foreach (var item in CollisionManager.Self.Partitions)
+                    {
+                        if (item.PartitionedObject == secondObject)
+                        {
+                            dto.SecondPartitionAxis = item.axis;
+                            isPartitioned = true;
+                            break;
+                        }
+                    }
+
+                    if (!isPartitioned)
+                    {
+                        listWithoutPartition = secondAsIEnumerable;
+                    }
+                }
+
+                dto.IsPartitioned = listWithoutPartition == null;
+
+                toReturn.Add(dto);
+            }
+            return toReturn;
         }
 
         #endregion
