@@ -136,7 +136,7 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Width="80" HorizontalAlignment="Left" 
+                        <TextBlock HorizontalAlignment="Left" 
                                    Text="{Binding FirstMassText, FallbackValue=First Mass}"></TextBlock>
                         <TextBox Grid.Row="1" Margin="10,0,10,0"
                                      Text="{Binding FirstCollisionMass}"></TextBox>
