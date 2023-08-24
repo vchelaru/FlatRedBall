@@ -11,18 +11,27 @@ namespace FlatRedBall.Glue.Managers
 {
     public class CopyPasteManager : Singleton<CopyPasteManager>
     {
+        object copiedObjectOwner;
         object copiedObjectClone;
         internal void HandleCopy()
         {
             var currentTreeNodeTag = GlueState.Self.CurrentTreeNode?.Tag;
+            var currentElement = GlueState.Self.CurrentElement;
 
             if(currentTreeNodeTag is ReferencedFileSave rfs)
             {
+                copiedObjectOwner = currentElement;
                 copiedObjectClone = rfs.Clone();
             }
             else if(currentTreeNodeTag is NamedObjectSave nos)
             {
+                copiedObjectOwner = currentElement;
                 copiedObjectClone = nos.Clone();
+            }
+            else if(currentTreeNodeTag is StateSave stateSave)
+            {
+                copiedObjectOwner = GlueState.Self.CurrentStateSaveCategory;
+                copiedObjectClone = stateSave.Clone();
             }
             else if(currentTreeNodeTag is ScreenSave screen)
             {
@@ -30,10 +39,11 @@ namespace FlatRedBall.Glue.Managers
             }
             else if(currentTreeNodeTag is EntitySave entity)
             {
-                copiedObjectClone = entity.Clone();
+                copiedObjectClone = entity.CloneJson();
             }
             else if (currentTreeNodeTag is CustomVariable variable)
             {
+                copiedObjectOwner = currentElement;
                 copiedObjectClone = variable.Clone();
             }
             else if(GlueState.Self.CurrentTreeNode.IsFolderForGlobalContentFiles())
@@ -60,6 +70,10 @@ namespace FlatRedBall.Glue.Managers
                 {
                     GlueCommands.Self.PrintError(response.Message);
                 }
+            }
+            else if(copiedObjectClone is StateSave asStateSave)
+            {
+                await GlueCommands.Self.GluxCommands.CopyStateSaveIntoElement(asStateSave, copiedObjectOwner as StateSaveCategory, GlueState.Self.CurrentElement);
             }
             else if(copiedObjectClone is GlueElement element)
             {

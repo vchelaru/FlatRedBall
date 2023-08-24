@@ -10,12 +10,14 @@ using FlatRedBall.Glue.FormHelpers;
 
 namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 {
+    #region NosVariableAssignment class
     public class NosVariableAssignment
     {
         public NamedObjectSave NamedObjectSave;
         public string VariableName;
         public object Value;
     }
+    #endregion
 
     public interface IGluxCommands
     {
@@ -231,6 +233,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #region StateSaveCategory
 
         void RemoveStateSaveCategory(StateSaveCategory category);
+
+        #endregion
+
+        #region StateSave
+
+        Task AddStateSave(StateSave newState, StateSaveCategory category, GlueElement element);
+
+        Task CopyStateSaveIntoElement(StateSave stateSave, StateSaveCategory category, GlueElement element);
 
         #endregion
 

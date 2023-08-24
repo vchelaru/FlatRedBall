@@ -1074,6 +1074,39 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #endregion
 
+        #region StateSave
+
+        public void ShowAddNewStateDialog()
+        {
+            // search: addstate, add new state, addnewstate, add state
+            var tiw = new TextInputWindow();
+            tiw.Message = "Enter a name for the new state";
+            tiw.Text = "New State";
+
+
+            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
+
+            if (result == DialogResult.OK)
+            {
+                var currentElement = GlueState.Self.CurrentElement;
+
+                string whyItIsntValid;
+                if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
+                {
+                    GlueGui.ShowMessageBox(whyItIsntValid);
+                }
+                else
+                {
+                    StateSave newState = new StateSave();
+                    newState.Name = tiw.Result;
+                    var category = GlueState.Self.CurrentStateSaveCategory;
+                    GlueCommands.Self.GluxCommands.AddStateSave(newState, category, currentElement);
+                }
+            }
+        }
+
+        #endregion
+
         #region Go to definition
         public void GoToDefinitionOfSelection()
         {

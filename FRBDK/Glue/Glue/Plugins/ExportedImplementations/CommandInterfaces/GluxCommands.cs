@@ -2739,6 +2739,61 @@ public class GluxCommands : IGluxCommands
 
     #endregion
 
+    #region StateSave
+
+    public Task AddStateSave(StateSave newState, StateSaveCategory category, GlueElement element)
+    {
+        return TaskManager.Self.AddAsync(() =>
+        {
+            if (category != null)
+            {
+                category.States.Add(newState);
+            }
+            else
+            {
+                element.States.Add(newState);
+            }
+
+            GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+            PluginManager.ReactToStateCreated(newState, category);
+
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
+
+            GlueState.Self.CurrentStateSave = newState;
+
+            _ = GluxCommands.Self.SaveElementAsync(element);
+            GlueCommands.Self.ProjectCommands.SaveProjects();
+        }, $"Add state {newState}");
+    }
+
+    public async Task CopyStateSaveIntoElement(StateSave stateSave, StateSaveCategory category, GlueElement element)
+    {
+
+        var ownerOfState = ObjectFinder.Self.GetElementContaining(category);
+
+        if(ownerOfState != element)
+        {
+            GlueCommands.Self.PrintError($"Cannot paste state into {element} - currently copy/paste is only supported within the same Screen/Entity");
+        }
+        else
+        {
+            if(category != null)
+            {
+                var clone = stateSave.Clone();
+
+                while(category.States.Any(item => item.Name == clone.Name))
+                {
+                    clone.Name = StringFunctions.IncrementNumberAtEnd(clone.Name);
+                }
+
+                await AddStateSave(clone, category, element);
+            }
+        }
+    }
+
+    #endregion
+
     #region GlueElements
 
     public FilePath GetElementJsonLocation(GlueElement element)
@@ -2816,7 +2871,6 @@ public class GluxCommands : IGluxCommands
     }
 
     #endregion
-
     
     #region Entity
 

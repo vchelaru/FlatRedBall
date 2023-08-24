@@ -1547,54 +1547,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         static void AddStateClick(object sender, EventArgs e)
         {
-            // search: addstate, add new state, addnewstate, add state
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.Message = "Enter a name for the new state";
-            tiw.Text = "New State";
-
-
-            DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
-
-            if (result == DialogResult.OK)
-            {
-                var currentElement = GlueState.Self.CurrentElement;
-
-                string whyItIsntValid;
-                if (!NameVerifier.IsStateNameValid(tiw.Result, currentElement, GlueState.Self.CurrentStateSaveCategory, GlueState.Self.CurrentStateSave, out whyItIsntValid))
-                {
-                    GlueGui.ShowMessageBox(whyItIsntValid);
-                }
-                else
-                {
-
-                    StateSave newState = new StateSave();
-                    newState.Name = tiw.Result;
-
-                    var category = GlueState.Self.CurrentStateSaveCategory;
-
-                    if (category != null)
-                    {
-                        category.States.Add(newState);
-                    }
-                    else
-                    {
-                        var element = currentElement;
-
-                        element.States.Add(newState);
-                    }
-
-                    GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-
-                    PluginManager.ReactToStateCreated(newState, category);
-
-                    GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
-
-                    GlueState.Self.CurrentStateSave = newState;
-
-                    GluxCommands.Self.SaveGlux();
-                    GlueCommands.Self.ProjectCommands.SaveProjects();
-                }
-            }
+            GlueCommands.Self.DialogCommands.ShowAddNewStateDialog();
         }
 
         static void AddStateCategoryClick(object sender, EventArgs e)

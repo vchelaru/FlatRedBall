@@ -47,7 +47,19 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
         #endregion
 
         void ShowLoadProjectDialog();
+
+        #region StateSave
+
+        void ShowAddNewStateDialog();
+
+
+        #endregion
+
+        #region StateSaveCategory
+
         void ShowAddNewCategoryDialog();
+
+        #endregion
 
         #region Message Box
 
