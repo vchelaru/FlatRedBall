@@ -11,6 +11,7 @@ using FlatRedBall.Utilities;
 #else
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FlatRedBall.IO;
 #endif
 
 namespace FlatRedBall.Graphics
@@ -349,13 +350,32 @@ namespace FlatRedBall.Graphics
 
         public override string ToString()
         {
-            string textureName = "<null texture>";
+            string toReturn = "<null texture>";
             if (this.Texture != null)
             {
-                textureName = this.Texture.Name;
+                if(!FlatRedBall.IO.FileManager.IsRelative(Texture.Name))
+                {
+                    toReturn = FileManager.MakeRelative(this.Texture.Name);
+
+                }
+                else
+                {
+                    toReturn = this.Texture.Name;
+                }
+
+
             }
 
-            return textureName;
+            if(ObjectCausingBreak is INameable nameable && !string.IsNullOrEmpty(nameable.Name))
+            {
+                toReturn += $" by {nameable.Name}";
+            }
+            else
+            {
+                toReturn += $"  by {ObjectCausingBreak?.GetType().Name}";
+            }
+
+            return toReturn;
         }
 
         #endregion
