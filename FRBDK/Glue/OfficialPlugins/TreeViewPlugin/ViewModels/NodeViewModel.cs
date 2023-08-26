@@ -52,6 +52,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage EntityInstanceIcon;
         public static BitmapImage EntityInstanceIsContainerIcon;
         public static BitmapImage EntityInstanceListIcon;
+        public static BitmapImage EntityInstanceListDerivedIcon;
         public static BitmapImage EventIcon;
         public static BitmapImage FileIcon;
         public static BitmapImage FileIconWildcard;
@@ -76,6 +77,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == EntityInstanceIcon.UriSource.OriginalString) return EntityInstanceIcon;
             if (source == EntityInstanceIsContainerIcon.UriSource.OriginalString) return EntityInstanceIsContainerIcon;
             if (source == EntityInstanceListIcon.UriSource.OriginalString) return EntityInstanceListIcon;
+            if (source == EntityInstanceListDerivedIcon.UriSource.OriginalString) return EntityInstanceListDerivedIcon;
             if (source == EventIcon.UriSource.OriginalString) return EventIcon;
             if (source == FileIcon.UriSource.OriginalString) return FileIcon;
             if (source == FileIconWildcard.UriSource.OriginalString) return FileIconWildcard;
@@ -240,6 +242,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
             EntityInstanceIsContainerIcon = LoadIcon("icon_entity_instance_iscontainer");
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
+            EntityInstanceListDerivedIcon = LoadIcon("icon_entity_list_derived");
             EventIcon = LoadIcon("icon_event");
             FileIcon = LoadIcon("icon_file_standard");
             FileIconWildcard = LoadIcon("icon_file_wildcard");

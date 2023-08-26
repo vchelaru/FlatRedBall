@@ -655,8 +655,8 @@ namespace OfficialPlugins.CollisionPlugin
                         float partitionWidthHeight;
                         if(automaticOrManual == PartitioningAutomaticManual.Automatic)
                         {
-                            partitionWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
-                                nos);
+                            partitionWidthHeight = Math.Abs( AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                                nos).HalfDimension * 2);
                         }
                         else
                         {

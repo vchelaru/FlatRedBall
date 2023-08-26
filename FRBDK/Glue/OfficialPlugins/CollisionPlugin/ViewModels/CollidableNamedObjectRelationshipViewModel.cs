@@ -125,6 +125,8 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
             get => $"Automatic ({CalculatedParitioningWidthHeight:0.0})";  
         }
 
+
+
         [DependsOn(nameof(IsAutomaticPartitionSizeChecked))]
         public Visibility AutomaticInfoVisibility => IsAutomaticPartitionSizeChecked.ToVisibility();
 
@@ -134,6 +136,12 @@ namespace OfficialPlugins.CollisionPlugin.ViewModels
         public float CalculatedParitioningWidthHeight
         {
             get => Get<float>();
+            set => Set(value);
+        }
+
+        public string CalculatedPartitionWidthHeightSource
+        {
+            get => Get<string>();
             set => Set(value);
         }
 

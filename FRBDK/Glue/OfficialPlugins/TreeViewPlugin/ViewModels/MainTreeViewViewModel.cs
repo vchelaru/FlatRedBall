@@ -801,7 +801,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var nos in namedObjects)
             {
-                var matchWeight = GetMatchWeight(nos.InstanceName);
+                var matchWeight = GetMatchWeight(nos.InstanceName, nos.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var node = new NodeViewModel();
@@ -852,7 +852,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             foreach (var variable in variables)
             {
-                var matchWeight = GetMatchWeight(variable.Name);
+                var matchWeight = GetMatchWeight(variable.Name, variable.DefinedByBase);
                 if (matchWeight > 0)
                 {
                     var treeNode = new NodeViewModel(null);
@@ -986,54 +986,62 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 }
             }
 
-            double GetMatchWeight(string itemName)
+            double GetMatchWeight(string itemName, bool isDefinedByBase = false)
             {
                 var itemNameToLower = itemName.ToLowerInvariant();
+
+                var weight = 0.0;
+
                 if (itemName == searchTermCaseSensitive)
                 {
                     // Search: Sprite 
                     // Actual: Sprite
-                    return 1;
+                    weight = 1;
                 }
                 else if (itemName.StartsWith(searchTermCaseSensitive))
                 {
                     // Search: Spri
                     // Actual: Sprite
-                    return 0.8;
+                    weight = 0.8;
                 }
                 else if (itemNameToLower == searchToLower)
                 {
                     // Search: sprite
                     // Actual: Sprite
-                    return 0.7;
+                    weight = 0.7;
                 }
                 else if (CamelCaseMatchUpper(itemName, searchTermCaseSensitive))
                 {
                     // Search MGE
                     // Actual: MachineGunEnemy
-                    return 0.65;
+                    weight = 0.65;
                 }
                 else if (itemNameToLower.StartsWith(searchToLower))
                 {
                     // Search: spri
                     // Actual: Sprite
-                    return 0.6;
+                    weight = 0.6;
                 }
                 else if (itemName.Contains(searchTermCaseSensitive))
                 {
                     // Search: rit
                     // Actual: Sprite
-                    return 0.5;
+                    weight = 0.5;
                 }
                 else if (itemNameToLower.Contains(searchToLower))
                 {
                     // Search: magetod
                     // Actual: DamageToDeal
-                    return 0.4;
+                    weight = 0.4;
                 }
 
+                // if defined by base, then we make this weigh slightly less so that it shows up after the original definitions
+                if(isDefinedByBase)
+                {
+                    weight -= .001f;
+                }
 
-                return 0;
+                return weight;
             }
             bool CamelCaseMatchUpper(string itemName, string searchTermCaseSensitive)
             {

@@ -32,8 +32,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
                 var nos = GlueState.Self.CurrentNamedObjectSave;
                 if (nos != null && ViewModel.CanBePartitioned)
                 {
-                    ViewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                    var partitionInfo = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
                         nos);
+                    ViewModel.CalculatedParitioningWidthHeight = Math.Abs(partitionInfo.HalfDimension * 2);
+                    ViewModel.CalculatedPartitionWidthHeightSource = partitionInfo.Source;
                 }
             }
         }
@@ -61,8 +63,10 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             viewModel.UpdateFromGlueObject();
             if(viewModel.CanBePartitioned)
             {
-                viewModel.CalculatedParitioningWidthHeight = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
+                var partitionInfo = AutomatedCollisionSizeLogic.GetAutomaticCollisionWidthHeight(
                     thisNamedObject);
+                viewModel.CalculatedParitioningWidthHeight = Math.Abs( partitionInfo.HalfDimension * 2);
+                ViewModel.CalculatedPartitionWidthHeightSource = partitionInfo.Source;
             }
 
             viewModel.CollisionRelationshipsTitle =

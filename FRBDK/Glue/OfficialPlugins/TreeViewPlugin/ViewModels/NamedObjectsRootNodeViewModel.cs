@@ -289,7 +289,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else if (namedObject.IsList)
             {
-                imageSource = NodeViewModel.EntityInstanceListIcon;
+                if(namedObject.DefinedByBase)
+                {
+                    imageSource = NodeViewModel.EntityInstanceListDerivedIcon;
+                }
+                else
+                {
+                    imageSource = NodeViewModel.EntityInstanceListIcon;
+                }
             }
             else if(namedObject.SourceClassType == "TileShapeCollection" || 
                 namedObject.SourceClassType == "FlatRedBall.TileCollisions.TileShapeCollection")
