@@ -154,7 +154,6 @@
     <Resource Include="QuickActionPlugin\Views\StartWizard.png" />
     <Resource Include="SpritePlugin\Icons\fitresize.png" />
     <Resource Include="TreeViewPlugin\Content\*.png" />
-    <Resource Include="TreeViewPlugin\Content\StarFilled.png" />
     <Resource Include="Wizard\Icons\action_forms.png" />
     <Resource Include="Wizard\Icons\action_platformer.png" />
     <Resource Include="Wizard\Icons\action_project.png" />

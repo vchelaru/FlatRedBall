@@ -118,6 +118,7 @@ public partial class CustomVariablePropertiesView : UserControl
         RemoveMember(nameof(VariableDefinition.UsesCustomCodeGeneration));
 
         PreferredDisplayerManager.AddDisplayerUi(VariableDefinitionGrid, Variable);
+        PreferredDisplayerManager.RefreshSelectedDisplayMembers(VariableDefinitionGrid, Variable);
 
         if(VariableDefinitionGrid.Categories?.Count > 0)
         {

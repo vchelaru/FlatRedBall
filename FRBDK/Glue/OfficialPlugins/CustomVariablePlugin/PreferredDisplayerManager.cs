@@ -82,7 +82,7 @@ internal class PreferredDisplayerManager
         }
     }
 
-    private static void RefreshSelectedDisplayMembers(DataUiGrid grid, CustomVariable variable)
+    public static void RefreshSelectedDisplayMembers(DataUiGrid grid, CustomVariable variable)
     {
         foreach (var member in SelectedDisplayerMembers)
         {
