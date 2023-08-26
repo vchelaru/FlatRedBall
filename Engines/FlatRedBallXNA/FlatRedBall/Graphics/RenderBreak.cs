@@ -366,6 +366,7 @@ namespace FlatRedBall.Graphics
 
             }
 
+#if DEBUG
             if(ObjectCausingBreak is INameable nameable && !string.IsNullOrEmpty(nameable.Name))
             {
                 toReturn += $" by {nameable.Name}";
@@ -374,13 +375,13 @@ namespace FlatRedBall.Graphics
             {
                 toReturn += $"  by {ObjectCausingBreak?.GetType().Name}";
             }
-
+#endif
             return toReturn;
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         public void Cleanup()
         {
