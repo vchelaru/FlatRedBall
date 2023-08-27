@@ -913,7 +913,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         valueAsString = "null";
                     }
                 }
-                else if (CustomVariableCodeGenerator.ShouldAssignToCsv(customVariable, valueAsString))
+                else if (CustomVariableCodeGenerator.ShouldAssignToCsv(customVariable, valueAsString, element))
                 {
                     valueAsString = CustomVariableCodeGenerator.GetAssignmentToCsvItem(customVariable, element, valueAsString);
                 }

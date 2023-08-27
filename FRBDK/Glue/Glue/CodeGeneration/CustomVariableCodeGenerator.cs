@@ -936,7 +936,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // we can't assign it until the CSV is loaded.  Therefore, we will do it in LoadStaticContent
                 if (customVariable.IsShared && 
                     (!customVariable.DefinedByBase || customVariable.IsTunneling || customVariable.CreatesEvent) &&
-                    ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string) &&
+                    ShouldAssignToCsv(customVariable, customVariable.DefaultValue as string, element) &&
                     !ReferencesCsvFromGlobalContent(customVariable))
                 {
                     string variableAssignment = " = " + GetAssignmentToCsvItem(customVariable, element, (string)customVariable.DefaultValue);
@@ -1300,9 +1300,13 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        public static bool ShouldAssignToCsv(CustomVariable customVariable, string variableToAssign)
+        public static bool ShouldAssignToCsv(CustomVariable customVariable, string variableToAssign, GlueElement element = null)
         {
-            return IsTypeFromCsv(customVariable) && !string.IsNullOrEmpty(variableToAssign) && variableToAssign != "<NULL>" && variableToAssign != "\"\"" && 
+            return 
+                !string.IsNullOrEmpty(variableToAssign) && 
+                variableToAssign != "<NULL>" && 
+                variableToAssign != "\"\"" && 
+                IsTypeFromCsv(customVariable, element) && 
                 !customVariable.GetIsListCsv();
         }
 

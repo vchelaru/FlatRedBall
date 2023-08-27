@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using FlatRedBall.Math.Geometry;
 using FlatRedBall.Performance.Measurement;
+using Microsoft.Xna.Framework.Content;
 
 namespace FlatRedBall.Graphics
 {
@@ -239,6 +240,7 @@ namespace FlatRedBall.Graphics
 
         static List<Sprite> mVisibleSprites = new List<Sprite>();
         static List<Text> mVisibleTexts = new List<Text>();
+        static List<IDrawableBatch> mVisibleBatches = new List<IDrawableBatch>();
 
         private static void DrawMixed(SpriteList spriteListUnfiltered, SortType sortType,
             PositionedObjectList<Text> textListUnfiltered, List<IDrawableBatch> batches,
@@ -278,6 +280,10 @@ namespace FlatRedBall.Graphics
                 Section.GetAndStartContextAndTime("Sort Lists");
             }
 
+            // Vic asks - why do we sort before identifying visible objects?
+            // The reason is because we want to sort the actual lists that are
+            // passed in so that the next time sorting is called, the lists are 
+            // already sorted (or nearly so), making each subsequent sort faster.
             if (mUpdateSorting)
             {
                 SortAllLists(spriteListUnfiltered, sortType, textListUnfiltered, batches, relativeToCamera, camera);
@@ -285,6 +291,24 @@ namespace FlatRedBall.Graphics
 
             mVisibleSprites.Clear();
             mVisibleTexts.Clear();
+            mVisibleBatches.Clear();
+            if(batches != null)
+            {
+                for(int i = 0; i < batches.Count; i++)
+                {
+                    var shouldAdd = true;
+                    var batch = batches[i];
+                    if(batch is IVisible asIVisible)
+                    {
+                        shouldAdd = asIVisible.AbsoluteVisible;
+                    }
+                    if(shouldAdd)
+                    {
+                        mVisibleBatches.Add(batch);
+                    }
+                }
+            }
+            
             for (int i = 0; i < spriteListUnfiltered.Count; i++)
             {
                 Sprite sprite = spriteListUnfiltered[i];
@@ -309,7 +333,7 @@ namespace FlatRedBall.Graphics
             int indexOfNextSpriteToReposition = 0;
 
 
-            GetNextZValuesByCategory(mVisibleSprites, sortType, mVisibleTexts, batches, camera, ref spriteIndex, ref textIndex, ref nextSpriteSortValue, ref nextTextSortValue, ref nextBatchSortValue);
+            GetNextZValuesByCategory(mVisibleSprites, sortType, mVisibleTexts, mVisibleBatches, camera, ref spriteIndex, ref textIndex, ref nextSpriteSortValue, ref nextTextSortValue, ref nextBatchSortValue);
 
             int numberToDraw = 0;
             // This is used as a temporary variable for Z or distance from camera
@@ -322,12 +346,12 @@ namespace FlatRedBall.Graphics
             }
 
             while (spriteIndex < mVisibleSprites.Count || textIndex < mVisibleTexts.Count ||
-                (batches != null && batchIndex < batches.Count))
+                (batchIndex < mVisibleBatches.Count))
             {
                 #region only 1 array remains to be drawn so finish it off completely
                 
                 #region Draw Texts
-                if (spriteIndex >= mVisibleSprites.Count && (batches == null || batchIndex >= batches.Count) &&
+                if (spriteIndex >= mVisibleSprites.Count && (batchIndex >= mVisibleBatches.Count) &&
                     textIndex < mVisibleTexts.Count)
                 {
                     if (section != null)
@@ -354,7 +378,7 @@ namespace FlatRedBall.Graphics
                 #endregion
 
                 #region Draw Sprites
-                else if (textIndex >= mVisibleTexts.Count && (batches == null || batchIndex >= batches.Count) &&
+                else if (textIndex >= mVisibleTexts.Count && (batchIndex >= mVisibleBatches.Count) &&
                     spriteIndex < mVisibleSprites.Count)
                 {
                     if (section != null)
@@ -395,7 +419,7 @@ namespace FlatRedBall.Graphics
 
                 #region Draw DrawableBatches
                 else if (spriteIndex >= mVisibleSprites.Count && textIndex >= mVisibleTexts.Count &&
-                    batches != null && batchIndex < batches.Count)
+                    batchIndex < mVisibleBatches.Count)
                 {
                     if (section != null)
                     {
@@ -406,9 +430,9 @@ namespace FlatRedBall.Graphics
                         Section.GetAndStartMergedContextAndTime("Draw IDrawableBatches");
                     }
                     // DRAWABLE BATCHES:  Only DrawableBatches remain so draw them all.
-                    while (batchIndex < batches.Count)
+                    while (batchIndex < mVisibleBatches.Count)
                     {
-                        IDrawableBatch batchAtIndex = batches[batchIndex];
+                        IDrawableBatch batchAtIndex = mVisibleBatches[batchIndex];
                         if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
                         {
                             batchAtIndex.Update();
@@ -592,9 +616,9 @@ namespace FlatRedBall.Graphics
                         }
                         Section.GetAndStartMergedContextAndTime("Draw IDrawableBatches");
                     }
-                    while (nextBatchSortValue <= nextSpriteSortValue && nextBatchSortValue <= nextTextSortValue && batchIndex < batches.Count)
+                    while (nextBatchSortValue <= nextSpriteSortValue && nextBatchSortValue <= nextTextSortValue && batchIndex < mVisibleBatches.Count)
                     {
-                        IDrawableBatch batchAtIndex = batches[batchIndex];
+                        IDrawableBatch batchAtIndex = mVisibleBatches[batchIndex];
 
                         if (mUpdateDrawableBatches && batchAtIndex.UpdateEveryFrame)
                         {
@@ -617,13 +641,13 @@ namespace FlatRedBall.Graphics
 
                         batchIndex++;
 
-                        if (batchIndex == batches.Count)
+                        if (batchIndex == mVisibleBatches.Count)
                         {
                             nextBatchSortValue = float.PositiveInfinity;
                         }
                         else
                         {
-                            batchAtIndex = batches[batchIndex];
+                            batchAtIndex = mVisibleBatches[batchIndex];
 
                             if (sortType == SortType.Z || sortType == SortType.ZSecondaryParentY || sortType == SortType.CustomComparer)
                             {
