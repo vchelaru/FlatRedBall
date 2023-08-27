@@ -350,6 +350,7 @@ namespace FlatRedBall.Graphics
 
         public override string ToString()
         {
+            var hasAlreadyIncludedType = false;
             string toReturn = "<null texture>";
             if (this.Texture != null)
             {
@@ -362,18 +363,24 @@ namespace FlatRedBall.Graphics
                 {
                     toReturn = this.Texture.Name;
                 }
-
-
             }
-
 #if DEBUG
-            if(ObjectCausingBreak is INameable nameable && !string.IsNullOrEmpty(nameable.Name))
-            {
-                toReturn += $" by {nameable.Name}";
-            }
             else
             {
-                toReturn += $"  by {ObjectCausingBreak?.GetType().Name}";
+                hasAlreadyIncludedType = true;
+                toReturn = ObjectCausingBreak?.GetType().Name;
+            }
+
+
+            var byPrefix = hasAlreadyIncludedType ? null : "  by";
+
+            if (ObjectCausingBreak is INameable nameable && !string.IsNullOrEmpty(nameable.Name))
+            {
+                toReturn += $"{byPrefix} {nameable.Name}";
+            }
+            else if(!hasAlreadyIncludedType)
+            {
+                toReturn += $"{byPrefix} {ObjectCausingBreak?.GetType().Name}";
             }
 #endif
             return toReturn;
