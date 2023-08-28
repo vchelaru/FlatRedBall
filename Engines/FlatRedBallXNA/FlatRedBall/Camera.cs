@@ -21,6 +21,32 @@ namespace FlatRedBall
 {
     public partial class Camera : PositionedObject
     {
+        #region Enums
+        public enum CoordinateRelativity
+        {
+            RelativeToWorld,
+            RelativeToCamera
+        }
+
+        public enum SplitScreenViewport
+        {
+            FullScreen,
+            TopHalf,
+            BottomHalf,
+            LeftHalf,
+            RightHalf,
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight,
+
+            LeftThird,
+            MiddleThird,
+            RightThird
+        }
+
+        #endregion
+
         #region Fields
 
         /// <summary>
@@ -357,6 +383,7 @@ namespace FlatRedBall
         }
 
         #endregion
+
         public bool ShiftsHalfUnitForRendering
         {
             get

@@ -85,7 +85,7 @@ namespace FlatRedBall.Graphics
             get { return mTextureFilter; }
             set
             {
-                if (true)//mTextureFilter != value)
+                if (mTextureFilter != value)
                 {
                     mTextureFilter = value;
 

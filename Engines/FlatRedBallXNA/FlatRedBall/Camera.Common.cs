@@ -14,33 +14,10 @@ using Microsoft.Xna.Framework;
 
 namespace FlatRedBall
 {
+    // Camera.Common was an effort to make FRB more cross platform before the unification of
+    // .NET. Now this isn't needed anymore and we can migrate the .Common things to regular Camera.
     public partial class Camera
     {
-        #region Enums
-        public enum CoordinateRelativity
-        {
-            RelativeToWorld,
-            RelativeToCamera
-        }
-
-        public enum SplitScreenViewport
-        {
-            FullScreen,
-            TopHalf,
-            BottomHalf,
-            LeftHalf,
-            RightHalf,
-            TopLeft,
-            TopRight,
-            BottomLeft,
-            BottomRight,
-
-            LeftThird,
-            MiddleThird,
-            RightThird
-        }
-
-        #endregion
 
         #region Fields
 

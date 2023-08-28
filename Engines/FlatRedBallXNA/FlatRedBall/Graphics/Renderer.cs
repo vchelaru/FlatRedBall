@@ -1525,7 +1525,12 @@ namespace FlatRedBall.Graphics
             vertsPerVertexBuffer.Clear();
             TextureFilter oldFilter = FlatRedBallServices.GraphicsOptions.TextureFilter;
 
-            FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter.Linear;
+            // Augu 28, 2023 - why do we use linear
+            // filtering for polygons? This won't make 
+            // the lines anti-aliased. It just blends the
+            // textels. This doesn't seem necessary, and is 
+            // just a waste of performance.
+            //FlatRedBallServices.GraphicsOptions.TextureFilter = TextureFilter.Linear;
 
             if (layer == null)
             {
@@ -2102,7 +2107,8 @@ namespace FlatRedBall.Graphics
                 //DrawVBList(camera, mShapesVertexBufferList, mRenderBreaks, verticesToDraw, PrimitiveType.LineStrip, VertexPositionColor.SizeInBytes);
             }
 
-            FlatRedBallServices.GraphicsOptions.TextureFilter = oldFilter;
+            // See comment above on this.
+            //FlatRedBallServices.GraphicsOptions.TextureFilter = oldFilter;
         }
 
         #endregion
