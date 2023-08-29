@@ -407,6 +407,11 @@ namespace FlatRedBall.Input
 
         #region Public Methods
 
+        /// <summary>
+        /// Returns a reference to the argument button as an IPressableInput.
+        /// </summary>
+        /// <param name="button">The button to return.</param>
+        /// <returns>A reference to the button as an IPressableInput.</returns>
         public IPressableInput GetButton(MouseButtons button)
         {
             if(mButtons.ContainsKey(button) == false)
@@ -545,6 +550,9 @@ namespace FlatRedBall.Input
 #endif
         #endregion
 
+        /// <summary>
+        /// Clears all input and marks the mouse as having been just cleared so that pushes do not fire next frame.
+        /// </summary>
         public void Clear()
         {
             mWasJustCleared = true;

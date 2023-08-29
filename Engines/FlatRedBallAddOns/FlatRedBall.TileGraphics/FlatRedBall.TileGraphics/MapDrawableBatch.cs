@@ -1602,7 +1602,16 @@ namespace FlatRedBall.TileGraphics
 
         public void MergeOntoThis(IEnumerable<MapDrawableBatch> mapDrawableBatches)
         {
-
+#if DEBUG
+            var thisTexture = this.Texture;
+            foreach (var mdb in mapDrawableBatches)
+            {
+                if(mdb.Texture != thisTexture)
+                {
+                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {mdb.Texture?.Name} which is different than this texture {thisTexture?.Name}");
+                }
+            }
+#endif
 
             int quadsToAdd = 0;
             int quadsOnThis = QuadCount;
