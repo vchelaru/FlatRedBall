@@ -101,6 +101,81 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
+        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
+            IElement element)
+        {
+            AppendFieldOrPropertyForReferencedFile(codeBlock, referencedFile, element, "ContentManagerName");
+        }
+
+        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock, ReferencedFileSave referencedFile,
+            IElement element, string contentManagerName)
+        {
+            /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
+            // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
+            if (!referencedFile.LoadedAtRuntime || referencedFile.IsDatabaseForLocalizing) return;
+            ///////////////////////////////////END EARLY OUT/////////////////////////////////////////////
+
+            string fileName = referencedFile.Name;
+            string extension = FileManager.GetExtension(fileName);
+            AssetTypeInfo ati = referencedFile.GetAssetTypeInfo();
+
+            string variableName = referencedFile.GetInstanceName();
+
+
+            #region Get the typeName
+            string typeName = null;
+
+            if (ati != null && !referencedFile.TreatAsCsv && ati.QualifiedRuntimeTypeName.QualifiedType != null)
+            {
+                typeName = ati.QualifiedRuntimeTypeName.QualifiedType;
+            }
+            else if (extension == "csv" || referencedFile.TreatAsCsv)
+            {
+                typeName = CsvCodeGenerator.GetEntireGenericTypeForCsvFile(referencedFile);
+            }
+
+            #endregion
+
+            //////////////////////////////EARLY OUT///////////////////////////////////////
+            if (typeName == null) return;
+            ///////////////////////////END EARLY OUT//////////////////////////////////////
+
+            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+            if (NeedsFullProperty(referencedFile, element))
+            {
+                AppendPropertyForReferencedFileSave(codeBlock, referencedFile, element, contentManagerName, ati, variableName, typeName);
+            }
+            else
+            {
+                if (element == null)
+                {
+                    var scope = referencedFile.HasPublicProperty ? Scope.Public : Scope.Protected;
+                    // Global Content will always have the content as properties.  This is so that you can switch between
+                    // async and sync loading and not have to change reflection code
+                    codeBlock.AutoProperty(variableName,
+                                           scope,
+
+                                           Static: referencedFile.IsSharedStatic,
+                                           Type: typeName);
+                }
+                else
+                {
+                    codeBlock.Line(StringHelper.Modifiers(
+                        Public: referencedFile.HasPublicProperty,
+                        // Should be protected so derived classes can access this
+                        Protected: !referencedFile.HasPublicProperty,
+                        Static: referencedFile.IsSharedStatic,
+                        Type: typeName,
+                        Name: variableName) + ";");
+                }
+
+            }
+
+            AddEndIfIfNecessary(codeBlock, referencedFile);
+
+        }
+
         #endregion
 
         public override ICodeBlock GenerateInitialize(ICodeBlock codeBlock,  SaveClasses.IElement element)
@@ -381,80 +456,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return codeBlock;
         }
 
-        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock,  ReferencedFileSave referencedFile,
-            IElement element)
-        {
-            AppendFieldOrPropertyForReferencedFile(codeBlock, referencedFile, element, "ContentManagerName");
-        }
 
-        public static void AppendFieldOrPropertyForReferencedFile(ICodeBlock codeBlock,  ReferencedFileSave referencedFile,
-            IElement element, string contentManagerName)
-        {
-            /////////////////////////////////////EARLY OUT//////////////////////////////////////////////
-            // If the referenced file is a database for localizing, it will just be stuffed right into the localization manager
-            if (!referencedFile.LoadedAtRuntime || referencedFile.IsDatabaseForLocalizing) return;
-            ///////////////////////////////////END EARLY OUT/////////////////////////////////////////////
-
-            string fileName = referencedFile.Name;
-            string extension = FileManager.GetExtension(fileName);
-            AssetTypeInfo ati = referencedFile.GetAssetTypeInfo();
-
-            string variableName = referencedFile.GetInstanceName();
-
-
-            #region Get the typeName
-            string typeName = null;
-
-            if (ati != null && !referencedFile.TreatAsCsv && ati.QualifiedRuntimeTypeName.QualifiedType != null)
-            {
-                typeName = ati.QualifiedRuntimeTypeName.QualifiedType;
-            }
-            else if (extension == "csv" || referencedFile.TreatAsCsv)
-            {
-                typeName = CsvCodeGenerator.GetEntireGenericTypeForCsvFile(referencedFile);
-            }
-
-            #endregion
-
-            //////////////////////////////EARLY OUT///////////////////////////////////////
-            if (typeName == null) return;
-            ///////////////////////////END EARLY OUT//////////////////////////////////////
-
-            AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
-
-            if (NeedsFullProperty(referencedFile, element))
-            {
-                AppendPropertyForReferencedFileSave(codeBlock, referencedFile, element, contentManagerName, ati, variableName, typeName);
-            }
-            else
-            {
-                if (element == null)
-                {
-                    var scope = referencedFile.HasPublicProperty ? Scope.Public : Scope.Protected;
-                    // Global Content will always have the content as properties.  This is so that you can switch between
-                    // async and sync loading and not have to change reflection code
-                    codeBlock.AutoProperty(variableName,
-                                           scope,
-
-                                           Static: referencedFile.IsSharedStatic, 
-                                           Type: typeName);
-                }
-                else
-                {
-                    codeBlock.Line(StringHelper.Modifiers(
-                        Public: referencedFile.HasPublicProperty,
-                        // Should be protected so derived classes can access this
-                        Protected: !referencedFile.HasPublicProperty,
-                        Static: referencedFile.IsSharedStatic,
-                        Type: typeName,
-                        Name: variableName) + ";");
-                }
-
-            }
-
-            AddEndIfIfNecessary(codeBlock, referencedFile);
-
-        }
 
         private static void AppendPropertyForReferencedFileSave(ICodeBlock codeBlock, ReferencedFileSave referencedFile, IElement element, string contentManagerName, AssetTypeInfo ati, string variableName, string typeName)
         {

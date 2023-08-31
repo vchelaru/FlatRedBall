@@ -234,6 +234,15 @@ namespace TileGraphicsPlugin
                 new VariableDefinition() { Name = "Visible", DefaultValue = "false", Type = "bool" });
             toReturn.VariableDefinitions.Add(
                 new VariableDefinition() { Name = "AdjustRepositionDirectionsOnAddAndRemove", DefaultValue = "true", Type = "bool" });
+            var repositionStyleVariable = new VariableDefinition() { Name = "RepositionUpdateStyle", DefaultValue = "Outward", Type = "string" };
+            repositionStyleVariable.UsesCustomCodeGeneration = true;
+            repositionStyleVariable.ForcedOptions = new List<string>
+            {
+                "None", 
+                "Outward",
+                "Upward"
+            };
+            toReturn.VariableDefinitions.Add(repositionStyleVariable);
 
             toReturn.ConstructorFunc = GenerateTileShapeCollectionConstructionFunc;
             return toReturn;

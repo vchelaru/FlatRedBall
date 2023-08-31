@@ -13,6 +13,26 @@ using System.Text;
 using AARect = FlatRedBall.Math.Geometry.AxisAlignedRectangle;
 namespace FlatRedBall.TileCollisions
 {
+    #region Enums
+
+    public enum RepositionUpdateStyle
+    {
+        /// <summary>
+        /// No reposition direction changes will be performed.
+        /// </summary>
+        None,
+        /// <summary>
+        /// Reposition directions will be assigned to push objects outward
+        /// </summary>
+        Outward,
+        /// <summary>
+        /// Reposition directions will be assigned to push objects upward (for cloud collision)
+        /// </summary>
+        Upward,
+    }
+
+    #endregion
+
     public partial class TileShapeCollection : INameable, ICollidable
     {
         #region Fields
@@ -182,6 +202,9 @@ namespace FlatRedBall.TileCollisions
         HashSet<object> ICollidable.ObjectsCollidedAgainst => this.mShapes.ObjectsCollidedAgainst;
 
         HashSet<object> ICollidable.LastFrameObjectsCollidedAgainst => this.mShapes.LastFrameObjectsCollidedAgainst;
+
+
+        public RepositionUpdateStyle RepositionUpdateStyle { get; set; } = RepositionUpdateStyle.Outward;
 
 
         #endregion
@@ -1073,27 +1096,38 @@ namespace FlatRedBall.TileCollisions
         /// </remarks>
         public void RefreshAllRepositionDirections()
         {
-            var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);
-
-            var count = this.mShapes.AxisAlignedRectangles.Count;
-            for (int i = 0; i < count; i++)
+            if (this.RepositionUpdateStyle == RepositionUpdateStyle.Upward)
             {
-                var rectangle = this.mShapes.AxisAlignedRectangles[i];
-
-                var directions = // UpdateRepositionDirections(rectangle, false, bytes, numberTilesWide);
-                    GetRepositionDirection(rectangle, bytes, left, bottom, numberTilesWide, out bool repositionHalfSize);
-                rectangle.RepositionDirections = directions;
-                rectangle.RepositionHalfSize = repositionHalfSize;
+                UpdateShapesForCloudCollision();
             }
-
-            count = this.mShapes.Polygons.Count;
-            for (int i = 0; i < count; i++)
+            else if (this.RepositionUpdateStyle == RepositionUpdateStyle.Outward)
             {
-                var polygon = this.mShapes.Polygons[i];
+                var bytes = GetCollisionByteArray(out float left, out float bottom, out int numberTilesWide);
 
-                var directions = UpdateRepositionDirections(polygon, false);
+                var count = this.mShapes.AxisAlignedRectangles.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var rectangle = this.mShapes.AxisAlignedRectangles[i];
 
-                polygon.RepositionDirections = directions;
+                    var directions = // UpdateRepositionDirections(rectangle, false, bytes, numberTilesWide);
+                        GetRepositionDirection(rectangle, bytes, left, bottom, numberTilesWide, out bool repositionHalfSize);
+                    rectangle.RepositionDirections = directions;
+                    rectangle.RepositionHalfSize = repositionHalfSize;
+                }
+
+                count = this.mShapes.Polygons.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var polygon = this.mShapes.Polygons[i];
+
+                    var directions = UpdateRepositionDirections(polygon, false);
+
+                    polygon.RepositionDirections = directions;
+                }
+            }
+            else
+            {
+                // do nothing...
             }
         }
 

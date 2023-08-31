@@ -292,6 +292,9 @@ namespace OfficialPluginsCore.Wizard.Managers
             {
                 cloudCollisionNos = await MainAddScreenPlugin.AddCollision(gameScreen, "CloudCollision",
                     setFromMapObject: vm.AddTiledMap);
+
+                cloudCollisionNos.SetVariable("RepositionUpdateStyle", "Upward");
+
             }
 
             if (vm.AddHudLayer)

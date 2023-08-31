@@ -203,6 +203,12 @@ namespace TileGraphicsPlugin.CodeGeneration
                     }
                 }
 
+                var repositionStyle = namedObjectSave.GetCustomVariable("RepositionUpdateStyle")?.Value as string;
+                if(!string.IsNullOrEmpty(repositionStyle))
+                {
+                    ifBlock.Line($"{namedObjectSave.InstanceName}.RepositionUpdateStyle = FlatRedBall.TileCollisions.RepositionUpdateStyle.{repositionStyle};");
+                }
+
                 switch(creationOptions)
                 {
                     case CollisionCreationOptions.Empty:
