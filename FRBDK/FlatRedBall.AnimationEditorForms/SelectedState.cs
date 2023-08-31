@@ -221,6 +221,19 @@ namespace FlatRedBall.AnimationEditorForms
 
                 return toReturn;
             }
+            set
+            {
+                List<TreeNode> treeNodes = new List<TreeNode>();
+
+                if (value == null)
+                {
+                    SelectedNodes = new List<TreeNode>();
+                }
+                else
+                {
+                    SelectedNodes = value.Select(item => TreeViewManager.Self.GetTreeNodeFor(item)).ToList();
+                }
+            }
         }
 
         public TileMapInformation SelectedTileMapInformation

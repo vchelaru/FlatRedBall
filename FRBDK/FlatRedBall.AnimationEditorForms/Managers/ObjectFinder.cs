@@ -42,5 +42,20 @@ namespace FlatRedBall.AnimationEditorForms.Managers
 
             return null;
         }
+
+        public AnimationChainSave GetAnimationChainContaining(AnimationFrameSave frame)
+        {
+            foreach(var animationChain in ProjectManager.Self.AnimationChainListSave.AnimationChains)
+            {
+                foreach (var possibleFrame in animationChain.Frames)
+                {
+                    if(possibleFrame == frame)
+                    {
+                        return animationChain;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

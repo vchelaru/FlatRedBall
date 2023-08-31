@@ -1785,6 +1785,10 @@ namespace FlatRedBall.Input
 #endif
         }
 
+        /// <summary>
+        /// Returns diagnostic information about the game pad, including connectivity, analog stick position, and button state.
+        /// </summary>
+        /// <returns>The diagnostic string.</returns>
         public override string ToString()
         {
 
