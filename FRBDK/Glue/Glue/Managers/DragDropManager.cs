@@ -190,12 +190,6 @@ public class DragDropManager : Singleton<DragDropManager>
                     canBeMovedInList = false;
                     //toReturn.Message = "The Object you are moving is of type " + movingNos.SourceClassType +
                     //    " but the list is of type " + targetNos.SourceClassGenericType;
-
-                }
-                else if (treeNodeMoving.Parent.IsRootNamedObjectNode() == false)
-                {
-                    canBeMovedInList = false;
-                    //toReturn.Message = "The Object you are moving is already part of a list, so it can't be moved";
                 }
                 else
                 {
