@@ -86,7 +86,7 @@ internal class PreferredDisplayerManager
     {
         foreach (var member in SelectedDisplayerMembers)
         {
-            grid.Categories.FirstOrDefault().Members.Remove(member);
+            grid.Categories.FirstOrDefault()?.Members.Remove(member);
         }
 
         SelectedDisplayerMembers.Clear();

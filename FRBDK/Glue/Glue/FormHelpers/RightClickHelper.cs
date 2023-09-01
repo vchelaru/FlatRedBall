@@ -2563,8 +2563,10 @@ namespace FlatRedBall.Glue.FormHelpers
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(elementToRegen);
             }
 
-
-            GluxCommands.Self.SaveGlux();
+            foreach(var elementToSave in elementsToRegen)
+            {
+                GlueCommands.Self.GluxCommands.SaveElementAsync(elementToSave, TaskExecutionPreference.AddOrMoveToEnd);
+            }
         }
 
         public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
