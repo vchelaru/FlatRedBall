@@ -237,6 +237,11 @@ public class DragDropManager : Singleton<DragDropManager>
                     canBeMovedInList = false;
                 }
             }
+            else
+            {
+                canBeCollidable = false;
+                canBeMovedInList = false;
+            }
         }
 
         if (canBeMovedInList)
