@@ -51,7 +51,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
         }
 
-        public void GenerateElementCode(GlueElement element)
+        public void GenerateElementCode(GlueElement element, bool generateDerivedElements = true)
         {
             if(element == null)
             {
@@ -72,14 +72,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 nameof(GenerateElementCode) + " " + element.ToString(), 
                 TaskExecutionPreference.AddOrMoveToEnd);
 
-            List<GlueElement> derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
-
-            foreach (var derivedElement in derivedElements)
+            if(generateDerivedElements)
             {
-                TaskManager.Self.Add(
-                    () => CodeGeneratorIElement.GenerateSpecificElement(derivedElement),
-                    nameof(GenerateElementCode) + " " + derivedElement.ToString(),
-                    TaskExecutionPreference.AddOrMoveToEnd);
+                List<GlueElement> derivedElements = ObjectFinder.Self.GetAllElementsThatInheritFrom(element);
+
+                foreach (var derivedElement in derivedElements)
+                {
+                    TaskManager.Self.Add(
+                        () => CodeGeneratorIElement.GenerateSpecificElement(derivedElement),
+                        nameof(GenerateElementCode) + " " + derivedElement.ToString(),
+                        TaskExecutionPreference.AddOrMoveToEnd);
+                }
             }
         }
 

@@ -3165,6 +3165,13 @@ public class GluxCommands : IGluxCommands
             }
         }
 
+        // regenerate the base items because they neeed their Types regenerated:
+        var baseScreens = ObjectFinder.Self.GetAllBaseElementsRecursively(screenToRemove);
+        foreach (var baseScreen in baseScreens)
+        {
+            GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseScreen, generateDerivedElements: false);
+        }
+
         PluginManager.ReactToScreenRemoved(screenToRemove, filesThatCouldBeRemoved);
 
 
@@ -3172,7 +3179,7 @@ public class GluxCommands : IGluxCommands
         FillWithJsonFilesForElement(filesThatCouldBeRemoved, screenToRemove);
 
         GlueCommands.Self.ProjectCommands.SaveProjects();
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
     }
 
     private static void RemoveUnreferencedFiles(IElement element, List<string> filesThatCouldBeRemoved)
