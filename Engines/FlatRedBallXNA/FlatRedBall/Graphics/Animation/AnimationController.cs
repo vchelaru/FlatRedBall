@@ -95,7 +95,8 @@ namespace FlatRedBall.Graphics.Animation
         }
 
         /// <summary>
-        /// Instantiates a new layer and adds it to the Layers collection.
+        /// Instantiates a new layer and adds it to the Layers collection. Every layer that is added has higher priority than all previous, so adding a new layer
+        /// places it in the highest priority spot
         /// </summary>
         /// <returns>The newly-created Layer.</returns>
         public AnimationLayer AddLayer()

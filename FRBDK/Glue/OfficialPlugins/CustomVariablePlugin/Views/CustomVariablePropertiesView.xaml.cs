@@ -128,10 +128,12 @@ public partial class CustomVariablePropertiesView : UserControl
                 .SelectMany(item => item.Members)
                 .FirstOrDefault(item => item.Name == nameof(VariableDefinition.PreferredDisplayer));
 
-            this.AddVariableDefinitionButton.Visibility = (customVariable.VariableDefinition == null).ToVisibility();
 
             VariableDefinitionGrid.InsertSpacesInCamelCaseMemberNames();
         }
+
+        this.AddVariableDefinitionButton.Visibility = (customVariable.VariableDefinition == null).ToVisibility();
+
         void RemoveMember(string memberName)
         {
             foreach (var category in VariableDefinitionGrid.Categories)
