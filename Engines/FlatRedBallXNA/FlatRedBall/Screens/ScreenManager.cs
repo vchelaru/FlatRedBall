@@ -506,7 +506,15 @@ namespace FlatRedBall.Screens
                 // created/added. If we don't
                 // then a single frame will pass
                 // without activity, and objects may
-                // not be positioned correclty.
+                // not be positioned correctly.
+                // Update Sept 2, 2023
+                // Actually this seems to cause a double
+                // Activity call. I'm not sure why it's needed
+                // but I don't have time to investigate now. I'm
+                // going to leave it in so that I don't accidentally
+                // break old games, but I did have to put a special check
+                // in the double-activity call generated code for entities
+                // to see if frame is 0 because of the double-calls.
                 if (!IsInEditMode)
                 {
                     mCurrentScreen.Activity(mCurrentScreen.ActivityCallCount == 0);

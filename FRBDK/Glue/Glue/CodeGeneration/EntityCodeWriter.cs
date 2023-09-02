@@ -31,7 +31,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             // This is to detect double-activity calls
             codeBlock.Line("#if DEBUG");
-            codeBlock.Line("private double mLastTimeCalledActivity;");
+            codeBlock.Line("private double mLastTimeCalledActivity=-1;");
             codeBlock.Line("#endif");
 
         }
@@ -41,7 +41,9 @@ namespace FlatRedBall.Glue.CodeGeneration
             codeBlock.Line("#if DEBUG");
             
             // in codeblock, write code to check if the mLastTimeCalledActivity is equal to the current time. If so, throw an exception
-            codeBlock.Line("if(mLastTimeCalledActivity == FlatRedBall.TimeManager.CurrentScreenTime)")
+            // 9/2/2023 - activity gets called 2x at the beginning. I'm not sure if this is desirable, but until I figure this out, I'm going
+            // to tolerate double calls on frame 0
+            codeBlock.Line("if(mLastTimeCalledActivity > 0 && mLastTimeCalledActivity == FlatRedBall.TimeManager.CurrentScreenTime)")
                 .Line("{")
                 .Line("    throw new System.Exception(\"Activity was called twice in the same frame. This can cause objects to move 2x as fast.\");")
                 .Line("}")
