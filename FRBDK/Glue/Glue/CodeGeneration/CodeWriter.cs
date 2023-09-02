@@ -43,8 +43,6 @@ namespace FlatRedBall.Glue.Parsing
     }
     #endregion
 
-
-
     public static class CodeWriter
     {
         #region Fields
@@ -498,22 +496,9 @@ namespace FlatRedBallAddOns.Entities
 
         internal static ICodeBlock GenerateFieldsAndProperties(IElement glueElement, ICodeBlock codeBlock)
         {
-            if(glueElement is EntitySave)
+            if(glueElement is EntitySave entitySave)
             {
-                if(glueElement.InheritsFromElement())
-                {
-                    string baseQualifiedName = ProjectManager.ProjectNamespace + "." + glueElement.BaseElement.Replace("\\", ".");
-
-                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
-                    codeBlock.Property("public static new string", "ContentManagerName")
-                        .Get().Line($"return {baseQualifiedName}.ContentManagerName;").End()
-                        .Set().Line($"{baseQualifiedName}.ContentManagerName = value;").End();
-                }
-                else
-                {
-                    codeBlock.Line("// This is made static so that static lazy-loaded content can access it.");
-                    codeBlock.AutoProperty("public static string", "ContentManagerName");
-                }
+                EntityCodeWriter.GenerateFieldsAndProperties(entitySave, codeBlock);
             }
 
             foreach (var codeGenerator in CodeWriter.CodeGenerators)
@@ -715,8 +700,6 @@ namespace FlatRedBallAddOns.Entities
         #endregion
 
 
-
-
         public static bool SaveFileContents(string fileContents, string fileName, bool tryAgain, bool standardizeNewlines = true)
         {
             if(standardizeNewlines && !string.IsNullOrEmpty(fileContents))
@@ -791,6 +774,10 @@ namespace FlatRedBallAddOns.Entities
             ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fileName, true);
             PluginManager.ReceiveOutput("Glue has created the generated file " + FileManager.RelativeDirectory + saveObject.Name + ".cs");
         }
+
+
+
+
 
         public static Dictionary<string, string> ReusableEntireFileRfses { get; } = new Dictionary<string, string>();
 
@@ -1308,6 +1295,7 @@ namespace FlatRedBallAddOns.Entities
             }
         }
 
+        #region Activity
 
         internal static void GenerateActivity(ICodeBlock codeBlock, IElement saveObject)
         {
@@ -1368,6 +1356,8 @@ namespace FlatRedBallAddOns.Entities
             }
             else
             {
+                EntityCodeWriter.GenerateActivity(saveObject as EntitySave, codeBlock);
+
                 CodeWriter.GenerateGeneralActivity(currentBlock, saveObject);
 
                 currentBlock.Line("CustomActivity();");
@@ -1496,6 +1486,8 @@ namespace FlatRedBallAddOns.Entities
 
             return codeBlock;
         }
+
+        #endregion
 
         internal static void GenerateDestroy(IElement saveObject, ICodeBlock codeBlock)
         {

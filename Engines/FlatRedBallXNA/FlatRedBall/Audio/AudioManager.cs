@@ -10,6 +10,7 @@ using FlatRedBall.Instructions;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using FlatRedBall.Screens;
+using System.Threading.Tasks;
 
 namespace FlatRedBall.Audio
 {
@@ -571,6 +572,13 @@ namespace FlatRedBall.Audio
         public static void Play(SoundEffect soundEffect)
         {
             Play(soundEffect, MasterSoundVolume);
+        }
+
+        public static async Task PlayAsync(SoundEffect soundEffect)
+        {
+            Play(soundEffect, MasterSoundVolume);
+
+            await TimeManager.Delay(soundEffect.Duration);
         }
 
         /// <summary>
