@@ -1199,7 +1199,8 @@ namespace GlueControl.Editing
                         }
                         break;
                     case "bool?":
-                        if(!string.IsNullOrWhiteSpace(variableValue))
+                    case "Nullable<Boolean>":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
                         {
                             convertedValue = bool.Parse(variableValue.ToLowerInvariant());
                         }
