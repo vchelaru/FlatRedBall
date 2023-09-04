@@ -42,6 +42,7 @@ using FlatRedBall.Entities;
 using System.Windows.Forms.Design;
 using FlatRedBall.Glue.AutomatedGlue;
 using static FlatRedBall.Debugging.Debugger;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 
@@ -2936,7 +2937,7 @@ public class GluxCommands : IGluxCommands
             if (entitySave.CreatedByOtherEntities)
             {
                 // Vic says: I'm tired.  For now just ignore the directory.  Fix this when it becomes a problem.
-                FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
             }
 
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.SeparateJsonFilesForElements)
@@ -3023,7 +3024,7 @@ public class GluxCommands : IGluxCommands
 
         if (entityToRemove.CreatedByOtherEntities == true)
         {
-            FactoryCodeGenerator.RemoveFactory(entityToRemove);
+            FactoryElementCodeGenerator.RemoveFactory(entityToRemove);
         }
 
         // We used to rely on RemoveUnreferencedFiles to do the removal of all RFS's 

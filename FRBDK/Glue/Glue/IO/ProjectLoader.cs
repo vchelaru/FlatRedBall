@@ -11,7 +11,6 @@ using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Windows.Forms;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Glue.Parsing;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Errors;
@@ -27,6 +26,7 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Reflection;
 using GlueSaveClasses;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -472,7 +472,7 @@ namespace FlatRedBall.Glue.IO
                 Section.GetAndStartContextAndTime("Performance code");
 
 
-                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
+                FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
                 Section.EndContextAndTime();
 
 

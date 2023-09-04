@@ -16,6 +16,7 @@ using GlueFormsCore.Managers;
 using GlueFormsCore.SetVariable.EntitySaves;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Managers;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 
 namespace FlatRedBall.Glue.SetVariable
 {
@@ -77,8 +78,8 @@ namespace FlatRedBall.Glue.SetVariable
                     }
                 }
 
-                FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
+                FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
             }
 
             #endregion

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Parsing;
+using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using System;
@@ -26,14 +27,14 @@ namespace GlueFormsCore.SetVariable.EntitySaves
                 }
                 else
                 {
-                    FactoryCodeGenerator.AddGeneratedPerformanceTypes();
-                    FactoryCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
+                    FactoryElementCodeGenerator.AddGeneratedPerformanceTypes();
+                    FactoryElementCodeGenerator.GenerateAndAddFactoryToProjectClass(entitySave);
                     GlueCommands.Self.ProjectCommands.SaveProjects();
                 }
             }
             else
             {
-                FactoryCodeGenerator.RemoveFactory(entitySave);
+                FactoryElementCodeGenerator.RemoveFactory(entitySave);
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 
