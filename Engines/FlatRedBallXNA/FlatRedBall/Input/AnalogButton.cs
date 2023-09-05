@@ -19,7 +19,7 @@ namespace FlatRedBall.Input
 
         float mVelocity = 0;
 
-        bool lastDPadDown = false;
+        bool lastIsDownDown = false;
 
         public string Name { get; set; }
 
@@ -52,7 +52,7 @@ namespace FlatRedBall.Input
         {
             get
             {
-                if (lastDPadDown)
+                if (lastIsDownDown)
                 {
                     return mPosition > AnalogStick.DPadOffValue;
                 }
@@ -64,9 +64,9 @@ namespace FlatRedBall.Input
             }
         }
 
-        public bool WasJustPressed => !lastDPadDown && IsDown;
+        public bool WasJustPressed => !lastIsDownDown && IsDown;
 
-        public bool WasJustReleased => lastDPadDown && !IsDown;
+        public bool WasJustReleased => lastIsDownDown && !IsDown;
 
 
 
@@ -113,7 +113,7 @@ namespace FlatRedBall.Input
         public void Update(float newPosition)
         {
             mLastPosition = mPosition;
-            lastDPadDown = IsDown;
+            lastIsDownDown = IsDown;
 
             if (TimeManager.SecondDifference != 0)
             {
@@ -121,7 +121,7 @@ namespace FlatRedBall.Input
             }
             mPosition = newPosition;
 
-            if(IsDown)
+            if(IsDown && !lastIsDownDown)
             {
                 mLastButtonPush = TimeManager.CurrentTime;
             }

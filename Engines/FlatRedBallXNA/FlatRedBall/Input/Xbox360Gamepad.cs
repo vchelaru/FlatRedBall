@@ -1884,7 +1884,7 @@ namespace FlatRedBall.Input
             {
                 if (defaultDownPressable == null)
                 {
-                    defaultDownPressable = GetButton(Button.DPadDown).Or(LeftStick.DownAsButton); ;
+                    defaultDownPressable = GetButton(Button.DPadDown).Or(LeftStick.DownAsButton);
                 }
                 return defaultDownPressable;
             }
