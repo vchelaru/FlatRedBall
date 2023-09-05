@@ -87,7 +87,7 @@ namespace FlatRedBall.Entities
             var damage = damageArea.DamageToDeal;
 
             var modifiedByDamageable = damageable.ModifyDamageReceived?.Invoke(damage, damageArea) ?? damage;
-            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(damage, damageable) ?? modifiedByDamageable;
+            var modifiedByBoth = damageArea.ModifyDamageDealt?.Invoke(modifiedByDamageable, damageable) ?? modifiedByDamageable;
 
             var healthBefore = damageable.CurrentHealth;
 
