@@ -41,6 +41,7 @@ namespace FlatRedBall.Glue.Elements
         public AssetTypeInfo Layer { get; set; }
 
         public AssetTypeInfo ShapeCollection { get; set; }
+        public AssetTypeInfo RenderTarget { get; set; }
     }
 
     public class AvailableAssetTypes

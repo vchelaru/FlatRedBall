@@ -271,6 +271,10 @@ namespace FlatRedBall.Glue.Elements
         [JsonIgnore]
         public object Tag { get; set; }
 
+        [XmlIgnore]
+        [JsonIgnore]
+        public AssetTypeInfo BaseAssetTypeInfo { get; set; }
+
         #endregion
 
         #region Properties

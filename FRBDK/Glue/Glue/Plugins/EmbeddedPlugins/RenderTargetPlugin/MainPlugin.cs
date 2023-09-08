@@ -50,6 +50,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.RenderTargetPlugin
 
             // Seems like currently Glue doesn't differentiate between remove from managers and destroy...may need to investigate this if it becomes a problem.
             renderTargetAti.DestroyMethod = "this.Dispose()";
+            renderTargetAti.BaseAssetTypeInfo = 
+                AvailableAssetTypes.Self.AllAssetTypes
+                    .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D");
 
             AvailableAssetTypes.Self.AddAssetType(renderTargetAti);
         }

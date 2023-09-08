@@ -94,6 +94,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TypeConverterPlugin
                 else if (IsTypeFile(memberType, customType))
                 {
                     AvailableFileStringConverter availableFileStringConverter = new AvailableFileStringConverter(container);
+                    if(instance != null)
+                    {
+                        availableFileStringConverter.IncludeNamedObjectsOfMatchingType = true;
+                    }
                     availableFileStringConverter.QualifiedRuntimeTypeNameFilter = memberType.FullName;
                     if (!string.IsNullOrEmpty(customType))
                     {
