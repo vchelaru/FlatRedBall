@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GlueControl.Managers;
+using GlueControl.Models;
 
 namespace GlueControl.Editing
 {
