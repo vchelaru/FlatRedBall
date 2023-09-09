@@ -124,7 +124,16 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException(msg);
                 }
 
-                Texture = sprite.mTexture;
+                // this could be disposed because of a transition:
+                if(sprite.mTexture?.IsDisposed == false)
+                {
+                    Texture = sprite.mTexture;
+                }
+                else
+                {
+                    Texture = null;
+                }
+
 
                 ColorOperation = sprite.mColorOperation;
                 BlendOperation = sprite.mBlendOperation;
