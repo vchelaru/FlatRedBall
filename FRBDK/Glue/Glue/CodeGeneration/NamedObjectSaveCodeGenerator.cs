@@ -712,7 +712,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
 
         private static void WriteCopyToAbsoluteInInitializeCode(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            IElement container,
+            GlueElement container,
             Dictionary<string, string> referencedFilesAlreadyUsingFullFile, AssetTypeInfo ati, string objectName, ReferencedFileSave rfs)
         {
             bool canWriteAbsoluteInitialize = GetIfCanAttach(namedObject, ati, container);
@@ -752,7 +752,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             }
         }
 
-        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, IElement container)
+        private static bool GetIfCanAttach(NamedObjectSave namedObject, AssetTypeInfo ati, GlueElement container)
         {
             var canWriteAbsoluteInitialize =
                 (ati != null && ati.ShouldAttach) ||
@@ -2462,7 +2462,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         }
 
         private static void WriteAttachTo(NamedObjectSave namedObject, ICodeBlock codeBlock, 
-            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs, IElement container)
+            Dictionary<string, string> referencedFilesAlreadyUsingFullFile, ReferencedFileSave rfs, GlueElement container)
         {
 
             string objectName = namedObject.FieldName;

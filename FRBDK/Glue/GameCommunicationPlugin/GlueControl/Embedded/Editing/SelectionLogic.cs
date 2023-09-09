@@ -87,9 +87,8 @@ namespace GlueControl.Editing
                         {
                             if (IsRayIntersecting(objectAtI, ray))
                             {
-                                var nos =
-                                    GlueState.Self.CurrentElement?.AllNamedObjects.FirstOrDefault(
-                                        item => item.InstanceName == objectAtI.Name);
+                                var allNamedObjects = GlueState.Self.CurrentElement.GetAllNamedObjectsRecurisvely();
+                                var nos = allNamedObjects.FirstOrDefault(item => item.InstanceName == objectAtI.Name);
 
                                 // don't select it if it is locked
                                 var isLocked = nos?.IsEditingLocked == true;

@@ -548,7 +548,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// </summary>
         /// <param name="element">Element named object container.</param>
         /// <returns>All named objects.</returns>
-        public static IEnumerable<NamedObjectSave> GetAllNamedObjectsRecurisvely(this IElement element)
+        public static IEnumerable<NamedObjectSave> GetAllNamedObjectsRecurisvely(this GlueElement element)
         {
             if (element != null)
             {
@@ -557,16 +557,13 @@ namespace FlatRedBall.Glue.SaveClasses
                     yield return nos;
                 }
 
-                if (!string.IsNullOrEmpty(element.BaseElement))
-                {
-                    IElement baseElement = GlueState.CurrentGlueProject.GetElement(element.BaseElement);
+                var allDerived = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
 
-                    if (baseElement != null)
+                foreach(var derived in allDerived)
+                {
+                    foreach (NamedObjectSave nos in derived.AllNamedObjects)
                     {
-                        foreach (NamedObjectSave nos in baseElement.GetAllNamedObjectsRecurisvely())
-                        {
-                            yield return nos;
-                        }
+                        yield return nos;
                     }
                 }
             }

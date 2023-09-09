@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FlatRedBall.Graphics.Animation;
 using FlatRedBall.Math.Paths;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GlueControl.Editing
 {
@@ -170,7 +171,25 @@ namespace GlueControl.Editing
             return arrowInstance;
         }
 
+        public static Sprite Sprite(Texture2D texture)
+        {
+            return Sprite(texture, FlatRedBall.Camera.Main.Position, 1);
+        }
+        public static Sprite Sprite(Texture2D texture, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.Texture = texture;
+            return sprite;
+        }
+
         public static Sprite Sprite(AnimationChain animationChain, Vector3 position, float textureScale = 1)
+        {
+            var sprite = CreateSpriteInternal(position, textureScale);
+            sprite.SetAnimationChain(animationChain);
+            return sprite;
+        }
+
+        private static Sprite CreateSpriteInternal(Vector3 position, float textureScale)
         {
             if (position.Z == Camera.Main.Z)
             {
@@ -187,7 +206,7 @@ namespace GlueControl.Editing
 
             if (nextSprite == Sprites.Count)
             {
-                var newSprite = SpriteManager.AddSprite(animationChain);
+                var newSprite = SpriteManager.AddSprite((Texture2D)null);
                 SpriteManager.AddToLayer(newSprite, DefaultLayer);
                 Sprites.Add(newSprite);
             }
@@ -195,7 +214,6 @@ namespace GlueControl.Editing
             var sprite = Sprites[nextSprite];
             sprite.Name = $"EditorVisuals Sprite {nextSprite}";
             sprite.Visible = true;
-            sprite.SetAnimationChain(animationChain);
             sprite.Position = position;
             sprite.TextureScale = textureScale;
             sprite.ColorOperation = ColorOperation.Texture;
@@ -208,7 +226,7 @@ namespace GlueControl.Editing
 
         public static Sprite ColoredRectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
-            var sprite = Sprite(null, centerPosition, textureScale: -1);
+            var sprite = Sprite((Microsoft.Xna.Framework.Graphics.Texture2D)null, centerPosition, textureScale: -1);
             sprite.Width = width;
             sprite.Height = height;
             sprite.ColorOperation = ColorOperation.Color;

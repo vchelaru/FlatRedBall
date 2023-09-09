@@ -82,7 +82,7 @@ namespace GlueControl.Editing
         {
             if (BackgroundBlue != null)
             {
-                var sprite = EditorVisuals.Sprite(null, Vector3.Zero);
+                var sprite = EditorVisuals.Sprite((Microsoft.Xna.Framework.Graphics.Texture2D)null, Vector3.Zero);
                 sprite.ColorOperation = FlatRedBall.Graphics.ColorOperation.Color;
                 sprite.Red = BackgroundRed.Value;
                 sprite.Green = BackgroundGreen.Value;

@@ -504,7 +504,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        private static void UpdateCollisionRelationshipsInThisElement(IElement element, object oldValue)
+        private static void UpdateCollisionRelationshipsInThisElement(GlueElement element, object oldValue)
         {
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
@@ -722,7 +722,7 @@ namespace OfficialPlugins.CollisionPlugin.Controllers
             }
         }
 
-        public static void TryApplyAutoName(IElement element, NamedObjectSave namedObject)
+        public static void TryApplyAutoName(GlueElement element, NamedObjectSave namedObject)
         {
             var isAutoNameEnabled = namedObject.Properties.GetValue<bool>(nameof(CollisionRelationshipViewModel.IsAutoNameEnabled));
             if(isAutoNameEnabled)

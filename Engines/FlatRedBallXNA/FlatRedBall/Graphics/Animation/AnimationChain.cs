@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using FlatRedBall.Utilities;
 
-
-
-
 namespace FlatRedBall.Graphics.Animation
 {
     /// <summary>

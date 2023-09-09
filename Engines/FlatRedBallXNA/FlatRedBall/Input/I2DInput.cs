@@ -199,6 +199,9 @@ namespace FlatRedBall.Input
                 () => instance.Y, () => instance.YVelocity);
 
         }
+
+        public static Vector2 Position2D(this I2DInput instance) => new Vector2(instance.X, instance.Y);
+        public static Vector3 Position3D(this I2DInput instance) => new Vector3(instance.X, instance.Y, 0);
     }
 
     /// <summary>

@@ -768,7 +768,7 @@ public class ObjectFinder : IObjectFinder
         }
     }
 
-    public List<GlueElement> GetAllBaseElementsRecursively(IElement derivedElement)
+    public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement)
     {
         var baseElements = new List<GlueElement>();
 

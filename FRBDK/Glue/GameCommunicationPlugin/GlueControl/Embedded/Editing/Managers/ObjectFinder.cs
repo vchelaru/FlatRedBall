@@ -266,6 +266,27 @@ namespace GlueControl.Managers
             }
         }
 
+        public List<GlueElement> GetAllBaseElementsRecursively(GlueElement derivedElement)
+        {
+            var baseElements = new List<GlueElement>();
+
+            while (!string.IsNullOrEmpty(derivedElement.BaseElement))
+            {
+                var baseElement = GetElement(derivedElement.BaseElement);
+
+                if (baseElement == null)
+                {
+                    break;
+                }
+                else
+                {
+                    baseElements.Add(baseElement);
+                    derivedElement = baseElement;
+                }
+            }
+
+            return baseElements;
+        }
 
         #endregion
 

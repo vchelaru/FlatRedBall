@@ -442,7 +442,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 return false;
             }
 
-            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+            var allBase = ObjectFinder.Self.GetAllBaseElementsRecursively(element as GlueElement);
 
             return allBase.Any(GetIfIsPlatformer);
         }

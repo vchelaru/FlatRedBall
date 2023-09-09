@@ -702,7 +702,8 @@ namespace FlatRedBall
         /// Adds the argument Sprite to the argument Layer. If the Sprite is not already
         /// managed by the SpriteManager, the Sprite will also be added to the internal list
         /// for management. This method can be called multiple times to add a single Sprite to
-        /// multiple Layers.
+        /// multiple Layers. If the Sprite is unlayered, it will be moved to the argument Layer and
+        /// only be drawn on the argument Layer.
         /// 
         /// If the layerToAddTo argument is null then the Sprite is added as a regular un-layered Sprite.
         /// </summary>

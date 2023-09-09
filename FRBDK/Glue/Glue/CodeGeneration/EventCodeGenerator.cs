@@ -831,7 +831,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if(shouldGenerate && customVariable.DefinedByBase)
             {
-                var baseContainers = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
+                var baseContainers = ObjectFinder.Self.GetAllBaseElementsRecursively(container as GlueElement);
 
                 foreach(var baseContainer in baseContainers)
                 {

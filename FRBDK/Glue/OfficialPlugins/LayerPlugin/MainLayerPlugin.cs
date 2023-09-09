@@ -44,7 +44,7 @@ namespace OfficialPlugins.LayerPlugin
 
         private List<string> GetAvailableRenderTargets(IElement element, NamedObjectSave save1, ReferencedFileSave save2)
         {
-            var availableRenderTargets = element.GetAllNamedObjectsRecurisvely()
+            var availableRenderTargets = (element as GlueElement).GetAllNamedObjectsRecurisvely()
                 .Where(item => item.GetAssetTypeInfo()?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.RenderTarget2D")
                 .Select(item => item.InstanceName)
                 .ToList();

@@ -377,7 +377,7 @@ namespace FlatRedBall.Glue.SetVariable
                     File.Move(oldFilePath.FullPath, newFilePath.FullPath);
                 }
 
-                UpdateObjectsUsingFile(container, oldName, rfs);
+                UpdateObjectsUsingFile(container as GlueElement, oldName, rfs);
 
                 await RegenerateCodeAndUpdateUiAccordingToRfsRename(oldName, newName, rfs);
 
@@ -391,7 +391,7 @@ namespace FlatRedBall.Glue.SetVariable
             }, $"ForceReactToRenamedReferencedFileAsync {oldName} -> {newName}");
         }
 
-        private static void UpdateObjectsUsingFile(IElement element, string oldName, ReferencedFileSave rfs)
+        private static void UpdateObjectsUsingFile(GlueElement element, string oldName, ReferencedFileSave rfs)
         {
             string newName = rfs.Name;
             string oldNameUnqualified = FileManager.RemoveExtension(FileManager.RemovePath(oldName));
@@ -400,13 +400,13 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 AdjustAccordingToRenamedRfs(element, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
-            foreach (IElement derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
+            foreach (var derived in ObjectFinder.Self.GetAllElementsThatInheritFrom(element))
             {
                 AdjustAccordingToRenamedRfs(derived, oldName, rfs, newName, oldNameUnqualified, newNameUnqualified);
             }
         }
 
-        private static void AdjustAccordingToRenamedRfs(IElement element, string oldName, ReferencedFileSave rfs, string newName, string oldNameUnqualified, string newNameUnqualified)
+        private static void AdjustAccordingToRenamedRfs(GlueElement element, string oldName, ReferencedFileSave rfs, string newName, string oldNameUnqualified, string newNameUnqualified)
         {
             foreach (NamedObjectSave nos in element.GetAllNamedObjectsRecurisvely())
             {
