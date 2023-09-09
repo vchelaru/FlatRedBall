@@ -8,6 +8,8 @@ using FlatRedBall.Utilities;
 
 namespace FlatRedBall.Localization
 {
+    #region LocalizationEntry Class
+
     public class LocalizationEntry
     {
         public string Key { get; set; }
@@ -29,6 +31,8 @@ namespace FlatRedBall.Localization
             }
         }
     }
+
+    #endregion
 
     public static class LocalizationManager
     {

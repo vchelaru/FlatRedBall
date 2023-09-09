@@ -197,6 +197,20 @@ namespace OfficialPlugins.VariableDisplay
                                 baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
                                     [variableInElement.PreferredDisplayerTypeName];
                             }
+                            else if(variableInElement?.VariableDefinition?.PreferredDisplayer != null)
+                            {
+                                baseVariableDefinition.PreferredDisplayer = variableInElement.VariableDefinition.PreferredDisplayer;
+
+                                if(variableInElement.VariableDefinition.PropertiesToSetOnDisplayer?.Count > 0)
+                                {
+                                    baseVariableDefinition.PropertiesToSetOnDisplayer.Clear();
+
+                                    foreach(var kvp in variableInElement.VariableDefinition.PropertiesToSetOnDisplayer)
+                                    {
+                                        baseVariableDefinition.PropertiesToSetOnDisplayer[kvp.Key] = kvp.Value;
+                                    }
+                                }
+                            }
                         }
                     }
 
