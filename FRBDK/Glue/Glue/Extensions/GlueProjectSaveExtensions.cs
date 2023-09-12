@@ -235,7 +235,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
             for(int i = element.CustomVariables.Count-1; i > -1; i--)
             {
-                var shouldStrip = DetermineIfShouldStripCustomVariable(baseElements, element.CustomVariables[i]);
+                var variable = element.CustomVariables[i];
+                var shouldStrip = DetermineIfShouldStripCustomVariable(baseElements, variable);
 
                 if(shouldStrip)
                 {

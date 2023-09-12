@@ -32,6 +32,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         public async void HandleDragDropTimerElapsed(GameHostView gameHostView)
         {
+            if(CompilerViewModel?.IsRunning != true)
+            {
+                return;
+            }
             try
             {
                 // These suck - they dont' return anything if the user is over only the wpf item:
