@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GumProjects", "GumProjects"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GlueProjects", "GlueProjects", "{4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterpolationCore", "StateInterpolationPlugin\InterpolationCore\InterpolationCore.csproj", "{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared Libraries", "Shared Libraries", "{07985C4C-B3CF-432C-8A27-36FDD006231F}"
@@ -89,7 +87,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompileAndEditMode", "Compi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompilerLibrary", "CompilerLibrary\CompilerLibrary.csproj", "{731481FE-AA6C-4282-8059-94D98873CEED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginLibraries", "PluginLibraries\PluginLibraries.csproj", "{FE26E006-0EE3-4735-AD14-54337CB2662E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginLibraries", "PluginLibraries\PluginLibraries.csproj", "{FE26E006-0EE3-4735-AD14-54337CB2662E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StateInterpolationNet6", "StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj", "{48261027-DFD2-4571-948E-129136A6E6BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,10 +101,6 @@ Global
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FE94178-9907-4878-AFAC-8F347CA86B50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9403B27A-6E3A-4083-8A42-0EB62B699246}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -221,13 +217,16 @@ Global
 		{FE26E006-0EE3-4735-AD14-54337CB2662E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE26E006-0EE3-4735-AD14-54337CB2662E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE26E006-0EE3-4735-AD14-54337CB2662E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48261027-DFD2-4571-948E-129136A6E6BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48261027-DFD2-4571-948E-129136A6E6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48261027-DFD2-4571-948E-129136A6E6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48261027-DFD2-4571-948E-129136A6E6BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5FE94178-9907-4878-AFAC-8F347CA86B50} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
-		{1F85AEF5-2AE4-49B6-B0DB-623ED2A3A63C} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 		{0BB8CBE3-8503-46C1-9272-D98E153A230E} = {4532DFDF-D042-4AEE-9FBE-92A1A7BC5F5D}
 		{1D66D67D-064B-4AAC-94E1-AF754D281FA0} = {3DDD0995-4B47-47A2-82A4-F0A6367C9FF2}
 		{F919C045-EAC7-4806-9A1F-CE421F923E97} = {1D66D67D-064B-4AAC-94E1-AF754D281FA0}
@@ -263,6 +262,7 @@ Global
 		{7E60C1AE-2A47-4AAA-93C3-88BC2E683AB3} = {2A5AF34E-E1E3-411F-8656-D96D0D1A7117}
 		{731481FE-AA6C-4282-8059-94D98873CEED} = {2A5AF34E-E1E3-411F-8656-D96D0D1A7117}
 		{FE26E006-0EE3-4735-AD14-54337CB2662E} = {EC6FC7AF-EDDF-4DC2-93C8-95EE34CD8CD8}
+		{48261027-DFD2-4571-948E-129136A6E6BE} = {07985C4C-B3CF-432C-8A27-36FDD006231F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {878CCBB8-EADE-4F25-9DE7-D55D999D414A}
@@ -270,6 +270,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{0bb8cbe3-8503-46c1-9272-d98e153a230e}*SharedItemsImports = 13
 		..\..\Engines\FlatRedBallXNA\FlatRedBall\FlatRedBallShared.projitems*{26dd17aa-55ae-46ab-9394-a2319728869a}*SharedItemsImports = 5
+		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{48261027-dfd2-4571-948e-129136a6e6be}*SharedItemsImports = 5
 		..\..\Engines\Forms\FlatRedBall.Forms\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems*{728151f0-03e0-4253-94fe-46b9c77edea6}*SharedItemsImports = 13
 		StateInterpolationPlugin\StateInterpolationPlugin\StateInterpolationShared.projitems*{d00d287d-385b-42fb-bf5f-04401e7d37d0}*SharedItemsImports = 13
 		..\..\..\Gum\GumCoreShared.projitems*{f919c045-eac7-4806-9a1f-ce421f923e97}*SharedItemsImports = 13

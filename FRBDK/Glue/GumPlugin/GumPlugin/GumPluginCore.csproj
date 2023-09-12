@@ -381,7 +381,7 @@
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
-    <ProjectReference Include="..\..\StateInterpolationPlugin\InterpolationCore\InterpolationCore.csproj" />
+    <ProjectReference Include="..\..\StateInterpolationPlugin\StateInterpolationNet6\StateInterpolationNet6.csproj" />
   </ItemGroup>
 
 
@@ -443,7 +443,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.pdb&quot;&#xD;&#xA;echo 5&#xD;&#xA;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\FlatRedBall.InterpolationCore.dll &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\FlatRedBall.InterpolationCore.dll&quot;&#xD;&#xA;" />
+    <Exec Command="echo PostBuild to $(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&#xD;&#xA;echo 1&#xD;&#xA;IF NOT EXIST  &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot; MD &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\&quot;&#xD;&#xA;echo 2&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.dll &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.dll&quot;&#xD;&#xA;copy &quot;$(TargetDir)&quot;\GumPluginCore.pdb &quot;$(SolutionDir)Glue\bin\Debug\Plugins\GumPlugin\GumPluginCore.pdb&quot;" />
   </Target>
 
 </Project>
