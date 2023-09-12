@@ -9,12 +9,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="NetFramework4_7\**" />
-    <EmbeddedResource Remove="NetFramework4_7\**" />
-    <None Remove="NetFramework4_7\**" />
-    <Page Remove="NetFramework4_7\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

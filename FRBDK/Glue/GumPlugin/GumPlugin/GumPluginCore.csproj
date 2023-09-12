@@ -376,8 +376,8 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Gum\GumDataTypes\GumDataTypesStandard.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Gum\GumRuntimeStandard\GumRuntimeStandard\GumRuntimeStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\GumDataTypes\GumDataTypesNet6.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Gum\GumRuntimeNet6\GumRuntimeNet6.csproj" />
     <ProjectReference Include="..\..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
     <ProjectReference Include="..\..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\..\Glue\GlueFormsCore.csproj" />
