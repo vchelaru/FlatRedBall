@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Controls;
+using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -35,7 +36,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
             // update view model
             aboutViewModel.CopyrightText = "FlatRedBall " + DateTime.Now.Year;
-            aboutViewModel.VersionNumberText = Application.ProductVersion;
+            aboutViewModel.Version = Version.Parse( Application.ProductVersion);
+            aboutViewModel.RefreshVersionInfo();
             var glueProject = GlueState.Self.CurrentGlueProject;
 
             if(glueProject == null)
