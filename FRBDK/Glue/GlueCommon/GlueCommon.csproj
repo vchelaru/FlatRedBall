@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="NetStandard\**" />
     <Compile Remove="Plugins\**" />
+    <EmbeddedResource Remove="NetStandard\**" />
     <EmbeddedResource Remove="Plugins\**" />
+    <None Remove="NetStandard\**" />
     <None Remove="Plugins\**" />
   </ItemGroup>
 
