@@ -109,6 +109,18 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\LateBinder.cs">
+      <Link>PropertyGrids\LateBinder.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\PropertyDescriptorHelper.cs">
+      <Link>PropertyGrids\PropertyDescriptorHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\PropertyGridDisplayer.cs">
+      <Link>PropertyGrids\PropertyGridDisplayer.cs</Link>
+    </Compile>
+    <Compile Include="..\Glue\FlatRedBall.PropertyGrid\ReflectingParameterDescriptor.cs">
+      <Link>PropertyGrids\ReflectingParameterDescriptor.cs</Link>
+    </Compile>
     <Compile Include="..\Glue\Glue\Controls\MultiButtonMessageBox.cs">
       <Link>Controls\MultiButtonMessageBox.cs</Link>
       <SubType>Form</SubType>
@@ -295,13 +307,9 @@
       <Project>{8C80BA7B-1CBA-4579-9382-D9DC6C365070}</Project>
       <Name>FlatRedBall.SpecializedXnaControls</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Glue\FlatRedBall.PropertyGrid\NetFramework4_7\FlatRedBall.PropertyGrid.csproj">
-      <Project>{5fe94178-9907-4878-afac-8f347ca86b50}</Project>
-      <Name>FlatRedBall.PropertyGrid</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Glue\GlueCommon\GlueCommon.csproj">
-      <Project>{bddab7de-db12-4bfe-ad4c-f607f3b7af43}</Project>
-      <Name>GlueCommon</Name>
+    <ProjectReference Include="..\Glue\GlueCommon\GlueCommonStandard.csproj">
+      <Project>{2d6db604-96a8-4473-ad53-823bae5e3141}</Project>
+      <Name>GlueCommonStandard</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
