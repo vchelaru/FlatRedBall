@@ -17,8 +17,12 @@
                 </ToolTip>
             </Button.ToolTip>
         </Button>
-        <TextBox Grid.Column="2" Margin="3,0,0,0" Width="150" 
-                 Text="{Binding Configuration}"></TextBox>
+        <Button Margin="3,0,0,0">
+            <Image Source="/CompilerPlugin;component/Icons/build.png"></Image>
+        </Button>
+        <ComboBox IsEditable="True" Grid.Column="2" Margin="3,0,0,0" Width="150" 
+                  ItemsSource="{Binding AvailableConfigurations}"
+                 Text="{Binding Configuration}"></ComboBox>
         <CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsPrintMsBuildCommandChecked}">Print MSBuild Command</CheckBox>
         <Button VerticalAlignment="Top" Width="24" Click="MSBuildSettingsButtonClicked" Margin="2,0,0,0">
             <Image IsHitTestVisible="False" Source="/CompilerPlugin;component/Icons/Settings.png"></Image>

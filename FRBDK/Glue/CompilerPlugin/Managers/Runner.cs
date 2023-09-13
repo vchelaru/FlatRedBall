@@ -297,7 +297,7 @@ namespace CompilerPlugin.Managers
             IsWaitingForGameToStart = true;
 
             foundExternallyRunningProcess = false;
-            string exeLocation = GetGameExeLocation();
+            string exeLocation = GetGameExeLocation(this._compilerViewModel.Configuration);
 
             ToolsUtilities.GeneralResponse<Process> startResponse = ToolsUtilities.GeneralResponse<Process>.UnsuccessfulResponse;
 
@@ -455,7 +455,7 @@ namespace CompilerPlugin.Managers
             }
         }
 
-        private static string GetGameExeLocation()
+        private static string GetGameExeLocation(string configuration)
         {
             var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
             if (string.IsNullOrEmpty(projectFileName))
@@ -467,7 +467,7 @@ namespace CompilerPlugin.Managers
                 var projectDirectory = FileManager.GetDirectory(projectFileName);
                 var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
                 // todo - make the plugin smarter so it knows where the .exe is really located
-                var exeLocation = projectDirectory + "bin/x86/debug/" + executableName + ".exe";
+                var exeLocation = projectDirectory + $"bin/{configuration}/" + executableName + ".exe";
                 return exeLocation;
             }
         }
@@ -583,7 +583,7 @@ namespace CompilerPlugin.Managers
 
         private async Task<string> GetCrashMessage()
         {
-            string exeLocation = GetGameExeLocation();
+            string exeLocation = GetGameExeLocation(this._compilerViewModel.Configuration);
 
             string message = string.Empty;
             if (!string.IsNullOrEmpty(exeLocation))

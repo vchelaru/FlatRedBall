@@ -254,6 +254,11 @@ namespace CompilerLibrary.ViewModels
             set => Set(value);
         }
 
+        public ObservableCollection<string> AvailableConfigurations
+        {
+            get; set;
+        }
+
         public List<string> GameSpeedList { get; set; } =
             new List<string>
             {
@@ -442,8 +447,13 @@ namespace CompilerLibrary.ViewModels
 
         CompilerViewModel()
         {
+            AvailableConfigurations = new ObservableCollection<string>();
+
             CurrentGameSpeed = "100%";
             ToolbarEntitiesAndStates = new ObservableCollection<ToolbarEntityAndStateViewModel>();
+
+            AvailableConfigurations.Add("Debug");
+            AvailableConfigurations.Add("Release");
         }
 
         #endregion

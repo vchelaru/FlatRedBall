@@ -512,7 +512,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 // This is the location when running from Glue
                 // Maybe eventually I'll fix glue build to build to the same location as the project...
-                string debugPath = "bin/x86/debug/";
+                string debugPath = "bin/debug/";
                 CopyToBuildFolder(absoluteSource.FullPath, debugPath);
 
                 if (GlueState.Self.CurrentMainProject is VisualStudioProject)
