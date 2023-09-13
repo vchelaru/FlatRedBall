@@ -28,6 +28,8 @@ namespace GlueControl
 {
     public class GlueControlManager
     {
+        public const string ProjectNamespace = "{ProjectNamespace}";
+
         #region Classes
 
         public class GameToGlueCommand
@@ -316,8 +318,7 @@ namespace GlueControl
 
         private bool GetIfMatchesCurrentScreen(string elementName, out System.Type ownerType, out Screen currentScreen)
         {
-            var game1FullName = typeof(Game1).FullName;
-            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
+            var topNamespace = ProjectNamespace;
             //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
             var ownerTypeName = $"{topNamespace}.{elementName.Replace("\\", ".")}";
 

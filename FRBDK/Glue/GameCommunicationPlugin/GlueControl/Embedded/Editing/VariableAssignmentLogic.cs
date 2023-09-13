@@ -23,6 +23,8 @@ namespace GlueControl.Editing
 {
     public static class VariableAssignmentLogic
     {
+        const string ProjectNamespace = "{ProjectNamespace}";
+
         public static GlueVariableSetDataResponse SetVariable(GlueVariableSetData data, PositionedObject forcedItem = null)
         {
             object variableValue = ConvertVariableValue(data);
@@ -75,7 +77,7 @@ namespace GlueControl.Editing
 
                 if (isStatic)
                 {
-                    var reflectedElementGameType = typeof(Game1).Assembly.GetType(elementGameType);
+                    var reflectedElementGameType = typeof(VariableAssignmentLogic).Assembly.GetType(elementGameType);
                     if (reflectedElementGameType != null)
                     {
                         var property = reflectedElementGameType.GetProperty(strippedVariableName);
@@ -1371,8 +1373,7 @@ namespace GlueControl.Editing
             qualifiedTypeName = string.Join(".", splitType.Take(splitType.Length - 1).ToArray()) + "+" +
                 splitType.Last();
 
-            var gameType = typeof(Game1).FullName.Split('.');
-            if (splitType[0] != gameType[0])
+            if (splitType[0] != ProjectNamespace)
             {
                 // The qualifiedTypeName could be in one of two formats.
                 // One is the Type.FullName which would appear as follows:
@@ -1384,7 +1385,7 @@ namespace GlueControl.Editing
                 // should tolerate that too. Infact, I question whether we even
                 // need the root namespace prefix. By supporting both we can incrementally
                 // refactor if that becomes the preferred way to do it.
-                qualifiedTypeName = gameType[0] + '.' + qualifiedTypeName;
+                qualifiedTypeName = ProjectNamespace + '.' + qualifiedTypeName;
             }
 
             var stateType = typeof(VariableAssignmentLogic).Assembly.GetType(qualifiedTypeName);

@@ -21,6 +21,8 @@ namespace GlueControl
 {
     static class CommandReceiver
     {
+        public const string ProjectNamespace = "{ProjectNamespace}";
+
         #region Supporting Methods/Properties
 
         /// <summary>
@@ -79,7 +81,7 @@ namespace GlueControl
                     // be a method that is only expected as a response
                     var possibleQualifiedType = $"GlueControl.Dtos.{dtoTypeName}";
 
-                    dtoType = typeof(Game1).Assembly.GetType(possibleQualifiedType);
+                    dtoType = typeof(CommandReceiver).Assembly.GetType(possibleQualifiedType);
                 }
                 var dto = JsonConvert.DeserializeObject(dtoSerialized, dtoType);
 
@@ -141,10 +143,7 @@ namespace GlueControl
 
         private static bool GetIfMatchesCurrentScreen(string elementNameGlue, out System.Type ownerType, out Screen currentScreen)
         {
-            var game1FullName = typeof(Game1).FullName;
-            var topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
-            //var ownerTypeName = "WhateverNamespace." + elementName.Replace("\\", ".");
-            var ownerTypeName = $"{topNamespace}.{elementNameGlue.Replace("\\", ".")}";
+            var ownerTypeName = $"{ProjectNamespace}.{elementNameGlue.Replace("\\", ".")}";
 
             ownerType = typeof(CommandReceiver).Assembly.GetType(ownerTypeName);
             currentScreen = ScreenManager.CurrentScreen;
@@ -687,15 +686,10 @@ namespace GlueControl
 
         #region Rename
 
-        static string topNamespace = null;
         public static string GlueToGameElementName(string elementName)
         {
-            if (topNamespace == null)
-            {
-                var game1FullName = typeof(Game1).FullName;
-                topNamespace = game1FullName.Substring(0, game1FullName.IndexOf('.'));
-            }
-            return $"{topNamespace}.{elementName.Replace("\\", ".")}";
+            
+            return $"{ProjectNamespace}.{elementName.Replace("\\", ".")}";
         }
 
         public static string GameElementTypeToGlueElement(string gameType)
