@@ -127,6 +127,31 @@ namespace FlatRedBall.Glue.Parsing
             }
         }
 
+        public static bool HasClass(string fileName, string className)
+        {
+            fileName = FileManager.Standardize(fileName);
+
+            if (FileManager.FileExists(fileName))
+            {
+
+                ParsedFile parsedFile = new ParsedFile(fileName);
+
+                if (parsedFile.Namespaces.Count != 0)
+                {
+                    for (int i = 0; i < parsedFile.Namespaces[0].Classes.Count; i++)
+                    {
+                        ParsedClass parsedClass = parsedFile.Namespaces[0].Classes[i];
+
+                        if(parsedClass.Name ==  className)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         public static string ConvertValueToCodeString<T>(T objectToParse, Type outputType = null)
         {
 

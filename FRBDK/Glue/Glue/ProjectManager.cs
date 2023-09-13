@@ -550,9 +550,10 @@ namespace FlatRedBall.Glue
                         }
 
                         if (GlueProjectSave != null &&
-                            !string.IsNullOrEmpty(GlueProjectSave.CustomGameClass) &&
-                            CodeParser.InheritsFrom(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass))
+                            !string.IsNullOrEmpty(GlueProjectSave.CustomGameClass))
                         {
+                            if ( CodeParser.InheritsFrom(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass) ||
+                                CodeParser.HasClass(bi.UnevaluatedInclude, GlueProjectSave.CustomGameClass))
                             return bi.UnevaluatedInclude;
                         }
                     }

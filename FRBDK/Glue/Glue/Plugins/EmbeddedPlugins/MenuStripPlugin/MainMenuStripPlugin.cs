@@ -319,14 +319,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             }
             else
             {
-                TextInputWindow tiw = new TextInputWindow();
-                tiw.DisplayText = "Enter the custom class name.  Delete the contents to not use a custom class.";
+                var tiw = new CustomizableTextInputWindow();
+                tiw.Message = "Enter the custom class name.  Delete the contents to not use a custom class.";
                 tiw.Result = ProjectManager.GlueProjectSave.CustomGameClass;
 
-                DialogResult result = tiw.ShowDialog();
+                var result = tiw.ShowDialog();
 
 
-                if (result == System.Windows.Forms.DialogResult.OK)
+                if (result == true)
                 {
                     ProjectManager.GlueProjectSave.CustomGameClass = tiw.Result;
                     GluxCommands.Self.SaveGlux();

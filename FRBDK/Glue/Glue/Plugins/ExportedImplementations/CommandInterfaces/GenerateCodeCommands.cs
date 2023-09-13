@@ -286,7 +286,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 var code = Game1CodeGeneratorManager.GetGame1GeneratedContents();
 
-                FilePath filePath = GlueState.CurrentGlueProjectDirectory + "Game1.Generated.cs";
+                string rawGameName = "Game1";
+                if(!string.IsNullOrEmpty(GlueState.CurrentGlueProject.CustomGameClass))
+                {
+                    rawGameName = GlueState.CurrentGlueProject.CustomGameClass;
+                }
+
+                FilePath filePath = GlueState.CurrentGlueProjectDirectory + $"{rawGameName}.Generated.cs";
 
                 GlueCommands.TryMultipleTimes(() =>
                 {
