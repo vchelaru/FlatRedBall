@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using CompilerLibrary.ViewModels;
+using System.Windows.Forms;
 
 namespace CompilerPlugin
 {
@@ -148,6 +149,8 @@ namespace CompilerPlugin
                 }
             };
 
+            MainControl.PackageClicked += HandlePackageClicked;
+
             MainControl.CancelBuildClicked += (_, _) =>
             {
                 _compiler.CancelBuild();
@@ -196,6 +199,36 @@ namespace CompilerPlugin
                     });
                 }
             };
+        }
+
+        private async void HandlePackageClicked()
+        {
+            return;
+            // todo - finish here
+            var compileTask = _compiler.Compile(
+                (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
+                (value) => ReactToPluginEvent("Compiler_Output_Error", value),
+                _compilerViewModel.Configuration,
+                _compilerViewModel.IsPrintMsBuildCommandChecked);
+
+            var dialog = new SaveFileDialog();
+            var saveDialogResult = dialog.ShowDialog();
+            if(saveDialogResult == DialogResult.OK)
+            {
+                var succeeded = await compileTask;
+
+                if (!succeeded)
+                {
+                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                }
+                else
+                {
+                    // save it:
+                    var fileName = dialog.FileName;
+
+                    // todo - zip and save here:
+                }
+            }
         }
         #endregion
 

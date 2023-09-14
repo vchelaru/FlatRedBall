@@ -17,6 +17,7 @@
             <views:WhileStoppedView
                 Visibility="{Binding WhileStoppedViewVisibility}"
                 BuildClicked="HandleCompileClick"
+                PackageClicked="WhileStoppedView_PackageClicked"
                 RunClicked="HandleRunClick"
                 MSBuildSettingsClicked="HandleMSBuildSettingsClicked"
                 >

@@ -24,6 +24,7 @@
     <None Remove="Icons\icon_magnify.png" />
     <None Remove="Icons\icon_minus.png" />
     <None Remove="Icons\icon_plus.png" />
+    <None Remove="Icons\package.png" />
     <None Remove="Icons\Pause.png" />
     <None Remove="Icons\play.png" />
     <None Remove="Icons\RestartGameOnCurrentScreen.png" />
@@ -54,6 +55,7 @@
     <Resource Include="Icons\icon_magnify.png" />
     <Resource Include="Icons\icon_minus.png" />
     <Resource Include="Icons\icon_plus.png" />
+    <Resource Include="Icons\package.png" />
     <Resource Include="Icons\Pause.png" />
     <Resource Include="Icons\play.png" />
     <Resource Include="Icons\RestartGameOnCurrentScreen.png" />
