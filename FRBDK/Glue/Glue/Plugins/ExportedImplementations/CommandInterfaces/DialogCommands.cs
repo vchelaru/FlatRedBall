@@ -1112,9 +1112,16 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             var selectedNode = GlueState.Self.CurrentTreeNode;
 
+            ///////////////////early out////////////////
+            if(selectedNode == null)
+            {
+                return;
+            }
+            //////////////////end early out/////////////
+
             #region Named object
 
-            if (selectedNode.IsNamedObjectNode())
+            if (selectedNode?.IsNamedObjectNode() == true)
             {
                 NamedObjectSave nos = selectedNode.Tag as NamedObjectSave;
 
