@@ -1226,7 +1226,7 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
-#if RendererHasExternalEffectManager
+#if RendererHasExternalEffectManager && !ANDROID
                 if (UseCustomEffect)
                 {
                     var effectManager = Renderer.ExternalEffectManager;
