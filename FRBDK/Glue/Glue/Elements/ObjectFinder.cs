@@ -428,11 +428,30 @@ public class ObjectFinder : IObjectFinder
         //foreach (NamedObjectSave nos in namedObjects.ToArray())
         foreach (NamedObjectSave nos in namedObjects)
         {
+            bool isListOrShapeCollection()
+            {
+                if(nos.IsList)
+                {
+                    return true;
+                }
+                else if(nos.SourceType == SourceType.FlatRedBallType)
+                {
+                    var sourceClassType = nos.SourceClassType;
+
+                    return sourceClassType == "ShapeCollection" || sourceClassType == "FlatRedBall.Math.Geometry.ShapeCollection";
+
+                }
+                return false;
+
+
+            }
+
+
             if (nos == objectToFind)
             {
                 return true;
             }
-            else if(nos.IsList && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
+            else if(isListOrShapeCollection() && IsContainedInListOrAsChild(nos.ContainedObjects, objectToFind))
             {
                 return true;
             }
