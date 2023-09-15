@@ -836,7 +836,7 @@ namespace GumPlugin
                         await FormsControlAdder.SaveElements(assembly);
                         await FormsControlAdder.SaveBehaviors(assembly);
 
-                        await HandleRebuildFonts();
+                        await HandleBuildMissingFonts();
 
                     }
                     GlueCommands.Self.GluxCommands.SaveProjectAndElements();
@@ -857,12 +857,12 @@ namespace GumPlugin
             GumPluginCommands.Self.GumControl = control;
             control.DataContext = viewModel;
 
-            control.RebuildFontsClicked += async () => await HandleRebuildFonts();
+            control.RebuildFontsClicked += async () => await HandleBuildMissingFonts();
 
             tab = this.CreateTab(control, "Gum Properties");
         }
 
-        public async Task HandleRebuildFonts()
+        public async Task HandleBuildMissingFonts()
         {
             // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
             var gumFileName = AppState.Self.GumProjectSave.FullFileName;
@@ -908,6 +908,8 @@ namespace GumPlugin
                 await TaskManager.Self.AddAsync(() =>
                 {
                     var startInfo = new System.Diagnostics.ProcessStartInfo();
+
+                    // Even though this is "rebuildfonts" it actually doesn't "rebuild". It's just a "build"
                     startInfo.Arguments = $@"--rebuildfonts ""{gumFileName}""";
                     startInfo.FileName = executable;
                     startInfo.UseShellExecute = false;
@@ -983,6 +985,8 @@ namespace GumPlugin
                 await UpdateGumParentProject();
 
                 GumPluginCommands.Self.UpdateGumToGlueResolution();
+
+                TaskManager.Self.Add(() => HandleBuildMissingFonts(), "Building missing Gum fonts");
             }
         }
 
