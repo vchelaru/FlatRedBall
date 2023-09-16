@@ -93,7 +93,7 @@ namespace OfficialPlugins.MonoGameContent
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Content Pipeline Settings", HandleContentPipelineSettings, "Content");
+            this.AddMenuItemTo(Localization.Texts.ContentPipelineSettings, Localization.MenuIds.ContentPipelineSettingsId, HandleContentPipelineSettings, Localization.MenuIds.ContentId);
 
             CreateController();
 

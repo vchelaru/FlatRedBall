@@ -14,8 +14,8 @@ namespace OfficialPlugins.FrbUpdater
     {
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
-        private const string UpdateLibrariesText = "Update Libraries";
-        public const string PluginsMenuItem = "Update";
+        private static readonly string UpdateLibrariesText = Localization.Texts.UpdateLibraries;
+        public const string PluginsMenuItem = Localization.MenuIds.UpdateId;
         FrbUpdaterPluginForm mForm;
 
         public event Action<IPlugin, string, string> ReactToPluginEventAction;

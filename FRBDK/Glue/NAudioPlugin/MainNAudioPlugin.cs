@@ -18,9 +18,9 @@ namespace NAudioPlugin
     [Export(typeof(PluginBase))]
     public class MainNAudioPlugin : PluginBase
     {
-        public override string FriendlyName => "NAduio Plugin";
+        public override string FriendlyName => "NAudio Plugin";
 
-        public override Version Version => new Version(1, 0);
+        public override Version Version => new (1, 0);
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
         {
@@ -32,7 +32,7 @@ namespace NAudioPlugin
         {
             RegisterCodeGenerator(new ElementCodeGenerator());
 
-            AddMenuItemTo("Embed NAudio Classes", HandleEmbedNAudioFiles, "Content");
+            AddMenuItemTo(Localization.Texts.EmbedNAudioClasses, Localization.MenuIds.EmbedNAudioClassesId, HandleEmbedNAudioFiles, Localization.MenuIds.ContentId);
 
             this.ReactToLoadedGluxEarly += HandleGluxLoadedEarly;
         }

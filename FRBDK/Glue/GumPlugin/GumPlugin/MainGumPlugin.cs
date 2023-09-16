@@ -313,7 +313,7 @@ namespace GumPlugin
 
             AssetTypeInfoManager.Self.AddCommonAtis();
 
-            addGumProjectMenuItem = this.AddMenuItemTo("Add New Gum Project", HandleAddNewGumProjectMenuItemClicked, "Content");
+            addGumProjectMenuItem = this.AddMenuItemTo(Localization.Texts.ProjectNewGum, Localization.MenuIds.ProjectNewGumId, HandleAddNewGumProjectMenuItemClicked, Localization.MenuIds.ContentId);
             //var bmp = new Bitmap(WindowsFormsApplication1.Properties.Resources.myimage);
             addGumProjectMenuItem.Image = new Bitmap(GumPluginCore.Resource1.GumIcon);
 
@@ -466,7 +466,7 @@ namespace GumPlugin
             gumToolbar = new GumToolbar();
             gumToolbar.DataContext = toolbarViewModel;
             gumToolbar.GumButtonClicked += HandleToolbarButtonClick;
-            base.AddToToolBar(gumToolbar, "Tools");
+            base.AddToToolBar(gumToolbar, Localization.Texts.Tools);
         }
 
         public bool HasGum() => AppState.Self.GumProjectSave != null;
@@ -541,14 +541,14 @@ namespace GumPlugin
         {
             await TaskManager.Self.AddAsync(async () =>
             {
-                bool createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
+                var createGumScreen = propertiesManager.GetShouldAutoCreateGumScreens();
 
                 if (createGumScreen && AppState.Self.GumProjectSave != null)
                 {
                     await GumPluginCommands.Self.AddScreenForGlueScreen(newFrbScreen);
                 }
 
-            }, $"Gum Plugin - handle new FRB screen {newFrbScreen}");
+            }, String.Format(Localization.Texts.GumPluginHandleNewFrbScreen , newFrbScreen));
         }
 
 
@@ -563,7 +563,7 @@ namespace GumPlugin
                 if (gumScreen != null)
                 {
                     var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(
-                        $"Delete the Gum Screen {gumScreen.Name}\nfor {glueScreen}?");
+                        String.Format(Localization.Texts.GumConfirmDeleteScreen,gumScreen.Name, glueScreen));
                     if(result == System.Windows.MessageBoxResult.Yes)
                     {
                         await GumPluginCommands.Self.RemoveScreen(gumScreen);
@@ -639,7 +639,7 @@ namespace GumPlugin
                 bool isInGlobalContent = GlueState.Self.CurrentGlueProject.GlobalFiles.Contains(newFile);
                 if (!isInGlobalContent)
                 {
-                    MessageBox.Show("The Gum project file (.gumx) can only be added to global content.");
+                    MessageBox.Show(Localization.Texts.GumProjectFileCanOnlyAddedToGlobal);
 
                     var container = FlatRedBall.Glue.Elements.ObjectFinder.Self.GetElementContaining(newFile);
 
@@ -669,7 +669,7 @@ namespace GumPlugin
                                 globalFiles.Remove(gumRfs);
                                 globalFiles.Insert(0, gumRfs);
                             }
-                        }, "Reordering .gumx");
+                        }, Localization.Texts.GumReordering);
                     }
 
                     // only do this if the property reactor is reacting to changes - if it's not, then we're still
@@ -754,22 +754,16 @@ namespace GumPlugin
         public async void AskToCreateGumProject()
         {
             var mbmb = new MultiButtonMessageBoxWpf();
-            mbmb.AddButton("Include Forms Controls (Recommended)", true);
-            mbmb.AddButton("No Forms, only raw Gum", false);
-            mbmb.MessageText = "Add Gum and FlatRedBall Forms?";
+            mbmb.AddButton(Localization.Texts.GumIncludeRecommendedFormsControls, true);
+            mbmb.AddButton(Localization.Texts.GumNoForms, false);
+            mbmb.MessageText = Localization.Texts.GumAddFRBForms;
             var showDialogResult = mbmb.ShowDialog();
-
-
 
             if (showDialogResult == true)
             {
-
                 var shouldAlsoAddForms = (bool)mbmb.ClickedResult;
                 await CreateGumProjectInternal(shouldAlsoAddForms, askToOverwrite:true);
             }
-
-
-
         }
 
         private async Task CreateGumProjectInternal(bool shouldAlsoAddForms, bool askToOverwrite)
@@ -783,13 +777,13 @@ namespace GumPlugin
 
             if (GlueState.Self.CurrentGlueProject == null)
             {
-                MessageBox.Show("You must first create a FlatRedBall project before adding a Gum project");
+                MessageBox.Show(Localization.Texts.GumErrorCreateFRBFirst);
                 shouldSave = false;
             }
 
             else if (GumProjectManager.Self.GetIsGumProjectAlreadyInGlueProject())
             {
-                MessageBox.Show("A Gum project already exists");
+                MessageBox.Show(Localization.Texts.GumProjectAlreadyExists);
                 shouldSave = false;
             }
 
@@ -798,7 +792,7 @@ namespace GumPlugin
 
                 if (control == null)
                 {
-                    GlueCommands.Self.DoOnUiThread(() => CreateGumControl());
+                    GlueCommands.Self.DoOnUiThread(CreateGumControl);
                 }
                 await TaskManager.Self.AddAsync(async () =>
                 {
@@ -846,8 +840,7 @@ namespace GumPlugin
                     propertiesManager.IsReactingToProperyChanges = true;
 
                     toolbarViewModel.HasGumProject = AppState.Self.GumProjectSave != null;
-                },
-                "Creating Gum Project");
+                }, Localization.Texts.GumProjectCreating);
             }
         }
 
@@ -859,7 +852,7 @@ namespace GumPlugin
 
             control.RebuildFontsClicked += async () => await HandleRebuildFonts();
 
-            tab = this.CreateTab(control, "Gum Properties");
+            tab = this.CreateTab(control, Localization.Texts.GumProperties);
         }
 
         public async Task HandleRebuildFonts()
@@ -900,8 +893,7 @@ namespace GumPlugin
 
             if (string.IsNullOrEmpty(executable))
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox(
-                    "Could not find file association for Gum files and could not find Gum relative to the FlatRedBall Editor. Associations need to be set before attempting to rebuild font files");
+                GlueCommands.Self.DialogCommands.ShowMessageBox(Localization.Texts.ErrorGumFileAssociationNotFound);
             }
             else
             {
@@ -916,7 +908,7 @@ namespace GumPlugin
 
                     process.WaitForExit();
                 },
-                "Refreshing Font Cache");
+                Localization.Texts.RefreshingFontCache);
 
 
             }
@@ -978,7 +970,7 @@ namespace GumPlugin
                     // the UpdatecodeInProjectPresence may add new files, so save:
                     GlueCommands.Self.ProjectCommands.SaveProjects();
 
-                }, "Gum plugin reacting to glux load");
+                }, Localization.Texts.GumPluginGluxLoad);
 
                 await UpdateGumParentProject();
 
@@ -1033,7 +1025,7 @@ namespace GumPlugin
 
             if (gumToolbar != null)
             {
-                base.RemoveFromToolbar(gumToolbar, "Standard");
+                base.RemoveFromToolbar(gumToolbar, Localization.Texts.Standard);
             }
 
             return true;

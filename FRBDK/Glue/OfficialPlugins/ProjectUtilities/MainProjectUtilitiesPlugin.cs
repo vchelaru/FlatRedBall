@@ -18,9 +18,8 @@ namespace OfficialPlugins.ForceSavePlugin
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Force Save Project", HandleForceSaveProject, "Project");
-            this.AddMenuItemTo("Set All Variables to SetByDerived = true", HandleSetAllVariablesToSetByDerived, "Project");
-
+            this.AddMenuItemTo(Localization.Texts.ForceSaveProject, Localization.MenuIds.ForceSaveProjectId, HandleForceSaveProject,Localization.MenuIds.ProjectId);
+            this.AddMenuItemTo(Localization.Texts.SetVariableByDerived, Localization.MenuIds.SetVariableByDerivedId, HandleSetAllVariablesToSetByDerived, Localization.MenuIds.ProjectId);
         }
 
         private void HandleForceSaveProject(object sender, EventArgs e)

@@ -104,9 +104,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
         private void ShowMessageAboutGenerateGame1()
         {
-            var message = "Glue is unable to communicate with your game. To enable this communication, click the \"Generate GlueControlManager in Game1\" checkbox and restart the game";
-
-            GlueCommands.Self.DialogCommands.ShowMessageBox(message);
+            GlueCommands.Self.DialogCommands.ShowMessageBox(Localization.Texts.GlueCannotCommunicateWithGame);
         }
 
         private void SpeedDecreaseClicked(object sender, RoutedEventArgs e)

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EntityInputMovementPlugin.Views" 
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:TopDownViews="clr-namespace:TopDownPlugin.Views;assembly=TopDownPluginCore"
              xmlns:PlatformerViews="clr-namespace:FlatRedBall.PlatformerPlugin.Views;assembly=PlatformerPluginCore"
              mc:Ignorable="d" 
@@ -14,39 +14,47 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" >
-            <GroupBox Header="Input Movement Type" IsEnabled="{Binding CanUserSelectMovementType}">
-                <GroupBox.ToolTip>Setting the Input Movement Type enables standard movement using the keyboard, gamepad, or custom input.</GroupBox.ToolTip>
+            <GroupBox Header="{x:Static localization:Texts.InputMovementType}" IsEnabled="{Binding CanUserSelectMovementType}">
+                <GroupBox.ToolTip><Label Content="{x:Static localization:Texts.HintSetInputMovementType}" /> </GroupBox.ToolTip>
                 <StackPanel>
-                    <RadioButton IsChecked="{Binding IsNoneRadioChecked}">
-                        <RadioButton.ToolTip>If None is checked, no movement code is generated.</RadioButton.ToolTip>
-                        None
+                    <RadioButton IsChecked="{Binding IsNoneRadioChecked}" >
+                        <RadioButton.ToolTip><Label Content="{x:Static localization:Texts.HintMovementNoneSelected}" /></RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.None}" />
                     </RadioButton>
                     <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">
-                        <RadioButton.ToolTip>If Top-Down is checked, standard top-down movement code is generated for moving in four directions.</RadioButton.ToolTip>
-                        Top-Down
+                        <RadioButton.ToolTip><Label Content="{x:Static localization:Texts.HintTopdownMovementGeneration}" /></RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.TopDown}" />
                     </RadioButton>
                     <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">
-                        <RadioButton.ToolTip>If Platformer is checked, standard platformer movement code is generated for moving horizontally and jumping.</RadioButton.ToolTip>
-                        Platformer
+                        <RadioButton.ToolTip><Label Content="{x:Static localization:Texts.HintPlatformerMovementGeneration}" /></RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.Platformer}" />
                     </RadioButton>
                     <!--eventually...
                     <RadioButton>Racing</RadioButton>-->
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Input Device" Visibility="{Binding InputDeviceVisibility}">
-                <GroupBox.ToolTip>Glue can generate standard input reading code. This can be overridden in code</GroupBox.ToolTip>
+            <GroupBox Header="{x:Static localization:Texts.InputDevice}" Visibility="{Binding InputDeviceVisibility}">
+                <GroupBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintGlueCanGenerateInput}" />
+                </GroupBox.ToolTip>
                 <StackPanel>
                     <RadioButton IsChecked="{Binding IsGamepadWithKeyboardFallbackInputDevice}">
-                        <RadioButton.ToolTip>Generates code to use a gamepad if plugged in, otherwise to use the Keyboard.</RadioButton.ToolTip>
-                        Xbox Gamepad with Keyboard Fallback
+                        <RadioButton.ToolTip>
+                            <Label Content="{x:Static localization:Texts.HintGamepadCodeGeneration}" />
+                        </RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.GamepadWithKeyboardFallback}" />
                     </RadioButton>
                     <RadioButton IsChecked="{Binding IsZeroInputDevice}">
-                        <RadioButton.ToolTip>Generates code assigning a "zero" input device.</RadioButton.ToolTip>
-                        "Zero" InputDevice
+                        <RadioButton.ToolTip>
+                            <Label Content="{x:Static localization:Texts.HintZeroInputGenerationCode}" />
+                        </RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.ZeroInputDevice}" />
                     </RadioButton>
                     <RadioButton IsChecked="{Binding IsNoneInputDevice}">
-                        <RadioButton.ToolTip>Generates no input assignment code, which will cause exceptions if not assigned in code.</RadioButton.ToolTip>
-                        None (Must Assign in Code)
+                        <RadioButton.ToolTip>
+                            <Label Content="{x:Static localization:Texts.HintGenerateNoInputCode}" />
+                        </RadioButton.ToolTip>
+                        <Label Content="{x:Static localization:Texts.NoneMustAssignInCode}" />
                     </RadioButton>
                 </StackPanel>
             </GroupBox>

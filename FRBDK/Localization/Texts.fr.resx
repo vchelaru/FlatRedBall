@@ -1,0 +1,1022 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+	
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="LoadingPlugins" xml:space="preserve">
+		<value>Chargement des plugins</value>
+	</data>
+	<data name="LoadingSettings" xml:space="preserve">
+		<value>Chargement des paramètres</value>
+	</data>
+	<data name="InitializingGlueSystems" xml:space="preserve">
+		<value>Initialisation des systèmes Glue</value>
+	</data>
+	<data name="InitializingEventManager" xml:space="preserve">
+		<value>Initialisation du système d'événements</value>
+	</data>
+	<data name="InitializingExposedVariableManager" xml:space="preserve">
+		<value>Initialisation du système de variables exposées</value>
+	</data>
+	<data name="ErrorCannotLoadGlue" xml:space="preserve">
+		<value>Impossible de charger les assemblys : vous devrez probablement reconstruire Glue.</value>
+	</data>
+	<data name="Error" xml:space="preserve">
+		<value>Erreur</value>
+	</data>
+	<data name="InitializeErrorReporting" xml:space="preserve">
+		<value>Initialiser le rapport d'erreurs</value>
+	</data>
+	<data name="InitializingRightClickMenus" xml:space="preserve">
+		<value>Initialisation des menus contextuels</value>
+	</data>
+	<data name="InitializingPropertyGrids" xml:space="preserve">
+		<value>Initialisation des grilles de propriétés</value>
+	</data>
+	<data name="InitializingInstructionManager" xml:space="preserve">
+		<value>Initialisation du gestionnaire d'instructions</value>
+	</data>
+	<data name="InitializingTypeConverter" xml:space="preserve">
+		<value>Initialisation du convertisseur de type</value>
+	</data>
+	<data name="InitializingNavigationStack" xml:space="preserve">
+		<value>Initialisation de la pile de navigation</value>
+	</data>
+	<data name="InitializingFileWatch" xml:space="preserve">
+		<value>Initialisation du suivi des fichiers</value>
+	</data>
+	<data name="LoadingCustomTypeInfo" xml:space="preserve">
+		<value>Chargement d'informations de type personnalisé</value>
+	</data>
+	<data name="LoadingProject" xml:space="preserve">
+		<value>Chargement du projet</value>
+	</data>
+	<data name="MenuStripTitle" xml:space="preserve">
+		<value>Bande de menu</value>
+	</data>
+	<data name="LoadingX" xml:space="preserve">
+		<value>Chargement de {0}</value>
+	</data>
+	<data name="ErrorLoadingSettings" xml:space="preserve">
+		<value>Erreur lors du chargement de votre fichier de paramètres qui se trouve à l'adresse</value>
+	</data>
+	<data name="ErrorDetails" xml:space="preserve">
+		<value>Détails de l'erreur:</value>
+	</data>
+	<data name="FilterResultsDescription" xml:space="preserve">
+		<value>Commencez une recherche par \"f \", \"e \", \"s \", \"o \", ou \"v \" (lettre puis espace) pour filtrer les résultats.</value>
+	</data>
+	<data name="FilteredToFiles" xml:space="preserve">
+		<value>Filtré vers les fichiers...</value>
+	</data>
+	<data name="FilteredToEntities" xml:space="preserve">
+		<value>Filtré vers les entités...</value>
+	</data>
+	<data name="FilteredToScreens" xml:space="preserve">
+		<value>Filtré sur les écrans...</value>
+	</data>
+	<data name="FilteredToObjects" xml:space="preserve">
+		<value>Filtré vers les objets...</value>
+	</data>
+	<data name="FilteredToVariables" xml:space="preserve">
+		<value>Filtré vers les variables...</value>
+	</data>
+	<data name="ProjectNew" xml:space="preserve">
+		<value>Nouveau projet</value>
+	</data>
+	<data name="ProjectLoad" xml:space="preserve">
+		<value>Charger le projet...</value>
+	</data>
+	<data name="ProjectClose" xml:space="preserve">
+		<value>Fermer le projet</value>
+	</data>
+	<data name="File" xml:space="preserve">
+		<value>Déposer</value>
+	</data>
+	<data name="Edit" xml:space="preserve">
+		<value>Modifier</value>
+	</data>
+	<data name="FindFileReferences" xml:space="preserve">
+		<value>Rechercher des références de fichiers...</value>
+	</data>
+	<data name="Project" xml:space="preserve">
+		<value>Projet</value>
+	</data>
+	<data name="GroupExport" xml:space="preserve">
+		<value>Exporter un groupe...</value>
+	</data>
+	<data name="GroupImport" xml:space="preserve">
+		<value>Importer un groupe...</value>
+	</data>
+	<data name="ErrorCheck" xml:space="preserve">
+		<value>Vérification des erreurs</value>
+	</data>
+	<data name="Content" xml:space="preserve">
+		<value>Contenu</value>
+	</data>
+	<data name="ContentAdditional" xml:space="preserve">
+		<value>Contenu additionnel</value>
+	</data>
+	<data name="ContentAdditionalViewTypes" xml:space="preserve">
+		<value>Voir les types de contenu supplémentaires</value>
+	</data>
+	<data name="ProjectForAll" xml:space="preserve">
+		<value>Pour tous les projets</value>
+	</data>
+	<data name="ProjectThisOnly" xml:space="preserve">
+		<value>Pour ce projet uniquement</value>
+	</data>
+	<data name="NewContentCSV" xml:space="preserve">
+		<value>Nouveau contenu (fichier CSV)...</value>
+	</data>
+	<data name="ViewNewFileTemplateFolder" xml:space="preserve">
+		<value>Afficher le dossier du nouveau modèle de fichier</value>
+	</data>
+	<data name="Settings" xml:space="preserve">
+		<value>Paramètres</value>
+	</data>
+	<data name="FileAssociations" xml:space="preserve">
+		<value>Les associations de fichiers</value>
+	</data>
+	<data name="FileBuildTools" xml:space="preserve">
+		<value>Outils de création de fichiers</value>
+	</data>
+	<data name="PerformanceSettings" xml:space="preserve">
+		<value>Paramètres de performances</value>
+	</data>
+	<data name="Preferences" xml:space="preserve">
+		<value>Préférences</value>
+	</data>
+	<data name="CustomGameClass" xml:space="preserve">
+		<value>Game Class de personnalisé</value>
+	</data>
+	<data name="Update" xml:space="preserve">
+		<value>Mise à jour</value>
+	</data>
+	<data name="Plugins" xml:space="preserve">
+		<value>Plugins</value>
+	</data>
+	<data name="PluginInstall" xml:space="preserve">
+		<value>Installer un plugin</value>
+	</data>
+	<data name="PluginUninstall" xml:space="preserve">
+		<value>Désinstaller un plugin</value>
+	</data>
+	<data name="PluginCreate" xml:space="preserve">
+		<value>Créer un plugin</value>
+	</data>
+	<data name="Help" xml:space="preserve">
+		<value>Aide</value>
+	</data>
+	<data name="Tutorials" xml:space="preserve">
+		<value>Tutoriels</value>
+	</data>
+	<data name="ReportABug" xml:space="preserve">
+		<value>Signaler un bug</value>
+	</data>
+	<data name="ErrorCannotOpenBrowser" xml:space="preserve">
+		<value>Impossible d'ouvrir un navigateur vers l'URL :\n\n{0}\n\nEssayez de saisir manuellement l'adresse dans un navigateur.</value>
+	</data>
+	<data name="EnterFileWithExtension" xml:space="preserve">
+		<value>Entrez le nom du fichier avec l'extension, mais pas de chemin (par exemple "monfichier.png")</value>
+	</data>
+	<data name="NoFilesFound" xml:space="preserve">
+		<value>Aucun fichier trouvé</value>
+	</data>
+	<data name="NoFilesReferencing" xml:space="preserve">
+		<value>Il n'y a aucun fichier faisant référence à {0}</value>
+	</data>
+	<data name="FoundTheFollowing" xml:space="preserve">
+		<value>J'ai trouvé ce qui suit :</value>
+	</data>
+	<data name="FoundFiles" xml:space="preserve">
+		<value>Fichiers trouvés</value>
+	</data>
+	<data name="AttemptFindFileReferences" xml:space="preserve">
+		<value>J'ai essayé de trouver des références de fichiers, mais je n'ai pas trouvé le fichier contenu {0}</value>
+	</data>
+	<data name="EnterNewCSVName" xml:space="preserve">
+		<value>Entrez le nouveau nom CSV</value>
+	</data>
+	<data name="ErrorCouldNotOpen" xml:space="preserve">
+		<value>Impossible d'ouvrir {0}</value>
+	</data>
+	<data name="NoLoadedGlueProject" xml:space="preserve">
+		<value>Il n’y a aucun projet Glue chargé</value>
+	</data>
+	<data name="EnterCustomClassDeleteContents" xml:space="preserve">
+		<value>Entrez le nom de la classe personnalisée. Supprimez le contenu pour ne pas utiliser de classe personnalisée.</value>
+	</data>
+	<data name="ErrorCouldntFindGameClass" xml:space="preserve">
+		<value>Impossible de trouver la classe du jeu.</value>
+	</data>
+	<data name="GameClassFound" xml:space="preserve">
+		<value>Classe de jeu trouvée :\n\n{0}</value>
+	</data>
+	<data name="Game" xml:space="preserve">
+		<value>Jeu</value>
+	</data>
+	<data name="EditorSettings" xml:space="preserve">
+		<value>Paramètres de l'éditeur</value>
+	</data>
+	<data name="ErrorFailedChangeGameEditMode" xml:space="preserve">
+		<value>Échec du changement de mode jeu/édition.</value>
+	</data>
+	<data name="GameSendNoResponseBack" xml:space="preserve">
+		<value>Le jeu n'a renvoyé aucune réponse.</value>
+	</data>
+	<data name="GenerateGlueControlCode" xml:space="preserve">
+		<value>Générer le code de contrôle Glue</value>
+	</data>
+	<data name="GenerateNewGlueControlCode" xml:space="preserve">
+		<value>Générer un nouveau code de contrôle Glue</value>
+	</data>
+	<data name="FailedFindGameHandle" xml:space="preserve">
+		<value>Impossible de trouver la poignée de jeu.</value>
+	</data>
+	<data name="FailedFindWindowHandle" xml:space="preserve">
+		<value>Impossible de trouver le handle de la fenêtre de jeu.</value>
+	</data>
+	<data name="QuickActions" xml:space="preserve">
+		<value>Actions rapides</value>
+	</data>
+	<data name="ProjectNewGum" xml:space="preserve">
+		<value>Nouveau projet de Gum</value>
+	</data>
+	<data name="Tools" xml:space="preserve">
+		<value>Outils</value>
+	</data>
+	<data name="GumProjectFileCanOnlyAddedToGlobal" xml:space="preserve">
+		<value>Le fichier de projet Gum (.gumx) ne peut être ajouté qu'au contenu global.</value>
+	</data>
+	<data name="GumConfirmDeleteScreen" xml:space="preserve">
+		<value>Supprimer l'écran Gum {0}\npour {1} ?</value>
+	</data>
+	<data name="GumPluginHandleNewFrbScreen" xml:space="preserve">
+		<value>Gum Plugin - gérer le nouvel écran FRB {0}</value>
+	</data>
+	<data name="GumReordering" xml:space="preserve">
+		<value>Réorganiser .gumx</value>
+	</data>
+	<data name="GumIncludeRecommendedFormsControls" xml:space="preserve">
+		<value>Inclure des contrôles de formulaires (recommandé)</value>
+	</data>
+	<data name="GumNoForms" xml:space="preserve">
+		<value>Pas de formulaires, seulement de la Gum brute</value>
+	</data>
+	<data name="GumAddFRBForms" xml:space="preserve">
+		<value>Ajouter des formulaires Gum et FlatRedBall ?</value>
+	</data>
+	<data name="GumErrorCreateFRBFirst" xml:space="preserve">
+		<value>Vous devez d'abord créer un projet FlatRedBall avant d'ajouter un projet Gum</value>
+	</data>
+	<data name="GumProjectAlreadyExists" xml:space="preserve">
+		<value>Un projet Gum existe déjà</value>
+	</data>
+	<data name="GumProjectCreating" xml:space="preserve">
+		<value>Création d'un projet Gum</value>
+	</data>
+	<data name="GumProperties" xml:space="preserve">
+		<value>Propriétés de la Gum</value>
+	</data>
+	<data name="ErrorGumFileAssociationNotFound" xml:space="preserve">
+		<value>Impossible de trouver l'association de fichiers pour les fichiers Gum et Gum par rapport à l'éditeur FlatRedBall. Les associations doivent être définies avant de tenter de reconstruire les fichiers de polices</value>
+	</data>
+	<data name="RefreshingFontCache" xml:space="preserve">
+		<value>Actualiser le cache des polices</value>
+	</data>
+	<data name="GumPluginGluxLoad" xml:space="preserve">
+		<value>Plugin Gum réagissant à la charge Glux</value>
+	</data>
+	<data name="Standard" xml:space="preserve">
+		<value>Standard</value>
+	</data>
+	<data name="GridAndMarkings" xml:space="preserve">
+		<value>Grille et marquages</value>
+	</data>
+	<data name="Snapping" xml:space="preserve">
+		<value>Capture</value>
+	</data>
+	<data name="WarningLocalizationFileChange" xml:space="preserve">
+		<value>Cela rechargera également si les fichiers CSV de localisation changent.\nSi cette case n'est pas cochée, le jeu ne répondra qu'aux modifications de fichiers (comme TMX) en mode édition.</value>
+	</data>
+	<data name="ErrorGameThrewNullString" xml:space="preserve">
+		<value>Chaîne nulle renvoyée du jeu</value>
+	</data>
+	<data name="ErrorGameMustRunToGetStoredCommands" xml:space="preserve">
+		<value>Le jeu doit être en cours d'exécution pour récupérer ses commandes stockées</value>
+	</data>
+	<data name="EnableGameEmbedInSettings" xml:space="preserve">
+		<value>Activer l'intégration et la modification du jeu dans les paramètres</value>
+	</data>
+	<data name="RunEditMode" xml:space="preserve">
+		<value>Exécuter en mode édition</value>
+	</data>
+	<data name="StartGameInEditMode" xml:space="preserve">
+		<value>Démarre le jeu en mode édition sur l'écran de démarrage.</value>
+	</data>
+	<data name="SelectStartupScreen" xml:space="preserve">
+		<value>Sélectionner l’écran de démarrage</value>
+	</data>
+	<data name="SelectStartupScreenInEdit" xml:space="preserve">
+		<value>Sélectionne l'écran de démarrage lors de l'édition.</value>
+	</data>
+	<data name="FocusOnSelection" xml:space="preserve">
+		<value>Focus sur la sélection</value>
+	</data>
+	<data name="MoveCameraToItemPlayAnimation" xml:space="preserve">
+		<value>Déplace la caméra vers l'élément sélectionné et lit l'animation de sélection.</value>
+	</data>
+	<data name="ViewPreviewExplorer" xml:space="preserve">
+		<value>Afficher l'aperçu dans l'Explorateur</value>
+	</data>
+	<data name="SetPreviewFile" xml:space="preserve">
+		<value>Définir le fichier d'aperçu</value>
+	</data>
+	<data name="FromCustomFile" xml:space="preserve">
+		<value>À partir d'un fichier personnalisé...</value>
+	</data>
+	<data name="FromEntity" xml:space="preserve">
+		<value>À partir de l'entité...</value>
+	</data>
+	<data name="RemoveFromToolbar" xml:space="preserve">
+		<value>Retirer de la barre d'outils</value>
+	</data>
+	<data name="Ok" xml:space="preserve">
+		<value>D'accord</value>
+	</data>
+	<data name="Cancel" xml:space="preserve">
+		<value>Annuler</value>
+	</data>
+	<data name="BuildSettings" xml:space="preserve">
+		<value>Paramètres de construction</value>
+	</data>
+	<data name="Building" xml:space="preserve">
+		<value>Bâtiment...</value>
+	</data>
+	<data name="CancelBuild" xml:space="preserve">
+		<value>Annuler la construction</value>
+	</data>
+	<data name="BuildGame" xml:space="preserve">
+		<value>Jeu de construction</value>
+	</data>
+	<data name="BuildCurrentGame" xml:space="preserve">
+		<value>Construit le projet de jeu actuel</value>
+	</data>
+	<data name="PackageGame" xml:space="preserve">
+		<value>Emballez le jeu</value>
+	</data>
+	<data name="CreateZipGameDistribution" xml:space="preserve">
+		<value>Crée un fichier .zip pour distribuer votre jeu.</value>
+	</data>
+	<data name="PrintMsBuildCommand" xml:space="preserve">
+		<value>Copier la commande MSBuild</value>
+	</data>
+	<data name="SlowDown" xml:space="preserve">
+		<value>Ralentir</value>
+	</data>
+	<data name="ReduceGameSpeedSlowMotion" xml:space="preserve">
+		<value>Réduire la vitesse du jeu (le fait fonctionner au ralenti)</value>
+	</data>
+	<data name="SpeedUp" xml:space="preserve">
+		<value>Accélérer</value>
+	</data>
+	<data name="IncreaseGameSpeedFastForward" xml:space="preserve">
+		<value>Augmente la vitesse du jeu (le fait fonctionner en avance rapide)</value>
+	</data>
+	<data name="AutoTakeSnapshot" xml:space="preserve">
+		<value>Prise d'instantané automatique</value>
+	</data>
+	<data name="TakeSnapshot" xml:space="preserve">
+		<value>Prendre un instantané</value>
+	</data>
+	<data name="GlueCannotCommunicateWithGame" xml:space="preserve">
+		<value>Glue n'est pas en mesure de communiquer avec votre jeu. Pour activer cette communication, cochez la case "Générer GlueControlManager dans Game1" et redémarrez le jeu.</value>
+	</data>
+	<data name="None" xml:space="preserve">
+		<value>Aucun</value>
+	</data>
+	<data name="TopDown" xml:space="preserve">
+		<value>Jeu descendant</value>
+	</data>
+	<data name="Platformer" xml:space="preserve">
+		<value>Plateforme</value>
+	</data>
+	<data name="HintSetInputMovementType" xml:space="preserve">
+		<value>La définition du type de mouvement d'entrée permet un mouvement standard à l'aide du clavier, de la manette de jeu ou d'une saisie personnalisée.</value>
+	</data>
+	<data name="HintMovementNoneSelected" xml:space="preserve">
+		<value>Si Aucun est coché, aucun code mouvement n'est généré.</value>
+	</data>
+	<data name="HintTopdownMovementGeneration" xml:space="preserve">
+		<value>Si la case Top-Down est cochée, un code de mouvement descendant standard est généré pour se déplacer dans quatre directions.</value>
+	</data>
+	<data name="HintPlatformerMovementGeneration" xml:space="preserve">
+		<value>Si Platformer est coché, un code de mouvement standard de plateforme est généré pour se déplacer horizontalement et sauter.</value>
+	</data>
+	<data name="HintGlueCanGenerateInput" xml:space="preserve">
+		<value>Glue peut générer un code de lecture d’entrée standard. Cela peut être remplacé dans le code</value>
+	</data>
+	<data name="HintGamepadCodeGeneration" xml:space="preserve">
+		<value>Génère du code pour utiliser une manette de jeu si elle est branchée, sinon pour utiliser le clavier.</value>
+	</data>
+	<data name="GamepadWithKeyboardFallback" xml:space="preserve">
+		<value>Manette de jeu avec clavier de secours</value>
+	</data>
+	<data name="HintZeroInputGenerationCode" xml:space="preserve">
+		<value>Génère un code attribuant un périphérique d'entrée "zéro".</value>
+	</data>
+	<data name="ZeroInputDevice" xml:space="preserve">
+		<value>Périphérique d'entrée "zéro"</value>
+	</data>
+	<data name="HintGenerateNoInputCode" xml:space="preserve">
+		<value>Ne génère aucun code d'affectation d'entrée, ce qui provoquera des exceptions s'il n'est pas attribué dans le code.</value>
+	</data>
+	<data name="NoneMustAssignInCode" xml:space="preserve">
+		<value>Aucun (doit attribuer dans le code)</value>
+	</data>
+	<data name="InputDevice" xml:space="preserve">
+		<value>Dispositif d'entrée</value>
+	</data>
+	<data name="InputMovementType" xml:space="preserve">
+		<value>Type de mouvement d'entrée</value>
+	</data>
+	<data name="AnimationAddEntry" xml:space="preserve">
+		<value>Ajouter une entrée d'animation</value>
+	</data>
+	<data name="EmptyValues" xml:space="preserve">
+		<value>Valeurs vides</value>
+	</data>
+	<data name="DefaultGroundControl" xml:space="preserve">
+		<value>Contrôle au sol par défaut</value>
+	</data>
+	<data name="DefaultAirControl" xml:space="preserve">
+		<value>Contrôle aérien par défaut</value>
+	</data>
+	<data name="HintCreateDuplicateAnimationLayer" xml:space="preserve">
+		<value>Créez une copie de ce calque d'animation.</value>
+	</data>
+	<data name="HintPlatformerEntityInherit" xml:space="preserve">
+		<value>Cette entité hérite d'une entité Platformer</value>
+	</data>
+	<data name="MovementType" xml:space="preserve">
+		<value>Type de mouvement</value>
+	</data>
+	<data name="Inheritance" xml:space="preserve">
+		<value>Succession</value>
+	</data>
+	<data name="HintEntityInheritsFromBase" xml:space="preserve">
+		<value>En cas d'héritage, cette entité utilisera cette valeur telle que définie dans l'entité de base.</value>
+	</data>
+	<data name="HintOverwriteHidesBase" xml:space="preserve">
+		<value>En cas d'écrasement, les valeurs de cette entité pour ces valeurs de mouvement seront utilisées à la place de l'entité de base.</value>
+	</data>
+	<data name="InheritValues" xml:space="preserve">
+		<value>Hériter des valeurs</value>
+	</data>
+	<data name="OverwriteValues" xml:space="preserve">
+		<value>Écraser les valeurs</value>
+	</data>
+	<data name="HorizontalMovement" xml:space="preserve">
+		<value>Mouvement horizontal</value>
+	</data>
+	<data name="MaxSpeed" xml:space="preserve">
+		<value>Vitesse maximale:</value>
+	</data>
+	<data name="HintMaxSpeedPerPixel" xml:space="preserve">
+		<value>Vitesse maximale en pixels par seconde à laquelle l'entité peut se déplacer en raison de l'entrée appliquée. Cette vitesse peut être dépassée lorsque l'on se trouve sur une plateforme mobile.</value>
+	</data>
+	<data name="HintSpeedToMaxStopsImmediate" xml:space="preserve">
+		<value>L'accélération jusqu'à la vitesse maximale ou jusqu'à l'arrêt se produit immédiatement.</value>
+	</data>
+	<data name="HintSpeedToMaxStopsGradually" xml:space="preserve">
+		<value>L'accélération jusqu'à la vitesse maximale ou la diminution se fait progressivement.</value>
+	</data>
+	<data name="Immediate" xml:space="preserve">
+		<value>Immédiat</value>
+	</data>
+	<data name="SpeedUpDown" xml:space="preserve">
+		<value>Accélération/Descente</value>
+	</data>
+	<data name="SpeedUpTime" xml:space="preserve">
+		<value>Temps d'accélération :</value>
+	</data>
+	<data name="HintSecondsToAccelerate" xml:space="preserve">
+		<value>Le nombre de secondes nécessaires pour accélérer depuis l’arrêt jusqu’à pleine vitesse.</value>
+	</data>
+	<data name="SlowDownTime" xml:space="preserve">
+		<value>Temps de ralentissement :</value>
+	</data>
+	<data name="HintSlowdownToStop" xml:space="preserve">
+		<value>Le nombre de secondes nécessaires pour décélérer de la vitesse maximale jusqu'à l'arrêt.</value>
+	</data>
+	<data name="CustomDecelerationAboveMaxSpeed" xml:space="preserve">
+		<value>Décélération au-dessus de la vitesse maximale</value>
+	</data>
+	<data name="HintCustomDecelerationAboveMaxSpeed" xml:space="preserve">
+		<value>S'il faut utiliser une valeur de décélération personnalisée lors du déplacement au-dessus de la vitesse maximale. Si faux, alors le temps de ralentissement sera utilisé pour calculer une valeur de décélération. Si c'est vrai, une valeur personnalisée sera utilisée. Cette valeur doit être vraie pour les valeurs de mouvement avec une vitesse maximale de 0.</value>
+	</data>
+	<data name="HintDecelerationAboveMaxSpeed" xml:space="preserve">
+		<value>La valeur de décélération à appliquer à l'entité si elle se déplace au-dessus de sa vitesse maximale.</value>
+	</data>
+	<data name="SlopeMovement" xml:space="preserve">
+		<value>Mouvement de pente</value>
+	</data>
+	<data name="HintHorizontalMovementSlopesNotImpacted" xml:space="preserve">
+		<value>Le mouvement horizontal n'est pas affecté par les pentes.</value>
+	</data>
+	<data name="MoveSameSpeed" xml:space="preserve">
+		<value>Déplacez-vous à la même vitesse</value>
+	</data>
+	<data name="HintHorizontalMovementSlopedImpacted" xml:space="preserve">
+		<value>Le mouvement horizontal est impacté par les pentes.</value>
+	</data>
+	<data name="SlopesChangeSpeed" xml:space="preserve">
+		<value>Les pentes changent de vitesse</value>
+	</data>
+	<data name="SlopeMoveUphill" xml:space="preserve">
+		<value>Le personnage monte une pente à toute vitesse</value>
+	</data>
+	<data name="CharacterStopMovingUphillSlope" xml:space="preserve">
+		<value>Le personnage arrête de monter une pente</value>
+	</data>
+	<data name="CharacterMovesFullSpeedOnSlope" xml:space="preserve">
+		<value>Le personnage descend une pente à toute vitesse</value>
+	</data>
+	<data name="CharacterMovesDownhill" xml:space="preserve">
+		<value>Le personnage descend la pente</value>
+	</data>
+	<data name="XFasterOnSlope" xml:space="preserve">
+		<value>% plus rapide en pente</value>
+	</data>
+	<data name="Jumping" xml:space="preserve">
+		<value>Sauter</value>
+	</data>
+	<data name="JumpSpeed" xml:space="preserve">
+		<value>Vitesse de saut :</value>
+	</data>
+	<data name="HintYVelocityForJumping" xml:space="preserve">
+		<value>La vitesse Y à attribuer lors du saut. Définir une valeur de 0 signifie que l'entité ne peut pas sauter.</value>
+	</data>
+	<data name="HintHoldToJumpHigher" xml:space="preserve">
+		<value>Si cette case est cochée, le joueur peut maintenir le bouton de saut enfoncé pour sauter plus haut. Si cette case n'est pas cochée, tous les sauts auront la même hauteur, quelle que soit la durée pendant laquelle le bouton de saut est maintenu enfoncé.</value>
+	</data>
+	<data name="HoldToJumpHigher" xml:space="preserve">
+		<value>Tenez pour sauter plus haut</value>
+	</data>
+	<data name="HintTimeAmountJumpHigher" xml:space="preserve">
+		<value>La durée pendant laquelle le joueur peut maintenir le bouton de saut enfoncé pour sauter plus haut. Tant que le bouton est maintenu enfoncé, la gravité est désactivée.</value>
+	</data>
+	<data name="HintPressDownThroughClouds" xml:space="preserve">
+		<value>Si cette case est cochée, le joueur peut appuyer vers le bas et sauter pour tomber à travers les nuages.</value>
+	</data>
+	<data name="CanFallThroughClouds" xml:space="preserve">
+		<value>Peut tomber à travers les nuages</value>
+	</data>
+	<data name="CloudPlatformThickness" xml:space="preserve">
+		<value>Épaisseur de la plateforme cloud :</value>
+	</data>
+	<data name="HintDistancePressCloudCollision" xml:space="preserve">
+		<value>La distance à parcourir en appuyant et en sautant sur le nuage avant de réactiver la collision avec le nuage. Cela devrait être la hauteur d'une tuile (généralement 16).</value>
+	</data>
+	<data name="Gravity" xml:space="preserve">
+		<value>La gravité:</value>
+	</data>
+	<data name="HintGravityApply" xml:space="preserve">
+		<value>La gravité (accélération Y) à appliquer à l’entité. Une valeur positive fait chuter l’entité.</value>
+	</data>
+	<data name="MaximumFallingSpeed" xml:space="preserve">
+		<value>La vitesse de chute maximale.</value>
+	</data>
+	<data name="MaxFallingSpeed" xml:space="preserve">
+		<value>Vitesse de chute maximale :</value>
+	</data>
+	<data name="HintIfValuesUsedForGroundMovement" xml:space="preserve">
+		<value>Si ces valeurs sont utilisées pour un mouvement du sol avec une gravité nulle ou négative, l'entité peut avoir son OnGround défini sur false une image sur deux.</value>
+	</data>
+	<data name="HintValuesGroundMovementFallingSpeed" xml:space="preserve">
+		<value>Si ces valeurs sont utilisées pour un mouvement au sol avec une vitesse de chute maximale de 0 ou négative, l'entité peut avoir son OnGround défini sur false toutes les deux images.</value>
+	</data>
+	<data name="Climbing" xml:space="preserve">
+		<value>Escalade</value>
+	</data>
+	<data name="HintClimbingPressingUp" xml:space="preserve">
+		<value>Si le fait d'appuyer de haut en bas met le joueur dans un état d'escalade. Lors de l'escalade, il n'y a pas de gravité et l'entrée haut/bas définit directement la vitesse du joueur.</value>
+	</data>
+	<data name="ClimbingSpeed" xml:space="preserve">
+		<value>Vitesse de montée :</value>
+	</data>
+	<data name="HintVerticalSpeedForClimbing" xml:space="preserve">
+		<value>La vitesse de déplacement vertical lors de la montée.</value>
+	</data>
+	<data name="CanClimb" xml:space="preserve">
+		<value>Pouvoir escalader</value>
+	</data>
+	<data name="HintDeletesMovementValues" xml:space="preserve">
+		<value>Supprime cet ensemble de valeurs de mouvement.</value>
+	</data>
+	<data name="HintDuplicateMovementValues" xml:space="preserve">
+		<value>Créez une copie de cet ensemble de valeurs de mouvement.</value>
+	</data>
+	<data name="Falling" xml:space="preserve">
+		<value>Chute</value>
+	</data>
+	<data name="DefaultValues" xml:space="preserve">
+		<value>Valeurs par défaut</value>
+	</data>
+	<data name="MovementTypeAdd" xml:space="preserve">
+		<value>Ajouter un type de mouvement</value>
+	</data>
+	<data name="HintMovementTypeName" xml:space="preserve">
+		<value>Le nom du type de mouvement. Ce nom peut être utilisé dans le code pour attribuer ce code mouvement.</value>
+	</data>
+	<data name="HintInheritedValueEntity" xml:space="preserve">
+		<value>En cas d'héritage, cette entité utilisera cette valeur telle que définie dans l'entité de base.</value>
+	</data>
+	<data name="Movement" xml:space="preserve">
+		<value>Mouvement</value>
+	</data>
+	<data name="HintMaxSpeedPixelsSecond" xml:space="preserve">
+		<value>Vitesse maximale en pixels par seconde à laquelle cette entité peut se déplacer via l'entrée. Il est possible de se déplacer plus rapidement si une autre force (comme une collision) agit sur cette entité.</value>
+	</data>
+	<data name="HintImmediateMovementEntity" xml:space="preserve">
+		<value>Si vous utilisez le mouvement immédiat, cette entité accélérera immédiatement lorsque le périphérique d'entrée est maintenu enfoncé et s'arrêtera immédiatement lorsque le périphérique d'entrée est relâché.</value>
+	</data>
+	<data name="HintMaxSpeedUpDown" xml:space="preserve">
+		<value>Si vous utilisez Accélération/Descente, cette entité accélérera progressivement jusqu'à la vitesse maximale lorsque le périphérique d'entrée est maintenu enfoncé, et ralentira progressivement lorsque le périphérique d'entrée est relâché.</value>
+	</data>
+	<data name="Directions" xml:space="preserve">
+		<value>Directions</value>
+	</data>
+	<data name="DirectionUpdates" xml:space="preserve">
+		<value>Mises à jour des directions :</value>
+	</data>
+	<data name="UpdateToVelocity" xml:space="preserve">
+		<value>Mise à jour de la vitesse</value>
+	</data>
+	<data name="UpdateToInput" xml:space="preserve">
+		<value>Mise à jour vers l'entrée</value>
+	</data>
+	<data name="HintDirectionPropertyUpdateToVelocity" xml:space="preserve">
+		<value>La propriété Direction doit être mise à jour en fonction de la vitesse de l'entite.</value>
+	</data>
+	<data name="HintDirectionPropertyUpdateToInput" xml:space="preserve">
+		<value>La propriété Direction doit être mise à jour en fonction de la direction maintenue sur le périphérique d'entrée, quelle que soit la vitesse.</value>
+	</data>
+	<data name="DirectionPreventChange" xml:space="preserve">
+		<value>Ne changez pas de direction</value>
+	</data>
+	<data name="HintDirectionUpdateInCustomCode" xml:space="preserve">
+		<value>La propriété Direction ne doit pas se mettre à jour dans le code généré, mais peut être définie dans le code personnalisé.</value>
+	</data>
+	<data name="PropsAdd" xml:space="preserve">
+		<value>Ajouter des accessoires</value>
+	</data>
+	<data name="HintEntityInheritsFromTopDown" xml:space="preserve">
+		<value>Cette entité hérite d'une entité Top-Down</value>
+	</data>
+	<data name="ProjectName" xml:space="preserve">
+		<value>Nom du projet:</value>
+	</data>
+	<data name="Platform" xml:space="preserve">
+		<value>Plate-forme:</value>
+	</data>
+	<data name="LocalCopyIfAvailable" xml:space="preserve">
+		<value>Utilisez la copie locale si disponible :</value>
+	</data>
+	<data name="CustomNamespace" xml:space="preserve">
+		<value>Namespace personnalisé :</value>
+	</data>
+	<data name="ProjectDirectoryCreate" xml:space="preserve">
+		<value>Créer un répertoire de projet :</value>
+	</data>
+	<data name="SolutionLocatedIn" xml:space="preserve">
+		<value>La solution (.sln) sera située dans :</value>
+	</data>
+	<data name="Location" xml:space="preserve">
+		<value>Emplacement:</value>
+	</data>
+	<data name="GitignoreAdd" xml:space="preserve">
+		<value>Ajoutez .gitignore :</value>
+	</data>
+	<data name="ProjectWizardOpen" xml:space="preserve">
+		<value>Assistant Ouvrir un nouveau projet :</value>
+	</data>
+	<data name="GlobalContentMembership" xml:space="preserve">
+		<value>Adhésion à GlobalContent</value>
+	</data>
+	<data name="UpdateLibraries" xml:space="preserve">
+		<value>Mettre à jour les bibliothèques</value>
+	</data>
+	<data name="LoadRecent" xml:space="preserve">
+		<value>Charger récent</value>
+	</data>
+	<data name="ProjectView" xml:space="preserve">
+		<value>Voir les projets</value>
+	</data>
+	<data name="About" xml:space="preserve">
+		<value>À propos</value>
+	</data>
+	<data name="CameraSettings" xml:space="preserve">
+		<value>Paramètres de la caméra</value>
+	</data>
+	<data name="ProjectCopyFileLinks" xml:space="preserve">
+		<value>Copier les liens des fichiers de projet</value>
+	</data>
+	<data name="ReferenceSharing" xml:space="preserve">
+		<value>Partage de référence</value>
+	</data>
+	<data name="ManagePlugins" xml:space="preserve">
+		<value>Gérer les plugins</value>
+	</data>
+	<data name="ViewUnreferencedFiles" xml:space="preserve">
+		<value>Afficher les fichiers non référencés</value>
+	</data>
+	<data name="UnreferencedFiles" xml:space="preserve">
+		<value>Fichiers non référencés</value>
+	</data>
+	<data name="EmbedNAudioClasses" xml:space="preserve">
+		<value>Intégrer des classes NAudio</value>
+	</data>
+	<data name="AddStateInterpolationClasses" xml:space="preserve">
+		<value>Ajouter des classes d'interpolation d'état</value>
+	</data>
+	<data name="ViewBuiltProjectSizes" xml:space="preserve">
+		<value>Voir les tailles des projets construits</value>
+	</data>
+	<data name="CodeGenerationPlugin" xml:space="preserve">
+		<value>Plugin de génération de code</value>
+	</data>
+	<data name="CodeGeneration" xml:space="preserve">
+		<value>Génération de code</value>
+	</data>
+	<data name="ContentPipelineSettings" xml:space="preserve">
+		<value>Paramètres du canal de contenu</value>
+	</data>
+	<data name="LinkGameToFrbSource" xml:space="preserve">
+		<value>Lier le jeu à la source FRB</value>
+	</data>
+	<data name="AddFrbSource" xml:space="preserve">
+		<value>Ajouter une source FRB</value>
+	</data>
+	<data name="AddUpdateGitignore" xml:space="preserve">
+		<value>Ajouter/Mettre à jour .gitignore</value>
+	</data>
+	<data name="AddProfileManager" xml:space="preserve">
+		<value>Ajouter un gestionnaire de profil</value>
+	</data>
+	<data name="ForceSaveProject" xml:space="preserve">
+		<value>Forcer la sauvegarde du projet</value>
+	</data>
+	<data name="SetVariableByDerived" xml:space="preserve">
+		<value>Définissez toutes les variables sur SetByDerived = true</value>
+	</data>
+	<data name="CreateObjectsJson" xml:space="preserve">
+		<value>Créer des objets JSON</value>
+	</data>
+	<data name="FrbEditorBinaries" xml:space="preserve">
+		<value>Mettre à jour les binaires de l'éditeur FRB</value>
+	</data>
+	<data name="FrbUpdateAndGameCode" xml:space="preserve">
+		<value>Mettez à jour FRB et le code du jeu...</value>
+	</data>
+	<data name="FrbAndGum" xml:space="preserve">
+		<value>FRB et Gum</value>
+	</data>
+	<data name="FrbGumAndGame" xml:space="preserve">
+		<value>FRB, Gum et jeu</value>
+	</data>
+	<data name="ProjectShowCopyEntireTab" xml:space="preserve">
+		<value>Afficher l'onglet Copier le projet entier</value>
+	</data>
+	<data name="AddXnbToMonogame" xml:space="preserve">
+		<value>Ajouter des XNB aux projets Monogame</value>
+	</data>
+	<data name="EnterNameForEntity" xml:space="preserve">
+		<value>Saisissez un nom pour la nouvelle entité :</value>
+	</data>
+	<data name="EntityBase" xml:space="preserve">
+		<value>Entité de base :</value>
+	</data>
+	<data name="Sprite" xml:space="preserve">
+		<value>Sprite</value>
+	</data>
+	<data name="Text" xml:space="preserve">
+		<value>Texte</value>
+	</data>
+	<data name="Circle" xml:space="preserve">
+		<value>Cercle</value>
+	</data>
+	<data name="PolygonRectangle" xml:space="preserve">
+		<value>Polygone (Rectangle)</value>
+	</data>
+	<data name="AxisAlignedRectangle" xml:space="preserve">
+		<value>Rectangle aligné sur l'axe</value>
+	</data>
+	<data name="IDamagableCanTakeDamage" xml:space="preserve">
+		<value>IDamageable (peut subir des dégâts)</value>
+	</data>
+	<data name="IDamageAreaCanDealDamage" xml:space="preserve">
+		<value>IDamageArea (peut infliger des dégâts)</value>
+	</data>
+	<data name="Custom" xml:space="preserve">
+		<value>Coutume</value>
+	</data>
+	<data name="TeamZeroPlayer" xml:space="preserve">
+		<value>0 (équipe de joueurs)</value>
+	</data>
+	<data name="TeamOneEnemy" xml:space="preserve">
+		<value>1 (équipe ennemie)</value>
+	</data>
+	<data name="GameScreenOpposingTeamAdd" xml:space="preserve">
+		<value>Ajouter des relations de collision d'index d'équipe adverse à GameScreen</value>
+	</data>
+	<data name="FactoryCreate" xml:space="preserve">
+		<value>Créer une usine</value>
+	</data>
+	<data name="IncludeListsInGameScreen" xml:space="preserve">
+		<value>Inclure des listes dans GameScreen</value>
+	</data>
+	<data name="LocalFiles" xml:space="preserve">
+		<value>Fichiers locaux</value>
+	</data>
+	<data name="DownloadFile" xml:space="preserve">
+		<value>Télécharger un fichier</value>
+	</data>
+	<data name="HintExistingFileList" xml:space="preserve">
+		<value>La liste ci-dessus affiche tous les fichiers du dossier de contenu du jeu. &lt;LineBreak&gt;&lt;/LineBreak&gt;Pour ajouter des fichiers en dehors du dossier de contenu, cliquez sur le bouton Parcourir. Les fichiers extérieurs au dossier de contenu seront copiés dans le dossier de contenu.</value>
+	</data>
+	<data name="Browse" xml:space="preserve">
+		<value>Parcourir...</value>
+	</data>
+	<data name="EnterUrlName" xml:space="preserve">
+		<value>Entrez le nom de l'URL :</value>
+	</data>
+	<data name="GlueWillDownloadFileAndDependencies" xml:space="preserve">
+		<value>Glue téléchargera le fichier saisi ci-dessus ainsi que toutes les dépendances.</value>
+	</data>
+	<data name="SelectFileOrClickBrowse" xml:space="preserve">
+		<value>Sélectionnez un fichier ou cliquez sur le bouton Parcourir</value>
+	</data>
+	<data name="AskDownloadFileOverwrite" xml:space="preserve">
+		<value>Voulez-vous télécharger ce fichier ? Il écrasera :</value>
+	</data>
+	<data name="DownloadAndOverwrite" xml:space="preserve">
+		<value>Télécharger et écraser ?</value>
+	</data>
+	<data name="ErrorDownloadingFiles" xml:space="preserve">
+		<value>Erreur de téléchargement de fichiers</value>
+	</data>
+	<data name="Object" xml:space="preserve">
+		<value>Objet:</value>
+	</data>
+	<data name="Variable" xml:space="preserve">
+		<value>Variable:</value>
+	</data>
+	<data name="AdvancedOptions" xml:space="preserve">
+		<value>Options avancées</value>
+	</data>
+	<data name="AlternativeName" xml:space="preserve">
+		<value>Nom alternatif :</value>
+	</data>
+	<data name="ConvertedType" xml:space="preserve">
+		<value>Type converti :</value>
+	</data>
+	<data name="TypeConverter" xml:space="preserve">
+		<value>Convertisseur de types :</value>
+	</data>
+	<data name="ShowStateCategories" xml:space="preserve">
+		<value>Afficher les catégories d'état</value>
+	</data>
+	<data name="Name" xml:space="preserve">
+		<value>Nom:</value>
+	</data>
+	<data name="Category" xml:space="preserve">
+		<value>Catégorie:</value>
+	</data>
+	<data name="Summary" xml:space="preserve">
+		<value>Résumé:</value>
+	</data>
+	<data name="List" xml:space="preserve">
+		<value>Liste</value>
+	</data>
+	<data name="StaticAllObjectsShareVariable" xml:space="preserve">
+		<value>Statique (tous les objets partagent une copie de la même variable)</value>
+	</data>
+	<data name="CanBeSetByDerived" xml:space="preserve">
+		<value>Peut être défini par dérivé</value>
+	</data>
+	<data name="Search" xml:space="preserve">
+		<value>Recherche...</value>
+	</data>
+	<data name="EnterFile" xml:space="preserve">
+		<value>Entrez le nom du nouveau fichier :</value>
+	</data>
+	<data name="SelectFileType" xml:space="preserve">
+		<value>Sélectionnez le type de fichier :</value>
+	</data>
+	<data name="Label" xml:space="preserve">
+		<value>Étiquette</value>
+	</data>
+	<data name="ValidationTextForWrapping" xml:space="preserve">
+		<value>Il s'agit d'un texte de validation qui est vraiment long pour que la ligne soit renvoyée, d'accord ? Oui, ça devrait...</value>
+	</data>
+	<data name="PleaseWait" xml:space="preserve">
+		<value>S'il vous plaît, attendez...</value>
+	</data>
+</root>

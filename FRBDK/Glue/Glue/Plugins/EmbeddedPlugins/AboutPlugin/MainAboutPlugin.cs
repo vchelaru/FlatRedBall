@@ -19,7 +19,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("About", HandleAboutClicked, "Help");
+            this.AddMenuItemTo(Localization.Texts.About, Localization.MenuIds.AboutId, HandleAboutClicked, Localization.MenuIds.HelpId);
         }
 
         private void HandleAboutClicked(object sender, EventArgs e)

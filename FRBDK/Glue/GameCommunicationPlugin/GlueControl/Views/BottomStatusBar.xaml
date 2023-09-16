@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="450" Height="28">
     <StackPanel Orientation="Horizontal">
@@ -15,8 +15,8 @@
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
-                                <TextBlock FontWeight="Bold">Slow Down</TextBlock>
-                                <TextBlock>Reudces game speed (makes it run in slow-motion)</TextBlock>
+                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.SlowDown}"></TextBlock>
+                                <TextBlock Text="{x:Static localization:Texts.ReduceGameSpeedSlowMotion}"></TextBlock>
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>
@@ -29,8 +29,8 @@
                     <Button.ToolTip>
                         <ToolTip>
                             <StackPanel>
-                                <TextBlock FontWeight="Bold">Speed Up</TextBlock>
-                                <TextBlock>Increases game speed (makes it run in fast-forward)</TextBlock>
+                                <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.SpeedUp}"></TextBlock>
+                                <TextBlock Text="{x:Static localization:Texts.IncreaseGameSpeedFastForward}"></TextBlock>
                             </StackPanel>
                         </ToolTip>
                     </Button.ToolTip>

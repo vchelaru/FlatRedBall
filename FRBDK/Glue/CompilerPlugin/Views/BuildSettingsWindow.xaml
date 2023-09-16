@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CompilerPlugin.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+        xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="Build Settings" Height="450" Width="800">
+        Title="{x:Static localization:Texts.BuildSettings}" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -15,8 +16,8 @@
             
         </wpfdataui:DataUiGrid>
         <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
-            <Button Width="100" Click="OkButtonClick">OK</Button>
-            <Button Width="100" Click="CancelButtonClick">Cancel</Button>
+            <Button Width="100" Click="OkButtonClick" Content="{x:Static localization:Texts.Ok}"></Button>
+            <Button Width="100" Click="CancelButtonClick"  Content="{x:Static localization:Texts.Cancel}"></Button>
         </StackPanel>
     </Grid>
 </Window>

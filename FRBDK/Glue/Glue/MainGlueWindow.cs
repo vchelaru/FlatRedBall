@@ -27,6 +27,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.Windows.Forms.Integration;
 using GlueFormsCore.Controls;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.Build.Evaluation;
@@ -184,6 +185,8 @@ namespace Glue
         }
         internal async void StartUpGlue()
         {
+            // TODO REMOVE BEFORE PULL REQUEST
+            Localization.Texts.Culture = new CultureInfo("fr-FR");
             //Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
 
             Microsoft.Build.Evaluation.Project item = null;
@@ -203,7 +206,7 @@ namespace Glue
             GlueGui.Initialize(mMenu);
             initializationWindow.Show();
 
-            initializationWindow.Message = "Initializing Glue Systems";
+            initializationWindow.Message = Localization.Texts.InitializingGlueSystems;
             Application.DoEvents();
 
             // Add Glue.Common
@@ -215,38 +218,37 @@ namespace Glue
             // Async stuff
             {
 
-                initializationWindow.SubMessage = "Initializing EventManager"; Application.DoEvents();
-                TaskManager.Self.Add(() => EventManager.Initialize(), "Initializing EventManager");
+                initializationWindow.SubMessage = Localization.Texts.InitializingEventManager; Application.DoEvents();
+                TaskManager.Self.Add(EventManager.Initialize, Localization.Texts.InitializingEventManager); Application.DoEvents();
 
-                Application.DoEvents();
+                initializationWindow.SubMessage = Localization.Texts.InitializingExposedVariableManager; Application.DoEvents();
 
-                initializationWindow.SubMessage = "Initializing ExposedVariableManager"; Application.DoEvents();
                 try
                 {
                     ExposedVariableManager.Initialize();
                 }
                 catch (Exception excep)
                 {
-                    GlueGui.ShowException("Could not load assemblies - you probably need to rebuild Glue.", "Error", excep);
+                    GlueGui.ShowException(Localization.Texts.ErrorCannotLoadGlue, Localization.Texts.Error, excep);
                     return;
                 }
             }
 
-            initializationWindow.SubMessage = "Initialize Error Reporting"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializeErrorReporting; Application.DoEvents();
             ErrorReporter.Initialize(this);
 
-            initializationWindow.SubMessage = "Initializing Right Click Menus"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializingRightClickMenus; Application.DoEvents();
             RightClickHelper.Initialize();
-            initializationWindow.SubMessage = "Initializing Property Grids"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializingPropertyGrids; Application.DoEvents();
             PropertyGridRightClickHelper.Initialize();
-            initializationWindow.SubMessage = "Initializing InstructionManager"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializingInstructionManager; Application.DoEvents();
             InstructionManager.Initialize();
-            initializationWindow.SubMessage = "Initializing TypeConverter"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializingTypeConverter; Application.DoEvents();
             TypeConverterHelper.InitializeClasses();
 
-            initializationWindow.SubMessage = "Initializing Navigation Stack"; Application.DoEvents();
+            initializationWindow.SubMessage = Localization.Texts.InitializingNavigationStack; Application.DoEvents();
 
-            initializationWindow.Message = "Loading Settings"; Application.DoEvents();
+            initializationWindow.Message = Localization.Texts.LoadingSettings; Application.DoEvents();
             // We need to load the glue settings before loading the plugins so that we can 
             // shut off plugins according to settings
             LoadGlueSettings(initializationWindow);
@@ -255,12 +257,11 @@ namespace Glue
             // Initialize before loading GlueSettings;
             // Also initialize before loading plugins so that plugins
             // can access the standard ATIs
-            string startupPath =
-                FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var startupPath = FileManager.GetDirectory(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
             AvailableAssetTypes.Self.Initialize(startupPath);
 
-            initializationWindow.Message = "Loading Plugins"; Application.DoEvents();
+            initializationWindow.Message = Localization.Texts.LoadingPlugins; Application.DoEvents();
             List<string> pluginsToIgnore = new List<string>();
             if (GlueState.Self.CurrentPluginSettings != null)
             {
@@ -281,18 +282,18 @@ namespace Glue
             {
                 FileManager.PreserveCase = true;
 
-                initializationWindow.Message = "Initializing File Watch";
+                initializationWindow.Message = Localization.Texts.InitializingFileWatch;
                 Application.DoEvents();
                 // Initialize the FileWatchManager before LoadGlueSettings
                 FileWatchManager.Initialize();
 
-                initializationWindow.Message = "Loading Custom Type Info";
+                initializationWindow.Message = Localization.Texts.LoadingCustomTypeInfo;
                 Application.DoEvents();
 
                 // Gotta do this too before Loading Glue Settings
                 ProjectManager.Initialize();
 
-                initializationWindow.Message = "Loading Project";
+                initializationWindow.Message = Localization.Texts.LoadingPlugins;
                 Application.DoEvents();
 
                 // LoadSettings before loading projects
@@ -394,7 +395,7 @@ namespace Glue
             this.mMenu.Name = "mMenu";
             this.mMenu.Size = new System.Drawing.Size(764, 24);
             this.mMenu.TabIndex = 1;
-            this.mMenu.Text = "menuStrip1";
+            this.mMenu.Text = Localization.Texts.MenuStripTitle;
             this.MainMenuStrip = this.mMenu;
         }
 
@@ -574,7 +575,7 @@ namespace Glue
             {
                 if (initializationWindow != null)
                 {
-                    initializationWindow.Message = "Loading " + csprojToLoad;
+                    initializationWindow.Message = String.Format(Localization.Texts.LoadingX, csprojToLoad);
                 }
 
                 await ProjectLoader.Self.LoadProject(csprojToLoad, initializationWindow);
@@ -622,8 +623,7 @@ namespace Glue
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show("Error loading your settings file which is located at\n\n" +
-                        settingsFileLocation + "\n\nError details:\n\n" + e.ToString());
+                    MessageBox.Show($"{Localization.Texts.ErrorLoadingSettings}\n\n{settingsFileLocation}\n\n{Localization.Texts.ErrorDetails}\n\n{e}");
                     didErrorOccur = true;
                 }
                 

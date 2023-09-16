@@ -28,7 +28,7 @@ namespace OfficialPluginsCore.ProfilePlugin
 
         private void AssignEvents()
         {
-            this.AddMenuItemTo("Add ProfileManager", HandleAddProfileManager, "Plugins");
+            this.AddMenuItemTo(Localization.Texts.AddProfileManager, Localization.MenuIds.AddProfileManagerId, HandleAddProfileManager, Localization.MenuIds.PluginId);
         }
 
         private void HandleAddProfileManager(object sender, EventArgs e)

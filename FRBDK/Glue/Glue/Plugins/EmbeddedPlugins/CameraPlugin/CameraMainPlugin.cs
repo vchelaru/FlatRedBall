@@ -4,14 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using Microsoft.Xna.Framework.Graphics;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -34,8 +33,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
             this.ReactToLoadedGlux += HandleLoadedGlux;
 
-            base.AddMenuItemTo(
-                "Camera Settings", HandleCameraSettings, "Settings");
+            base.AddMenuItemTo(L.Texts.CameraSettings, L.MenuIds.CameraSettingsId, HandleCameraSettings, L.MenuIds.SettingsId);
 
             base.AddToToolBar(new CameraToolbar(), "Standard");
         }

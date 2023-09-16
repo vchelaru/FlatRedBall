@@ -3,15 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              WindowStyle="ToolWindow"
              mc:Ignorable="d" 
              SizeToContent="Height"
              Width="260">
     <StackPanel x:Name="MainStackPanel" Margin="4">
-        <TextBlock Margin="3,0,3,0">Enter a name for the new entity:</TextBlock>
-        <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" 
-                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+        <TextBlock Margin="3,0,3,0"  Text="{x:Static localization:Texts.EnterNameForEntity}"></TextBlock>
+        <TextBox x:Name="TextBox" Margin="3,0,3,0" KeyDown="TextBox_KeyDown" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <TextBlock x:Name="FailureTextBlock" Margin="3,0,3,3" Foreground="DarkRed" 
                    Visibility="{Binding FailureTextVisibility}" Text="{Binding FailureText}" TextWrapping="Wrap"></TextBlock>
         <Grid>
@@ -19,37 +18,37 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center">Base Entity:</TextBlock>
+            <TextBlock VerticalAlignment="Center"  Text="{x:Static localization:Texts.EntityBase}"></TextBlock>
             <ComboBox Grid.Column="1" Margin="2,0,2,0" ItemsSource="{Binding BaseEntityOptions}" SelectedItem="{Binding SelectedBaseEntity}"></ComboBox>
         </Grid>
         <GroupBox Header="Visuals" Visibility="{Binding VisualsVisibility}">
             <StackPanel>
-                <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}">Sprite</CheckBox>
-                <CheckBox x:Name="TextCheckBox" IsChecked="{Binding IsTextChecked}">Text</CheckBox>
+                <CheckBox x:Name="SpriteCheckBox" IsChecked="{Binding IsSpriteChecked}" Content="{x:Static localization:Texts.Sprite}"></CheckBox>
+                <CheckBox x:Name="TextCheckBox" IsChecked="{Binding IsTextChecked}"  Content="{x:Static localization:Texts.Text}"></CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Collisions" Visibility="{Binding CollisionsVisibility}">
             <StackPanel>
-                <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}">Circle</CheckBox>
-                <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}">AxisAlignedRectangle</CheckBox>
-                <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}">Polygon (Rectangle)</CheckBox>
+                <CheckBox x:Name="CircleCheckBox" IsChecked="{Binding IsCircleChecked}" Content="{x:Static localization:Texts.Circle}"></CheckBox>
+                <CheckBox x:Name="AxisAlignedRectangleCheckBox" IsChecked="{Binding IsAxisAlignedRectangleChecked}" Content="{x:Static localization:Texts.AxisAlignedRectangle}"></CheckBox>
+                <CheckBox x:Name="PolygonCheckBox" IsChecked="{Binding IsPolygonChecked}" Content="{x:Static localization:Texts.PolygonRectangle}"></CheckBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Interfaces" Visibility="{Binding InterfaceVisibility}">
             <StackPanel>
                 <CheckBox x:Name="ICollidableCheckBox" IsChecked="{Binding IsICollidableChecked}" IsEnabled="{Binding IsICollidableEnabled}">ICollidable</CheckBox>
-                <CheckBox x:Name="IDamageableCheckBox" IsChecked="{Binding IsIDamageableChecked}">IDamageable (can take damage)</CheckBox>
-                <CheckBox x:Name="IDamageAreaCheckBox" IsChecked="{Binding IsIDamageAreaChecked}">IDamageArea (can deal damage)</CheckBox>
+                <CheckBox x:Name="IDamageableCheckBox" IsChecked="{Binding IsIDamageableChecked}" Content="{x:Static localization:Texts.IDamagableCanTakeDamage}"></CheckBox>
+                <CheckBox x:Name="IDamageAreaCheckBox" IsChecked="{Binding IsIDamageAreaChecked}" Content="{x:Static localization:Texts.IDamageAreaCanDealDamage}"></CheckBox>
                 <GroupBox Header="Team Index" Visibility="{Binding TeamIndexUiVisibility}">
                     <StackPanel>
-                        <RadioButton IsChecked="{Binding IsTeamIndex0Checked}">0 (Player Team)</RadioButton>
-                        <RadioButton IsChecked="{Binding IsTeamIndex1Checked}">1 (Enemy Team)</RadioButton>
-                        <RadioButton IsChecked="{Binding IsCustomTeamIndexChecked}">Custom</RadioButton>
+                        <RadioButton IsChecked="{Binding IsTeamIndex0Checked}" Content="{x:Static localization:Texts.TeamZeroPlayer}"></RadioButton>
+                        <RadioButton IsChecked="{Binding IsTeamIndex1Checked}" Content="{x:Static localization:Texts.TeamOneEnemy}"></RadioButton>
+                        <RadioButton IsChecked="{Binding IsCustomTeamIndexChecked}" Content="{x:Static localization:Texts.Custom}"></RadioButton>
                         <TextBox Visibility="{Binding CustomTeamIndexTextBoxVisibility}" Text="{Binding CustomTeamIndex}" Margin="18,0,0,0"></TextBox>
                     </StackPanel>
                 </GroupBox>
                 <CheckBox Visibility="{Binding OpposingTeamIndexCheckboxVisibility}" IsChecked="{Binding IsOpposingTeamIndexDamageCollisionChecked}">
-                    <TextBlock TextWrapping="Wrap">Add Opposing Team Index Collision Relationships to GameScreen</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Text="{x:Static localization:Texts.GameScreenOpposingTeamAdd}"></TextBlock>
                 </CheckBox>
                 <ListBox Height="100" Visibility="{Binding OpposingTeamCollisionListVisibility}" ItemsSource="{Binding OpposingTeamCollisionListItems}" Margin="20,0,0,0">
                     
@@ -58,7 +57,7 @@
         </GroupBox>
         <GroupBox Header="Creation">
             <StackPanel>
-                <CheckBox x:Name="CreateFactoryCheckBox" IsChecked="{Binding IsCreateFactoryChecked}">Create Factory</CheckBox>
+                <CheckBox x:Name="CreateFactoryCheckBox" IsChecked="{Binding IsCreateFactoryChecked}" Content="{x:Static localization:Texts.FactoryCreate}"></CheckBox>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"></RowDefinition>
@@ -67,8 +66,7 @@
                     <CheckBox Grid.Row="1" VerticalAlignment="Center"
                         IsChecked="{Binding IncludeListsInScreens}" Visibility="{Binding IncludeListsInScreensVisibility}">
                         <TextBlock>
-                            <AccessText TextWrapping="Wrap"
-                                Text="Include lists in GameScreen"/>
+                            <AccessText TextWrapping="Wrap" Text="{x:Static localization:Texts.IncludeListsInGameScreen}"/>
                         </TextBlock>
 
                     </CheckBox>
@@ -76,8 +74,8 @@
             </StackPanel>
         </GroupBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Width="60" Click="OkClickInternal">OK</Button>
-            <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="Cancel"/>
+            <Button Width="60" Click="OkClickInternal" Content="{x:Static localization:Texts.Ok}" />
+            <Button Margin="5,0,0,0" Width="60" Click="CancelClickInternal" Content="{x:Static localization:Texts.Cancel}"/>
         </StackPanel>
     </StackPanel>
 </Window>

@@ -47,7 +47,7 @@ namespace OfficialPluginsCore.Wizard
         {
             AssignEvents();
             
-            AddMenuItemTo("Create Objects JSON", (not, used) => HandleCreateObjectsJsonClicked(), "Project");
+            AddMenuItemTo(Localization.Texts.CreateObjectsJson, Localization.MenuIds.CreateObjectsJsonId, HandleCreateObjectsJsonClicked, Localization.MenuIds.ProjectId);
         }
 
         private void HandleCreateObjectsJsonClicked()

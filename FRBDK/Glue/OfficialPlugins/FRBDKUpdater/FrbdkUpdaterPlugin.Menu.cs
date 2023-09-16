@@ -16,22 +16,16 @@ namespace OfficialPlugins.FrbdkUpdater
     public class FrbdkUpdaterPlugin : PluginBase
     {
         public override string FriendlyName => "Updater Plugin";
-        public override Version Version => new System.Version(2,0);
-
-
-        private const string FrbdkSyncMenuItem = "Update FRB editor binaries";
-        private const string FrbAndGameCode = "Update FRB and game code...";
-
-        public const string PluginsMenuItem = "Update";
+        public override Version Version => new (2,0);
 
         public override void StartUp()
         {
-            this.AddMenuItemTo(FrbdkSyncMenuItem, () => MenuItemClick(), "Update");
+            this.AddMenuItemTo(Localization.Texts.FrbEditorBinaries, Localization.MenuIds.FrbEditorBinariesId, MenuItemClick, Localization.MenuIds.UpdateId);
 
-            var menuItem = this.AddMenuItemTo(FrbAndGameCode, (Action)null, "Update");
+            var menuItem = this.AddMenuItemTo(Localization.Texts.FrbUpdateAndGameCode, Localization.MenuIds.FrbUpdateAndGameCodeId, (Action)null, Localization.MenuIds.UpdateId);
 
-            menuItem.DropDownItems.Add(new ToolStripMenuItem("FRB and Gum", null, (_, _) => UpdateFrbFromCode(false)));
-            menuItem.DropDownItems.Add(new ToolStripMenuItem("FRB, Gum, and Game", null, (_, _) => UpdateFrbFromCode(true)));
+            menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbAndGum, null, (_, _) => UpdateFrbFromCode(false)));
+            menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbGumAndGame, null, (_, _) => UpdateFrbFromCode(true)));
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)

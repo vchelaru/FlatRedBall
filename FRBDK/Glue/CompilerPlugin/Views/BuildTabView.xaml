@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:CompilerPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="500">
     <Grid>
@@ -24,8 +25,8 @@
             </views:WhileStoppedView>
 
             <StackPanel x:Name="WhileBuildingView" Visibility="{Binding WhileBuildingVisibility}" Orientation="Horizontal">
-                <Label>Building...</Label>
-                <Button Click="HandleCancelBuildButtonClick">Cancel Build</Button>
+                <Label Content="{x:Static localization:Texts.Building}"></Label>
+                <Button Click="HandleCancelBuildButtonClick" Content="{x:Static localization:Texts.CancelBuild}"></Button>
             </StackPanel>
 
         </WrapPanel>

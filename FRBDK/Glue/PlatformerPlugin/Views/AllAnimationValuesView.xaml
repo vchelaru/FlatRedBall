@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PlatformerPluginCore.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="500">
     <Grid>
@@ -21,6 +22,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-        <Button Grid.Row="1" Click="AddAnimationEntryButtonClicked">Add Animation Entry</Button>
+        <Button Grid.Row="1" Click="AddAnimationEntryButtonClicked" Content="{x:Static localization:Texts.AnimationAddEntry}" />
     </Grid>
 </UserControl>

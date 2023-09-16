@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              WindowStartupLocation="Manual"
              mc:Ignorable="d" 
              WindowStyle="ToolWindow" 
@@ -15,8 +15,8 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Grid.Row="0">
-            <RadioButton Margin="6" IsChecked="{Binding IsLocalFilesChecked}">Local Files</RadioButton>
-            <RadioButton Margin="16,6,6,6" IsChecked="{Binding IsDownloadFileChecked}">Download File</RadioButton>
+            <RadioButton Margin="6" IsChecked="{Binding IsLocalFilesChecked}" Content="{x:Static localization:Texts.LocalFiles}" />
+            <RadioButton Margin="16,6,6,6" IsChecked="{Binding IsDownloadFileChecked}" Content="{x:Static localization:Texts.DownloadFile}" />
         </StackPanel>
         
         <Grid Visibility="{Binding LocalUiVisibility, FallbackValue=Collapsed}" Grid.Row="1">
@@ -40,9 +40,7 @@
                  SelectionChanged="ListBoxInstance_SelectionChanged"
                  MouseDoubleClick="ListBoxInstance_MouseDoubleClick"
                  ></ListBox>
-            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
-            The list above shows all files in the game's content folder. <LineBreak></LineBreak>
-            To add files from outside of the content folder, click the Browse button. Files from outside of the content folder will be copied to the content folder.</TextBlock>
+            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2" Text="{x:Static localization:Texts.HintExistingFileList}"></TextBlock>
             <Grid Grid.Row="3" Margin="5,0,15,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -50,9 +48,9 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Click="HandleBrowseClicked">Browse...</Button>
-                <Button Grid.Column="2" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
-                <Button Grid.Column="3" Click="CancelButtonClicked">Cancel</Button>
+                <Button Click="HandleBrowseClicked" Content="{x:Static localization:Texts.Browse}" />
+                <Button Grid.Column="2" Margin="0,0,5,0" Click="OkButtonClicked" Content="{x:Static localization:Texts.Ok}" />
+                <Button Grid.Column="3" Click="CancelButtonClicked" Content="{x:Static localization:Texts.Cancel}" />
             </Grid>
         </Grid>
 
@@ -68,7 +66,7 @@
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock VerticalAlignment="Center">Enter URL Name:</TextBlock>
+                <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.EnterUrlName}" ></TextBlock>
                 <TextBox Grid.Column="1" Text="{Binding DownloadUrl}" Margin="5,0,0,0"></TextBox>
             </Grid>
             <ListBox Grid.Row="1" ItemsSource="{Binding DownloadedFilesList}" Margin="5">
@@ -80,9 +78,8 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            
-            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2">
-            Glue will download the file entered above along with any dependencies.
+
+            <TextBlock FontSize="10" Margin="5,0,5,5" TextWrapping="Wrap" Grid.Row="2"  Text="{x:Static localization:Texts.GlueWillDownloadFileAndDependencies}">
             </TextBlock>
             <Grid Grid.Row="3" Margin="5,0,15,5">
                 <Grid.ColumnDefinitions>
@@ -90,8 +87,8 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" Margin="0,0,5,0" Click="OkButtonClicked">OK</Button>
-                <Button Grid.Column="2" Click="CancelButtonClicked">Cancel</Button>
+                <Button Grid.Column="1" Margin="0,0,5,0" Click="OkButtonClicked" Content="{x:Static localization:Texts.Ok}" />
+                <Button Grid.Column="2" Click="CancelButtonClicked" Content="{x:Static localization:Texts.Cancel}" />
             </Grid>
         </Grid>
     </Grid>

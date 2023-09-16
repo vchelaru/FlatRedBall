@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -12,9 +12,9 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <WrapPanel Margin="2"  Orientation="Horizontal" Grid.Column="0">
-            <Button Click="Button_Click">Take Snapshot</Button>
+            <Button Click="InvokeSnapShot" Content="{x:Static localization:Texts.TakeSnapshot}"></Button>
 
-            <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}">Auto Take Snapshot</CheckBox>
+            <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}" Content="{x:Static localization:Texts.AutoTakeSnapshot}"></CheckBox>
         </WrapPanel>
         <TabControl Grid.Row="1">
             <TabItem Header="Summary">

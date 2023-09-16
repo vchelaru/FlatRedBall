@@ -28,22 +28,7 @@ namespace OfficialPlugins.Git
 
         void HandleGluxLoaded()
         {
-            this.AddMenuItemTo("Add/Update .gitignore", (not, used) => AddGitIgnore(), "Update");
-
-            // This is handled in the FrbdkUpdaterPlugin
-            //this.RemoveAllMenuItems();
-
-            //if (UpdateAllAndRunLocation.Exists())
-            //{
-            //    this.AddMenuItemTo("Shut Down and Update from Source", HandleShutdownAndUpdate, "Update");
-            //    this.AddMenuItemTo("Refresh UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
-
-            //}
-            //else
-            //{
-            //    this.AddMenuItemTo("Add UpdateAllAndRun.bat", (not, used) => AddUpdateAllAndRun(), "Update");
-            //}
-
+            this.AddMenuItemTo(Localization.Texts.AddUpdateGitignore, Localization.MenuIds.AddUpdateGitignoreId, AddGitIgnore, Localization.MenuIds.UpdateId);
         }
 
         private void HandleUnloadedGlux()

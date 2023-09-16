@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.Plugins.Interfaces;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Controls;
@@ -11,7 +10,6 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Reflection;
-using FlatRedBall.Instructions.Reflection;
 using System.ComponentModel;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Content.Instructions;
@@ -21,8 +19,6 @@ using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Errors;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.IO;
-using System.Windows;
-using System.Collections.ObjectModel;
 using GlueFormsCore.Controls;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -32,6 +28,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using static FlatRedBall.Glue.Plugins.PluginManager;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -544,27 +541,30 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Menu items
 
-        protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd)
+        protected ToolStripMenuItem AddTopLevelMenuItem(string whatToAdd, string id)
         {
             ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd);
+            menuItem.Name = id;
             GlueGui.MenuStrip.Items.Add(menuItem);
             return menuItem;
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId,  EventHandler eventHandler, string container)
         {
-            return AddMenuItemTo(whatToAdd, eventHandler, container, -1);
+            return AddMenuItemTo(whatToAdd, whatToAddId, eventHandler, container, -1);
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, Action action, string container)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, Action action, string container)
         {
-            return AddMenuItemTo(whatToAdd, (not, used) => action?.Invoke(), container, -1);
+            return AddMenuItemTo(whatToAdd, whatToAddId, (not, used) => action?.Invoke(), container, -1);
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, EventHandler eventHandler, string container, int preferredIndex)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container, int preferredIndex)
         {
-            ToolStripMenuItem menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
-            ToolStripMenuItem itemToAddTo = GetItem(container);
+            var menuItem = new ToolStripMenuItem(whatToAdd, null, eventHandler);
+            menuItem.Name = whatToAddId;
+            var itemToAddTo = GetItem(container);
+            Debug.Assert(itemToAddTo != null);
             toolStripItemsAndParents.Add(menuItem, itemToAddTo);
 
 
@@ -586,7 +586,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             foreach (ToolStripMenuItem item in GlueGui.MenuStrip.Items)
             {
-                if (item.Text == name)
+                if (item.Name == name)
                 {
                     return item;
                 }

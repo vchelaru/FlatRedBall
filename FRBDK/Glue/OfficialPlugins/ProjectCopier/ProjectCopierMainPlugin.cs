@@ -34,8 +34,7 @@ namespace OfficialPlugins.ProjectCopier
         public override void StartUp()
         {
             copyManager = new CopyManager(ShowError);
-            this.AddMenuItemTo("Show Copy Entire Project tab", AddControlToTab, "Project");
-            //this.InitializeBottomTabHandler += AddControlToTab;
+            this.AddMenuItemTo(Localization.Texts.ProjectShowCopyEntireTab, Localization.MenuIds.ProjectShowCopyEntireTabId, AddControlToTab, Localization.MenuIds.ProjectId);
 
             CreateControl();
             this.ReactToLoadedGlux += HandleGluxLoad;

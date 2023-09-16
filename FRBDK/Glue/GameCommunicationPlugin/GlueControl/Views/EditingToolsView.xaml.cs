@@ -1,24 +1,13 @@
-﻿using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.MVVM;
+﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
 using GameCommunicationPlugin.GlueControl.CommandSending;
-using GameCommunicationPlugin.GlueControl.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TMXGlueLib;
 
 namespace GameCommunicationPlugin.GlueControl.Views
