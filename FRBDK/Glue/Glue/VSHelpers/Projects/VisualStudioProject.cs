@@ -115,6 +115,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public Version DotNetVersion { get; private set; }
 
         public decimal? DotNetVersionNumber { get; private set; }
+
+        public string ExecutableName { get; private set; }
+
         #endregion
 
         #region Methods
@@ -589,7 +592,10 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             FindRootNamespace();
 
-            // December 20, 2010
+
+            ExecutableName = mProject.GetProperty("AssemblyName")?.EvaluatedValue ??
+                FileManager.RemoveExtension(FileManager.RemovePath(fileName));
+
 
             if (wasChanged)
             {
