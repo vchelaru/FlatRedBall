@@ -541,6 +541,7 @@ namespace FlatRedBall.Glue.FormHelpers
         #region Images
 
         static System.Windows.Controls.Image BookmarkImage;
+        static System.Windows.Controls.Image DerivedEntity;
 
         #endregion
 
@@ -614,6 +615,12 @@ namespace FlatRedBall.Glue.FormHelpers
                 }
                 else
                 {
+                    EntitySave entitySave = targetNode.Tag as EntitySave;
+
+                    Add("Add Derived Entity", () => ShowAddDerivedEntityDialog(entitySave), image: DerivedEntity);
+
+                    AddSeparator();
+
                     AddRemoveFromProjectItems();
 
                     AddSeparator();
@@ -621,7 +628,6 @@ namespace FlatRedBall.Glue.FormHelpers
                     AddItem(mExportElement);
                     AddItem(mFindAllReferences);
 
-                    EntitySave entitySave = targetNode.Tag as EntitySave;
 
                     if (entitySave.PooledByFactory)
                     {
@@ -1004,6 +1010,7 @@ namespace FlatRedBall.Glue.FormHelpers
             #endregion
         }
 
+
         static bool HasCreatedImages = false;
         private static void CreateImages()
         {
@@ -1011,6 +1018,7 @@ namespace FlatRedBall.Glue.FormHelpers
             {
                 
                 BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
+                DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
                 
 
                 HasCreatedImages = true;
@@ -2762,7 +2770,6 @@ namespace FlatRedBall.Glue.FormHelpers
             ElementImporter.ShowImportElementUi(targetTreeNode);
         }
 
-
         private static void ForceSaveElementJson(GlueElement glueElement)
         {
             var glueDirectory = GlueState.Self.CurrentGlueProjectDirectory;
@@ -2783,6 +2790,13 @@ namespace FlatRedBall.Glue.FormHelpers
             FileWatchManager.IgnoreNextChangeOnFile(destination);
 
             FileManager.SaveText(serialized, destination);
+        }
+
+        private static void ShowAddDerivedEntityDialog(EntitySave entitySave)
+        {
+            var vm = GlueCommands.Self.DialogCommands.CreateAddNewEntityViewModel();
+            vm.SelectedBaseEntity = entitySave.Name;
+            GlueCommands.Self.DialogCommands.ShowAddNewEntityDialog(vm);
         }
     }
 }
