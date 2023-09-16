@@ -124,16 +124,17 @@ namespace FlatRedBall.Graphics
                     throw new ObjectDisposedException(msg);
                 }
 
-                // this could be disposed because of a transition:
-                if(sprite.mTexture?.IsDisposed == false)
+                try
                 {
                     Texture = sprite.mTexture;
                 }
-                else
+                catch(ObjectDisposedException)
                 {
+                    // no big deal if it's disposed, that probably means we are switching to a new screen and the render breaks
+                    // for this frame are being recorded. We can ignore this:
+
                     Texture = null;
                 }
-
 
                 ColorOperation = sprite.mColorOperation;
                 BlendOperation = sprite.mBlendOperation;
