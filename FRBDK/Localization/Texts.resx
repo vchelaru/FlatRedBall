@@ -834,7 +834,7 @@
 		<value>Embed NAudio Classes</value>
 	</data>
 	<data name="AddStateInterpolationClasses" xml:space="preserve">
-		<value>Add State Interpolation Classes</value>
+		<value>Add state interpolation classes</value>
 	</data>
 	<data name="ViewBuiltProjectSizes" xml:space="preserve">
 		<value>View Built Project Sizes</value>
@@ -1543,5 +1543,206 @@
 	</data>
 	<data name="AfterDoubleJump" xml:space="preserve">
 		<value>After double jump:</value>
+	</data>
+	<data name="More" xml:space="preserve">
+		<value>More...</value>
+	</data>
+	<data name="Refresh" xml:space="preserve">
+		<value>Refresh</value>
+	</data>
+	<data name="ProjectNoneLoaded" xml:space="preserve">
+		<value>No project loaded</value>
+	</data>
+	<data name="ErrorPlayingWavFile" xml:space="preserve">
+		<value>Error playing wav file: </value>
+	</data>
+	<data name="VariableAddDefinition" xml:space="preserve">
+		<value>Add Variable Definition</value>
+	</data>
+	<data name="ErrorCopyCurrent" xml:space="preserve">
+		<value>Copy Current Error</value>
+	</data>
+	<data name="ErrorCopyAll" xml:space="preserve">
+		<value>Copy All Errors</value>
+	</data>
+	<data name="ErrorRefresh" xml:space="preserve">
+		<value>Refresh Errors</value>
+	</data>
+	<data name="ErrorCheckingDetails" xml:space="preserve">
+		<value>Output Error Checking Details</value>
+	</data>
+	<data name="ExampleBoolProperty" xml:space="preserve">
+		<value>Example Bool Property</value>
+	</data>
+	<data name="PropertyString" xml:space="preserve">
+		<value>String Property:</value>
+	</data>
+	<data name="LinkToSource" xml:space="preserve">
+		<value>Link to Source</value>
+	</data>
+	<data name="Angle" xml:space="preserve">
+		<value>Angle:</value>
+	</data>
+	<data name="AddToPath" xml:space="preserve">
+		<value>Add to path</value>
+	</data>
+	<data name="Width" xml:space="preserve">
+		<value>Width:</value>
+	</data>
+	<data name="Height" xml:space="preserve">
+		<value>Height:</value>
+	</data>
+	<data name="Add" xml:space="preserve">
+		<value>Add</value>
+	</data>
+	<data name="Remove" xml:space="preserve">
+		<value>Remove</value>
+	</data>
+	<data name="PolygonToRectangle" xml:space="preserve">
+		<value>Adds or replaces all points on the polygon to create a rectangle.</value>
+	</data>
+	<data name="PolygonToMultiSided" xml:space="preserve">
+		<value>Adds or replaces all points on the polygon to create a multi-sided polygon.</value>
+	</data>
+	<data name="HintMovePointUpList" xml:space="preserve">
+		<value>Moves the selected point up in the list.</value>
+	</data>
+	<data name="HintMovePointDownList" xml:space="preserve">
+		<value>Moves the selected point down in the list.</value>
+	</data>
+	<data name="HintResizePolygon" xml:space="preserve">
+		<value>Resize the polygon by moving the contained points.</value>
+	</data>
+	<data name="ClearPointsAddRectangle" xml:space="preserve">
+		<value>Would you like to clear the points and replace them with points for a rectangle shape?</value>
+	</data>
+	<data name="HintEnterNumberOfPoints" xml:space="preserve">
+		<value>Enter the number of points for the new polygon. At least 3 points are required. Note that the last point is automatically repeated, so only enter the number of visible points. For example, 3 for a triangle.</value>
+	</data>
+	<data name="HintThisWillReplacePoints" xml:space="preserve">
+		<value>This will completely replace the existing points on this polygon.</value>
+	</data>
+	<data name="OnlyIntegerValuesAllowed" xml:space="preserve">
+		<value>Only integer values are allowed. Invalid value: {0}</value>
+	</data>
+	<data name="AtLeastThreePointsRequired" xml:space="preserve">
+		<value>At least 3 points are required. Invalid value: {0}</value>
+	</data>
+	<data name="Save" xml:space="preserve">
+		<value>Save</value>
+	</data>
+	<data name="ProjectWizardNew" xml:space="preserve">
+		<value>New Project Wizard</value>
+	</data>
+	<data name="GumPlugin" xml:space="preserve">
+		<value>Gum Plugin</value>
+	</data>
+	<data name="ObjectAdd" xml:space="preserve">
+		<value>Add Object</value>
+	</data>
+	<data name="ObjectAddDescription" xml:space="preserve">
+		<value>Set the AddObject details here, depending on if it's a Screen or entity.</value>
+	</data>
+	<data name="AddXXXToList" xml:space="preserve">
+		<value>Add XXXX to XXXXList</value>
+	</data>
+	<data name="AddInstanceToSelectedList" xml:space="preserve">
+		<value>Adds a new instance to the selected list</value>
+	</data>
+	<data name="AddXXXToGameScreen" xml:space="preserve">
+		<value>Add XXXX List to GameScreen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreen" xml:space="preserve">
+		<value>Add XXXX Instance to GameScreen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreenDescription" xml:space="preserve">
+		<value>Adds a single XXXX instance to the GameScreen</value>
+	</data>
+	<data name="CurrentScreen" xml:space="preserve">
+		<value>Current Screen</value>
+	</data>
+	<data name="AddXXXFactory" xml:space="preserve">
+		<value>Add XXXX Factory</value>
+	</data>
+	<data name="AddXXXFactoryDescription" xml:space="preserve">
+		<value>Factories simplify the creation and addition of entities to screen lists. Factories are required to create entities through TMX files.</value>
+	</data>
+	<data name="ProjectCommands" xml:space="preserve">
+		<value>Project Commands</value>
+	</data>
+	<data name="GlueWizardRun" xml:space="preserve">
+		<value>Run Glue Wizard</value>
+	</data>
+	<data name="GlueWizardDescription" xml:space="preserve">
+		<value>The Glue Wizard can help you get a fully functional game set up in seconds.</value>
+	</data>
+	<data name="ProjectCreateNew" xml:space="preserve">
+		<value>Create New Project</value>
+	</data>
+	<data name="ProjectCreateNewDescription" xml:space="preserve">
+		<value>Usually new projects target Desktop GL.</value>
+	</data>
+	<data name="ProjectOpen" xml:space="preserve">
+		<value>Open Project</value>
+	</data>
+	<data name="ProjectOpenDescription" xml:space="preserve">
+		<value>Load an existing project from disk.</value>
+	</data>
+	<data name="ProjectGumAdd" xml:space="preserve">
+		<value>Add Gum Project</value>
+	</data>
+	<data name="ProjectGumAddDescription" xml:space="preserve">
+		<value>Gum is used to create UI and HUD.</value>
+	</data>
+	<data name="AddScreenLevel" xml:space="preserve">
+		<value>Add Screen/Level</value>
+	</data>
+	<data name="AddScreenLevelDescription" xml:space="preserve">
+		<value>Every game needs at least one screen. Usually the game logic is in a screen called GameScreen. Typically each level requires a new screen.</value>
+	</data>
+	<data name="EntityAdd" xml:space="preserve">
+		<value>Add Entity</value>
+	</data>
+	<data name="EntityAddDescription" xml:space="preserve">
+		<value>Entities represent game objects like the player, enemies, bullets, and pick-ups.</value>
+	</data>
+	<data name="InGame" xml:space="preserve">
+		<value>In Game</value>
+	</data>
+	<data name="PlaySong" xml:space="preserve">
+		<value>Play Song</value>
+	</data>
+	<data name="LoopSong" xml:space="preserve">
+		<value>Loop Song</value>
+	</data>
+	<data name="SetVolume" xml:space="preserve">
+		<value>Set Volume</value>
+	</data>
+	<data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
+		<value>Keep Playing After Leaving Screen</value>
+	</data>
+	<data name="Preview" xml:space="preserve">
+		<value>Preview</value>
+	</data>
+	<data name="MapSpriteTexture" xml:space="preserve">
+		<value>Map Sprite Texture</value>
+	</data>
+	<data name="Zoom" xml:space="preserve">
+		<value>Zoom</value>
+	</data>
+	<data name="Enabled" xml:space="preserve">
+		<value>Enabled</value>
+	</data>
+	<data name="SeparateHeight" xml:space="preserve">
+		<value>Separate Height</value>
+	</data>
+	<data name="TextureSize" xml:space="preserve">
+		<value>Texture Size</value>
+	</data>
+	<data name="Variables" xml:space="preserve">
+		<value>Variables</value>
+	</data>
+	<data name="VariablesExcluded" xml:space="preserve">
+		<value>Excluded Variables</value>
 	</data>
 </root>

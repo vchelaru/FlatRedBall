@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.StateDataPlugin.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
@@ -42,7 +42,7 @@
             </Grid.RowDefinitions>
             <Rectangle VerticalAlignment="Top" Height="1" Grid.ColumnSpan="3" Fill="Black"></Rectangle>
 
-            <TextBlock Margin="0,1,0,0">Variables</TextBlock>
+            <TextBlock Margin="0,1,0,0" Text="{x:Static localization:Texts.Variables}" />
             <ListBox Grid.Row="1" SelectedItem="{Binding SelectedIncludedVariable}" ItemsSource="{Binding IncludedVariables}"></ListBox>
             <StackPanel Grid.Column="1" Grid.Row="1">
                 <Button Click="ExcludeButtonClick">&gt;&gt;</Button>
@@ -53,7 +53,7 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2">Excluded Variables</TextBlock>
+                <TextBlock  Margin="0,1,0,0" Grid.Column="0" Grid.ColumnSpan="2"  Text="{x:Static localization:Texts.VariablesExcluded}" />
                 <Button Grid.Column="1" Width="20" Click="CollapseVariableManagementClick">X</Button>
             </Grid>
             <ListBox Grid.Row="1" SelectedItem="{Binding SelectedExcludedVariable}" ItemsSource="{Binding ExcludedVariables}" Grid.Column="2" Grid.ColumnSpan="2"></ListBox>
@@ -63,13 +63,7 @@
                       HorizontalAlignment="Stretch" 
                       VerticalAlignment="Center"
                       Visibility="{Binding VariableManagementVisibility}"></GridSplitter>
-        <!--https://www.wpftutorial.net/DataGrid.html-->
 
-        <!--
-        These don't work when selecting a cell. They do if selecting an entire row, so the binding is set up
-        in the codebehind.
-        SelectedItem="{Binding SelectedState}"
-                  SelectedIndex="{Binding SelectedIndex}"-->
         <DataGrid Grid.Row="3"
             x:Name="DataGridInstance" 
                   ItemsSource="{Binding States}" 

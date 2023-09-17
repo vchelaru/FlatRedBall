@@ -1544,4 +1544,205 @@
 	<data name="AfterDoubleJump" xml:space="preserve">
 		<value>Nach Doppelsprung:</value>
 	</data>
+	<data name="More" xml:space="preserve">
+		<value>Mehr...</value>
+	</data>
+	<data name="Refresh" xml:space="preserve">
+		<value>Aktualisierung</value>
+	</data>
+	<data name="ProjectNoneLoaded" xml:space="preserve">
+		<value>Kein Projekt geladen</value>
+	</data>
+	<data name="ErrorPlayingWavFile" xml:space="preserve">
+		<value>Fehler beim Abspielen der WAV-Datei:</value>
+	</data>
+	<data name="VariableAddDefinition" xml:space="preserve">
+		<value>Variablendefinition hinzufügen</value>
+	</data>
+	<data name="ErrorCopyCurrent" xml:space="preserve">
+		<value>Aktuellen Fehler kopieren</value>
+	</data>
+	<data name="ErrorCopyAll" xml:space="preserve">
+		<value>Alle Fehler kopieren</value>
+	</data>
+	<data name="ErrorRefresh" xml:space="preserve">
+		<value>Aktualisieren Sie Fehler</value>
+	</data>
+	<data name="ErrorCheckingDetails" xml:space="preserve">
+		<value>Details zur Fehlerprüfung ausgeben</value>
+	</data>
+	<data name="ExampleBoolProperty" xml:space="preserve">
+		<value>Beispiel für eine boolesche Eigenschaft</value>
+	</data>
+	<data name="PropertyString" xml:space="preserve">
+		<value>String-Eigenschaft:</value>
+	</data>
+	<data name="LinkToSource" xml:space="preserve">
+		<value>Link zur Quelle</value>
+	</data>
+	<data name="Angle" xml:space="preserve">
+		<value>Winkel:</value>
+	</data>
+	<data name="AddToPath" xml:space="preserve">
+		<value>Zum Pfad hinzufügen</value>
+	</data>
+	<data name="Width" xml:space="preserve">
+		<value>Breite:</value>
+	</data>
+	<data name="Height" xml:space="preserve">
+		<value>Höhe:</value>
+	</data>
+	<data name="Add" xml:space="preserve">
+		<value>Hinzufügen</value>
+	</data>
+	<data name="Remove" xml:space="preserve">
+		<value>Entfernen</value>
+	</data>
+	<data name="PolygonToRectangle" xml:space="preserve">
+		<value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein Rechteck zu erstellen.</value>
+	</data>
+	<data name="PolygonToMultiSided" xml:space="preserve">
+		<value>Fügt alle Punkte auf dem Polygon hinzu oder ersetzt sie, um ein mehrseitiges Polygon zu erstellen.</value>
+	</data>
+	<data name="HintMovePointUpList" xml:space="preserve">
+		<value>Verschiebt den ausgewählten Punkt in der Liste nach oben.</value>
+	</data>
+	<data name="HintMovePointDownList" xml:space="preserve">
+		<value>Verschiebt den ausgewählten Punkt in der Liste nach unten.</value>
+	</data>
+	<data name="HintResizePolygon" xml:space="preserve">
+		<value>Ändern Sie die Größe des Polygons, indem Sie die enthaltenen Punkte verschieben.</value>
+	</data>
+	<data name="ClearPointsAddRectangle" xml:space="preserve">
+		<value>Möchten Sie die Punkte löschen und durch Punkte für eine Rechteckform ersetzen?</value>
+	</data>
+	<data name="HintEnterNumberOfPoints" xml:space="preserve">
+		<value>Geben Sie die Anzahl der Punkte für das neue Polygon ein. Es sind mindestens 3 Punkte erforderlich. Beachten Sie, dass der letzte Punkt automatisch wiederholt wird. Geben Sie daher nur die Anzahl der sichtbaren Punkte ein. Zum Beispiel 3 für ein Dreieck.</value>
+	</data>
+	<data name="HintThisWillReplacePoints" xml:space="preserve">
+		<value>Dadurch werden die vorhandenen Punkte auf diesem Polygon vollständig ersetzt.</value>
+	</data>
+	<data name="OnlyIntegerValuesAllowed" xml:space="preserve">
+		<value>Es sind nur ganzzahlige Werte zulässig. Ungültiger Wert: {0}</value>
+	</data>
+	<data name="AtLeastThreePointsRequired" xml:space="preserve">
+		<value>Es sind mindestens 3 Punkte erforderlich. Ungültiger Wert: {0}</value>
+	</data>
+	<data name="Save" xml:space="preserve">
+		<value>Speichern</value>
+	</data>
+	<data name="ProjectWizardNew" xml:space="preserve">
+		<value>Assistent für neue Projekte</value>
+	</data>
+	<data name="GumPlugin" xml:space="preserve">
+		<value>Gum Plugin</value>
+	</data>
+	<data name="ObjectAdd" xml:space="preserve">
+		<value>Objekt hinzufügen</value>
+	</data>
+	<data name="ObjectAddDescription" xml:space="preserve">
+		<value>Legen Sie hier die AddObject-Details fest, je nachdem, ob es sich um einen Bildschirm oder eine Entität handelt.</value>
+	</data>
+	<data name="AddXXXToList" xml:space="preserve">
+		<value>XXXX zur XXXXList hinzufügen</value>
+	</data>
+	<data name="AddInstanceToSelectedList" xml:space="preserve">
+		<value>Fügt der ausgewählten Liste eine neue Instanz hinzu.</value>
+	</data>
+	<data name="AddXXXToGameScreen" xml:space="preserve">
+		<value>XXXX-Liste zu GameScreen hinzufügen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreen" xml:space="preserve">
+		<value>XXXX-Instanz zu GameScreen hinzufügen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreenDescription" xml:space="preserve">
+		<value>Fügt dem GameScreen eine einzelne XXXX-Instanz hinzu</value>
+	</data>
+	<data name="CurrentScreen" xml:space="preserve">
+		<value>Aktueller Bildschirm</value>
+	</data>
+	<data name="AddXXXFactory" xml:space="preserve">
+		<value>XXXX Factory hinzufügen</value>
+	</data>
+	<data name="AddXXXFactoryDescription" xml:space="preserve">
+		<value>Fabriken vereinfachen das Erstellen und Hinzufügen von Entitäten zu Bildschirmlisten. Fabriken sind erforderlich, um Entitäten über TMX-Dateien zu erstellen.</value>
+	</data>
+	<data name="ProjectCommands" xml:space="preserve">
+		<value>Projektbefehle</value>
+	</data>
+	<data name="GlueWizardRun" xml:space="preserve">
+		<value>Führen Sie den Glue assistenten aus</value>
+	</data>
+	<data name="GlueWizardDescription" xml:space="preserve">
+		<value>Mit dem Glue Wizard können Sie in Sekundenschnelle ein voll funktionsfähiges Spiel einrichten.</value>
+	</data>
+	<data name="ProjectCreateNew" xml:space="preserve">
+		<value>Neues Projekt erstellen</value>
+	</data>
+	<data name="ProjectCreateNewDescription" xml:space="preserve">
+		<value>Normalerweise zielen neue Projekte auf Desktop GL ab.</value>
+	</data>
+	<data name="ProjectOpen" xml:space="preserve">
+		<value>Offenes Projekt</value>
+	</data>
+	<data name="ProjectOpenDescription" xml:space="preserve">
+		<value>Laden Sie ein vorhandenes Projekt von der Festplatte.</value>
+	</data>
+	<data name="ProjectGumAdd" xml:space="preserve">
+		<value>Gum-Projekt hinzufügen</value>
+	</data>
+	<data name="ProjectGumAddDescription" xml:space="preserve">
+		<value>Gum wird zum Erstellen der Benutzeroberfläche und des HUD verwendet.</value>
+	</data>
+	<data name="AddScreenLevel" xml:space="preserve">
+		<value>Bildschirm/Ebene hinzufügen</value>
+	</data>
+	<data name="AddScreenLevelDescription" xml:space="preserve">
+		<value>Jedes Spiel benötigt mindestens einen Bildschirm. Normalerweise befindet sich die Spiellogik in einem Bildschirm namens GameScreen. Normalerweise erfordert jedes Level einen neuen Bildschirm.</value>
+	</data>
+	<data name="EntityAdd" xml:space="preserve">
+		<value>Entität hinzufügen</value>
+	</data>
+	<data name="EntityAddDescription" xml:space="preserve">
+		<value>Entitäten repräsentieren Spielobjekte wie den Spieler, Feinde, Kugeln und Pick-ups.</value>
+	</data>
+	<data name="InGame" xml:space="preserve">
+		<value>Im Spiel</value>
+	</data>
+	<data name="PlaySong" xml:space="preserve">
+		<value>Lied abspielen</value>
+	</data>
+	<data name="LoopSong" xml:space="preserve">
+		<value>Loop-Song</value>
+	</data>
+	<data name="SetVolume" xml:space="preserve">
+		<value>Lautstärke einstellen</value>
+	</data>
+	<data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
+		<value>Spielen Sie weiter, nachdem Sie den Bildschirm verlassen haben</value>
+	</data>
+	<data name="Preview" xml:space="preserve">
+		<value>Vorschau</value>
+	</data>
+	<data name="MapSpriteTexture" xml:space="preserve">
+		<value>Sprite-Textur zuordnen</value>
+	</data>
+	<data name="Zoom" xml:space="preserve">
+		<value>Zoomen</value>
+	</data>
+	<data name="Enabled" xml:space="preserve">
+		<value>Ermöglicht</value>
+	</data>
+	<data name="SeparateHeight" xml:space="preserve">
+		<value>Separate Höhe</value>
+	</data>
+	<data name="TextureSize" xml:space="preserve">
+		<value>Texturgröße</value>
+	</data>
+	<data name="Variables" xml:space="preserve">
+		<value>Variablen</value>
+	</data>
+	<data name="VariablesExcluded" xml:space="preserve">
+		<value>Ausgeschlossene Variablen</value>
+	</data>
 </root>

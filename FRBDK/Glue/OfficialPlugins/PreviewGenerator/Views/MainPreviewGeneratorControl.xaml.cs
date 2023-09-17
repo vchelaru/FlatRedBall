@@ -1,23 +1,9 @@
-﻿using FlatRedBall.Content.AnimationChain;
-using FlatRedBall.Glue.Elements;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.IO;
 using OfficialPlugins.PreviewGenerator.Managers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.PreviewGenerator.Views
 {
@@ -26,9 +12,9 @@ namespace OfficialPlugins.PreviewGenerator.Views
     /// </summary>
     public partial class MainPreviewGeneratorControl : UserControl
     {
-        NamedObjectSave NamedObjectSave { get; set; }
-        GlueElement GlueElement { get; set; }
-        StateSave StateSave { get; set; }
+        private NamedObjectSave NamedObjectSave { get; set; }
+        private GlueElement GlueElement { get; set; }
+        private StateSave StateSave { get; set; }
 
         public MainPreviewGeneratorControl()
         {

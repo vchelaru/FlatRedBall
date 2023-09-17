@@ -4,25 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:glue="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignWidth="800">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="MainStackPanel">
-            <glue:StyledGroupBox Header="Current Screen">
+            <glue:StyledGroupBox Header="{x:Static localization:Texts.CurrentScreen}">
                 
                 <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
                     <local:TitleImageButton
                         x:Name="AddObjectToScreenButton"
-                        Title="Add Object"
-                        Details="Set the AddObject details here, depending on if it's a Screen or entity."
+                        Title="{x:Static localization:Texts.ObjectAdd}"
+                        Details="{x:Static localization:Texts.ObjectAddDescription}"
                         Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddObjectToListInScreenButton"
-                        Title="Add XXXX to XXXXList"
-                        Details="Adds a new instance to the selected list."
+                        Title="{x:Static localization:Texts.AddXXXToList}"
+                        Details="{x:Static localization:Texts.AddInstanceToSelectedList}"
                         Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
@@ -33,22 +34,22 @@
                 <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
                     <local:TitleImageButton
                         x:Name="AddObjectToEntityButton"
-                        Title="Add Object"
-                        Details="Set the AddObject details here, depending on if it's a Screen or entity."
+                        Title="{x:Static localization:Texts.ObjectAdd}"
+                        Details="{x:Static localization:Texts.ObjectAddDescription}"
                         Clicked="AddObjectButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddObjectToListInEntityButton"
-                        Title="Add XXXX to XXXXList"
-                        Details="Adds a new instance to the selected list."
+                        Title="{x:Static localization:Texts.AddXXXToList}"
+                        Details="{x:Static localization:Texts.AddInstanceToSelectedList}"
                         Clicked="AddObjectToListButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Object.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddListOfEntityButton"
-                        Title="Add XXXX List to GameScreen"
-                        Details="Add a XXXX list to the GameScreen"
+                        Title="{x:Static localization:Texts.AddXXXToGameScreen}"
+                        Details="{x:Static localization:Texts.AddXXXToGameScreen}"
                         Clicked="AddListOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity List to GameScreen.png">
 
                     </local:TitleImageButton>
@@ -56,78 +57,68 @@
 
                     <local:TitleImageButton
                         x:Name="AddInstanceOfEntityButton"
-                        Title="Add XXXX Instance to GameScreen"
-                        Details="Adds a single XXXX instance to the GameScreen"
+                        Title="{x:Static localization:Texts.AddXXXInstanceToGameScreen}"
+                        Details="{x:Static localization:Texts.AddXXXInstanceToGameScreenDescription}"
                         Clicked="AddInstanceOfEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Entity instance to GameScreen.png">
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddEntityFactory"
-                        Title="Add XXXX Factory"
-                        Details="Factories simplify the creation and addition of entities to screen lists. 
-                        Factories are required to create entities through TMX files."
+                        Title="{x:Static localization:Texts.AddXXXFactory}"
+                        Details="{x:Static localization:Texts.AddXXXFactoryDescription}"
                         Clicked="AddEntityFactory_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Factory for Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>
-                
-                
-                
             </glue:StyledGroupBox>
-            <glue:StyledGroupBox Header="Project Commands">
+            <glue:StyledGroupBox Header="{x:Static localization:Texts.ProjectCommands}">
                 <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
-
                     <local:TitleImageButton
                         x:Name="RunWizardButton"
-                        Title="Run Glue Wizard"
-                        Details="The Glue Wizard can help you get a fully functional game set up in seconds."
-                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/StartWizard.png"
-                        >
+                        Title="{x:Static localization:Texts.GlueWizardRun}"
+                        Details="{x:Static localization:Texts.GlueWizardDescription}"
+                        Clicked="RunWizard_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/StartWizard.png">
 
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="CreateNewProjectButton"
-                        Title="Create New Project"
-                        Details="Usually new projects target Desktop GL."
+                        Title="{x:Static localization:Texts.ProjectCreateNew}"
+                        Details="{x:Static localization:Texts.ProjectCreateNewDescription}"
                         Clicked="CreateNewProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Project.png"
-                        >
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Project.png">
 
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="OpenProjectButton"
-                        Title="Open Project"
-                        Details="Load an existing project from disk."
+                        Title="{x:Static localization:Texts.ProjectOpen}"
+                        Details="{x:Static localization:Texts.ProjectOpenDescription}"
                         Clicked="OpenProjectButton_Clicked" 
-                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Open Project.png"
-                        >
+                        Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Open Project.png">
 
                     </local:TitleImageButton>
 
 
                     <local:TitleImageButton 
                         x:Name="AddGumProject"
-                        Title="Add Gum Project" 
-                        Details="Gum is used to create UI and HUD."
+                        Title="{x:Static localization:Texts.ProjectGumAdd}"
+                        Details="{x:Static localization:Texts.ProjectGumAddDescription}"
                         Clicked="AddGumButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Gum Project.png">
 
                     </local:TitleImageButton>
 
                     <local:TitleImageButton 
                         x:Name="AddScreenButton"
-                        Title="Add Screen/Level" 
-                        Details="Every game needs at least one screen.
-                        Usually the game logic is in a screen called GameScreen.
-                        Typically each level requires a new screen."
+                        Title="{x:Static localization:Texts.AddScreenLevel}"
+                        Details="{x:Static localization:Texts.AddScreenLevelDescription}"
                         Clicked="AddScreenButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Add Level Screen.png">
 
                     </local:TitleImageButton>
 
                     <local:TitleImageButton
                         x:Name="AddEntityButton"
-                        Title="Add Entity"
-                        Details="Entities represent game objects like the player, enemies, bullets, and pick-ups."
+                        Title="{x:Static localization:Texts.EntityAdd}"
+                        Details="{x:Static localization:Texts.EntityAddDescription}"
                         Clicked="AddEntityButton_Clicked" Image="/OfficialPluginsCore;component/QuickActionPlugin/Icons/Create Entity.png">
                     </local:TitleImageButton>
                 </WrapPanel>

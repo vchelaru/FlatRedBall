@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.FilesPlugin.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -12,6 +12,6 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <TreeView ItemsSource="{Binding ReferencedFiles}"></TreeView>
-        <Button Grid.Row="1" ButtonBase.Click="RefreshButtonClicked">Refresh</Button>
+        <Button Grid.Row="1" ButtonBase.Click="RefreshButtonClicked"  Content="{x:Static localization:Texts.Refresh}" />
     </Grid>
 </UserControl>

@@ -5,17 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using LinqToVisualTree;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
@@ -112,13 +106,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             }
         }
 
-        int? CurrentColumnIndex
-        {
-            get
-            {
-                return DataGridInstance.CurrentColumn?.DisplayIndex;
-            }
-        }
+        int? CurrentColumnIndex => DataGridInstance.CurrentColumn?.DisplayIndex;
 
         StateCategoryViewModel ViewModel => DataContext as StateCategoryViewModel;
 
@@ -146,7 +134,7 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                 var currentColumnIndex = CurrentColumnIndex;
                 var currentRowIndex = CurrentRowIndex;
 
-                if (currentColumnIndex > -1 && currentRowIndex > -1 && currentColumnIndex != null)
+                if (currentColumnIndex.HasValue && currentColumnIndex > -1 && currentRowIndex > -1)
                 {
                     FocusTextBoxAt(currentColumnIndex, currentRowIndex);
                 }
@@ -162,20 +150,6 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             {
                 ViewModel.SelectedIndex = ViewModel.States.IndexOf(ViewModel.SelectedState);
             }
-            //var rowIndex = DataGridInstance.SelectedIndex;
-            //var state = ViewModel.States[rowIndex];
-            //var value = DataGridInstance.SelectedValue;
-            //var path = DataGridInstance.SelectedValuePath;
-
-            //var textBox = DataGridInstance.Descendants<TextBox>()
-            //    .OfType<TextBox>()
-            //    .ToArray();
-            //var cell = DataGridInstance.CurrentItem;
-
-
-            //var foundTextBox = textBox.FirstOrDefault(item => item.DataContext == cell);
-
-            //int m = 3;
         }
 
         private bool FocusTextBoxAt(int? currentColumnIndex, int? currentRowIndex)
@@ -366,32 +340,13 @@ namespace OfficialPlugins.StateDataPlugin.Controls
                     return textBox;
                 });
 
-                
-
                 column = templateColumn;
-                //var textColumn = new DataGridTextColumn();
-                //textColumn.Binding = new Binding($"Variables[{i}]")
-                //{
-                    //UpdateSourceTrigger = UpdateSourceTrigger.LostFocus,
-                //};
-                
-                //column = textColumn;
             }
 
 
 
             column.Header = viewModelColumn;
             DataGridInstance.Columns.Add(column);
-        }
-
-        private void HandleTextBoxLostFocus(TextBox textBox, int index)
-        {
-            //var value = ViewModel.States[ViewModel.SelectedIndex].Variables[index];
-
-            //ViewModel.ApplyViewModelVariableToStateAtIndex(
-            //    value, index, ViewModel.States[ViewModel.SelectedIndex]);
-
-            //int m = 3;
         }
 
         private void DataGridInstance_KeyDown(object sender, KeyEventArgs e)

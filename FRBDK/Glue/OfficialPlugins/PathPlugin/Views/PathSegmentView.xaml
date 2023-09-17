@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.PathPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="24" d:DesignWidth="400">
     <Grid>
@@ -39,7 +39,7 @@
                 <ColumnDefinition Width="Auto"></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0">Angle:</TextBlock>
+            <TextBlock  VerticalAlignment="Center" Margin="0,0,3,0" Text="{x:Static localization:Texts.Angle}" />
             <TextBox x:Name="AngleTextBox" Grid.Column="1" Text="{Binding Angle}" GotFocus="TextBox_GotFocus" KeyUp="TextBox_KeyEnterUpdate"  MouseWheel="TextBox_MouseWheel"></TextBox>
         </Grid>
 

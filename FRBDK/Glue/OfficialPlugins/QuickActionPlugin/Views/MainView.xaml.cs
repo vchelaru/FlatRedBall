@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue;
-using FlatRedBall.Glue.Elements;
+﻿using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -7,20 +6,10 @@ using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Managers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using FileManager = ToolsUtilities.FileManager;
-using StringFunctions = ToolsUtilities.StringFunctions;
 
 namespace OfficialPluginsCore.QuickActionPlugin.Views
 {
@@ -66,7 +55,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void RunWizard_Clicked(object sender, RoutedEventArgs e)
         {
-            PluginManager.CallPluginMethod("New Project Wizard", "RunWizard");
+            PluginManager.CallPluginMethod(Localization.Texts.ProjectWizardNew, "RunWizard");
         }
 
         private void CreateNewProjectButton_Clicked(object sender, RoutedEventArgs e)
@@ -77,7 +66,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
 
         private void AddGumButton_Clicked(object sender, RoutedEventArgs args)
         {
-            PluginManager.CallPluginMethod("Gum Plugin", "AskToCreateGumProject");
+            PluginManager.CallPluginMethod(Localization.Texts.GumPlugin, "AskToCreateGumProject");
         }
 
         #region Add Object

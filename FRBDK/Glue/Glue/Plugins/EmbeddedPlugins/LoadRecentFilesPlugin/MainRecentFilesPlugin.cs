@@ -54,11 +54,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
                     recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
                 }
-
-
             }
 
-            recentFilesMenuItem.DropDownItems.Add("More...", null, HandleLoadRecentClicked);
+            recentFilesMenuItem.DropDownItems.Add(L.Texts.More, null, HandleLoadRecentClicked);
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)

@@ -1544,4 +1544,205 @@
 	<data name="AfterDoubleJump" xml:space="preserve">
 		<value>Na dubbele sprong:</value>
 	</data>
+	<data name="More" xml:space="preserve">
+		<value>Meer...</value>
+	</data>
+	<data name="Refresh" xml:space="preserve">
+		<value>Ververs</value>
+	</data>
+	<data name="ProjectNoneLoaded" xml:space="preserve">
+		<value>Geen project geladen</value>
+	</data>
+	<data name="ErrorPlayingWavFile" xml:space="preserve">
+		<value>Fout bij afspelen wav-bestand:</value>
+	</data>
+	<data name="VariableAddDefinition" xml:space="preserve">
+		<value>Variabeledefinitie toevoegen</value>
+	</data>
+	<data name="ErrorCopyCurrent" xml:space="preserve">
+		<value>Kopieer huidige fout</value>
+	</data>
+	<data name="ErrorCopyAll" xml:space="preserve">
+		<value>Kopieer alle fouten</value>
+	</data>
+	<data name="ErrorRefresh" xml:space="preserve">
+		<value>Vernieuw fouten lijst</value>
+	</data>
+	<data name="ErrorCheckingDetails" xml:space="preserve">
+		<value>Weergave foutmelding details</value>
+	</data>
+	<data name="ExampleBoolProperty" xml:space="preserve">
+		<value>Voorbeeld Booleaanse eigenschap</value>
+	</data>
+	<data name="PropertyString" xml:space="preserve">
+		<value>Tekenreeks eigenschap:</value>
+	</data>
+	<data name="LinkToSource" xml:space="preserve">
+		<value>Link naar bron</value>
+	</data>
+	<data name="Angle" xml:space="preserve">
+		<value>Hoek:</value>
+	</data>
+	<data name="AddToPath" xml:space="preserve">
+		<value>Toevoegen aan pad</value>
+	</data>
+	<data name="Width" xml:space="preserve">
+		<value>Breedte:</value>
+	</data>
+	<data name="Height" xml:space="preserve">
+		<value>Hoogte:</value>
+	</data>
+	<data name="Add" xml:space="preserve">
+		<value>Toevoegen</value>
+	</data>
+	<data name="Remove" xml:space="preserve">
+		<value>Verwijderen</value>
+	</data>
+	<data name="PolygonToRectangle" xml:space="preserve">
+		<value>Voegt alle punten op de polygoon toe of vervangt deze om een rechthoek te creëren.</value>
+	</data>
+	<data name="PolygonToMultiSided" xml:space="preserve">
+		<value>Voegt alle punten op de polygoon toe of vervangt deze om een meerzijdige polygoon te creëren.</value>
+	</data>
+	<data name="HintMovePointUpList" xml:space="preserve">
+		<value>Verplaatst het geselecteerde punt omhoog in de lijst.</value>
+	</data>
+	<data name="HintMovePointDownList" xml:space="preserve">
+		<value>Verplaatst het geselecteerde punt naar beneden in de lijst.</value>
+	</data>
+	<data name="HintResizePolygon" xml:space="preserve">
+		<value>Pas het formaat van de polygoon aan door de aanwezige punten te verplaatsen.</value>
+	</data>
+	<data name="ClearPointsAddRectangle" xml:space="preserve">
+		<value>Wilt u de punten wissen en vervangen door punten voor een rechthoekige vorm?</value>
+	</data>
+	<data name="HintEnterNumberOfPoints" xml:space="preserve">
+		<value>Voer het aantal punten voor de nieuwe polygoon in. Er zijn minimaal 3 punten nodig. Let op: het laatste punt wordt automatisch herhaald, dus voer alleen het aantal zichtbare punten in. Bijvoorbeeld 3 voor een driehoek.</value>
+	</data>
+	<data name="HintThisWillReplacePoints" xml:space="preserve">
+		<value>Dit zal de bestaande punten op deze polygoon volledig vervangen.</value>
+	</data>
+	<data name="OnlyIntegerValuesAllowed" xml:space="preserve">
+		<value>Alleen gehele waarden zijn toegestaan. Ongeldige waarde: {0}</value>
+	</data>
+	<data name="AtLeastThreePointsRequired" xml:space="preserve">
+		<value>Er zijn minimaal 3 punten nodig. Ongeldige waarde: {0}</value>
+	</data>
+	<data name="Save" xml:space="preserve">
+		<value>Opslaan</value>
+	</data>
+	<data name="ProjectWizardNew" xml:space="preserve">
+		<value>Nieuwe Projectwizard</value>
+	</data>
+	<data name="GumPlugin" xml:space="preserve">
+		<value>Gum Plugin</value>
+	</data>
+	<data name="ObjectAdd" xml:space="preserve">
+		<value>Object toevoegen</value>
+	</data>
+	<data name="ObjectAddDescription" xml:space="preserve">
+		<value>Stel hier de AddObject-details in, afhankelijk van of het een scherm of entiteit is.</value>
+	</data>
+	<data name="AddXXXToList" xml:space="preserve">
+		<value>Voeg XXXX toe aan XXXXLijst</value>
+	</data>
+	<data name="AddInstanceToSelectedList" xml:space="preserve">
+		<value>Voegt een nieuw exemplaar toe aan de geselecteerde lijst.</value>
+	</data>
+	<data name="AddXXXToGameScreen" xml:space="preserve">
+		<value>Voeg XXXX-lijst toe aan GameScreen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreen" xml:space="preserve">
+		<value>Voeg XXXX-instantie toe aan GameScreen</value>
+	</data>
+	<data name="AddXXXInstanceToGameScreenDescription" xml:space="preserve">
+		<value>Voegt een enkele XXXX-instantie toe aan GameScreen</value>
+	</data>
+	<data name="CurrentScreen" xml:space="preserve">
+		<value>Huidig scherm</value>
+	</data>
+	<data name="AddXXXFactory" xml:space="preserve">
+		<value>Voeg XXXX-fabriek toe</value>
+	</data>
+	<data name="AddXXXFactoryDescription" xml:space="preserve">
+		<value>Fabrieken vereenvoudigen het maken en toevoegen van entiteiten aan schermlijsten. Fabrieken zijn verplicht om entiteiten te creëren via TMX-bestanden.</value>
+	</data>
+	<data name="ProjectCommands" xml:space="preserve">
+		<value>Projectopdrachten</value>
+	</data>
+	<data name="GlueWizardRun" xml:space="preserve">
+		<value>Voer de Glue wizard uit</value>
+	</data>
+	<data name="GlueWizardDescription" xml:space="preserve">
+		<value>De Glue Wizard kan je helpen om binnen enkele seconden een volledig functioneel spel op te zetten.</value>
+	</data>
+	<data name="ProjectCreateNew" xml:space="preserve">
+		<value>Nieuw project maken</value>
+	</data>
+	<data name="ProjectCreateNewDescription" xml:space="preserve">
+		<value>Meestal richten nieuwe projecten zich op Desktop GL.</value>
+	</data>
+	<data name="ProjectOpen" xml:space="preserve">
+		<value>Open project</value>
+	</data>
+	<data name="ProjectOpenDescription" xml:space="preserve">
+		<value>Laad een bestaand project vanaf schijf.</value>
+	</data>
+	<data name="ProjectGumAdd" xml:space="preserve">
+		<value>Gumproject toevoegen</value>
+	</data>
+	<data name="ProjectGumAddDescription" xml:space="preserve">
+		<value>Gom wordt gebruikt om UI en HUD te creëren.</value>
+	</data>
+	<data name="AddScreenLevel" xml:space="preserve">
+		<value>Scherm/niveau toevoegen</value>
+	</data>
+	<data name="AddScreenLevelDescription" xml:space="preserve">
+		<value>Elk spel heeft minimaal één scherm nodig. Meestal bevindt de spellogica zich in een scherm genaamd GameScreen. Normaal gesproken vereist elk niveau een nieuw scherm.</value>
+	</data>
+	<data name="EntityAdd" xml:space="preserve">
+		<value>Entiteit toevoegen</value>
+	</data>
+	<data name="EntityAddDescription" xml:space="preserve">
+		<value>Entiteiten vertegenwoordigen spelobjecten zoals de speler, vijanden, kogels en pick-ups.</value>
+	</data>
+	<data name="InGame" xml:space="preserve">
+		<value>In spel</value>
+	</data>
+	<data name="PlaySong" xml:space="preserve">
+		<value>Speel liedje</value>
+	</data>
+	<data name="LoopSong" xml:space="preserve">
+		<value>Loop muzieknummer</value>
+	</data>
+	<data name="SetVolume" xml:space="preserve">
+		<value>Volume instellen</value>
+	</data>
+	<data name="KeepPlayingSoundAfterLeaving" xml:space="preserve">
+		<value>Blijf spelen nadat je het scherm hebt verlaten</value>
+	</data>
+	<data name="Preview" xml:space="preserve">
+		<value>Preview</value>
+	</data>
+	<data name="MapSpriteTexture" xml:space="preserve">
+		<value>Map Sprite-textuur</value>
+	</data>
+	<data name="Zoom" xml:space="preserve">
+		<value>Zoom</value>
+	</data>
+	<data name="Enabled" xml:space="preserve">
+		<value>Ingeschakeld</value>
+	</data>
+	<data name="SeparateHeight" xml:space="preserve">
+		<value>Aparte hoogte</value>
+	</data>
+	<data name="TextureSize" xml:space="preserve">
+		<value>Textuurgrootte</value>
+	</data>
+	<data name="Variables" xml:space="preserve">
+		<value>Variabelen</value>
+	</data>
+	<data name="VariablesExcluded" xml:space="preserve">
+		<value>Uitgesloten variabelen</value>
+	</data>
 </root>

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.PreviewGenerator.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Image x:Name="Image"></Image>
-        <Button Click="Button_Click" Grid.Row="1">Do it!</Button>
-        <Button Click="SaveItClicked" Grid.Row="2">Save it!</Button>
+        <Button Click="Button_Click" Grid.Row="1" Content="{x:Static localization:Texts.Execute}" />
+        <Button Click="SaveItClicked" Grid.Row="2" Content="{x:Static localization:Texts.Save}" />
     </Grid>
 </UserControl>
