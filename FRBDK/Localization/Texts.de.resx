@@ -1262,4 +1262,286 @@
 	<data name="ViewInExplorer" xml:space="preserve">
 		<value>Im Explorer anzeigen</value>
 	</data>
+	<data name="EnterNewScreenName" xml:space="preserve">
+		<value>Geben Sie einen Namen für das neue Fenster ein</value>
+	</data>
+	<data name="ErrorNewProjectFirst" xml:space="preserve">
+		<value>Sie müssen zuerst ein Projekt erstellen oder laden.</value>
+	</data>
+	<data name="ErrorOpenAttemptFailed" xml:space="preserve">
+		<value>Versuch, {0} zu öffnen, aber fehlgeschlagen: {1}</value>
+	</data>
+	<data name="TypeInfiniteRecursion" xml:space="preserve">
+		<value>Dieser Typ würde zu einer unendlichen Rekursion führen</value>
+	</data>
+	<data name="ExposedInDerivedCannotDelete" xml:space="preserve">
+		<value>Folgendes kann nicht gelöscht werden, da ein Basisobjekt als ExposedInDerived oder SetByDerived markiert ist:</value>
+	</data>
+	<data name="WhatToDoWithFiles" xml:space="preserve">
+		<value>Was möchten Sie mit den folgenden Dateien machen:</value>
+	</data>
+	<data name="FilesLeaveAsPartOfProject" xml:space="preserve">
+		<value>Nichts – belassen Sie sie als Teil des Spielprojekts</value>
+	</data>
+	<data name="FilesRemoveFromProjectButKeep" xml:space="preserve">
+		<value>Entfernen Sie sie aus dem Projekt, aber behalten Sie die Dateien</value>
+	</data>
+	<data name="FilesRemoveAndDelete" xml:space="preserve">
+		<value>Löschen Sie die Dateien dauerhaft</value>
+	</data>
+	<data name="RefreshingTreeNodes" xml:space="preserve">
+		<value>Baumknoten werden aktualisiert</value>
+	</data>
+	<data name="Spreadsheet" xml:space="preserve">
+		<value>Kalkulationstabelle</value>
+	</data>
+	<data name="PluginCallReactToNewEntity" xml:space="preserve">
+		<value>Aufruf des Plugins ReactToNewEntityCreatedWithUi</value>
+	</data>
+	<data name="VariableMustSelect" xml:space="preserve">
+		<value>Sie müssen eine Variable für {0} auswählen.</value>
+	</data>
+	<data name="VariableInBaseAlreadyExists" xml:space="preserve">
+		<value>Im Basiselement gibt es bereits eine Variable mit dem Namen {0}, diese ist jedoch nicht SetByDerived. Glue erstellt keine Variable, da dies zu einem Namenskonflikt führen würde.</value>
+	</data>
+	<data name="VariableAddThroughUI" xml:space="preserve">
+		<value>Variable {0} über die Benutzeroberfläche hinzufügen</value>
+	</data>
+	<data name="VariableAlreadyModifying" xml:space="preserve">
+		<value>Es gibt bereits eine Variable, die {0} auf {1} ändert.</value>
+	</data>
+	<data name="VariableTypeMustBeSelectedForNew" xml:space="preserve">
+		<value>Für neue Variablen muss ein Typ ausgewählt werden</value>
+	</data>
+	<data name="VariableIsExposableUseDifferentName" xml:space="preserve">
+		<value>Die Variable {0} ist eine verfügbare Variable. Bitte verwenden Sie einen anderen Variablennamen oder wählen Sie die Variable über die Registerkarte „Expose“ aus</value>
+	</data>
+	<data name="VariableFrbReserved" xml:space="preserve">
+		<value>Die Variable {0} ist für FlatRedBall reserviert.</value>
+	</data>
+	<data name="Confirm" xml:space="preserve">
+		<value>Bestätigen</value>
+	</data>
+	<data name="CategoryEnterName" xml:space="preserve">
+		<value>Geben Sie einen Namen für die neue Kategorie ein</value>
+	</data>
+	<data name="CategoryNew" xml:space="preserve">
+		<value>Neue Kategorie</value>
+	</data>
+	<data name="StateEnterName" xml:space="preserve">
+		<value>Geben Sie einen Namen für den neuen Staat ein</value>
+	</data>
+	<data name="StateNew" xml:space="preserve">
+		<value>Neuer Staat</value>
+	</data>
+	<data name="ObjectCouldNotDefineFor" xml:space="preserve">
+		<value>Definierendes Basisobjekt für {0} konnte nicht gefunden werden</value>
+	</data>
+	<data name="FontsRegenerate" xml:space="preserve">
+		<value>Schriftarten neu generieren</value>
+	</data>
+	<data name="CustomRuntimeFilesRemoveOrphaned" xml:space="preserve">
+		<value>Entfernen Sie verwaiste benutzerdefinierte Laufzeitdateien</value>
+	</data>
+	<data name="ProjectGumManagement" xml:space="preserve">
+		<value>Gum-Projektmanagement</value>
+	</data>
+	<data name="GumAutoCreateForGlue" xml:space="preserve">
+		<value>Erstellen Sie automatisch Gum für Glue</value>
+	</data>
+	<data name="GumMatchGameResolution" xml:space="preserve">
+		<value>Passen Sie die Spielauflösung in Gum an</value>
+	</data>
+	<data name="ProjectGumProperties" xml:space="preserve">
+		<value>Eigenschaften des Gum-Projekts</value>
+	</data>
+	<data name="ShowMouse" xml:space="preserve">
+		<value>Maus anzeigen</value>
+	</data>
+	<data name="UseAtlases" xml:space="preserve">
+		<value>Verwenden Sie Atlanten</value>
+	</data>
+	<data name="ShowDottedOutlines" xml:space="preserve">
+		<value>Gepunktete Umrisse anzeigen</value>
+	</data>
+	<data name="GenerateCodeMakePublic" xml:space="preserve">
+		<value>Machen Sie generierte Codeinstanzen öffentlich</value>
+	</data>
+	<data name="GumCoreAddition" xml:space="preserve">
+		<value>Kern Gum-Zugabe</value>
+	</data>
+	<data name="FilesIncludeNoneUseDllsOrSource" xml:space="preserve">
+		<value>Keine Dateien einschließen (verknüpfte DLLs oder Quelle verwenden)</value>
+	</data>
+	<data name="EmbedCodeFilesLegacy" xml:space="preserve">
+		<value>Codedateien einbetten (alt)</value>
+	</data>
+	<data name="ProjectFormsAddUpdate" xml:space="preserve">
+		<value>Formulare zum Projekt hinzufügen/aktualisieren</value>
+	</data>
+	<data name="FormClickAgainReAdd" xml:space="preserve">
+		<value>(Durch erneutes Klicken werden alle Formularinhalte erneut hinzugefügt.)</value>
+	</data>
+	<data name="Advanced" xml:space="preserve">
+		<value>Erweitert</value>
+	</data>
+	<data name="FormsIncludeComponents" xml:space="preserve">
+		<value>Fügen Sie Formulare in Komponenten mit Verhalten ein</value>
+	</data>
+	<data name="FormsAddDefaultToGum" xml:space="preserve">
+		<value>Fügen Sie Standardformen zu Gum-Komponentenzuordnungen hinzu</value>
+	</data>
+	<data name="FrbGenerateBehaviors" xml:space="preserve">
+		<value>Generieren Sie FlatRedBall-Verhalten</value>
+	</data>
+	<data name="GumFormComponentsAddRefresh" xml:space="preserve">
+		<value>Gum-Form-Komponenten hinzufügen/aktualisieren</value>
+	</data>
+	<data name="EntityMain" xml:space="preserve">
+		<value>Hauptentität</value>
+	</data>
+	<data name="FullyManaged" xml:space="preserve">
+		<value>Vollständig verwaltet</value>
+	</data>
+	<data name="SelectManagedProperties" xml:space="preserve">
+		<value>Wählen Sie „Verwaltete Eigenschaften“ aus</value>
+	</data>
+	<data name="LoadFile" xml:space="preserve">
+		<value>Lade Datei...</value>
+	</data>
+	<data name="MobilePackage" xml:space="preserve">
+		<value>Mobiles Paket</value>
+	</data>
+	<data name="RegenEverything" xml:space="preserve">
+		<value>Alles neu generieren</value>
+	</data>
+	<data name="PerformCollisionPartitioning" xml:space="preserve">
+		<value>Führen Sie eine Kollisionspartitionierung durch</value>
+	</data>
+	<data name="Partitioning" xml:space="preserve">
+		<value>Partitionierung</value>
+	</data>
+	<data name="SortAxis" xml:space="preserve">
+		<value>Sortierachse</value>
+	</data>
+	<data name="PartitionWidthHeight" xml:space="preserve">
+		<value>Breite/Höhe der Trennwand</value>
+	</data>
+	<data name="HintAutoPartitionDoesNotConsider" xml:space="preserve">
+		<value>Die automatische Partitionierung berücksichtigt keine Entitätsrotation, Zustände oder benutzerdefinierten Code. Animationen werden berücksichtigt, wenn das Sprite als Einstellungskollision markiert ist.</value>
+	</data>
+	<data name="Manual" xml:space="preserve">
+		<value>Manuell</value>
+	</data>
+	<data name="HintPartitioningEnterWidthHeight" xml:space="preserve">
+		<value>Geben Sie das Maximum für Breite oder Höhe ein. Dieser Wert wird für die sekundäre Partitionierung verwendet. Geben Sie daher unabhängig von der Sortierachse das Maximum beider Dimensionen ein.</value>
+	</data>
+	<data name="ListSortEveryFrame" xml:space="preserve">
+		<value>Sortieren Sie jeden Frame</value>
+	</data>
+	<data name="ObjectNoPartitioning" xml:space="preserve">
+		<value>Für dieses Objekt sind keine Partitionierungsoptionen verfügbar.</value>
+	</data>
+	<data name="HintObjectAutoPartition" xml:space="preserve">
+		<value>Dieses Objekt wird automatisch partitioniert oder benötigt keine Partitionierung</value>
+	</data>
+	<data name="HintObjectNotPartitioned" xml:space="preserve">
+		<value>Dieses Objekt ist nicht partitioniert, sodass die Kollisionsbeziehung möglicherweise langsam ausgeführt wird</value>
+	</data>
+	<data name="HintSubcollisionCannotDelegate" xml:space="preserve">
+		<value>Unterkollision kann nicht für die Delegate-Kollision festgelegt werden – der Delegat kann intern auswählen, welche Objekte kollidieren sollen.</value>
+	</data>
+	<data name="Subcollision" xml:space="preserve">
+		<value>Unterkollision:</value>
+	</data>
+	<data name="AutoNameRelationship" xml:space="preserve">
+		<value>Automatische Benennungsbeziehung</value>
+	</data>
+	<data name="IsCollisionActive" xml:space="preserve">
+		<value>Ist Kollision aktiv</value>
+	</data>
+	<data name="HintCollisionsInactiveMayCalled" xml:space="preserve">
+		<value>Inaktive Kollisionen lösen nicht automatisch Ereignisse aus und führen keine physikalischen Effekte aus, sondern können manuell im Code aufgerufen werden</value>
+	</data>
+	<data name="CollisionLimit" xml:space="preserve">
+		<value>Kollisionsgrenze</value>
+	</data>
+	<data name="All" xml:space="preserve">
+		<value>Alle</value>
+	</data>
+	<data name="Closest" xml:space="preserve">
+		<value>Am nächsten</value>
+	</data>
+	<data name="StopAfterFirst" xml:space="preserve">
+		<value>Stoppen Sie nach dem Ersten</value>
+	</data>
+	<data name="CollisionListVsList" xml:space="preserve">
+		<value>Doppelte Kollisionsoptionen auflisten vs. auflisten</value>
+	</data>
+	<data name="PreventDoubleChecksFrame" xml:space="preserve">
+		<value>Verhindern Sie Doppelprüfungen pro Frame</value>
+	</data>
+	<data name="AllowDoubleChecksFrame" xml:space="preserve">
+		<value>Doppelte Prüfungen pro Frame zulassen</value>
+	</data>
+	<data name="HintDoubleCollisionChecks" xml:space="preserve">
+		<value>Wenn eine Selbstkollision für eine Entitätsliste durchgeführt wird und jedes Element eine andere Unterkollision verwendet, sollten doppelte Prüfungen durchgeführt werden</value>
+	</data>
+	<data name="CollisionPhysics" xml:space="preserve">
+		<value>Kollisionsphysik</value>
+	</data>
+	<data name="NoPhysics" xml:space="preserve">
+		<value>Keine Physik</value>
+	</data>
+	<data name="MoveCollision" xml:space="preserve">
+		<value>Kollision verschieben (überlappende Objekte trennen)</value>
+	</data>
+	<data name="MoveCollisionSoft" xml:space="preserve">
+		<value>Weiche Kollision verschieben (überlappende Objekte im Laufe der Zeit trennen)</value>
+	</data>
+	<data name="SeparationCoefficient" xml:space="preserve">
+		<value>Trennungskoeffizient</value>
+	</data>
+	<data name="CollisionBounce" xml:space="preserve">
+		<value>Bounce-Kollision</value>
+	</data>
+	<data name="Elasticity" xml:space="preserve">
+		<value>Elastizität</value>
+	</data>
+	<data name="Damage" xml:space="preserve">
+		<value>Schaden</value>
+	</data>
+	<data name="PlatformerSolidCollision" xml:space="preserve">
+		<value>Plattformer Solid Collision</value>
+	</data>
+	<data name="PlatformerCloudCollision" xml:space="preserve">
+		<value>Platformer-Cloud-Kollision</value>
+	</data>
+	<data name="CollisionStacking" xml:space="preserve">
+		<value>Stapelkollision</value>
+	</data>
+	<data name="DelegateCollision" xml:space="preserve">
+		<value>Delegatkollision (Delegierter im Code zugewiesen)</value>
+	</data>
+	<data name="CollisionApplyPhysics" xml:space="preserve">
+		<value>Physik bei Kollision automatisch anwenden</value>
+	</data>
+	<data name="DamageInGeneratedCode" xml:space="preserve">
+		<value>Füge Schaden im generierten Code zu</value>
+	</data>
+	<data name="Always" xml:space="preserve">
+		<value>Stets</value>
+	</data>
+	<data name="DamageDealtIf" xml:space="preserve">
+		<value>Wenn Schaden verursacht wird</value>
+	</data>
+	<data name="GroundMovement" xml:space="preserve">
+		<value>Bodenbewegung:</value>
+	</data>
+	<data name="AirMovement" xml:space="preserve">
+		<value>Luftbewegung:</value>
+	</data>
+	<data name="AfterDoubleJump" xml:space="preserve">
+		<value>Nach Doppelsprung:</value>
+	</data>
 </root>

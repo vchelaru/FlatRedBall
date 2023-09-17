@@ -4,74 +4,58 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OfficialPlugins.CollisionPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="260">
     <Grid>
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>-->
-
-
         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" x:Name="ScrollViewerInstance">
             <StackPanel>
-
-
                 <TextBlock 
-                    Text="Partitioning"
+                    Text="{x:Static localization:Texts.Partitioning}"
                     FontSize="18" FontWeight="SemiBold">
                 </TextBlock>
 
                 <Separator Margin="0,2,0,2" VerticalAlignment="Bottom"></Separator>
                 <StackPanel Margin="10,0,0,0" Visibility="{Binding PartitioningControlUiVisibility}">
                     <CheckBox VerticalContentAlignment="Center"
-                              IsChecked="{Binding PerformCollisionPartitioning}">Perform Collision Partitioning</CheckBox>
+                              IsChecked="{Binding PerformCollisionPartitioning}"  Content="{x:Static localization:Texts.PerformCollisionPartitioning}" />
                     <StackPanel x:Name="HideableUi" Visibility="{Binding PartitioningUiVisibility}">
-                        <GroupBox Header="Sort Axis">
+                        <GroupBox Header="{x:Static localization:Texts.SortAxis}">
                             <StackPanel>
                                 <RadioButton IsChecked="{Binding IsSortXAxisChecked}">X</RadioButton>
                                 <RadioButton IsChecked="{Binding IsSortYAxisChecked}">Y</RadioButton>
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Header="Partition Width/Height">
+                        <GroupBox Header="{x:Static localization:Texts.PartitionWidthHeight}">
                             <StackPanel>
                                 <RadioButton IsChecked="{Binding IsAutomaticPartitionSizeChecked}">
                                     <StackPanel x:Name="AutomaticRadioButtonStack">
                                         <TextBlock Text="{Binding AutomaticRadioButtonText, FallbackValue=Automatic}"></TextBlock>
                                         <TextBlock Text="{Binding CalculatedPartitionWidthHeightSource, FallbackValue=ByXXXX}" FontSize="9"></TextBlock>
                                         <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding AutomaticInfoVisibility}"
-                                            Width="175" HorizontalAlignment="Left">
-                                            Automatic partitioning does not consider entity rotation, states, or custom code. Animations are considered if the Sprite is marked as setting collision.
-                                        </TextBlock>
+                                            Width="175" HorizontalAlignment="Left"   Text="{x:Static localization:Texts.HintAutoPartitionDoesNotConsider}" />
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton IsChecked="{Binding IsManualPartitionSizeChecked}">
                                     <StackPanel x:Name="ManualRadioButtonStack">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock>Manual</TextBlock>
+                                            <TextBlock Text="{x:Static localization:Texts.Manual}" />
                                             <TextBox Margin="4,0,0,0" Text="{Binding PartitionWidthHeight}" IsEnabled="{Binding IsManualTextBoxEnabled}" 
                                                      VerticalContentAlignment="Center" Width="48"></TextBox>
                                         
                                         </StackPanel>
                                         <TextBlock TextWrapping="Wrap" FontSize="9" Visibility="{Binding ManualInfoVisibility}"
-                                            Width="175">
-                                            Enter the maximum of either width or height. This value is used for secondary partitioning, so enter the max of either dimension regardless of sort axis.
-                                        </TextBlock>
+                                            Width="175" Text="{x:Static localization:Texts.HintPartitioningEnterWidthHeight}" />
                                     </StackPanel>
                                 </RadioButton>
                             </StackPanel>
                         </GroupBox>
                         <StackPanel Orientation="Horizontal">
                         </StackPanel>
-                        <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center">Sort List Every Frame</CheckBox>
-                        
+                        <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center" Content="{x:Static localization:Texts.HintAutoPartitionDoesNotConsider}" />
                     </StackPanel>
                 </StackPanel>
-                <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}">
-                    This object has no partitioning options available.</Label>
-
-
+                <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}"  Content="{x:Static localization:Texts.ObjectNoPartitioning}" />
 
                 <!--Source https://stackoverflow.com/questions/1981137/c-sharp-wpf-scrollviewer-textblock-troubles-->
                 <TextBlock

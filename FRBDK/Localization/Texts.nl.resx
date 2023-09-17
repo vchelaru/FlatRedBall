@@ -1259,4 +1259,289 @@
 	<data name="ViewInExplorer" xml:space="preserve">
 		<value>Bekijk in Verkenner</value>
 	</data>
+	<data name="EnterNewScreenName" xml:space="preserve">
+		<value>Voer een naam in voor het nieuwe scherm</value>
+	</data>
+	<data name="ErrorNewProjectFirst" xml:space="preserve">
+		<value>U moet eerst een project aanmaken of laden.</value>
+	</data>
+	<data name="ErrorOpenAttemptFailed" xml:space="preserve">
+		<value>Poging is gedaan om {0} te openen, maar dat mislukte: {1}</value>
+	</data>
+	<data name="TypeInfiniteRecursion" xml:space="preserve">
+		<value>Dit type zou resulteren in oneindige recursie</value>
+	</data>
+	<data name="ExposedInDerivedCannotDelete" xml:space="preserve">
+		<value>Het volgende kan niet worden verwijderd omdat het bij een basisobject is gemarkeerd als ExposedInDerived of SetByDerived:</value>
+	</data>
+	<data name="WhatToDoWithFiles" xml:space="preserve">
+		<value>Wat wilt u doen met de volgende bestanden:</value>
+	</data>
+	<data name="FilesLeaveAsPartOfProject" xml:space="preserve">
+		<value>Niets - laat ze achter als onderdeel van het spelproject</value>
+	</data>
+	<data name="FilesRemoveFromProjectButKeep" xml:space="preserve">
+		<value>Verwijder ze uit het project, maar bewaar de bestanden</value>
+	</data>
+	<data name="FilesRemoveAndDelete" xml:space="preserve">
+		<value>Verwijder de bestanden permanent</value>
+	</data>
+	<data name="RefreshingTreeNodes" xml:space="preserve">
+		<value>Tree Nodes vernieuwen</value>
+	</data>
+	<data name="Spreadsheet" xml:space="preserve">
+		<value>Spreadsheet</value>
+	</data>
+	<data name="PluginCallReactToNewEntity" xml:space="preserve">
+		<value>Aanroepende plug-in ReactToNewEntityCreatedWithUi</value>
+	</data>
+	<data name="VariableMustSelect" xml:space="preserve">
+		<value>U moet een variabele selecteren op {0}</value>
+	</data>
+	<data name="VariableInBaseAlreadyExists" xml:space="preserve">
+		<value>Er is al een variabele met de naam {0} in het basiselement, maar deze is niet SetByDerived. Glue zal geen variabele aanmaken, omdat dit zou resulteren in een naamconflict.</value>
+	</data>
+	<data name="VariableAddThroughUI" xml:space="preserve">
+		<value>Variabele {0} toevoegen via de gebruikersinterface</value>
+	</data>
+	<data name="VariableAlreadyModifying" xml:space="preserve">
+		<value>Er is al een variabele die {0} op {1} wijzigt</value>
+	</data>
+	<data name="VariableTypeMustBeSelectedForNew" xml:space="preserve">
+		<value>Voor nieuwe variabelen moet een type worden geselecteerd</value>
+	</data>
+	<data name="VariableIsExposableUseDifferentName" xml:space="preserve">
+		<value>De variabele {0} is een zichtbare variabele. Gebruik een andere variabelenaam of selecteer de variabele via het tabblad Expose</value>
+	</data>
+	<data name="VariableFrbReserved" xml:space="preserve">
+		<value>De variabele {0} is gereserveerd door FlatRedBall.</value>
+	</data>
+	<data name="Confirm" xml:space="preserve">
+		<value>Bevestigen</value>
+	</data>
+	<data name="CategoryEnterName" xml:space="preserve">
+		<value>Voer een naam in voor de nieuwe categorie</value>
+	</data>
+	<data name="CategoryNew" xml:space="preserve">
+		<value>Nieuwe categorie</value>
+	</data>
+	<data name="StateEnterName" xml:space="preserve">
+		<value>Voer een naam in voor de nieuwe status</value>
+	</data>
+	<data name="StateNew" xml:space="preserve">
+		<value>Nieuwe staat</value>
+	</data>
+	<data name="ObjectCouldNotDefineFor" xml:space="preserve">
+		<value>Kon het definiërende basisobject voor {0} niet vinden</value>
+	</data>
+	<data name="FontsRegenerate" xml:space="preserve">
+		<value>Lettertypen opnieuw genereren</value>
+	</data>
+	<data name="CustomRuntimeFilesRemoveOrphaned" xml:space="preserve">
+		<value>Verwijder verweesde maatwerk runtimebestanden</value>
+	</data>
+	<data name="ProjectGumManagement" xml:space="preserve">
+		<value>Gum Projectmanagement</value>
+	</data>
+	<data name="GumAutoCreateForGlue" xml:space="preserve">
+		<value>Maak automatisch Gum schermen voor Glue schermen</value>
+	</data>
+	<data name="GumMatchGameResolution" xml:space="preserve">
+		<value>Match de spelresolutie in Gum</value>
+	</data>
+	<data name="ProjectGumProperties" xml:space="preserve">
+		<value>Eigenschappen van Gumprojecten</value>
+	</data>
+	<data name="ShowMouse" xml:space="preserve">
+		<value>Muis tonen</value>
+	</data>
+	<data name="UseAtlases" xml:space="preserve">
+		<value>Gebruik atlassen</value>
+	</data>
+	<data name="ShowDottedOutlines" xml:space="preserve">
+		<value>Gestippelde contouren tonen</value>
+	</data>
+	<data name="GenerateCodeMakePublic" xml:space="preserve">
+		<value>Maak gegenereerde code-instanties openbaar</value>
+	</data>
+	<data name="GumCoreAddition" xml:space="preserve">
+		<value>Kern-Gum toevoeging</value>
+	</data>
+	<data name="FilesIncludeNoneUseDllsOrSource" xml:space="preserve">
+		<value>Geen bestanden opnemen (gebruik gekoppelde .dll's of broncode)</value>
+	</data>
+	<data name="EmbedCodeFilesLegacy" xml:space="preserve">
+		<value>Codebestanden insluiten (verouderd)</value>
+	</data>
+	<data name="ProjectFormsAddUpdate" xml:space="preserve">
+		<value>Formulieren toevoegen/bijwerken aan project</value>
+	</data>
+	<data name="Advanced" xml:space="preserve">
+		<value>Geavanceerd</value>
+	</data>
+	<data name="FormsIncludeComponents" xml:space="preserve">
+		<value>Formulieren opnemen in componenten met gedrag</value>
+	</data>
+	<data name="FormsAddDefaultToGum" xml:space="preserve">
+		<value>Voeg standaardformulieren toe aan associaties van tandvleescomponenten</value>
+	</data>
+	<data name="FormClickAgainReAdd" xml:space="preserve">
+		<value>(Als u nogmaals klikt, wordt alle formulierinhoud opnieuw toegevoegd)</value>
+	</data>
+	<data name="FrbGenerateBehaviors" xml:space="preserve">
+		<value>Genereer FlatRedBall-gedrag</value>
+	</data>
+	<data name="GumFormComponentsAddRefresh" xml:space="preserve">
+		<value>Voeg/vernieuw Gum componenten toe</value>
+	</data>
+	<data name="EntityMain" xml:space="preserve">
+		<value>Hoofdentiteit</value>
+	</data>
+	<data name="FullyManaged" xml:space="preserve">
+		<value>Volledig beheerd</value>
+	</data>
+	<data name="SelectManagedProperties" xml:space="preserve">
+		<value>Selecteer beheerde eigenschappen</value>
+	</data>
+	<data name="LoadFile" xml:space="preserve">
+		<value>Laad bestand...</value>
+	</data>
+	<data name="MobilePackage" xml:space="preserve">
+		<value>Mobiele packagebestand</value>
+	</data>
+	<data name="RegenEverything" xml:space="preserve">
+		<value>Alles opnieuw genereren</value>
+	</data>
+	<data name="PropsAdd" xml:space="preserve">
+		<value>Props toevoegen</value>
+	</data>
+	<data name="PerformCollisionPartitioning" xml:space="preserve">
+		<value>Voer botsingspartitionering uit</value>
+	</data>
+	<data name="Partitioning" xml:space="preserve">
+		<value>Partitioneren</value>
+	</data>
+	<data name="SortAxis" xml:space="preserve">
+		<value>As sorteren</value>
+	</data>
+	<data name="PartitionWidthHeight" xml:space="preserve">
+		<value>Partitiebreedte/hoogte</value>
+	</data>
+	<data name="HintAutoPartitionDoesNotConsider" xml:space="preserve">
+		<value>Bij automatische partities wordt geen rekening gehouden met rotatie van entiteiten, statussen of aangepaste code. Animaties worden in overweging genomen als de Sprite is gemarkeerd als instellingsbotsing.</value>
+	</data>
+	<data name="Manual" xml:space="preserve">
+		<value>Handmatig</value>
+	</data>
+	<data name="HintPartitioningEnterWidthHeight" xml:space="preserve">
+		<value>Voer het maximum van breedte of hoogte in. Deze waarde wordt gebruikt voor secundaire partities, dus voer het maximum van beide dimensies in, ongeacht de sorteeras.</value>
+	</data>
+	<data name="ListSortEveryFrame" xml:space="preserve">
+		<value>Sorteer Lijst tijdens elke frame</value>
+	</data>
+	<data name="ObjectNoPartitioning" xml:space="preserve">
+		<value>Voor dit object zijn geen partitieopties beschikbaar.</value>
+	</data>
+	<data name="HintObjectAutoPartition" xml:space="preserve">
+		<value>Dit object wordt automatisch gepartitioneerd, of hoeft niet te worden gepartitioneerd</value>
+	</data>
+	<data name="HintObjectNotPartitioned" xml:space="preserve">
+		<value>Dit object is niet gepartitioneerd, dus de botsingsrelaties opbouwen kan langzaam verlopen</value>
+	</data>
+	<data name="HintSubcollisionCannotDelegate" xml:space="preserve">
+		<value>Subbotsing kan niet worden ingesteld op Botsing van deelnemers: de deelnemer kan intern selecteren welke objecten moeten botsen.</value>
+	</data>
+	<data name="Subcollision" xml:space="preserve">
+		<value>Subbotsing:</value>
+	</data>
+	<data name="AutoNameRelationship" xml:space="preserve">
+		<value>Relatie automatisch benoemen</value>
+	</data>
+	<data name="IsCollisionActive" xml:space="preserve">
+		<value>Is botsing actief</value>
+	</data>
+	<data name="HintCollisionsInactiveMayCalled" xml:space="preserve">
+		<value>Inactieve botsingen veroorzaken niet automatisch gebeurtenissen en voeren natuurkunde uit, maar kunnen handmatig in code worden aangeroepen</value>
+	</data>
+	<data name="CollisionLimit" xml:space="preserve">
+		<value>Botsingslimiet</value>
+	</data>
+	<data name="All" xml:space="preserve">
+		<value>Alle</value>
+	</data>
+	<data name="Closest" xml:space="preserve">
+		<value>Dichtstbijzijnde</value>
+	</data>
+	<data name="StopAfterFirst" xml:space="preserve">
+		<value>Stop na eerste</value>
+	</data>
+	<data name="CollisionListVsList" xml:space="preserve">
+		<value>Lijst versus lijst duplicate botsingsopties</value>
+	</data>
+	<data name="PreventDoubleChecksFrame" xml:space="preserve">
+		<value>Voorkom dubbele controles per frame</value>
+	</data>
+	<data name="AllowDoubleChecksFrame" xml:space="preserve">
+		<value>Dubbele controles per frame toestaan</value>
+	</data>
+	<data name="HintDoubleCollisionChecks" xml:space="preserve">
+		<value>Er moeten dubbele controles worden uitgevoerd als er sprake is van een zelfbotsing op een entiteitenlijst, waarbij elk item een andere subbotsing gebruikt</value>
+	</data>
+	<data name="CollisionPhysics" xml:space="preserve">
+		<value>Botsingsfysica</value>
+	</data>
+	<data name="NoPhysics" xml:space="preserve">
+		<value>Geen fysica</value>
+	</data>
+	<data name="MoveCollision" xml:space="preserve">
+		<value>Botsing verplaatsen (afzonderlijke overlappende objecten)</value>
+	</data>
+	<data name="MoveCollisionSoft" xml:space="preserve">
+		<value>Verplaats zachte botsing (scheid overlappende objecten in de loop van de tijd)</value>
+	</data>
+	<data name="SeparationCoefficient" xml:space="preserve">
+		<value>Scheidingscoëfficiënt</value>
+	</data>
+	<data name="CollisionBounce" xml:space="preserve">
+		<value>Stuiterende botsing</value>
+	</data>
+	<data name="Elasticity" xml:space="preserve">
+		<value>Elasticiteit</value>
+	</data>
+	<data name="Damage" xml:space="preserve">
+		<value>Schade</value>
+	</data>
+	<data name="PlatformerSolidCollision" xml:space="preserve">
+		<value>Platformgame Solide botsing</value>
+	</data>
+	<data name="PlatformerCloudCollision" xml:space="preserve">
+		<value>Platformgame Cloud Collision</value>
+	</data>
+	<data name="CollisionStacking" xml:space="preserve">
+		<value>Stapelbotsing</value>
+	</data>
+	<data name="DelegateCollision" xml:space="preserve">
+		<value>Botsing met deelnemers (delegate toegewezen in code)</value>
+	</data>
+	<data name="CollisionApplyPhysics" xml:space="preserve">
+		<value>Pas fysica automatisch toe bij botsing</value>
+	</data>
+	<data name="DamageInGeneratedCode" xml:space="preserve">
+		<value>Breng schade aan in gegenereerde code</value>
+	</data>
+	<data name="Always" xml:space="preserve">
+		<value>Altijd</value>
+	</data>
+	<data name="DamageDealtIf" xml:space="preserve">
+		<value>Als er schade is aangericht</value>
+	</data>
+	<data name="GroundMovement" xml:space="preserve">
+		<value>Grondbeweging:</value>
+	</data>
+	<data name="AirMovement" xml:space="preserve">
+		<value>Luchtbeweging:</value>
+	</data>
+	<data name="AfterDoubleJump" xml:space="preserve">
+		<value>Na dubbele sprong:</value>
+	</data>
 </root>
