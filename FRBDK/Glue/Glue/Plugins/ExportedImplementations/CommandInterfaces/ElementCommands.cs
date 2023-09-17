@@ -462,14 +462,32 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
         {
             newElement.BaseEntity = viewModel.SelectedBaseEntity;
 
+            var baseEntity = ObjectFinder.Self.GetEntitySave(viewModel.SelectedBaseEntity);
+
+            List<CustomVariable> variablesToRemove = new List<CustomVariable>();
+            // continue here...
+
             // make X, Y, Z DefinedByBase
             foreach(var customVariable in newElement.CustomVariables)
             {
                 if(customVariable.Name == "X" || customVariable.Name == "Y" || customVariable.Name == "Z")
                 {
-                    customVariable.DefinedByBase = true;
+                    // See if the base has this:
+
+                    var foundVariableInBase = baseEntity?.GetCustomVariableRecursively(customVariable.Name) != null;
+
+                    if(!foundVariableInBase)
+                    {
+                        variablesToRemove.Add(customVariable);
+                    }
+                    else
+                    {
+                        customVariable.DefinedByBase = true;
+                    }
                 }
             }
+
+            newElement.CustomVariables.RemoveAll(item => variablesToRemove.Contains(item));
 
             //EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
             //    nameof(newElement.BaseEntity), false, nameof(newElement.BaseEntity), null);
