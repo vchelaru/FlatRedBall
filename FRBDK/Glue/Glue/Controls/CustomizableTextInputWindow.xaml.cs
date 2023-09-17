@@ -43,7 +43,7 @@ namespace FlatRedBall.Glue.Controls
             ValidationLabel.Visibility = Visibility.Hidden;
         }
 
-        public void HighlghtText()
+        public void HighlightText()
         {
             TextBox.SelectAll();
         }

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
@@ -21,12 +21,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel>
-            <Label>From:</Label>
-            <!--<RadioButton GroupName="FromGroup">Project</RadioButton>
-            <RadioButton GroupName="FromGroup">File</RadioButton>-->
-
-            <!--<ComboBox></ComboBox>-->
-
+            <Label Content="{x:Static localization:Texts.From}" />
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -36,14 +31,10 @@
                 <TextBox Text="{Binding FromFile}"></TextBox>
                 <Button Grid.Column="1" Width="25" Click="FromButtonClicked">...</Button>
             </Grid>
-
-
         </StackPanel>
 
-
-
         <StackPanel Grid.Column="2">
-            <Label>To:</Label>
+            <Label Content="{x:Static localization:Texts.To}" />
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition></ColumnDefinition>
@@ -56,8 +47,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Right">
-            <Button Width="80" Click="HandleDoItClick">Do it!</Button>
-            <!--<Button Width="80">Cancel</Button>-->
+            <Button Width="80" Click="HandleDoItClick" Content="{x:Static localization:Texts.Execute}" />
         </StackPanel>
 
     </Grid>

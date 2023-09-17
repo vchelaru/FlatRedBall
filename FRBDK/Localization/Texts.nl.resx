@@ -921,7 +921,7 @@
 		<value>1 (vijandelijk team)</value>
 	</data>
 	<data name="GameScreenOpposingTeamAdd" xml:space="preserve">
-		<value>Voeg botsingsrelaties van tegengestelde teams toe aan GameScreen</value>
+		<value>Voeg botsingsrelaties van tegengestelde teams toe aan het spelscherm</value>
 	</data>
 	<data name="FactoryCreate" xml:space="preserve">
 		<value>Fabriek creëren</value>
@@ -1015,5 +1015,248 @@
 	</data>
 	<data name="PleaseWait" xml:space="preserve">
 		<value>Even geduld aub...</value>
+	</data>
+	<data name="VariableCreate" xml:space="preserve">
+		<value>Maak een nieuwe variabele</value>
+	</data>
+	<data name="VariableTunnelIntoContainer" xml:space="preserve">
+		<value>Tunnel een variabele in een ingesloten object</value>
+	</data>
+	<data name="ExposeVariable" xml:space="preserve">
+		<value>Maak een bestaande variabele zichtbaar</value>
+	</data>
+	<data name="SelectExistingVariable" xml:space="preserve">
+		<value>Selecteer een bestaande variabele:</value>
+	</data>
+	<data name="Type" xml:space="preserve">
+		<value>Type:</value>
+	</data>
+	<data name="HintTopRowInformation" xml:space="preserve">
+		<value>Dit is de bovenste rij met informatie. Hieronder vindt u de keuzelijst, de aangepaste controlestapel en vervolgens de knoppenstapel</value>
+	</data>
+	<data name="ObjectNew" xml:space="preserve">
+		<value>Nieuw Object</value>
+	</data>
+	<data name="Entity" xml:space="preserve">
+		<value>Entiteit</value>
+	</data>
+	<data name="FromFile" xml:space="preserve">
+		<value>Van bestand</value>
+	</data>
+	<data name="FrbOrCustomType" xml:space="preserve">
+		<value>FlatRedBall of maatwerk type</value>
+	</data>
+	<data name="SourceName" xml:space="preserve">
+		<value>Bronnaam:</value>
+	</data>
+	<data name="ListType" xml:space="preserve">
+		<value>Lijsttype:</value>
+	</data>
+	<data name="EnterNewObjectName" xml:space="preserve">
+		<value>Voer de naam van het nieuwe object in</value>
+	</data>
+	<data name="ObjectDelete" xml:space="preserve">
+		<value>Object verwijderen?</value>
+	</data>
+	<data name="Delete" xml:space="preserve">
+		<value>Verwijderen</value>
+	</data>
+	<data name="DeleteAlsoFollowing" xml:space="preserve">
+		<value>De volgende items worden ook verwijderd:</value>
+	</data>
+	<data name="DeleteQuestion" xml:space="preserve">
+		<value>Wilt u dit item verwijderen?</value>
+	</data>
+	<data name="FrbGlueVersion" xml:space="preserve">
+		<value>FlatRedBall Glue Versie</value>
+	</data>
+	<data name="LatestVersion" xml:space="preserve">
+		<value>Laatste versie</value>
+	</data>
+	<data name="InstallUpdate" xml:space="preserve">
+		<value>Installeer update</value>
+	</data>
+	<data name="Copyright" xml:space="preserve">
+		<value>Copyright</value>
+	</data>
+	<data name="GlueProjectVersion" xml:space="preserve">
+		<value>Glue Projectversie</value>
+	</data>
+	<data name="InheritFromGameScreen" xml:space="preserve">
+		<value>Erven van GameScreen</value>
+	</data>
+	<data name="LevelScreen" xml:space="preserve">
+		<value>Level scherm</value>
+	</data>
+	<data name="SetAsStartupScreen" xml:space="preserve">
+		<value>Instellen als opstartscherm (eerste scherm tijdens het opstarten)</value>
+	</data>
+	<data name="EntitiesCopyAnotherLevel" xml:space="preserve">
+		<value>Kopieer entiteiten van een ander level</value>
+	</data>
+	<data name="TmxAddStandard" xml:space="preserve">
+		<value>Standaard TMX-bestand toevoegen</value>
+	</data>
+	<data name="TmxCopyOtherLevel" xml:space="preserve">
+		<value>Kopieer TMX van een ander level</value>
+	</data>
+	<data name="TmxNoFile" xml:space="preserve">
+		<value>Geen TMX-bestand (kan later worden toegevoegd)</value>
+	</data>
+	<data name="GameScreenBaseLevelScreen" xml:space="preserve">
+		<value>Spelscherm (basisniveauscherm)</value>
+	</data>
+	<data name="EmptyScreen" xml:space="preserve">
+		<value>Leeg scherm</value>
+	</data>
+	<data name="EntitiesListAdd" xml:space="preserve">
+		<value>Lijsten voor entiteiten toevoegen</value>
+	</data>
+	<data name="LayeredTileMapAdd" xml:space="preserve">
+		<value>Voeg LayeredTileMap toe</value>
+	</data>
+	<data name="SolidCollisionAdd" xml:space="preserve">
+		<value>Voeg SolidCollision ShapeCollection toe</value>
+	</data>
+	<data name="CloudCollisionAdd" xml:space="preserve">
+		<value>Voeg CloudCollision ShapeCollection toe</value>
+	</data>
+	<data name="GenerateDisplayCode" xml:space="preserve">
+		<value>Weergavecode genereren</value>
+	</data>
+	<data name="AspectRatioVariable" xml:space="preserve">
+		<value>Variabele aspectverhouding</value>
+	</data>
+	<data name="AspectRatioFixed" xml:space="preserve">
+		<value>Gefixeerde aspectverhouding</value>
+	</data>
+	<data name="AspectRatioRanged" xml:space="preserve">
+		<value>Bereikte aspectverhouding</value>
+	</data>
+	<data name="Point" xml:space="preserve">
+		<value>Punt</value>
+	</data>
+	<data name="Linear" xml:space="preserve">
+		<value>Lineair</value>
+	</data>
+	<data name="Perspective" xml:space="preserve">
+		<value>Perspectief</value>
+	</data>
+	<data name="TextureFilter" xml:space="preserve">
+		<value>Textuurfilter</value>
+	</data>
+	<data name="Fullscreen" xml:space="preserve">
+		<value>Volledig scherm</value>
+	</data>
+	<data name="WindowResizingAllow" xml:space="preserve">
+		<value>Venstergrootte aanpassen toestaan</value>
+	</data>
+	<data name="HintGameZoomGlueCannotSet" xml:space="preserve">
+		<value>De zoomfunctie van het spel kan niet worden ingesteld met Glue. De zoomlens zal in feite een resultaat zijn van de gewenste resolutie en de resolutie van de monitor.</value>
+	</data>
+	<data name="PreserveStretchArea" xml:space="preserve">
+		<value>Rekgebied behouden</value>
+	</data>
+	<data name="IncreaseVisibleArea" xml:space="preserve">
+		<value>Vergroot het zichtbare gebied</value>
+	</data>
+	<data name="HintSupportedOrientationsDocumentation" xml:space="preserve">
+		<value>Zie de SupportedOrientations-documentatie voor het beheren van mobiele oriëntaties.</value>
+	</data>
+	<data name="EnterNameDisplaySetting" xml:space="preserve">
+		<value>Voer een naam in voor de weergave-instelling</value>
+	</data>
+	<data name="ProjectSaveCameraChanges" xml:space="preserve">
+		<value>Project opslaan vanwege camerawijzigingen</value>
+	</data>
+	<data name="RemoveDisplayOption" xml:space="preserve">
+		<value>Weergaveoptie verwijderen</value>
+	</data>
+	<data name="From" xml:space="preserve">
+		<value>Van:</value>
+	</data>
+	<data name="To" xml:space="preserve">
+		<value>Tot:</value>
+	</data>
+	<data name="Activate" xml:space="preserve">
+		<value>Activeren</value>
+	</data>
+	<data name="Execute" xml:space="preserve">
+		<value>Uitvoeren</value>
+	</data>
+	<data name="CSharpProjectFiles" xml:space="preserve">
+		<value>C#-projectbestanden</value>
+	</data>
+	<data name="CopyAutomatically" xml:space="preserve">
+		<value>Automatisch kopiëren</value>
+	</data>
+	<data name="CopyManual" xml:space="preserve">
+		<value>Handmatig kopiëren:</value>
+	</data>
+	<data name="CopiedReferencesForProjectAInB" xml:space="preserve">
+		<value>Referenties gekopieerd voor project {0} in {1}.</value>
+	</data>
+	<data name="SkippingProjectNotFound" xml:space="preserve">
+		<value>Project {0} wordt overgeslagen omdat er geen overeenkomend project is gevonden in {1}</value>
+	</data>
+	<data name="Load" xml:space="preserve">
+		<value>Laad</value>
+	</data>
+	<data name="PluginRestartToDelete" xml:space="preserve">
+		<value>Succes - Glue moet opnieuw worden opgestart om het verwijderen van de plug-in te voltooien.</value>
+	</data>
+	<data name="LoadOnStartup" xml:space="preserve">
+		<value>Laden bij opstarten</value>
+	</data>
+	<data name="RequiredByProject" xml:space="preserve">
+		<value>Vereist per project</value>
+	</data>
+	<data name="ProjectGlueNoneLoaded" xml:space="preserve">
+		<value>Geen Glue-project geladen</value>
+	</data>
+	<data name="CleanAll" xml:space="preserve">
+		<value>Alles leegmaken</value>
+	</data>
+	<data name="HintOrphanedFilesOfProject" xml:space="preserve">
+		<value>Er wordt verwezen naar weesbestanden door het huidige project, maar ze bestaan niet op schijf. Deze bestanden veroorzaken compileerfouten in uw project.</value>
+	</data>
+	<data name="ErrorCannotOpenXamarin" xml:space="preserve">
+		<value>Fout bij het openen van Xamarin Studio - zie fout in de uitvoer</value>
+	</data>
+	<data name="GlueFileAssociation" xml:space="preserve">
+		<value>Op uw machine is het bestand {0} gekoppeld aan Glue. Het moet waarschijnlijk worden geassocieerd met een programmeer-IDE zoals Visual Studio</value>
+	</data>
+	<data name="ErrorOpeningProjectVisualStudio" xml:space="preserve">
+		<value>Er is een fout opgetreden bij het openen van het project. Probeer het opnieuw als Visual Studio niet is geopend.</value>
+	</data>
+	<data name="ErrorCannotOpenProject" xml:space="preserve">
+		<value>Er is een fout opgetreden bij het openen van het projectbestand {0}. U kunt dit project nog steeds handmatig openen via Windows Verkenner of Visual Studio. Aanvullende informatie: {1}</value>
+	</data>
+	<data name="ProjectRemove" xml:space="preserve">
+		<value>Project verwijderen</value>
+	</data>
+	<data name="ProjectNewSynced" xml:space="preserve">
+		<value>Nieuw gesynchroniseerd project</value>
+	</data>
+	<data name="ProjectAddExisting" xml:space="preserve">
+		<value>Bestaand project toevoegen</value>
+	</data>
+	<data name="ProjectAndroid" xml:space="preserve">
+		<value>Android-project</value>
+	</data>
+	<data name="VisualStudioFiles" xml:space="preserve">
+		<value>VS Project-bestanden</value>
+	</data>
+	<data name="ProjectIsAlreadySynced" xml:space="preserve">
+		<value>Het geselecteerde project is al een gesynchroniseerd project.</value>
+	</data>
+	<data name="InGameProject" xml:space="preserve">
+		<value>In spelproject</value>
+	</data>
+	<data name="OnFileSystem" xml:space="preserve">
+		<value>Op bestandssysteem</value>
+	</data>
+	<data name="ViewInExplorer" xml:space="preserve">
+		<value>Bekijk in Verkenner</value>
 	</data>
 </root>

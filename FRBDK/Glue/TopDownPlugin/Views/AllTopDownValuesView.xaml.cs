@@ -49,9 +49,7 @@ namespace TopDownPlugin.Views
         {
             var valuesViewModel = (sender as UserControl).DataContext as TopDownValuesViewModel;
 
-            bool contains = ViewModel.TopDownValues.Contains(valuesViewModel);
-
-            if (contains)
+            if (ViewModel.TopDownValues.Contains(valuesViewModel))
             {
                 ViewModel.TopDownValues.Remove(valuesViewModel);
             }

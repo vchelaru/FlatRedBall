@@ -891,7 +891,7 @@
 		<value>Geben Sie einen Namen für die neue Entität ein:</value>
 	</data>
 	<data name="EntityBase" xml:space="preserve">
-		<value>Basiseinheit:</value>
+		<value>Basisentität</value>
 	</data>
 	<data name="Sprite" xml:space="preserve">
 		<value>Sprite</value>
@@ -1018,5 +1018,248 @@
 	</data>
 	<data name="PleaseWait" xml:space="preserve">
 		<value>Bitte warten...</value>
+	</data>
+	<data name="VariableCreate" xml:space="preserve">
+		<value>Erstellen Sie eine neue Variable</value>
+	</data>
+	<data name="VariableTunnelIntoContainer" xml:space="preserve">
+		<value>Tunneln Sie eine Variable in einem enthaltenen Objekt</value>
+	</data>
+	<data name="ExposeVariable" xml:space="preserve">
+		<value>Machen Sie eine vorhandene Variable verfügbar</value>
+	</data>
+	<data name="SelectExistingVariable" xml:space="preserve">
+		<value>Wählen Sie eine vorhandene Variable aus:</value>
+	</data>
+	<data name="Type" xml:space="preserve">
+		<value>Typ:</value>
+	</data>
+	<data name="HintTopRowInformation" xml:space="preserve">
+		<value>Dies ist die oberste Zeile mit Informationen. Unten befindet sich das Listenfeld, der benutzerdefinierte Steuerelementstapel und dann der Schaltflächenstapel</value>
+	</data>
+	<data name="ObjectNew" xml:space="preserve">
+		<value>Neues Objekt</value>
+	</data>
+	<data name="Entity" xml:space="preserve">
+		<value>Entität</value>
+	</data>
+	<data name="FromFile" xml:space="preserve">
+		<value>Von Datei</value>
+	</data>
+	<data name="FrbOrCustomType" xml:space="preserve">
+		<value>FlatRedBall oder benutzerdefinierter Typ</value>
+	</data>
+	<data name="SourceName" xml:space="preserve">
+		<value>Quellenname:</value>
+	</data>
+	<data name="ListType" xml:space="preserve">
+		<value>Listentyp:</value>
+	</data>
+	<data name="EnterNewObjectName" xml:space="preserve">
+		<value>Geben Sie den Namen des neuen Objekts ein</value>
+	</data>
+	<data name="ObjectDelete" xml:space="preserve">
+		<value>Objekt löschen?</value>
+	</data>
+	<data name="Delete" xml:space="preserve">
+		<value>Löschen</value>
+	</data>
+	<data name="DeleteAlsoFollowing" xml:space="preserve">
+		<value>Die folgenden Elemente werden ebenfalls gelöscht:</value>
+	</data>
+	<data name="DeleteQuestion" xml:space="preserve">
+		<value>Möchten Sie diesen Artikel löschen?</value>
+	</data>
+	<data name="FrbGlueVersion" xml:space="preserve">
+		<value>FlatRedBall-Glueversion</value>
+	</data>
+	<data name="LatestVersion" xml:space="preserve">
+		<value>Letzte Version</value>
+	</data>
+	<data name="InstallUpdate" xml:space="preserve">
+		<value>Installiere Update</value>
+	</data>
+	<data name="Copyright" xml:space="preserve">
+		<value>Urheberrecht</value>
+	</data>
+	<data name="GlueProjectVersion" xml:space="preserve">
+		<value>Glue-Projektversion</value>
+	</data>
+	<data name="InheritFromGameScreen" xml:space="preserve">
+		<value>Von GameScreen erben</value>
+	</data>
+	<data name="LevelScreen" xml:space="preserve">
+		<value>Level-Bildschirm</value>
+	</data>
+	<data name="SetAsStartupScreen" xml:space="preserve">
+		<value>Als Startbildschirm festlegen (erster Bildschirm beim Ausführen)</value>
+	</data>
+	<data name="EntitiesCopyAnotherLevel" xml:space="preserve">
+		<value>Elemente von einer anderen Level kopieren</value>
+	</data>
+	<data name="TmxAddStandard" xml:space="preserve">
+		<value>Standard-TMX-Datei hinzufügen</value>
+	</data>
+	<data name="TmxCopyOtherLevel" xml:space="preserve">
+		<value>Kopieren Sie TMX von einer anderen Level</value>
+	</data>
+	<data name="TmxNoFile" xml:space="preserve">
+		<value>Keine TMX-Datei (Kann später hinzugefügt werden)</value>
+	</data>
+	<data name="GameScreenBaseLevelScreen" xml:space="preserve">
+		<value>Spielbildschirm (Basisebene-Bildschirm)</value>
+	</data>
+	<data name="EmptyScreen" xml:space="preserve">
+		<value>Leerer Bildschirm</value>
+	</data>
+	<data name="EntitiesListAdd" xml:space="preserve">
+		<value>Listen für Entitäten hinzufügen</value>
+	</data>
+	<data name="LayeredTileMapAdd" xml:space="preserve">
+		<value>LayeredTileMap hinzufügen</value>
+	</data>
+	<data name="SolidCollisionAdd" xml:space="preserve">
+		<value>SolidCollision ShapeCollection hinzufügen</value>
+	</data>
+	<data name="CloudCollisionAdd" xml:space="preserve">
+		<value>CloudCollision ShapeCollection hinzufügen</value>
+	</data>
+	<data name="GenerateDisplayCode" xml:space="preserve">
+		<value>Anzeigecode generieren</value>
+	</data>
+	<data name="AspectRatioVariable" xml:space="preserve">
+		<value>Variables Seitenverhältnis</value>
+	</data>
+	<data name="AspectRatioFixed" xml:space="preserve">
+		<value>Festes Seitenverhältnis</value>
+	</data>
+	<data name="AspectRatioRanged" xml:space="preserve">
+		<value>Fernkampf Seitenverhältnis</value>
+	</data>
+	<data name="Point" xml:space="preserve">
+		<value>Punkt</value>
+	</data>
+	<data name="Linear" xml:space="preserve">
+		<value>Linear</value>
+	</data>
+	<data name="Perspective" xml:space="preserve">
+		<value>Perspektive</value>
+	</data>
+	<data name="TextureFilter" xml:space="preserve">
+		<value>Texturfilter</value>
+	</data>
+	<data name="Fullscreen" xml:space="preserve">
+		<value>Vollbild</value>
+	</data>
+	<data name="WindowResizingAllow" xml:space="preserve">
+		<value>Fenstergrößenänderung zulassen</value>
+	</data>
+	<data name="HintGameZoomGlueCannotSet" xml:space="preserve">
+		<value>Der Zoom des Spiels kann nicht von Glue eingestellt werden. Der Zoom hängt effektiv von der gewünschten Auflösung und der Auflösung des Monitors ab.</value>
+	</data>
+	<data name="PreserveStretchArea" xml:space="preserve">
+		<value>Dehnungsbereich erhalten</value>
+	</data>
+	<data name="IncreaseVisibleArea" xml:space="preserve">
+		<value>Sichtbaren Bereich vergrößern</value>
+	</data>
+	<data name="HintSupportedOrientationsDocumentation" xml:space="preserve">
+		<value>Informationen zum Steuern mobiler Ausrichtungen finden Sie in der SupportedOrientations-Dokumentation.</value>
+	</data>
+	<data name="EnterNameDisplaySetting" xml:space="preserve">
+		<value>Geben Sie einen Namen für die Anzeigeeinstellung ein</value>
+	</data>
+	<data name="ProjectSaveCameraChanges" xml:space="preserve">
+		<value>Projekt wird wegen Kamerawechsel gespeichert</value>
+	</data>
+	<data name="RemoveDisplayOption" xml:space="preserve">
+		<value>Anzeigeoption entfernen</value>
+	</data>
+	<data name="From" xml:space="preserve">
+		<value>Aus:</value>
+	</data>
+	<data name="To" xml:space="preserve">
+		<value>Zu:</value>
+	</data>
+	<data name="Activate" xml:space="preserve">
+		<value>Aktivieren</value>
+	</data>
+	<data name="Execute" xml:space="preserve">
+		<value>Ausführen</value>
+	</data>
+	<data name="CSharpProjectFiles" xml:space="preserve">
+		<value>C#-Projektdateien</value>
+	</data>
+	<data name="CopyAutomatically" xml:space="preserve">
+		<value>Automatisch kopieren</value>
+	</data>
+	<data name="CopyManual" xml:space="preserve">
+		<value>Manuelle Kopie:</value>
+	</data>
+	<data name="CopiedReferencesForProjectAInB" xml:space="preserve">
+		<value>Referenzen für Projekt {0} in {1} kopiert.</value>
+	</data>
+	<data name="SkippingProjectNotFound" xml:space="preserve">
+		<value>Projekt {0} wird übersprungen, da in {1} kein passendes Projekt gefunden wurde</value>
+	</data>
+	<data name="Load" xml:space="preserve">
+		<value>Laden</value>
+	</data>
+	<data name="PluginRestartToDelete" xml:space="preserve">
+		<value>Erfolg – Glue muss neu gestartet werden, um das Entfernen des Plugins abzuschließen.</value>
+	</data>
+	<data name="LoadOnStartup" xml:space="preserve">
+		<value>Beim Start laden</value>
+	</data>
+	<data name="RequiredByProject" xml:space="preserve">
+		<value>Je nach Projekt erforderlich</value>
+	</data>
+	<data name="ProjectGlueNoneLoaded" xml:space="preserve">
+		<value>Kein Glue-Projekt geladen</value>
+	</data>
+	<data name="CleanAll" xml:space="preserve">
+		<value>Alles leeren</value>
+	</data>
+	<data name="HintOrphanedFilesOfProject" xml:space="preserve">
+		<value>Verwaiste Dateien werden vom aktuellen Projekt referenziert, sind aber nicht auf der Festplatte vorhanden. Diese Dateien verursachen Kompilierungsfehler in Ihrem Projekt.</value>
+	</data>
+	<data name="ErrorCannotOpenXamarin" xml:space="preserve">
+		<value>Fehler beim Öffnen von Xamarin Studio – siehe Fehler in der Ausgabe</value>
+	</data>
+	<data name="GlueFileAssociation" xml:space="preserve">
+		<value>Auf Ihrem Computer ist die Datei {0} mit Glue verknüpft. Es sollte wahrscheinlich mit einer Programmier-IDE wie Visual Studio verknüpft sein</value>
+	</data>
+	<data name="ErrorOpeningProjectVisualStudio" xml:space="preserve">
+		<value>Beim Versuch, das Projekt zu öffnen, ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut, wenn Visual Studio nicht geöffnet wurde.</value>
+	</data>
+	<data name="ErrorCannotOpenProject" xml:space="preserve">
+		<value>Beim Versuch, die Projektdatei {0} zu öffnen, ist ein Fehler aufgetreten. Sie können dieses Projekt weiterhin manuell über Windows Explorer oder Visual Studio öffnen. Zusätzliche Informationen: {1}</value>
+	</data>
+	<data name="ProjectRemove" xml:space="preserve">
+		<value>Projekt entfernen</value>
+	</data>
+	<data name="ProjectNewSynced" xml:space="preserve">
+		<value>Neues synchronisiertes Projekt</value>
+	</data>
+	<data name="ProjectAddExisting" xml:space="preserve">
+		<value>Bestehendes Projekt hinzufügen</value>
+	</data>
+	<data name="ProjectAndroid" xml:space="preserve">
+		<value>Android-Projekt</value>
+	</data>
+	<data name="VisualStudioFiles" xml:space="preserve">
+		<value>VS-Projektdateien</value>
+	</data>
+	<data name="ProjectIsAlreadySynced" xml:space="preserve">
+		<value>Das ausgewählte Projekt ist bereits ein synchronisiertes Projekt.</value>
+	</data>
+	<data name="InGameProject" xml:space="preserve">
+		<value>Im Spielprojekt</value>
+	</data>
+	<data name="OnFileSystem" xml:space="preserve">
+		<value>Im Dateisystem</value>
+	</data>
+	<data name="ViewInExplorer" xml:space="preserve">
+		<value>Im Explorer anzeigen</value>
 	</data>
 </root>

@@ -68,7 +68,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
-            HighlghtText();
+            HighlightText();
         }
     }
 }

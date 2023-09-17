@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views" 
         xmlns:controls="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
         Title="Recent FlatRedBall Projects" Height="450" Width="660">
     <Grid Margin="5">
@@ -35,8 +36,8 @@
         </ListBox>
         
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,0,0">
-            <Button Click="LoadButton_Click">Load</Button>
-            <Button Click="CancelButton_Click" Margin="5,0,0,0">Cancel</Button>
+            <Button Click="LoadButton_Click"  Content="{x:Static localization:Texts.Load}" />
+            <Button Click="CancelButton_Click" Margin="5,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

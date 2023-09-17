@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GlueFormsCore.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d"  d:DesignWidth="200">
     <Grid Grid.Row="1">
         <Grid.ColumnDefinitions>
@@ -33,7 +33,7 @@
                                Margin="3,0,3,0" 
                                Visibility="{Binding SearchPlaceholderVisibility}"
                                x:Name="PlaceholderText" Grid.ColumnSpan="2" 
-                               >Search...</TextBlock>
+                               Text="{x:Static localization:Texts.Search}" />
             </Grid>
         </StackPanel>
         <Button x:Name="ClearSearchButton" Width="18" Height="18" VerticalAlignment="Top" Grid.Column="1" Click="ClearSearchButton_Click"

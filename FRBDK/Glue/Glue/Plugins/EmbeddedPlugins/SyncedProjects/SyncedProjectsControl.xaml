@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="400">
     <Grid>
@@ -19,22 +20,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        
             <StackPanel Grid.Column="1">
-
-
-            <Button Margin="6" Height="30" Click="AddNewProjectClick">
-                New Synced Project</Button>
-
-            <Button Margin="6" Height="30" Click="AddProjectClick">
-                    Add Existing Project</Button>
-
-                <Button Margin="6" Height="30" Click="RemoveProjectClick">
-                    Remove Project</Button>
-
-            </StackPanel>
-
-            
-        
+            <Button Margin="6" Height="30" Click="AddNewProjectClick" Content="{x:Static localization:Texts.ProjectNewSynced}" />
+            <Button Margin="6" Height="30" Click="AddProjectClick"   Content="{x:Static localization:Texts.ProjectAddExisting}" />
+            <Button Margin="6" Height="30" Click="RemoveProjectClick"  Content="{x:Static localization:Texts.ProjectRemove}" />
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
         Title="" SizeToContent="Height" Width="400">
     <Grid>
@@ -14,7 +15,7 @@
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap">This is the top row with information. Below is the list box, custom control stack, then the button stack</TextBlock>
+        <TextBlock x:Name="DisplayTextLabel" TextWrapping="Wrap" Text="{x:Static localization:Texts.HintTopRowInformation}" />
         <local:SearchBar x:Name="SearchBarInstance" Grid.Row="1" Visibility="Collapsed"></local:SearchBar>
         <ListBox x:Name="ListBoxInstance" Grid.Row="2" MinHeight="120" ItemsSource="{Binding FilteredItems}">
         </ListBox>

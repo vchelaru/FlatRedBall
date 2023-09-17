@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin" xmlns:views="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:views="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin.Views"
              mc:Ignorable="d" 
              
              d:Width="250">
@@ -24,8 +25,8 @@
                     <Image Source="/Content/Icons/Delete.png"></Image>
                 </Button>
             </Grid>
-            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}">Generate Display Code</CheckBox>
-            <StackPanel Visibility="{Binding AllPropertiesVisibility}">
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}" Content="{x:Static localization:Texts.GenerateDisplayCode}" />
+                <StackPanel Visibility="{Binding AllPropertiesVisibility}">
                 
                 <GroupBox Header="Resolution">
                     <StackPanel>
@@ -43,7 +44,6 @@
                                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                         <Button HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-3,-3,0,-3" Click="PresetResolutionDropdownClick">
                                             <Polygon HorizontalAlignment="Center" VerticalAlignment="Center" Points="0,0 10,0, 5,6" Stroke="Black" Fill="Black" />
-                                            
                                         </Button>                                    
                                     </Grid>
                                 </MenuItem.Icon>
@@ -55,9 +55,9 @@
                             </MenuItem>
                             
                         </WrapPanel>
-                        <RadioButton IsChecked="{Binding IsVariableAspectRatio}">Variable Aspect Ratio</RadioButton>
-                        <RadioButton IsChecked="{Binding IsFixedAspectRatio}">Fixed Aspect Ratio</RadioButton>
-                        <RadioButton IsChecked="{Binding IsRangedAspectRatio}">Ranged Aspect Ratio</RadioButton>
+                        <RadioButton IsChecked="{Binding IsVariableAspectRatio}" Content="{x:Static localization:Texts.AspectRatioVariable}" />
+                        <RadioButton IsChecked="{Binding IsFixedAspectRatio}" Content="{x:Static localization:Texts.AspectRatioFixed}" />
+                        <RadioButton IsChecked="{Binding IsRangedAspectRatio}" Content="{x:Static localization:Texts.AspectRatioRanged}" />
                         <!--<CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" Content="Fixed Aspect Ratio" IsChecked="{Binding FixedAspectRatio}"/>-->
                         <StackPanel Orientation="Horizontal">
                             <views:AspectRatioSelectionView DataContext="{Binding AspectRatio1}"></views:AspectRatioSelectionView>
@@ -77,8 +77,8 @@
                             
                     </StackPanel>
                 </GroupBox>
-                
-                <GroupBox Header="Perspective">
+
+                <GroupBox Header="{x:Static localization:Texts.Perspective}">
                     <WrapPanel>
                         <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding Is2D}" Margin="6">
                             <StackPanel>
@@ -95,18 +95,18 @@
                     </WrapPanel>
                 </GroupBox>
 
-                <GroupBox Header="Texture Filter">
+                <GroupBox Header="{x:Static localization:Texts.TextureFilter}">
                     <WrapPanel>
                         <RadioButton GroupName="Filter" IsChecked="{Binding IsPointFilter}" VerticalContentAlignment="Center" Margin="10">
                             <StackPanel>
                                 <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/PointFilter.png" MaxWidth="80"></Image>
-                                <TextBlock>Point</TextBlock>
+                                <TextBlock Text="{x:Static localization:Texts.Point}" />
                             </StackPanel>
                         </RadioButton>
                         <RadioButton GroupName="Filter" IsChecked="{Binding IsLinearFilter}" VerticalContentAlignment="Center" Margin="10">
                             <StackPanel>
                                 <Image Source="/Plugins/EmbeddedPlugins/CameraPlugin/Icons/LinearFilter.png" MaxWidth="80"></Image>
-                                <TextBlock>Linear</TextBlock>
+                                <TextBlock Text="{x:Static localization:Texts.Linear}" />
                             </StackPanel>
                         </RadioButton>
                     </WrapPanel>
@@ -114,9 +114,9 @@
 
                 <GroupBox Header="Desktop">
                     <StackPanel>
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding RunInFullScreen}">Fullscreen</CheckBox>
+                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding RunInFullScreen}" Content="{x:Static localization:Texts.Fullscreen}" />
 
-                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding AllowWindowResizing}">Allow Window Resizing</CheckBox>
+                        <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding AllowWindowResizing}" Content="{x:Static localization:Texts.WindowResizingAllow}" />
 
                         <StackPanel Orientation="Horizontal">
                             <Label>Scale</Label>
@@ -128,7 +128,7 @@
 
                         <GroupBox Margin="20,0,0,0" Background="LightYellow" Visibility="{Binding FullScreenScaleMessageVisibility}">
                             <StackPanel>
-                                <TextBlock TextWrapping="Wrap">The game's zoom cannot be set by Glue. The zoom will effectively be a result of the desired resolution and the resolution of the monitor.</TextBlock>
+                                <TextBlock TextWrapping="Wrap" Text="{x:Static localization:Texts.HintGameZoomGlueCannotSet}" />
                             </StackPanel>
                         </GroupBox>
 
@@ -154,7 +154,7 @@
                                             Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchArea.gif"/>
-                                        <TextBlock  TextAlignment="Center">Preserve<LineBreak/>(Stretch) Area</TextBlock>
+                                        <TextBlock  TextAlignment="Center" Text="{x:Static localization:Texts.PreserveStretchArea}" />
                                     </StackPanel>
                                 </RadioButton>
 
@@ -172,7 +172,7 @@
                                             Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseArea.gif"/>
-                                        <TextBlock TextAlignment="Center">Increase<LineBreak/>Visible Area</TextBlock>
+                                        <TextBlock TextAlignment="Center" Text="{x:Static localization:Texts.IncreaseVisibleArea}" />
                                     </StackPanel>
                                 </RadioButton>
                             </WrapPanel>
@@ -190,7 +190,7 @@
                                             LoadedBehavior="Play" Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/StretchAreaGum.gif"/>
-                                        <TextBlock TextAlignment="Center">Preserve<LineBreak/>(Stretch)  Area</TextBlock>
+                                        <TextBlock TextAlignment="Center" Text="{x:Static localization:Texts.PreserveStretchArea}" />
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Margin="18,0,0,0" IsChecked="{Binding UseIncreaseVisibleResizeGumBehavior}" 
@@ -202,28 +202,23 @@
                                             LoadedBehavior="Play" Stretch="None" 
                                             MediaEnded="HandleMediaEnded"
                                             Source="pack://siteoforigin:,,,/Plugins/EmbeddedPlugins/CameraPlugin/IncreaseAreaGum.gif"/>
-                                        <TextBlock  TextAlignment="Center">Increase<LineBreak/>Area</TextBlock>
+                                        <TextBlock  TextAlignment="Center" Text="{x:Static localization:Texts.IncreaseVisibleArea}" />
                                     </StackPanel>
                                 </RadioButton>
                             </WrapPanel>
                         </GroupBox>
-
                     </StackPanel>
-
                 </GroupBox>
                 <GroupBox Header="Mobile">
                     <StackPanel>
                         <TextBlock Visibility="{Binding SupportedOrientationsLinkVisibility}" TextWrapping="Wrap" >           
                             <Hyperlink NavigateUri="http://flatredball.com/documentation/api/microsoft-xna-framework/graphicsdevicemanager/supportedorientations/" 
                                        RequestNavigate="Hyperlink_RequestNavigate">
-                                <Run>See the SupportedOrientations documentation for controlling mobile orientations.</Run>
+                                <Run Text="{x:Static localization:Texts.HintSupportedOrientationsDocumentation}" />
                             </Hyperlink>
                         </TextBlock>
-                        
-                        
                     </StackPanel>
                 </GroupBox>
-
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

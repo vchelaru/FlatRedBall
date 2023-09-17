@@ -786,7 +786,7 @@
 		<value>Create Project Directory:</value>
 	</data>
 	<data name="SolutionLocatedIn" xml:space="preserve">
-		<value>Solution (.sln) will be located in:</value>
+		<value>The solution (.sln) is located in:</value>
 	</data>
 	<data name="Location" xml:space="preserve">
 		<value>Location:</value>
@@ -1018,5 +1018,248 @@
 	</data>
 	<data name="PleaseWait" xml:space="preserve">
 		<value>Please wait...</value>
+	</data>
+	<data name="VariableCreate" xml:space="preserve">
+		<value>Create a new variable</value>
+	</data>
+	<data name="VariableTunnelIntoContainer" xml:space="preserve">
+		<value>Tunnel a variable in a contained object</value>
+	</data>
+	<data name="ExposeVariable" xml:space="preserve">
+		<value>Expose an existing variable</value>
+	</data>
+	<data name="SelectExistingVariable" xml:space="preserve">
+		<value>Select an existing variable:</value>
+	</data>
+	<data name="Type" xml:space="preserve">
+		<value>Type:</value>
+	</data>
+	<data name="HintTopRowInformation" xml:space="preserve">
+		<value>This is the top row with information. Below is the list box, custom control stack, then the button stack</value>
+	</data>
+	<data name="ObjectNew" xml:space="preserve">
+		<value>New Object</value>
+	</data>
+	<data name="Entity" xml:space="preserve">
+		<value>Entity</value>
+	</data>
+	<data name="FromFile" xml:space="preserve">
+		<value>From File</value>
+	</data>
+	<data name="FrbOrCustomType" xml:space="preserve">
+		<value>FlatRedBall or Custom Type</value>
+	</data>
+	<data name="SourceName" xml:space="preserve">
+		<value>Source name:</value>
+	</data>
+	<data name="ListType" xml:space="preserve">
+		<value>List Type:</value>
+	</data>
+	<data name="EnterNewObjectName" xml:space="preserve">
+		<value>Enter the new object's name</value>
+	</data>
+	<data name="ObjectDelete" xml:space="preserve">
+		<value>Delete Object?</value>
+	</data>
+	<data name="Delete" xml:space="preserve">
+		<value>Delete</value>
+	</data>
+	<data name="DeleteAlsoFollowing" xml:space="preserve">
+		<value>The following items will also be deleted:</value>
+	</data>
+	<data name="DeleteQuestion" xml:space="preserve">
+		<value>Would you like to delete this item?</value>
+	</data>
+	<data name="FrbGlueVersion" xml:space="preserve">
+		<value>FlatRedBall Glue Version</value>
+	</data>
+	<data name="LatestVersion" xml:space="preserve">
+		<value>Latest Version</value>
+	</data>
+	<data name="InstallUpdate" xml:space="preserve">
+		<value>Install Update</value>
+	</data>
+	<data name="Copyright" xml:space="preserve">
+		<value>Copyright</value>
+	</data>
+	<data name="GlueProjectVersion" xml:space="preserve">
+		<value>Glue Project Version</value>
+	</data>
+	<data name="InheritFromGameScreen" xml:space="preserve">
+		<value>Inherit from GameScreen</value>
+	</data>
+	<data name="LevelScreen" xml:space="preserve">
+		<value>Level Screen</value>
+	</data>
+	<data name="SetAsStartupScreen" xml:space="preserve">
+		<value>Set as StartUp Screen (first screen when running)</value>
+	</data>
+	<data name="EntitiesCopyAnotherLevel" xml:space="preserve">
+		<value>Copy Entities From Other Level</value>
+	</data>
+	<data name="TmxAddStandard" xml:space="preserve">
+		<value>Add Standard TMX File</value>
+	</data>
+	<data name="TmxCopyOtherLevel" xml:space="preserve">
+		<value>Copy TMX From Other Level</value>
+	</data>
+	<data name="TmxNoFile" xml:space="preserve">
+		<value>No TMX File (Can be added later)</value>
+	</data>
+	<data name="GameScreenBaseLevelScreen" xml:space="preserve">
+		<value>Game Screen (Base Level Screen)</value>
+	</data>
+	<data name="EmptyScreen" xml:space="preserve">
+		<value>Empty Screen</value>
+	</data>
+	<data name="EntitiesListAdd" xml:space="preserve">
+		<value>Add Lists for Entities</value>
+	</data>
+	<data name="LayeredTileMapAdd" xml:space="preserve">
+		<value>Add LayeredTileMap</value>
+	</data>
+	<data name="SolidCollisionAdd" xml:space="preserve">
+		<value>Add SolidCollision ShapeCollection</value>
+	</data>
+	<data name="CloudCollisionAdd" xml:space="preserve">
+		<value>Add CloudCollision ShapeCollection</value>
+	</data>
+	<data name="GenerateDisplayCode" xml:space="preserve">
+		<value>Generate Display Code</value>
+	</data>
+	<data name="AspectRatioVariable" xml:space="preserve">
+		<value>Variable Aspect Ratio</value>
+	</data>
+	<data name="AspectRatioFixed" xml:space="preserve">
+		<value>Fixed Aspect Ratio</value>
+	</data>
+	<data name="AspectRatioRanged" xml:space="preserve">
+		<value>Ranged Aspect Ratio</value>
+	</data>
+	<data name="Point" xml:space="preserve">
+		<value>Point</value>
+	</data>
+	<data name="Linear" xml:space="preserve">
+		<value>Linear</value>
+	</data>
+	<data name="Perspective" xml:space="preserve">
+		<value>Perspective</value>
+	</data>
+	<data name="TextureFilter" xml:space="preserve">
+		<value>Texture Filter</value>
+	</data>
+	<data name="Fullscreen" xml:space="preserve">
+		<value>Fullscreen</value>
+	</data>
+	<data name="WindowResizingAllow" xml:space="preserve">
+		<value>Allow Window Resizing</value>
+	</data>
+	<data name="HintGameZoomGlueCannotSet" xml:space="preserve">
+		<value>The game's zoom cannot be set by Glue. The zoom will effectively be a result of the desired resolution and the resolution of the monitor.</value>
+	</data>
+	<data name="PreserveStretchArea" xml:space="preserve">
+		<value>Preserve Stretch Area</value>
+	</data>
+	<data name="IncreaseVisibleArea" xml:space="preserve">
+		<value>Increase Visible Area</value>
+	</data>
+	<data name="HintSupportedOrientationsDocumentation" xml:space="preserve">
+		<value>See the SupportedOrientations documentation for controlling mobile orientations.</value>
+	</data>
+	<data name="EnterNameDisplaySetting" xml:space="preserve">
+		<value>Enter a name for the display setting</value>
+	</data>
+	<data name="ProjectSaveCameraChanges" xml:space="preserve">
+		<value>Saving project due to camera changes</value>
+	</data>
+	<data name="RemoveDisplayOption" xml:space="preserve">
+		<value>Removing Display Option</value>
+	</data>
+	<data name="From" xml:space="preserve">
+		<value>From:</value>
+	</data>
+	<data name="To" xml:space="preserve">
+		<value>To</value>
+	</data>
+	<data name="Activate" xml:space="preserve">
+		<value>Activate</value>
+	</data>
+	<data name="Execute" xml:space="preserve">
+		<value>Execute</value>
+	</data>
+	<data name="CSharpProjectFiles" xml:space="preserve">
+		<value>C# Project Files</value>
+	</data>
+	<data name="CopyAutomatically" xml:space="preserve">
+		<value>Automatically copy</value>
+	</data>
+	<data name="CopyManual" xml:space="preserve">
+		<value>Manual copy:</value>
+	</data>
+	<data name="CopiedReferencesForProjectAInB" xml:space="preserve">
+		<value>Copied references for project {0} in {1}.</value>
+	</data>
+	<data name="SkippingProjectNotFound" xml:space="preserve">
+		<value>Skipping project {0} because a matching project was not found in {1}</value>
+	</data>
+	<data name="Load" xml:space="preserve">
+		<value>Load</value>
+	</data>
+	<data name="PluginRestartToDelete" xml:space="preserve">
+		<value>Success - Glue must be restarted to finish removing the plugin.</value>
+	</data>
+	<data name="LoadOnStartup" xml:space="preserve">
+		<value>Load on startup</value>
+	</data>
+	<data name="RequiredByProject" xml:space="preserve">
+		<value>Required by project</value>
+	</data>
+	<data name="ProjectGlueNoneLoaded" xml:space="preserve">
+		<value>No Glue project loaded</value>
+	</data>
+	<data name="CleanAll" xml:space="preserve">
+		<value>Clean all</value>
+	</data>
+	<data name="HintOrphanedFilesOfProject" xml:space="preserve">
+		<value>Orphaned files are referenced by the current project but do not exist on disk. These files will cause compile errors in your project.</value>
+	</data>
+	<data name="ErrorCannotOpenXamarin" xml:space="preserve">
+		<value>Error opening Xamarin Studio - see error in output</value>
+	</data>
+	<data name="GlueFileAssociation" xml:space="preserve">
+		<value>Your machine has the file {0} associated with Glue.  It should probably be associated with a programming IDE like Visual Studio</value>
+	</data>
+	<data name="ErrorOpeningProjectVisualStudio" xml:space="preserve">
+		<value>An error has occurred when trying to open the project. Please try again if Visual Studio has not opened.</value>
+	</data>
+	<data name="ErrorCannotOpenProject" xml:space="preserve">
+		<value>An error has occurred when trying to open the project file {0}.You can still open this project manually through Windows Explorer or Visual Studio. Additional info: {1}</value>
+	</data>
+	<data name="ProjectRemove" xml:space="preserve">
+		<value>Remove Project</value>
+	</data>
+	<data name="ProjectNewSynced" xml:space="preserve">
+		<value>New Synced Project</value>
+	</data>
+	<data name="ProjectAddExisting" xml:space="preserve">
+		<value>Add Existing Project</value>
+	</data>
+	<data name="ProjectAndroid" xml:space="preserve">
+		<value>Android project</value>
+	</data>
+	<data name="VisualStudioFiles" xml:space="preserve">
+		<value>VS Project files</value>
+	</data>
+	<data name="ProjectIsAlreadySynced" xml:space="preserve">
+		<value>The selected project is already a synced project.</value>
+	</data>
+	<data name="InGameProject" xml:space="preserve">
+		<value>In Game Project</value>
+	</data>
+	<data name="OnFileSystem" xml:space="preserve">
+		<value>On File System</value>
+	</data>
+	<data name="ViewInExplorer" xml:space="preserve">
+		<value>View in Explorer</value>
 	</data>
 </root>

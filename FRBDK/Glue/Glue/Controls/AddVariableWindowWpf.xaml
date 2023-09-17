@@ -14,14 +14,14 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Margin="10">
-            <RadioButton IsChecked="{Binding IsExposedVariableChecked}">Expose an existing variable</RadioButton>
-            <RadioButton IsChecked="{Binding IsTunneledVariableChecked}">Tunnel a variable in a contained object</RadioButton>
-            <RadioButton IsChecked="{Binding IsNewVariableChecked}">Create a new variable</RadioButton>
+            <RadioButton IsChecked="{Binding IsExposedVariableChecked}" Content="{x:Static localization:Texts.ExposeVariable}" />
+            <RadioButton IsChecked="{Binding IsTunneledVariableChecked}" Content="{x:Static localization:Texts.VariableTunnelIntoContainer}" />
+            <RadioButton IsChecked="{Binding IsNewVariableChecked}" Content="{x:Static localization:Texts.VariableCreate}" />
         </StackPanel>
         <Separator Grid.Row="1"></Separator>
         
         <StackPanel x:Name="ExposeExistingUi" Grid.Row="2" Margin="10" Visibility="{Binding ExposeUiVisibility, FallbackValue=Collapsed}">
-            <Label>Select an existing variable:</Label>
+            <Label Content="{x:Static localization:Texts.SelectExistingVariable}" />
             <ComboBox x:Name="ExistingVariableComboBox" 
                       ItemsSource="{Binding AvailableExposedVariables}" 
                       SelectedItem="{Binding SelectedExposedVariable}"></ComboBox>
@@ -86,7 +86,7 @@
                     VerticalAlignment="Bottom" Content="{x:Static localization:Texts.ShowStateCategories}" />
 
             </StackPanel>
-            <Label VerticalAlignment="Bottom" HorizontalAlignment="Left">Type:</Label>
+            <Label VerticalAlignment="Bottom" HorizontalAlignment="Left"  Content="{x:Static localization:Texts.Type}" />
             <ListBox 
                 ItemsSource="{Binding AvailableNewVariableTypes}"
                 SelectedItem="{Binding SelectedNewType}"
