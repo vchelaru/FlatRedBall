@@ -33,6 +33,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         private RefreshManager _refreshManager;
         CompilerViewModel viewModel;
 
+        string[] ignoredFilesForCopying = new[]
+        {
+            "gum_events.json",
+            "GumLastChangeFilePath.txt"
+        };
+
+
         public FileChangeManager(Action<string> output, CompilerViewModel viewModel, RefreshManager refreshManager)
         {
             this._output = output;
@@ -68,7 +75,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         {
             var settingsFolder = GlueState.Self.ProjectSpecificSettingsPath;
 
-            return settingsFolder.IsRootOf(fileName);
+            if(settingsFolder.IsRootOf(fileName))
+            {
+                return true;
+            }
+
+
+            var strippedFileName = fileName.NoPath;
+
+            return ignoredFilesForCopying.Contains(strippedFileName);
         }
 
         private void OutputSuccessOrFailure(bool succeeded)

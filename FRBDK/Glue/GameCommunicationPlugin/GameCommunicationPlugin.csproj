@@ -67,6 +67,8 @@
   <ItemGroup>
     <None Remove="GlueControl\Icons\AdvanceOneFrame.png" />
     <None Remove="GlueControl\Icons\build.png" />
+    <None Remove="GlueControl\Icons\Connected.png" />
+    <None Remove="GlueControl\Icons\Disconnected.png" />
     <None Remove="GlueControl\Icons\Edit.png" />
     <None Remove="GlueControl\Icons\EditDeselected.png" />
     <None Remove="GlueControl\Icons\FirewallEnablePopup.png" />
@@ -151,6 +153,8 @@
   <ItemGroup>
     <Resource Include="GlueControl\Icons\AdvanceOneFrame.png" />
     <Resource Include="GlueControl\Icons\build.png" />
+    <Resource Include="GlueControl\Icons\Connected.png" />
+    <Resource Include="GlueControl\Icons\Disconnected.png" />
     <Resource Include="GlueControl\Icons\Edit.png" />
     <Resource Include="GlueControl\Icons\EditDeselected.png" />
     <Resource Include="GlueControl\Icons\FirewallEnablePopup.png" />

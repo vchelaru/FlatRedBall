@@ -61,11 +61,27 @@
             </WrapPanel>
 
             <StackPanel x:Name="AlwaysVisibleStack" HorizontalAlignment="Right" Orientation="Horizontal" Margin="2" Grid.Column="1">
+
+                <Image Height="24" 
+                       Source="/GameCommunicationPlugin;component/GlueControl/Icons/Connected.png"
+                       Visibility="{Binding ConnectedButtonVisibility}">
+                    <Image.ToolTip>
+                        <TextBlock>Connected to game</TextBlock>
+                    </Image.ToolTip>
+                </Image>
+                <Image Height="24" 
+                       Source="/GameCommunicationPlugin;component/GlueControl/Icons/Disconnected.png"
+                       Visibility="{Binding CancelButtonVisibility}">
+                    <Image.ToolTip>
+                        <TextBlock>Disconnected from game</TextBlock>
+                    </Image.ToolTip>
+                </Image>
+
                 <Grid Visibility="{Binding MessageAboutEditModeDisabledVisibility}">
-                    <Frame Background="Yellow" BorderBrush="DarkGray" BorderThickness="1"/>
+                    <Frame Margin="0,3,0,3" Background="Yellow" BorderBrush="DarkGray" BorderThickness="1"/>
                     <TextBlock Margin="3" VerticalAlignment="Center">Enable Game Embed and Edit in Settings</TextBlock>
                 </Grid>
-                <Button VerticalAlignment="Top" Width="24" Click="GlueViewSettingsButtonClicked">
+                <Button VerticalAlignment="Center" Width="24"  Click="GlueViewSettingsButtonClicked" Margin="2,0,0,0">
                     <Image IsHitTestVisible="False" Source="/GameCommunicationPlugin;component/GlueControl/Icons/Settings.png"></Image>
                 </Button>
             </StackPanel>
