@@ -202,6 +202,8 @@ namespace BuildServerUploaderConsole.Data
             {
                 var engine = new EngineData();
 
+                engine.EngineCSProjLocation = @"FlatRedBall\Engines\FlatRedBallXNA\FlatRedBallDesktopGLNet6\FlatRedBallDesktopGLNet6.csproj";
+
                 engine.RelativeToLibrariesDebugFolder = @"DesktopGl\Debug";
                 engine.RelativeToLibrariesReleaseFolder = @"DesktopGl\Release";
                 engine.TemplateFolder = @"FlatRedBallDesktopGlNet6Template\FlatRedBallDesktopGlNet6Template\";
