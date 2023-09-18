@@ -45,8 +45,7 @@ namespace BuildServerUploaderConsole.Processes
             {
                 if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
                 {
-
-                    var csProjAbsolute = DirectoryHelper.FlatRedBallDirectory + engine.EngineCSProjLocation;
+                    var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
                     ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
                 }
             }
