@@ -128,7 +128,7 @@ namespace CompilerPlugin
             _compilerViewModel.Configuration = "Debug";
             _compilerViewModel.PropertyChanged += HandleCompilerViewModelPropertyChanged;
 
-            buildTab = CreateTab(MainControl, "Build", TabLocation.Bottom);
+            buildTab = CreateTab(MainControl, Localization.Texts.Build, TabLocation.Bottom);
             buildTab.Show();
 
             AssignControlEvents();
@@ -145,7 +145,7 @@ namespace CompilerPlugin
                     _compilerViewModel.IsPrintMsBuildCommandChecked);
                 if (!succeeded)
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
             };
 
@@ -208,7 +208,7 @@ namespace CompilerPlugin
             var compileTask = _compiler.Compile(
                 (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
                 (value) => ReactToPluginEvent("Compiler_Output_Error", value),
-                _compilerViewModel.Configuration,
+                _compilerViewModel.Configuration,   
                 _compilerViewModel.IsPrintMsBuildCommandChecked);
 
             var dialog = new SaveFileDialog();
@@ -219,7 +219,7 @@ namespace CompilerPlugin
 
                 if (!succeeded)
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
                 else
                 {

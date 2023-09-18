@@ -915,7 +915,7 @@
 		<value>IDamageArea (peut infliger des dégâts)</value>
 	</data>
 	<data name="Custom" xml:space="preserve">
-		<value>Coutume</value>
+		<value>Personnalisé</value>
 	</data>
 	<data name="TeamZeroPlayer" xml:space="preserve">
 		<value>0 (équipe de joueurs)</value>
@@ -1068,7 +1068,7 @@
 		<value>Les éléments suivants seront également supprimés :</value>
 	</data>
 	<data name="DeleteQuestion" xml:space="preserve">
-		<value>Souhaitez-vous supprimer cet élément ?</value>
+		<value>Etes-vous sûr que vous voulez supprimer?</value>
 	</data>
 	<data name="FrbGlueVersion" xml:space="preserve">
 		<value>Version Glue FlatRedBall</value>
@@ -1744,5 +1744,338 @@
 	</data>
 	<data name="VariablesExcluded" xml:space="preserve">
 		<value>Variables exclues</value>
+	</data>
+	<data name="CollapseAll" xml:space="preserve">
+		<value>Réduire tout</value>
+	</data>
+	<data name="CollapseAllFolders" xml:space="preserve">
+		<value>Réduit tous les dossiers et conteneurs</value>
+	</data>
+	<data name="ScopeDefinitions" xml:space="preserve">
+		<value>Portée des définitions</value>
+	</data>
+	<data name="SelectPreviousItem" xml:space="preserve">
+		<value>Sélectionne l'élément précédemment sélectionné</value>
+	</data>
+	<data name="SelectionStackNext" xml:space="preserve">
+		<value>Sélectionne l'élément suivant dans la pile de sélection</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Dos</value>
+	</data>
+	<data name="Forward" xml:space="preserve">
+		<value>Avant</value>
+	</data>
+	<data name="CollapseFoldersExpandsTopLevel" xml:space="preserve">
+		<value>Réduit tous les écrans et entités, développe les dossiers de niveau supérieur</value>
+	</data>
+	<data name="SavingSettingsAfterDismissing" xml:space="preserve">
+		<value>Enregistrement des paramètres après avoir fermé l'arborescence</value>
+	</data>
+	<data name="Undo" xml:space="preserve">
+		<value>Annuler</value>
+	</data>
+	<data name="CopyJsonToClipboard" xml:space="preserve">
+		<value>Copier JSON dans le Presse-papiers</value>
+	</data>
+	<data name="PlatformerStandard" xml:space="preserve">
+		<value>Jeu de plateforme standard</value>
+	</data>
+	<data name="PlatformerStandardDescription" xml:space="preserve">
+		<value>Crée un projet de plateforme. Les jeux de plateforme incluent un joueur qui peut se déplacer horizontalement et sauter.</value>
+	</data>
+	<data name="TopdownStandard" xml:space="preserve">
+		<value>Standard de haut en bas</value>
+	</data>
+	<data name="TopdownStandardDescription" xml:space="preserve">
+		<value>Crée un jeu descendant. Les jeux descendants incluent un joueur qui peut se déplacer dans les quatre directions.</value>
+	</data>
+	<data name="UIFrbForms" xml:space="preserve">
+		<value>IU (FlatRedBall.Forms)</value>
+	</data>
+	<data name="UIFrbFormsDescription" xml:space="preserve">
+		<value>Crée un jeu avec un menu principal et inclut FlatRedBall.Forms.</value>
+	</data>
+	<data name="CustomAdvanced" xml:space="preserve">
+		<value>Personnalisé (avancé)</value>
+	</data>
+	<data name="CustomAdvancedDescription" xml:space="preserve">
+		<value>Des jeux personnalisés peuvent être créés à l'aide d'un certain nombre d'options contrôlant la configuration du joueur, du niveau et de l'interface utilisateur.</value>
+	</data>
+	<data name="SelectGameType" xml:space="preserve">
+		<value>Sélectionnez un type de jeu :</value>
+	</data>
+	<data name="Welcome" xml:space="preserve">
+		<value>Bienvenu</value>
+	</data>
+	<data name="WizardWelcomeLabel" xml:space="preserve">
+		<value>Cet assistant vous aidera à configurer rapidement un projet Glue. Commençons!</value>
+	</data>
+	<data name="ConfigurationUse" xml:space="preserve">
+		<value>Utiliser la configuration</value>
+	</data>
+	<data name="WizardStartFromStretch" xml:space="preserve">
+		<value>Démarrer l'assistant à partir de zéro</value>
+	</data>
+	<data name="Or" xml:space="preserve">
+		<value>Ou</value>
+	</data>
+	<data name="WizardConfigurationEnter" xml:space="preserve">
+		<value>Entrez la configuration de l'assistant</value>
+	</data>
+	<data name="WizardProjectStart" xml:space="preserve">
+		<value>Assistant de configuration de projet</value>
+	</data>
+	<data name="EntityIsRacing" xml:space="preserve">
+		<value>Est une entité de course</value>
+	</data>
+	<data name="Scale" xml:space="preserve">
+		<value>Échelle:</value>
+	</data>
+	<data name="LayerVisibility" xml:space="preserve">
+		<value>Visibilité des couches :</value>
+	</data>
+	<data name="OffsetX" xml:space="preserve">
+		<value>Décalage X :</value>
+	</data>
+	<data name="OffsetY" xml:space="preserve">
+		<value>Décalage Y :</value>
+	</data>
+	<data name="OffsetZ" xml:space="preserve">
+		<value>Décalage Z :</value>
+	</data>
+	<data name="LayerName" xml:space="preserve">
+		<value>Nom du calque :</value>
+	</data>
+	<data name="VariableType" xml:space="preserve">
+		<value>Type de variable :</value>
+	</data>
+	<data name="CopyImages" xml:space="preserve">
+		<value>Copier des images</value>
+	</data>
+	<data name="RequireTile" xml:space="preserve">
+		<value>Exiger une tuile</value>
+	</data>
+	<data name="AutomaticallyCreateScreensTmx" xml:space="preserve">
+		<value>Créer automatiquement des écrans pour les fichiers TMX</value>
+	</data>
+	<data name="TreeViewShowLevelScreens" xml:space="preserve">
+		<value>Afficher les écrans de niveau dans l'arborescence</value>
+	</data>
+	<data name="Rename" xml:space="preserve">
+		<value>Renommer</value>
+	</data>
+	<data name="Duplicate" xml:space="preserve">
+		<value>Dupliquer</value>
+	</data>
+	<data name="ScreensOrphaned" xml:space="preserve">
+		<value>Écrans orphelins</value>
+	</data>
+	<data name="ContentFolderTmxAutoGlue" xml:space="preserve">
+		<value>Les fichiers TMX dans le dossier Contenu créeront automatiquement des écrans Glue. Ces écrans n'apparaîtront dans l'arborescence que si la case ci-dessus est cochée. Ces écrans sont accessibles dans le code.</value>
+	</data>
+	<data name="EnterNewTmx" xml:space="preserve">
+		<value>Entrez le nouveau nom du TMX</value>
+	</data>
+	<data name="TmxAlreadyExists" xml:space="preserve">
+		<value>Le nom TMX {0} existe déjà</value>
+	</data>
+	<data name="CollisionIncludeSolid" xml:space="preserve">
+		<value>Inclure une bordure de collision solide</value>
+	</data>
+	<data name="EntitiesCreateGeneratedCode" xml:space="preserve">
+		<value>Créer des entités dans le code généré</value>
+	</data>
+	<data name="ViewTiledObjectsXml" xml:space="preserve">
+		<value>Afficher les objets en mosaïque XML</value>
+	</data>
+	<data name="LinksPerNode" xml:space="preserve">
+		<value>Liens par nœud</value>
+	</data>
+	<data name="Four" xml:space="preserve">
+		<value>Quatre</value>
+	</data>
+	<data name="Eight" xml:space="preserve">
+		<value>Huit</value>
+	</data>
+	<data name="Empty" xml:space="preserve">
+		<value>Vide</value>
+	</data>
+	<data name="CreationOptions" xml:space="preserve">
+		<value>Options de création</value>
+	</data>
+	<data name="FillCompletely" xml:space="preserve">
+		<value>Remplissez complètement</value>
+	</data>
+	<data name="EliminateCutCorners" xml:space="preserve">
+		<value>Éliminez les coins coupés</value>
+	</data>
+	<data name="Left" xml:space="preserve">
+		<value>Gauche:</value>
+	</data>
+	<data name="TileSize" xml:space="preserve">
+		<value>Taille des carreaux :</value>
+	</data>
+	<data name="Top" xml:space="preserve">
+		<value>Haut:</value>
+	</data>
+	<data name="TilesWide" xml:space="preserve">
+		<value>Carreaux larges :</value>
+	</data>
+	<data name="TilesHigh" xml:space="preserve">
+		<value>Hauteur des tuiles :</value>
+	</data>
+	<data name="TypeFrom" xml:space="preserve">
+		<value>Du type :</value>
+	</data>
+	<data name="SourceTmxFileObject" xml:space="preserve">
+		<value>Fichier/Objet TMX source :</value>
+	</data>
+	<data name="PropertyFrom" xml:space="preserve">
+		<value>À partir de la propriété :</value>
+	</data>
+	<data name="Property" xml:space="preserve">
+		<value>Propriété:</value>
+	</data>
+	<data name="LayerFrom" xml:space="preserve">
+		<value>À partir du calque :</value>
+	</data>
+	<data name="Layer" xml:space="preserve">
+		<value>Couche:</value>
+	</data>
+	<data name="EmptyAll" xml:space="preserve">
+		<value>Tout vide</value>
+	</data>
+	<data name="HintTileShapeCollection" xml:space="preserve">
+		<value>Cette TileShapeCollection est définie dans un écran de base. Les modifications doivent être apportées dans l'écran de base.</value>
+	</data>
+	<data name="BorderOutline" xml:space="preserve">
+		<value>Contour de la frontière</value>
+	</data>
+	<data name="LeftOuterEdge" xml:space="preserve">
+		<value>Bord extérieur gauche :</value>
+	</data>
+	<data name="TopOuterEdge" xml:space="preserve">
+		<value>Bord extérieur supérieur :</value>
+	</data>
+	<data name="BorderDimensions" xml:space="preserve">
+		<value>Dimensions de la bordure</value>
+	</data>
+	<data name="InnerSize" xml:space="preserve">
+		<value>Taille intérieure</value>
+	</data>
+	<data name="TilesX" xml:space="preserve">
+		<value># Carrelage</value>
+	</data>
+	<data name="FromTmxCollision" xml:space="preserve">
+		<value>De TMX Collision (utiliser des formes de jeu de tuiles)</value>
+	</data>
+	<data name="ClickToSetTile" xml:space="preserve">
+		<value>Cliquez pour définir la vignette</value>
+	</data>
+	<data name="HintChangingTileTsx" xml:space="preserve">
+		<value>Changer la tuile peut également modifier le TSX sous-jacent</value>
+	</data>
+	<data name="TilesRemove" xml:space="preserve">
+		<value>Supprimer les tuiles</value>
+	</data>
+	<data name="IsMerged" xml:space="preserve">
+		<value>Est fusionné</value>
+	</data>
+	<data name="PropertyWith" xml:space="preserve">
+		<value>Avec propriété</value>
+	</data>
+	<data name="Entities" xml:space="preserve">
+		<value>Entités</value>
+	</data>
+	<data name="Screens" xml:space="preserve">
+		<value>Écrans</value>
+	</data>
+	<data name="ContentGlobalFiles" xml:space="preserve">
+		<value>Fichiers de contenu global</value>
+	</data>
+	<data name="TasksRemaining" xml:space="preserve">
+		<value>Tâches restantes :</value>
+	</data>
+	<data name="Output" xml:space="preserve">
+		<value>Sortir</value>
+	</data>
+	<data name="PlatformInclusions" xml:space="preserve">
+		<value>Inclusions de la plateforme</value>
+	</data>
+	<data name="PlatformsExcluded" xml:space="preserve">
+		<value>Exclus de {0} plates-formes</value>
+	</data>
+	<data name="ReplaceProjectName" xml:space="preserve">
+		<value>Remplacer le nom du projet</value>
+	</data>
+	<data name="ProjectsSaveGenerateElements" xml:space="preserve">
+		<value>Génération d'éléments et sauvegarde de projets</value>
+	</data>
+	<data name="Build" xml:space="preserve">
+		<value>Construire</value>
+	</data>
+	<data name="Profiling" xml:space="preserve">
+		<value>Profilage</value>
+	</data>
+	<data name="Errors" xml:space="preserve">
+		<value>Messages d'erreur</value>
+	</data>
+	<data name="HintRunGameLiveFRB" xml:space="preserve">
+		<value>*L'exécution de votre jeu avec le mode édition activé nécessite une connexion en direct à l'éditeur FlatRedBall. Cliquez sur Autoriser l'accès pour activer la connexion.</value>
+	</data>
+	<data name="ShowGameRerun" xml:space="preserve">
+		<value>Afficher la liste des commandes de réexécution du jeu</value>
+	</data>
+	<data name="EnableLiveEdit" xml:space="preserve">
+		<value>Activer la modification en direct</value>
+	</data>
+	<data name="EmbedGameInGameTab" xml:space="preserve">
+		<value>Intégrer le jeu dans l'onglet Jeu</value>
+	</data>
+	<data name="PortNumber" xml:space="preserve">
+		<value>Numéro de port</value>
+	</data>
+	<data name="ShowScreenBoundsWhenViewingEntities" xml:space="preserve">
+		<value>Afficher les limites de l'écran lors de la visualisation des entités</value>
+	</data>
+	<data name="SetBackgroundColor" xml:space="preserve">
+		<value>Définir la couleur d'arrière-plan</value>
+	</data>
+	<data name="BackgroundRed" xml:space="preserve">
+		<value>Fond rouge</value>
+	</data>
+	<data name="BackgroundGreen" xml:space="preserve">
+		<value>Fond vert</value>
+	</data>
+	<data name="BackgroundBlue" xml:space="preserve">
+		<value>Fond bleu</value>
+	</data>
+	<data name="ShowGrid" xml:space="preserve">
+		<value>Afficher la grille</value>
+	</data>
+	<data name="GridAlpha" xml:space="preserve">
+		<value>Grille alpha</value>
+	</data>
+	<data name="GridSize" xml:space="preserve">
+		<value>Taille de la grille</value>
+	</data>
+	<data name="RestartScreenOnLevelContentChange" xml:space="preserve">
+		<value>Redémarrer l'écran lors du changement de contenu de niveau</value>
+	</data>
+	<data name="EnableSnapping" xml:space="preserve">
+		<value>Activer la capture</value>
+	</data>
+	<data name="SnapSize" xml:space="preserve">
+		<value>Taille du cliché</value>
+	</data>
+	<data name="PolygonPointSnapSize" xml:space="preserve">
+		<value>Taille d'accrochage au point du polygone</value>
+	</data>
+	<data name="ShowWindowDefenderUi" xml:space="preserve">
+		<value>Afficher l'interface utilisateur de Window Defender</value>
+	</data>
+	<data name="Uncategorized" xml:space="preserve">
+		<value>Non classé</value>
 	</data>
 </root>

@@ -3,22 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TiledPluginCore.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400
              ">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}" >Automatically Create Screens for TMX Files</CheckBox>
+            <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding AutoCreateTmxScreens}"  Content="{x:Static localization:Texts.AutomaticallyCreateScreensTmx}" />
             <StackPanel Margin="5,0,5,0">
                 <ListBox MinHeight="100" ItemsSource="{Binding TmxFiles}" SelectedItem="{Binding SelectedTmxFile}">
                     <ListBox.Resources>
 
                         <!--Defines a context menu-->
                         <ContextMenu x:Key="MyElementMenu">
-                            <MenuItem Header="Delete" Click="DeleteLevelClicked"/>
-                            <MenuItem Header="Duplicate" Click="DuplicateLevelClicked"/>
-                            <MenuItem Header="Rename" Click="RenameLevelClicked"/>
+                            <MenuItem Header="{x:Static localization:Texts.Delete}" Click="DeleteLevelClicked"/>
+                            <MenuItem Header="{x:Static localization:Texts.Duplicate}" Click="DuplicateLevelClicked"/>
+                            <MenuItem Header="{x:Static localization:Texts.Rename}" Click="RenameLevelClicked"/>
 
                         </ContextMenu>
 
@@ -29,13 +29,9 @@
 
                     </ListBox.Resources>
                 </ListBox>
-                <CheckBox IsChecked="{Binding ShowLevelScreensInTreeView}">Show Level Screens in Tree View</CheckBox>
-                <TextBlock TextWrapping="Wrap" FontSize="10" >
-                    TMX files in the Content folder will automatically create Glue screens. 
-                    These screens will show up in the tree view only if the check box above is checked.
-                    These screens can be accessed in code.</TextBlock>
-
-                <GroupBox Header="Orphaned Screens">
+                <CheckBox IsChecked="{Binding ShowLevelScreensInTreeView}"  Content="{x:Static localization:Texts.TreeViewShowLevelScreens}" />
+                <TextBlock TextWrapping="Wrap" FontSize="10" Text="{x:Static localization:Texts.ContentFolderTmxAutoGlue}" />
+                <GroupBox Header="{x:Static localization:Texts.ScreensOrphaned}">
                     <StackPanel>
                         <ListBox ItemsSource="{Binding OrphanedScreens}" MinHeight="30" >
                         </ListBox>

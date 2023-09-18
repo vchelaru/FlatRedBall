@@ -1,11 +1,6 @@
 ﻿using CompilerLibrary.Models;
 using FlatRedBall.Glue.MVVM;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Windows;
 
 namespace GameCommunicationPlugin.GlueControl.ViewModels
@@ -158,8 +153,6 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             compilerSettings.PolygonPointSnapSize = this.PolygonPointSnapSize;
 
             compilerSettings.ToolbarObjects.Clear();
-
-
         }
     }
 }

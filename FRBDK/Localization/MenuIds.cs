@@ -39,6 +39,6 @@
         public const string SnappingId = "00387CAA99CB4B0CA9B86FED0B54705A";
         public const string ViewBuiltProjectSizesId = "31A4A32CC90D48EC80278ABB655A3613";
         public const string ViewUnreferencedFilesId = "6273430CF94C4C90B53418A423EE5E75";
-
+        public const string VariableId = "66847D0E5F4A489F8ADE75E283FC0A72";
     }
 }

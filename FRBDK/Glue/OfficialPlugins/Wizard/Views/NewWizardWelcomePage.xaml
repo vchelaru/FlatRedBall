@@ -3,37 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.Wizard.Views" xmlns:views="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:views="clr-namespace:OfficialPluginsCore.QuickActionPlugin.Views"
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="580">
     <StackPanel >
-        <TextBlock FontSize="24">Select a game type:</TextBlock>
+        <TextBlock FontSize="24" Text="{x:Static localization:Texts.SelectGameType}" />
         <WrapPanel Margin="0,8,0,0">
             
             <views:TitleImageButton Clicked="PlatformerButtonClicked" 
-                                    Title="Standard Platformer" 
-                                    Details="Creates a platformer project. Platformer games include a Player which can move horizontally and jump." 
+                                    Title="{x:Static localization:Texts.PlatformerStandard}" 
+                                    Details="{x:Static localization:Texts.PlatformerStandardDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
                                     Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_platformer.png"></views:TitleImageButton>
         
             <views:TitleImageButton Clicked="TopDownButtonClicked"
-                                    Title="Standard Top Down" 
-                                    Details="Creates a top down game. Top down games include a Player which can move in all four directions." 
+                                    Title="{x:Static localization:Texts.TopdownStandard}" 
+                                    Details="{x:Static localization:Texts.TopdownStandardDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
                                     Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_topdown.png"></views:TitleImageButton>
 
             <views:TitleImageButton Clicked="FormsButtonClicked" 
-                                    Title="UI (FlatRedBall.Forms)" 
-                                    Details="Creates a game with a Main Menu and includes FlatRedBall.Forms." 
+                                    Title="{x:Static localization:Texts.UIFrbForms}" 
+                                    Details="{x:Static localization:Texts.UIFrbForms}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
                                     Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_forms.png"></views:TitleImageButton>
 
             <views:TitleImageButton Clicked="CustomButtonClicked" 
-                                    Title="Custom (Advanced)" 
-                                    Details="Custom games can be created using a number of options controlling Player, Level, and UI setup." 
+                                    Title="{x:Static localization:Texts.CustomAdvanced}" 
+                                    Details="{x:Static localization:Texts.CustomAdvancedDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
                                     Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_project.png"></views:TitleImageButton>

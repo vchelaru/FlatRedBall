@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.Composition;
-using FlatRedBall.Glue.Plugins.Interfaces;
-using FlatRedBall.Glue.Controls;
-using System.Windows.Forms;
+﻿using System.ComponentModel.Composition;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
 {
@@ -18,7 +12,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins
         public override void StartUp()
         {
             outputControl = new OutputControl();
-            var tab = base.CreateAndAddTab(outputControl, "Output", TabLocation.Bottom);
+            var tab = base.CreateAndAddTab(outputControl, L.Texts.Output, TabLocation.Bottom);
 
             this.OnOutputHandler += OnOutput;
             this.OnErrorOutputHandler += OnErrorOutput;

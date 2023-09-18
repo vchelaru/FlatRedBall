@@ -3,18 +3,9 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using FlatRedBall.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TiledPluginCore.ViewModels;
 
 namespace TiledPluginCore.Views
@@ -35,7 +26,7 @@ namespace TiledPluginCore.Views
 
         private void DeleteLevelClicked(object sender, RoutedEventArgs e)
         {
-            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Are you sure you want to delete?");
+            var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(Localization.Texts.DeleteQuestion);
             if(result == MessageBoxResult.Yes)
             {
                 System.IO.File.Delete(ViewModel.SelectedTmxFilePath.FullPath);
@@ -45,8 +36,8 @@ namespace TiledPluginCore.Views
 
         private void DuplicateLevelClicked(object sender, RoutedEventArgs e)
         {
-            TextInputWindow tiw = new TextInputWindow();
-            tiw.Message = "Enter new TMX name";
+            var tiw = new TextInputWindow();
+            tiw.Message = Localization.Texts.EnterNewTmx;
 
             tiw.Result = StringFunctions.IncrementNumberAtEnd(FileManager.RemoveExtension(ViewModel.SelectedTmxFile)) 
                 + ".tmx";
@@ -62,7 +53,7 @@ namespace TiledPluginCore.Views
 
                 if(doesFileAlreadyExist)
                 {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox($"The TMX name {tiw.Result} already exists");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(Localization.Texts.TmxAlreadyExists, tiw.Result));
                 }
                 else
                 {

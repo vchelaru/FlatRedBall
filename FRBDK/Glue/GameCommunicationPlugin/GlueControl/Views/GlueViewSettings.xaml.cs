@@ -49,7 +49,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 category.Name = "";
                 foreach(var member in category.Members)
                 {
-                    member.DisplayName = StringFunctions.InsertSpacesInCamelCaseString(member.DisplayName);
+                    member.DisplayName = Localization.Texts.ResourceManager.GetString(StringFunctions.InsertSpacesInCamelCaseString(member.DisplayName), Localization.Texts.Culture);
                 }
 
                 var whatToRemove = category.Members

@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="Project Setup Wizard" Height="620" Width="640"
+        Title="{x:Static localization:Texts.WizardProjectStart}" Height="620" Width="640"
         PreviewKeyDown="Window_PreviewKeyDown">
     <Grid Margin="16">
         <local:DownloadingProgress x:Name="PleaseWaitGrid" Visibility="Collapsed">

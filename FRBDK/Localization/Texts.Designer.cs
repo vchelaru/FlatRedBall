@@ -367,6 +367,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Automatically Create Screens for TMX Files.
+        /// </summary>
+        public static string AutomaticallyCreateScreensTmx {
+            get {
+                return ResourceManager.GetString("AutomaticallyCreateScreensTmx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto-name Relationship.
         /// </summary>
         public static string AutoNameRelationship {
@@ -394,11 +403,74 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back.
+        /// </summary>
+        public static string Back {
+            get {
+                return ResourceManager.GetString("Back", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blue background.
+        /// </summary>
+        public static string BackgroundBlue {
+            get {
+                return ResourceManager.GetString("BackgroundBlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Green background.
+        /// </summary>
+        public static string BackgroundGreen {
+            get {
+                return ResourceManager.GetString("BackgroundGreen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Red background.
+        /// </summary>
+        public static string BackgroundRed {
+            get {
+                return ResourceManager.GetString("BackgroundRed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Border Dimensions.
+        /// </summary>
+        public static string BorderDimensions {
+            get {
+                return ResourceManager.GetString("BorderDimensions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Border Outline.
+        /// </summary>
+        public static string BorderOutline {
+            get {
+                return ResourceManager.GetString("BorderOutline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Browse....
         /// </summary>
         public static string Browse {
             get {
                 return ResourceManager.GetString("Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Build.
+        /// </summary>
+        public static string Build {
+            get {
+                return ResourceManager.GetString("Build", resourceCulture);
             }
         }
         
@@ -574,6 +646,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Click to set tile.
+        /// </summary>
+        public static string ClickToSetTile {
+            get {
+                return ResourceManager.GetString("ClickToSetTile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Climbing.
         /// </summary>
         public static string Climbing {
@@ -637,6 +718,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collapse All.
+        /// </summary>
+        public static string CollapseAll {
+            get {
+                return ResourceManager.GetString("CollapseAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collapses all folders and containers.
+        /// </summary>
+        public static string CollapseAllFolders {
+            get {
+                return ResourceManager.GetString("CollapseAllFolders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Collapses all Screens and Entities, expands the top-level folders.
+        /// </summary>
+        public static string CollapseFoldersExpandsTopLevel {
+            get {
+                return ResourceManager.GetString("CollapseFoldersExpandsTopLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Automatically Apply Physics On Collision.
         /// </summary>
         public static string CollisionApplyPhysics {
@@ -651,6 +759,15 @@ namespace Localization {
         public static string CollisionBounce {
             get {
                 return ResourceManager.GetString("CollisionBounce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include Solid Collision Border.
+        /// </summary>
+        public static string CollisionIncludeSolid {
+            get {
+                return ResourceManager.GetString("CollisionIncludeSolid", resourceCulture);
             }
         }
         
@@ -691,6 +808,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use Configuration.
+        /// </summary>
+        public static string ConfigurationUse {
+            get {
+                return ResourceManager.GetString("ConfigurationUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Confirm.
         /// </summary>
         public static string Confirm {
@@ -723,6 +849,24 @@ namespace Localization {
         public static string ContentAdditionalViewTypes {
             get {
                 return ResourceManager.GetString("ContentAdditionalViewTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TMX files in the Content folder will automatically create Glue screens. These screens will show up in the tree view only if the check box above is checked.These screens can be accessed in code..
+        /// </summary>
+        public static string ContentFolderTmxAutoGlue {
+            get {
+                return ResourceManager.GetString("ContentFolderTmxAutoGlue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global Content Files.
+        /// </summary>
+        public static string ContentGlobalFiles {
+            get {
+                return ResourceManager.GetString("ContentGlobalFiles", resourceCulture);
             }
         }
         
@@ -763,6 +907,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy images.
+        /// </summary>
+        public static string CopyImages {
+            get {
+                return ResourceManager.GetString("CopyImages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy JSON to Clipboard.
+        /// </summary>
+        public static string CopyJsonToClipboard {
+            get {
+                return ResourceManager.GetString("CopyJsonToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manual copy:.
         /// </summary>
         public static string CopyManual {
@@ -799,6 +961,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creation Options.
+        /// </summary>
+        public static string CreationOptions {
+            get {
+                return ResourceManager.GetString("CreationOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to C# Project Files.
         /// </summary>
         public static string CSharpProjectFiles {
@@ -822,6 +993,24 @@ namespace Localization {
         public static string Custom {
             get {
                 return ResourceManager.GetString("Custom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom (Advanced).
+        /// </summary>
+        public static string CustomAdvanced {
+            get {
+                return ResourceManager.GetString("CustomAdvanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom games can be created using a number of options controlling Player, Level, and UI setup..
+        /// </summary>
+        public static string CustomAdvancedDescription {
+            get {
+                return ResourceManager.GetString("CustomAdvancedDescription", resourceCulture);
             }
         }
         
@@ -943,7 +1132,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Would you like to delete this item?.
+        ///   Looks up a localized string similar to Are you sure you want to delete?.
         /// </summary>
         public static string DeleteQuestion {
             get {
@@ -997,6 +1186,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate.
+        /// </summary>
+        public static string Duplicate {
+            get {
+                return ResourceManager.GetString("Duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit.
         /// </summary>
         public static string Edit {
@@ -1015,11 +1213,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Eight.
+        /// </summary>
+        public static string Eight {
+            get {
+                return ResourceManager.GetString("Eight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Elasticity.
         /// </summary>
         public static string Elasticity {
             get {
                 return ResourceManager.GetString("Elasticity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Eliminate Cut Corners.
+        /// </summary>
+        public static string EliminateCutCorners {
+            get {
+                return ResourceManager.GetString("EliminateCutCorners", resourceCulture);
             }
         }
         
@@ -1033,11 +1249,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Embed game in game tab.
+        /// </summary>
+        public static string EmbedGameInGameTab {
+            get {
+                return ResourceManager.GetString("EmbedGameInGameTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Embed NAudio Classes.
         /// </summary>
         public static string EmbedNAudioClasses {
             get {
                 return ResourceManager.GetString("EmbedNAudioClasses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empty.
+        /// </summary>
+        public static string Empty {
+            get {
+                return ResourceManager.GetString("Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All empty.
+        /// </summary>
+        public static string EmptyAll {
+            get {
+                return ResourceManager.GetString("EmptyAll", resourceCulture);
             }
         }
         
@@ -1074,6 +1317,24 @@ namespace Localization {
         public static string EnableGameEmbedInSettings {
             get {
                 return ResourceManager.GetString("EnableGameEmbedInSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable live edit.
+        /// </summary>
+        public static string EnableLiveEdit {
+            get {
+                return ResourceManager.GetString("EnableLiveEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable snapping.
+        /// </summary>
+        public static string EnableSnapping {
+            get {
+                return ResourceManager.GetString("EnableSnapping", resourceCulture);
             }
         }
         
@@ -1150,6 +1411,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter new TMX name.
+        /// </summary>
+        public static string EnterNewTmx {
+            get {
+                return ResourceManager.GetString("EnterNewTmx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter URL Name:.
         /// </summary>
         public static string EnterUrlName {
@@ -1159,11 +1429,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Entities.
+        /// </summary>
+        public static string Entities {
+            get {
+                return ResourceManager.GetString("Entities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy Entities From Other Level.
         /// </summary>
         public static string EntitiesCopyAnotherLevel {
             get {
                 return ResourceManager.GetString("EntitiesCopyAnotherLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Entities in Generated Code.
+        /// </summary>
+        public static string EntitiesCreateGeneratedCode {
+            get {
+                return ResourceManager.GetString("EntitiesCreateGeneratedCode", resourceCulture);
             }
         }
         
@@ -1209,6 +1497,15 @@ namespace Localization {
         public static string EntityBase {
             get {
                 return ResourceManager.GetString("EntityBase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Racing Entity.
+        /// </summary>
+        public static string EntityIsRacing {
+            get {
+                return ResourceManager.GetString("EntityIsRacing", resourceCulture);
             }
         }
         
@@ -1429,6 +1726,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Errors.
+        /// </summary>
+        public static string Errors {
+            get {
+                return ResourceManager.GetString("Errors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Example Bool Property.
         /// </summary>
         public static string ExampleBoolProperty {
@@ -1564,6 +1870,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fill Completely.
+        /// </summary>
+        public static string FillCompletely {
+            get {
+                return ResourceManager.GetString("FillCompletely", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filtered to Entities....
         /// </summary>
         public static string FilteredToEntities {
@@ -1681,6 +1996,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Forward.
+        /// </summary>
+        public static string Forward {
+            get {
+                return ResourceManager.GetString("Forward", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Files found.
         /// </summary>
         public static string FoundFiles {
@@ -1695,6 +2019,15 @@ namespace Localization {
         public static string FoundTheFollowing {
             get {
                 return ResourceManager.GetString("FoundTheFollowing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Four.
+        /// </summary>
+        public static string Four {
+            get {
+                return ResourceManager.GetString("Four", resourceCulture);
             }
         }
         
@@ -1794,6 +2127,15 @@ namespace Localization {
         public static string FromFile {
             get {
                 return ResourceManager.GetString("FromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From TMX Collision (use tileset shapes).
+        /// </summary>
+        public static string FromTmxCollision {
+            get {
+                return ResourceManager.GetString("FromTmxCollision", resourceCulture);
             }
         }
         
@@ -1987,11 +2329,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Grid alpha.
+        /// </summary>
+        public static string GridAlpha {
+            get {
+                return ResourceManager.GetString("GridAlpha", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Grid and Markings.
         /// </summary>
         public static string GridAndMarkings {
             get {
                 return ResourceManager.GetString("GridAndMarkings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grid size.
+        /// </summary>
+        public static string GridSize {
+            get {
+                return ResourceManager.GetString("GridSize", resourceCulture);
             }
         }
         
@@ -2199,6 +2559,15 @@ namespace Localization {
         public static string HintAutoPartitionDoesNotConsider {
             get {
                 return ResourceManager.GetString("HintAutoPartitionDoesNotConsider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changing the tile may also modify the underlying TSX.
+        /// </summary>
+        public static string HintChangingTileTsx {
+            get {
+                return ResourceManager.GetString("HintChangingTileTsx", resourceCulture);
             }
         }
         
@@ -2590,6 +2959,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to *Running your game with edit mode enabled requires a live connection to the FlatRedBall Editor. Click Allow Access to enable the connection..
+        /// </summary>
+        public static string HintRunGameLiveFRB {
+            get {
+                return ResourceManager.GetString("HintRunGameLiveFRB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number of seconds to accelerate from a standstill to full speed..
         /// </summary>
         public static string HintSecondsToAccelerate {
@@ -2658,6 +3036,15 @@ namespace Localization {
         public static string HintThisWillReplacePoints {
             get {
                 return ResourceManager.GetString("HintThisWillReplacePoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This TileShapeCollection is defined in a base Screen. Changes must be made in the base screen..
+        /// </summary>
+        public static string HintTileShapeCollection {
+            get {
+                return ResourceManager.GetString("HintTileShapeCollection", resourceCulture);
             }
         }
         
@@ -2932,6 +3319,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Inner Size.
+        /// </summary>
+        public static string InnerSize {
+            get {
+                return ResourceManager.GetString("InnerSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input Device.
         /// </summary>
         public static string InputDevice {
@@ -2964,6 +3360,15 @@ namespace Localization {
         public static string IsCollisionActive {
             get {
                 return ResourceManager.GetString("IsCollisionActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is Merged.
+        /// </summary>
+        public static string IsMerged {
+            get {
+                return ResourceManager.GetString("IsMerged", resourceCulture);
             }
         }
         
@@ -3013,11 +3418,65 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Layer:.
+        /// </summary>
+        public static string Layer {
+            get {
+                return ResourceManager.GetString("Layer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add LayeredTileMap.
         /// </summary>
         public static string LayeredTileMapAdd {
             get {
                 return ResourceManager.GetString("LayeredTileMapAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From layer:.
+        /// </summary>
+        public static string LayerFrom {
+            get {
+                return ResourceManager.GetString("LayerFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Layer name:.
+        /// </summary>
+        public static string LayerName {
+            get {
+                return ResourceManager.GetString("LayerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Layer visibility:.
+        /// </summary>
+        public static string LayerVisibility {
+            get {
+                return ResourceManager.GetString("LayerVisibility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left:.
+        /// </summary>
+        public static string Left {
+            get {
+                return ResourceManager.GetString("Left", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left Outer Edge:.
+        /// </summary>
+        public static string LeftOuterEdge {
+            get {
+                return ResourceManager.GetString("LeftOuterEdge", resourceCulture);
             }
         }
         
@@ -3045,6 +3504,15 @@ namespace Localization {
         public static string LinkGameToFrbSource {
             get {
                 return ResourceManager.GetString("LinkGameToFrbSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Links Per Node.
+        /// </summary>
+        public static string LinksPerNode {
+            get {
+                return ResourceManager.GetString("LinksPerNode", resourceCulture);
             }
         }
         
@@ -3481,6 +3949,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to X Offset:.
+        /// </summary>
+        public static string OffsetX {
+            get {
+                return ResourceManager.GetString("OffsetX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y Offset:.
+        /// </summary>
+        public static string OffsetY {
+            get {
+                return ResourceManager.GetString("OffsetY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Z Offset:.
+        /// </summary>
+        public static string OffsetZ {
+            get {
+                return ResourceManager.GetString("OffsetZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OK.
         /// </summary>
         public static string Ok {
@@ -3504,6 +3999,24 @@ namespace Localization {
         public static string OnlyIntegerValuesAllowed {
             get {
                 return ResourceManager.GetString("OnlyIntegerValuesAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Or.
+        /// </summary>
+        public static string Or {
+            get {
+                return ResourceManager.GetString("Or", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Output.
+        /// </summary>
+        public static string Output {
+            get {
+                return ResourceManager.GetString("Output", resourceCulture);
             }
         }
         
@@ -3607,6 +4120,42 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Standard Platformer.
+        /// </summary>
+        public static string PlatformerStandard {
+            get {
+                return ResourceManager.GetString("PlatformerStandard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates a platformer project. Platformer games include a Player which can move horizontally and jump..
+        /// </summary>
+        public static string PlatformerStandardDescription {
+            get {
+                return ResourceManager.GetString("PlatformerStandardDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Platform Inclusions.
+        /// </summary>
+        public static string PlatformInclusions {
+            get {
+                return ResourceManager.GetString("PlatformInclusions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Excluded from {0} platforms.
+        /// </summary>
+        public static string PlatformsExcluded {
+            get {
+                return ResourceManager.GetString("PlatformsExcluded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Play Song.
         /// </summary>
         public static string PlaySong {
@@ -3688,6 +4237,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Polygon point snap size.
+        /// </summary>
+        public static string PolygonPointSnapSize {
+            get {
+                return ResourceManager.GetString("PolygonPointSnapSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Polygon (Rectangle).
         /// </summary>
         public static string PolygonRectangle {
@@ -3711,6 +4269,15 @@ namespace Localization {
         public static string PolygonToRectangle {
             get {
                 return ResourceManager.GetString("PolygonToRectangle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Port number.
+        /// </summary>
+        public static string PortNumber {
+            get {
+                return ResourceManager.GetString("PortNumber", resourceCulture);
             }
         }
         
@@ -3756,6 +4323,15 @@ namespace Localization {
         public static string PrintMsBuildCommand {
             get {
                 return ResourceManager.GetString("PrintMsBuildCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Profiling.
+        /// </summary>
+        public static string Profiling {
+            get {
+                return ResourceManager.GetString("Profiling", resourceCulture);
             }
         }
         
@@ -4012,6 +4588,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Generating element and saving projects.
+        /// </summary>
+        public static string ProjectsSaveGenerateElements {
+            get {
+                return ResourceManager.GetString("ProjectsSaveGenerateElements", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to For This Project Only.
         /// </summary>
         public static string ProjectThisOnly {
@@ -4048,11 +4633,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Property:.
+        /// </summary>
+        public static string Property {
+            get {
+                return ResourceManager.GetString("Property", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Property:.
+        /// </summary>
+        public static string PropertyFrom {
+            get {
+                return ResourceManager.GetString("PropertyFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to String Property:.
         /// </summary>
         public static string PropertyString {
             get {
                 return ResourceManager.GetString("PropertyString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to With property.
+        /// </summary>
+        public static string PropertyWith {
+            get {
+                return ResourceManager.GetString("PropertyWith", resourceCulture);
             }
         }
         
@@ -4156,6 +4768,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rename.
+        /// </summary>
+        public static string Rename {
+            get {
+                return ResourceManager.GetString("Rename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replace ProjectName.
+        /// </summary>
+        public static string ReplaceProjectName {
+            get {
+                return ResourceManager.GetString("ReplaceProjectName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Report a Bug.
         /// </summary>
         public static string ReportABug {
@@ -4174,6 +4804,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Require Tile.
+        /// </summary>
+        public static string RequireTile {
+            get {
+                return ResourceManager.GetString("RequireTile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restart screen on level content change.
+        /// </summary>
+        public static string RestartScreenOnLevelContentChange {
+            get {
+                return ResourceManager.GetString("RestartScreenOnLevelContentChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Run In Edit Mode.
         /// </summary>
         public static string RunEditMode {
@@ -4188,6 +4836,51 @@ namespace Localization {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving settings after dismissing tree view.
+        /// </summary>
+        public static string SavingSettingsAfterDismissing {
+            get {
+                return ResourceManager.GetString("SavingSettingsAfterDismissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scale:.
+        /// </summary>
+        public static string Scale {
+            get {
+                return ResourceManager.GetString("Scale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scope To Definitions.
+        /// </summary>
+        public static string ScopeDefinitions {
+            get {
+                return ResourceManager.GetString("ScopeDefinitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screens.
+        /// </summary>
+        public static string Screens {
+            get {
+                return ResourceManager.GetString("Screens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orphaned Screens.
+        /// </summary>
+        public static string ScreensOrphaned {
+            get {
+                return ResourceManager.GetString("ScreensOrphaned", resourceCulture);
             }
         }
         
@@ -4228,11 +4921,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a game type:.
+        /// </summary>
+        public static string SelectGameType {
+            get {
+                return ResourceManager.GetString("SelectGameType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects the next item in the selection stack.
+        /// </summary>
+        public static string SelectionStackNext {
+            get {
+                return ResourceManager.GetString("SelectionStackNext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select Managed Properties.
         /// </summary>
         public static string SelectManagedProperties {
             get {
                 return ResourceManager.GetString("SelectManagedProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects the previously-selected item.
+        /// </summary>
+        public static string SelectPreviousItem {
+            get {
+                return ResourceManager.GetString("SelectPreviousItem", resourceCulture);
             }
         }
         
@@ -4282,6 +5002,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set background color.
+        /// </summary>
+        public static string SetBackgroundColor {
+            get {
+                return ResourceManager.GetString("SetBackgroundColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set Preview File.
         /// </summary>
         public static string SetPreviewFile {
@@ -4327,6 +5056,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Game Rerun Command List.
+        /// </summary>
+        public static string ShowGameRerun {
+            get {
+                return ResourceManager.GetString("ShowGameRerun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show grid.
+        /// </summary>
+        public static string ShowGrid {
+            get {
+                return ResourceManager.GetString("ShowGrid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Mouse.
         /// </summary>
         public static string ShowMouse {
@@ -4336,11 +5083,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show screen bounds when viewing entities.
+        /// </summary>
+        public static string ShowScreenBoundsWhenViewingEntities {
+            get {
+                return ResourceManager.GetString("ShowScreenBoundsWhenViewingEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show State Categories.
         /// </summary>
         public static string ShowStateCategories {
             get {
                 return ResourceManager.GetString("ShowStateCategories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show window defender UI.
+        /// </summary>
+        public static string ShowWindowDefenderUi {
+            get {
+                return ResourceManager.GetString("ShowWindowDefenderUi", resourceCulture);
             }
         }
         
@@ -4408,6 +5173,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Snap size.
+        /// </summary>
+        public static string SnapSize {
+            get {
+                return ResourceManager.GetString("SnapSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add SolidCollision ShapeCollection.
         /// </summary>
         public static string SolidCollisionAdd {
@@ -4440,6 +5214,15 @@ namespace Localization {
         public static string SourceName {
             get {
                 return ResourceManager.GetString("SourceName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source TMX File/Object:.
+        /// </summary>
+        public static string SourceTmxFileObject {
+            get {
+                return ResourceManager.GetString("SourceTmxFileObject", resourceCulture);
             }
         }
         
@@ -4570,6 +5353,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tasks remaining:.
+        /// </summary>
+        public static string TasksRemaining {
+            get {
+                return ResourceManager.GetString("TasksRemaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 1 (Enemy Team).
         /// </summary>
         public static string TeamOneEnemy {
@@ -4615,11 +5407,65 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tiles high:.
+        /// </summary>
+        public static string TilesHigh {
+            get {
+                return ResourceManager.GetString("TilesHigh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile Size:.
+        /// </summary>
+        public static string TileSize {
+            get {
+                return ResourceManager.GetString("TileSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove Tiles.
+        /// </summary>
+        public static string TilesRemove {
+            get {
+                return ResourceManager.GetString("TilesRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tiles wide:.
+        /// </summary>
+        public static string TilesWide {
+            get {
+                return ResourceManager.GetString("TilesWide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Tiles.
+        /// </summary>
+        public static string TilesX {
+            get {
+                return ResourceManager.GetString("TilesX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Standard TMX File.
         /// </summary>
         public static string TmxAddStandard {
             get {
                 return ResourceManager.GetString("TmxAddStandard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The TMX name {0} already exists.
+        /// </summary>
+        public static string TmxAlreadyExists {
+            get {
+                return ResourceManager.GetString("TmxAlreadyExists", resourceCulture);
             }
         }
         
@@ -4660,11 +5506,56 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Top:.
+        /// </summary>
+        public static string Top {
+            get {
+                return ResourceManager.GetString("Top", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Top-Down.
         /// </summary>
         public static string TopDown {
             get {
                 return ResourceManager.GetString("TopDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Standard Top Down.
+        /// </summary>
+        public static string TopdownStandard {
+            get {
+                return ResourceManager.GetString("TopdownStandard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates a top down game. Top down games include a Player which can move in all four directions..
+        /// </summary>
+        public static string TopdownStandardDescription {
+            get {
+                return ResourceManager.GetString("TopdownStandardDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Outer Edge:.
+        /// </summary>
+        public static string TopOuterEdge {
+            get {
+                return ResourceManager.GetString("TopOuterEdge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Level Screens in Tree View.
+        /// </summary>
+        public static string TreeViewShowLevelScreens {
+            get {
+                return ResourceManager.GetString("TreeViewShowLevelScreens", resourceCulture);
             }
         }
         
@@ -4696,11 +5587,56 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to From Type:.
+        /// </summary>
+        public static string TypeFrom {
+            get {
+                return ResourceManager.GetString("TypeFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This type would result in infinite recursion.
         /// </summary>
         public static string TypeInfiniteRecursion {
             get {
                 return ResourceManager.GetString("TypeInfiniteRecursion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UI (FlatRedBall.Forms).
+        /// </summary>
+        public static string UIFrbForms {
+            get {
+                return ResourceManager.GetString("UIFrbForms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creates a game with a Main Menu and includes FlatRedBall.Forms..
+        /// </summary>
+        public static string UIFrbFormsDescription {
+            get {
+                return ResourceManager.GetString("UIFrbFormsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Uncategorized {
+            get {
+                return ResourceManager.GetString("Uncategorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undo.
+        /// </summary>
+        public static string Undo {
+            get {
+                return ResourceManager.GetString("Undo", resourceCulture);
             }
         }
         
@@ -4858,7 +5794,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Excluded Variables.
         /// </summary>
         public static string VariablesExcluded {
             get {
@@ -4872,6 +5808,15 @@ namespace Localization {
         public static string VariableTunnelIntoContainer {
             get {
                 return ResourceManager.GetString("VariableTunnelIntoContainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable Type:.
+        /// </summary>
+        public static string VariableType {
+            get {
+                return ResourceManager.GetString("VariableType", resourceCulture);
             }
         }
         
@@ -4921,6 +5866,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View Tiled Objects XML.
+        /// </summary>
+        public static string ViewTiledObjectsXml {
+            get {
+                return ResourceManager.GetString("ViewTiledObjectsXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View Unreferenced Files.
         /// </summary>
         public static string ViewUnreferencedFiles {
@@ -4948,6 +5902,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Welcome.
+        /// </summary>
+        public static string Welcome {
+            get {
+                return ResourceManager.GetString("Welcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to What would you like to do with the following files:.
         /// </summary>
         public static string WhatToDoWithFiles {
@@ -4971,6 +5934,42 @@ namespace Localization {
         public static string WindowResizingAllow {
             get {
                 return ResourceManager.GetString("WindowResizingAllow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter Wizard Configuration.
+        /// </summary>
+        public static string WizardConfigurationEnter {
+            get {
+                return ResourceManager.GetString("WizardConfigurationEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Setup Wizard.
+        /// </summary>
+        public static string WizardProjectStart {
+            get {
+                return ResourceManager.GetString("WizardProjectStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Wizard From Scratch.
+        /// </summary>
+        public static string WizardStartFromStretch {
+            get {
+                return ResourceManager.GetString("WizardStartFromStretch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This wizard will help you set up a Glue project quickly. Let&apos;s get started!.
+        /// </summary>
+        public static string WizardWelcomeLabel {
+            get {
+                return ResourceManager.GetString("WizardWelcomeLabel", resourceCulture);
             }
         }
         

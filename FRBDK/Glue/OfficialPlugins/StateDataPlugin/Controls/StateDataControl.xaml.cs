@@ -450,25 +450,24 @@ namespace OfficialPlugins.StateDataPlugin.Controls
             this.DataContext = dataContext;
         }
 
-        private string GetColumnBindingPath(DataGridColumn column)
+        private static string GetColumnBindingPath(DataGridColumn column)
         {
             Binding binding = null;
-            if(column is DataGridComboBoxColumn)
+            switch (column)
             {
-                binding = ((DataGridComboBoxColumn)column).SelectedItemBinding as Binding;
-            }
-            else if (column is DataGridCheckBoxColumn)
-            {
-                binding = ((DataGridCheckBoxColumn)column).Binding as Binding;
-            }
-            else if(column is DataGridTextColumn)
-            {
-                binding = ((DataGridTextColumn)column).Binding as Binding;
-            }
-            else if(column is DataGridTemplateColumn)
-            {
-                // doesn't exist:
-                //binding = ((DataGridTemplateColumn)column).Binding as Binding;
+                case DataGridComboBoxColumn boxColumn:
+                    binding = boxColumn.SelectedItemBinding as Binding;
+                    break;
+                case DataGridCheckBoxColumn boxColumn:
+                    binding = boxColumn.Binding as Binding;
+                    break;
+                case DataGridTextColumn textColumn:
+                    binding = textColumn.Binding as Binding;
+                    break;
+                case DataGridTemplateColumn:
+                    // doesn't exist:
+                    //binding = ((DataGridTemplateColumn)column).Binding as Binding;
+                    break;
             }
 
             return binding?.Path?.Path;

@@ -1065,7 +1065,7 @@
 		<value>De volgende items worden ook verwijderd:</value>
 	</data>
 	<data name="DeleteQuestion" xml:space="preserve">
-		<value>Wilt u dit item verwijderen?</value>
+		<value>Weet je zeker dat je wilt verwijderen?</value>
 	</data>
 	<data name="FrbGlueVersion" xml:space="preserve">
 		<value>FlatRedBall Glue Versie</value>
@@ -1744,5 +1744,338 @@
 	</data>
 	<data name="VariablesExcluded" xml:space="preserve">
 		<value>Uitgesloten variabelen</value>
+	</data>
+	<data name="CollapseAll" xml:space="preserve">
+		<value>Alles inklappen</value>
+	</data>
+	<data name="CollapseAllFolders" xml:space="preserve">
+		<value>Vouwt alle mappen en containers in</value>
+	</data>
+	<data name="ScopeDefinitions" xml:space="preserve">
+		<value>Reikwijdte van definities</value>
+	</data>
+	<data name="SelectPreviousItem" xml:space="preserve">
+		<value>Selecteert het eerder geselecteerde item</value>
+	</data>
+	<data name="SelectionStackNext" xml:space="preserve">
+		<value>Selecteert het volgende item in de selectiestapel</value>
+	</data>
+	<data name="Back" xml:space="preserve">
+		<value>Terug</value>
+	</data>
+	<data name="Forward" xml:space="preserve">
+		<value>Vooruit</value>
+	</data>
+	<data name="CollapseFoldersExpandsTopLevel" xml:space="preserve">
+		<value>Vouwt alle schermen en entiteiten samen, vouwt de mappen op het hoogste niveau uit</value>
+	</data>
+	<data name="SavingSettingsAfterDismissing" xml:space="preserve">
+		<value>Instellingen opslaan na het sluiten van de boomweergave</value>
+	</data>
+	<data name="Undo" xml:space="preserve">
+		<value>Ongedaan maken</value>
+	</data>
+	<data name="CopyJsonToClipboard" xml:space="preserve">
+		<value>Kopieer JSON naar het klembord</value>
+	</data>
+	<data name="PlatformerStandard" xml:space="preserve">
+		<value>Standaard platformgame</value>
+	</data>
+	<data name="PlatformerStandardDescription" xml:space="preserve">
+		<value>Creëert een platformgameproject. Platformgames bevatten een speler die horizontaal kan bewegen en springen.</value>
+	</data>
+	<data name="TopdownStandard" xml:space="preserve">
+		<value>Standaard van boven naar beneden</value>
+	</data>
+	<data name="TopdownStandardDescription" xml:space="preserve">
+		<value>Creëert een top-down spel. Top-down-spellen bevatten een speler die in alle vier de richtingen kan bewegen.</value>
+	</data>
+	<data name="UIFrbForms" xml:space="preserve">
+		<value>UI (FlatRedBall.Forms)</value>
+	</data>
+	<data name="UIFrbFormsDescription" xml:space="preserve">
+		<value>Creëert een spel met een hoofdmenu en bevat FlatRedBall.Forms.</value>
+	</data>
+	<data name="CustomAdvanced" xml:space="preserve">
+		<value>Maatwerk (geavanceerd)</value>
+	</data>
+	<data name="CustomAdvancedDescription" xml:space="preserve">
+		<value>Aangepaste games kunnen worden gemaakt met behulp van een aantal opties die de speler-, niveau- en UI-instellingen regelen.</value>
+	</data>
+	<data name="SelectGameType" xml:space="preserve">
+		<value>Selecteer een speltype:</value>
+	</data>
+	<data name="Welcome" xml:space="preserve">
+		<value>Welkom</value>
+	</data>
+	<data name="WizardWelcomeLabel" xml:space="preserve">
+		<value>Met deze wizard kunt u snel een Glue-project opzetten. Laten we beginnen!</value>
+	</data>
+	<data name="ConfigurationUse" xml:space="preserve">
+		<value>Gebruik Configuratie</value>
+	</data>
+	<data name="WizardStartFromStretch" xml:space="preserve">
+		<value>Start de wizard vanaf niets</value>
+	</data>
+	<data name="Or" xml:space="preserve">
+		<value>Of</value>
+	</data>
+	<data name="WizardConfigurationEnter" xml:space="preserve">
+		<value>Ga naar Wizardconfiguratie</value>
+	</data>
+	<data name="WizardProjectStart" xml:space="preserve">
+		<value>Projectconfiguratie wizard</value>
+	</data>
+	<data name="EntityIsRacing" xml:space="preserve">
+		<value>Is een race-entiteit</value>
+	</data>
+	<data name="Scale" xml:space="preserve">
+		<value>Schaal:</value>
+	</data>
+	<data name="LayerVisibility" xml:space="preserve">
+		<value>Zichtbaarheid van lagen:</value>
+	</data>
+	<data name="OffsetX" xml:space="preserve">
+		<value>X-compensatie:</value>
+	</data>
+	<data name="OffsetY" xml:space="preserve">
+		<value>Y-compensatie:</value>
+	</data>
+	<data name="OffsetZ" xml:space="preserve">
+		<value>Z-compensatie:</value>
+	</data>
+	<data name="LayerName" xml:space="preserve">
+		<value>Laag naam:</value>
+	</data>
+	<data name="VariableType" xml:space="preserve">
+		<value>Variabel type:</value>
+	</data>
+	<data name="CopyImages" xml:space="preserve">
+		<value>Kopieer afbeeldingen</value>
+	</data>
+	<data name="RequireTile" xml:space="preserve">
+		<value>Tegel vereisen</value>
+	</data>
+	<data name="AutomaticallyCreateScreensTmx" xml:space="preserve">
+		<value>Maak automatisch schermen voor TMX-bestanden</value>
+	</data>
+	<data name="TreeViewShowLevelScreens" xml:space="preserve">
+		<value>Toon niveauschermen in boomweergave</value>
+	</data>
+	<data name="Rename" xml:space="preserve">
+		<value>Hernoemen</value>
+	</data>
+	<data name="Duplicate" xml:space="preserve">
+		<value>Duplicaat</value>
+	</data>
+	<data name="ScreensOrphaned" xml:space="preserve">
+		<value>Verweesde schermen</value>
+	</data>
+	<data name="ContentFolderTmxAutoGlue" xml:space="preserve">
+		<value>TMX-bestanden in de map Content maken automatisch Glue-schermen. Deze schermen verschijnen alleen in de boomstructuur als het selectievakje hierboven is aangevinkt. Deze schermen zijn toegankelijk in code.</value>
+	</data>
+	<data name="EnterNewTmx" xml:space="preserve">
+		<value>Voer een nieuwe TMX-naam in</value>
+	</data>
+	<data name="TmxAlreadyExists" xml:space="preserve">
+		<value>De TMX-naam {0} bestaat al</value>
+	</data>
+	<data name="CollisionIncludeSolid" xml:space="preserve">
+		<value>Voeg een solide botsingsrand toe</value>
+	</data>
+	<data name="EntitiesCreateGeneratedCode" xml:space="preserve">
+		<value>Maak entiteiten in gegenereerde code</value>
+	</data>
+	<data name="ViewTiledObjectsXml" xml:space="preserve">
+		<value>Bekijk betegelde objecten XML</value>
+	</data>
+	<data name="LinksPerNode" xml:space="preserve">
+		<value>Links per knooppunt</value>
+	</data>
+	<data name="Four" xml:space="preserve">
+		<value>Vier</value>
+	</data>
+	<data name="Eight" xml:space="preserve">
+		<value>Acht</value>
+	</data>
+	<data name="Empty" xml:space="preserve">
+		<value>Leeg</value>
+	</data>
+	<data name="CreationOptions" xml:space="preserve">
+		<value>Creatie opties</value>
+	</data>
+	<data name="FillCompletely" xml:space="preserve">
+		<value>Vul volledig</value>
+	</data>
+	<data name="EliminateCutCorners" xml:space="preserve">
+		<value>Elimineer snijhoeken</value>
+	</data>
+	<data name="Left" xml:space="preserve">
+		<value>Links:</value>
+	</data>
+	<data name="TileSize" xml:space="preserve">
+		<value>Tegelgrootte:</value>
+	</data>
+	<data name="Top" xml:space="preserve">
+		<value>Boven:</value>
+	</data>
+	<data name="TilesWide" xml:space="preserve">
+		<value>Tegels breed:</value>
+	</data>
+	<data name="TilesHigh" xml:space="preserve">
+		<value>Tegels hoog:</value>
+	</data>
+	<data name="TypeFrom" xml:space="preserve">
+		<value>Van type:</value>
+	</data>
+	<data name="SourceTmxFileObject" xml:space="preserve">
+		<value>Bron TMX-bestand/object:</value>
+	</data>
+	<data name="PropertyFrom" xml:space="preserve">
+		<value>Van eigenschap:</value>
+	</data>
+	<data name="Property" xml:space="preserve">
+		<value>Eigenschap:</value>
+	</data>
+	<data name="LayerFrom" xml:space="preserve">
+		<value>Van laag:</value>
+	</data>
+	<data name="Layer" xml:space="preserve">
+		<value>Laag:</value>
+	</data>
+	<data name="EmptyAll" xml:space="preserve">
+		<value>Allemaal leeg</value>
+	</data>
+	<data name="HintTileShapeCollection" xml:space="preserve">
+		<value>Deze TileShapeCollection wordt gedefinieerd in een basisscherm. Wijzigingen moeten in het basisscherm worden aangebracht.</value>
+	</data>
+	<data name="BorderOutline" xml:space="preserve">
+		<value>Randlijn</value>
+	</data>
+	<data name="LeftOuterEdge" xml:space="preserve">
+		<value>Linker buitenrand:</value>
+	</data>
+	<data name="TopOuterEdge" xml:space="preserve">
+		<value>Bovenste buitenrand:</value>
+	</data>
+	<data name="BorderDimensions" xml:space="preserve">
+		<value>Randafmetingen</value>
+	</data>
+	<data name="InnerSize" xml:space="preserve">
+		<value>Binnenmaat</value>
+	</data>
+	<data name="TilesX" xml:space="preserve">
+		<value># Tegels</value>
+	</data>
+	<data name="FromTmxCollision" xml:space="preserve">
+		<value>Van TMX-botsing (gebruik tegelsetvormen)</value>
+	</data>
+	<data name="ClickToSetTile" xml:space="preserve">
+		<value>Klik om de tegel in te stellen</value>
+	</data>
+	<data name="HintChangingTileTsx" xml:space="preserve">
+		<value>Het wijzigen van de tegel kan ook de onderliggende TSX wijzigen</value>
+	</data>
+	<data name="TilesRemove" xml:space="preserve">
+		<value>Tegels verwijderen</value>
+	</data>
+	<data name="IsMerged" xml:space="preserve">
+		<value>Is samengevoegd</value>
+	</data>
+	<data name="PropertyWith" xml:space="preserve">
+		<value>Met eigenschap</value>
+	</data>
+	<data name="Entities" xml:space="preserve">
+		<value>Entiteiten</value>
+	</data>
+	<data name="Screens" xml:space="preserve">
+		<value>Schermen</value>
+	</data>
+	<data name="ContentGlobalFiles" xml:space="preserve">
+		<value>Globale inhoudsbestanden</value>
+	</data>
+	<data name="TasksRemaining" xml:space="preserve">
+		<value>Resterende taken:</value>
+	</data>
+	<data name="Output" xml:space="preserve">
+		<value>Output</value>
+	</data>
+	<data name="PlatformInclusions" xml:space="preserve">
+		<value>Platforminsluitingen</value>
+	</data>
+	<data name="PlatformsExcluded" xml:space="preserve">
+		<value>Uitgesloten van {0} platforms</value>
+	</data>
+	<data name="ReplaceProjectName" xml:space="preserve">
+		<value>Vervang Projectnaam</value>
+	</data>
+	<data name="ProjectsSaveGenerateElements" xml:space="preserve">
+		<value>Element genereren en projecten opslaan</value>
+	</data>
+	<data name="Build" xml:space="preserve">
+		<value>Bouw</value>
+	</data>
+	<data name="Profiling" xml:space="preserve">
+		<value>Profilering</value>
+	</data>
+	<data name="Errors" xml:space="preserve">
+		<value>Foutmeldingen</value>
+	</data>
+	<data name="HintRunGameLiveFRB" xml:space="preserve">
+		<value>*Als je je game wilt spelen terwijl de bewerkingsmodus is ingeschakeld, heb je een liveverbinding met de FlatRedBall Editor nodig. Klik op Toegang toestaan ​​om de verbinding in te schakelen.</value>
+	</data>
+	<data name="ShowGameRerun" xml:space="preserve">
+		<value>Toon opdrachtlijst voor opnieuw uitvoeren van spel</value>
+	</data>
+	<data name="EnableLiveEdit" xml:space="preserve">
+		<value>Schakel live bewerken in</value>
+	</data>
+	<data name="EmbedGameInGameTab" xml:space="preserve">
+		<value>Spel insluiten op het speltabblad</value>
+	</data>
+	<data name="PortNumber" xml:space="preserve">
+		<value>Poortnummer</value>
+	</data>
+	<data name="ShowScreenBoundsWhenViewingEntities" xml:space="preserve">
+		<value>Toon schermgrenzen bij het bekijken van entiteiten</value>
+	</data>
+	<data name="SetBackgroundColor" xml:space="preserve">
+		<value>Achtergrondkleur</value>
+	</data>
+	<data name="BackgroundRed" xml:space="preserve">
+		<value>Rode achtergrond</value>
+	</data>
+	<data name="BackgroundGreen" xml:space="preserve">
+		<value>Groene achtergrond</value>
+	</data>
+	<data name="BackgroundBlue" xml:space="preserve">
+		<value>Blauwe achtergrond</value>
+	</data>
+	<data name="ShowGrid" xml:space="preserve">
+		<value>Raster tonen</value>
+	</data>
+	<data name="GridAlpha" xml:space="preserve">
+		<value>Raster alfa</value>
+	</data>
+	<data name="GridSize" xml:space="preserve">
+		<value>Rastergrootte</value>
+	</data>
+	<data name="RestartScreenOnLevelContentChange" xml:space="preserve">
+		<value>Herstart het scherm bij verandering van niveau-inhoud</value>
+	</data>
+	<data name="EnableSnapping" xml:space="preserve">
+		<value>Schakel snappen in</value>
+	</data>
+	<data name="SnapSize" xml:space="preserve">
+		<value>Snap-grootte</value>
+	</data>
+	<data name="PolygonPointSnapSize" xml:space="preserve">
+		<value>Snapgrootte van polygoonpunt</value>
+	</data>
+	<data name="ShowWindowDefenderUi" xml:space="preserve">
+		<value>Toon de gebruikersinterface van Window Defender</value>
+	</data>
+	<data name="Uncategorized" xml:space="preserve">
+		<value>Nicht kategorisiert</value>
 	</data>
 </root>

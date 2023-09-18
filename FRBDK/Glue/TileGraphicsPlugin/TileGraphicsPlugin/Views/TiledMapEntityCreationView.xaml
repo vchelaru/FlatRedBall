@@ -3,17 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TileGraphicsPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="250">
     <StackPanel>
         <CheckBox VerticalContentAlignment="Center"
-                      IsChecked="{Binding CreateEntitiesInGeneratedCode}">
-            Create Entities in Generated Code
-        </CheckBox>
-        <Button Margin="1" Click="HandleViewTiledObjectXmlClicked">View Tiled Objects XML</Button>
-        <TextBlock TextWrapping="WrapWithOverflow" Margin="10,5,0,0">
-                Information about generated entities. This should line wrap.
-        </TextBlock>
+                      IsChecked="{Binding CreateEntitiesInGeneratedCode}" Content="{x:Static localization:Texts.EntitiesCreateGeneratedCode}" />
+        <Button Margin="1" Click="HandleViewTiledObjectXmlClicked" Content="{x:Static localization:Texts.ViewTiledObjectsXml}" />
+        <TextBlock TextWrapping="WrapWithOverflow" Margin="10,5,0,0" Text="{x:Static localization:Texts.ValidationTextForWrapping}" />
     </StackPanel>
 </UserControl>

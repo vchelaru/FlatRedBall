@@ -48,7 +48,7 @@ namespace OfficialPlugins.ErrorPlugin
                 .Add(new ErrorCreateRemoveLogic());
 
             control = new ErrorWindow();
-            tab = CreateAndAddTab(control, "Errors", TabLocation.Bottom);
+            tab = CreateAndAddTab(control, Localization.Texts.Error, TabLocation.Bottom);
 
             errorListViewModel = GlueState.Self.ErrorList;
             errorListViewModel.Errors.CollectionChanged += HandleErrorsCollectionChanged;
@@ -110,7 +110,7 @@ namespace OfficialPlugins.ErrorPlugin
         private void RefreshTabText()
         {
             var numberOfErrors = errorListViewModel.Errors.Count;
-            var tabText = $"Errors ({numberOfErrors})";
+            var tabText = $"{Localization.Texts.Errors} ({numberOfErrors})";
 
             if(tab.Title != tabText)
             {

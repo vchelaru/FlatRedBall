@@ -324,7 +324,7 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
-                GlueCommands.Self.DialogCommands.FocusTab("Build");
+                GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 var succeeded = await _gameHostController.Compile();
 
                 if (succeeded)
@@ -358,7 +358,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
             }
         }
@@ -591,7 +591,7 @@ namespace GameCommunicationPlugin.GlueControl
             var vm = new ProfilingControlViewModel();
             control.DataContext = vm;
 
-            this.CreateAndAddTab(control, "Profiling", TabLocation.Bottom);
+            this.CreateAndAddTab(control, Localization.Texts.Profiling, TabLocation.Bottom);
 
             ProfilingManager.Self.Initialize(vm, CompilerViewModel);
         }

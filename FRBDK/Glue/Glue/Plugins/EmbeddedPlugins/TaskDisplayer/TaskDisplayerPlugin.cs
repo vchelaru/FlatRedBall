@@ -33,7 +33,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
         {
             if(!ProjectManager.WantsToCloseProject)
             {
-                string desiredText = " " + vm.StatusText;
+                string desiredText = " " + TaskDisplayerViewModel.StatusText;
                 TaskManager.Self.BeginOnUiThread(() =>
                     {
                         if (tab.Title != desiredText)

@@ -1,24 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Tasks;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 {
     public class TaskDisplayerViewModel : ViewModel
     {
-        public string StatusText
-        {
-            get
-            {
-                return "Tasks remaining: " + TaskManager.Self.TaskCount;
-            }
-        }
+        public static string StatusText => $"{L.Texts.TasksRemaining} {TaskManager.Self.TaskCount}";
 
-        public string CurrentTaskText => TaskManager.Self.NextTasksDescription;
+        public static string CurrentTaskText => TaskManager.Self.NextTasksDescription;
 
         public bool LogTaskDetailsToOutput
         {
@@ -53,11 +45,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
                 var text = plugin;
                 if (time.Minutes > 0)
                 {
-                    text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds.ToString("000")}";
+                    text += $" {time.Minutes}:{time.Seconds}.{time.Milliseconds:000}";
                 }
                 else
                 {
-                    text += $" {time.Seconds}.{time.Milliseconds.ToString("000")}";
+                    text += $" {time.Seconds}.{time.Milliseconds:000}";
                 }
 
                 PluginManager.ReceiveOutput(text);
@@ -72,13 +64,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 
             if(LogTaskDetailsToOutput)
             {
-                var shouldlog = addedOrRemoved == TaskEvent.Started || addedOrRemoved == TaskEvent.Removed ||
-                    addedOrRemoved == TaskEvent.StartedImmediate;
-
-                if(!shouldlog)
-                {
-                    shouldlog = LogQueueChanges;
-                }
+                var shouldlog = LogQueueChanges || addedOrRemoved is TaskEvent.Started or TaskEvent.Removed or TaskEvent.StartedImmediate;
 
                 if(shouldlog)
                 {

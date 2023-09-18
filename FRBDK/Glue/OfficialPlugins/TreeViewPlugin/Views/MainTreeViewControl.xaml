@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.TreeViewPlugin.Views" 
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:pt="http://propertytools.org/wpf" 
              xmlns:controls="clr-namespace:GlueFormsCore.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
@@ -23,8 +23,8 @@
             <Button IsEnabled="{Binding IsBackButtonEnabled}" Click="BackButtonClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Back (ALT + &lt;-)</TextBlock>
-                        <TextBlock>Selects the previously-selected item</TextBlock>
+                        <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Back}" /> (ALT + &lt;-)</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SelectPreviousItem}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_back.png">
@@ -34,8 +34,8 @@
             <Button Click="NextButtonClicked" IsEnabled="{Binding IsForwardButtonEnabled}"  Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Forward (ALT + -&gt;)</TextBlock>
-                        <TextBlock>Selects the next item in the selection stack</TextBlock>
+                        <TextBlock FontWeight="Bold"><Label Content="{x:Static localization:Texts.Forward}" /> (ALT + -&gt;)</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SelectionStackNext}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_forward.png">
@@ -45,8 +45,8 @@
             <Button Click="CollapseAllClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Collapse All</TextBlock>
-                        <TextBlock>Collapses all folders and containers</TextBlock>
+                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.CollapseAll}" />
+                        <TextBlock Text="{x:Static localization:Texts.CollapseAllFolders}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_contract.png">
@@ -56,8 +56,8 @@
             <Button Click="CollapseToDefinitionsClicked" Width="24" Margin="2,2,0,2">
                 <Button.ToolTip>
                     <StackPanel>
-                        <TextBlock FontWeight="Bold">Scope To Definitions</TextBlock>
-                        <TextBlock>Collapses all Screens and Entities, expands the top-level folders</TextBlock>
+                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.ScopeDefinitions}" />
+                        <TextBlock  Text="{x:Static localization:Texts.CollapseFoldersExpandsTopLevel}" />
                     </StackPanel>
                 </Button.ToolTip>
                 <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/TreeViewPlugin/Content/icon_collapse_to_definitions.png">

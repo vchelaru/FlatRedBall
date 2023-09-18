@@ -2,15 +2,9 @@
 using FlatRedBall.Glue.Navigation;
 using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using Glue;
-using GlueFormsCore.Plugins.EmbeddedPlugins.ExplorerTabPlugin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Managers
 {
@@ -153,7 +147,7 @@ namespace FlatRedBall.Glue.Managers
                         "Glue Compiler",
                         "BuildAndRun");
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.DialogCommands.FocusTab(L.Texts.Build);
                     return true;
                 case Key.F12:
                     GlueCommands.Self.DialogCommands.GoToDefinitionOfSelection();

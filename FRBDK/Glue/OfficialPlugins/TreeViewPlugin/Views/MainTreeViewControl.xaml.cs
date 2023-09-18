@@ -2,28 +2,18 @@
 using FlatRedBall.Glue.FormHelpers;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Navigation;
-using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
 using OfficialPlugins.TreeViewPlugin.Logic;
 using OfficialPlugins.TreeViewPlugin.ViewModels;
-using PropertyTools.Wpf;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Xceed.Wpf.Toolkit.Primitives;
 
 namespace OfficialPlugins.TreeViewPlugin.Views
 {
@@ -579,16 +569,39 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         private void SelectSearchNode(NodeViewModel searchNodePushed)
         {
             var foundSomething = true;
-            if (searchNodePushed?.Tag is ScreenSave screenSave) GlueState.Self.CurrentScreenSave = screenSave;
-            else if (searchNodePushed?.Tag is EntitySave entitySave) GlueState.Self.CurrentEntitySave = entitySave;
-            else if (searchNodePushed?.Tag is ReferencedFileSave rfs) GlueState.Self.CurrentReferencedFileSave = rfs;
-            else if (searchNodePushed?.Tag is NamedObjectSave nos) GlueState.Self.CurrentNamedObjectSave = nos;
-            else if (searchNodePushed?.Tag is StateSaveCategory stateSaveCategory) GlueState.Self.CurrentStateSaveCategory = stateSaveCategory;
-            else if (searchNodePushed?.Tag is StateSave stateSave) GlueState.Self.CurrentStateSave = stateSave;
-            else if (searchNodePushed?.Tag is CustomVariable variable) GlueState.Self.CurrentCustomVariable = variable;
-            else if (searchNodePushed?.Tag is EventResponseSave eventResponse) GlueState.Self.CurrentEventResponseSave = eventResponse;
-            else if (searchNodePushed?.Tag is NodeViewModel nodeViewModel) GlueState.Self.CurrentTreeNode = nodeViewModel;
-            else foundSomething = false;
+            switch (searchNodePushed?.Tag)
+            {
+                case ScreenSave screenSave:
+                    GlueState.Self.CurrentScreenSave = screenSave;
+                    break;
+                case EntitySave entitySave:
+                    GlueState.Self.CurrentEntitySave = entitySave;
+                    break;
+                case ReferencedFileSave rfs:
+                    GlueState.Self.CurrentReferencedFileSave = rfs;
+                    break;
+                case NamedObjectSave nos:
+                    GlueState.Self.CurrentNamedObjectSave = nos;
+                    break;
+                case StateSaveCategory stateSaveCategory:
+                    GlueState.Self.CurrentStateSaveCategory = stateSaveCategory;
+                    break;
+                case StateSave stateSave:
+                    GlueState.Self.CurrentStateSave = stateSave;
+                    break;
+                case CustomVariable variable:
+                    GlueState.Self.CurrentCustomVariable = variable;
+                    break;
+                case EventResponseSave eventResponse:
+                    GlueState.Self.CurrentEventResponseSave = eventResponse;
+                    break;
+                case NodeViewModel nodeViewModel:
+                    GlueState.Self.CurrentTreeNode = nodeViewModel;
+                    break;
+                default:
+                    foundSomething = false;
+                    break;
+            }
 
             if (foundSomething)
             {
@@ -618,8 +631,6 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             {
                 var node = FlatList.SelectedItem as NodeViewModel;
                 SelectSearchNode(node);
-
-
             }
         }
 
@@ -634,7 +645,7 @@ namespace OfficialPlugins.TreeViewPlugin.Views
                         .SetValue(nameof(ViewModel.HasUserDismissedTips), true);
                     GlueCommands.Self.GluxCommands.SaveSettings();
                 }
-            }, "Saving settings after dismissing tree view hint text");
+            }, Localization.Texts.SavingSettingsAfterDismissing);
         }
 
         #endregion
