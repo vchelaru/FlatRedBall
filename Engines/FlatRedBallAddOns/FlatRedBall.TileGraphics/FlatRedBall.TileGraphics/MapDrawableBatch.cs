@@ -1608,7 +1608,10 @@ namespace FlatRedBall.TileGraphics
             {
                 if(mdb.Texture != thisTexture)
                 {
-                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {mdb.Texture?.Name} which is different than this texture {thisTexture?.Name}");
+                    string thisTextureName = thisTexture?.Name ?? "<null>";
+                    string otherTexture = mdb.Texture?.Name ?? "<null>";
+
+                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {otherTexture} which is different than this layer's texture {thisTexture}");
                 }
             }
 #endif
