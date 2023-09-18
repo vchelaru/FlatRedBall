@@ -1110,7 +1110,8 @@ namespace GameCommunicationPlugin.GlueControl
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+            var projectName = 
+                GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
 
             var found = processes
                 .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&
