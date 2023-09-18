@@ -1602,26 +1602,38 @@ namespace FlatRedBall.TileGraphics
 
         public void MergeOntoThis(IEnumerable<MapDrawableBatch> mapDrawableBatches)
         {
+            int quadsOnThis = QuadCount;
+
+            // If this is empty, then this will inherit the first MDB's texture
+
+            if (quadsOnThis == 0 && this.Texture == null)
+            {
+                var firstWithNonNullTexture = mapDrawableBatches.FirstOrDefault(item => item.Texture != null);
+
+                this.Texture = firstWithNonNullTexture?.Texture;
+            }
+
+
 #if DEBUG
             var thisTexture = this.Texture;
             foreach (var mdb in mapDrawableBatches)
             {
-                if(mdb.Texture != thisTexture)
+                if(mdb.Texture != thisTexture && mdb.QuadCount > 0)
                 {
                     string thisTextureName = thisTexture?.Name ?? "<null>";
                     string otherTexture = mdb.Texture?.Name ?? "<null>";
 
-                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {otherTexture} which is different than this layer's texture {thisTexture}");
+                    throw new InvalidOperationException($"The MapDrawableBatch {mdb.Name} has the texture {otherTexture} which is different than this layer's texture {thisTextureName}");
                 }
             }
 #endif
 
             int quadsToAdd = 0;
-            int quadsOnThis = QuadCount;
             foreach (var mdb in mapDrawableBatches)
             {
                 quadsToAdd += mdb.QuadCount;
             }
+
 
 
             int totalNumberOfVerts = 4 * (this.QuadCount + quadsToAdd);
