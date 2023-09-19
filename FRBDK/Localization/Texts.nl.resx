@@ -2267,4 +2267,91 @@
 	<data name="ErrorDotnetMultipleIssue" xml:space="preserve">
 		<value>Mogelijk hebt u meerdere installaties van .NET op uw computer. Meer info hier: https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. Druk op CTRL+C in deze pop-up om de tekst te kopiëren, zodat u deze in een externe editor kunt plakken en die URL kunt openen.</value>
 	</data>
+	<data name="GenerateTombstoningCode" xml:space="preserve">
+		<value>Tombstoning-code genereren</value>
+	</data>
+	<data name="OpenChildNewWindow" xml:space="preserve">
+		<value>Open externe applicaties als onderliggend venster.</value>
+	</data>
+	<data name="ShowHiddenNodes" xml:space="preserve">
+		<value>Toon verborgen knooppunten</value>
+	</data>
+	<data name="English" xml:space="preserve">
+		<value>Engels</value>
+	</data>
+	<data name="French" xml:space="preserve">
+		<value>Frans</value>
+	</data>
+	<data name="German" xml:space="preserve">
+		<value>Duits</value>
+	</data>
+	<data name="Dutch" xml:space="preserve">
+		<value>Nederlands</value>
+	</data>
+	<data name="EditorLanguage" xml:space="preserve">
+		<value>Editor Taal</value>
+	</data>
+	<data name="SelectLanguage" xml:space="preserve">
+		<value>Selecteer taal</value>
+	</data>
+	<data name="ProjectType" xml:space="preserve">
+		<value>Project type</value>
+	</data>
+	<data name="FileNewAdd" xml:space="preserve">
+		<value>Nieuw bestand toevoegen</value>
+	</data>
+	<data name="FileExistingAdd" xml:space="preserve">
+		<value>Bestaand bestand toevoegen</value>
+	</data>
+	<data name="FileAdd" xml:space="preserve">
+		<value>Bestand toevoegen</value>
+	</data>
+	<data name="Done" xml:space="preserve">
+		<value>Klaar</value>
+	</data>
+	<data name="FileRemove" xml:space="preserve">
+		<value>Bestand verwijderen</value>
+	</data>
+	<data name="ProjectSpecificFiles" xml:space="preserve">
+		<value>Projectspecifieke bestanden</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Sluiten</value>
+	</data>
+	<data name="PluginFiles" xml:space="preserve">
+		<value>Plugin-bestanden</value>
+	</data>
+	<data name="Uninstall" xml:space="preserve">
+		<value>Deinstalleren</value>
+	</data>
+	<data name="ProjectForCurrent" xml:space="preserve">
+		<value>Voor huidig project</value>
+	</data>
+	<data name="UserFor" xml:space="preserve">
+		<value>Voor gebruiker</value>
+	</data>
+	<data name="TypeInstall" xml:space="preserve">
+		<value>Installatietype:</value>
+	</data>
+	<data name="Path" xml:space="preserve">
+		<value>Pad:</value>
+	</data>
+	<data name="ElementsAll" xml:space="preserve">
+		<value>Alle elementen:</value>
+	</data>
+	<data name="ElementsToExport" xml:space="preserve">
+		<value>Elementen om te exporteren:</value>
+	</data>
+	<data name="ElementsToExportSelect" xml:space="preserve">
+		<value>Selecteer elementen om te exporteren:</value>
+	</data>
+	<data name="BuildToolAdd" xml:space="preserve">
+		<value>Nieuwe build-tool toevoegen</value>
+	</data>
+	<data name="FileRootExternalToCsProj" xml:space="preserve">
+		<value>Externe bestandshoofdmap (relatieve paden zijn relatief ten opzichte van de .csproj):</value>
+	</data>
+	<data name="SelectItemForExampleCl" xml:space="preserve">
+		<value>Selecteer een item om een voorbeeld van een opdrachtregel te zien</value>
+	</data>
 </root>

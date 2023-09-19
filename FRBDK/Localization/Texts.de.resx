@@ -2267,4 +2267,91 @@
 	<data name="ErrorDotnetMultipleIssue" xml:space="preserve">
 		<value>Möglicherweise sind auf Ihrem Computer mehrere .NET-Installationen vorhanden. Weitere Informationen hier: https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. Drücken Sie in diesem Popup STRG+C, um den Text zu kopieren, sodass Sie ihn in einen externen Editor einfügen und diese URL öffnen können.</value>
 	</data>
+	<data name="GenerateTombstoningCode" xml:space="preserve">
+		<value>Tombstoning-Code generieren</value>
+	</data>
+	<data name="OpenChildNewWindow" xml:space="preserve">
+		<value>Externe Anwendungen als untergeordnetes Fenster öffnen.</value>
+	</data>
+	<data name="ShowHiddenNodes" xml:space="preserve">
+		<value>Versteckte Knoten anzeigen</value>
+	</data>
+	<data name="English" xml:space="preserve">
+		<value>Englisch</value>
+	</data>
+	<data name="French" xml:space="preserve">
+		<value>Französisch</value>
+	</data>
+	<data name="German" xml:space="preserve">
+		<value>Deutsch</value>
+	</data>
+	<data name="Dutch" xml:space="preserve">
+		<value>Niederländisch</value>
+	</data>
+	<data name="EditorLanguage" xml:space="preserve">
+		<value>Editorsprache</value>
+	</data>
+	<data name="SelectLanguage" xml:space="preserve">
+		<value>Sprache auswählen</value>
+	</data>
+	<data name="ProjectType" xml:space="preserve">
+		<value>Projekttyp</value>
+	</data>
+	<data name="FileNewAdd" xml:space="preserve">
+		<value>Neue Datei hinzufügen</value>
+	</data>
+	<data name="FileExistingAdd" xml:space="preserve">
+		<value>Vorhandene Datei hinzufügen</value>
+	</data>
+	<data name="FileAdd" xml:space="preserve">
+		<value>Datei hinzufügen</value>
+	</data>
+	<data name="Done" xml:space="preserve">
+		<value>Erledigt</value>
+	</data>
+	<data name="FileRemove" xml:space="preserve">
+		<value>Datei löschen</value>
+	</data>
+	<data name="ProjectSpecificFiles" xml:space="preserve">
+		<value>Projektspezifische Dateien</value>
+	</data>
+	<data name="Close" xml:space="preserve">
+		<value>Schließen</value>
+	</data>
+	<data name="PluginFiles" xml:space="preserve">
+		<value>Plugin-Dateien</value>
+	</data>
+	<data name="Uninstall" xml:space="preserve">
+		<value>Deinstallieren</value>
+	</data>
+	<data name="ProjectForCurrent" xml:space="preserve">
+		<value>Für aktuelles Projekt</value>
+	</data>
+	<data name="UserFor" xml:space="preserve">
+		<value>Für Benutzer</value>
+	</data>
+	<data name="TypeInstall" xml:space="preserve">
+		<value>Installationstyp:</value>
+	</data>
+	<data name="Path" xml:space="preserve">
+		<value>Verzeichnis:</value>
+	</data>
+	<data name="ElementsAll" xml:space="preserve">
+		<value>Alle Elemente:</value>
+	</data>
+	<data name="ElementsToExport" xml:space="preserve">
+		<value>Zu exportierende Elemente:</value>
+	</data>
+	<data name="ElementsToExportSelect" xml:space="preserve">
+		<value>Wählen Sie die zu exportierenden Elemente aus:</value>
+	</data>
+	<data name="BuildToolAdd" xml:space="preserve">
+		<value>Neues Build-Tool hinzufügen</value>
+	</data>
+	<data name="FileRootExternalToCsProj" xml:space="preserve">
+		<value>Externes Dateistammverzeichnis (relative Pfade beziehen sich auf .csproj):</value>
+	</data>
+	<data name="SelectItemForExampleCl" xml:space="preserve">
+		<value>Wählen Sie ein Element aus, um eine Beispielbefehlszeile anzuzeigen</value>
+	</data>
 </root>

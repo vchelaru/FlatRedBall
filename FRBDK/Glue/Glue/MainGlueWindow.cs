@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Linq;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace Glue;
 
@@ -175,9 +176,10 @@ public partial class MainGlueWindow : Form
     {
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
         LoadGlueSettings();
-        Localization.Texts.Culture = GlueState.Self.GlueSettingsSave.CurrentCulture;
-
-        Microsoft.Build.Evaluation.Project item = null;
+        var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
+        Localization.Texts.Culture = mainCulture;
+        Thread.CurrentThread.CurrentCulture = mainCulture;
+        Thread.CurrentThread.CurrentUICulture = mainCulture;
 
         // Some stuff can be parallelized.  We're going to run stuff
         // that can be parallelized in parallel, and then block to wait for
@@ -203,7 +205,7 @@ public partial class MainGlueWindow : Form
 
         // Event manager
         SetScreenSubMessage(Localization.Texts.InitializingEventManager);
-        TaskManager.Self.Add(EventManager.Initialize, Localization.Texts.InitializingEventManager); Application.DoEvents();
+        TaskManager.Self.Add(EventManager.Initialize, Localization.Texts.InitializingEventManager);
         SetScreenSubMessage(Localization.Texts.InitializingExposedVariableManager);
 
         try

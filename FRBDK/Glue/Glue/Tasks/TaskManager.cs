@@ -302,11 +302,11 @@ namespace FlatRedBall.Glue.Managers
                 (arg)=>ExecuteParallelAction(action, details));
         }
 
-        [Obsolete("Use Add, which allows specifying the priority")]
         /// <summary>
         /// Adds an action to be executed, guaranteeing that no other actions will be executed at the same time as this.
         /// Actions added will be executed in the order they were added (fifo).
         /// </summary>
+        [Obsolete("Use Add, which allows specifying the priority")]
         public void AddSync(Action action, string displayInfo) => Add(action, displayInfo);
 
         /// <summary>
