@@ -322,7 +322,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Animation Speed.
         /// </summary>
         public static string AnimationSpeed {
             get {
@@ -2046,6 +2046,15 @@ namespace Localization {
         public static string FailedFindWindowHandle {
             get {
                 return ResourceManager.GetString("FailedFindWindowHandle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to set game/edit mode to {0}.
+        /// </summary>
+        public static string FailedToSetGameEditModeToX {
+            get {
+                return ResourceManager.GetString("FailedToSetGameEditModeToX", resourceCulture);
             }
         }
         

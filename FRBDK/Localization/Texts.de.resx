@@ -2411,4 +2411,7 @@
 	<data name="AnimationSpeed" xml:space="preserve">
 		<value>Animations Geschwindigkeit</value>
 	</data>
+	<data name="FailedToSetGameEditModeToX" xml:space="preserve">
+		<value>Der Spiel-/Bearbeitungsmodus konnte nicht auf {0} gesetzt werden.</value>
+	</data>
 </root>
