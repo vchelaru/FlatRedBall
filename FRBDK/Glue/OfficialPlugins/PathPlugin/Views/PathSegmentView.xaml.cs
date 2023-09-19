@@ -74,7 +74,7 @@ namespace OfficialPlugins.PathPlugin.Views
                 ViewModel.X += 5 * sign;
                 e.Handled = true;
             }
-            else if(Equals(sender, YTextBox))
+            else if ((Equals(sender, YTextBox)))
             {
                 ViewModel.Y += 5 * sign;
 

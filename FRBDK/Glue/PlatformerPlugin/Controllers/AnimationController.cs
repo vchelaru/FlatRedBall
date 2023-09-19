@@ -98,7 +98,7 @@ namespace PlatformerPluginCore.Controllers
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.AbsoluteXVelocityAnimationSpeedMultiplier);
-                prop.Category = "771DBED6F6A14D1ABEAE1014B56BE01F";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
@@ -106,21 +106,21 @@ namespace PlatformerPluginCore.Controllers
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.AbsoluteYVelocityAnimationSpeedMultiplier);
-                prop.Category = "771DBED6F6A14D1ABEAE1014B56BE01F";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.MaxSpeedXRatioMultiplier);
-                prop.Category = "771DBED6F6A14D1ABEAE1014B56BE01F";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.MaxSpeedYRatioMultiplier);
-                prop.Category = "771DBED6F6A14D1ABEAE1014B56BE01F";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
