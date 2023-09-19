@@ -62,17 +62,17 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
 
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), Localization.MenuIds.ContentId, Localization.Texts.Content); // content
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), Localization.Texts.Content); // content
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowGrid), Localization.MenuIds.GridAndMarkingsId, Localization.Texts.GridAndMarkings);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), Localization.MenuIds.GridAndMarkingsId, Localization.Texts.GridAndMarkings);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), Localization.MenuIds.GridAndMarkingsId, Localization.Texts.GridAndMarkings);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), Localization.MenuIds.GridAndMarkingsId, Localization.Texts.GridAndMarkings);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), Localization.MenuIds.GridAndMarkingsId, Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowGrid), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), Localization.Texts.GridAndMarkings);
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), Localization.MenuIds.SnappingId, Localization.Texts.Snapping);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), Localization.MenuIds.SnappingId, Localization.Texts.Snapping);
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.PolygonPointSnapSize), Localization.MenuIds.SnappingId, Localization.Texts.Snapping);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), Localization.Texts.Snapping);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), Localization.Texts.Snapping);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.PolygonPointSnapSize), Localization.Texts.Snapping);
 
 
             var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange));

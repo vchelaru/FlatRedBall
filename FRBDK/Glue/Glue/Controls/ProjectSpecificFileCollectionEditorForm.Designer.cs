@@ -138,7 +138,7 @@ partial class ProjectSpecificFileCollectionEditorForm
         this.RemoveFileTab.Padding = new System.Windows.Forms.Padding(3);
         this.RemoveFileTab.Size = new System.Drawing.Size(259, 62);
         this.RemoveFileTab.TabIndex = 0;
-        this.RemoveFileTab.Text = L.Texts.FileRemove
+        this.RemoveFileTab.Text = L.Texts.FileRemove;
         this.RemoveFileTab.UseVisualStyleBackColor = true;
         // 
         // DoneButton

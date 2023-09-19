@@ -225,7 +225,7 @@ namespace OfficialPlugins.VariableDisplay
 
             List<MemberCategory> categories = new List<MemberCategory>();
 
-            CreateAndAddCategory(categories, Localization.MenuIds.VariableId, Localization.Texts.Variables);
+            CreateAndAddCategory(categories, Localization.Texts.Variables);
             CreateInstanceMembersForVariables(element, categories);
 
             AddAlternatingColors(grid, categories);
@@ -254,9 +254,9 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryName, string categoryLabel)
+        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryLabel)
         {
-            var defaultCategory = new MemberCategory(categoryName, categoryLabel);
+            var defaultCategory = new MemberCategory(categoryLabel);
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
             return defaultCategory;
@@ -295,7 +295,7 @@ namespace OfficialPlugins.VariableDisplay
 
                 if (category == null)
                 {
-                    category = CreateAndAddCategory(categories, categoryName, "TODOMUSTFIX");
+                    category = CreateAndAddCategory(categories, categoryName);
                 }
 
                 category.Members.Add(instanceMember);

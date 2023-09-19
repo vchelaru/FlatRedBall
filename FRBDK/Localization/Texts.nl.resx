@@ -2354,4 +2354,61 @@
 	<data name="SelectItemForExampleCl" xml:space="preserve">
 		<value>Selecteer een item om een voorbeeld van een opdrachtregel te zien</value>
 	</data>
+	<data name="MakeRelative" xml:space="preserve">
+		<value>Maak relatief</value>
+	</data>
+	<data name="MakeAbsolute" xml:space="preserve">
+		<value>Maak absoluut</value>
+	</data>
+	<data name="SelectedFileAssociation" xml:space="preserve">
+		<value>Op de geselecteerde bestandskoppeling wil ik...</value>
+	</data>
+	<data name="PluginDownloading" xml:space="preserve">
+		<value>Plug-in downloaden...</value>
+	</data>
+	<data name="OnlyCodeFiles" xml:space="preserve">
+		<value>Alleen codebestanden</value>
+	</data>
+	<data name="FilesAll" xml:space="preserve">
+		<value>Alle bestanden</value>
+	</data>
+	<data name="PluginSource" xml:space="preserve">
+		<value>Plugin bron</value>
+	</data>
+	<data name="PluginFromInstalled" xml:space="preserve">
+		<value>Van geïnstalleerde plug-in</value>
+	</data>
+	<data name="FromFolder" xml:space="preserve">
+		<value>Uit map</value>
+	</data>
+	<data name="Event" xml:space="preserve">
+		<value>Evenement:</value>
+	</data>
+	<data name="PropertyType" xml:space="preserve">
+		<value>Eigenschap type:</value>
+	</data>
+	<data name="EventExistingExpose" xml:space="preserve">
+		<value>Een bestaand evenement blootleggen</value>
+	</data>
+	<data name="EventNewCreate" xml:space="preserve">
+		<value>Maak een nieuw evenement aan</value>
+	</data>
+	<data name="EventSelectExisting" xml:space="preserve">
+		<value>Selecteer een bestaand evenement:</value>
+	</data>
+	<data name="GenericType" xml:space="preserve">
+		<value>Generiek type:</value>
+	</data>
+	<data name="EventNew" xml:space="preserve">
+		<value>Nieuw evenement</value>
+	</data>
+	<data name="HintObjectIsContainerNotApply" xml:space="preserve">
+		<value>Deze waarde kan niet worden toegepast omdat IsContainer voor dit object is ingesteld op true</value>
+	</data>
+	<data name="Velocity" xml:space="preserve">
+		<value>Snelheid</value>
+	</data>
+	<data name="AnimationSpeed" xml:space="preserve">
+		<value>Animatie snelheid</value>
+	</data>
 </root>

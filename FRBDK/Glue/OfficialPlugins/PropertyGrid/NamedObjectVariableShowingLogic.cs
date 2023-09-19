@@ -231,7 +231,7 @@ namespace OfficialPlugins.VariableDisplay
 
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory(Localization.MenuIds.VariableId, Localization.Texts.Variables);
+            var defaultCategory = new MemberCategory(Localization.Texts.Variables);
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 
@@ -461,7 +461,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AddSourceNameVariable(NamedObjectSave instance, List<MemberCategory> categories)
         {
-            var categoryToAddTo = new MemberCategory(Localization.MenuIds.FileId, Localization.Texts.File);
+            var categoryToAddTo = new MemberCategory(Localization.Texts.File);
             categoryToAddTo.FontSize = 14;
 
             if (categories.Count > 0)
@@ -737,7 +737,7 @@ namespace OfficialPlugins.VariableDisplay
                 if (categoryToAddTo == null)
                 {
                     //... if not, make one, and insert it before the last:
-                    categoryToAddTo = new MemberCategory(categoryName, "TODOMUSTFIX");
+                    categoryToAddTo = new MemberCategory(categoryName);
                     categoryToAddTo.FontSize = 14;
 
                     categories.Insert(categories.Count - 1, categoryToAddTo);

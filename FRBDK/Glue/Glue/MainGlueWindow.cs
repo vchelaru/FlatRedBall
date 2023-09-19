@@ -90,12 +90,11 @@ public partial class MainGlueWindow : Form
 
         if(String.IsNullOrEmpty(output))
         {
-            // Ensure dotnet is installed. If not, abort the program.
-            // This can happen if the engine is run from an AOT compiled install
+            // Ensure dotnet is installed. If not, we will assume the user uses .NET Framework.
+            // Any further checks on .NET usage are not required.
             if (!System.IO.File.Exists(@"C:\Program Files\dotnet\dotnet.exe"))
             {
                 MessageBox.Show(Localization.Texts.ErrorDotNetIsNotInstalledOrEnvironmentVariables);
-                Environment.Exit(2);
                 return;
             }
 

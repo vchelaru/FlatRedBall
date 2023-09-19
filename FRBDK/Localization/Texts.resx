@@ -2354,4 +2354,61 @@
 	<data name="SelectItemForExampleCl" xml:space="preserve">
 		<value>Select an item to see an example command line</value>
 	</data>
+	<data name="MakeRelative" xml:space="preserve">
+		<value>Make Relative</value>
+	</data>
+	<data name="MakeAbsolute" xml:space="preserve">
+		<value>Make Absolute</value>
+	</data>
+	<data name="SelectedFileAssociation" xml:space="preserve">
+		<value>On the selected file association I want to...</value>
+	</data>
+	<data name="PluginDownloading" xml:space="preserve">
+		<value>Downloading Plugin...</value>
+	</data>
+	<data name="OnlyCodeFiles" xml:space="preserve">
+		<value>Just Code Files</value>
+	</data>
+	<data name="FilesAll" xml:space="preserve">
+		<value>All Files</value>
+	</data>
+	<data name="PluginSource" xml:space="preserve">
+		<value>Plugin Source</value>
+	</data>
+	<data name="PluginFromInstalled" xml:space="preserve">
+		<value>From Installed Plugin</value>
+	</data>
+	<data name="FromFolder" xml:space="preserve">
+		<value>From Folder</value>
+	</data>
+	<data name="Event" xml:space="preserve">
+		<value>Event:</value>
+	</data>
+	<data name="PropertyType" xml:space="preserve">
+		<value>Property Type:</value>
+	</data>
+	<data name="EventExistingExpose" xml:space="preserve">
+		<value>Expose an existing event</value>
+	</data>
+	<data name="EventNewCreate" xml:space="preserve">
+		<value>Create a new event</value>
+	</data>
+	<data name="EventSelectExisting" xml:space="preserve">
+		<value>Select an existing event:</value>
+	</data>
+	<data name="GenericType" xml:space="preserve">
+		<value>Generic Type:</value>
+	</data>
+	<data name="EventNew" xml:space="preserve">
+		<value>New Event</value>
+	</data>
+	<data name="HintObjectIsContainerNotApply" xml:space="preserve">
+		<value>This value may not be applied since this object has IsContainer set to true</value>
+	</data>
+	<data name="Velocity" xml:space="preserve">
+		<value>Velocity</value>
+	</data>
+	<data name="AnimationSpeed" xml:space="preserve">
+		<value>Animation Speed</value>
+	</data>
 </root>

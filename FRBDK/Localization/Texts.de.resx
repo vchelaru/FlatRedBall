@@ -2354,4 +2354,61 @@
 	<data name="SelectItemForExampleCl" xml:space="preserve">
 		<value>Wählen Sie ein Element aus, um eine Beispielbefehlszeile anzuzeigen</value>
 	</data>
+	<data name="MakeRelative" xml:space="preserve">
+		<value>Relativ machen</value>
+	</data>
+	<data name="MakeAbsolute" xml:space="preserve">
+		<value>Absolut machen</value>
+	</data>
+	<data name="SelectedFileAssociation" xml:space="preserve">
+		<value>Für die ausgewählte Dateizuordnung möchte ich...</value>
+	</data>
+	<data name="PluginDownloading" xml:space="preserve">
+		<value>Plugin wird heruntergeladen...</value>
+	</data>
+	<data name="OnlyCodeFiles" xml:space="preserve">
+		<value>Nur Codedateien</value>
+	</data>
+	<data name="FilesAll" xml:space="preserve">
+		<value>Alle Dateien</value>
+	</data>
+	<data name="PluginSource" xml:space="preserve">
+		<value>Plugin-Quelle</value>
+	</data>
+	<data name="PluginFromInstalled" xml:space="preserve">
+		<value>Vom installierten Plugin</value>
+	</data>
+	<data name="FromFolder" xml:space="preserve">
+		<value>Aus Ordner</value>
+	</data>
+	<data name="Event" xml:space="preserve">
+		<value>Veranstaltung:</value>
+	</data>
+	<data name="PropertyType" xml:space="preserve">
+		<value>Immobilientyp:</value>
+	</data>
+	<data name="EventExistingExpose" xml:space="preserve">
+		<value>Machen Sie ein vorhandenes Veranstaltung verfügbar</value>
+	</data>
+	<data name="EventNewCreate" xml:space="preserve">
+		<value>Erstellen Sie ein neues Veranstaltung</value>
+	</data>
+	<data name="EventSelectExisting" xml:space="preserve">
+		<value>Wählen Sie ein vorhandenes Veranstaltung aus:</value>
+	</data>
+	<data name="GenericType" xml:space="preserve">
+		<value>Allgemeiner Typ:</value>
+	</data>
+	<data name="EventNew" xml:space="preserve">
+		<value>Neue Veranstaltung</value>
+	</data>
+	<data name="HintObjectIsContainerNotApply" xml:space="preserve">
+		<value>Dieser Wert darf nicht angewendet werden, da IsContainer für dieses Objekt auf „true“ gesetzt ist</value>
+	</data>
+	<data name="Velocity" xml:space="preserve">
+		<value>Geschwindigkeit</value>
+	</data>
+	<data name="AnimationSpeed" xml:space="preserve">
+		<value>Animations Geschwindigkeit</value>
+	</data>
 </root>

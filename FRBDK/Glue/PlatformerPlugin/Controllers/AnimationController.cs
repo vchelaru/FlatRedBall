@@ -81,11 +81,11 @@ namespace PlatformerPluginCore.Controllers
                 instanceMember.PropertiesToSetOnDisplayer[(nameof(MultiLineTextBoxDisplay.IsAboveBelowLayout))] = true;
             }
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinXVelocityAbsolute), "897FF12C13144C80BD4D034C4B8451F5", "Velocity");
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), "897FF12C13144C80BD4D034C4B8451F5", "Velocity");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinXVelocityAbsolute), Localization.Texts.Velocity);
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), Localization.Texts.Velocity);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), "897FF12C13144C80BD4D034C4B8451F5", "Velocity");
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity), "897FF12C13144C80BD4D034C4B8451F5", "Velocity");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), Localization.Texts.Velocity);
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity),Localization.Texts.Velocity);
 
             var velocityFirstGridLength = new GridLength(150);
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
@@ -93,7 +93,7 @@ namespace PlatformerPluginCore.Controllers
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinYVelocity)).FirstGridLength = velocityFirstGridLength;
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxYVelocity)).FirstGridLength = velocityFirstGridLength;
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment), "771DBED6F6A14D1ABEAE1014B56BE01F", "Animation Speed");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment),Localization.Texts.AnimationSpeed);
 
             {
                 var prop = new InstanceMemberDisplayProperties();
@@ -127,7 +127,7 @@ namespace PlatformerPluginCore.Controllers
 
             dataUiGrid.Apply(properties);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.OnGroundRequirement), "3462D6D4A9BF40AD86F6C4C463E0B2B7", "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.OnGroundRequirement), Localization.Texts.MovementType);
             var member = dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.OnGroundRequirement));
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.TrueText)] = "Ground Only";
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.FalseText)] = "Air Only";
@@ -139,9 +139,9 @@ namespace PlatformerPluginCore.Controllers
                 category.Members.RemoveAll(item => item.PropertyType == typeof(System.Windows.Input.ICommand));
             }
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MovementName), "3462D6D4A9BF40AD86F6C4C463E0B2B7", "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MovementName), Localization.Texts.MovementType);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.CustomCondition), "3462D6D4A9BF40AD86F6C4C463E0B2B7", "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.CustomCondition), Localization.Texts.MovementType);
         }
 
         public static void LoadAnimationFilesFromDisk(GlueElement currentElement)
