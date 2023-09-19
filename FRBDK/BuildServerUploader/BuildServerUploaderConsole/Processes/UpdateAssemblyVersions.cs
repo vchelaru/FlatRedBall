@@ -111,7 +111,7 @@ namespace BuildServerUploaderConsole.Processes
 
             csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
                         "<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
-                        $"<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"{versionString} />");
+                        $"<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"{versionString}\" />");
 
             FileManager.SaveText(csprojText, csprojLocation);
         }
