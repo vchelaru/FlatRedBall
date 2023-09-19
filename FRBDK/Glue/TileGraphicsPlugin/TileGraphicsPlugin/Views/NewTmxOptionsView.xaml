@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
-        <GroupBox Header="TMX Creation Options">
+        <GroupBox Header="{x:Static localization:Texts.TmxCreationOptions}">
             <StackPanel>
                 <CheckBox VerticalContentAlignment="Center"
                     IsChecked="{Binding IncludeDefaultTileset}">

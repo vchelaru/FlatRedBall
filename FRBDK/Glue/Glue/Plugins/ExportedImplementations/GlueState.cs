@@ -373,13 +373,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 
         public GlueProjectSave CurrentGlueProject => ObjectFinder.Self.GlueProject; 
 
-        public PluginSettings CurrentPluginSettings
-        {
-            get
-            {
-                return ProjectManager.PluginSettings;
-            }
-        }
+        public PluginSettings CurrentPluginSettings => ProjectManager.PluginSettings;
 
 
         /// <summary>

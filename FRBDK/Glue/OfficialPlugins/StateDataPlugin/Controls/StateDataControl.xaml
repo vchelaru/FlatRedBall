@@ -74,7 +74,7 @@
                   KeyDown="DataGridInstance_KeyDown"
                   PreviewKeyDown="DataGridInstance_PreviewKeyDown">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="State" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
+                <DataGridTextColumn Header="{x:Static localization:Texts.State}" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="{x:Type TextBlock}">
                             <Style.Triggers>

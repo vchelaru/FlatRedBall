@@ -16,7 +16,7 @@
                 <CheckBox VerticalContentAlignment="Center" Margin="0,2,0,0"
                           IsChecked="{Binding ShouldLoopSong}"
                           IsEnabled="{Binding IsEnabled}"  Content="{x:Static localization:Texts.LoopSong}" />
-                <GroupBox Header="Volume">
+                <GroupBox Header="{x:Static localization:Texts.Volume}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSetVolumeChecked}"  Content="{x:Static localization:Texts.SetVolume}" />
                 

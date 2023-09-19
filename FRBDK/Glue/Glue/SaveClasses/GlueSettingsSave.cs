@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
@@ -121,13 +122,29 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public ExternalSeparatingList<BuildToolAssociation> BuildToolAssociations = new ExternalSeparatingList<BuildToolAssociation>();
 
-        [XmlIgnore]
-        public static bool StopSavesAndLoads { get; set; }
+        [XmlIgnore] public static bool StopSavesAndLoads { get; set; }
 
         public List<PropertySave> Properties = new List<PropertySave>();
 
         public bool IsBookmarksListVisible { get; set; }
         public double BookmarkRowHeight { get; set; }
+
+        /// <summary>
+        /// XML cannot serialize CultureInfo because it doesn't have a parameterless constructor;
+        /// hence, this property is used as a workaround.
+        /// </summary>
+        public string Culture
+        {
+            get => CurrentCulture?.TwoLetterISOLanguageName ?? "en";
+            set
+            {
+                if (!String.IsNullOrWhiteSpace(value))
+                {
+                    CurrentCulture = new CultureInfo(value);
+                }
+            }
+        }
+        [XmlIgnore] public CultureInfo CurrentCulture { get; set; }
 
         #endregion
 
@@ -157,6 +174,14 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public void FixAllTypes()
         {
+            CurrentCulture ??= CultureInfo.InstalledUICulture.TwoLetterISOLanguageName switch
+            {
+                "fr" => new CultureInfo("fr-FR"),
+                "nl" => new CultureInfo("nl-NL"),
+                "de" => new CultureInfo("de-DE"),
+                _ => new CultureInfo("en-US")
+            };
+
             foreach (var property in Properties)
             {
                 FixAllTypes(property);
@@ -188,7 +213,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public void LoadExternalBuildToolsFromCsv(string csvFileName)
         {
-            List<BuildToolAssociation> externals = new List<BuildToolAssociation>();
+            var externals = new List<BuildToolAssociation>();
 
             CsvFileManager.CsvDeserializeList(typeof(BuildToolAssociation), csvFileName, externals);
 

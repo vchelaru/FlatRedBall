@@ -6,7 +6,7 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Input Movement Type" Visibility="{Binding AllUiVisibility}">
+    <GroupBox Header="{x:Static localization:Texts.InputMovementType}" Visibility="{Binding AllUiVisibility}">
         <StackPanel>
             <RadioButton IsChecked="{Binding IsNoneRadioChecked}" Content="{x:Static localization:Texts.None}" />
             <RadioButton IsChecked="{Binding IsTopDownRadioChecked}" Content="{x:Static localization:Texts.TopDown}" />

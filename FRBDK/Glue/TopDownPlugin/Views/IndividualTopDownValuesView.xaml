@@ -55,7 +55,7 @@
                 </TextBox.ToolTip>
             </TextBox>
 
-            <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
+            <GroupBox Header="{x:Static localization:Texts.Inheritance}" Visibility="{Binding InheritBoxVisibility}">
                 <StackPanel>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">
                         <RadioButton.ToolTip>

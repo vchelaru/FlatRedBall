@@ -2078,4 +2078,193 @@
 	<data name="Uncategorized" xml:space="preserve">
 		<value>Nicht kategorisiert</value>
 	</data>
+	<data name="Tiled" xml:space="preserve">
+		<value>Betegeld</value>
+	</data>
+	<data name="ScreenProperties" xml:space="preserve">
+		<value>Schermeigenschappen</value>
+	</data>
+	<data name="Collision" xml:space="preserve">
+		<value>Botsingen</value>
+	</data>
+	<data name="Visuals" xml:space="preserve">
+		<value>Visueel</value>
+	</data>
+	<data name="Interfaces" xml:space="preserve">
+		<value>Interfaces</value>
+	</data>
+	<data name="Creation" xml:space="preserve">
+		<value>Creatie</value>
+	</data>
+	<data name="TeamIndex" xml:space="preserve">
+		<value>Teamindex</value>
+	</data>
+	<data name="SelectObjectType" xml:space="preserve">
+		<value>Selecteer Objecttype</value>
+	</data>
+	<data name="Desktop" xml:space="preserve">
+		<value>Desktop</value>
+	</data>
+	<data name="Mobile" xml:space="preserve">
+		<value>Mobiel</value>
+	</data>
+	<data name="Resolution" xml:space="preserve">
+		<value>Resolutie</value>
+	</data>
+	<data name="Destruction" xml:space="preserve">
+		<value>Destructie</value>
+	</data>
+	<data name="Events" xml:space="preserve">
+		<value>Evenementen</value>
+	</data>
+	<data name="GoToObject" xml:space="preserve">
+		<value>Ga naar object</value>
+	</data>
+	<data name="EntityCurrent" xml:space="preserve">
+		<value>Huidige entiteit</value>
+	</data>
+	<data name="Volume" xml:space="preserve">
+		<value>Volume</value>
+	</data>
+	<data name="State" xml:space="preserve">
+		<value>Status</value>
+	</data>
+	<data name="TmxCreationOptions" xml:space="preserve">
+		<value>Opties voor het maken van TMX</value>
+	</data>
+	<data name="HintMostGamesMultipleScreens" xml:space="preserve">
+		<value>De meeste games hebben meerdere schermen. Voorbeelden hiervan zijn titelschermen, levelselectieschermen en instellingenschermen.</value>
+	</data>
+	<data name="HintNeedAtLeastOneScreen" xml:space="preserve">
+		<value>Elk spel heeft minimaal één scherm nodig. Meestal bevindt de spellogica zich in een scherm genaamd GameScreen.</value>
+	</data>
+	<data name="ObjectAddToX" xml:space="preserve">
+		<value>Object toevoegen aan {0}</value>
+	</data>
+	<data name="HintCommonEntityTypes" xml:space="preserve">
+		<value>Veel voorkomende entiteitsobjecttypen zijn onder meer sprites en vormen voor botsingen.</value>
+	</data>
+	<data name="HintCommonEntityTypesRelationships" xml:space="preserve">
+		<value>Veel voorkomende schermobjecttypen zijn onder meer entiteitslijsten, lagen en botsingsrelaties.</value>
+	</data>
+	<data name="AddNewXToY" xml:space="preserve">
+		<value>Voeg een nieuwe {0} toe aan {1}</value>
+	</data>
+	<data name="ListAddXToGameScreen" xml:space="preserve">
+		<value>Voeg {0} lijst toe aan GameScreen</value>
+	</data>
+	<data name="HintListMultipleCopiesOfEntity" xml:space="preserve">
+		<value>Lijsten zorgen ervoor dat er meerdere exemplaren van deze entiteit in het spelscherm kunnen bestaan.</value>
+	</data>
+	<data name="Another" xml:space="preserve">
+		<value>nog een</value>
+	</data>
+	<data name="GameScreenInstanceAdd" xml:space="preserve">
+		<value>Voeg {0}{1} instantie toe aan GameScreen</value>
+	</data>
+	<data name="HintGameScreenAddInstance" xml:space="preserve">
+		<value>Voegt een enkele instantie toe aan het GameScreen. Dit wordt meestal gedaan als er op enig moment maar één van deze in het spelscherm aanwezig is.</value>
+	</data>
+	<data name="FactoryAddX" xml:space="preserve">
+		<value>Voeg {0} fabriek toe</value>
+	</data>
+	<data name="NameCannotBeEmpty" xml:space="preserve">
+		<value>De naam mag niet leeg zijn.</value>
+	</data>
+	<data name="NameCannotStartWithNumber" xml:space="preserve">
+		<value>Namen mogen niet met een cijfer beginnen.</value>
+	</data>
+	<data name="NameCannotContainInvalidChar" xml:space="preserve">
+		<value>De naam mag geen ongeldig teken {0} bevatten</value>
+	</data>
+	<data name="NameCannotHaveSpaces" xml:space="preserve">
+		<value>De naam mag geen spaties bevatten.</value>
+	</data>
+	<data name="NameEngineReserved" xml:space="preserve">
+		<value>Het woord '{0}' is een gereserveerd woord dat door de engine wordt gebruikt. Dit kan niet als naam worden gebruikt</value>
+	</data>
+	<data name="NameXIsCSharpKeyword" xml:space="preserve">
+		<value>Het woord '{0}' is een C#-trefwoord. Dit kan niet als naam worden gebruikt</value>
+	</data>
+	<data name="NameInvalidAmbiguity" xml:space="preserve">
+		<value>Het woord '{0}' is een ongeldige naam omdat dit voor dubbelzinnigheid kan zorgen</value>
+	</data>
+	<data name="Screen" xml:space="preserve">
+		<value>Scherm</value>
+	</data>
+	<data name="VariableYAlreadyInX" xml:space="preserve">
+		<value>Deze {0} heeft al een variabele met de naam {1}</value>
+	</data>
+	<data name="NameXHasObjectYInvalid" xml:space="preserve">
+		<value>Deze {0} heeft een object met de naam {1}, dus u moet een andere variabelenaam kiezen</value>
+	</data>
+	<data name="NameXCannotBeSameAsY" xml:space="preserve">
+		<value>De variabelenaam {0} mag niet hetzelfde zijn als zijn {1}</value>
+	</data>
+	<data name="VariableXReservedByFrb" xml:space="preserve">
+		<value>De variabele {0} is gereserveerd door FlatRedBall.</value>
+	</data>
+	<data name="NameXReservedByWindows" xml:space="preserve">
+		<value>De naam {0} is een gereserveerde bestandsnaam in Windows</value>
+	</data>
+	<data name="ProjectContainsEntityWithFileName" xml:space="preserve">
+		<value>Uw project bevat een entiteit met de naam {0}, die dezelfde naam heeft als uw bestand. Glue staat niet toe dat bestanden met dezelfde namen als entiteiten worden toegevoegd, omdat dit kan leiden tot dubbelzinnigheid in de code.</value>
+	</data>
+	<data name="ScreenNamedXExists" xml:space="preserve">
+		<value>Er is al een scherm met de naam {0}</value>
+	</data>
+	<data name="FileNamedXExists" xml:space="preserve">
+		<value>Er is al een bestand met de naam {0}</value>
+	</data>
+	<data name="ScreenNameReservedForClass" xml:space="preserve">
+		<value>De naam {0} is een gereserveerde klassenaam en kan dus niet voor een scherm worden gebruikt</value>
+	</data>
+	<data name="EntityXAlreadyExists" xml:space="preserve">
+		<value>Er is al een entiteit met de naam {0}. Glue raadt aan om de klasse een andere naam te geven dan de bestaande entiteiten.</value>
+	</data>
+	<data name="HintClassCannotBeNamedRootNamespace" xml:space="preserve">
+		<value>De klasse kan niet dezelfde naam hebben als de root-namespace (die meestal dezelfde naam heeft als het project)</value>
+	</data>
+	<data name="NameCannotBeReservedClassName" xml:space="preserve">
+		<value>De naam {0} is een gereserveerde klassenaam en kan dus niet worden gebruikt voor een statuscategorie</value>
+	</data>
+	<data name="NameAlreadyUsedInCategory" xml:space="preserve">
+		<value>De naam {0} wordt al gebruikt in de categorie {1}</value>
+	</data>
+	<data name="NameStateAlreadyUsedInBase" xml:space="preserve">
+		<value>Deze statusnaam '{0}' wordt al gebruikt in een basis {1}</value>
+	</data>
+	<data name="ObjectNotSetInDerived" xml:space="preserve">
+		<value>Er is een object met de naam {0} in het basiselement, maar dit is niet ingesteld door afgeleid.</value>
+	</data>
+	<data name="NameAlreadyUsed" xml:space="preserve">
+		<value>De naam {0} wordt al gebruikt</value>
+	</data>
+	<data name="ObjectCannotUseNameOfContainer" xml:space="preserve">
+		<value>U kunt uw object niet dezelfde naam geven als de {0} waarin het zich bevindt.</value>
+	</data>
+	<data name="ObjectNameCannotStartWithNumber" xml:space="preserve">
+		<value>Objectnamen mogen niet met cijfers beginnen</value>
+	</data>
+	<data name="ObjectNameCannotHaveSpace" xml:space="preserve">
+		<value>Objectnamen mogen geen spaties bevatten</value>
+	</data>
+	<data name="NameIsExistingOrExposed" xml:space="preserve">
+		<value>De naam {0} is een bestaande of zichtbare variabelenaam in {1} en is dus geen geldige objectnaam</value>
+	</data>
+	<data name="NameNotAllowedForObjects" xml:space="preserve">
+		<value>De naam '{0}' is geen toegestane naam voor objecten.</value>
+	</data>
+	<data name="NameIsReservedByPositionedObject" xml:space="preserve">
+		<value>De naam '{0}' is een gereserveerde naam van het PositionedObject Type.</value>
+	</data>
+	<data name="ErrorDotNetIsNotInstalledOrEnvironmentVariables" xml:space="preserve">
+		<value>Kritieke fout: Dotnet is niet gevonden op uw apparaat. Installeer het alstublieft - en als u dit al gedaan heeft, controleer dan uw omgevingsvariabelen</value>
+	</data>
+	<data name="ErrorCouldNotFindNetSix" xml:space="preserve">
+		<value>Kan geen geïnstalleerde versies van .NET 6.XX SDK's vinden. Glue kan projecten mogelijk niet laden. We raden u aan de .NET 6 SDK te installeren. dotnet --list-sdks-uitvoer: {0}</value>
+	</data>
+	<data name="ErrorDotnetMultipleIssue" xml:space="preserve">
+		<value>Mogelijk hebt u meerdere installaties van .NET op uw computer. Meer info hier: https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. Druk op CTRL+C in deze pop-up om de tekst te kopiëren, zodat u deze in een externe editor kunt plakken en die URL kunt openen.</value>
+	</data>
 </root>

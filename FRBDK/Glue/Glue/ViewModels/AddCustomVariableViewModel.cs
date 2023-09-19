@@ -456,8 +456,6 @@ namespace GlueFormsCore.ViewModels
             AvailableCategories = new ObservableCollection<string>(); 
             AvailableExposedVariables = new ObservableCollection<string>();
 
-            TypeConverterHelper.InitializeClasses();
-
             this.Element = glueElement;
 
             FillExposableVariables();

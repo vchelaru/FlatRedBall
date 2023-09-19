@@ -14,9 +14,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <!--<CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
-                      IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>-->
-            <GroupBox Header="Creation Options" Grid.Row="1">
+            <GroupBox Header="{x:Static localization:Texts.CreationOptions}" Grid.Row="1">
                 <StackPanel>
                     <TextBlock TextWrapping="Wrap" Visibility="{Binding MessageAboutInheritanceVisibility}" Text="{x:Static localization:Texts.HintTileShapeCollection}" />
                     <RadioButton VerticalContentAlignment="Center"

@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
 
 
-        <GroupBox Header="Select Object Type" Grid.Row="0" IsEnabled="{Binding IsObjectTypeGroupBoxEnabled}">
+        <GroupBox Header="{x:Static localization:Texts.SelectObjectType}" Grid.Row="0" IsEnabled="{Binding IsObjectTypeGroupBoxEnabled}">
             <StackPanel>
                 <RadioButton IsChecked="{Binding IsFlatRedBallType}" Content="{x:Static localization:Texts.FrbOrCustomType}" />
                 <RadioButton IsChecked="{Binding IsEntityType}" Content="{x:Static localization:Texts.Entity}" />

@@ -27,8 +27,8 @@
             </Grid>
             <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding GenerateDisplayCode}" Content="{x:Static localization:Texts.GenerateDisplayCode}" />
                 <StackPanel Visibility="{Binding AllPropertiesVisibility}">
-                
-                <GroupBox Header="Resolution">
+
+                <GroupBox Header="{x:Static localization:Texts.Resolution}">
                     <StackPanel>
                         <WrapPanel>
                             <StackPanel Height="24" Orientation="Horizontal" Margin="3">
@@ -112,14 +112,14 @@
                     </WrapPanel>
                 </GroupBox>
 
-                <GroupBox Header="Desktop">
+                <GroupBox Header="{x:Static localization:Texts.Desktop}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding RunInFullScreen}" Content="{x:Static localization:Texts.Fullscreen}" />
 
                         <CheckBox VerticalContentAlignment="Center" Margin="0,3,0,0" IsChecked="{Binding AllowWindowResizing}" Content="{x:Static localization:Texts.WindowResizingAllow}" />
 
                         <StackPanel Orientation="Horizontal">
-                            <Label>Scale</Label>
+                            <Label Content="{x:Static localization:Texts.Scale}" />
                             <Button Width="20" Margin="5" Click="ScaleMinusClicked">-</Button>
                             <TextBox Width="40" Height="18" Text="{Binding Scale}" IsEnabled="{Binding IsScaleUiEnabled}" VerticalContentAlignment="Center" KeyUp="TextBox_KeyUp"></TextBox>
                             <Button Width="20" Margin="5,5,0,5" Click="ScalePlusClicked">+</Button>
@@ -209,7 +209,7 @@
                         </GroupBox>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Mobile">
+                <GroupBox Header="{x:Static localization:Texts.Mobile}">
                     <StackPanel>
                         <TextBlock Visibility="{Binding SupportedOrientationsLinkVisibility}" TextWrapping="Wrap" >           
                             <Hyperlink NavigateUri="http://flatredball.com/documentation/api/microsoft-xna-framework/graphicsdevicemanager/supportedorientations/" 

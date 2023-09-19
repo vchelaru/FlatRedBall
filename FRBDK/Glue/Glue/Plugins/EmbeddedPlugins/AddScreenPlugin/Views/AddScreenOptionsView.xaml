@@ -10,19 +10,19 @@
         <StackPanel>
             <RadioButton Visibility="{Binding LevelScreenOptionUiVisibility}" IsEnabled="{Binding CanAddLevelScreen}" IsChecked="{Binding IsLevelScreen}"  Content="{x:Static localization:Texts.LevelScreen}" />
             <StackPanel Margin="10,0,0,0" Visibility="{Binding LevelScreenUiVisibility}">
-                <GroupBox Header="Screen Properties">
+                <GroupBox Header="{x:Static localization:Texts.ScreenProperties}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding InheritFromGameScreen}" Content="{x:Static localization:Texts.InheritFromGameScreen}" />
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsSetAsStartupChecked}" Content="{x:Static localization:Texts.SetAsStartupScreen}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Entities" Visibility="{Binding LevelScreenEntitiesGroupVisibility}">
+                <GroupBox Header="{x:Static localization:Texts.Entities}" Visibility="{Binding LevelScreenEntitiesGroupVisibility}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsCopyEntitiesFromOtherLevelChecked}" Content="{x:Static localization:Texts.EntitiesCopyAnotherLevel}" />
                         <ComboBox Margin="20,0,0,6" Visibility="{Binding CopyEntitiesVisibility}" ItemsSource="{Binding AvailableLevels, Mode=OneWay}" SelectedItem="{Binding SelectedCopyEntitiesFromLevel}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Tiled">
+                <GroupBox Header="{x:Static localization:Texts.Tiled}">
                     <StackPanel>
                         <RadioButton IsChecked="{Binding IsAddStandardTmxChecked }" Content="{x:Static localization:Texts.TmxAddStandard}" />
                         <RadioButton IsChecked="{Binding IsCopyTmxFromOtherLevelChecked}" Visibility="{Binding CopyTmxFromOtherLevelVisibility}" Content="{x:Static localization:Texts.TmxCopyOtherLevel}" />
@@ -33,17 +33,17 @@
             </StackPanel>
             <RadioButton Visibility="{Binding GameScreenOptionUiVisibility}" IsChecked="{Binding IsBaseLevelScreen}" Content="{x:Static localization:Texts.GameScreenBaseLevelScreen}" />
             <StackPanel Margin="10,0,0,0" Visibility="{Binding BaseLevelScreenUiVisibility}">
-                <GroupBox Header="Tiled">
+                <GroupBox Header="{x:Static localization:Texts.Tiled}">
                     <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddMapLayeredTileMapChecked}" Content="{x:Static localization:Texts.LayeredTileMapAdd}" />
                 </GroupBox>
-                <GroupBox Header="Collision">
+                <GroupBox Header="{x:Static localization:Texts.Collision}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddSolidCollisionShapeCollectionChecked}" Content="{x:Static localization:Texts.SolidCollisionAdd}" />
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddCloudCollisionShapeCollectionChecked}" Content="{x:Static localization:Texts.CloudCollisionAdd}" />
                         
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Entities">
+                <GroupBox Header="{x:Static localization:Texts.Entities}">
                     <StackPanel>
                         <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding IsAddListsForEntitiesChecked}"  Content="{x:Static localization:Texts.EntitiesListAdd}" />
                     </StackPanel>

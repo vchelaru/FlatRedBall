@@ -106,6 +106,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add a new {0} to {1}.
+        /// </summary>
+        public static string AddNewXToY {
+            get {
+                return ResourceManager.GetString("AddNewXToY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add ProfileManager.
         /// </summary>
         public static string AddProfileManager {
@@ -309,6 +318,15 @@ namespace Localization {
         public static string AnimationAddEntry {
             get {
                 return ResourceManager.GetString("AnimationAddEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to another.
+        /// </summary>
+        public static string Another {
+            get {
+                return ResourceManager.GetString("Another", resourceCulture);
             }
         }
         
@@ -745,6 +763,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collision.
+        /// </summary>
+        public static string Collision {
+            get {
+                return ResourceManager.GetString("Collision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Automatically Apply Physics On Collision.
         /// </summary>
         public static string CollisionApplyPhysics {
@@ -961,6 +988,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creation.
+        /// </summary>
+        public static string Creation {
+            get {
+                return ResourceManager.GetString("Creation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creation Options.
         /// </summary>
         public static string CreationOptions {
@@ -1137,6 +1173,24 @@ namespace Localization {
         public static string DeleteQuestion {
             get {
                 return ResourceManager.GetString("DeleteQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Desktop.
+        /// </summary>
+        public static string Desktop {
+            get {
+                return ResourceManager.GetString("Desktop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Destruction.
+        /// </summary>
+        public static string Destruction {
+            get {
+                return ResourceManager.GetString("Destruction", resourceCulture);
             }
         }
         
@@ -1501,6 +1555,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current Entity.
+        /// </summary>
+        public static string EntityCurrent {
+            get {
+                return ResourceManager.GetString("EntityCurrent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is Racing Entity.
         /// </summary>
         public static string EntityIsRacing {
@@ -1515,6 +1578,15 @@ namespace Localization {
         public static string EntityMain {
             get {
                 return ResourceManager.GetString("EntityMain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already an Entity named {0}. Glue recommends naming the Class something different than existing Entities..
+        /// </summary>
+        public static string EntityXAlreadyExists {
+            get {
+                return ResourceManager.GetString("EntityXAlreadyExists", resourceCulture);
             }
         }
         
@@ -1600,6 +1672,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find any versions of .NET 6.XX SDKs installed. Glue may not be able to load projects. We recommend installing .NET 6 SDK. dotnet --list-sdks output: {0}.
+        /// </summary>
+        public static string ErrorCouldNotFindNetSix {
+            get {
+                return ResourceManager.GetString("ErrorCouldNotFindNetSix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not open {0}.
         /// </summary>
         public static string ErrorCouldNotOpen {
@@ -1623,6 +1704,24 @@ namespace Localization {
         public static string ErrorDetails {
             get {
                 return ResourceManager.GetString("ErrorDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical Error: Dotnet has not been found on your device. Please install it - and if done so already, please check your environment variables.
+        /// </summary>
+        public static string ErrorDotNetIsNotInstalledOrEnvironmentVariables {
+            get {
+                return ResourceManager.GetString("ErrorDotNetIsNotInstalledOrEnvironmentVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may have multiple installations of .NET on your machine. More info here: https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. Press CTRL+C on this popup to copy the text so you can paste it in an external editor and open that URL..
+        /// </summary>
+        public static string ErrorDotnetMultipleIssue {
+            get {
+                return ResourceManager.GetString("ErrorDotnetMultipleIssue", resourceCulture);
             }
         }
         
@@ -1735,6 +1834,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Events.
+        /// </summary>
+        public static string Events {
+            get {
+                return ResourceManager.GetString("Events", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Example Bool Property.
         /// </summary>
         public static string ExampleBoolProperty {
@@ -1767,6 +1875,15 @@ namespace Localization {
         public static string ExposeVariable {
             get {
                 return ResourceManager.GetString("ExposeVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add {0} Factory.
+        /// </summary>
+        public static string FactoryAddX {
+            get {
+                return ResourceManager.GetString("FactoryAddX", resourceCulture);
             }
         }
         
@@ -1830,6 +1947,15 @@ namespace Localization {
         public static string FileBuildTools {
             get {
                 return ResourceManager.GetString("FileBuildTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a file named {0}.
+        /// </summary>
+        public static string FileNamedXExists {
+            get {
+                return ResourceManager.GetString("FileNamedXExists", resourceCulture);
             }
         }
         
@@ -2194,6 +2320,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add {0}{1} Instance to GameScreen.
+        /// </summary>
+        public static string GameScreenInstanceAdd {
+            get {
+                return ResourceManager.GetString("GameScreenInstanceAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Opposing Team Index Collision Relationships to GameScreen.
         /// </summary>
         public static string GameScreenOpposingTeamAdd {
@@ -2316,6 +2451,15 @@ namespace Localization {
         public static string GlueWizardRun {
             get {
                 return ResourceManager.GetString("GlueWizardRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go to object.
+        /// </summary>
+        public static string GoToObject {
+            get {
+                return ResourceManager.GetString("GoToObject", resourceCulture);
             }
         }
         
@@ -2572,6 +2716,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The class cannot be named the same as the root namespace (which is usually the same name as the project).
+        /// </summary>
+        public static string HintClassCannotBeNamedRootNamespace {
+            get {
+                return ResourceManager.GetString("HintClassCannotBeNamedRootNamespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player&apos;s velocity..
         /// </summary>
         public static string HintClimbingPressingUp {
@@ -2586,6 +2739,24 @@ namespace Localization {
         public static string HintCollisionsInactiveMayCalled {
             get {
                 return ResourceManager.GetString("HintCollisionsInactiveMayCalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Common entity object types include sprites and shapes for collision..
+        /// </summary>
+        public static string HintCommonEntityTypes {
+            get {
+                return ResourceManager.GetString("HintCommonEntityTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Common screen object types include entity lists, layers, and collision relationships..
+        /// </summary>
+        public static string HintCommonEntityTypesRelationships {
+            get {
+                return ResourceManager.GetString("HintCommonEntityTypesRelationships", resourceCulture);
             }
         }
         
@@ -2725,6 +2896,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adds a single instance to the GameScreen. This is usually done if there will only ever be one of these in the game screen at any time..
+        /// </summary>
+        public static string HintGameScreenAddInstance {
+            get {
+                return ResourceManager.GetString("HintGameScreenAddInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The game&apos;s zoom cannot be set by Glue. The zoom will effectively be a result of the desired resolution and the resolution of the monitor..
         /// </summary>
         public static string HintGameZoomGlueCannotSet {
@@ -2815,6 +2995,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lists enable multiple copies of this entity to exist in the game screen..
+        /// </summary>
+        public static string HintListMultipleCopiesOfEntity {
+            get {
+                return ResourceManager.GetString("HintListMultipleCopiesOfEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The maximum speed in pixels per second that the entity can move due to input being applyed. This speed can be exceeded when on a moving platform..
         /// </summary>
         public static string HintMaxSpeedPerPixel {
@@ -2838,6 +3027,15 @@ namespace Localization {
         public static string HintMaxSpeedUpDown {
             get {
                 return ResourceManager.GetString("HintMaxSpeedUpDown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Most games have multiple screens. Examples include title screens, level selection screens, and settings screens..
+        /// </summary>
+        public static string HintMostGamesMultipleScreens {
+            get {
+                return ResourceManager.GetString("HintMostGamesMultipleScreens", resourceCulture);
             }
         }
         
@@ -2874,6 +3072,15 @@ namespace Localization {
         public static string HintMovePointUpList {
             get {
                 return ResourceManager.GetString("HintMovePointUpList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every game needs at least one screen. Usually the game logic is in a screen called GameScreen..
+        /// </summary>
+        public static string HintNeedAtLeastOneScreen {
+            get {
+                return ResourceManager.GetString("HintNeedAtLeastOneScreen", resourceCulture);
             }
         }
         
@@ -3355,6 +3562,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interfaces.
+        /// </summary>
+        public static string Interfaces {
+            get {
+                return ResourceManager.GetString("Interfaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is Collision Active.
         /// </summary>
         public static string IsCollisionActive {
@@ -3531,6 +3747,15 @@ namespace Localization {
         public static string List {
             get {
                 return ResourceManager.GetString("List", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add {0} List to GameScreen.
+        /// </summary>
+        public static string ListAddXToGameScreen {
+            get {
+                return ResourceManager.GetString("ListAddXToGameScreen", resourceCulture);
             }
         }
         
@@ -3733,6 +3958,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mobile.
+        /// </summary>
+        public static string Mobile {
+            get {
+                return ResourceManager.GetString("Mobile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mobile Package.
         /// </summary>
         public static string MobilePackage {
@@ -3819,6 +4053,159 @@ namespace Localization {
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is already being used.
+        /// </summary>
+        public static string NameAlreadyUsed {
+            get {
+                return ResourceManager.GetString("NameAlreadyUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is already being used in the category {1}.
+        /// </summary>
+        public static string NameAlreadyUsedInCategory {
+            get {
+                return ResourceManager.GetString("NameAlreadyUsedInCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name cannot be empty..
+        /// </summary>
+        public static string NameCannotBeEmpty {
+            get {
+                return ResourceManager.GetString("NameCannotBeEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is a reserved class name, so it can&apos;t be used for a State Category.
+        /// </summary>
+        public static string NameCannotBeReservedClassName {
+            get {
+                return ResourceManager.GetString("NameCannotBeReservedClassName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name can&apos;t contain invalid character {0}.
+        /// </summary>
+        public static string NameCannotContainInvalidChar {
+            get {
+                return ResourceManager.GetString("NameCannotContainInvalidChar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name can&apos;t have any spaces..
+        /// </summary>
+        public static string NameCannotHaveSpaces {
+            get {
+                return ResourceManager.GetString("NameCannotHaveSpaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Names can&apos;t start with a number..
+        /// </summary>
+        public static string NameCannotStartWithNumber {
+            get {
+                return ResourceManager.GetString("NameCannotStartWithNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The word &apos;{0}&apos; is a reserved word used by the engine.  This can&apos;t be used as a name.
+        /// </summary>
+        public static string NameEngineReserved {
+            get {
+                return ResourceManager.GetString("NameEngineReserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The word &apos;{0}&apos; is an invalid name because it can cause ambiguity.
+        /// </summary>
+        public static string NameInvalidAmbiguity {
+            get {
+                return ResourceManager.GetString("NameInvalidAmbiguity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is an existing or exposable variable name in {1} so it is not a valid object name.
+        /// </summary>
+        public static string NameIsExistingOrExposed {
+            get {
+                return ResourceManager.GetString("NameIsExistingOrExposed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name &apos;{0}&apos; is a reserved name by the PositionedObject Type..
+        /// </summary>
+        public static string NameIsReservedByPositionedObject {
+            get {
+                return ResourceManager.GetString("NameIsReservedByPositionedObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name &apos;{0}&apos; is not an allowed name for objects..
+        /// </summary>
+        public static string NameNotAllowedForObjects {
+            get {
+                return ResourceManager.GetString("NameNotAllowedForObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This state name &apos;{0}&apos; is already used in a base {1}.
+        /// </summary>
+        public static string NameStateAlreadyUsedInBase {
+            get {
+                return ResourceManager.GetString("NameStateAlreadyUsedInBase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The variable name {0} cannot be the same as its {1}.
+        /// </summary>
+        public static string NameXCannotBeSameAsY {
+            get {
+                return ResourceManager.GetString("NameXCannotBeSameAsY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This {0} has an object named {1} so you must choose a different variable name.
+        /// </summary>
+        public static string NameXHasObjectYInvalid {
+            get {
+                return ResourceManager.GetString("NameXHasObjectYInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The word &apos;{0}&apos; is a C# keyword.  This can&apos;t be used as a name.
+        /// </summary>
+        public static string NameXIsCSharpKeyword {
+            get {
+                return ResourceManager.GetString("NameXIsCSharpKeyword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is a reserved file name in Windows.
+        /// </summary>
+        public static string NameXReservedByWindows {
+            get {
+                return ResourceManager.GetString("NameXReservedByWindows", resourceCulture);
             }
         }
         
@@ -3913,6 +4300,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Object to {0}.
+        /// </summary>
+        public static string ObjectAddToX {
+            get {
+                return ResourceManager.GetString("ObjectAddToX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can&apos;t name your Object the same name as the {0} it is contained in..
+        /// </summary>
+        public static string ObjectCannotUseNameOfContainer {
+            get {
+                return ResourceManager.GetString("ObjectCannotUseNameOfContainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find defining base object for {0}.
         /// </summary>
         public static string ObjectCouldNotDefineFor {
@@ -3931,6 +4336,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Object names can&apos;t have spaces.
+        /// </summary>
+        public static string ObjectNameCannotHaveSpace {
+            get {
+                return ResourceManager.GetString("ObjectNameCannotHaveSpace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object names can&apos;t start with numbers.
+        /// </summary>
+        public static string ObjectNameCannotStartWithNumber {
+            get {
+                return ResourceManager.GetString("ObjectNameCannotStartWithNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New Object.
         /// </summary>
         public static string ObjectNew {
@@ -3945,6 +4368,15 @@ namespace Localization {
         public static string ObjectNoPartitioning {
             get {
                 return ResourceManager.GetString("ObjectNoPartitioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is an object named {0} in the base Element but it is not Set By Derived..
+        /// </summary>
+        public static string ObjectNotSetInDerived {
+            get {
+                return ResourceManager.GetString("ObjectNotSetInDerived", resourceCulture);
             }
         }
         
@@ -4381,6 +4813,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your project contains an entity named {0} which is the same name as your file.  Glue does not allow files with the same names as Entities to be added as this can result in code ambiguity..
+        /// </summary>
+        public static string ProjectContainsEntityWithFileName {
+            get {
+                return ResourceManager.GetString("ProjectContainsEntityWithFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy project file links.
         /// </summary>
         public static string ProjectCopyFileLinks {
@@ -4813,6 +5254,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resolution.
+        /// </summary>
+        public static string Resolution {
+            get {
+                return ResourceManager.GetString("Resolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restart screen on level content change.
         /// </summary>
         public static string RestartScreenOnLevelContentChange {
@@ -4863,6 +5313,42 @@ namespace Localization {
         public static string ScopeDefinitions {
             get {
                 return ResourceManager.GetString("ScopeDefinitions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen .
+        /// </summary>
+        public static string Screen {
+            get {
+                return ResourceManager.GetString("Screen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already an Screen named {0}.
+        /// </summary>
+        public static string ScreenNamedXExists {
+            get {
+                return ResourceManager.GetString("ScreenNamedXExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name {0} is a reserved class name, so it can&apos;t be used for a Screen.
+        /// </summary>
+        public static string ScreenNameReservedForClass {
+            get {
+                return ResourceManager.GetString("ScreenNameReservedForClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Screen Properties.
+        /// </summary>
+        public static string ScreenProperties {
+            get {
+                return ResourceManager.GetString("ScreenProperties", resourceCulture);
             }
         }
         
@@ -4944,6 +5430,15 @@ namespace Localization {
         public static string SelectManagedProperties {
             get {
                 return ResourceManager.GetString("SelectManagedProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Object Type.
+        /// </summary>
+        public static string SelectObjectType {
+            get {
+                return ResourceManager.GetString("SelectObjectType", resourceCulture);
             }
         }
         
@@ -5290,6 +5785,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a name for the new state.
         /// </summary>
         public static string StateEnterName {
@@ -5362,6 +5866,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Team index.
+        /// </summary>
+        public static string TeamIndex {
+            get {
+                return ResourceManager.GetString("TeamIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 1 (Enemy Team).
         /// </summary>
         public static string TeamOneEnemy {
@@ -5403,6 +5916,15 @@ namespace Localization {
         public static string TextureSize {
             get {
                 return ResourceManager.GetString("TextureSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tiled.
+        /// </summary>
+        public static string Tiled {
+            get {
+                return ResourceManager.GetString("Tiled", resourceCulture);
             }
         }
         
@@ -5475,6 +5997,15 @@ namespace Localization {
         public static string TmxCopyOtherLevel {
             get {
                 return ResourceManager.GetString("TmxCopyOtherLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TMX Creation Options.
+        /// </summary>
+        public static string TmxCreationOptions {
+            get {
+                return ResourceManager.GetString("TmxCreationOptions", resourceCulture);
             }
         }
         
@@ -5623,7 +6154,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Uncategorized.
         /// </summary>
         public static string Uncategorized {
             get {
@@ -5830,6 +6361,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The variable {0} is reserved by FlatRedBall..
+        /// </summary>
+        public static string VariableXReservedByFrb {
+            get {
+                return ResourceManager.GetString("VariableXReservedByFrb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This {0} already has a variable named {1}.
+        /// </summary>
+        public static string VariableYAlreadyInX {
+            get {
+                return ResourceManager.GetString("VariableYAlreadyInX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View Built Project Sizes.
         /// </summary>
         public static string ViewBuiltProjectSizes {
@@ -5884,11 +6433,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Visuals.
+        /// </summary>
+        public static string Visuals {
+            get {
+                return ResourceManager.GetString("Visuals", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to VS Project files.
         /// </summary>
         public static string VisualStudioFiles {
             get {
                 return ResourceManager.GetString("VisualStudioFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Volume.
+        /// </summary>
+        public static string Volume {
+            get {
+                return ResourceManager.GetString("Volume", resourceCulture);
             }
         }
         

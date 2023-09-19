@@ -2078,4 +2078,193 @@
 	<data name="Uncategorized" xml:space="preserve">
 		<value>Non classé</value>
 	</data>
+	<data name="Tiled" xml:space="preserve">
+		<value>Carrelé</value>
+	</data>
+	<data name="ScreenProperties" xml:space="preserve">
+		<value>Propriétés de l'écran</value>
+	</data>
+	<data name="Collision" xml:space="preserve">
+		<value>Collisions</value>
+	</data>
+	<data name="Visuals" xml:space="preserve">
+		<value>Visuels</value>
+	</data>
+	<data name="Interfaces" xml:space="preserve">
+		<value>Interfaces</value>
+	</data>
+	<data name="Creation" xml:space="preserve">
+		<value>Création</value>
+	</data>
+	<data name="TeamIndex" xml:space="preserve">
+		<value>Indice des équipes</value>
+	</data>
+	<data name="SelectObjectType" xml:space="preserve">
+		<value>Sélectionnez le type d'objet</value>
+	</data>
+	<data name="Desktop" xml:space="preserve">
+		<value>Bureau</value>
+	</data>
+	<data name="Mobile" xml:space="preserve">
+		<value>Mobile</value>
+	</data>
+	<data name="Resolution" xml:space="preserve">
+		<value>Résolution d'écran</value>
+	</data>
+	<data name="Destruction" xml:space="preserve">
+		<value>Destruction</value>
+	</data>
+	<data name="Events" xml:space="preserve">
+		<value>Événements</value>
+	</data>
+	<data name="GoToObject" xml:space="preserve">
+		<value>Aller à l'objet</value>
+	</data>
+	<data name="EntityCurrent" xml:space="preserve">
+		<value>Entité actuelle</value>
+	</data>
+	<data name="Volume" xml:space="preserve">
+		<value>Volume</value>
+	</data>
+	<data name="State" xml:space="preserve">
+		<value>État</value>
+	</data>
+	<data name="TmxCreationOptions" xml:space="preserve">
+		<value>Options de création de TMX</value>
+	</data>
+	<data name="HintMostGamesMultipleScreens" xml:space="preserve">
+		<value>La plupart des jeux ont plusieurs écrans. Les exemples incluent les écrans de titre, les écrans de sélection de niveau et les écrans de paramètres.</value>
+	</data>
+	<data name="HintNeedAtLeastOneScreen" xml:space="preserve">
+		<value>Chaque jeu a besoin d'au moins un écran. Habituellement, la logique du jeu se trouve dans un écran appelé GameScreen.</value>
+	</data>
+	<data name="ObjectAddToX" xml:space="preserve">
+		<value>Ajouter un objet à {0}</value>
+	</data>
+	<data name="HintCommonEntityTypes" xml:space="preserve">
+		<value>Les types d'objets d'entité courants incluent les sprites et les formes pour les collisions.</value>
+	</data>
+	<data name="HintCommonEntityTypesRelationships" xml:space="preserve">
+		<value>Les types d'objets d'écran courants incluent les listes d'entités, les couches et les relations de collision.</value>
+	</data>
+	<data name="AddNewXToY" xml:space="preserve">
+		<value>Ajouter un nouveau {0} à {1}</value>
+	</data>
+	<data name="ListAddXToGameScreen" xml:space="preserve">
+		<value>Ajouter la liste {0} à GameScreen</value>
+	</data>
+	<data name="HintListMultipleCopiesOfEntity" xml:space="preserve">
+		<value>Les listes permettent à plusieurs copies de cette entité d'exister dans l'écran de jeu.</value>
+	</data>
+	<data name="Another" xml:space="preserve">
+		<value>un autre</value>
+	</data>
+	<data name="GameScreenInstanceAdd" xml:space="preserve">
+		<value>Ajouter une instance {0}{1} à GameScreen</value>
+	</data>
+	<data name="HintGameScreenAddInstance" xml:space="preserve">
+		<value>Ajoute une seule instance au GameScreen. Cela se produit généralement s'il n'y en a qu'un seul sur l'écran de jeu à la fois.</value>
+	</data>
+	<data name="FactoryAddX" xml:space="preserve">
+		<value>Ajouter {0} usine</value>
+	</data>
+	<data name="NameCannotBeEmpty" xml:space="preserve">
+		<value>Le nom ne peut pas être vide.</value>
+	</data>
+	<data name="NameCannotStartWithNumber" xml:space="preserve">
+		<value>Les noms ne peuvent pas commencer par un chiffre.</value>
+	</data>
+	<data name="NameCannotContainInvalidChar" xml:space="preserve">
+		<value>Le nom ne peut pas contenir de caractère non valide {0}</value>
+	</data>
+	<data name="NameCannotHaveSpaces" xml:space="preserve">
+		<value>Le nom ne peut contenir aucun espace.</value>
+	</data>
+	<data name="NameEngineReserved" xml:space="preserve">
+		<value>Le mot '{0}' est un mot réservé utilisé par le moteur. Cela ne peut pas être utilisé comme nom</value>
+	</data>
+	<data name="NameXIsCSharpKeyword" xml:space="preserve">
+		<value>Le mot « {0} » est un mot-clé C#. Cela ne peut pas être utilisé comme nom</value>
+	</data>
+	<data name="NameInvalidAmbiguity" xml:space="preserve">
+		<value>Le mot « {0} » n'est pas un nom valide, car il peut provoquer une ambiguïté.</value>
+	</data>
+	<data name="Screen" xml:space="preserve">
+		<value>Écran</value>
+	</data>
+	<data name="VariableYAlreadyInX" xml:space="preserve">
+		<value>Ce {0} a déjà une variable nommée {1}</value>
+	</data>
+	<data name="NameXHasObjectYInvalid" xml:space="preserve">
+		<value>Ce {0} a un objet nommé {1}, vous devez donc choisir un nom de variable différent</value>
+	</data>
+	<data name="NameXCannotBeSameAsY" xml:space="preserve">
+		<value>Le nom de la variable {0} ne peut pas être le même que son {1}</value>
+	</data>
+	<data name="VariableXReservedByFrb" xml:space="preserve">
+		<value>La variable {0} est réservée par FlatRedBall.</value>
+	</data>
+	<data name="NameXReservedByWindows" xml:space="preserve">
+		<value>Le nom {0} est un nom de fichier réservé sous Windows</value>
+	</data>
+	<data name="ProjectContainsEntityWithFileName" xml:space="preserve">
+		<value>Votre projet contient une entité nommée {0} qui porte le même nom que votre fichier. Glue n'autorise pas l'ajout de fichiers portant les mêmes noms que les entités, car cela peut entraîner une ambiguïté dans le code.</value>
+	</data>
+	<data name="ScreenNamedXExists" xml:space="preserve">
+		<value>Il existe déjà un écran nommé {0}</value>
+	</data>
+	<data name="FileNamedXExists" xml:space="preserve">
+		<value>Il existe déjà un fichier nommé {0}</value>
+	</data>
+	<data name="ScreenNameReservedForClass" xml:space="preserve">
+		<value>Le nom {0} est un nom de classe réservé, il ne peut donc pas être utilisé pour un Screen</value>
+	</data>
+	<data name="EntityXAlreadyExists" xml:space="preserve">
+		<value>Il existe déjà une entité nommée {0}. Glue recommande de nommer la classe différemment des entités existantes.</value>
+	</data>
+	<data name="HintClassCannotBeNamedRootNamespace" xml:space="preserve">
+		<value>La classe ne peut pas être nommée de la même manière que l'espace de noms racine (qui porte généralement le même nom que le projet)</value>
+	</data>
+	<data name="NameCannotBeReservedClassName" xml:space="preserve">
+		<value>Le nom {0} est un nom de classe réservé, il ne peut donc pas être utilisé pour une catégorie d'état</value>
+	</data>
+	<data name="NameAlreadyUsedInCategory" xml:space="preserve">
+		<value>Le nom {0} est déjà utilisé dans la catégorie {1}</value>
+	</data>
+	<data name="NameStateAlreadyUsedInBase" xml:space="preserve">
+		<value>Ce nom d'état '{0}' est déjà utilisé dans une base {1}</value>
+	</data>
+	<data name="ObjectNotSetInDerived" xml:space="preserve">
+		<value>Il existe un objet nommé {0} dans l'élément de base mais il n'est pas défini par dérivé.</value>
+	</data>
+	<data name="NameAlreadyUsed" xml:space="preserve">
+		<value>Le nom {0} est déjà utilisé</value>
+	</data>
+	<data name="ObjectCannotUseNameOfContainer" xml:space="preserve">
+		<value>Vous ne pouvez pas nommer votre objet du même nom que le {0} dans lequel il est contenu.</value>
+	</data>
+	<data name="ObjectNameCannotStartWithNumber" xml:space="preserve">
+		<value>Les noms d'objet ne peuvent pas commencer par des chiffres</value>
+	</data>
+	<data name="ObjectNameCannotHaveSpace" xml:space="preserve">
+		<value>Les noms d'objet ne peuvent pas contenir d'espaces</value>
+	</data>
+	<data name="NameIsExistingOrExposed" xml:space="preserve">
+		<value>Le nom {0} est un nom de variable existant ou exposable dans {1}, ce n'est donc pas un nom d'objet valide</value>
+	</data>
+	<data name="NameNotAllowedForObjects" xml:space="preserve">
+		<value>Le nom « {0} » n'est pas un nom autorisé pour les objets.</value>
+	</data>
+	<data name="NameIsReservedByPositionedObject" xml:space="preserve">
+		<value>Le nom '{0}' est un nom réservé par le type PositionedObject.</value>
+	</data>
+	<data name="ErrorDotNetIsNotInstalledOrEnvironmentVariables" xml:space="preserve">
+		<value>Erreur critique : Dotnet n'a pas été trouvé sur votre appareil. Veuillez l'installer - et si cela est déjà fait, veuillez vérifier vos variables d'environnement</value>
+	</data>
+	<data name="ErrorCouldNotFindNetSix" xml:space="preserve">
+		<value>Aucune version des SDK .NET 6.XX installée n'a été trouvée. Il se peut que Glue ne parvienne pas à charger les projets. Nous vous recommandons d'installer le SDK .NET 6. Résultat dotnet --list-sdks : {0}</value>
+	</data>
+	<data name="ErrorDotnetMultipleIssue" xml:space="preserve">
+		<value>Vous pouvez avoir plusieurs installations de .NET sur votre ordinateur. Plus d'informations ici : https://stackoverflow.com/questions/65692530/why-dotnet-list-sdks-does-not-show-installed-sdks-on-windows-10. Appuyez sur CTRL+C dans cette fenêtre contextuelle pour copier le texte afin de pouvoir le coller dans un éditeur externe et ouvrir cette URL.</value>
+	</data>
 </root>

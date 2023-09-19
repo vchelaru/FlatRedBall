@@ -30,7 +30,7 @@
 
                 </WrapPanel>
             </glue:StyledGroupBox>
-            <glue:StyledGroupBox Header="Current Entity">
+            <glue:StyledGroupBox Header="{x:Static localization:Texts.EntityCurrent}">
                 <WrapPanel HorizontalAlignment="Center" Margin="0,0,10,10">
                     <local:TitleImageButton
                         x:Name="AddObjectToEntityButton"

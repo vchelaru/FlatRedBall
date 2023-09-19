@@ -17,14 +17,14 @@
             <CheckBox Margin="5,0,0,0" IsChecked="{Binding IsAutoSnapshotEnabled}" Content="{x:Static localization:Texts.AutoTakeSnapshot}"></CheckBox>
         </WrapPanel>
         <TabControl Grid.Row="1">
-            <TabItem Header="Summary">
+            <TabItem Header="{x:Static localization:Texts.Summary}">
                 <ScrollViewer>
                     <TextBlock Grid.Row="1" x:Name="SummaryTextBlock" Text="{Binding SummaryText}">
 
                     </TextBlock>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Collision">
+            <TabItem Header="{x:Static localization:Texts.Collision}">
                 <ScrollViewer>
                     <TextBlock Grid.Row="1" x:Name="CollisionTextBlock" Text="{Binding CollisionText}">
 
