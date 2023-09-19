@@ -100,7 +100,7 @@ namespace BuildServerUploaderConsole.Processes
 
         }
 
-        private static void ModifyNugetVersionInAssembly(string csprojLocation, string versionString)
+        private void ModifyNugetVersionInAssembly(string csprojLocation, string versionString)
         {
             if (System.IO.File.Exists(csprojLocation) == false)
             {
@@ -112,6 +112,9 @@ namespace BuildServerUploaderConsole.Processes
             csprojText = System.Text.RegularExpressions.Regex.Replace(csprojText,
                         "<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"[0-9]*.[0-9]*.[0-9]*.[0-9]*\" />",
                         $"<PackageReference Include=\"FlatRedBallDesktopGLNet6\" Version=\"{versionString}\" />");
+
+            Results.WriteMessage("Modified " + csprojLocation + $" to have FlatRedBall Nuget package {VersionString}");
+
 
             FileManager.SaveText(csprojText, csprojLocation);
         }
