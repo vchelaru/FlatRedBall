@@ -1,8 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <DefineConstants>TRACE;MONOGAME; DESKTOP_GL; XNA4; FRB_XNA;MONOGAME_381;</DefineConstants>
+    <Title>FlatRedBall (.NET 6 Desktop GL)</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>FlatRedBall Game Engine</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.1</Version>
   </PropertyGroup>
   <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
 

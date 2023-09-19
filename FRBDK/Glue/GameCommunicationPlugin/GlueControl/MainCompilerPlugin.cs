@@ -749,7 +749,7 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (response?.Succeeded != true)
             {
-                var message = Localization.Texts.ErrorFailedChangeGameEditMode;
+                var message = string.Format(Localization.Texts.FailedToSetGameEditModeToX, CompilerViewModel.PlayOrEdit);
                 if (response == null)
                 {
                     message += Localization.Texts.GameSendNoResponseBack;
@@ -759,10 +759,11 @@ namespace GameCommunicationPlugin.GlueControl
                     message += response.Message;
                 }
                 ReactToPluginEvent("Compiler_Output_Standard", message);
+                GlueCommands.Self.PrintOutput(message);
             }
             else if (CommandSender.Self.IsConnected == false)
             {
-
+                var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit} because the game is not connected.";
             }
             else if (inEditMode)
             {
@@ -823,8 +824,8 @@ namespace GameCommunicationPlugin.GlueControl
             {
                 if(displaySettings != null &&
                     displaySettings.AspectRatioHeight > 0 &&
-                    displaySettings.FixedAspectRatio == true
-                    )
+                    // need to reearch at some time - do we want to worry about variable aspect ratio?
+                    displaySettings.AspectRatioBehavior == AspectRatioBehavior.FixedAspectRatio)
                 {
                     setCameraAspectRatioDto.AspectRatio = GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioWidth /
                         GlueState.Self.CurrentGlueProject.DisplaySettings.AspectRatioHeight;
@@ -1105,7 +1106,8 @@ namespace GameCommunicationPlugin.GlueControl
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+            var projectName = 
+                GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
 
             var found = processes
                 .FirstOrDefault(item => item.ProcessName.ToLowerInvariant() == projectName &&

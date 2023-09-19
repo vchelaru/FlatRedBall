@@ -24,6 +24,8 @@ namespace BuildServerUploaderConsole.Data
         public string RelativeToLibrariesReleaseFolder { get; set; }
         public string TemplateFolder { get; set; }
 
+        public string EngineCSProjLocation { get; set; }
+
         public string TemplateName
         {
             get

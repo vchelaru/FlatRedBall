@@ -17,7 +17,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         #region Entity
 
-        void ShowAddNewEntityDialog();
+        void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null);
+
+        AddEntityViewModel CreateAddNewEntityViewModel();
 
         #endregion
 

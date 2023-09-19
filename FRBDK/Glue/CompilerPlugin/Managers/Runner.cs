@@ -265,7 +265,7 @@ namespace CompilerPlugin.Managers
                 .OrderBy(item => item.ProcessName)
                 .ToArray();
 
-            var projectName = GlueState.Self.CurrentMainProject?.Name?.ToLowerInvariant();
+            var projectName = GlueState.Self.CurrentMainProject?.ExecutableName?.ToLowerInvariant();
 
             var found = processes
                 .Where(item => item.ProcessName.ToLowerInvariant() == projectName &&
@@ -457,15 +457,16 @@ namespace CompilerPlugin.Managers
 
         private static string GetGameExeLocation(string configuration)
         {
-            var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
-            if (string.IsNullOrEmpty(projectFileName))
+            var project = GlueState.Self.CurrentMainProject;
+            if (project == null)
             {
                 return null;
             }
             else
             {
+                var projectFileName = GlueState.Self.CurrentMainProject?.FullFileName.FullPath;
                 var projectDirectory = FileManager.GetDirectory(projectFileName);
-                var executableName = FileManager.RemoveExtension(FileManager.RemovePath(projectFileName));
+                var executableName = project.ExecutableName;
                 // todo - make the plugin smarter so it knows where the .exe is really located
                 var exeLocation = projectDirectory + $"bin/{configuration}/" + executableName + ".exe";
                 return exeLocation;

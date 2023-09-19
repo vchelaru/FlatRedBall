@@ -67,6 +67,13 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        /// <summary>
+        /// The number of letters to show per second when printing out in "typewriter style". If null, 0, or negative, then the text will be shown immediately.
+        /// </summary>
+        public int? LettersPerSecond { get; set; } = 20;
+
+        public bool TypeNextPageImmediatelyOnCancelPush { get; set; } = true;
+
         #endregion
 
         #region Events
@@ -129,7 +136,7 @@ namespace FlatRedBall.Forms.Controls.Games
         {
             base.Show();
             showNextPageOnDismissedPage = true;
-            ShowInternal(text);
+            ShowInternal(text, forceImmediatePrint:false);
         }
 
         public void Show(IEnumerable<string> pages)
@@ -159,7 +166,7 @@ namespace FlatRedBall.Forms.Controls.Games
                 {
                     this.Pages.Add(page);
                 }
-                await ShowNextPageAsync();
+                await StartShowAllPagesLoop();
             }
         }
 
@@ -171,7 +178,7 @@ namespace FlatRedBall.Forms.Controls.Games
             if (pageTasks.Any())
             {
                 this.Pages.AddRange(pageTasks);
-                await ShowNextPageAsync();
+                await StartShowAllPagesLoop();
             }
         }
 
@@ -215,22 +222,24 @@ namespace FlatRedBall.Forms.Controls.Games
             return null;
         }
 
-        public void ShowNextPage()
+        public void ShowNextPage(bool forceImmediatePrint = false)
         {
             var page = Pages.FirstOrDefault();
 
             if(page != null)
             {
-                ShowInternal(page.Page);
+                ShowInternal(page.Page, forceImmediatePrint);
                 Pages.RemoveAt(0);
             }
         }
 
-        private async Task ShowNextPageAsync()
+        bool wasLastAdvancePressPrintImmediate = false;
+        private async Task StartShowAllPagesLoop()
         {
             var page = Pages.FirstOrDefault();
+            wasLastAdvancePressPrintImmediate = false;
 
-            while(page != null)
+            while (page != null)
             {
                 // remove it before calling ShowInternal so that the dialog box hides if there are no pages
                 Pages.RemoveAt(0);
@@ -265,7 +274,7 @@ namespace FlatRedBall.Forms.Controls.Games
                     this.PageAdvanced += ReleaseSemaphor;
 
                     semaphoreSlim.Wait();
-                    ShowInternal(page.Page);
+                    ShowInternal(page.Page, forceImmediatePrint: wasLastAdvancePressPrintImmediate);
 
                     await semaphoreSlim.WaitAsync();
                     semaphoreSlim.Dispose();
@@ -276,7 +285,7 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
-        private void ShowInternal(string text)
+        private void ShowInternal(string text, bool forceImmediatePrint)
         {
             IsVisible = true;
 
@@ -289,40 +298,58 @@ namespace FlatRedBall.Forms.Controls.Games
             // go through the component instead of the core text object to force a layout refresh if necessary
             textComponent.SetProperty("Text", text);
 
-            coreTextObject.MaxLettersToShow = 0;
 
-            var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
-            allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
+            var shouldPrintCharacterByCharacter = LettersPerSecond > 0 && !forceImmediatePrint;
+            if(shouldPrintCharacterByCharacter)
             {
-                Name = "TextInstance.MaxLettersToShow",
-                Value = text.Length,
-                SetsValue = true
-            });
+                coreTextObject.MaxLettersToShow = 0;
+                var allTextShownState = new global::Gum.DataTypes.Variables.StateSave();
+                allTextShownState.Variables.Add(new global::Gum.DataTypes.Variables.VariableSave
+                {
+                    Name = "TextInstance.MaxLettersToShow",
+                    Value = text.Length,
+                    SetsValue = true
+                });
 
-            const float lettersPerSecond = 20;
-            var duration = text.Length / lettersPerSecond;
+                var duration = text.Length / (float)LettersPerSecond;
 
-            showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
+                showLetterTweener = this.Visual.InterpolateTo(NoTextShownState, allTextShownState, duration, InterpolationType.Linear, Easing.Out);
 
-            if (continueIndicatorInstance != null)
-            {
-                continueIndicatorInstance.Visible = false;
+                if (continueIndicatorInstance != null)
+                {
+                    continueIndicatorInstance.Visible = false;
+                }
+                showLetterTweener.Ended += () =>
+                {
+                    if (TakingInput && continueIndicatorInstance != null)
+                    {
+                        continueIndicatorInstance.Visible = true;
+                    }
+                    FinishedTypingPage?.Invoke(this, null);
+                };
             }
-            showLetterTweener.Ended += () =>
+            else
             {
+                coreTextObject.MaxLettersToShow = text.Length;
+
                 if (TakingInput && continueIndicatorInstance != null)
                 {
                     continueIndicatorInstance.Visible = true;
                 }
+
+                if (continueIndicatorInstance != null)
+                {
+                    continueIndicatorInstance.Visible = true;
+                }
                 FinishedTypingPage?.Invoke(this, null);
-            };
+            }
         }
 
         #region Event Handler Methods
 
         private void HandleClick(IWindow window)
         {
-            ReactToInput();
+            ReactToConfirmInput();
         }
 
         /// <summary>
@@ -331,15 +358,25 @@ namespace FlatRedBall.Forms.Controls.Games
         /// the async call will internally loop through all pages.
         /// </summary>
         bool showNextPageOnDismissedPage = true;
-        private void ReactToInput()
+        private void ReactToConfirmInput()
+        {
+            ReactToInputForAdvancing(forceImmediatePrint: false);
+        }
+
+        private void ReactToCancelInput()
+        {
+            wasLastAdvancePressPrintImmediate = TypeNextPageImmediatelyOnCancelPush;
+            ReactToInputForAdvancing(forceImmediatePrint: true);
+        }
+
+        private void ReactToInputForAdvancing(bool forceImmediatePrint)
         {
             ////////////////////Early Out/////////////////////
-            if(!TakingInput)
+            if (!TakingInput)
             {
                 return;
             }
             //////////////////End Early Out///////////////////
-            
             var hasMoreToType = coreTextObject.MaxLettersToShow < currentPageText?.Length;
             if (hasMoreToType)
             {
@@ -354,11 +391,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
                 FinishedTypingPage?.Invoke(this, null);
             }
-            else if(Pages.Count > 0)
+            else if (Pages.Count > 0)
             {
-                if(showNextPageOnDismissedPage)
+                if (showNextPageOnDismissedPage)
                 {
-                    ShowNextPage();
+                    ShowNextPage(forceImmediatePrint);
                 }
 
                 PageAdvanced?.Invoke(this, null);
@@ -404,7 +441,7 @@ namespace FlatRedBall.Forms.Controls.Games
             {
                 if(AdvancePageInputPredicate())
                 {
-                    ReactToInput();
+                    ReactToConfirmInput();
                 }
             }
             else
@@ -418,7 +455,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
                     if(inputDevice.DefaultConfirmInput.WasJustPressed)
                     {
-                        ReactToInput();
+                        ReactToConfirmInput();
+                    }
+
+                    if(inputDevice.DefaultCancelInput.WasJustPressed)
+                    {
+                        ReactToCancelInput();
                     }
                 }
 
@@ -431,7 +473,12 @@ namespace FlatRedBall.Forms.Controls.Games
 
                     if (inputDevice.DefaultConfirmInput.WasJustPressed)
                     {
-                        ReactToInput();
+                        ReactToConfirmInput();
+                    }
+
+                    if(inputDevice.DefaultCancelInput.WasJustPressed)
+                    {
+                        ReactToCancelInput();
                     }
                 }
             }
@@ -440,7 +487,11 @@ namespace FlatRedBall.Forms.Controls.Games
 
             if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
             {
-                ReactToInput();
+                ReactToConfirmInput();
+            }
+            if(keyboardAsInputDevice.DefaultCancelInput.WasJustPressed)
+            {
+                ReactToCancelInput();
             }
         }
 

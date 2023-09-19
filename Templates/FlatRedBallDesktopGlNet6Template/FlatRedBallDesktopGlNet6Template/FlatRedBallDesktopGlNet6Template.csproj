@@ -29,6 +29,7 @@
     <EmbeddedResource Include="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FlatRedBallDesktopGLNet6" Version="2023.9.18.460" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
     <PackageReference Include="SkiaSharp" Version="2.88.3" />
@@ -36,9 +37,6 @@
   <ItemGroup>
     <Reference Include="FlatRedBall.Forms.DesktopGlNet6">
       <HintPath>Libraries\DesktopGl\Debug\FlatRedBall.Forms.DesktopGlNet6.dll</HintPath>
-    </Reference>
-    <Reference Include="FlatRedBallDesktopGLNet6">
-      <HintPath>Libraries\DesktopGl\Debug\FlatRedBallDesktopGLNet6.dll</HintPath>
     </Reference>
     <Reference Include="GumCore.DesktopGlNet6">
       <HintPath>Libraries\DesktopGl\Debug\GumCore.DesktopGlNet6.dll</HintPath>

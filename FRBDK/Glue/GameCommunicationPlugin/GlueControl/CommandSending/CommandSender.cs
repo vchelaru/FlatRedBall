@@ -25,7 +25,21 @@ namespace GameCommunicationPlugin.GlueControl.CommandSending
 
         public GlueViewSettingsViewModel GlueViewSettingsViewModel { get; set; }
         public CompilerViewModel CompilerViewModel { get; set; }
-        public bool IsConnected { get; internal set; }
+
+        bool isConnected;
+        public bool IsConnected 
+        { 
+            get => isConnected;
+            internal set
+            {
+                isConnected = value;
+
+                if (CompilerViewModel != null)
+                {
+                    CompilerViewModel.IsConnectedToGame = value;
+                }
+            }
+        }
 
         public static CommandSender Self { get; private set; }
 

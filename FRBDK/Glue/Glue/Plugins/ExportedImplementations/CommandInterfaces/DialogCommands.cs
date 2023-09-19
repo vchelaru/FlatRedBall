@@ -511,10 +511,14 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         #region EntitySave
 
-        public async void ShowAddNewEntityDialog()
+        public async void ShowAddNewEntityDialog(AddEntityViewModel viewModel = null)
         {
+            viewModel = viewModel ?? CreateAddNewEntityViewModel();
+
+            GlueProjectSave project = GlueState.Self.CurrentGlueProject;
+
             // search:  addentity, add entity
-            if (ProjectManager.GlueProjectSave == null)
+            if (project == null)
             {
                 System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
             }
@@ -523,19 +527,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (ProjectManager.StatusCheck() == ProjectManager.CheckResult.Passed)
                 {
                     AddEntityWindow window = new Controls.AddEntityWindow();
-                    var viewModel = new AddEntityViewModel();
-
-                    var project = GlueState.Self.CurrentGlueProject;
-                    var sortedEntities = project.Entities.ToList().OrderBy(item => item);
-
-                    viewModel.BaseEntityOptions.Add("<NONE>");
-
-                    foreach (var entity in project.Entities.ToList())
-                    {
-                        viewModel.BaseEntityOptions.Add(entity.Name);
-                    }
-
-                    viewModel.SelectedBaseEntity = "<NONE>";
 
                     window.DataContext = viewModel;
 
@@ -576,6 +567,26 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                 }
             }
+        }
+
+        public AddEntityViewModel CreateAddNewEntityViewModel()
+        {
+            AddEntityViewModel viewModel = new AddEntityViewModel();
+            viewModel.BaseEntityOptions.Add("<NONE>");
+            var project = GlueState.Self.CurrentGlueProject;
+            if (project != null)
+            {
+                var sortedEntities = project.Entities.ToList().OrderBy(item => item);
+
+                foreach (var entity in project.Entities.ToList())
+                {
+                    viewModel.BaseEntityOptions.Add(entity.Name);
+                }
+            }
+
+            viewModel.SelectedBaseEntity = "<NONE>";
+
+            return viewModel;
         }
 
         public void MoveToCursor(System.Windows.Window window)

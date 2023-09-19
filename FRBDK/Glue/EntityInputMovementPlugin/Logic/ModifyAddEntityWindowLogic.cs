@@ -23,10 +23,12 @@ namespace TopDownPlugin.Logic
                 switch (args.PropertyName)
                 {
                     case nameof(AddEntityViewModel.HasInheritance):
-                        viewModel.AllUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
+                        RefreshHasInheritance(viewModel, commonViewModel);
                         break;
                 }
             };
+
+            RefreshHasInheritance(viewModel, commonViewModel);
 
             viewModel.PropertyChanged += (sender, args) =>
             {
@@ -57,6 +59,11 @@ namespace TopDownPlugin.Logic
             var control = new AdditionalEntitiesControls();
             control.DataContext = viewModel;
             window.AddControl(control);
+        }
+
+        private static void RefreshHasInheritance(AdditionalEntitiesControlViewModel viewModel, AddEntityViewModel commonViewModel)
+        {
+            viewModel.AllUiVisibility = (commonViewModel.HasInheritance == false).ToVisibility();
         }
     }
 }

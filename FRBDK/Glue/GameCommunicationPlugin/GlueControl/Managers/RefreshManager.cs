@@ -798,8 +798,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal async void ReactToNamedObjectChangedValueList(List<VariableChangeArguments> variableList, AssignOrRecordOnly assignOrRecordOnly)
         {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
-            {
+            //if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            // https://github.com/vchelaru/FlatRedBall/issues/1181
+            if (ViewModel.IsRunning)
+                {
                 await VariableSendingManager.HandleNamedObjectVariableListChanged(variableList, assignOrRecordOnly);
             }
         }
@@ -814,7 +816,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
 
         internal void HandleVariableChanged(IElement variableElement, CustomVariable variable)
         {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            //if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            // Making this push variables even if not in edit mode:
+            // https://github.com/vchelaru/FlatRedBall/issues/1181
+            if (ViewModel.IsRunning)
             {
                 VariableSendingManager.HandleVariableChanged(variableElement as GlueElement, variable);
             }

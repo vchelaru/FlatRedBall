@@ -158,7 +158,7 @@ namespace GlueFormsCore.Managers
 
                 GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entitySave);
 
-                AskToPreserveVariables(entitySave, variablesBefore);
+                AskToPreserveVariablesAfterInheritanceChange(entitySave, variablesBefore);
             }
             if(entitySave == GlueState.Self.CurrentEntitySave)
             {
@@ -275,7 +275,7 @@ namespace GlueFormsCore.Managers
             return isValidBase;
         }
 
-        private static void AskToPreserveVariables(EntitySave entitySave, List<CustomVariable> variablesBefore)
+        private static void AskToPreserveVariablesAfterInheritanceChange(EntitySave entitySave, List<CustomVariable> variablesBefore)
         {
             foreach (CustomVariable oldVariable in variablesBefore)
             {

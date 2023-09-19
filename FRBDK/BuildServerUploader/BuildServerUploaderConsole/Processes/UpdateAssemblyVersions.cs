@@ -2,6 +2,7 @@
 using System.Globalization;
 using FlatRedBall.IO;
 using System.Collections.Generic;
+using BuildServerUploaderConsole.Data;
 
 namespace BuildServerUploaderConsole.Processes
 {
@@ -38,6 +39,17 @@ namespace BuildServerUploaderConsole.Processes
                     }
                 }
             }
+
+            // If we list a csproj, then update that:
+            foreach(var engine in AllData.Engines)
+            {
+                if(!string.IsNullOrEmpty(engine.EngineCSProjLocation))
+                {
+                    var csProjAbsolute = DirectoryHelper.CheckoutDirectory + engine.EngineCSProjLocation;
+                    ModifyCsprojAssemblyInfoVersion(csProjAbsolute, VersionString);
+                }
+            }
+
             //ModifyVersionInfo(engineDirectory + @"\FlatRedBallXNA\FlatRedBall\Properties\AssemblyInfo.cs", VersionString);
             //Results.WriteMessage("XNA assembly version updated to " + VersionString);
 

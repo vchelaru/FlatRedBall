@@ -1186,6 +1186,17 @@ namespace GlueControl.Editing
                         }
 
                         break;
+                    case "byte":
+                    case "System.Byte":
+                        if (!string.IsNullOrWhiteSpace(variableValue))
+                        {
+                            convertedValue = byte.Parse(variableValue);
+                        }
+                        else
+                        {
+                            convertedValue = 0;
+                        }
+                        break;
 
                     case "bool":
                     case nameof(Boolean):

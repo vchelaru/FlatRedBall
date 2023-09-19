@@ -565,9 +565,9 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }, $"{nameof(CopyToBuildFolder)} {absoluteSource}");
         }
 
-        private static void CopyToBuildFolder(FilePath absoluteSource, string debugPath)
+        private static void CopyToBuildFolder(FilePath absoluteSource, string outputPathRelativeToCsProj)
         {
-            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + debugPath + "Content/";
+            string buildFolder = FileManager.GetDirectory(GlueState.Self.CurrentCodeProjectFileName.FullPath) + outputPathRelativeToCsProj + "Content/";
             string destination = buildFolder + FileManager.MakeRelative(absoluteSource.FullPath, GlueState.Self.ContentDirectory);
 
             string destinationFolder = FileManager.GetDirectory(destination);
