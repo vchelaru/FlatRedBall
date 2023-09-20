@@ -63,13 +63,13 @@ class ElementImporter
 
                 string relativeToUnzipRoot = FileManager.MakeRelative(zipFile, unpackDirectory);
 
-                if (relativeToUnzipRoot.StartsWith($"{L.Texts.Entities}/", StringComparison.OrdinalIgnoreCase))
+                if (relativeToUnzipRoot.StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase))
                 {
-                    relativeToUnzipRoot = relativeToUnzipRoot[$"{L.Texts.Entities}/".Length..];
+                    relativeToUnzipRoot = relativeToUnzipRoot[$"Entities/".Length..];
                 }
-                else if (relativeToUnzipRoot.StartsWith($"{L.Texts.Screens}/", StringComparison.OrdinalIgnoreCase))
+                else if (relativeToUnzipRoot.StartsWith($"Screens/", StringComparison.OrdinalIgnoreCase))
                 {
-                    relativeToUnzipRoot = relativeToUnzipRoot[$"{L.Texts.Screens}/".Length..];
+                    relativeToUnzipRoot = relativeToUnzipRoot[$"Screens/".Length..];
                 }
 
                 // remove the file name (like Entity.entz) to get the directory
