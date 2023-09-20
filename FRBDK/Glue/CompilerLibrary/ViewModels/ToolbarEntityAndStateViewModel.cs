@@ -71,9 +71,9 @@ namespace CompilerLibrary.ViewModels
             get
             {
                 var toReturn = NamedObjectSave.SourceClassType;
-                if(toReturn?.StartsWith("Entities\\") == true)
+                if(toReturn?.StartsWith($"{Localization.Texts.Entities}\\", StringComparison.OrdinalIgnoreCase) ?? false)
                 {
-                    toReturn = toReturn.Substring("Entities\\".Length);
+                    toReturn = toReturn[$@"{Localization.Texts.Entities}\".Length..];
                 }
 
                 foreach(var variable in ExceptXYZ( NamedObjectSave.InstructionSaves))

@@ -2127,7 +2127,7 @@
 		<value>Volumen</value>
 	</data>
 	<data name="State" xml:space="preserve">
-		<value>Staat</value>
+		<value>Status</value>
 	</data>
 	<data name="TmxCreationOptions" xml:space="preserve">
 		<value>TMX-Erstellungsoptionen</value>
@@ -2413,5 +2413,263 @@
 	</data>
 	<data name="FailedToSetGameEditModeToX" xml:space="preserve">
 		<value>Der Spiel-/Bearbeitungsmodus konnte nicht auf {0} gesetzt werden.</value>
+	</data>
+	<data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
+		<value>Das Projekt konnte nicht geladen werden. Weitere Informationen finden Sie im Ausgabefenster.</value>
+	</data>
+	<data name="CouldNotCreateSyncedProject" xml:space="preserve">
+		<value>Es kann kein neues synchronisiertes Projekt erstellt werden, da kein offenes Projekt vorhanden ist.</value>
+	</data>
+	<data name="Files" xml:space="preserve">
+		<value>Dateien</value>
+	</data>
+	<data name="Objects" xml:space="preserve">
+		<value>Objekte</value>
+	</data>
+	<data name="Layers" xml:space="preserve">
+		<value>Lagen</value>
+	</data>
+	<data name="Code" xml:space="preserve">
+		<value>Code</value>
+	</data>
+	<data name="States" xml:space="preserve">
+		<value>Statussen</value>
+	</data>
+	<data name="NewFolder" xml:space="preserve">
+		<value>Neuer Ordner</value>
+	</data>
+	<data name="NewFolderEnter" xml:space="preserve">
+		<value>Geben Sie einen neuen Ordnernamen ein</value>
+	</data>
+	<data name="VariableRemove" xml:space="preserve">
+		<value>Entfernen Sie die Variable</value>
+	</data>
+	<data name="VariableHasNoStates" xml:space="preserve">
+		<value>Der Variablen {0} sind keine Zustände mehr zugeordnet. Was würdest du gern tun?</value>
+	</data>
+	<data name="DeleteQuestionX" xml:space="preserve">
+		<value>Sind Sie sicher, dass Sie {0} löschen möchten?</value>
+	</data>
+	<data name="WarningScreenXBaseForScreens" xml:space="preserve">
+		<value>Achtung: Der Bildschirm {0} ist die Basis für die folgenden Bildschirme:</value>
+	</data>
+	<data name="VariableRemoveNothing" xml:space="preserve">
+		<value>Nichts (Projekt wird möglicherweise nicht ausgeführt, bis das Problem behoben ist)</value>
+	</data>
+	<data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
+		<value>Sie müssen zunächst ein Glue-Projekt laden oder erstellen</value>
+	</data>
+	<data name="EntityIsBaseForEntities" xml:space="preserve">
+		<value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
+	</data>
+	<data name="EntityReferencedByFollowingObjects" xml:space="preserve">
+		<value>Die Entität {0} wird von den folgenden Objekten referenziert:</value>
+	</data>
+	<data name="FilesRemove" xml:space="preserve">
+		<value>Dateien entfernen</value>
+	</data>
+	<data name="EntityRemove" xml:space="preserve">
+		<value>Entität wird entfernt</value>
+	</data>
+	<data name="ScreenRemove" xml:space="preserve">
+		<value>Bildschirm entfernen</value>
+	</data>
+	<data name="ItemRemove" xml:space="preserve">
+		<value>Gegenstand entfernen</value>
+	</data>
+	<data name="RemoveFromScreen" xml:space="preserve">
+		<value>Vom Bildschirm entfernen</value>
+	</data>
+	<data name="RemoveFromEntity" xml:space="preserve">
+		<value>Aus Entität entfernen</value>
+	</data>
+	<data name="RemoveFromGlobalContent" xml:space="preserve">
+		<value>Aus dem globalen Inhalt entfernen</value>
+	</data>
+	<data name="FillValuesDefault" xml:space="preserve">
+		<value>Werte aus Standardwerten füllen?</value>
+	</data>
+	<data name="QuestionFillValuesDefault" xml:space="preserve">
+		<value>Sind Sie sicher, dass Sie alle Werte im Status {0} mit den Standardvariablenwerten füllen möchten? Alle vorherigen Werte gehen verloren</value>
+	</data>
+	<data name="LayerAdd" xml:space="preserve">
+		<value>Ebene hinzufügen</value>
+	</data>
+	<data name="RefreshUi" xml:space="preserve">
+		<value>Benutzeroberfläche aktualisieren</value>
+	</data>
+	<data name="EventAdd" xml:space="preserve">
+		<value>Veranstaltung hinzufügen</value>
+	</data>
+	<data name="CopyBuildFolder" xml:space="preserve">
+		<value>In den Build-Ordner kopieren</value>
+	</data>
+	<data name="ScreenExport" xml:space="preserve">
+		<value>Export bildschirm</value>
+	</data>
+	<data name="ZipPackageCreate" xml:space="preserve">
+		<value>Zip-Paket erstellen</value>
+	</data>
+	<data name="StateAdd" xml:space="preserve">
+		<value>Status hinzufügen</value>
+	</data>
+	<data name="ViewFileOrder" xml:space="preserve">
+		<value>Dateireihenfolge anzeigen</value>
+	</data>
+	<data name="FileCreateForMissing" xml:space="preserve">
+		<value>Erstellen Sie eine neue Datei für die fehlende Datei</value>
+	</data>
+	<data name="CategoryAddState" xml:space="preserve">
+		<value>Statuskategorie hinzufügen</value>
+	</data>
+	<data name="ResetVariablesPoolingAdd" xml:space="preserve">
+		<value>Fügen Sie Reset-Variablen für das Pooling hinzu</value>
+	</data>
+	<data name="PipelineContentToggle" xml:space="preserve">
+		<value>Schalten Sie „Inhaltspipeline verwenden“ um</value>
+	</data>
+	<data name="VariableFillValues" xml:space="preserve">
+		<value>Füllen Sie Werte aus Variablen</value>
+	</data>
+	<data name="RemoveFromProjectQuick" xml:space="preserve">
+		<value>Schnell aus dem Projekt entfernen (NUR WENN SIE WISSEN, WAS SIE TUN!)</value>
+	</data>
+	<data name="MoveUp" xml:space="preserve">
+		<value>Nach oben</value>
+	</data>
+	<data name="MoveDown" xml:space="preserve">
+		<value>Nach unten</value>
+	</data>
+	<data name="MoveBottom" xml:space="preserve">
+		<value>Nach unten bewegen</value>
+	</data>
+	<data name="MakeRequiredAtStartup" xml:space="preserve">
+		<value>Machen Sie es beim Start erforderlich</value>
+	</data>
+	<data name="FileRebuild" xml:space="preserve">
+		<value>Datei neu erstellen</value>
+	</data>
+	<data name="ViewSourceExplorer" xml:space="preserve">
+		<value>Quelldatei im Explorer anzeigen</value>
+	</data>
+	<data name="FindAllReferences" xml:space="preserve">
+		<value>Hier finden Sie alle Hinweise dazu</value>
+	</data>
+	<data name="VariableAdd" xml:space="preserve">
+		<value>Variable hinzufügen</value>
+	</data>
+	<data name="MoveToTop" xml:space="preserve">
+		<value>Nach oben verschieben</value>
+	</data>
+	<data name="VariableResetEdit" xml:space="preserve">
+		<value>Zurücksetzen-Variablen bearbeiten</value>
+	</data>
+	<data name="OpenWith" xml:space="preserve">
+		<value>Öffnen mit...</value>
+	</data>
+	<data name="FileNew" xml:space="preserve">
+		<value>Neue Datei</value>
+	</data>
+	<data name="RemoveFromProject" xml:space="preserve">
+		<value>Aus Projekt entfernen</value>
+	</data>
+	<data name="ScreenAdd" xml:space="preserve">
+		<value>Bildschirm hinzufügen</value>
+	</data>
+	<data name="FileExisting" xml:space="preserve">
+		<value>Vorhandene Datei(en)</value>
+	</data>
+	<data name="CreatedClass" xml:space="preserve">
+		<value>Erstellte Klasse festlegen</value>
+	</data>
+	<data name="Bookmark" xml:space="preserve">
+		<value>Lesezeichen</value>
+	</data>
+	<data name="FolderRename" xml:space="preserve">
+		<value>Ordner umbenennen</value>
+	</data>
+	<data name="FolderDelete" xml:space="preserve">
+		<value>Lösche Ordner</value>
+	</data>
+	<data name="EntityImport" xml:space="preserve">
+		<value>Entität importieren</value>
+	</data>
+	<data name="FolderAdd" xml:space="preserve">
+		<value>Ordner hinzufügen</value>
+	</data>
+	<data name="ViewContentFolder" xml:space="preserve">
+		<value>Inhaltsordner anzeigen</value>
+	</data>
+	<data name="CodeRegenerate" xml:space="preserve">
+		<value>Code neu generieren</value>
+	</data>
+	<data name="Open" xml:space="preserve">
+		<value>Öffnen</value>
+	</data>
+	<data name="CopyPathClipboard" xml:space="preserve">
+		<value>Pfad in die Zwischenablage kopieren</value>
+	</data>
+	<data name="GoToDefinition" xml:space="preserve">
+		<value>Gehen Sie zur Definition</value>
+	</data>
+	<data name="ScreenImport" xml:space="preserve">
+		<value>Import bildschirm</value>
+	</data>
+	<data name="EntityListAdd" xml:space="preserve">
+		<value>Entitätsliste hinzufügen</value>
+	</data>
+	<data name="EntityAddInstance" xml:space="preserve">
+		<value>Entitätsinstanz hinzufügen</value>
+	</data>
+	<data name="EntityExport" xml:space="preserve">
+		<value>Entität exportieren</value>
+	</data>
+	<data name="FileOpenCs" xml:space="preserve">
+		<value>Öffnen Sie die .cs-Datei</value>
+	</data>
+	<data name="EntityAddDerived" xml:space="preserve">
+		<value>Abgeleitete Entität hinzufügen</value>
+	</data>
+	<data name="ScreenLevelCreate" xml:space="preserve">
+		<value>Levelbildschirm erstellen</value>
+	</data>
+	<data name="ScreenSaveForceJson" xml:space="preserve">
+		<value>Speichern des Bildschirm-JSON erzwingen</value>
+	</data>
+	<data name="ScreenRemoveRequirement" xml:space="preserve">
+		<value>Startvoraussetzung entfernen</value>
+	</data>
+	<data name="StartupMakeRequired" xml:space="preserve">
+		<value>Machen Sie es beim Start erforderlich</value>
+	</data>
+	<data name="FolderGlueNotMadeLackFiles" xml:space="preserve">
+		<value>Glue hat diesen Inhaltsordner noch nicht erstellt, da er keine Dateien enthält.</value>
+	</data>
+	<data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
+		<value>Dieses {0} hat keinen Inhaltsordner. Es wird erstellt, wenn eine Datei zu diesem {1} hinzugefügt wird.</value>
+	</data>
+	<data name="Sure" xml:space="preserve">
+		<value>Bist du sicher?</value>
+	</data>
+	<data name="FolderDeleteNotEmpty" xml:space="preserve">
+		<value>Das Verzeichnis {0} ist nicht leer. Sind Sie sicher, dass Sie es und alles darin löschen möchten?</value>
+	</data>
+	<data name="MovingToTop" xml:space="preserve">
+		<value>Nach oben verschieben</value>
+	</data>
+	<data name="MovingToBottom" xml:space="preserve">
+		<value>Nach unten bewegen</value>
+	</data>
+	<data name="MovingXUpOrDown" xml:space="preserve">
+		<value>{0} nach oben oder unten verschieben</value>
+	</data>
+	<data name="ObjectNullSource" xml:space="preserve">
+		<value>Dieses Objekt hat eine Null-Quelldatei.</value>
+	</data>
+	<data name="ErrorOpeningFolder" xml:space="preserve">
+		<value>Fehler beim Öffnen des Ordners</value>
+	</data>
+	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
+		<value>Die gepackte Datei konnte nicht erstellt werden – wahrscheinlich, weil die Datei {0} Dateien enthält, die nicht relativ sind.</value>
 	</data>
 </root>

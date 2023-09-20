@@ -235,13 +235,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public MainTreeViewViewModel()
         {
             ScreenRootNode =
-                new NodeViewModel(null) { Text = Localization.Texts.Screens };
+                new NodeViewModel(null) { Text = "Screens/" };
 
             EntityRootNode =
-                new NodeViewModel(null) { Text = Localization.Texts.Entities };
+                new NodeViewModel(null) { Text = "Entities/" };
 
             GlobalContentRootNode =
-                new NodeViewModel(null) { Text = Localization.Texts.ContentGlobalFiles };
+                new NodeViewModel(null) { Text = "Global Content Files/" };
 
             Root = new List<NodeViewModel>()
             {
@@ -619,7 +619,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             string containingDirectory = FileManager.MakeRelative(FileManager.GetDirectory(entitySave.Name));
 
             NodeViewModel treeNodeToAddTo;
-            if (containingDirectory == "Entities/")
+            if (containingDirectory == $"Entities/")
             {
                 treeNodeToAddTo = EntityRootNode;
             }

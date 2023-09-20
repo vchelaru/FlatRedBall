@@ -8,8 +8,6 @@ using FlatRedBall.Utilities;
 using FlatRedBall.Instructions.Reflection;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.SaveClasses;
-using FlatRedBall.Content.Instructions;
-using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Events;
 using FlatRedBall.Glue.Plugins.Performance;
@@ -18,13 +16,11 @@ using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.IO;
 using System.IO;
 using FlatRedBall.Glue.AutomatedGlue;
-using FlatRedBall.Glue.FormHelpers;
-using System.Windows.Forms;
-using Glue;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using System.Threading.Tasks;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Parsing;
 
@@ -405,7 +401,7 @@ namespace FlatRedBallAddOns.Entities
         {
             string directory = FileManager.MakeRelative(FileManager.GetDirectory(element.Name));
 
-            if (directory.ToLower() != "Entities/".ToLower())
+            if (!directory.Equals($"Entities/", StringComparison.OrdinalIgnoreCase))
             {
                 string relativeDirectory = FileManager.MakeRelative(directory);
                 relativeDirectory = relativeDirectory.Substring(0, relativeDirectory.Length - 1);

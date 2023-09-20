@@ -2414,4 +2414,265 @@
 	<data name="FailedToSetGameEditModeToX" xml:space="preserve">
 		<value>Failed to set game/edit mode to {0}</value>
 	</data>
+	<data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
+		<value>Could not load the project. Check the output window for more information.</value>
+	</data>
+	<data name="CouldNotCreateSyncedProject" xml:space="preserve">
+		<value>Can not create a new Synced Project because there is no open project.</value>
+	</data>
+	<data name="Files" xml:space="preserve">
+		<value>Files</value>
+	</data>
+	<data name="Objects" xml:space="preserve">
+		<value>Objects</value>
+	</data>
+	<data name="Layers" xml:space="preserve">
+		<value>Layers</value>
+	</data>
+	<data name="Code" xml:space="preserve">
+		<value>Code</value>
+	</data>
+	<data name="States" xml:space="preserve">
+		<value>States</value>
+	</data>
+	<data name="NewFolder" xml:space="preserve">
+		<value>New Folder</value>
+	</data>
+	<data name="NewFolderEnter" xml:space="preserve">
+		<value>Enter new folder name</value>
+	</data>
+	<data name="VariableRemove" xml:space="preserve">
+		<value>Remove the variable</value>
+	</data>
+	<data name="VariableHasNoStates" xml:space="preserve">
+		<value>The variable {0} no longer has any states associated with it.  What would you like to do?</value>
+	</data>
+	<data name="DeleteQuestionX" xml:space="preserve">
+		<value>Are you sure you want to delete {0}?</value>
+	</data>
+	<data name="WarningScreenXBaseForScreens" xml:space="preserve">
+		<value>Warning: the Screen {0} is the base for the following Screens:</value>
+	</data>
+	<data name="VariableRemoveNothing" xml:space="preserve">
+		<value>Nothing (project may not run until this is fixed)</value>
+	</data>
+	<data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
+		<value>You must first load or create a Glue project</value>
+	</data>
+	<data name="EntityIsBaseForEntities" xml:space="preserve">
+		<value>The Entity {0} is the base for the following Entities:</value>
+	</data>
+	<data name="EntityReferencedByFollowingObjects" xml:space="preserve">
+		<value>The Entity {0} is referenced by the following objects:</value>
+	</data>
+	<data name="FilesRemove" xml:space="preserve">
+		<value>Removing files</value>
+	</data>
+	<data name="EntityRemove" xml:space="preserve">
+		<value>Removing Entity</value>
+	</data>
+	<data name="ScreenRemove" xml:space="preserve">
+		<value>Removing Screen</value>
+	</data>
+	<data name="ItemRemove" xml:space="preserve">
+		<value>Remove item</value>
+	</data>
+	<data name="ItemsOrphaned" xml:space="preserve">
+		<value>Orphaned item</value>
+	</data>
+	<data name="RemoveFromScreen" xml:space="preserve">
+		<value>Remove from Screen</value>
+	</data>
+	<data name="RemoveFromEntity" xml:space="preserve">
+		<value>Remove from Entity</value>
+	</data>
+	<data name="RemoveFromGlobalContent" xml:space="preserve">
+		<value>Remove from Global Content</value>
+	</data>
+	<data name="FillValuesDefault" xml:space="preserve">
+		<value>Fill values from default?</value>
+	</data>
+	<data name="QuestionFillValuesDefault" xml:space="preserve">
+		<value>Are you sure you want to fill all values in the {0} State from the default variable values?  All previous values will be lost</value>
+	</data>
+	<data name="LayerAdd" xml:space="preserve">
+		<value>Add Layer</value>
+	</data>
+	<data name="RefreshUi" xml:space="preserve">
+		<value>Refresh UI</value>
+	</data>
+	<data name="EventAdd" xml:space="preserve">
+		<value>Add Event</value>
+	</data>
+	<data name="CopyBuildFolder" xml:space="preserve">
+		<value>Copy to build folder</value>
+	</data>
+	<data name="ScreenExport" xml:space="preserve">
+		<value>Export Screen</value>
+	</data>
+	<data name="ZipPackageCreate" xml:space="preserve">
+		<value>Create Zip Package</value>
+	</data>
+	<data name="StateAdd" xml:space="preserve">
+		<value>Add State</value>
+	</data>
+	<data name="ViewFileOrder" xml:space="preserve">
+		<value>View File Orde</value>
+	</data>
+	<data name="FileCreateForMissing" xml:space="preserve">
+		<value>Create new file for missing file</value>
+	</data>
+	<data name="CategoryAddState" xml:space="preserve">
+		<value>Add State Category</value>
+	</data>
+	<data name="ResetVariablesPoolingAdd" xml:space="preserve">
+		<value>Add Reset Variables For Pooling</value>
+	</data>
+	<data name="PipelineContentToggle" xml:space="preserve">
+		<value>Toggle Use Content Pipeline</value>
+	</data>
+	<data name="VariableFillValues" xml:space="preserve">
+		<value>Fill Values From Variables</value>
+	</data>
+	<data name="RemoveFromProjectQuick" xml:space="preserve">
+		<value>Remove from project quick (ONLY IF YOU KNOW WHAT YOU'RE DOING!)</value>
+	</data>
+	<data name="MoveUp" xml:space="preserve">
+		<value>Move Up</value>
+	</data>
+	<data name="MoveDown" xml:space="preserve">
+		<value>Move Down</value>
+	</data>
+	<data name="MoveBottom" xml:space="preserve">
+		<value>Move To Bottom</value>
+	</data>
+	<data name="MakeRequiredAtStartup" xml:space="preserve">
+		<value>Make Required at StartUp</value>
+	</data>
+	<data name="FileRebuild" xml:space="preserve">
+		<value>Rebuild File</value>
+	</data>
+	<data name="ViewSourceExplorer" xml:space="preserve">
+		<value>View source file in explorer</value>
+	</data>
+	<data name="FindAllReferences" xml:space="preserve">
+		<value>Find all references to this</value>
+	</data>
+	<data name="VariableAdd" xml:space="preserve">
+		<value>Add variable</value>
+	</data>
+	<data name="MoveToTop" xml:space="preserve">
+		<value>Move To Top</value>
+	</data>
+	<data name="VariableResetEdit" xml:space="preserve">
+		<value>Edit Reset Variables</value>
+	</data>
+	<data name="OpenWith" xml:space="preserve">
+		<value>Open with...</value>
+	</data>
+	<data name="FileNew" xml:space="preserve">
+		<value>New file</value>
+	</data>
+	<data name="RemoveFromProject" xml:space="preserve">
+		<value>Remove from project</value>
+	</data>
+	<data name="ScreenAdd" xml:space="preserve">
+		<value>Add screen</value>
+	</data>
+	<data name="FileExisting" xml:space="preserve">
+		<value>Existing File(s)</value>
+	</data>
+	<data name="CreatedClass" xml:space="preserve">
+		<value>Set Created Class</value>
+	</data>
+	<data name="Bookmark" xml:space="preserve">
+		<value>Bookmark</value>
+	</data>
+	<data name="FolderRename" xml:space="preserve">
+		<value>Rename Folder</value>
+	</data>
+	<data name="FolderDelete" xml:space="preserve">
+		<value>Delete Folder</value>
+	</data>
+	<data name="EntityImport" xml:space="preserve">
+		<value>Import Entity</value>
+	</data>
+	<data name="FolderAdd" xml:space="preserve">
+		<value>Add Folder</value>
+	</data>
+	<data name="ViewContentFolder" xml:space="preserve">
+		<value>View content folder</value>
+	</data>
+	<data name="CodeRegenerate" xml:space="preserve">
+		<value>Re-Generate Code</value>
+	</data>
+	<data name="Open" xml:space="preserve">
+		<value>Open</value>
+	</data>
+	<data name="CopyPathClipboard" xml:space="preserve">
+		<value>Copy path to clipboard</value>
+	</data>
+	<data name="GoToDefinition" xml:space="preserve">
+		<value>Go to definition</value>
+	</data>
+	<data name="ScreenImport" xml:space="preserve">
+		<value>Import Screen</value>
+	</data>
+	<data name="EntityListAdd" xml:space="preserve">
+		<value>Add Entity List</value>
+	</data>
+	<data name="EntityAddInstance" xml:space="preserve">
+		<value>Add Entity Instance</value>
+	</data>
+	<data name="EntityExport" xml:space="preserve">
+		<value>Export Entity</value>
+	</data>
+	<data name="FileOpenCs" xml:space="preserve">
+		<value>Open .cs file</value>
+	</data>
+	<data name="EntityAddDerived" xml:space="preserve">
+		<value>Add Derived Entity</value>
+	</data>
+	<data name="ScreenLevelCreate" xml:space="preserve">
+		<value>Create Level Screen</value>
+	</data>
+	<data name="ScreenSaveForceJson" xml:space="preserve">
+		<value>Force save screen JSON</value>
+	</data>
+	<data name="ScreenRemoveRequirement" xml:space="preserve">
+		<value>Remove StartUp Requirement</value>
+	</data>
+	<data name="StartupMakeRequired" xml:space="preserve">
+		<value>Make Required at StartUp</value>
+	</data>
+	<data name="FolderGlueNotMadeLackFiles" xml:space="preserve">
+		<value>Glue has not created this content folder yet since it doesn't contain any files.</value>
+	</data>
+	<data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
+		<value>This {0} does not have a content folder. It will be created when a file is added to this {1}.</value>
+	</data>
+	<data name="Sure" xml:space="preserve">
+		<value>Are you sure?</value>
+	</data>
+	<data name="FolderDeleteNotEmpty" xml:space="preserve">
+		<value>The {0} directory is not empty. Are you sure you want to delete it and everything in it?</value>
+	</data>
+	<data name="MovingToTop" xml:space="preserve">
+		<value>Moving to top</value>
+	</data>
+	<data name="MovingToBottom" xml:space="preserve">
+		<value>Moving to bottom</value>
+	</data>
+	<data name="MovingXUpOrDown" xml:space="preserve">
+		<value>Moving {0} up or down</value>
+	</data>
+	<data name="ObjectNullSource" xml:space="preserve">
+		<value>This object has a null source file.</value>
+	</data>
+	<data name="ErrorOpeningFolder" xml:space="preserve">
+		<value>Error opening folder</value>
+	</data>
+	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
+		<value>Could not create packaged file - likely because the file {0} contains files that are not relative.</value>
+	</data>
 </root>
