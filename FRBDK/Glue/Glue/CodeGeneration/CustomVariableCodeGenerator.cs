@@ -261,8 +261,6 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
 
-            string formatString = null;
-
             bool needsToBeProperty = (customVariable.SetByDerived && !customVariable.IsShared) || customVariable.CreatesProperty || customVariable.CreatesEvent
                 || IsVariableWholeNumberWithVelocity(customVariable);
 
@@ -282,14 +280,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
             }
 
-
             EventCodeGenerator.TryGenerateEventsForVariable(codeBlock, customVariable, element);
             
-
-            string memberType = GetMemberTypeFor(customVariable, element);
-
-            string scopeValue = customVariable.Scope.ToString().ToLower();
-
+            var memberType = GetMemberTypeFor(customVariable, element);
+            var scopeValue = customVariable.Scope.ToString().ToLowerInvariant();
 
 
             if (needsToBeProperty)
@@ -299,11 +293,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // then it needs to have
                 // custom code (it can't be
                 // an automatic property).
-                bool isWholeNumberWithVelocity = IsVariableWholeNumberWithVelocity(customVariable);
+                var isWholeNumberWithVelocity = IsVariableWholeNumberWithVelocity(customVariable);
 
                 if (customVariable.CreatesEvent || isWholeNumberWithVelocity || customVariable.DefaultValue != null )
                 {
-                    string variableToAssignInProperty = "base." + customVariable.Name;
+                    var variableToAssignInProperty = "base." + customVariable.Name;
                     // create a field for this, unless it's defined by base - then the base creates a field for it
                     if (!isExposing && !customVariable.DefinedByBase)
                     {
@@ -318,9 +312,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         codeBlock.Line(line);
                     }
 
-                    string propertyHeader = null;
-
-                    var scopeString = customVariable.Scope.ToString().ToLower();
+                    string propertyHeader;
 
                     if (isExposing)
                     {
@@ -398,7 +390,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     if(isStateDefinedInOtherEntity)
                     {
-                        var line = customVariable.Scope.ToString().ToLower() + " " + 
+                        var line = customVariable.Scope.ToString().ToLowerInvariant() + " " + 
                             StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name) + ";";
 
                         codeBlock.Line(line);
@@ -413,7 +405,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // state variable for a
                         // disabled object, we still
                         // want to generate something:
-                        var line = scopeValue.ToString().ToLower() + " " +
+                        var line = scopeValue.ToLowerInvariant() + " " +
                             StringHelper.Modifiers(Static: customVariable.IsShared, Type: memberType, Name: customVariable.Name)
                             + ";";
 

@@ -810,15 +810,14 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static string GetFileToLoadForRfs(ReferencedFileSave referencedFile, AssetTypeInfo ati = null)
         {
-            string referencedFileName = "content/" +  referencedFile.Name;
-            ati = ati ?? referencedFile.GetAssetTypeInfo();
+            var referencedFileName = "content/" +  referencedFile.Name;
+            ati ??= referencedFile.GetAssetTypeInfo();
             if (ati?.MustBeAddedToContentPipeline == true || referencedFile.UseContentPipeline)
             {
                 referencedFileName = FileManager.RemoveExtension(referencedFileName);
             }
             
-            referencedFileName = referencedFileName.ToLower();
-            return referencedFileName;
+            return referencedFileName.ToLowerInvariant();
         }
 
         public static void AppendAddUnloadMethod(ICodeBlock codeBlock, IElement element)
@@ -845,10 +844,9 @@ namespace FlatRedBall.Glue.CodeGeneration
                 var ati = referencedFile.GetAssetTypeInfo();
                 if (referencedFile.IsCsvOrTreatedAsCsv && referencedFile.CreatesDictionary)
                 {
-                    var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLower().Replace("\\", "/");
+                    var fileName = ProjectBase.AccessContentDirectory + referencedFile.Name.ToLowerInvariant().Replace("\\", "/");
                     var instanceName = referencedFile.GetInstanceName();
-                    string line =
-                        $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
+                    string line = $"FlatRedBall.IO.Csv.CsvFileManager.UpdateDictionaryValuesFromCsv({instanceName}, \"{fileName}\");";
                     codeBlock.Line(line);
                 }
                 else if (ati?.QualifiedRuntimeTypeName.QualifiedType == "Microsoft.Xna.Framework.Graphics.Texture2D")
@@ -919,7 +917,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    fileName = ReferencedFileSaveCodeGenerator.GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
+                    fileName = GetFileToLoadForRfs(referencedFile, referencedFile.GetAssetTypeInfo());
 
                     project = ProjectManager.ProjectBase;
                 }
@@ -930,7 +928,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                     containerName = container.Name;
                 }
                 AddCodeforFileLoad(referencedFile, ref codeBlock, container,
-                    ref directives, isProjectSpecific, fileName, project, loadType, containerName);
+                    ref directives, isProjectSpecific, fileName, project, loadType);
             }
 
             if (directives == true)
@@ -971,7 +969,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void AddCodeforFileLoad(ReferencedFileSave referencedFile, ref ICodeBlock codeBlock, 
             IElement container, ref bool directives, bool isProjectSpecific, 
-            string fileName, ProjectBase project, LoadType loadType, string containerName)
+            string fileName, ProjectBase project, LoadType loadType)
         {
             if (project != null)
             {
@@ -1191,7 +1189,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 typeName = "System.Collections.Generic.List<" + FileManager.RemovePath(FileManager.RemoveExtension(fileName)) + ">";
             }
 
-            if (typeName.ToLower().EndsWith("file"))
+            if (typeName.EndsWith("file", StringComparison.OrdinalIgnoreCase))
             {
                 typeName = typeName.Substring(0, typeName.Length - "file".Length);
             }

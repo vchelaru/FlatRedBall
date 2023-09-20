@@ -451,7 +451,7 @@ namespace FlatRedBall.Glue.SaveClasses
             // removed when code was generated for it.  We
             // don't want this to happen so we're going to always
             // treat strings as non-files...for now at least.
-            if (typeName != null && typeName.ToLower() == "string")
+            if (String.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

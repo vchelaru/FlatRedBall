@@ -122,19 +122,9 @@ namespace FlatRedBall.Instructions
             }
         }
 
-        public override Type MemberType
-        {
-            get{ return typeof(ValueType);}
-        }
+        public override Type MemberType => typeof(ValueType);
 
-        public override string MemberTypeAsString
-        {
-            get 
-            { 
-                return typeof(ValueType).FullName; 
-            
-            }
-        }
+        public override string MemberTypeAsString => typeof(ValueType).FullName;
 
         public override string MemberValueAsString
         {
@@ -143,7 +133,7 @@ namespace FlatRedBall.Instructions
                 if (mValue != null)
                 {
                     if (mValue is bool)
-                        return mValue.ToString().ToLower();
+                        return mValue.ToString().ToLowerInvariant();
                     else
                         return mValue.ToString();
                 }
@@ -154,8 +144,8 @@ namespace FlatRedBall.Instructions
 
         public override object MemberValueAsObject
         {
-            get { return mValue; }
-			set { mValue = ((ValueType) value) ; }
+            get => mValue;
+            set { mValue = ((ValueType) value) ; }
         }
 
         public ValueType Value

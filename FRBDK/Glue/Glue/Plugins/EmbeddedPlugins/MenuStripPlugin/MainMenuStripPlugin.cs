@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -144,13 +145,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                 List<ReferencedFileSave> matchingReferencedFileSaves = new List<ReferencedFileSave>();
                 List<string> matchingRegularFiles = new List<string>();
 
-                string result = tiw.Result.ToLower();
-
                 List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
 
                 foreach (ReferencedFileSave rfs in allReferencedFiles)
                 {
-                    if (FileManager.RemovePath(rfs.Name.ToLower()) == result)
+                    if (String.Equals(FileManager.RemovePath(rfs.Name), tiw.Result, StringComparison.OrdinalIgnoreCase))
                     {
                         matchingReferencedFileSaves.Add(rfs);
                     }
@@ -171,20 +170,19 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                         }
 
                         if (referencedFiles == null) continue;
-                        
-                        foreach (var referencedFile in referencedFiles)
-                        {
-                            if (result == referencedFile.NoPath.ToLower())
-                            {
-                                matchingRegularFiles.Add(referencedFile + " in " + rfs.ToString() + "\n");
-                            }
-                        }
+
+                        matchingRegularFiles.AddRange(
+                            from referencedFile 
+                            in referencedFiles 
+                            where String.Equals(tiw.Result, referencedFile.NoPath, StringComparison.OrdinalIgnoreCase) 
+                            select referencedFile + " in " + rfs + "\n"
+                        );
                     }
                 }
 
                 if (matchingReferencedFileSaves.Count == 0 && matchingRegularFiles.Count == 0)
                 {
-                    MessageBox.Show(String.Format(Localization.Texts.NoFilesReferencing, result), Localization.Texts.NoFilesFound);
+                    MessageBox.Show(String.Format(Localization.Texts.NoFilesReferencing, tiw.Result), Localization.Texts.NoFilesFound);
                 }
                 else
                 {
@@ -197,15 +195,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                     foreach (ReferencedFileSave rfs in matchingReferencedFileSaves)
                     {
-                        message += rfs.ToString() + "\n";
+                        message += rfs + "\n";
                     }
                     MessageBox.Show(message, Localization.Texts.FoundFiles);
                 }
-
-
-
             }
-
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
@@ -213,7 +207,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             GroupExportForm groupExportForm = new GroupExportForm();
             DialogResult result = groupExportForm.ShowDialog();
 
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 ElementExporter.ExportGroup(groupExportForm.SelectedElements, GlueState.Self.CurrentGlueProject);
             }
@@ -246,10 +240,10 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
             // CSVs can be added to be project-specific or shared across all projects (installed to a centralized location)
 
-            if (result == System.Windows.Forms.DialogResult.OK)
+            if (result == DialogResult.OK)
             {
                 string textResult = tiw.Result;
-                if (textResult.ToLower().EndsWith(".csv"))
+                if (textResult.ToLower().EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
                 {
                     textResult = FileManager.RemoveExtension(textResult);
                 }
@@ -265,7 +259,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     globalOrProjectSpecific = GlobalOrProjectSpecific.ProjectSpecific;
                 }
 
-                AvailableAssetTypes.Self.CreateAdditionalCsvFile(tiw.Result, globalOrProjectSpecific);
+                AvailableAssetTypes.Self.CreateAdditionalCsvFile(textResult, globalOrProjectSpecific);
 
                 ViewAdditionalContentTypes(globalOrProjectSpecific);
             }

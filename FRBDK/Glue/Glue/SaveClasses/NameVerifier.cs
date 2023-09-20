@@ -641,10 +641,8 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static bool IsEventNameValid(string name, IElement currentElement, out string failureMessage)
         {
-            bool didFailureOccur = false;
-
             string whyItIsntValid = "";
-            didFailureOccur = NameVerifier.IsCustomVariableNameValid(name, null, currentElement, ref whyItIsntValid) == false;
+            var didFailureOccur = NameVerifier.IsCustomVariableNameValid(name, null, currentElement, ref whyItIsntValid) == false;
             failureMessage = null;
             if (didFailureOccur)
             {
@@ -663,7 +661,7 @@ namespace FlatRedBall.Glue.SaveClasses
         private static void CheckForFileNameWindowsReserved(string name, out string whyNotValid)
         {
             whyNotValid = null;
-            if (InvalidWindowsFileNames.Contains(name?.ToLower()))
+            if (InvalidWindowsFileNames.Any(n => n.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
                 whyNotValid = String.Format(L.Texts.NameXReservedByWindows, name);
             }

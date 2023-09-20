@@ -2675,4 +2675,37 @@
 	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
 		<value>Could not create packaged file - likely because the file {0} contains files that are not relative.</value>
 	</data>
+	<data name="FileXNotRelativeToContentFolder" xml:space="preserve">
+		<value>The file {0} is not relative to the content folder for the element which is {1}</value>
+	</data>
+	<data name="ErrorDeleteDirectoryFailed" xml:space="preserve">
+		<value>Failed to delete the target export directory: {0}</value>
+	</data>
+	<data name="GlueGroup" xml:space="preserve">
+		<value>Glue Group</value>
+	</data>
+	<data name="QuestionFilesOutsideContent" xml:space="preserve">
+		<value>This {0} contains files outside of its content folder. Glue will export this {0}, but all files will be referenced in the same content folder. This may break some file references. Do you want to export?</value>
+	</data>
+	<data name="QuestionExport" xml:space="preserve">
+		<value>Export?</value>
+	</data>
+	<data name="FolderSelectExportedFile" xml:space="preserve">
+		<value>Select folder to save exported file:</value>
+	</data>
+	<data name="QuestionOverwrite" xml:space="preserve">
+		<value>Overwrite?</value>
+	</data>
+	<data name="FileXExistsOverwrite" xml:space="preserve">
+		<value>The file already exist {0}. Overwrite?</value>
+	</data>
+	<data name="ExportCant" xml:space="preserve">
+		<value>Can't export:</value>
+	</data>
+	<data name="BuilderWhichForFile" xml:space="preserve">
+		<value>Which builder would you like to use for this file?</value>
+	</data>
+	<data name="CliExtraArguments" xml:space="preserve">
+		<value>Enter extra command line arguments:</value>
+	</data>
 </root>

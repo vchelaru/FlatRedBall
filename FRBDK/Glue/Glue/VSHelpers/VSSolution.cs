@@ -142,7 +142,7 @@ namespace FlatRedBall.Glue.VSHelpers
                 //Add ones that don't already exist
                 foreach (var solutionConfiguration in solutionConfigurations)
                 {
-                    if (existingSolutionConfigurations.All(item => item.ToLower().Trim() != solutionConfiguration.ToLower().Trim()))
+                    if (existingSolutionConfigurations.All(item => !String.Equals(item.Trim(),solutionConfiguration.Trim(), StringComparison.OrdinalIgnoreCase)))
                     {
                         allLines.Insert(addLineHere.Value + 1, GetSolutionConfigurationText(solutionConfiguration));
                     }

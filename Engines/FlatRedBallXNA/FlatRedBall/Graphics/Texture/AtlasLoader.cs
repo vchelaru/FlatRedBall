@@ -66,8 +66,8 @@ namespace FlatRedBall.Graphics.Texture
                     }
 
                     var isRotated = int.Parse(cols[1]) == 1;
-                    var slashIndex = cols[0].IndexOf("/");
-                    var name = cols[0].Substring(slashIndex + 1).ToLower();
+                    var slashIndex = cols[0].IndexOf("/", StringComparison.Ordinal);
+                    var name = cols[0].Substring(slashIndex + 1).ToLowerInvariant();
 
                     var sourceRectangle = new Microsoft.Xna.Framework.Rectangle(
                         int.Parse(cols[2]),

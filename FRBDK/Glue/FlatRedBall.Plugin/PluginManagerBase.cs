@@ -353,8 +353,9 @@ namespace FlatRedBall.Glue.Plugins
             {
                 bool shouldProcessPlugin = true;
                 // GlueView is a special case, so we should skip that
-                string pluginToLower = plugin.ToLower().Replace("\\", "/");
-                if (pluginToLower.EndsWith("/glueview") || pluginToLower.EndsWith("/glueview/"))
+                string pluginToLower = plugin.Replace("\\", "/");
+                if (pluginToLower.EndsWith("/glueview", StringComparison.OrdinalIgnoreCase)
+                    || pluginToLower.EndsWith("/glueview/", StringComparison.OrdinalIgnoreCase))
                 {
                     shouldProcessPlugin = false;
                 }
@@ -363,7 +364,7 @@ namespace FlatRedBall.Glue.Plugins
                 {
                     // We had a && false here, so I don't think we use this ignored check, do we?
                     bool isIgnored = pluginsToIgnore != null && pluginsToIgnore.Any(item => 
-                        FileManager.Standardize(item.ToLowerInvariant()) == FileManager.Standardize(plugin.ToLowerInvariant()));
+                        FileManager.Standardize(item).Equals(FileManager.Standardize(plugin), StringComparison.OrdinalIgnoreCase));
 
                     if (!isIgnored)
                     {

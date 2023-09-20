@@ -121,20 +121,14 @@ namespace FlatRedBall.Glue.SaveClasses
         public static bool IsFileSourceForThis(this ReferencedFileSave instance, string fileName)
         {
             if (!string.IsNullOrEmpty(instance.SourceFile) &&
-                 FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile) ).ToLower() == fileName)
+                 FileManager.RemoveDotDotSlash( ObjectFinder.Self.MakeAbsoluteContent(instance.SourceFile)).Equals(fileName, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             if(instance.SourceFileCache != null)
             {
-                foreach (SourceReferencingFile srf in instance.SourceFileCache)
-                {
-                    if (srf.SourceFile == fileName)
-                    {
-                        return true;
-                    }
-                }
+                return instance.SourceFileCache.Any(srf => String.Equals(srf.SourceFile, fileName, StringComparison.OrdinalIgnoreCase));
             }
 
             return false;

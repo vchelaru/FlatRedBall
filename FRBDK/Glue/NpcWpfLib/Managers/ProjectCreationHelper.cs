@@ -80,7 +80,7 @@ namespace Npc
 
             var generalResponse = GeneralResponse.SuccessfulResponse;
             
-            if (CommandLineManager.Self.OpenedBy != null && CommandLineManager.Self.OpenedBy.ToLower() == "glue")
+            if (CommandLineManager.Self.OpenedBy != null && CommandLineManager.Self.OpenedBy.Equals("glue", StringComparison.OrdinalIgnoreCase))
             {
                 var ppi = viewModel.SelectedProject;
 

@@ -866,7 +866,7 @@ namespace FlatRedBall
 
         private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
         {
-            return arr.FirstOrDefault(s => extensions.Any(ext => s.ToLower() == (search.ToLower() + ext)));
+            return arr.FirstOrDefault(s => extensions.Any(ext => s.Equals(search + ext, StringComparison.OrdinalIgnoreCase)));
         }
 
 #if ASK_VIC //MDS_TODO ASK VIC

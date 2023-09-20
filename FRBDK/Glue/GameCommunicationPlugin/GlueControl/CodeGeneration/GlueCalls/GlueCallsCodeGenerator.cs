@@ -169,7 +169,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
 
                     bldr.AppendLine($"          return await GlueCallsClassGenerationManager.ConvertToPropertyCallToGame(nameof({prop.Name}), typeof({prop.ReturnType}), parameter, new GlueCallsClassGenerationManager.CallPropertyParameters");
                     bldr.AppendLine($"          {{");
-                    bldr.AppendLine($"              ReturnToPropertyType = {prop.ReturnToPropertyType.ToString().ToLower()}");
+                    bldr.AppendLine($"              ReturnToPropertyType = {prop.ReturnToPropertyType.ToString().ToLowerInvariant()}");
                     bldr.AppendLine($"          }});");
                     bldr.AppendLine($"      }}");
                 }

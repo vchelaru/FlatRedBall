@@ -2672,4 +2672,37 @@
 	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
 		<value>Impossible de créer le fichier packagé, probablement parce que le fichier {0} contient des fichiers qui ne sont pas relatifs.</value>
 	</data>
+	<data name="FileXNotRelativeToContentFolder" xml:space="preserve">
+		<value>Le fichier {0} n'est pas relatif au dossier de contenu de l'élément qui est {1}</value>
+	</data>
+	<data name="ErrorDeleteDirectoryFailed" xml:space="preserve">
+		<value>Échec de la suppression du répertoire d'exportation cible : {0}</value>
+	</data>
+	<data name="GlueGroup" xml:space="preserve">
+		<value>Groupe de Glue</value>
+	</data>
+	<data name="QuestionFilesOutsideContent" xml:space="preserve">
+		<value>Ce {0} contient des fichiers en dehors de son dossier de contenu. Glue exportera ce {0}, mais tous les fichiers seront référencés dans le même dossier de contenu. Cela peut casser certaines références de fichiers. Vous souhaitez exporter ?</value>
+	</data>
+	<data name="QuestionExport" xml:space="preserve">
+		<value>Exporter?</value>
+	</data>
+	<data name="FolderSelectExportedFile" xml:space="preserve">
+		<value>Sélectionnez le dossier pour enregistrer le fichier exporté :</value>
+	</data>
+	<data name="QuestionOverwrite" xml:space="preserve">
+		<value>Écraser?</value>
+	</data>
+	<data name="FileXExistsOverwrite" xml:space="preserve">
+		<value>Le fichier existe déjà {0}. Écraser?</value>
+	</data>
+	<data name="ExportCant" xml:space="preserve">
+		<value>Impossible d'exporter :</value>
+	</data>
+	<data name="BuilderWhichForFile" xml:space="preserve">
+		<value>Quel constructeur souhaitez-vous utiliser pour ce fichier ?</value>
+	</data>
+	<data name="CliExtraArguments" xml:space="preserve">
+		<value>Entrez des arguments de ligne de commande supplémentaires :</value>
+	</data>
 </root>

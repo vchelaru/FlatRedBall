@@ -74,15 +74,15 @@ namespace FlatRedBall.IO
 
 #else
         // Vic says - this used to be:
-        //static string mRelativeDirectory = (System.IO.Directory.GetCurrentDirectory() + "/").ToLower().Replace("\\", "/");
+        //static string mRelativeDirectory = (System.IO.Directory.GetCurrentDirectory() + "/").Replace("\\", "/");
         // But the current directory is the directory that launched the application, not the directory of the .exe.
         // We want to make sure that we use the .exe so that the game/tool can reference the proper path when loading
         // content.
         // Update: Made this per-thread so we can do multi-threaded loading.
-        // static string mRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").ToLower().Replace("\\", "/");
+        // static string mRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
         // Update October 22, 2012 - Projects like Glue may be multi-threaded, but they want the default directory to be preset to
         // something specific.  But I think we only want this for tools (on the PC).
-        public static string DefaultRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").ToLowerInvariant().Replace("\\", "/");
+        public static string DefaultRelativeDirectory = (System.Windows.Forms.Application.StartupPath + "/").Replace("\\", "/");
 
 #endif
 
@@ -696,21 +696,14 @@ namespace FlatRedBall.IO
             int i = fileName.LastIndexOf('.');
             if (i != -1)
             {
-                bool hasDotSlash = false;
-                if (i < fileName.Length - 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
-                {
-                    hasDotSlash = true;
-                }
+                bool hasDotSlash = i < fileName.Length - 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\');
 
                 // Justin Johnson, 09/28/2017:
                 // Folders in the path might have a period in them. We need to make sure
                 // the period is after the last slash or we could end up with an "extension"
                 // that is a large chunk of the path
-                bool hasSlashAfterDot = false;
-                if(i < fileName.LastIndexOf("/") || i < fileName.LastIndexOf(@"\"))
-                {
-                    hasSlashAfterDot = true;
-                }
+                bool hasSlashAfterDot = i < fileName.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) 
+                                        || i < fileName.LastIndexOf(@"\", StringComparison.OrdinalIgnoreCase);
 
                 if (hasDotSlash || hasSlashAfterDot)
                 {
@@ -1122,16 +1115,16 @@ namespace FlatRedBall.IO
                 if (!IsRelative(directory))
                 {
                     // just have to make sure that the filename includes the path
-                    fileName = fileName.ToLowerInvariant().Replace('\\', '/');
-                    directory = directory.ToLowerInvariant().Replace('\\', '/');
+                    fileName = fileName.Replace('\\', '/');
+                    directory = directory.Replace('\\', '/');
 
-                    if(directory.EndsWith("/") == false)
+                    if(directory.EndsWith("/", StringComparison.OrdinalIgnoreCase) == false)
                     {
                         // Do this to simplify the code below by allowing a "contains" call
                         directory += "/";
                     }
 
-                    return fileName.IndexOf(directory) == 0;
+                    return fileName.IndexOf(directory, StringComparison.OrdinalIgnoreCase) == 0;
                 }
             }
             else // fileName is relative
@@ -1152,7 +1145,7 @@ namespace FlatRedBall.IO
 
         public static bool IsUrl(string fileName)
         {
-            return fileName.IndexOf("http:") == 0 || fileName.IndexOf("https:") == 0;
+            return fileName.IndexOf("http:", StringComparison.OrdinalIgnoreCase) == 0 || fileName.IndexOf("https:", StringComparison.OrdinalIgnoreCase) == 0;
         }
 
 
@@ -1213,7 +1206,7 @@ namespace FlatRedBall.IO
                     // the string arrays.
                     //while (start < path.Length && start < relpath.Length && path[start] == relpath[start])
                     //while (path[start] == relpath[start])
-                    while (start < path.Length && start < relpath.Length && path[start].ToLower() == relpath[start].ToLower())
+                    while (start < path.Length && start < relpath.Length && String.Equals(path[start],relpath[start], StringComparison.OrdinalIgnoreCase))
                     {
                         start++;
                     }
@@ -1616,7 +1609,7 @@ namespace FlatRedBall.IO
             if (fileNameToFix == null)
                 return null;
 
-            bool isNetwork = fileNameToFix.StartsWith("\\\\");
+            bool isNetwork = fileNameToFix.StartsWith(@"\\");
 
             ReplaceSlashes(ref fileNameToFix);
 

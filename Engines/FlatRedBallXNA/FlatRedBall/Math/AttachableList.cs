@@ -411,12 +411,10 @@ namespace FlatRedBall.Math
         /// <returns>The IAttachable with a name containing the argument string or null if none are found.</returns>
         public T FindWithNameContainingCaseInsensitive(string stringToSearchFor)
         {
-            string name;
             for (int i = 0; i < this.Count; i++)
             {
                 T t = this[i];
-                name = t.Name.ToLower();
-                if (name.Contains(stringToSearchFor.ToLower()))
+                if (t.Name.IndexOf(stringToSearchFor, StringComparison.OrdinalIgnoreCase) >= 0)
                     return t;
             }
 

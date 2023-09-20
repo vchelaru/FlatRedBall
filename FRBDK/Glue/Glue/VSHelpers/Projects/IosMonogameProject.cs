@@ -74,7 +74,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         {
             var returnValue = base.ProcessLink(path);
             // iOS is case-sensitive
-            return returnValue.ToLower();
+            return returnValue.ToLowerInvariant();
         }
         // Is this valid?
         public override string NeededVisualStudioVersion

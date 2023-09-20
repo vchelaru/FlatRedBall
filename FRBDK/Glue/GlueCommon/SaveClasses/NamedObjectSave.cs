@@ -165,7 +165,7 @@ namespace FlatRedBall.Glue.SaveClasses
             get => mSourceFile;
             set
             {
-                if (!String.IsNullOrEmpty(value) && value.ToLower().Replace("\\", "/").StartsWith("content/"))
+                if (!String.IsNullOrEmpty(value) && value.Replace("\\", "/").StartsWith("content/", StringComparison.OrdinalIgnoreCase))
                     value = value.Substring(8);
 
                 mSourceFile = value;

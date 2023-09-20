@@ -4,6 +4,7 @@ using System.IO;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using L = Localization;
 
@@ -27,26 +28,16 @@ namespace FlatRedBall.Glue.Parsing
 
             // Okay, this is really cheap, but I'm in a hurry.  We should fix this for sure.
             if (File.Exists(FileManager.RelativeDirectory + generatedFile) &&
-                FileManager.MakeRelative(FileManager.GetDirectory(fileName)).StartsWith("Entities/"))
+                FileManager.MakeRelative(FileManager.GetDirectory(fileName)).StartsWith("Entities/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
 
             // If we got here, it still might be an Entity, it just doesn't have its generated code yet
 
-            string modifiedFileName = FileManager.RemoveExtension(fileName).ToLower();
+            string modifiedFileName = FileManager.RemoveExtension(fileName);
 
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Entities.Count; i++)
-            {
-                EntitySave es = ProjectManager.GlueProjectSave.Entities[i];
-
-                if (es.Name.ToLower() == modifiedFileName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ProjectManager.GlueProjectSave.Entities.Any(es => String.Equals(es.Name, modifiedFileName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool IsScreen(string fileName)
@@ -66,19 +57,9 @@ namespace FlatRedBall.Glue.Parsing
                 return true;
             }
 
-            string modifiedFileName = FileManager.RemoveExtension(fileName).ToLower();
+            string modifiedFileName = FileManager.RemoveExtension(fileName);
 
-            for (int i = 0; i < ProjectManager.GlueProjectSave.Screens.Count; i++)
-            {
-                ScreenSave ss = ProjectManager.GlueProjectSave.Screens[i];
-
-                if (ss.Name.ToLower() == modifiedFileName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return ProjectManager.GlueProjectSave.Screens.Any(ss => String.Equals(ss.Name, modifiedFileName, StringComparison.OrdinalIgnoreCase));
         }
 
         public static bool InheritsFrom(string fileName, string baseClass)
@@ -163,7 +144,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = value.ToLower();
+                    value = value.ToLowerInvariant();
                 }
             }
             else if (objectToParse is float || typeof(T) == typeof(float?))

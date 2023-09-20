@@ -521,7 +521,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-            foreach (var file in files.Where(item=>item.ToLower().EndsWith(".generated.glux") || item.ToLower().EndsWith(".generated.gluj")))
+            foreach (var file in files.Where(item=>item.EndsWith(".generated.glux", StringComparison.OrdinalIgnoreCase) || item.EndsWith(".generated.gluj", StringComparison.OrdinalIgnoreCase)))
             {
                 string withoutExtension = FileManager.RemoveExtension(file);
                 string withoutGenerated = FileManager.RemoveExtension(withoutExtension);

@@ -402,17 +402,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             string extension = filePath.Extension;
 
-            if (extension == "")
+            if (String.IsNullOrWhiteSpace(extension))
             {
                 return false;
             }
 
-            foreach (var ati in AvailableAssetTypes.Self.AllAssetTypes)
+            if (AvailableAssetTypes.Self.AllAssetTypes
+                .Any(ati => String.Equals(ati.Extension, extension, StringComparison.OrdinalIgnoreCase)))
             {
-                if (ati.Extension == extension)
-                {
-                    return true;
-                }
+                return true;
             }
 
             if (AvailableAssetTypes.Self.AdditionalExtensionsToTreatAsAssets.Contains(extension))
@@ -427,8 +425,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
 
-            if (extension == "csv" ||
-                extension == "xml")
+            if (String.Equals(extension, "csv", StringComparison.OrdinalIgnoreCase) ||
+                String.Equals(extension, "xml", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -522,7 +520,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         var relativeExe = "";
                         if (GumFileExtensions.Contains(textExtension.ToLower()))
                             relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                        if (textExtension == "achx")
+                        if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
                             relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
                         if ((relativeExe != "") && (System.IO.File.Exists(relativeExe)))
                         {

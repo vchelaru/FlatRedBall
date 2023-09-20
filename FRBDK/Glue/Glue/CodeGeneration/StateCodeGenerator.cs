@@ -917,7 +917,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     valueAsString = CustomVariableCodeGenerator.GetAssignmentToCsvItem(customVariable, element, valueAsString);
                 }
-                else if (customVariable != null && customVariable.Type == "Color")
+                else if (customVariable is { Type: "Color" })
                 {
                     valueAsString = "Color." + valueAsString.Replace("\"", "");
                 }
@@ -979,7 +979,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 {
                     string variableType = "VariableState";
 
-                    if (customVariable != null && customVariable.Type.ToLower() != "string")
+                    if (customVariable != null && !String.Equals(customVariable.Type, "string", StringComparison.OrdinalIgnoreCase))
                     {
                         variableType = customVariable.Type;
                     }

@@ -520,13 +520,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 else
                 {
                     // The RFS may be contained, but see if the file names match
-                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false).ToLower();
-                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativeFilePath(), null, false).ToLower();
+                    string rfsName = FileManager.Standardize(referencedFileSave.Name, null, false);
+                    string treeNodeFile = FileManager.Standardize(treeNode.GetRelativeFilePath(), null, false);
 
                     // We first need to make sure that the file is part of GlobalContentFiles.
                     // If it is, then we may have tree node in the wrong folder, so let's get rid
                     // of it.  If it doesn't start with globalcontent/ then we shouldn't remove it here.
-                    if (rfsName.StartsWith("globalcontent/") && rfsName != treeNodeFile)
+                    if (rfsName.StartsWith("globalcontent/", StringComparison.OrdinalIgnoreCase) && !String.Equals(rfsName, treeNodeFile, StringComparison.OrdinalIgnoreCase))
                     {
                         treeNode.Parent.Remove(treeNode);
                     }
