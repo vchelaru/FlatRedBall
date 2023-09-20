@@ -2414,4 +2414,265 @@
 	<data name="FailedToSetGameEditModeToX" xml:space="preserve">
 		<value>Kan de spel-/bewerkingsmodus niet instellen op {0}</value>
 	</data>
+	<data name="CouldNotLoadProjectSeeOutput" xml:space="preserve">
+		<value>Kan het project niet laden. Controleer het uitvoervenster voor meer informatie.</value>
+	</data>
+	<data name="CouldNotCreateSyncedProject" xml:space="preserve">
+		<value>Kan geen nieuw gesynchroniseerd project maken omdat er geen open project is.</value>
+	</data>
+	<data name="Files" xml:space="preserve">
+		<value>Bestanden</value>
+	</data>
+	<data name="Objects" xml:space="preserve">
+		<value>Objecten</value>
+	</data>
+	<data name="Layers" xml:space="preserve">
+		<value>Lagen</value>
+	</data>
+	<data name="Code" xml:space="preserve">
+		<value>Code</value>
+	</data>
+	<data name="States" xml:space="preserve">
+		<value>Statussen</value>
+	</data>
+	<data name="NewFolder" xml:space="preserve">
+		<value>Nieuwe map</value>
+	</data>
+	<data name="NewFolderEnter" xml:space="preserve">
+		<value>Voer een nieuwe mapnaam in</value>
+	</data>
+	<data name="VariableRemove" xml:space="preserve">
+		<value>Verwijder de variabele</value>
+	</data>
+	<data name="VariableHasNoStates" xml:space="preserve">
+		<value>Aan de variabele {0} zijn geen statussen meer gekoppeld. Wat zou je willen doen?</value>
+	</data>
+	<data name="DeleteQuestionX" xml:space="preserve">
+		<value>Weet je zeker dat je {0} wilt verwijderen?</value>
+	</data>
+	<data name="WarningScreenXBaseForScreens" xml:space="preserve">
+		<value>Waarschuwing: het scherm {0} is de basis voor de volgende schermen:</value>
+	</data>
+	<data name="VariableRemoveNothing" xml:space="preserve">
+		<value>Niets (project loopt mogelijk niet totdat dit is opgelost)</value>
+	</data>
+	<data name="ProjectGlueLoadOrCreateFirst" xml:space="preserve">
+		<value>U moet eerst een Glue-project laden of maken</value>
+	</data>
+	<data name="EntityIsBaseForEntities" xml:space="preserve">
+		<value>De Entiteit {0} is de basis voor de volgende Entiteiten:</value>
+	</data>
+	<data name="EntityReferencedByFollowingObjects" xml:space="preserve">
+		<value>Er wordt verwezen naar de entiteit {0} door de volgende objecten:</value>
+	</data>
+	<data name="FilesRemove" xml:space="preserve">
+		<value>Bestanden verwijderen</value>
+	</data>
+	<data name="EntityRemove" xml:space="preserve">
+		<value>Entiteit verwijderen</value>
+	</data>
+	<data name="ScreenRemove" xml:space="preserve">
+		<value>Scherm verwijderen</value>
+	</data>
+	<data name="ItemRemove" xml:space="preserve">
+		<value>Verwijder voorwerp</value>
+	</data>
+	<data name="ItemsOrphaned" xml:space="preserve">
+		<value>Verweesde voorwerpen</value>
+	</data>
+	<data name="RemoveFromScreen" xml:space="preserve">
+		<value>Verwijderen van scherm</value>
+	</data>
+	<data name="RemoveFromEntity" xml:space="preserve">
+		<value>Verwijderen uit entiteit</value>
+	</data>
+	<data name="RemoveFromGlobalContent" xml:space="preserve">
+		<value>Verwijderen uit algemene inhoud</value>
+	</data>
+	<data name="FillValuesDefault" xml:space="preserve">
+		<value>Waarden invullen vanaf standaard?</value>
+	</data>
+	<data name="QuestionFillValuesDefault" xml:space="preserve">
+		<value>Weet u zeker dat u alle waardenmet status {0} wilt invullen op basis van de standaardvariabelewaarden? Alle voorgaande waarden gaan verloren</value>
+	</data>
+	<data name="LayerAdd" xml:space="preserve">
+		<value>Laag toevoegen</value>
+	</data>
+	<data name="RefreshUi" xml:space="preserve">
+		<value>Vernieuw de gebruikersinterface</value>
+	</data>
+	<data name="EventAdd" xml:space="preserve">
+		<value>Voeg evenement toe</value>
+	</data>
+	<data name="CopyBuildFolder" xml:space="preserve">
+		<value>Kopiëren naar buildmap</value>
+	</data>
+	<data name="ScreenExport" xml:space="preserve">
+		<value>Scherm exporteren</value>
+	</data>
+	<data name="ZipPackageCreate" xml:space="preserve">
+		<value>Zip-pakket maken</value>
+	</data>
+	<data name="StateAdd" xml:space="preserve">
+		<value>Status toevoegen</value>
+	</data>
+	<data name="ViewFileOrder" xml:space="preserve">
+		<value>Bestandsvolgorde bekijken</value>
+	</data>
+	<data name="FileCreateForMissing" xml:space="preserve">
+		<value>Maak een nieuw bestand voor het ontbrekende bestand</value>
+	</data>
+	<data name="CategoryAddState" xml:space="preserve">
+		<value>Statuscategorie toevoegen</value>
+	</data>
+	<data name="ResetVariablesPoolingAdd" xml:space="preserve">
+		<value>Voeg resetvariabelen toe voor pooling</value>
+	</data>
+	<data name="PipelineContentToggle" xml:space="preserve">
+		<value>Toggle Inhoudspijplijn gebruiken</value>
+	</data>
+	<data name="VariableFillValues" xml:space="preserve">
+		<value>Vul waarden uit variabelen in</value>
+	</data>
+	<data name="RemoveFromProjectQuick" xml:space="preserve">
+		<value>Snel uit het project verwijderen (ALLEEN ALS JE WEET WAT JE DOET!)</value>
+	</data>
+	<data name="MoveUp" xml:space="preserve">
+		<value>Omhoog</value>
+	</data>
+	<data name="MoveDown" xml:space="preserve">
+		<value>Beneden</value>
+	</data>
+	<data name="MoveBottom" xml:space="preserve">
+		<value>Verplaats naar beneden</value>
+	</data>
+	<data name="MakeRequiredAtStartup" xml:space="preserve">
+		<value>Vereist maken bij opstarten</value>
+	</data>
+	<data name="FileRebuild" xml:space="preserve">
+		<value>Bestand opnieuw opbouwen</value>
+	</data>
+	<data name="ViewSourceExplorer" xml:space="preserve">
+		<value>Bekijk het bronbestand in verkenner</value>
+	</data>
+	<data name="FindAllReferences" xml:space="preserve">
+		<value>Vind alle verwijzingen hiernaar</value>
+	</data>
+	<data name="VariableAdd" xml:space="preserve">
+		<value>Variabele toevoegen</value>
+	</data>
+	<data name="MoveToTop" xml:space="preserve">
+		<value>Verplaats naar bovenkant</value>
+	</data>
+	<data name="VariableResetEdit" xml:space="preserve">
+		<value>Bewerk resetvariabelen</value>
+	</data>
+	<data name="OpenWith" xml:space="preserve">
+		<value>Öffnen mit...</value>
+	</data>
+	<data name="FileNew" xml:space="preserve">
+		<value>Nieuw bestand</value>
+	</data>
+	<data name="RemoveFromProject" xml:space="preserve">
+		<value>Verwijderen uit project</value>
+	</data>
+	<data name="ScreenAdd" xml:space="preserve">
+		<value>Scherm toevoegen</value>
+	</data>
+	<data name="FileExisting" xml:space="preserve">
+		<value>Bestaande bestand(en)</value>
+	</data>
+	<data name="CreatedClass" xml:space="preserve">
+		<value>Stel de aangemaakte klasse in</value>
+	</data>
+	<data name="Bookmark" xml:space="preserve">
+		<value>Bladwijzer</value>
+	</data>
+	<data name="FolderRename" xml:space="preserve">
+		<value>Hernoem map</value>
+	</data>
+	<data name="FolderDelete" xml:space="preserve">
+		<value>Verwijder map</value>
+	</data>
+	<data name="EntityImport" xml:space="preserve">
+		<value>Entiteit importeren</value>
+	</data>
+	<data name="FolderAdd" xml:space="preserve">
+		<value>Map toevoegen</value>
+	</data>
+	<data name="ViewContentFolder" xml:space="preserve">
+		<value>Inhoudsmap bekijken</value>
+	</data>
+	<data name="CodeRegenerate" xml:space="preserve">
+		<value>Code opnieuw genereren</value>
+	</data>
+	<data name="Open" xml:space="preserve">
+		<value>Open</value>
+	</data>
+	<data name="CopyPathClipboard" xml:space="preserve">
+		<value>Kopieer pad naar klembord</value>
+	</data>
+	<data name="GoToDefinition" xml:space="preserve">
+		<value>Ga naar definitie</value>
+	</data>
+	<data name="ScreenImport" xml:space="preserve">
+		<value>Scherm importeren</value>
+	</data>
+	<data name="EntityListAdd" xml:space="preserve">
+		<value>Entiteitenlijst toevoegen</value>
+	</data>
+	<data name="EntityAddInstance" xml:space="preserve">
+		<value>Entiteitsinstantie toevoegen</value>
+	</data>
+	<data name="EntityExport" xml:space="preserve">
+		<value>Entiteit exporteren</value>
+	</data>
+	<data name="FileOpenCs" xml:space="preserve">
+		<value>Open het .cs-bestand</value>
+	</data>
+	<data name="EntityAddDerived" xml:space="preserve">
+		<value>Afgeleide entiteit toevoegen</value>
+	</data>
+	<data name="ScreenLevelCreate" xml:space="preserve">
+		<value>Niveauscherm maken</value>
+	</data>
+	<data name="ScreenSaveForceJson" xml:space="preserve">
+		<value>Forceer scherm-JSON voor opslaan</value>
+	</data>
+	<data name="ScreenRemoveRequirement" xml:space="preserve">
+		<value>Opstartvereiste verwijderen</value>
+	</data>
+	<data name="StartupMakeRequired" xml:space="preserve">
+		<value>Vereist maken bij opstarten</value>
+	</data>
+	<data name="FolderGlueNotMadeLackFiles" xml:space="preserve">
+		<value>Glue heeft deze inhoudsmap nog niet gemaakt omdat deze geen bestanden bevat.</value>
+	</data>
+	<data name="FolderGlueMadeWhenFileAdded" xml:space="preserve">
+		<value>Deze {0} heeft geen inhoudsmap. Het wordt gemaakt wanneer een bestand wordt toegevoegd aan deze {1}.</value>
+	</data>
+	<data name="Sure" xml:space="preserve">
+		<value>Weet u het zeker?</value>
+	</data>
+	<data name="FolderDeleteNotEmpty" xml:space="preserve">
+		<value>Das Verzeichnis {0} is niet leerzaam. Als u zeker weet dat u alles wilt doen wat u wilt?</value>
+	</data>
+	<data name="MovingToTop" xml:space="preserve">
+		<value>Verplaatsen naar boven</value>
+	</data>
+	<data name="MovingToBottom" xml:space="preserve">
+		<value>Verplaatsen naar beneden</value>
+	</data>
+	<data name="MovingXUpOrDown" xml:space="preserve">
+		<value>{0} omhoog of omlaag verplaatsen</value>
+	</data>
+	<data name="ObjectNullSource" xml:space="preserve">
+		<value>Dit object heeft een nulbronbestand.</value>
+	</data>
+	<data name="ErrorOpeningFolder" xml:space="preserve">
+		<value>Fout bij openen van map</value>
+	</data>
+	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
+		<value>Kon het verpakte bestand niet maken - waarschijnlijk omdat het bestand {0} bestanden bevat die niet relatief zijn.</value>
+	</data>
 </root>

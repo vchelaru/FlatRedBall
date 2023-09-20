@@ -77,57 +77,58 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             Text = glueElement.GetStrippedName();
 
-            if (Tag is ScreenSave asScreenSave)
+            switch (Tag)
             {
-                var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
+                case ScreenSave asScreenSave:
+                {
+                    var startupScreen = GlueState.Self.CurrentGlueProject.StartUpScreen;
 
-                if (startupScreen == asScreenSave.Name)
-                {
-                    ImageSource = ScreenStartupIcon;
-                    FontWeight = FontWeights.Bold;
-                }
-                else
-                {
-                    ImageSource = ScreenIcon;
-                    FontWeight = FontWeights.Normal;
-                }
-            }
-            else if (Tag is EntitySave asEntitySave)
-            {
-                var isDerived = !string.IsNullOrEmpty(asEntitySave.BaseEntity) &&
-                    (asEntitySave.BaseEntity.StartsWith("Entities\\") ||
-                      asEntitySave.BaseEntity.StartsWith("Entities/"));
+                    if (startupScreen == asScreenSave.Name)
+                    {
+                        ImageSource = ScreenStartupIcon;
+                        FontWeight = FontWeights.Bold;
+                    }
+                    else
+                    {
+                        ImageSource = ScreenIcon;
+                        FontWeight = FontWeights.Normal;
+                    }
 
-                if(isDerived)
-                {
-                    ImageSource = EntityDerivedIcon;
+                    break;
                 }
-                else
+                case EntitySave asEntitySave:
                 {
-                    ImageSource = EntityIcon;
+                    var isDerived = !string.IsNullOrEmpty(asEntitySave.BaseEntity) &&
+                                    (asEntitySave.BaseEntity.StartsWith($"Entities\\", StringComparison.OrdinalIgnoreCase) ||
+                                     asEntitySave.BaseEntity.StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase));
+
+                    ImageSource = isDerived ? EntityDerivedIcon : EntityIcon;
+                    break;
                 }
             }
 
-            if(treeNodeRefreshType == TreeNodeRefreshType.CustomVariables)
+            switch (treeNodeRefreshType)
             {
-                VariablesNode.RefreshTreeNodes(treeNodeRefreshType);
+                case TreeNodeRefreshType.CustomVariables:
+                    VariablesNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                case TreeNodeRefreshType.NamedObjects:
+                    ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                case TreeNodeRefreshType.StateSaves:
+                    this.StatesNode.RefreshTreeNodes(treeNodeRefreshType);
+                    break;
+                default:
+                {
+                    // could add more here for the sake of performance, but only if needed
+                    foreach (var node in Children)
+                    {
+                        node.RefreshTreeNodes(treeNodeRefreshType);
+                    }
+
+                    break;
+                }
             }
-            else if(treeNodeRefreshType == TreeNodeRefreshType.NamedObjects)
-            {
-                ObjectsNode.RefreshTreeNodes(treeNodeRefreshType);
-            }
-            else if (treeNodeRefreshType == TreeNodeRefreshType.StateSaves)
-{
-    this.StatesNode.RefreshTreeNodes(treeNodeRefreshType);
-}
-else
-{
-    // could add more here for the sake of performance, but only if needed
-    foreach (var node in Children)
-    {
-        node.RefreshTreeNodes(treeNodeRefreshType);
-    }
-}
         }
     }
 }

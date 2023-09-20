@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using FlatRedBall.IO;
-using FlatRedBall.Utilities;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections;
 using Microsoft.Xna.Framework;
-//using FlatRedBall.Gui;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Parsing
 {
@@ -64,7 +61,7 @@ namespace FlatRedBall.Glue.Parsing
 
             // Okay, this is really cheap, but I'm in a hurry.  We should fix this for sure.
             if (File.Exists(FileManager.RelativeDirectory + generatedFile) &&
-                FileManager.RemovePath(FileManager.GetDirectory(fileName)) == "Screens/")
+                FileManager.RemovePath(FileManager.GetDirectory(fileName)).Equals($"{L.Texts.Screens}/", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }

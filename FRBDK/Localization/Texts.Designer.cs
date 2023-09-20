@@ -466,6 +466,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bookmark.
+        /// </summary>
+        public static string Bookmark {
+            get {
+                return ResourceManager.GetString("Bookmark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Border Dimensions.
         /// </summary>
         public static string BorderDimensions {
@@ -610,6 +619,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add State Category.
+        /// </summary>
+        public static string CategoryAddState {
+            get {
+                return ResourceManager.GetString("CategoryAddState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enter a name for the new category.
         /// </summary>
         public static string CategoryEnterName {
@@ -745,6 +763,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code.
+        /// </summary>
+        public static string Code {
+            get {
+                return ResourceManager.GetString("Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Code Generation.
         /// </summary>
         public static string CodeGeneration {
@@ -759,6 +786,15 @@ namespace Localization {
         public static string CodeGenerationPlugin {
             get {
                 return ResourceManager.GetString("CodeGenerationPlugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Re-Generate Code.
+        /// </summary>
+        public static string CodeRegenerate {
+            get {
+                return ResourceManager.GetString("CodeRegenerate", resourceCulture);
             }
         }
         
@@ -961,6 +997,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy to build folder.
+        /// </summary>
+        public static string CopyBuildFolder {
+            get {
+                return ResourceManager.GetString("CopyBuildFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy images.
         /// </summary>
         public static string CopyImages {
@@ -988,11 +1033,47 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Copy path to clipboard.
+        /// </summary>
+        public static string CopyPathClipboard {
+            get {
+                return ResourceManager.GetString("CopyPathClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copyright.
         /// </summary>
         public static string Copyright {
             get {
                 return ResourceManager.GetString("Copyright", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not create a new Synced Project because there is no open project..
+        /// </summary>
+        public static string CouldNotCreateSyncedProject {
+            get {
+                return ResourceManager.GetString("CouldNotCreateSyncedProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not load the project. Check the output window for more information..
+        /// </summary>
+        public static string CouldNotLoadProjectSeeOutput {
+            get {
+                return ResourceManager.GetString("CouldNotLoadProjectSeeOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set Created Class.
+        /// </summary>
+        public static string CreatedClass {
+            get {
+                return ResourceManager.GetString("CreatedClass", resourceCulture);
             }
         }
         
@@ -1200,6 +1281,15 @@ namespace Localization {
         public static string DeleteQuestion {
             get {
                 return ResourceManager.GetString("DeleteQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete {0}?.
+        /// </summary>
+        public static string DeleteQuestionX {
+            get {
+                return ResourceManager.GetString("DeleteQuestionX", resourceCulture);
             }
         }
         
@@ -1627,11 +1717,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Derived Entity.
+        /// </summary>
+        public static string EntityAddDerived {
+            get {
+                return ResourceManager.GetString("EntityAddDerived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Entities represent game objects like the player, enemies, bullets, and pick-ups..
         /// </summary>
         public static string EntityAddDescription {
             get {
                 return ResourceManager.GetString("EntityAddDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Entity Instance.
+        /// </summary>
+        public static string EntityAddInstance {
+            get {
+                return ResourceManager.GetString("EntityAddInstance", resourceCulture);
             }
         }
         
@@ -1654,6 +1762,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export Entity.
+        /// </summary>
+        public static string EntityExport {
+            get {
+                return ResourceManager.GetString("EntityExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Entity.
+        /// </summary>
+        public static string EntityImport {
+            get {
+                return ResourceManager.GetString("EntityImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Entity {0} is the base for the following Entities:.
+        /// </summary>
+        public static string EntityIsBaseForEntities {
+            get {
+                return ResourceManager.GetString("EntityIsBaseForEntities", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is Racing Entity.
         /// </summary>
         public static string EntityIsRacing {
@@ -1663,11 +1798,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Entity List.
+        /// </summary>
+        public static string EntityListAdd {
+            get {
+                return ResourceManager.GetString("EntityListAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Main Entity.
         /// </summary>
         public static string EntityMain {
             get {
                 return ResourceManager.GetString("EntityMain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Entity {0} is referenced by the following objects:.
+        /// </summary>
+        public static string EntityReferencedByFollowingObjects {
+            get {
+                return ResourceManager.GetString("EntityReferencedByFollowingObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing Entity.
+        /// </summary>
+        public static string EntityRemove {
+            get {
+                return ResourceManager.GetString("EntityRemove", resourceCulture);
             }
         }
         
@@ -1780,6 +1942,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string ErrorCouldNotPackageFileRelative {
+            get {
+                return ResourceManager.GetString("ErrorCouldNotPackageFileRelative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Couldn&apos;t find the game class..
         /// </summary>
         public static string ErrorCouldntFindGameClass {
@@ -1888,6 +2059,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error opening folder.
+        /// </summary>
+        public static string ErrorOpeningFolder {
+            get {
+                return ResourceManager.GetString("ErrorOpeningFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An error has occurred when trying to open the project. Please try again if Visual Studio has not opened..
         /// </summary>
         public static string ErrorOpeningProjectVisualStudio {
@@ -1929,6 +2109,15 @@ namespace Localization {
         public static string Event {
             get {
                 return ResourceManager.GetString("Event", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Event.
+        /// </summary>
+        public static string EventAdd {
+            get {
+                return ResourceManager.GetString("EventAdd", resourceCulture);
             }
         }
         
@@ -2104,6 +2293,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new file for missing file.
+        /// </summary>
+        public static string FileCreateForMissing {
+            get {
+                return ResourceManager.GetString("FileCreateForMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Existing File(s).
+        /// </summary>
+        public static string FileExisting {
+            get {
+                return ResourceManager.GetString("FileExisting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Existing File.
         /// </summary>
         public static string FileExistingAdd {
@@ -2122,11 +2329,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New file.
+        /// </summary>
+        public static string FileNew {
+            get {
+                return ResourceManager.GetString("FileNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add New File.
         /// </summary>
         public static string FileNewAdd {
             get {
                 return ResourceManager.GetString("FileNewAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open .cs file.
+        /// </summary>
+        public static string FileOpenCs {
+            get {
+                return ResourceManager.GetString("FileOpenCs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rebuild File.
+        /// </summary>
+        public static string FileRebuild {
+            get {
+                return ResourceManager.GetString("FileRebuild", resourceCulture);
             }
         }
         
@@ -2145,6 +2379,15 @@ namespace Localization {
         public static string FileRootExternalToCsProj {
             get {
                 return ResourceManager.GetString("FileRootExternalToCsProj", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files.
+        /// </summary>
+        public static string Files {
+            get {
+                return ResourceManager.GetString("Files", resourceCulture);
             }
         }
         
@@ -2176,6 +2419,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removing files.
+        /// </summary>
+        public static string FilesRemove {
+            get {
+                return ResourceManager.GetString("FilesRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove and delete the files.
         /// </summary>
         public static string FilesRemoveAndDelete {
@@ -2199,6 +2451,15 @@ namespace Localization {
         public static string FillCompletely {
             get {
                 return ResourceManager.GetString("FillCompletely", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fill values from default?.
+        /// </summary>
+        public static string FillValuesDefault {
+            get {
+                return ResourceManager.GetString("FillValuesDefault", resourceCulture);
             }
         }
         
@@ -2257,6 +2518,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Find all references to this.
+        /// </summary>
+        public static string FindAllReferences {
+            get {
+                return ResourceManager.GetString("FindAllReferences", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find file references....
         /// </summary>
         public static string FindFileReferences {
@@ -2271,6 +2541,60 @@ namespace Localization {
         public static string FocusOnSelection {
             get {
                 return ResourceManager.GetString("FocusOnSelection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Folder.
+        /// </summary>
+        public static string FolderAdd {
+            get {
+                return ResourceManager.GetString("FolderAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete Folder.
+        /// </summary>
+        public static string FolderDelete {
+            get {
+                return ResourceManager.GetString("FolderDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} directory is not empty. Are you sure you want to delete it and everything in it?.
+        /// </summary>
+        public static string FolderDeleteNotEmpty {
+            get {
+                return ResourceManager.GetString("FolderDeleteNotEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This {0} does not have a content folder. It will be created when a file is added to this {1}..
+        /// </summary>
+        public static string FolderGlueMadeWhenFileAdded {
+            get {
+                return ResourceManager.GetString("FolderGlueMadeWhenFileAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glue has not created this content folder yet since it doesn&apos;t contain any files..
+        /// </summary>
+        public static string FolderGlueNotMadeLackFiles {
+            get {
+                return ResourceManager.GetString("FolderGlueNotMadeLackFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename Folder.
+        /// </summary>
+        public static string FolderRename {
+            get {
+                return ResourceManager.GetString("FolderRename", resourceCulture);
             }
         }
         
@@ -2694,6 +3018,15 @@ namespace Localization {
         public static string GlueWizardRun {
             get {
                 return ResourceManager.GetString("GlueWizardRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go to definition.
+        /// </summary>
+        public static string GoToDefinition {
+            get {
+                return ResourceManager.GetString("GoToDefinition", resourceCulture);
             }
         }
         
@@ -3841,6 +4174,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove item.
+        /// </summary>
+        public static string ItemRemove {
+            get {
+                return ResourceManager.GetString("ItemRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orphaned item.
+        /// </summary>
+        public static string ItemsOrphaned {
+            get {
+                return ResourceManager.GetString("ItemsOrphaned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Jumping.
         /// </summary>
         public static string Jumping {
@@ -3895,6 +4246,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Layer.
+        /// </summary>
+        public static string LayerAdd {
+            get {
+                return ResourceManager.GetString("LayerAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add LayeredTileMap.
         /// </summary>
         public static string LayeredTileMapAdd {
@@ -3918,6 +4278,15 @@ namespace Localization {
         public static string LayerName {
             get {
                 return ResourceManager.GetString("LayerName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Layers.
+        /// </summary>
+        public static string Layers {
+            get {
+                return ResourceManager.GetString("Layers", resourceCulture);
             }
         }
         
@@ -4165,6 +4534,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make Required at StartUp.
+        /// </summary>
+        public static string MakeRequiredAtStartup {
+            get {
+                return ResourceManager.GetString("MakeRequiredAtStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Manage Plugins.
         /// </summary>
         public static string ManagePlugins {
@@ -4255,6 +4633,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Move To Bottom.
+        /// </summary>
+        public static string MoveBottom {
+            get {
+                return ResourceManager.GetString("MoveBottom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Moves the camera to the selected item and plays the selection animation..
         /// </summary>
         public static string MoveCameraToItemPlayAnimation {
@@ -4278,6 +4665,15 @@ namespace Localization {
         public static string MoveCollisionSoft {
             get {
                 return ResourceManager.GetString("MoveCollisionSoft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Down.
+        /// </summary>
+        public static string MoveDown {
+            get {
+                return ResourceManager.GetString("MoveDown", resourceCulture);
             }
         }
         
@@ -4314,6 +4710,51 @@ namespace Localization {
         public static string MoveSameSpeed {
             get {
                 return ResourceManager.GetString("MoveSameSpeed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move To Top.
+        /// </summary>
+        public static string MoveToTop {
+            get {
+                return ResourceManager.GetString("MoveToTop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Move Up.
+        /// </summary>
+        public static string MoveUp {
+            get {
+                return ResourceManager.GetString("MoveUp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moving to bottom.
+        /// </summary>
+        public static string MovingToBottom {
+            get {
+                return ResourceManager.GetString("MovingToBottom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moving to top.
+        /// </summary>
+        public static string MovingToTop {
+            get {
+                return ResourceManager.GetString("MovingToTop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moving {0} up or down.
+        /// </summary>
+        public static string MovingXUpOrDown {
+            get {
+                return ResourceManager.GetString("MovingXUpOrDown", resourceCulture);
             }
         }
         
@@ -4489,6 +4930,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New Folder.
+        /// </summary>
+        public static string NewFolder {
+            get {
+                return ResourceManager.GetString("NewFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter new folder name.
+        /// </summary>
+        public static string NewFolderEnter {
+            get {
+                return ResourceManager.GetString("NewFolderEnter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No files found.
         /// </summary>
         public static string NoFilesFound {
@@ -4651,6 +5110,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This object has a null source file..
+        /// </summary>
+        public static string ObjectNullSource {
+            get {
+                return ResourceManager.GetString("ObjectNullSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objects.
+        /// </summary>
+        public static string Objects {
+            get {
+                return ResourceManager.GetString("Objects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to X Offset:.
         /// </summary>
         public static string OffsetX {
@@ -4714,11 +5191,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open.
+        /// </summary>
+        public static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open external applications as child window..
         /// </summary>
         public static string OpenChildNewWindow {
             get {
                 return ResourceManager.GetString("OpenChildNewWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open with....
+        /// </summary>
+        public static string OpenWith {
+            get {
+                return ResourceManager.GetString("OpenWith", resourceCulture);
             }
         }
         
@@ -4809,6 +5304,15 @@ namespace Localization {
         public static string Perspective {
             get {
                 return ResourceManager.GetString("Perspective", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Toggle Use Content Pipeline.
+        /// </summary>
+        public static string PipelineContentToggle {
+            get {
+                return ResourceManager.GetString("PipelineContentToggle", resourceCulture);
             }
         }
         
@@ -5218,6 +5722,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You must first load or create a Glue project.
+        /// </summary>
+        public static string ProjectGlueLoadOrCreateFirst {
+            get {
+                return ResourceManager.GetString("ProjectGlueLoadOrCreateFirst", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Glue project loaded.
         /// </summary>
         public static string ProjectGlueNoneLoaded {
@@ -5488,6 +6001,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to fill all values in the {0} State from the default variable values?  All previous values will be lost.
+        /// </summary>
+        public static string QuestionFillValuesDefault {
+            get {
+                return ResourceManager.GetString("QuestionFillValuesDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Quick Actions.
         /// </summary>
         public static string QuickActions {
@@ -5542,6 +6064,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Refresh UI.
+        /// </summary>
+        public static string RefreshUi {
+            get {
+                return ResourceManager.GetString("RefreshUi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Regenerate everything.
         /// </summary>
         public static string RegenEverything {
@@ -5565,6 +6096,51 @@ namespace Localization {
         public static string RemoveDisplayOption {
             get {
                 return ResourceManager.GetString("RemoveDisplayOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Entity.
+        /// </summary>
+        public static string RemoveFromEntity {
+            get {
+                return ResourceManager.GetString("RemoveFromEntity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Global Content.
+        /// </summary>
+        public static string RemoveFromGlobalContent {
+            get {
+                return ResourceManager.GetString("RemoveFromGlobalContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from project.
+        /// </summary>
+        public static string RemoveFromProject {
+            get {
+                return ResourceManager.GetString("RemoveFromProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from project quick (ONLY IF YOU KNOW WHAT YOU&apos;RE DOING!).
+        /// </summary>
+        public static string RemoveFromProjectQuick {
+            get {
+                return ResourceManager.GetString("RemoveFromProjectQuick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Screen.
+        /// </summary>
+        public static string RemoveFromScreen {
+            get {
+                return ResourceManager.GetString("RemoveFromScreen", resourceCulture);
             }
         }
         
@@ -5619,6 +6195,15 @@ namespace Localization {
         public static string RequireTile {
             get {
                 return ResourceManager.GetString("RequireTile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Reset Variables For Pooling.
+        /// </summary>
+        public static string ResetVariablesPoolingAdd {
+            get {
+                return ResourceManager.GetString("ResetVariablesPoolingAdd", resourceCulture);
             }
         }
         
@@ -5695,6 +6280,42 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add screen.
+        /// </summary>
+        public static string ScreenAdd {
+            get {
+                return ResourceManager.GetString("ScreenAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Screen.
+        /// </summary>
+        public static string ScreenExport {
+            get {
+                return ResourceManager.GetString("ScreenExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Screen.
+        /// </summary>
+        public static string ScreenImport {
+            get {
+                return ResourceManager.GetString("ScreenImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Level Screen.
+        /// </summary>
+        public static string ScreenLevelCreate {
+            get {
+                return ResourceManager.GetString("ScreenLevelCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is already an Screen named {0}.
         /// </summary>
         public static string ScreenNamedXExists {
@@ -5722,11 +6343,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Removing Screen.
+        /// </summary>
+        public static string ScreenRemove {
+            get {
+                return ResourceManager.GetString("ScreenRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove StartUp Requirement.
+        /// </summary>
+        public static string ScreenRemoveRequirement {
+            get {
+                return ResourceManager.GetString("ScreenRemoveRequirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Screens.
         /// </summary>
         public static string Screens {
             get {
                 return ResourceManager.GetString("Screens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force save screen JSON.
+        /// </summary>
+        public static string ScreenSaveForceJson {
+            get {
+                return ResourceManager.GetString("ScreenSaveForceJson", resourceCulture);
             }
         }
         
@@ -6190,11 +6838,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make Required at StartUp.
+        /// </summary>
+        public static string StartupMakeRequired {
+            get {
+                return ResourceManager.GetString("StartupMakeRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to State.
         /// </summary>
         public static string State {
             get {
                 return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add State.
+        /// </summary>
+        public static string StateAdd {
+            get {
+                return ResourceManager.GetString("StateAdd", resourceCulture);
             }
         }
         
@@ -6213,6 +6879,15 @@ namespace Localization {
         public static string StateNew {
             get {
                 return ResourceManager.GetString("StateNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to States.
+        /// </summary>
+        public static string States {
+            get {
+                return ResourceManager.GetString("States", resourceCulture);
             }
         }
         
@@ -6249,6 +6924,15 @@ namespace Localization {
         public static string Summary {
             get {
                 return ResourceManager.GetString("Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure?.
+        /// </summary>
+        public static string Sure {
+            get {
+                return ResourceManager.GetString("Sure", resourceCulture);
             }
         }
         
@@ -6676,6 +7360,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add variable.
+        /// </summary>
+        public static string VariableAdd {
+            get {
+                return ResourceManager.GetString("VariableAdd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add Variable Definition.
         /// </summary>
         public static string VariableAddDefinition {
@@ -6712,11 +7405,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fill Values From Variables.
+        /// </summary>
+        public static string VariableFillValues {
+            get {
+                return ResourceManager.GetString("VariableFillValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The variable {0} is reserved by FlatRedBall..
         /// </summary>
         public static string VariableFrbReserved {
             get {
                 return ResourceManager.GetString("VariableFrbReserved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The variable {0} no longer has any states associated with it.  What would you like to do?.
+        /// </summary>
+        public static string VariableHasNoStates {
+            get {
+                return ResourceManager.GetString("VariableHasNoStates", resourceCulture);
             }
         }
         
@@ -6744,6 +7455,33 @@ namespace Localization {
         public static string VariableMustSelect {
             get {
                 return ResourceManager.GetString("VariableMustSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Remove the variable.
+        /// </summary>
+        public static string VariableRemove {
+            get {
+                return ResourceManager.GetString("VariableRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing (project may not run until this is fixed).
+        /// </summary>
+        public static string VariableRemoveNothing {
+            get {
+                return ResourceManager.GetString("VariableRemoveNothing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Reset Variables.
+        /// </summary>
+        public static string VariableResetEdit {
+            get {
+                return ResourceManager.GetString("VariableResetEdit", resourceCulture);
             }
         }
         
@@ -6829,6 +7567,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to View content folder.
+        /// </summary>
+        public static string ViewContentFolder {
+            get {
+                return ResourceManager.GetString("ViewContentFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View File Orde.
+        /// </summary>
+        public static string ViewFileOrder {
+            get {
+                return ResourceManager.GetString("ViewFileOrder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View in Explorer.
         /// </summary>
         public static string ViewInExplorer {
@@ -6852,6 +7608,15 @@ namespace Localization {
         public static string ViewPreviewExplorer {
             get {
                 return ResourceManager.GetString("ViewPreviewExplorer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View source file in explorer.
+        /// </summary>
+        public static string ViewSourceExplorer {
+            get {
+                return ResourceManager.GetString("ViewSourceExplorer", resourceCulture);
             }
         }
         
@@ -6906,6 +7671,15 @@ namespace Localization {
         public static string WarningLocalizationFileChange {
             get {
                 return ResourceManager.GetString("WarningLocalizationFileChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning: the Screen {0} is the base for the following Screens:.
+        /// </summary>
+        public static string WarningScreenXBaseForScreens {
+            get {
+                return ResourceManager.GetString("WarningScreenXBaseForScreens", resourceCulture);
             }
         }
         
@@ -6996,6 +7770,15 @@ namespace Localization {
         public static string ZeroInputDevice {
             get {
                 return ResourceManager.GetString("ZeroInputDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Zip Package.
+        /// </summary>
+        public static string ZipPackageCreate {
+            get {
+                return ResourceManager.GetString("ZipPackageCreate", resourceCulture);
             }
         }
         
