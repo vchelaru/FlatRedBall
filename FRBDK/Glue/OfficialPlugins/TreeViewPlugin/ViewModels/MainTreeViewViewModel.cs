@@ -235,13 +235,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public MainTreeViewViewModel()
         {
             ScreenRootNode =
-                new NodeViewModel(null) { Text = "Screens/" };
+                new NodeViewModel(null) { Text = "Screens" };
 
             EntityRootNode =
-                new NodeViewModel(null) { Text = "Entities/" };
+                new NodeViewModel(null) { Text = "Entities" };
 
             GlobalContentRootNode =
-                new NodeViewModel(null) { Text = "Global Content Files/" };
+                new NodeViewModel(null) { Text = "Global Content Files" };
 
             Root = new List<NodeViewModel>()
             {

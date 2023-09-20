@@ -407,7 +407,7 @@ namespace OfficialPlugins.MonoGameContent
                         foreach (var extension in contentItem.GetBuiltExtensions())
                         {
                             toReturn.Add(absoluteToAddNoExtension + "." + extension);
-                            AddFileToProject(project,
+                            AddFileToProjectIfNotAlreadyIncluded(project,
                                 absoluteToAddNoExtension + "." + extension,
                                 relativeToAddNoExtension + "." + extension,
                                 saveProjectAfterAdd);
@@ -574,7 +574,7 @@ namespace OfficialPlugins.MonoGameContent
             return false;
         }
 
-        private void AddFileToProject(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)
+        private void AddFileToProjectIfNotAlreadyIncluded(VisualStudioProject project, string absoluteFile, string link, bool saveProjectAfterAdd)
         {
             //project.AddContentBuildItem(file, SyncedProjectRelativeType.Linked, false);
 
