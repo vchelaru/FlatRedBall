@@ -12,7 +12,6 @@ using FlatRedBall.Glue.AutomatedGlue;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.Glue.Managers;
 using FlatRedBall.Utilities;
-using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.FormHelpers.StringConverters;
@@ -20,10 +19,9 @@ using GlueFormsCore.ViewModels;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.VSHelpers;
 using GlueFormsCore.Extensions;
-using System.Runtime.InteropServices;
 using FlatRedBall.Glue.IO;
 using System.Threading.Tasks;
-using System.Xml.Linq;
+using L = Localization;
 
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
@@ -78,7 +76,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     catch(Exception e)
                     {
-                        GlueCommands.Self.DialogCommands.ShowMessageBox($"Attempted to open\n\n{projectFileName}\n\nbut failed:\n{e}");
+                        GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(L.Texts.ErrorOpenAttemptFailed, projectFileName, e));
                     }
 
                     // not sure why we need to do this....
@@ -108,7 +106,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (addObjectViewModel.SourceType == SourceType.Entity && !RecursionManager.Self.CanContainInstanceOf(GlueState.Self.CurrentElement, addObjectViewModel.SourceClassType))
                     {
                         isValid = false;
-                        whyItIsntValid = "This type would result in infinite recursion";
+                        whyItIsntValid = L.Texts.TypeInfiniteRecursion;
                     }
                 }
 
@@ -317,7 +315,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if(baseRestrictingDeletes.Count > 0)
             {
 
-                var message = $"The following cannot be deleted because a base object has it marked as ExposedInDerived or SetByDerived:\n";
+                var message = $"{L.Texts.ExposedInDerivedCannotDelete}\n";
 
                 foreach(var item in baseRestrictingDeletes)
                 {
@@ -329,7 +327,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 canDelete = false;
             }
 
-            HashSet<GlueElement> owners = new HashSet<GlueElement>();
+            var owners = new HashSet<GlueElement>();
 
             if (canDelete)
             {
@@ -370,7 +368,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 await GlueCommands.Self.GluxCommands
                     .RemoveNamedObjectListAsync(namedObjectsToRemove, true, true, filesToRemove);
 
-                if (filesToRemove.Count != 0 && true /*askToDeleteFiles*/)
+                if (filesToRemove.Count != 0)
                 {
 
                     for (int i = 0; i < filesToRemove.Count; i++)
@@ -386,25 +384,24 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     var lbw = new ListBoxWindowWpf();
 
-                    string messageString = "What would you like to do with the following files:\n";
+                    string messageString = L.Texts.WhatToDoWithFiles + "\n";
                     lbw.Message = messageString;
 
-                    foreach (string s in filesToRemove)
+                    foreach (var s in filesToRemove)
                     {
-
                         lbw.AddItem(s);
                     }
                     lbw.ClearButtons();
-                    lbw.AddButton("Nothing - leave them as part of the game project", DialogResult.No);
-                    lbw.AddButton("Remove them from the project but keep the files", DialogResult.OK);
-                    lbw.AddButton("Remove and delete the files", DialogResult.Yes);
+                    lbw.AddButton(L.Texts.FilesLeaveAsPartOfProject, DialogResult.No);
+                    lbw.AddButton(L.Texts.FilesRemoveFromProjectButKeep, DialogResult.OK);
+                    lbw.AddButton(L.Texts.FilesRemoveAndDelete, DialogResult.Yes);
 
-                    var dialogShowResult = lbw.ShowDialog();
-                    DialogResult result = (DialogResult)lbw.ClickedOption;
+                    lbw.ShowDialog();
+                    var result = (DialogResult)lbw.ClickedOption;
 
-                    if (result == DialogResult.OK || result == DialogResult.Yes)
+                    if (result is DialogResult.OK or DialogResult.Yes)
                     {
-                        foreach (string file in filesToRemove)
+                        foreach (var file in filesToRemove)
                         {
                             FilePath fileName = GlueCommands.Self.GetAbsoluteFileName(file, false);
                             // This file may have been removed
@@ -417,24 +414,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                     if (result == DialogResult.Yes)
                     {
-                        foreach (string file in filesToRemove)
+                        foreach (var fileName in filesToRemove.Select(file => GlueCommands.Self.GetAbsoluteFileName(file, false)).Where(System.IO.File.Exists))
                         {
-                            string fileName = GlueCommands.Self.GetAbsoluteFileName(file, false);
-                            // This file may have been removed
-                            // in windows explorer, and now removed
-                            // from Glue.  Check to prevent a crash.
-                            if (System.IO.File.Exists(fileName))
-                            {
-                                FileHelper.MoveToRecycleBin(fileName);
-                            }
+                            FileHelper.MoveToRecycleBin(fileName);
                         }
                     }
                 }
 
                 TaskManager.Self.AddOrRunIfTasked(() =>
                 {
-                    var glueState = GlueState.Self;
-
                     // Nodes aren't directly removed in the code above. Instead, 
                     // a "refresh nodes" method is called, which may remove unneeded
                     // nodes, but event raising is suppressed. Therefore, we have to explicitly 
@@ -443,7 +431,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     {
                         GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(owner);
                     }
-                }, "Refreshing tree nodes");
+                }, L.Texts.RefreshingTreeNodes);
 
 
                 if (saveAndRegenerate)
@@ -457,7 +445,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     //GluxCommands.Self.SaveGlux();
                     foreach(var owner in owners)
                     {
-                        var throwaway = GluxCommands.Self.SaveElementAsync(owner);
+                        _ = GluxCommands.Self.SaveElementAsync(owner);
                     }
                 }
             }
@@ -514,7 +502,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             }
 
             // Also add CSV files
-            nfw.AddOption(new AssetTypeInfo("csv", "", null, "Spreadsheet (.csv)", "", ""));
+            nfw.AddOption(new AssetTypeInfo("csv", "", null, L.Texts.Spreadsheet + " (.csv)", "", ""));
 
             return nfw;
         }
@@ -532,7 +520,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // search:  addentity, add entity
             if (project == null)
             {
-                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
+                System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
             }
             else
             {
@@ -572,7 +560,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                             await TaskManager.Self.AddAsync(() =>
                                 PluginManager.ReactToNewEntityCreatedWithUi(entity, window),
-                                "Calling plugin ReactToNewEntityCreatedWithUi", doOnUiThread: true);
+                                L.Texts.PluginCallReactToNewEntity, doOnUiThread: true);
 
                             GlueState.Self.CurrentEntitySave = entity;
                         }
@@ -616,15 +604,17 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             string tunneledVariableName = "",
             GlueElement container = null)
         {
-            container = container ?? GlueState.Self.CurrentElement;
+            container ??= GlueState.Self.CurrentElement;
 
-            var viewModel = new AddCustomVariableViewModel(container);
-            viewModel.SetByDerived = true;
-            viewModel.SelectedTunneledObject = tunnelingObject;
-            viewModel.SelectedTunneledVariableName = tunneledVariableName;
-            viewModel.DesiredVariableType = variableType;
+            var viewModel = new AddCustomVariableViewModel(container)
+            {
+                SetByDerived = true,
+                SelectedTunneledObject = tunnelingObject,
+                SelectedTunneledVariableName = tunneledVariableName,
+                DesiredVariableType = variableType
+            };
 
-            HashSet<string> variableCategories = new HashSet<string>();
+            var variableCategories = new HashSet<string>();
             variableCategories.AddRange(container.CustomVariables.Select(item => item.Category).Where(item => !string.IsNullOrEmpty(item)));
             var baseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(container);
             foreach(var element in baseElements)
@@ -638,11 +628,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 viewModel.SelectedNewType = viewModel.AvailableNewVariableTypes.FirstOrDefault();
             }
 
-            var xyzVariables = container.CustomVariables.Where(item =>
-                item.Name == "X" || item.Name == "Y" || item.Name == "Z");
+            var xyzVariables = container.CustomVariables.Where(item => item.Name is "X" or "Y" or "Z");
 
-            var areAllStatic = container.CustomVariables.Except(xyzVariables).Count() > 0 &&
-                container.CustomVariables.Except(xyzVariables).All(item => item.IsShared);
+            var areAllStatic = container.CustomVariables.Except(xyzVariables).Any() &&
+                               container.CustomVariables.Except(xyzVariables).All(item => item.IsShared);
 
             if(areAllStatic && 
                 // If tunneling on an object then it must be an instance, so make sure there is no tunnelingObject if setting this to true:
@@ -660,18 +649,6 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             {
                 HandleAddVariableOk(viewModel, container);
             }
-
-            //// Search terms:  add new variable, addnewvariable, add variable
-            //AddVariableWindow addVariableWindow = new AddVariableWindow(container);
-            //addVariableWindow.DesiredVariableType = variableType;
-
-            //addVariableWindow.TunnelingObject = tunnelingObject;
-            //addVariableWindow.TunnelingVariable = tunneledVariableName;
-
-            //if (addVariableWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
-            //{
-            //    HandleAddVariableOk(addVariableWindow.GetViewModel(), container);
-            //}
         }
 
         private static async void HandleAddVariableOk(AddCustomVariableViewModel viewModel, GlueElement currentElement)
@@ -688,7 +665,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (!string.IsNullOrEmpty(viewModel.SelectedTunneledObject) && string.IsNullOrEmpty(viewModel.SelectedTunneledVariableName))
                 {
                     didFailureOccur = true;
-                    failureMessage = $"You must select a variable on {viewModel.SelectedTunneledObject}";
+                    failureMessage = String.Format(L.Texts.VariableMustSelect, viewModel.SelectedTunneledObject);
                 }
             }
 
@@ -714,10 +691,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         else
                         {
-                            MessageBox.Show("There is already a variable named\n\n" + resultName +
-                                "\n\nin the base element, but it is not SetByDerived.\nGlue will not " +
-                                "create a variable because it would result in a name conflict.");
-
+                            MessageBox.Show(String.Format(L.Texts.VariableInBaseAlreadyExists, resultName));
                             canCreate = false;
                         }
                     }
@@ -742,16 +716,12 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         }
                         string typeConverter = viewModel.SelectedTypeConverter;
 
-                        CustomVariable newVariable = new CustomVariable();
-                        newVariable.Name = resultName;
-                        if(viewModel.IsList)
+                        var newVariable = new CustomVariable
                         {
-                            newVariable.Type = $"List<{type}>";
-                        }
-                        else
-                        {
-                            newVariable.Type = type;
-                        }
+                            Name = resultName
+                        };
+
+                        newVariable.Type = viewModel.IsList ? $"List<{type}>" : type;
                         newVariable.SourceObject = sourceObject;
                         newVariable.SourceObjectProperty = sourceObjectProperty;
 
@@ -798,17 +768,15 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
                         await GlueCommands.Self.GluxCommands.ElementCommands.AddCustomVariableToElementAsync(newVariable, currentElement);
                     }
-                }, $"Adding variable {resultName} through UI");
+                }, String.Format(L.Texts.VariableAddThroughUI, resultName));
             }
         }
 
         public static bool IsVariableInvalid(AddCustomVariableViewModel viewModel, IElement currentElement, out string failureMessage)
         {
-            bool didFailureOccur = false;
-
             string whyItIsntValid = "";
             var resultName = viewModel.ResultName;
-            didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
+            var didFailureOccur = NameVerifier.IsCustomVariableNameValid(resultName, null, currentElement, ref whyItIsntValid) == false;
             failureMessage = null;
             if (didFailureOccur)
             {
@@ -819,41 +787,35 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             if (!didFailureOccur && NameVerifier.DoesTunneledVariableAlreadyExist(viewModel.SelectedTunneledObject, viewModel.SelectedTunneledVariableName, currentElement))
             {
                 didFailureOccur = true;
-                failureMessage = "There is already a variable that is modifying " + viewModel.SelectedTunneledVariableName + " on " + viewModel.SelectedTunneledObject;
+                failureMessage = String.Format(L.Texts.VariableAlreadyModifying, viewModel.SelectedTunneledVariableName, viewModel.SelectedTunneledObject);
             }
             
-            if (!didFailureOccur && viewModel != null && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName, viewModel.DesiredVariableType == CustomVariableType.Exposed))
+            if (!didFailureOccur && viewModel != null && viewModel.DesiredVariableType != CustomVariableType.Exposed && IsUserTryingToCreateNewWithExposableName(viewModel.ResultName))
             {
                 didFailureOccur = true;
-                failureMessage = "The variable\n\n" + resultName + "\n\nis an expoable variable.  Please use a different variable name or select the variable through the Expose tab";
+                failureMessage = String.Format(L.Texts.VariableIsExposableUseDifferentName, resultName);
             }
 
             if (!didFailureOccur && ExposedVariableManager.IsReservedPositionedPositionedObjectMember(resultName) && currentElement is EntitySave)
             {
                 didFailureOccur = true;
-                failureMessage = "The variable\n\n" + resultName + "\n\nis reserved by FlatRedBall.";
+                failureMessage = String.Format(L.Texts.VariableFrbReserved, resultName);
             }
 
             if(!didFailureOccur && viewModel.DesiredVariableType == CustomVariableType.New && string.IsNullOrEmpty(viewModel.SelectedNewType) )
             {
                 didFailureOccur = true;
-                failureMessage = "A type must be selected for new variables";
+                failureMessage = L.Texts.VariableTypeMustBeSelectedForNew;
             }
 
             return didFailureOccur;
         }
 
-        private static bool IsUserTryingToCreateNewWithExposableName(string resultName, bool isExposeTabSelected)
+        private static bool IsUserTryingToCreateNewWithExposableName(string resultName)
         {
-            List<string> exposables = ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentElement, false).Select(item => item.Member).ToList();
-            if (exposables.Contains(resultName))
-            {
-                return isExposeTabSelected == false;
-            }
-            else
-            {
-                return false;
-            }
+            return ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentElement, false)
+                .Select(item => item.Member)
+                .Contains(resultName);
         }
 
 
@@ -865,7 +827,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             //////////////Early Out////////////
             if (ProjectManager.GlueProjectSave == null)
             {
-                System.Windows.Forms.MessageBox.Show("You need to create or load a project first.");
+                System.Windows.Forms.MessageBox.Show(L.Texts.ErrorNewProjectFirst);
                 return;
             }
             if (ProjectManager.StatusCheck() != ProjectManager.CheckResult.Passed)
@@ -879,7 +841,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             MoveToCursor(addScreenWindow);
 
-            addScreenWindow.Message = "Enter a name for the new Screen";
+            addScreenWindow.Message = L.Texts.EnterNewScreenName;
 
             string name = "NewScreen";
 
@@ -999,7 +961,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                 if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.BottomTabItems);
                 if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.LeftTabItems);
                 if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.RightTabItems);
-                if (!focused) focused = TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
+                if (!focused) TryFocus(PluginManager.TabControlViewModel.CenterTabItems);
             });
             bool TryFocus(TabContainerViewModel items)
             {
@@ -1029,9 +991,10 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             GlueGui.ShowMessageBox(message, caption);
         }
 
-        public System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = "Confirm", Action yesAction = null, Action noAction = null)
+        public System.Windows.MessageBoxResult ShowYesNoMessageBox(string message, string caption = null, Action yesAction = null, Action noAction = null)
         {
-            System.Windows.MessageBoxResult result = System.Windows.MessageBoxResult.None;
+            caption ??= L.Texts.Confirm;
+            var result = System.Windows.MessageBoxResult.None;
 
             if (GlueGui.ShowGui)
             {
@@ -1063,8 +1026,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             // add category, addcategory, add state category
             var tiw = new TextInputWindow();
-            tiw.Message = "Enter a name for the new category";
-            tiw.Text = "New Category";
+            tiw.Message = L.Texts.CategoryEnterName;
+            tiw.Text = L.Texts.CategoryNew;
 
             DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
 
@@ -1091,8 +1054,8 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
         {
             // search: addstate, add new state, addnewstate, add state
             var tiw = new TextInputWindow();
-            tiw.Message = "Enter a name for the new state";
-            tiw.Text = "New State";
+            tiw.Message = L.Texts.StateEnterName;
+            tiw.Text = L.Texts.StateNew;
 
 
             DialogResult result = tiw.ShowDialog(MainGlueWindow.Self);
@@ -1145,7 +1108,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     }
                     else
                     {
-                        GlueCommands.Self.PrintOutput($"Could not find defining base object for {baseNos}");
+                        GlueCommands.Self.PrintOutput(String.Format(L.Texts.ObjectCouldNotDefineFor, baseNos));
                     }
                 }
                 else if (nos.SourceType == SourceType.Entity)

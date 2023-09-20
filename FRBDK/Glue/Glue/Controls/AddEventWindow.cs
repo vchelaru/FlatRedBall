@@ -238,12 +238,9 @@ namespace FlatRedBall.Glue.Controls
 		{
 			InitializeComponent();
 
-            TypeConverterHelper.InitializeClasses();
-
 			StartPosition = FormStartPosition.Manual;
 
 			Location = new Point(MainGlueWindow.MousePosition.X - this.Width/2, MainGlueWindow.MousePosition.Y - this.Height / 2);
-
 
             FillTunnelingObjects();
 

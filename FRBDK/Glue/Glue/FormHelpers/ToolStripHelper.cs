@@ -24,7 +24,7 @@ namespace FlatRedBall.Glue.FormHelpers
 
         public ToolStripMenuItem GetItem(MenuStrip menuStrip, string name)
         {
-            return menuStrip.Items.Cast<ToolStripMenuItem>().FirstOrDefault(item => item.Text == name);
+            return menuStrip.Items.Cast<ToolStripMenuItem>().FirstOrDefault(item => item.Name == name);
         }
 
     }

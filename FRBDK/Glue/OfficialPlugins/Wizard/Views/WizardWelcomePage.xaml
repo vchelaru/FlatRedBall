@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPluginsCore.Wizard.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400">
     <Grid>
@@ -12,8 +12,8 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Margin="5">
-            <Label FontSize="24">Welcome</Label>
-            <TextBlock TextWrapping="Wrap">This wizard will help you set up a Glue project quickly. Let's get started!</TextBlock>
+            <Label FontSize="24" Content="{x:Static localization:Texts.Welcome}" />
+            <TextBlock TextWrapping="Wrap" Text="{x:Static localization:Texts.WizardWelcomeLabel}" />
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -27,10 +27,10 @@
                     <RowDefinition></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                <TextBlock>Enter Wizard Configuration</TextBlock>
+                <TextBlock Text="{x:Static localization:Texts.WizardConfigurationEnter}" />
                 <TextBox Text="{Binding ConfigurationText,UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5" Grid.Row="1" AcceptsReturn="True" ></TextBox>
                 <Button IsEnabled="{Binding IsStartWithConfigurationEnabled}" Grid.Row="2" 
-                        Height="40" Click="StartWithConfigurationClicked">Use Configuration</Button>
+                        Height="40" Click="StartWithConfigurationClicked"  Content="{x:Static localization:Texts.ConfigurationUse}" />
             </Grid>
             <Grid Grid.Column="1" Margin="0,6,0,6">
                 <Grid.RowDefinitions>
@@ -39,12 +39,12 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Rectangle Fill="Gray" Width="1"></Rectangle>
-                <TextBlock Grid.Row="1" VerticalAlignment="Center">OR</TextBlock>
+                <TextBlock Grid.Row="1" VerticalAlignment="Center" Text="{x:Static localization:Texts.Or}" />
                 <Rectangle Grid.Row="2" Fill="Gray" Width="1"></Rectangle>
 
             </Grid>
             <Grid Grid.Column="2" Margin="6">
-                <Button Height="40" VerticalAlignment="Bottom" Click="StartFromScratchClicked">Start Wizard From Scratch</Button>
+                <Button Height="40" VerticalAlignment="Bottom" Click="StartFromScratchClicked" Content="{x:Static localization:Texts.WizardStartFromStretch}" />
             </Grid>
         </Grid>
     </Grid>

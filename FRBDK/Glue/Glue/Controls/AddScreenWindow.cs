@@ -1,9 +1,6 @@
-﻿using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -68,7 +65,7 @@ namespace FlatRedBall.Glue.Controls
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
-            HighlghtText();
+            HighlightText();
         }
     }
 }

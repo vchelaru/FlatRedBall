@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Glue;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Reflection;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using L = Localization;
 
 namespace FlatRedBall.Glue.SaveClasses
 {
@@ -321,26 +320,25 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (ObjectFinder.Self.GetScreenSave("Screens\\" + name) != null)
             {
-                whyItIsntValid = "There is already an Screen named " + name;
+                whyItIsntValid = String.Format(L.Texts.ScreenNamedXExists, name);
             }
             else if (GlueCommands.Self.GluxCommands.GetReferencedFileSaveFromFile("Screens\\" + name) != null)
             {
-                whyItIsntValid = "There is already a file named " + name;
+                whyItIsntValid = String.Format(L.Texts.FileNamedXExists, name);
             }
             else if (mReservedClassNames.Contains(name))
             {
-                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a Screen";
+                whyItIsntValid = String.Format(L.Texts.ScreenNameReservedForClass, name);
             }
             else if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
             {
-                whyItIsntValid = "There is already an Entity named " + name + ".\n\n" +
-                    "Glue recommends naming the Class something different than existing Entities.";
+                whyItIsntValid = String.Format(L.Texts.EntityXAlreadyExists, name);
             }
             else if (name == ProjectManager.ProjectNamespace)
             {
-                whyItIsntValid = "The class cannot be named the same as the root namespace (which is usually the same name as the project)";
+                whyItIsntValid = L.Texts.HintClassCannotBeNamedRootNamespace;
             }
-            return string.IsNullOrEmpty(whyItIsntValid);
+            return String.IsNullOrEmpty(whyItIsntValid);
         }
 
         #region Element (Screen/Entity
@@ -437,11 +435,10 @@ namespace FlatRedBall.Glue.SaveClasses
             whyItIsntValid = null;
 
             CheckForCommonImproperNames(name, ref whyItIsntValid);
-
             
             if (mReservedClassNames.Contains(name))
             {
-                whyItIsntValid = "The name " + name + " is a reserved class name, so it can't be used for a State Category";
+                whyItIsntValid = String.Format(L.Texts.NameCannotBeReservedClassName, name);
             }
 
             return string.IsNullOrEmpty(whyItIsntValid);
@@ -463,7 +460,7 @@ namespace FlatRedBall.Glue.SaveClasses
                 {
                     if (category.States.Any(state => state.Name == name && state != currentStateSave))
                     {
-                        whyItIsntValid = "The name " + name + " is already being used in the category " + category.Name;
+                        whyItIsntValid = String.Format(L.Texts.NameAlreadyUsedInCategory, name, category.Name);
                         return false;
                     }
                 }
@@ -484,13 +481,13 @@ namespace FlatRedBall.Glue.SaveClasses
 
                     if (baseElement.GetState(name, categoryName) != null)
                     {
-                        string screenOrEntity = "screen";
+                        var screenOrEntity = L.Texts.Screen;
                         if(baseElement is EntitySave)
                         {
-                            screenOrEntity = "entity";
+                            screenOrEntity = L.Texts.Entity;
                         }
 
-                        whyItIsntValid = "This state name \"" + name + "\" is already used in a base " + screenOrEntity;
+                        whyItIsntValid = String.Format(L.Texts.NameStateAlreadyUsedInBase, name, screenOrEntity);
                     }
 
                     
@@ -550,51 +547,43 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if (isDefinedInBaseButNotSetByDerived)
                 {
-                    whyItIsntValid = "There is an object named " + name + " in the base Element but it is not Set By Derived.";
+                    whyItIsntValid = String.Format(L.Texts.ObjectNotSetInDerived, name);
                 }
                 else if (membershipInfo == MembershipInfo.ContainedInThis)
                 {
-                    whyItIsntValid = "The name " + name + " is already being used";
+                    whyItIsntValid = String.Format(L.Texts.NameAlreadyUsed, name);
                 }
                 else if (GlueState.Self.CurrentElement != null && FileManager.RemovePath(GlueState.Self.CurrentElement.Name) == name)
                 {
-                    if (GlueState.Self.CurrentElement is EntitySave)
-                    {
-                        whyItIsntValid = "You can't name your Object the same name as the Entity it is contained in.";
-
-                    }
-                    else
-                    {
-                        whyItIsntValid = "You can't name your Object the same name as the Screen it is contained in.";
-                    }
+                    var param = GlueState.Self.CurrentElement is EntitySave ? L.Texts.Entity : L.Texts.Screen;
+                    whyItIsntValid = String.Format(L.Texts.ObjectCannotUseNameOfContainer, param);
                 }
                 else if (string.IsNullOrEmpty(name))
                 {
-                    whyItIsntValid = "The name cannot be blank.";
+                    whyItIsntValid = L.Texts.NameCannotBeEmpty;
                 }
                 else if (char.IsDigit(name[0]))
                 {
-                    whyItIsntValid = "Object names can't start with numbers";
+                    whyItIsntValid = L.Texts.ObjectNameCannotStartWithNumber;
                 }
 
                 else if (name.Contains(' '))
                 {
-                    whyItIsntValid = "Object names can't have spaces";
+                    whyItIsntValid = L.Texts.ObjectNameCannotHaveSpace;
                 }
                 else if (GlueState.Self.CurrentElement != null &&
                     ExposedVariableManager.GetExposableMembersFor(GlueState.Self.CurrentElement, false).Any(item => item.Member == name))
                 {
-                    whyItIsntValid = "The name " + name + " is an existing or exposable variable name in " +
-                        GlueState.Self.CurrentElement.ToString() + " so it is not a valid object name";
+                    whyItIsntValid = String.Format(L.Texts.NameIsExistingOrExposed, name, GlueState.Self.CurrentElement);
                 }
                 else if (mOtherReservedNames.Contains(name))
                 {
 
-                    whyItIsntValid = "The name \"" + name + "\" is not an allowed name for objects. ";
+                    whyItIsntValid = String.Format(L.Texts.NameNotAllowedForObjects, name);
                 }
                 else if (IsPositionedObjectMember(name))
                 {
-                    whyItIsntValid = "The name \"" + name + "\" is a reserved name by the PositionedObject Type.";
+                    whyItIsntValid = String.Format(L.Texts.NameIsReservedByPositionedObject, name);
                 }
             }
             return string.IsNullOrEmpty(whyItIsntValid);
@@ -665,7 +654,7 @@ namespace FlatRedBall.Glue.SaveClasses
             if (ExposedVariableManager.IsReservedPositionedPositionedObjectMember(name) && currentElement is EntitySave)
             {
                 didFailureOccur = true;
-                failureMessage = "The variable\n\n" + name + "\n\nis reserved by FlatRedBall.";
+                failureMessage = String.Format(L.Texts.VariableXReservedByFrb, name);
             }
 
             return didFailureOccur;
@@ -676,7 +665,7 @@ namespace FlatRedBall.Glue.SaveClasses
             whyNotValid = null;
             if (InvalidWindowsFileNames.Contains(name?.ToLower()))
             {
-                whyNotValid = $"The name {name} is a reserved file name in Windows";
+                whyNotValid = String.Format(L.Texts.NameXReservedByWindows, name);
             }
         }
 
@@ -684,55 +673,43 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             if (ObjectFinder.Self.GetEntitySaveUnqualified(name) != null)
             {
-                whyItIsntValid = "Your project contains an entity named " + name + " which is the same name as your file.  Glue does not allow files with the " + 
-                    "same names as Entities to be added as this can result in code ambiguity.";
+                whyItIsntValid = String.Format(L.Texts.ProjectContainsEntityWithFileName, name);
             }
         }
 
 		private static void CheckForCommonImproperNames(string name, ref string whyItIsntValid)
 		{
 			if (string.IsNullOrEmpty(name))
-			{
-				whyItIsntValid = "The name can't be empty.";
-			}
+            {
+                whyItIsntValid = L.Texts.NameCannotBeEmpty;
+            }
 			else if (char.IsDigit(name[0]))
 			{
-				whyItIsntValid = "Names can't start with a number.";
-			}
+				whyItIsntValid = L.Texts.NameCannotStartWithNumber;
+            }
 			else if(name.IndexOfAny(InvalidCharacters) != -1)
-			{
+            {
                 // See which ones are contained
-                foreach(var invalidCharacter in InvalidCharacters)
-                {
-                    if(name.Contains(invalidCharacter))
-                    {
-                        string clarification = "";
-                        if(invalidCharacter == '.')
-                        {
-                            clarification = " (period)";
-                        }
-
-				        whyItIsntValid += $"The name can't contain invalid character {invalidCharacter}{clarification}\n";
-
-                    }
-                }
-
-			}
+                whyItIsntValid = InvalidCharacters
+                    .Where(name.Contains)
+                    .Aggregate(whyItIsntValid, (current, invalidCharacter) 
+                        => current + String.Format(L.Texts.NameCannotContainInvalidChar, invalidCharacter));
+            }
 			else if(name.Contains(' '))
-			{
-				whyItIsntValid = "The name can't have any spaces.";
-			}
+            {
+                whyItIsntValid = L.Texts.NameCannotHaveSpaces;
+            }
             else if (mXnaReservedWords.Contains(name))
             {
-                whyItIsntValid = "The word '" + name + "' is a reserved word used by the engine.  This can't be used as a name";
+                whyItIsntValid = String.Format(L.Texts.NameEngineReserved, name);
             }
             else if (mCSharpKeyWords.Contains(name))
             {
-                whyItIsntValid = "The word '" + name + "' is a C# keyword.  This can't be used as a name";
+                whyItIsntValid = String.Format(L.Texts.NameXIsCSharpKeyword, name);
             }
             else if (mOtherReservedNames.Contains(name))
             {
-                whyItIsntValid = "The word '" + name + "' is an invalid name because it can cause ambiguity";
+                whyItIsntValid = String.Format(L.Texts.NameInvalidAmbiguity, name);
             }
 
 		}
@@ -746,47 +723,26 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (containingElement is ScreenSave)
             {
-                screenOrEntity = "Screen";
+                screenOrEntity = L.Texts.Screen;
             }
             else
             {
-                screenOrEntity = "Entity";
+                screenOrEntity = L.Texts.Entity;
             }
 
             if(string.IsNullOrEmpty(whyItIsntValid))
             {
                 if (containingElement.CustomVariables.Any(item=> item.Name == variableName && item != customVariable))
                 {
-                    whyItIsntValid += "This " + screenOrEntity + " already has a variable named " + variableName;
+                    whyItIsntValid += String.Format(L.Texts.VariableYAlreadyInX, screenOrEntity, variableName);
                 }
             }
-
-            // This looks like duplicate code compared to what's above.  
-            //if (string.IsNullOrEmpty(whyItIsntValid))
-            //{
-            //    if (containingElement.ContainsCustomVariable(variableName))
-            //    {
-            //        string screenOrEntity = "";
-
-            //        if (containingElement is ScreenSave)
-            //        {
-            //            screenOrEntity = "Screen";
-            //        }
-            //        else
-            //        {
-            //            screenOrEntity = "Entity";
-            //        }
-
-            //        whyItIsntValid += "This " + screenOrEntity + " already has a variable named " + variableName;
-            //    }
-            //}
-
+            
             if (string.IsNullOrEmpty(whyItIsntValid))
             {
                 if (containingElement.GetNamedObjectRecursively(variableName) != null)
                 {
-                    whyItIsntValid = "This " + screenOrEntity + 
-                        " has an object named " + variableName + " so you must choose a different variable name";
+                    whyItIsntValid = string.Format(L.Texts.NameXHasObjectYInvalid, screenOrEntity, variableName);
                 }
             }
 
@@ -794,7 +750,7 @@ namespace FlatRedBall.Glue.SaveClasses
             {
                 if(variableName == containingElement.GetStrippedName())
                 {
-                    whyItIsntValid = $"The variable name {variableName} cannot be the same as its {screenOrEntity}";
+                    whyItIsntValid = String.Format(L.Texts.NameXCannotBeSameAsY, variableName, screenOrEntity);
                 }
             }
 

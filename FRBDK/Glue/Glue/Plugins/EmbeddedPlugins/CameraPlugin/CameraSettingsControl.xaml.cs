@@ -3,22 +3,15 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Plugins.EmbeddedPlugins.CameraPlugin.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 {
@@ -27,7 +20,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
     /// </summary>
     public partial class CameraSettingsControl : UserControl
     {
-        DisplaySettingsViewModel ViewModel => DataContext as DisplaySettingsViewModel;
+        private DisplaySettingsViewModel ViewModel => DataContext as DisplaySettingsViewModel;
 
         public CameraSettingsControl()
         {
@@ -38,11 +31,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             if (e.Key == Key.Enter)
             {
-                TextBox tBox = (TextBox)sender;
-                DependencyProperty prop = TextBox.TextProperty;
-
-                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
-                if (binding != null) { binding.UpdateSource(); }
+                var tBox = (TextBox)sender;
+                BindingOperations.GetBindingExpression(tBox, TextBox.TextProperty)?.UpdateSource();
             }
         }
 
@@ -51,11 +41,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         {
             var currentScale = ViewModel.Scale;
 
-            for(int i = 0; i < ScaleValues.Length; i++)
+            foreach (var t in ScaleValues)
             {
-                if(ScaleValues[i] < currentScale)
+                if(t < currentScale)
                 {
-                    ViewModel.Scale = ScaleValues[i];
+                    ViewModel.Scale = t;
                     break;
                 }
             }
@@ -75,19 +65,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             }
         }
 
-        //private void StretchRadioButtonGumChecked(object sender, RoutedEventArgs e)
-        //{
-        //    StretchAreaGumMediaElement.Position = TimeSpan.FromMilliseconds(1000);
-        //    StretchAreaGumMediaElement.Play();
-        //}
-
-        //private void IncreaseAreaRadioButtonGumChecked(object sender, RoutedEventArgs e)
-        //{
-        //    IncreaseAreaGumMediaElement.Position = TimeSpan.FromMilliseconds(1000);
-        //    IncreaseAreaGumMediaElement.Play();
-        //}
-
-
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             OpenBrowser(e.Uri.AbsoluteUri);
@@ -95,7 +72,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
 
         }
 
-        void OpenBrowser(string url)
+        static void OpenBrowser(string url)
         {
             try
             {
@@ -127,14 +104,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
         private void HandleMediaEnded(object sender, RoutedEventArgs e)
         {
             (sender as MediaElement).Position = TimeSpan.FromMilliseconds(1);
-            //(sender as MediaElement).Play();
         }
 
         private void SaveClicked(object sender, RoutedEventArgs args)
         {
-            var tiw = new CustomizableTextInputWindow();
-
-            tiw.Label.Text = "Enter a name for the display setting";
+            var tiw = new CustomizableTextInputWindow
+            {
+                Label =
+                {
+                    Text = L.Texts.EnterNameDisplaySetting
+                }
+            };
 
             var result = tiw.ShowDialog();
 
@@ -160,7 +140,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
                     glueProject.AllDisplaySettings.Add(newEntry);
 
                     GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                }, "Saving project due to camera changes");
+                }, L.Texts.ProjectSaveCameraChanges);
 
                 var existingVmOption = ViewModel.AvailableOptions
                     .FirstOrDefault(item => item.Name == newEntry.Name);
@@ -193,31 +173,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             {
                 var existing = GlueState.Self.CurrentGlueProject.AllDisplaySettings
                     .FirstOrDefault(item => item.Name == name);
-                if(existing != null)
-                {
-                    GlueState.Self.CurrentGlueProject.AllDisplaySettings.Remove(existing);
+                if (existing == null) return;
+                GlueState.Self.CurrentGlueProject.AllDisplaySettings.Remove(existing);
 
-                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
-                }
-            }, "Removing Display Option");
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
+            }, L.Texts.RemoveDisplayOption);
         }
 
         private void PresetResolutionDropdownClick(object sender, RoutedEventArgs e)
         {
             ResolutionDropdown.Items.Clear();
 
-            void Add(int width, int height)
-            {
-                var vm = new ResolutionDropDownViewModel(width, height);
-                var menuItem = new MenuItem();
-                menuItem.Header = vm;
-                menuItem.Click += (not, used) =>
-                {
-                    ViewModel.ResolutionWidth = width;
-                    ViewModel.ResolutionHeight = height;
-                };
-                ResolutionDropdown.Items.Add(menuItem);
-            }
             Add(256, 224);
 
             Add(360,240);
@@ -228,8 +194,23 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CameraPlugin
             Add(1920,1080);
 
             ResolutionDropdown.IsOpen = true;
+            return;
 
 
+            void Add(int width, int height)
+            {
+                var vm = new ResolutionDropDownViewModel(width, height);
+                var menuItem = new MenuItem
+                {
+                    Header = vm
+                };
+                menuItem.Click += (not, used) =>
+                {
+                    ViewModel.ResolutionWidth = width;
+                    ViewModel.ResolutionHeight = height;
+                };
+                ResolutionDropdown.Items.Add(menuItem);
+            }
         }
 
     }

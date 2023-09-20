@@ -162,12 +162,12 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
         [DependsOn(nameof(SearchBoxText))]
         public string FilterResultsInfo =>
-            SearchBoxText?.StartsWith("f ") == true ? "Filtered to Files..." :
-            SearchBoxText?.StartsWith("e ") == true ? "Filtered to Entities..." :
-            SearchBoxText?.StartsWith("s ") == true ? "Filtered to Screens..." :
-            SearchBoxText?.StartsWith("o ") == true ? "Filtered to Objects..." :
-            SearchBoxText?.StartsWith("v ") == true ? "Filtered to Variables..." :
-            "Begin a search with \"f \", \"e \", \"s \", \"o \", or \"v \" (letter then space) to filter results.";
+            SearchBoxText?.StartsWith("f ") == true ? Localization.Texts.FilteredToFiles :
+            SearchBoxText?.StartsWith("e ") == true ? Localization.Texts.FilteredToEntities :
+            SearchBoxText?.StartsWith("s ") == true ? Localization.Texts.FilteredToScreens :
+            SearchBoxText?.StartsWith("o ") == true ? Localization.Texts.FilteredToObjects :
+            SearchBoxText?.StartsWith("v ") == true ? Localization.Texts.FilteredToVariables :
+            Localization.Texts.FilterResultsDescription;
 
         public bool IsForwardButtonEnabled
         {
@@ -235,13 +235,13 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public MainTreeViewViewModel()
         {
             ScreenRootNode =
-                new NodeViewModel(null) { Text = "Screens" };
+                new NodeViewModel(null) { Text = Localization.Texts.Screens };
 
             EntityRootNode =
-                new NodeViewModel(null) { Text = "Entities" };
+                new NodeViewModel(null) { Text = Localization.Texts.Entities };
 
             GlobalContentRootNode =
-                new NodeViewModel(null) { Text = "Global Content Files" };
+                new NodeViewModel(null) { Text = Localization.Texts.ContentGlobalFiles };
 
             Root = new List<NodeViewModel>()
             {
@@ -351,11 +351,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             var start = StartOfRelative(relativePath, out string remainder);
 
             NodeViewModel treeNode;
-            if (start == "Screens")
+            if (start ==  Localization.Texts.Screens)
             {
                 treeNode = ScreenRootNode;
             }
-            else if (start == "Entities")
+            else if (start == Localization.Texts.Entities)
             {
                 treeNode = EntityRootNode;
             }

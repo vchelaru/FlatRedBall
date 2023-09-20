@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <Grid.RowDefinitions>
@@ -12,11 +13,11 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock TextWrapping="Wrap">Orphaned files are referenced by the current project but do not exist on disk. These files will cause compile errors in your project.</TextBlock>
+        <TextBlock TextWrapping="Wrap" Text="{x:Static localization:Texts.HintOrphanedFilesOfProject}" />
         
         <TreeView Grid.Row="1" ItemsSource="{Binding Orphans}" ></TreeView>
-        
-        <Button Grid.Row="2" Click="Button_Click">Clean All</Button>
-          
+
+        <Button Grid.Row="2" Click="Button_Click" Content="{x:Static localization:Texts.CleanAll}" />
+
     </Grid>
 </UserControl>

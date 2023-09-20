@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TileGraphicsPlugin.Views" xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:controls="clr-namespace:FlatRedBall.Glue.Controls;assembly=GlueFormsCore"
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -13,44 +14,42 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <!--<CheckBox VerticalAlignment="Center" VerticalContentAlignment="Center"
-                      IsChecked="{Binding IsCollisionVisible}">Visible</CheckBox>-->
-            <GroupBox Header="Creation Options" Grid.Row="1">
+            <GroupBox Header="{x:Static localization:Texts.CreationOptions}" Grid.Row="1">
                 <StackPanel>
-                    <TextBlock TextWrapping="Wrap" Visibility="{Binding MessageAboutInheritanceVisibility}">This TileShapeCollection is defined in a base Screen. Changes must be made in the base screen.</TextBlock>
+                    <TextBlock TextWrapping="Wrap" Visibility="{Binding MessageAboutInheritanceVisibility}" Text="{x:Static localization:Texts.HintTileShapeCollection}" />
                     <RadioButton VerticalContentAlignment="Center"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsEmptyChecked}">Empty</RadioButton>
+                                 IsChecked="{Binding IsEmptyChecked}" Content="{x:Static localization:Texts.Four}" />
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFillCompletelyChecked}">Fill Completely</RadioButton>
+                                 IsChecked="{Binding IsFillCompletelyChecked}" Content="{x:Static localization:Texts.FillCompletely}" />
                     <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding FillDimensionsVisibility}" IsEnabled="{Binding IsEntireViewEnabled}">
 
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="60">Tile Size:</TextBlock>
+                            <TextBlock Width="60" Text="{x:Static localization:Texts.TileSize}" />
                             <TextBox Width="100" Text="{Binding CollisionTileSize}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                            <TextBlock Width="40">Left:</TextBlock>
+                            <TextBlock Width="40" Text="{x:Static localization:Texts.Left}" />
                             <TextBox Width="100" Text="{Binding CollisionFillLeft}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="40">Top:</TextBlock>
+                            <TextBlock Width="40" Text="{x:Static localization:Texts.Top}" />
                             <TextBox Width="100" Text="{Binding CollisionFillTop}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                            <TextBlock Width="60">Tiles Wide:</TextBlock>
+                            <TextBlock Width="60" Text="{x:Static localization:Texts.TilesWide}" />
                             <TextBox Width="100" Text="{Binding CollisionFillWidth}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="60">Tiles High:</TextBlock>
+                            <TextBlock Width="60" Text="{x:Static localization:Texts.TilesHigh}" />
                             <TextBox Width="100" Text="{Binding CollisionFillHeight}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
@@ -58,33 +57,33 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsBorderChecked}">Border Outline</RadioButton>
+                                 IsChecked="{Binding IsBorderChecked}" Content="{x:Static localization:Texts.BorderOutline}" />
                     <StackPanel Margin="10, 0, 0, 0" Visibility="{Binding BorderOutlineVisibility}">
 
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="90">Tile Size:</TextBlock>
+                            <TextBlock Width="90" Text="{x:Static localization:Texts.TileSize}" />
                             <TextBox Width="100" Text="{Binding CollisionTileSize}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                            <TextBlock Width="90">Left Outer Edge:</TextBlock>
+                            <TextBlock Width="90"  Text="{x:Static localization:Texts.LeftOuterEdge}" />
                             <TextBox Width="100" Text="{Binding CollisionFillLeft}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="90">Top Outer Edge:</TextBlock>
+                            <TextBlock Width="90"  Text="{x:Static localization:Texts.TopOuterEdge}" />
                             <TextBox Width="100" Text="{Binding CollisionFillTop}"
                                      KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                         </StackPanel>
-                        <GroupBox Header="Border Dimensions">
+                        <GroupBox Header="{x:Static localization:Texts.BorderDimensions}">
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <RadioButton IsChecked="{Binding IsNumberOfTilesBorderOutlineChecked}"># Tiles</RadioButton>
-                                    <RadioButton IsChecked="{Binding IsInnerSizeBorderOutlineChecked}" Margin="30,0,0,0">Inner Size</RadioButton>
+                                    <RadioButton IsChecked="{Binding IsNumberOfTilesBorderOutlineChecked}" Content="{x:Static localization:Texts.TilesX}" />
+                                    <RadioButton IsChecked="{Binding IsInnerSizeBorderOutlineChecked}" Margin="30,0,0,0" Content="{x:Static localization:Texts.InnerSize}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                                    <TextBlock Width="50">Width:</TextBlock>
+                                    <TextBlock Width="50" Text="{x:Static localization:Texts.Width}" />
                                     <TextBox Width="100" Text="{Binding CollisionFillWidth}"
                                              Visibility="{Binding BorderNumberOfTilesUiVisibility}"
                                              KeyUp="TextBox_KeyEnterUpdate"></TextBox>
@@ -93,7 +92,7 @@
                                              KeyUp="TextBox_KeyEnterUpdate"></TextBox>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Width="50">Height:</TextBlock>
+                                    <TextBlock Width="50" Text="{x:Static localization:Texts.Height}" />
                                     <TextBox Width="100" Text="{Binding CollisionFillHeight}"
                                              Visibility="{Binding BorderNumberOfTilesUiVisibility}"
                                              KeyUp="TextBox_KeyEnterUpdate"></TextBox>
@@ -109,14 +108,14 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromMapCollisionChecked}">From TMX Collision (use tileset shapes)</RadioButton>
+                                 IsChecked="{Binding IsFromMapCollisionChecked}" Content="{x:Static localization:Texts.FromTmxCollision}" />
                     <StackPanel x:Name="TmxCollisionStackPanel" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromTmxCollisionVisibility}">
-                        <TextBlock>Source TMX File/Object:</TextBlock>
+                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0">Type:</TextBlock>
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
                         <ComboBox x:Name="TmxCollisionComboBox" 
                                   IsEditable="True"
                                   HorizontalAlignment="Left" Width="200" 
@@ -130,14 +129,14 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromTypeChecked}">From Type</RadioButton>
+                                 IsChecked="{Binding IsFromTypeChecked}" Content="{x:Static localization:Texts.TypeFrom}" />
                     <StackPanel x:Name="Types" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromTypeVisibility}">
-                        <TextBlock>Source TMX File/Object:</TextBlock>
+                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0">Type:</TextBlock>
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
                         <StackPanel Orientation="Horizontal">
                             <controls:TilesetTileSelector 
                                 x:Name="TilesetTileSelector"
@@ -149,8 +148,8 @@
                                 >
                                 <controls:TilesetTileSelector.ToolTip>
                                     <StackPanel>
-                                        <TextBlock FontWeight="Bold">Click to set tile</TextBlock>
-                                        <TextBlock>Changing the tile may also modify the underlying TSX</TextBlock>
+                                        <TextBlock FontWeight="Bold" Text="{x:Static localization:Texts.ClickToSetTile}" />
+                                        <TextBlock Text="{x:Static localization:Texts.HintChangingTileTsx}" />
                                     </StackPanel>
                                 </controls:TilesetTileSelector.ToolTip>
                             </controls:TilesetTileSelector>
@@ -161,10 +160,8 @@
                                       ItemsSource="{Binding AvailableTypes}"
                                       VerticalAlignment="Center"
                                      KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-
                         </StackPanel>
-                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}">Remove Tiles</CheckBox>
-
+                        <CheckBox VerticalContentAlignment="Center" IsChecked="{Binding RemoveTilesAfterCreatingCollision}" Content="{x:Static localization:Texts.TilesRemove}" />
                     </StackPanel>
 
 
@@ -172,36 +169,36 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromPropertiesChecked}">From Property</RadioButton>
+                                 IsChecked="{Binding IsFromPropertiesChecked}" Content="{x:Static localization:Texts.PropertyFrom}" />
                     <StackPanel x:Name="Properties" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromPropertiesVisibility}">
-                        <TextBlock>Source TMX File/Object:</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SourceTmxFileObject}" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0">Property:</TextBlock>
+                        <TextBlock Margin="0,5,0,0"  Text="{x:Static localization:Texts.Property}" />
                         <ComboBox IsEditable="True"  HorizontalAlignment="Left" Width="200" Text="{Binding CollisionPropertyName}"
                                  KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-                        <CheckBox IsChecked="{Binding IsCollisionMerged}" VerticalContentAlignment="Center">IsMerged</CheckBox>
+                        <CheckBox IsChecked="{Binding IsCollisionMerged}" VerticalContentAlignment="Center" Content="{x:Static localization:Texts.IsMerged}" />
                     </StackPanel>
                 
                 
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromLayerChecked}">From Layer</RadioButton>
+                                 IsChecked="{Binding IsFromLayerChecked}" Content="{x:Static localization:Texts.LayerFrom}" />
                     <StackPanel Margin="10,0,0,0" Visibility="{Binding FromLayerVisibility}" IsEnabled="{Binding IsEntireViewEnabled}">
-                        <TextBlock>Source TMX File/Object:</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SourceTmxFileObject}" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0">Layer:</TextBlock>
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Layer}" />
                         <ComboBox HorizontalAlignment="Left" Width="200" 
                                   Text="{Binding CollisionLayerName}"
                                   IsEditable="True"
                               
                                   KeyUp="TextBox_KeyEnterUpdate"></ComboBox>
-                        <TextBlock Margin="0,5,0,0">With property</TextBlock>
+                        <TextBlock Margin="0,5,0,0"  Text="{x:Static localization:Texts.PropertyWith}" />
                         <TextBox HorizontalAlignment="Left" Width="200" Text="{Binding CollisionLayerTileType}"
                                  KeyUp="TextBox_KeyEnterUpdate"></TextBox> 
                     </StackPanel>

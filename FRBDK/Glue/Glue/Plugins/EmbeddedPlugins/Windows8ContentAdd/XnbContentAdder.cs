@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.Glue.FormHelpers;
 using System.ComponentModel.Composition;
@@ -10,6 +9,7 @@ using FlatRedBall.IO;
 using System.IO;
 using Microsoft.Build.Evaluation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 {
@@ -41,8 +41,8 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.Windows8ContentAdd
 
         void HandleInitializeMenuHandler(MenuStrip menuStrip)
         {
-            ToolStripMenuItem item = ToolStripHelper.Self.GetItem(menuStrip, "Content");
-            item.DropDownItems.Add("Add XNBs to Monogame Project(s)", null, HandleAddXnbsClick);
+            ToolStripMenuItem item = ToolStripHelper.Self.GetItem(menuStrip, L.MenuIds.ContentId);
+            item.DropDownItems.Add(L.Texts.AddXnbToMonogame, null, HandleAddXnbsClick);
         }
 
         bool NeedsXnbs(ProjectBase project)

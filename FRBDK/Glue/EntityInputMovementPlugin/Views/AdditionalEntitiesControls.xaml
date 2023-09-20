@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TopDownPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="300">
-    <GroupBox Header="Input Movement Type" Visibility="{Binding AllUiVisibility}">
+    <GroupBox Header="{x:Static localization:Texts.InputMovementType}" Visibility="{Binding AllUiVisibility}">
         <StackPanel>
-            <RadioButton IsChecked="{Binding IsNoneRadioChecked}">None</RadioButton>
-            <RadioButton IsChecked="{Binding IsTopDownRadioChecked}">Top-Down</RadioButton>
-            <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}">Platformer</RadioButton>
+            <RadioButton IsChecked="{Binding IsNoneRadioChecked}" Content="{x:Static localization:Texts.None}" />
+            <RadioButton IsChecked="{Binding IsTopDownRadioChecked}" Content="{x:Static localization:Texts.TopDown}" />
+            <RadioButton IsChecked="{Binding IsPlatformerRadioChecked}" Content="{x:Static localization:Texts.Platformer}" />
             <!--eventually...
                     <RadioButton>Racing</RadioButton>-->
         </StackPanel> 

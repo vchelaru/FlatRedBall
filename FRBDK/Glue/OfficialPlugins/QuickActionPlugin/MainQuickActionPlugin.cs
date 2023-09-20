@@ -52,7 +52,7 @@ namespace OfficialPluginsCore.QuickActionPlugin
             mainView = new MainView();
             mainView.AnyButtonClicked += () => buttonVisibilityManager.UpdateVisibility();
 
-            pluginTab = this.CreateTab(mainView, "Quick Actions");
+            pluginTab = this.CreateTab(mainView, Localization.Texts.QuickActions);
             pluginTab.CanClose = false;
             pluginTab.Show();
         }

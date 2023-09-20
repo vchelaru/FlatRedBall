@@ -3,29 +3,29 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="Delete Object?" SizeToContent="Height" Width="550" Height="250">
+        Title="{x:Static localization:Texts.ObjectDelete}" SizeToContent="Height" Width="550" Height="250">
     <Grid Margin="6">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <Label Content="{Binding WouldYouLikeToDeleteMessage, FallbackValue='Would you like to delete XXXX?'}"></Label>
+        <Label Content="{Binding WouldYouLikeToDeleteMessage, FallbackValue={x:Static localization:Texts.ObjectDelete}}"></Label>
         <Grid Margin="5" Grid.Row="1" Visibility="{Binding ObjectsToRemoveVisibility}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-            <Label>The following items will also be deleted:</Label>
+            <Label Content="{x:Static localization:Texts.DeleteAlsoFollowing}" />
             <ListBox Grid.Row="1" ItemsSource="{Binding ObjectsToRemove}">
                 
             </ListBox>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Click="DeleteButton_Click" IsDefault="True">Delete</Button>
-            <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" >Cancel</Button>
+            <Button Click="DeleteButton_Click" IsDefault="True" Content="{x:Static localization:Texts.Delete}" />
+            <Button Click="CancelButton_Click" IsCancel="True" Margin="5,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </Grid>
 </Window>

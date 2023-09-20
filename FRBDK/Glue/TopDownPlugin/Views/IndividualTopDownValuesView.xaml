@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TopDownPlugin.Views"
              xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="600">
     <Grid>
@@ -42,32 +42,32 @@
         <StackPanel Grid.Row="1" Margin="3">
             <TextBlock HorizontalAlignment="Center" Margin="3">
                 <TextBlock.ToolTip>
-                    The name of the movement type. This name can be used in code to assign this movement type.
+                    <Label Content="{x:Static localization:Texts.HintMovementTypeName}" />
                 </TextBlock.ToolTip>
-                Movement Type
+                <Label Content="{x:Static localization:Texts.MovementType}" />
             </TextBlock>
             
             <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
                      KeyUp="TextBox_KeyEnterUpdate" 
                      IsEnabled="{Binding IsNameEditable}">
                 <TextBox.ToolTip>
-                    The name of the movement type. This name can be used in code to assign this movement type.
+                    <Label Content="{x:Static localization:Texts.HintMovementTypeName}" />
                 </TextBox.ToolTip>
             </TextBox>
 
-            <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
+            <GroupBox Header="{x:Static localization:Texts.Inheritance}" Visibility="{Binding InheritBoxVisibility}">
                 <StackPanel>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">
                         <RadioButton.ToolTip>
-                            If inherited, this entity will use this value as defined in the base entity.
+                            <Label Content="{x:Static localization:Texts.HintInheritedValueEntity}" />
                         </RadioButton.ToolTip>
-                        Inherit Values
+                        <Label Content="{x:Static localization:Texts.InheritValues}" />
                     </RadioButton>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding OverwriteMovementValues}">
                         <RadioButton.ToolTip>
-                            If overwriting, this entity's values for these movement values will be used instead of the base entity.
+                            <Label Content="{x:Static localization:Texts.HintOverwriteHidesBase}" />
                         </RadioButton.ToolTip>
-                        Overwrite Values
+                        <Label Content="{x:Static localization:Texts.OverwriteValues}" />
                     </RadioButton>
                 </StackPanel>
             </GroupBox>
@@ -76,88 +76,87 @@
 
 
         <!--Horizontal Movement-->
-        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Movement</TextBlock>
+        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3" Text="{x:Static localization:Texts.Movement}" />
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3" IsEnabled="{Binding IsEditable}">
 
-            <TextBlock>Max Speed:</TextBlock>
+            <TextBlock Text="{x:Static localization:Texts.MaxSpeed}"/>
             <TextBox Text="{Binding MaxSpeed}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
                      KeyUp="TextBox_KeyEnterUpdate">
                 <TextBox.ToolTip>
-                    The maximum speed in pixels per second that this entity can move through input. It is possible to move faster if another force (such as collision) acts on this entity.
+                    <Label Content="{x:Static localization:Texts.HintMaxSpeedPixelsSecond}" />
                 </TextBox.ToolTip>
             </TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">
                 <RadioButton.ToolTip>
-                    If using Immediate movement, this entity will immediately speed up when the input device is held down, and will immediately stop when the input device is released.
+                    <Label Content="{x:Static localization:Texts.HintImmediateMovementEntity}" />
                 </RadioButton.ToolTip>
-                Immediate
+                <Label Content="{x:Static localization:Texts.Immediate}" />
             </RadioButton>
             <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">
                 <RadioButton.ToolTip>
-                    If using Speed Up/Down, this entity will gradually accelerate to max speed when the input device is held down, and will gradually slow down when the input device is released.
+                    <Label Content="{x:Static localization:Texts.HintMaxSpeedUpDown}" />
                 </RadioButton.ToolTip>
-                Speed Up/Down
+                <Label Content="{x:Static localization:Texts.SpeedUpDown}" />
             </RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
-                <TextBlock>Speed Up Time:</TextBlock>
+                <TextBlock Text="{x:Static localization:Texts.SlowDownTime}" />
                 <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTime}"
                          KeyUp="TextBox_KeyEnterUpdate">
                     <TextBox.ToolTip>
-                        The number of seconds to accelerate (linearly) from a standstill to maximum speed.
+                        <Label Content="{x:Static localization:Texts.HintSecondsToAccelerate}" />
                     </TextBox.ToolTip>
                 </TextBox>
                 <TextBlock>Slow Down Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTime}"
                          KeyUp="TextBox_KeyEnterUpdate">
                     <TextBox.ToolTip>
-                        The number of seconds to slow down (linearly) from max speed to a standstill.
+                        <Label Content="{x:Static localization:Texts.HintSlowdownToStop}" />
                     </TextBox.ToolTip>
                 </TextBox>
             </StackPanel>
 
             <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
                 <CheckBox.ToolTip>
-                    Whether to use a custom deceleration value when moving above max speed. If false, then the Slow Down Time will be used to calculate a deceleration value. If true, a custom value will be used. This value shoudl be true for movement values with a Max Speed of 0.
+                    <Label Content="{x:Static localization:Texts.HintCustomDecelerationAboveMaxSpeed}" />
                 </CheckBox.ToolTip>
-                Custom deceleration above max speed
+                <Label Content="{x:Static localization:Texts.CustomDecelerationAboveMaxSpeed}" />
             </CheckBox>
             <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}">
                 <TextBox.ToolTip>
-                    The deceleration value to apply to the entity if it is moving above its max speed.
+                    <Label Content="{x:Static localization:Texts.HintDecelerationAboveMaxSpeed}" />
                 </TextBox.ToolTip>
             </TextBox>
         </StackPanel>
 
 
         <!--Directions Movement-->
-        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Directions</TextBlock>
+        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3" Text="{x:Static localization:Texts.Directions}" />
         <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3" IsEnabled="{Binding IsEditable}">
-            
-            <TextBlock>Direction Updates:</TextBlock>
+
+            <TextBlock Text="{x:Static localization:Texts.DirectionUpdates}" />
             <RadioButton IsChecked="{Binding UpdateDirectionFromVelocity}">
                 <RadioButton.ToolTip>
-                    The Direction property should update according to the unit's velocity.
+                    <Label Content="{x:Static localization:Texts.HintDirectionPropertyUpdateToVelocity}" />
                 </RadioButton.ToolTip>
-                Update to Velocity
+                <Label Content="{x:Static localization:Texts.UpdateToVelocity}" />
             </RadioButton>
             <RadioButton IsChecked="{Binding UpdateDirectionFromInput}">
                 <RadioButton.ToolTip>
-                    The Direction property should update according to the direction held on the input device, regardless of velocity.
+                    <Label Content="{x:Static localization:Texts.HintDirectionPropertyUpdateToInput}" />
                 </RadioButton.ToolTip>
-                Update to Input
+                <Label Content="{x:Static localization:Texts.UpdateToInput}" />
             </RadioButton>
             <RadioButton  IsChecked="{Binding DontChangeDirection}" Margin="0,0,0,5">
                 <RadioButton.ToolTip>
-                    The Direction property should not update in generated code, but can be set in custom code.
+                    <Label Content="{x:Static localization:Texts.HintDirectionUpdateInCustomCode}" />
                 </RadioButton.ToolTip>
-
-                Don't Change Direction
+                <Label Content="{x:Static localization:Texts.DirectionPreventChange}" />
             </RadioButton>
         </StackPanel>
 
-        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Add'l Props </TextBlock>
+        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3"  Text="{x:Static localization:Texts.PropsAdd}" />
         <wpfdataui:DataUiGrid x:Name="DataGrid" Grid.Row="1" Grid.Column="3"  IsEnabled="{Binding IsEditable}"></wpfdataui:DataUiGrid>
 
         <Button Grid.Column="4" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >X</Button>

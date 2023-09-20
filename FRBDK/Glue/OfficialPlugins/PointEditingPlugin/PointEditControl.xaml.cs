@@ -3,18 +3,9 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using Microsoft.Xna.Framework;
 using OfficialPlugins.PointEditingPlugin.Views;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.PointEditingPlugin
 {
@@ -121,7 +112,7 @@ namespace OfficialPlugins.PointEditingPlugin
         {
             if(ViewModel.Points?.Count > 0)
             {
-                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox("Would you like to clear the points and replace them with points for a rectangle shape?");
+                var result = GlueCommands.Self.DialogCommands.ShowYesNoMessageBox(Localization.Texts.ClearPointsAddRectangle);
                 if(result == MessageBoxResult.Yes)
                 {
                     AddRectanglePoints();
@@ -136,12 +127,11 @@ namespace OfficialPlugins.PointEditingPlugin
         private void HandleAddPolygonPointsClicked(object sender, RoutedEventArgs e)
         {
             var tiw = new CustomizableTextInputWindow();
-            tiw.Message = "Enter the number of points for the new polygon. At least 3 points are required. Note that the last point is automatically repeated, " +
-                "so only enter the number of visible points. For example, 3 for a triangle.";
+            tiw.Message = Localization.Texts.HintEnterNumberOfPoints;
 
             if(ViewModel.Points?.Count > 0)
             {
-                tiw.Message += "\n\nThis will completely replace the existing points on this polygon.";
+                tiw.Message += "\n\n" + Localization.Texts.HintThisWillReplacePoints;
             }
 
             var trueFalseResult = tiw.ShowDialog();
@@ -154,11 +144,11 @@ namespace OfficialPlugins.PointEditingPlugin
 
                 if(!succeeded)
                 {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox($"Only integer values are allowed. Invalid value: {value}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(Localization.Texts.OnlyIntegerValuesAllowed, value));
                 }
                 else if(intResult <= 2)
                 {
-                    GlueCommands.Self.DialogCommands.ShowMessageBox($"At least 3 points are required. Invalid value: {intResult}");
+                    GlueCommands.Self.DialogCommands.ShowMessageBox(String.Format(Localization.Texts.AtLeastThreePointsRequired, intResult));
                 }
                 else 
                 {

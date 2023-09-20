@@ -1,18 +1,10 @@
 ﻿using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -116,12 +108,6 @@ namespace FlatRedBall.Glue.Controls
             }
         }
 
-        public bool IsSearchBoxVisible
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         [DependsOn(nameof(SearchBoxText))]
         public Visibility SearchButtonVisibility => (!string.IsNullOrEmpty(SearchBoxText)).ToVisibility();
 
@@ -161,15 +147,6 @@ namespace FlatRedBall.Glue.Controls
                     FilteredItems.Add(item);
                 }
             }
-
-            //var selected = FilteredItems.FirstOrDefault(item => item.IsSelected);
-            //if (selected == null)
-            //{
-            //    if (FilteredItems.Count > 0)
-            //        AvailableScreens[0].IsSelected = true;
-            //    else
-            //        StartupScreenName = "";
-            //}
         }
     }
 }

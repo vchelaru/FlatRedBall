@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:PlatformerPluginCore.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="200"
               BorderThickness="1" BorderBrush="DarkGray">
@@ -20,7 +21,7 @@
             <Button x:Name="DuplicateButton" Command="{Binding DuplicateCommand}" Width="22" Margin="0,5,0,0">
                 <Image Source="/PlatformerPluginCore;component/Content/Icons/icon_duplicate.png"></Image>
                 <Button.ToolTip>
-                    Create a duplicate of this animation layer.
+                    <Label Content="{x:Static localization:Texts.HintCreateDuplicateAnimationLayer}" />
                 </Button.ToolTip>
             </Button>
         </StackPanel>

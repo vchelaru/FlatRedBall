@@ -140,6 +140,7 @@
 		<ProjectReference Include="..\..\..\Engines\FlatRedBallXNA\Standard\FlatRedBallStandard\FlatRedBallStandard\FlatRedBallStandard.csproj" />
 		<ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
 		<ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
+		<ProjectReference Include="..\..\Localization\Localization.csproj" />
 		<ProjectReference Include="..\FlatRedBall.Plugin\FlatRedBall.PluginCore.csproj" />
 		<ProjectReference Include="..\FlatRedBall.PropertyGrid\FlatRedBall.PropertyGrid.csproj" />
 		<ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />

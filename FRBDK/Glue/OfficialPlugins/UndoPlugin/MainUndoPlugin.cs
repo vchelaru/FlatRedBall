@@ -44,7 +44,7 @@ namespace OfficialPlugins.UndoPlugin
         private void CreateView()
         {
             view = new UndoDisplay();
-            this.CreateAndAddTab(view, "Undo", TabLocation.Bottom);
+            this.CreateAndAddTab(view, Localization.Texts.Undo, TabLocation.Bottom);
         }
 
         private void AssignEvents()

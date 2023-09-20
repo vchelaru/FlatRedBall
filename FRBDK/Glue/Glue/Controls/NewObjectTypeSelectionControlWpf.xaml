@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GlueFormsCore.Controls"
+        xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="New Object" Width="400" Height="500"
+        Title="{x:Static localization:Texts.ObjectNew}" Width="400" Height="500"
         >
 
 
@@ -19,12 +19,12 @@
         </Grid.RowDefinitions>
 
 
-        <GroupBox Header="Select Object Type" Grid.Row="0" IsEnabled="{Binding IsObjectTypeGroupBoxEnabled}">
+        <GroupBox Header="{x:Static localization:Texts.SelectObjectType}" Grid.Row="0" IsEnabled="{Binding IsObjectTypeGroupBoxEnabled}">
             <StackPanel>
-                <RadioButton IsChecked="{Binding IsFlatRedBallType}">FlatRedBall or Custom Type</RadioButton>
-                <RadioButton IsChecked="{Binding IsEntityType}">Entity</RadioButton>
+                <RadioButton IsChecked="{Binding IsFlatRedBallType}" Content="{x:Static localization:Texts.FrbOrCustomType}" />
+                <RadioButton IsChecked="{Binding IsEntityType}" Content="{x:Static localization:Texts.Entity}" />
                 <RadioButton IsChecked="{Binding IsGumType}">Gum</RadioButton>
-                <RadioButton IsChecked="{Binding IsFromFileType}">From File</RadioButton>
+                <RadioButton IsChecked="{Binding IsFromFileType}" Content="{x:Static localization:Texts.FromFile}" />
             </StackPanel>
         </GroupBox>
 
@@ -52,7 +52,7 @@
                  SelectedItem="{Binding SelectedItem}"
                  HorizontalContentAlignment="Stretch"
                  VerticalContentAlignment="Stretch"
-                 KeyDown="ListBox_KeyDown"
+                 KeyDown="HandleEnterEscape"
                  Grid.Row="0"
                  IsEnabled="{Binding IsSelectionEnabled}"
                  >
@@ -78,7 +78,7 @@
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Label>List Type:</Label>
+                <Label Content="{x:Static localization:Texts.ListType}" />
                 <ComboBox IsEditable="True" Grid.Column="1"
                     ItemsSource="{Binding AvailableListTypes}"
                     SelectedItem="{Binding SourceClassGenericType}"
@@ -91,7 +91,7 @@
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Label>Source Name:</Label>
+                <Label Content="{x:Static localization:Texts.SourceName}" />
                 <ComboBox Grid.Column="1" 
                       ItemsSource="{Binding AvailableFileSourceNames}"
                       SelectedItem="{Binding SourceNameInFile}"
@@ -107,10 +107,8 @@
 
 
         <StackPanel  Grid.Row="3">
-            <Label Margin="0,5,0,0">
-                Enter the new object's name
-            </Label>
-            <TextBox Text="{Binding ObjectName}" KeyDown="NameTextBoxKeyDown"></TextBox>
+            <Label Margin="0,5,0,0" Content="{x:Static localization:Texts.EnterNewObjectName}" />
+            <TextBox Text="{Binding ObjectName}" KeyDown="HandleEnterEscape"></TextBox>
             
         </StackPanel>
 
@@ -120,8 +118,8 @@
                 <ColumnDefinition Width="10"></ColumnDefinition>
                 <ColumnDefinition Width="100"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button Click="OkClicked" IsEnabled="{Binding IsOkButtonEnabled}">OK</Button>
-            <Button Click="CancelClicked" Grid.Column="2">Cancel</Button>
+            <Button Click="OkClicked" IsEnabled="{Binding IsOkButtonEnabled}" Content="{x:Static localization:Texts.Ok}" />
+            <Button Click="CancelClicked" Grid.Column="2" Content="{x:Static localization:Texts.Cancel}" />
         </Grid>
     </Grid>
 </Window>

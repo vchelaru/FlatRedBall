@@ -1,23 +1,13 @@
 ﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces;
 using FlatRedBall.IO;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 {
@@ -26,22 +16,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
     /// </summary>
     public partial class PluginView : UserControl
     {
-        PluginContainer pluginContainer
-        {
-            get
-            {
-                return (DataContext as PluginViewModel)?.BackingData;
-            }
-        }
+        PluginContainer pluginContainer => (DataContext as PluginViewModel)?.BackingData;
 
-        static string UninstallPluginFile
-        {
-            get
-            {
-                return FileManager.UserApplicationData + "FRBDK/Plugins/Uninstall.txt";
-            }
-        }
-
+        static string UninstallPluginFile => FileManager.UserApplicationData + "FRBDK/Plugins/Uninstall.txt";
 
         public PluginView()
         {
@@ -52,17 +29,15 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             if(DataContext != null)
             {
-
-                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-
-
-
-                dlg.FileName = pluginContainer.Name.Replace(" ", ""); // Default file name
-                dlg.DefaultExt = ".plug"; // Default file extension
-                dlg.Filter = "Plugin (.plug)|*.plug"; // Filter files by extension
+                var dlg = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = pluginContainer.Name.Replace(" ", ""), // Default file name
+                    DefaultExt = ".plug", // Default file extension
+                    Filter = "Plugin (.plug)|*.plug" // Filter files by extension
+                };
 
                 // Show save file dialog box
-                Nullable<bool> result = dlg.ShowDialog();
+                var result = dlg.ShowDialog();
 
                 // Process save file dialog box results
                 if (result == true)
@@ -101,12 +76,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
                 }
                 catch(UnauthorizedAccessException ex)
                 {
-                    EditorObjects.IoC.Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox("Success - Glue must be restarted to finish removing the plugin.");
+                    EditorObjects.IoC.Container.Get<IGlueCommands>().DialogCommands.ShowMessageBox(L.Texts.PluginRestartToDelete);
 
-                    using (StreamWriter w = File.AppendText(UninstallPluginFile))
-                    {
-                        w.WriteLine(directoryToDelete);
-                    }
+                    using StreamWriter w = File.AppendText(UninstallPluginFile);
+                    w.WriteLine(directoryToDelete);
                 }
             }
         }
@@ -115,11 +88,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
         {
             if(pluginContainer != null)
             {
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.UseShellExecute = true;
-                psi.FileName = FileManager.GetDirectory(pluginContainer.AssemblyLocation);
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = FileManager.GetDirectory(pluginContainer.AssemblyLocation)
+                };
 
-                System.Diagnostics.Process.Start(psi);
+                Process.Start(psi);
             }
         }
 

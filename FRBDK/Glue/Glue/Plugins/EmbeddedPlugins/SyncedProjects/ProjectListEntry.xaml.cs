@@ -4,21 +4,11 @@ using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using FlatRedBall.IO;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 {
@@ -27,14 +17,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
     /// </summary>
     public partial class ProjectListEntry : UserControl
     {
-        ProjectBase Project
-        {
-            get
-            {
-                return (this.DataContext as SyncedProjectViewModel).ProjectBase;
-            }
-
-        }
+        ProjectBase Project => (this.DataContext as SyncedProjectViewModel).ProjectBase;
 
         public ProjectListEntry()
         {
@@ -63,23 +46,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
             string fileToOpen = null;
 
-            if (string.IsNullOrEmpty(solutionName))
-            {
-                // I don't think we should do anything here. This could confuse users if
-                // the solution isn't found. Let LocateSolution do its job, dont' second guess it...
-                //if (!PluginManager.OpenProject(project.FullFileName))
-                //{
-                //    fileToOpen = ProjectManager.ProjectBase.FullFileName;
-                //}
-            }
-            else
+            if (!string.IsNullOrEmpty(solutionName))
             {
                 if (!PluginManager.OpenSolution(solutionName))
                 {
                     fileToOpen = solutionName;
                 }
             }
-
 
             if (!string.IsNullOrEmpty(fileToOpen))
             {
@@ -104,19 +77,17 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
 
                     if(openedWithGlue)
                     {
-                        MessageBox.Show("Your machine has the file\n\n" + fileToOpen + "\n\nassociated with Glue.  " +
-                            "It should probably be associated with a programming IDE like Visual Studio");
+                        MessageBox.Show(String.Format(L.Texts.GlueFileAssociation, fileToOpen));
                     }
                 }
                 catch(InvalidOperationException)
                 {
                     // An error with this code has been reported, but I'm not sure why. It's not damaging to just ignore it, and say that there was a failure:
-                    GlueCommands.Self.PrintOutput("An error has occurred when trying to open the project. Please try again if Visual Studio has not opened.");
+                    GlueCommands.Self.PrintOutput(L.Texts.ErrorOpeningProjectVisualStudio);
                 }
                 catch(Exception e)
                 {
-                    GlueCommands.Self.PrintOutput($"An error has occurred when trying to open the project file {fileToOpen}." +
-                        $"You can still open this project manually through Windows Explorer or Visual Studio. Additional info:\n\n{e}");
+                    GlueCommands.Self.PrintOutput(String.Format(L.Texts.ErrorCannotOpenProject, fileToOpen, e));
                 }
                 finally
                 {
@@ -196,7 +167,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.SyncedProjects
                 catch (Exception ex)
                 {
                     PluginManager.ReceiveError(ex.ToString());
-                    MessageBox.Show("Error opening Xamarin Studio - see error in output");
+                    MessageBox.Show(L.Texts.ErrorCannotOpenXamarin);
                 }
             }
             return shouldHandle;

@@ -3,17 +3,10 @@ using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TMXGlueLib;
 
 namespace FlatRedBall.Glue.Controls
@@ -163,9 +156,9 @@ namespace FlatRedBall.Glue.Controls
                 var newId = (uint)vm.TileId;
 
                 mapTilesetTile newTile = null;
-                if(tileset.TileDictionary.ContainsKey(newId))
+                if(tileset.TileDictionary.TryGetValue(newId, out var value))
                 {
-                    newTile = tileset.TileDictionary[newId];
+                    newTile = value;
                 }
                 if(newTile == null)
                 {

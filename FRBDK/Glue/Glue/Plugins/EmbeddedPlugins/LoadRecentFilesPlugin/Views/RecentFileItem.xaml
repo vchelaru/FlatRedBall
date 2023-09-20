@@ -3,12 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views"
              mc:Ignorable="d" 
              d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <Image Source="{Binding FavoriteImage}" Height="16" PreviewMouseLeftButtonDown="Image_PreviewMouseLeftButtonDown" MouseLeftButtonDown="Image_MouseLeftButtonDown"></Image>
-        <TextBlock FontWeight="Bold" Text="{Binding StrippedName, FallbackValue=ProjectName}"></TextBlock>
-        <TextBlock Margin="10,0,0,0" FontSize="10" VerticalAlignment="Bottom" Text="{Binding FullPath, FallbackValue=c:Whatever}"></TextBlock>
+        <Image Source="{Binding FavoriteImage}" Height="16" PreviewMouseLeftButtonDown="Image_PreviewMouseLeftButtonDown" />
+        <TextBlock FontWeight="Bold" Text="{Binding StrippedName, FallbackValue=ProjectName}" />
+        <TextBlock Margin="10,0,0,0" FontSize="10" VerticalAlignment="Bottom" Text="{Binding FullPath, FallbackValue=c:Whatever}" />
     </StackPanel>
 </UserControl>

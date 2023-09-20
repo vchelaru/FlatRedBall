@@ -324,7 +324,7 @@ namespace GameCommunicationPlugin.GlueControl
         {
             if (CompilerViewModel.IsToolbarPlayButtonEnabled)
             {
-                GlueCommands.Self.DialogCommands.FocusTab("Build");
+                GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 var succeeded = await _gameHostController.Compile();
 
                 if (succeeded)
@@ -358,7 +358,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
                 else
                 {
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
                 }
             }
         }
@@ -523,7 +523,7 @@ namespace GameCommunicationPlugin.GlueControl
                 }
             };
 
-            pluginTab = base.CreateTab(gameHostView, "Game", TabLocation.Center);
+            pluginTab = base.CreateTab(gameHostView, Localization.Texts.Game, TabLocation.Center);
             pluginTab.CanClose = false;
             pluginTab.AfterHide += (_, __) => TryKillGame();
             //pluginTab = base.CreateAndAddTab(GameHostView, "Game Contrll", TabLocation.Bottom);
@@ -591,7 +591,7 @@ namespace GameCommunicationPlugin.GlueControl
             var vm = new ProfilingControlViewModel();
             control.DataContext = vm;
 
-            this.CreateAndAddTab(control, "Profiling", TabLocation.Bottom);
+            this.CreateAndAddTab(control, Localization.Texts.Profiling, TabLocation.Bottom);
 
             ProfilingManager.Self.Initialize(vm, CompilerViewModel);
         }
@@ -624,15 +624,11 @@ namespace GameCommunicationPlugin.GlueControl
             CommandSender.Self.CompilerViewModel = CompilerViewModel;
             CommandSender.Self.PrintOutput = (value) => ReactToPluginEvent("Compiler_Output_Standard", value);
             CommandSender.Self.SendPacket = (value) => ReactToPluginEventWithReturn("GameCommunication_Send_OldDTO", value);
-
-            //buildTab = base.CreateTab(MainControl, "Build", TabLocation.Bottom);
-            //buildTab.Show();
-
-
+            
             glueViewSettingsView = new Views.GlueViewSettings();
             glueViewSettingsView.ViewModel = GlueViewSettingsViewModel;
 
-            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, "Editor Settings");
+            glueViewSettingsTab = base.CreateTab(glueViewSettingsView, Localization.Texts.EditorSettings);
 
             AssignControlEvents();
         }
@@ -753,10 +749,10 @@ namespace GameCommunicationPlugin.GlueControl
 
             if (response?.Succeeded != true)
             {
-                var message = $"Failed to set game/edit mode to {CompilerViewModel.PlayOrEdit}.";
+                var message = string.Format(Localization.Texts.FailedToSetGameEditModeToX, CompilerViewModel.PlayOrEdit);
                 if (response == null)
                 {
-                    message += "Game sent no response back.";
+                    message += Localization.Texts.GameSendNoResponseBack;
                 }
                 else
                 {
@@ -883,8 +879,8 @@ namespace GameCommunicationPlugin.GlueControl
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
             if (IsFrbNewEnough())
             {
-                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableLiveEdit), "Generate Glue Control Code");
-                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
+                TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableLiveEdit), Localization.Texts.GenerateGlueControlCode);
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), Localization.Texts.GenerateNewGlueControlCode);
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
@@ -1077,11 +1073,11 @@ namespace GameCommunicationPlugin.GlueControl
                 GlueCommands.Self.DoOnUiThread(() => CompilerViewModel.IsWindowEmbedded = false);
                 if(gameProcess == null)
                 {
-                    GlueCommands.Self.PrintOutput("Failed to find game handle.");
+                    GlueCommands.Self.PrintOutput(Localization.Texts.FailedFindGameHandle);
                 }
                 else
                 {
-                    GlueCommands.Self.PrintOutput("Failed to find window handle.");
+                    GlueCommands.Self.PrintOutput(Localization.Texts.FailedFindWindowHandle);
                 }
                 
             }

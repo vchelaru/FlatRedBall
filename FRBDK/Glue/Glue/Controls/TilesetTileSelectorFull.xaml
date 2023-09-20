@@ -3,15 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FlatRedBall.Glue.Controls"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d">
     <StackPanel>
         <Grid Width="512" Height="512"  MouseLeave="PopupImage_MouseLeave"
                    MouseMove="PopupImage_MouseMove" 
-                   MouseLeftButtonDown="PopupImage_MouseLeftButtonDown"
-              >
-            <Image x:Name="PopupImage" 
-                  >
+                   MouseLeftButtonDown="PopupImage_MouseLeftButtonDown">
+            <Image x:Name="PopupImage">
             </Image>
             <Rectangle IsHitTestVisible="False" x:Name="SelectionRectangle" HorizontalAlignment="Left" VerticalAlignment="Top" Width="16" Height="16" StrokeThickness="1" Stroke="Purple"></Rectangle>
             <Rectangle IsHitTestVisible="False" x:Name="HighlightRectangle" HorizontalAlignment="Left" VerticalAlignment="Top" Width="16" Height="16" Fill="#55B200FF"  StrokeThickness="1" Stroke="Purple"></Rectangle>
@@ -23,8 +21,8 @@
         </Grid>
         
         <StackPanel Orientation="Horizontal" Margin="4" HorizontalAlignment="Right">
-            <Button x:Name="OkButton" Click="OkButton_Click" Width="60">OK</Button>
-            <Button x:Name="CancelButton" Click="CancelButton_Click" Width="60" Margin="2,0,0,0">Cancel</Button>
+            <Button x:Name="OkButton" Click="OkButton_Click" Width="60"  Content="{x:Static localization:Texts.Ok}" />
+            <Button x:Name="CancelButton" Click="CancelButton_Click" Width="60" Margin="2,0,0,0" Content="{x:Static localization:Texts.Cancel}" />
         </StackPanel>
     </StackPanel>
 </UserControl>

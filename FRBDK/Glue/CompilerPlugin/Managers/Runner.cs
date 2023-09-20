@@ -600,7 +600,7 @@ namespace CompilerPlugin.Managers
                     message = $"The game has crashed. See the Build tab for a callstack";
                     var contents = System.IO.File.ReadAllText(logFile);
 
-                    GlueCommands.Self.DialogCommands.FocusTab("Build");
+                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
 
                     ErrorReceived?.Invoke(contents);
                     

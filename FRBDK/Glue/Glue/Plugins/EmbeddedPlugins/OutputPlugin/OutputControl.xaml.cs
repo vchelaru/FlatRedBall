@@ -1,17 +1,9 @@
-﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 {
@@ -26,27 +18,24 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
     /// </summary>
     public partial class OutputControl : UserControl
     {
-        List<ColoredTextWpf> mBuffer = new List<ColoredTextWpf>();
-        // Used to be 800,000, but increasing slightly to get more output
-        const int MaxLength = 900000;
-        const int LengthToReduceTo = 700000;
+        List<ColoredTextWpf> mBuffer = new();
 
-        System.Windows.Threading.DispatcherTimer timer;
+        private readonly System.Windows.Threading.DispatcherTimer _timer;
 
-        SolidColorBrush Error;
-        SolidColorBrush Normal;
+        private readonly SolidColorBrush _error;
+        private readonly SolidColorBrush _normal;
 
         public OutputControl()
         {
             InitializeComponent();
 
-            timer = new System.Windows.Threading.DispatcherTimer();
-            timer.Tick += HandleTimerTick;
-            timer.Interval = TimeSpan.FromMilliseconds(100);
-            timer.Start();
+            _timer = new System.Windows.Threading.DispatcherTimer();
+            _timer.Tick += HandleTimerTick;
+            _timer.Interval = TimeSpan.FromMilliseconds(100);
+            _timer.Start();
 
-            Error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
-            Normal = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            _error = new SolidColorBrush(Color.FromRgb(255, 0, 0));
+            _normal = new SolidColorBrush(Color.FromRgb(0, 0, 0));
         }
 
         private void HandleTimerTick(object sender, EventArgs e)
@@ -77,18 +66,13 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
 
         public void OnOutput(string output)
         {
-            Color color = Color.FromRgb(0,0,0);
-
-            AppendText(output, Normal);
+            AppendText(output, _normal);
         }
 
         public void OnErrorOutput(string output)
         {
-            Color color = Color.FromRgb(255,0,0);
-            AppendText(output, Error);
-
+            AppendText(output, _error);
         }
-
 
         private void AppendText(string output, SolidColorBrush brush)
         {
@@ -97,8 +81,6 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.OutputPlugin
                 mBuffer.Add(new ColoredTextWpf() { Brush = brush, Text = output });
             }
         }
-
-
 
         private void ShortenOutputIfNecessary()
         {

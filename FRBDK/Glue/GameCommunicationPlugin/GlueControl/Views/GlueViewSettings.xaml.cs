@@ -4,22 +4,11 @@ using GameCommunicationPlugin.GlueControl.CommandSending;
 using GameCommunicationPlugin.GlueControl.Dtos;
 using GameCommunicationPlugin.GlueControl.ViewModels;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ToolsUtilities;
-using WpfDataUi;
 using WpfDataUi.DataTypes;
 
 namespace GameCommunicationPlugin.GlueControl.Views
@@ -37,13 +26,13 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 this.DataContext = value;
                 this.DataUiGrid.Instance = value;
 
-                ViewModel.PropertyChanged += HandlePropertyChaned;
+                ViewModel.PropertyChanged += HandlePropertyChanged;
 
                 CustomizeDisplay();
             }
         }
 
-        private void HandlePropertyChaned(object sender, PropertyChangedEventArgs e)
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             this.DataUiGrid.Refresh();
         }
@@ -60,7 +49,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
                 category.Name = "";
                 foreach(var member in category.Members)
                 {
-                    member.DisplayName = StringFunctions.InsertSpacesInCamelCaseString(member.DisplayName);
+                    member.DisplayName = Localization.Texts.ResourceManager.GetString(member.DisplayName, Localization.Texts.Culture);
                 }
 
                 var whatToRemove = category.Members
@@ -73,21 +62,21 @@ namespace GameCommunicationPlugin.GlueControl.Views
 
 
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), "Content");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.RestartScreenOnLevelContentChange), Localization.Texts.Content); // content
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowGrid), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), "Grid and Markings");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), "Grid and Markings");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowGrid), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridAlpha), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.GridSize), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.ShowScreenBoundsWhenViewingEntities), Localization.Texts.GridAndMarkings);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SetBackgroundColor), Localization.Texts.GridAndMarkings);
 
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), "Snapping");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), "Snapping");
-            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.PolygonPointSnapSize), "Snapping");
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.EnableSnapping), Localization.Texts.Snapping);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.SnapSize), Localization.Texts.Snapping);
+            this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.PolygonPointSnapSize), Localization.Texts.Snapping);
 
 
-            var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange)); 
-            restartScreenOnContentChangeMember.DetailText = "This will also reload if localization CSV files change.\nIf unchecked, the game will only respond to file changes (like TMX) in edit mode";
+            var restartScreenOnContentChangeMember = GetMember(nameof(ViewModel.RestartScreenOnLevelContentChange));
+            restartScreenOnContentChangeMember.DetailText = Localization.Texts.WarningLocalizationFileChange;
             //this.DataUiGrid.MoveMemberToCategory(nameof(ViewModel.Show), "Grid and Markings");
 
             TypeMemberDisplayProperties properties = new TypeMemberDisplayProperties();
@@ -98,7 +87,7 @@ namespace GameCommunicationPlugin.GlueControl.Views
             void AddColorProperties(string propertyName)
             {
                 var colorProperties = properties.GetOrCreateImdp(propertyName);
-                colorProperties.Category = "Grid and Markings";
+                colorProperties.Category = Localization.Texts.GridAndMarkings;
                 colorProperties.IsHiddenDelegate = (notused) => ViewModel.SetBackgroundColor == false;
 
             }
@@ -147,16 +136,16 @@ namespace GameCommunicationPlugin.GlueControl.Views
                     }
                     else
                     {
-                        errorMessage = "Null string returned back from the game";
+                        errorMessage = Localization.Texts.ErrorGameThrewNullString;
                     }
                 }
             }
             else
             {
-                errorMessage = "The game must be running to get its stored commands";
+                errorMessage = Localization.Texts.ErrorGameMustRunToGetStoredCommands;
             }
 
-            if(!string.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
                 GlueCommands.Self.DialogCommands.ShowMessageBox(errorMessage);
             }

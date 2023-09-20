@@ -1,18 +1,7 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 {
@@ -21,13 +10,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
     /// </summary>
     public partial class ManualReferenceCopier : UserControl
     {
-        ReferenceCopierViewModel ViewModel
-        {
-            get
-            {
-                return this.DataContext as ReferenceCopierViewModel;
-            }
-        }
+        ReferenceCopierViewModel ViewModel => this.DataContext as ReferenceCopierViewModel;
 
         public ManualReferenceCopier()
         {
@@ -37,9 +20,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
         private void FromButtonClicked(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.DefaultExt = ".csproj";
-            fileDialog.Filter = "C# Project Files|*.csproj";
+            OpenFileDialog fileDialog = new OpenFileDialog
+            {
+                DefaultExt = ".csproj",
+                Filter = L.Texts.CSharpProjectFiles + "|*.csproj"
+            };
 
             var result = fileDialog.ShowDialog();
 
@@ -51,10 +36,11 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
         private void ToButtonClicked(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog fileDialog = new SaveFileDialog();
-
-            fileDialog.DefaultExt = ".csproj";
-            fileDialog.Filter = "C# Project Files|*.csproj";
+            SaveFileDialog fileDialog = new SaveFileDialog
+            {
+                DefaultExt = ".csproj",
+                Filter = L.Texts.CSharpProjectFiles + "|*.csproj"
+            };
 
 
             var result = fileDialog.ShowDialog();

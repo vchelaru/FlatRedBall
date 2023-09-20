@@ -231,7 +231,7 @@ namespace OfficialPlugins.VariableDisplay
 
 
             List<MemberCategory> categories = new List<MemberCategory>();
-            var defaultCategory = new MemberCategory("Variables");
+            var defaultCategory = new MemberCategory(Localization.Texts.Variables);
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
 
@@ -461,7 +461,7 @@ namespace OfficialPlugins.VariableDisplay
 
         private static void AddSourceNameVariable(NamedObjectSave instance, List<MemberCategory> categories)
         {
-            var categoryToAddTo = new MemberCategory("File");
+            var categoryToAddTo = new MemberCategory(Localization.Texts.File);
             categoryToAddTo.FontSize = 14;
 
             if (categories.Count > 0)

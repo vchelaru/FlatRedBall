@@ -1,22 +1,13 @@
 ﻿using FRBDKUpdater;
 using FRBDKUpdater.Actions;
-using OfficialPlugins.FrbdkUpdater;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ToolsUtilities;
 using ToolsUtilitiesStandard.Network;
 
@@ -41,18 +32,6 @@ namespace UpdaterWpf.Views
         {
             get => CancelButton.Visibility;
             set => CancelButton.Visibility = value;
-        }
-
-        public string UserMessage
-        {
-            get
-            {
-                return this.Title;
-            }
-            set
-            {
-                this.Title = value;
-            }
         }
 
         public MainWindow()
@@ -91,7 +70,7 @@ namespace UpdaterWpf.Views
                 Messaging.ShowAlerts = !_settings.Passive;
 
                 if (!String.IsNullOrEmpty(_settings.Title))
-                    UserMessage = _settings.Title;
+                    Title = _settings.Title;
 
                 await PerformDownload();
             }
@@ -157,11 +136,6 @@ namespace UpdaterWpf.Views
             {
                 DialogResult = generalResponse.Succeeded;
             }
-        }
-
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
-        {
-            StartGlueAndCloseThis();
         }
 
         private void StartGlueAndCloseThis()

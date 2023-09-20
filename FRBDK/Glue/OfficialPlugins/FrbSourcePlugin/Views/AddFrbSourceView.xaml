@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.FrbSourcePlugin.Views" xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
+             xmlns:wpfdataui="clr-namespace:WpfDataUi;assembly=WpfDataUiCore"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -14,7 +15,7 @@
         <StackPanel>
             <wpfdataui:DataUiGrid x:Name="DataUiGrid"></wpfdataui:DataUiGrid>
         </StackPanel>
-        <Button Grid.Row="1" x:Name="LinkToSourceButton" Click="LinkToSourceButton_Click">Link to Source</Button>
+        <Button Grid.Row="1" x:Name="LinkToSourceButton" Click="LinkToSourceButton_Click" Content="{x:Static localization:Texts.LinkToSource}" />
         
     </Grid>
 </UserControl>

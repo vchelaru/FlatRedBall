@@ -1,5 +1,4 @@
-﻿using FlatRedBall.Glue.IO;
-using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
+﻿using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewModels;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
@@ -8,9 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 {
@@ -23,7 +21,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
         public override void StartUp()
         {
 
-            recentFilesMenuItem = this.AddMenuItemTo("Load Recent", null, "File", preferredIndex:2);
+            recentFilesMenuItem = this.AddMenuItemTo(L.Texts.LoadRecent, L.MenuIds.LoadRecentId, null, L.MenuIds.FileId, preferredIndex:2);
 
             RefreshMenuItems();
 
@@ -56,11 +54,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
                     recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
                 }
-
-
             }
 
-            recentFilesMenuItem.DropDownItems.Add("More...", null, HandleLoadRecentClicked);
+            recentFilesMenuItem.DropDownItems.Add(L.Texts.More, null, HandleLoadRecentClicked);
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)

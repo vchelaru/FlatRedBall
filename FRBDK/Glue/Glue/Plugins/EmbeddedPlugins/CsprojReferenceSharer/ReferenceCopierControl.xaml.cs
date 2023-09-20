@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.Win32;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.VSHelpers;
 using FlatRedBall.IO;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 {
@@ -23,13 +15,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
     /// </summary>
     public partial class ReferenceCopierControl : UserControl
     {
-        ReferenceCopierViewModel ViewModel
-        {
-            get
-            {
-                return this.DataContext as ReferenceCopierViewModel;
-            }
-        }
+        ReferenceCopierViewModel ViewModel => this.DataContext as ReferenceCopierViewModel;
 
         public ReferenceCopierControl()
         {
@@ -76,33 +62,24 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.CsprojReferenceSharer
 
                     ViewModel.PerformCopy(showPopup:false);
 
-                    PluginManager.ReceiveOutput($"Copied references for project {strippedSource} in {strippedDestinationSolutionName}.");
+                    PluginManager.ReceiveOutput(String.Format(L.Texts.CopiedReferencesForProjectAInB, strippedSource, strippedDestinationSolutionName));
 
                 }
                 else
                 {
-                    PluginManager.ReceiveOutput($"Skipping project {strippedSource} because a matching project was not found in {strippedDestinationSolutionName}");
+                    PluginManager.ReceiveOutput(String.Format(L.Texts.SkippingProjectNotFound, strippedSource, strippedDestinationSolutionName));
                 }
             }
         }
 
-        private List<VSSolution> GetSyncedSolutions()
+        private static List<VSSolution> GetSyncedSolutions()
         {
-            List<VSSolution> toReturn = new List<VSSolution>();
-
-            foreach (var project in GlueState.Self.SyncedProjects)
-            {
-                var syncedSolutionFileName = ProjectSyncer.LocateSolution(project.FullFileName.FullPath);
-
-                var syncedSolution = VSSolution.FromFile(syncedSolutionFileName);
-
-                toReturn.Add(syncedSolution);
-            }
-
-            return toReturn;
+            return GlueState.Self.SyncedProjects
+                .Select(project => VSSolution.FromFile(ProjectSyncer.LocateSolution(project.FullFileName.FullPath)))
+                .ToList();
         }
 
-        private VSSolution GetMainSolution()
+        private static VSSolution GetMainSolution()
         {
             var mainSln = GlueState.Self.CurrentSlnFileName;
 

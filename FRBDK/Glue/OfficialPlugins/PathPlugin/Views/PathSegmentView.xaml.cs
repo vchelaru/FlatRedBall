@@ -1,16 +1,9 @@
 ﻿using OfficialPlugins.PathPlugin.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.PathPlugin.Views
 {
@@ -76,18 +69,18 @@ namespace OfficialPlugins.PathPlugin.Views
         private void TextBox_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             var sign = Math.Sign( e.Delta);
-            if(sender == XTextBox)
+            if(Equals(sender, XTextBox))
             {
                 ViewModel.X += 5 * sign;
                 e.Handled = true;
             }
-            else if(sender == YTextBox)
+            else if ((Equals(sender, YTextBox)))
             {
                 ViewModel.Y += 5 * sign;
 
                 e.Handled = true;
             }
-            else if(sender == AngleTextBox)
+            else if(Equals(sender, AngleTextBox))
             {
                 ViewModel.Angle += 5 * sign;
 

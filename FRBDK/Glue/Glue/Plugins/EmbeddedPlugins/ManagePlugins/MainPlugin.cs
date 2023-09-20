@@ -1,13 +1,8 @@
-﻿using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.Rss;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 {
@@ -19,7 +14,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
 
         public override void StartUp()
         {
-            this.AddMenuItemTo("Manage Plugins", HandleManagePlugins, "Plugins");
+            this.AddMenuItemTo(L.Texts.ManagePlugins, L.MenuIds.ManagePluginsId, HandleManagePlugins, L.MenuIds.PluginId);
         }
 
         private void HandleManagePlugins(object sender, EventArgs e)
@@ -28,7 +23,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins
             {
                 mainControl = new MainControl();
 
-                tab = CreateAndAddTab(mainControl, "Plugins", TabLocation.Left);
+                tab = CreateAndAddTab(mainControl, L.Texts.Plugins, TabLocation.Left);
             }
             else
             {

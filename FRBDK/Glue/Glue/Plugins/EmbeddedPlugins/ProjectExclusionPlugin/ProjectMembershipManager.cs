@@ -88,7 +88,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.ProjectExclusionPlugin
             return wasRemoved;
         }
 
-        private IEnumerable<ReferencedFileSave> AllMatching(ReferencedFileSave rfs)
+        private static IEnumerable<ReferencedFileSave> AllMatching(ReferencedFileSave rfs)
         {
             yield return rfs;
             var matching = Elements.ObjectFinder.Self.GetMatchingReferencedFiles(rfs);

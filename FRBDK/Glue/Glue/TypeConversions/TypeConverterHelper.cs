@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Diagnostics;
 using FlatRedBall.Glue.SaveClasses;
 
 namespace FlatRedBall.Glue.TypeConversions
@@ -19,16 +20,14 @@ namespace FlatRedBall.Glue.TypeConversions
 
         public static void InitializeClasses()
         {
-            if (TypeConverters == null)
-            {
-                TypeConverters = new Dictionary<string, CustomTypeConverter>();
-                CreateDefaultConverter();
-            }
+            Debug.Assert(TypeConverters == null);
+            TypeConverters = new Dictionary<string, CustomTypeConverter>();
+            CreateDefaultConverter();
         }
 
         private static void CreateDefaultConverter()
         {
-            CustomTypeConverter converter = new CustomTypeConverter();
+            var converter = new CustomTypeConverter();
 
             converter.AddConversion("int", "string", "value.ToString()");
             converter.AddConversion("string", "int", "int.Parse(value)");
@@ -49,39 +48,32 @@ namespace FlatRedBall.Glue.TypeConversions
 
             TypeConverters.Add("<default>", converter);
 
+            var commaSeparatingConverter = new CustomTypeConverter();
+            commaSeparatingConverter.AddConversion("int", "string", "value.ToString(\"n0\")");
+            commaSeparatingConverter.AddConversion("string", "int", "int.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
 
+            commaSeparatingConverter.AddConversion("float", "string", "string.Format(\"{0:n}\", value)");
+            commaSeparatingConverter.AddConversion("string", "float", "float.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
 
-            converter = new CustomTypeConverter();
+            commaSeparatingConverter.AddConversion("long", "string", "value.ToString(\"n0\")");
+            commaSeparatingConverter.AddConversion("string", "long", "long.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
 
-            converter.AddConversion("int", "string", "value.ToString(\"n0\")");
-            converter.AddConversion("string", "int", "int.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
-
-            converter.AddConversion("float", "string", "string.Format(\"{0:n}\", value)");
-            converter.AddConversion("string", "float", "float.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
-
-            converter.AddConversion("long", "string", "value.ToString(\"n0\")");
-            converter.AddConversion("string", "long", "long.Parse(value.Replace(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator, \"\"))");
-
-            converter.AddConversion("string", "string", "value");
+            commaSeparatingConverter.AddConversion("string", "string", "value");
 
             // gotta get rid of commas before int.Parse
             // using CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator
 
-            TypeConverters.Add("Comma Separating", converter);
+            TypeConverters.Add("Comma Separating", commaSeparatingConverter);
 
-
-
-            converter = new CustomTypeConverter();
-            converter.AddConversion("int", "string", 
+            var minuteSecondsConverter = new CustomTypeConverter();
+            minuteSecondsConverter.AddConversion("int", "string", 
                 "string.Format(\"{0}:{1}\", (value / 60).ToString(\"D1\"), (value % 60).ToString(\"D2\"))");
-            TypeConverters.Add("Minutes:Seconds", converter);
+            TypeConverters.Add("Minutes:Seconds", minuteSecondsConverter);
 
-            converter = new CustomTypeConverter();
-            converter.AddConversion("float", "string",
+            var floatToStringConverter = new CustomTypeConverter();
+            floatToStringConverter.AddConversion("float", "string",
                 "string.Format(\"{0}:{1}{2}\", ((int)value / 60).ToString(\"D1\"), ((int)value % 60).ToString(\"D2\"), (value - (int)value).ToString(\".00\"))");
-            TypeConverters.Add("Minutes:Seconds.Hundredths", converter);
-
-
+            TypeConverters.Add("Minutes:Seconds.Hundredths", floatToStringConverter);
         }
 
         public static string Convert(CustomVariable customVariable, GetterOrSetter getterOrSetter, string value)
@@ -90,20 +82,14 @@ namespace FlatRedBall.Glue.TypeConversions
             {
                 return value;
             }
-            else
+
+            var converter = TypeConverters[customVariable.TypeConverter];
+            if (getterOrSetter == GetterOrSetter.Getter)
             {
-                CustomTypeConverter converter = TypeConverters[customVariable.TypeConverter];
-
-                if (getterOrSetter == GetterOrSetter.Getter)
-                {
-                    return converter.GetConversion(customVariable.Type, customVariable.OverridingPropertyType, value);
-                }
-                else
-                {
-                    return converter.GetConversion(customVariable.OverridingPropertyType, customVariable.Type, value);
-                }
+                return converter.GetConversion(customVariable.Type, customVariable.OverridingPropertyType, value);
             }
-        }
 
+            return converter.GetConversion(customVariable.OverridingPropertyType, customVariable.Type, value);
+        }
     }
 }

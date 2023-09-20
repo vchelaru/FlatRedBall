@@ -1,22 +1,9 @@
-﻿using FlatRedBall.Glue.Controls;
-using FlatRedBall.Glue.Plugins.ExportedImplementations;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.ViewModels;
 using OfficialPlugins.CollisionPlugin.Controllers;
 using OfficialPlugins.CollisionPlugin.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OfficialPlugins.CollisionPlugin.Views
 {
@@ -41,21 +28,8 @@ namespace OfficialPlugins.CollisionPlugin.Views
             viewModel.TunnelingObject = namedObject.InstanceName;
             viewModel.TunnelingEvent = "CollisionOccurred";
 
-            //GlueCommands.Self.DialogCommands.ShowAddNewEventDialog(viewModel);
-
             viewModel.EventName = namedObject.InstanceName + "Collided";
-            //viewModel.TunnelingObject = addEventWindow.TunnelingObject;
-            //viewModel.TunnelingEvent = addEventWindow.TunnelingEvent;
-
-            //viewModel.SourceVariable = addEventWindow.SourceVariable;
-            //viewModel.BeforeOrAfter = addEventWindow.BeforeOrAfter;
-
-            //viewModel.DelegateType = addEventWindow.ResultDelegateType;
-
             GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
-
-
-
         }
 
         private void FirstObjectCollisionPartitioningButtonClicked(object sender, RoutedEventArgs e)

@@ -71,7 +71,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override void StartUp()
         {
-            miLinkSource = this.AddMenuItemTo("Link Game to FRB Source", (_, _) => ShowGameToGlueSourceTab(), "Project");
+            miLinkSource = this.AddMenuItemTo(Localization.Texts.LinkGameToFrbSource, Localization.MenuIds.LinkGameToFrbSourceId, ShowGameToGlueSourceTab, Localization.MenuIds.ProjectId);
 
             miLinkSource.Enabled = false;
 
@@ -102,16 +102,16 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void CreateTabIfNecessary()
         {
-            if(Tab == null)
+            if (Tab != null) 
+                return;
+            
+            control = new AddFrbSourceView();
+            control.LinkToSourceClicked += () =>
             {
-                control = new AddFrbSourceView();
-                control.LinkToSourceClicked += () =>
-                {
-                    AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
-                    Tab.Hide();
-                };
-                    Tab = CreateTab(control, "Add FRB Source");
-            }
+                AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
+                Tab.Hide();
+            };
+            Tab = CreateTab(control, Localization.Texts.AddFrbSource);
         }
 
     }

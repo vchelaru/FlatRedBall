@@ -225,7 +225,7 @@ namespace OfficialPlugins.VariableDisplay
 
             List<MemberCategory> categories = new List<MemberCategory>();
 
-            CreateAndAddCategory(categories, "Variables");
+            CreateAndAddCategory(categories, Localization.Texts.Variables);
             CreateInstanceMembersForVariables(element, categories);
 
             AddAlternatingColors(grid, categories);
@@ -254,9 +254,9 @@ namespace OfficialPlugins.VariableDisplay
             }
         }
 
-        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryName)
+        private static MemberCategory CreateAndAddCategory(List<MemberCategory> categories, string categoryLabel)
         {
-            var defaultCategory = new MemberCategory(categoryName);
+            var defaultCategory = new MemberCategory(categoryLabel);
             defaultCategory.FontSize = 14;
             categories.Add(defaultCategory);
             return defaultCategory;

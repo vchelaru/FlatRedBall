@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FlatRedBall.PlatformerPlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              xmlns:b="clr-namespace:FlatRedBall.PlatformerPlugin.WpfBehaviors"
              mc:Ignorable="d" 
              
@@ -38,129 +39,132 @@
 
         <Rectangle Grid.Row="0" Grid.ColumnSpan="7" VerticalAlignment="Top" Height="1" Fill="Black" />
         <Rectangle Grid.Row="0" Grid.Column ="1" Grid.ColumnSpan="5" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
-
-
-
         <Rectangle Grid.Row="1" Grid.ColumnSpan="7" Grid.Column="0" VerticalAlignment="Bottom" Height="1" Fill="Gray" />
-
 
         <!--Name-->
         <StackPanel Grid.Row="1" Margin="3">
-            <TextBlock HorizontalAlignment="Center" Margin="3">Movement Type</TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="3" Text="{x:Static localization:Texts.MovementType}"></TextBlock>
             <TextBox Text="{Binding Name}" Width="90" VerticalAlignment="Top" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text"
                      IsEnabled="{Binding IsNameEditable}">
                 
             </TextBox>
-            <GroupBox Header="Inheritance" Visibility="{Binding InheritBoxVisibility}">
+            <GroupBox Header="{x:Static localization:Texts.Inheritance}" Visibility="{Binding InheritBoxVisibility}">
                 <StackPanel>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding InheritMovementValues}">
                         <RadioButton.ToolTip>
-                            If inherited, this entity will use this value as defined in the base entity.
+                            <Label Content="{x:Static localization:Texts.HintEntityInheritsFromBase}" />
                         </RadioButton.ToolTip>
-                        Inherit Values
+                        <Label Content="{x:Static localization:Texts.InheritValues}" />
                     </RadioButton>
                     <RadioButton VerticalContentAlignment="Center" IsChecked="{Binding OverwriteMovementValues}">
                         <RadioButton.ToolTip>
-                            If overwriting, this entity's values for these movement values will be used instead of the base entity.
+                            <Label Content="{x:Static localization:Texts.HintOverwriteHidesBase}" />
                         </RadioButton.ToolTip>
-                        Overwrite Values
+                        <Label Content="{x:Static localization:Texts.OverwriteValues}" />
                     </RadioButton>
                 </StackPanel>
             </GroupBox>
         </StackPanel>
 
         <!--Horizontal Movement-->
-        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Horizontal Movement</TextBlock>
+        <TextBlock Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3" Text="{x:Static localization:Texts.HorizontalMovement}" />
         <StackPanel Grid.Row="1" Grid.Column="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
 
-            <TextBlock>Max Speed:</TextBlock>
+            <TextBlock Text="{x:Static localization:Texts.MaxSpeed}"/>
             <TextBox Text="{Binding MaxSpeedX}" HorizontalAlignment="Left" Width="70" Margin="0,0,0,5"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
-                <TextBox.ToolTip>The maximum speed in pixels per second that the entity can move due to input being applyed. This speed can be exceeded when on a moving platform.</TextBox.ToolTip>
+                <TextBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintMaxSpeedPerPixel}"/>
+                </TextBox.ToolTip>
             </TextBox>
 
             <RadioButton IsChecked="{Binding IsImmediate}">
-                <RadioButton.ToolTip>Speeding up to maximum speed or down to stopping happens immediately.</RadioButton.ToolTip>
-                Immediate
+                <RadioButton.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintSpeedToMaxStopsImmediate}"/>
+                </RadioButton.ToolTip>
+                <Label Content="{x:Static localization:Texts.Immediate}"/>
             </RadioButton>
             <RadioButton  IsChecked="{Binding UsesAcceleration}" Margin="0,0,0,5">
-                <RadioButton.ToolTip>Speeding up to maximum speed or down happens gradually.</RadioButton.ToolTip>
-                Speed Up/Down
+                <RadioButton.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintSpeedToMaxStopsGradually}"/>
+                </RadioButton.ToolTip>
+                <Label Content="{x:Static localization:Texts.SpeedUpDown}"/>
             </RadioButton>
 
             <StackPanel Visibility="{Binding AccelerationValuesVisibility}">
-                <TextBlock>Speed Up Time:</TextBlock>
+                <TextBlock Text="{x:Static localization:Texts.SpeedUpTime}" />
                 <TextBox HorizontalAlignment="Left" Width="50"  Text="{Binding AccelerationTimeX}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                     <TextBox.ToolTip>
-                        The number of seconds to accelerate from a standstill to full speed.
+                        <Label Content="{x:Static localization:Texts.HintSecondsToAccelerate}"/>
                     </TextBox.ToolTip>
                 </TextBox>
-                <TextBlock>Slow Down Time:</TextBlock>
+                <TextBlock Text="{x:Static localization:Texts.SlowDownTime}" />
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding DecelerationTimeX}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                     <TextBox.ToolTip>
-                        The number of seconds to decelerate from max speed to a standstill.
+                        <Label Content="{x:Static localization:Texts.HintSlowdownToStop}"/>
                     </TextBox.ToolTip>
                 </TextBox>
-
 
                 <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding IsCustomDecelerationChecked}">
                     <CheckBox.ToolTip>
-                        Whether to use a custom deceleration value when moving above max speed. If false, then the Slow Down Time will be used to calculate a deceleration value. If true, a custom value will be used. This value shoudl be true for movement values with a Max Speed of 0.
+                        <Label Content="{x:Static localization:Texts.HintCustomDecelerationAboveMaxSpeed}"/>
                     </CheckBox.ToolTip>
-                    Custom deceleration above max speed
+                    <Label Content="{x:Static localization:Texts.CustomDecelerationAboveMaxSpeed}"/>
                 </CheckBox>
                 <TextBox Width="70" HorizontalAlignment="Left" IsEnabled="{Binding IsCustomDecelerationValueEnabled}" Text="{Binding CustomDecelerationValue}">
                     <TextBox.ToolTip>
-                        The deceleration value to apply to the entity if it is moving above its max speed.
+                        <Label Content="{x:Static localization:Texts.HintDecelerationAboveMaxSpeed}"/>
                     </TextBox.ToolTip>
                 </TextBox>
             </StackPanel>
-
-
         </StackPanel>
 
         <!--Slope Movement -->
-        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3">Slope Movement</TextBlock>
+        <TextBlock Grid.Column="2" FontSize="16" HorizontalAlignment="Left" Margin="3,3,8,3" Text="{x:Static localization:Texts.SlopeMovement}" />
         <StackPanel Grid.Row="1" Grid.Column="2" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <RadioButton IsChecked="{Binding MoveSameSpeedOnSlopes}" VerticalContentAlignment="Center">
-                <RadioButton.ToolTip>Horizontal movement is not impacted by slopes.</RadioButton.ToolTip>
-                Move the same speed</RadioButton>
+                <RadioButton.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintHorizontalMovementSlopesNotImpacted}"/>
+                </RadioButton.ToolTip>
+                <Label Content="{x:Static localization:Texts.MoveSameSpeed}"/>
+            </RadioButton>
             <RadioButton IsChecked="{Binding AdjustSpeedOnSlopes}" VerticalContentAlignment="Center">
-                <RadioButton.ToolTip>Horizontal movement is impacted by slopes.</RadioButton.ToolTip>
-
-                Slopes change speed</RadioButton>
+                <RadioButton.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintHorizontalMovementSlopedImpacted}"/>
+                </RadioButton.ToolTip>
+                <Label Content="{x:Static localization:Texts.SlopesChangeSpeed}"/>
+            </RadioButton>
             <StackPanel Margin="10,0,0,0" Visibility="{Binding SlopeMovementSpeedUiVisibility}">
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock>Character moves uphill at full speed on slope</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.SlopeMoveUphill}" />
                     </StackPanel>
                     <local:SlopeDisplay Angle="{Binding UphillFullSpeedSlope}"></local:SlopeDisplay>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock>Character stops moving uphill on slope</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.CharacterStopMovingUphillSlope}" />
                     </StackPanel>
                     <local:SlopeDisplay Angle="{Binding UphillStopSpeedSlope}"></local:SlopeDisplay>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock>Character moves downhill at full speed on slope</TextBlock>
+                        <TextBlock Text="{x:Static localization:Texts.CharacterMovesFullSpeedOnSlope}" />
                     </StackPanel>
-                    <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillFullSpeedSlope}"></local:SlopeDisplay>
-
+                    <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillFullSpeedSlope}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Width="255">
-                        <TextBlock VerticalAlignment="Center" >Character moves downhill</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.CharacterMovesDownhill}" />
                         <TextBox Width="24" Height="18" Text="{Binding Path=DownhillMaxSpeedBoostPercentage, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <TextBlock VerticalAlignment="Center" >% faster on slope</TextBlock>
+                        <TextBlock VerticalAlignment="Center" Text="{x:Static localization:Texts.XFasterOnSlope}" />
                     </StackPanel>
                     <local:SlopeDisplay IsInverted="True" Angle="{Binding DownhillMaxSpeedSlope}"></local:SlopeDisplay>
                 </StackPanel>
@@ -169,81 +173,97 @@
         </StackPanel>
 
         <!--Jumping-->
-        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3">Jumping</TextBlock>
+        <TextBlock Grid.Column="3" FontSize="16" HorizontalAlignment="Left" Margin="3" Text="{x:Static localization:Texts.Jumping}" />
         <StackPanel Grid.Column="3" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
-            <TextBlock>Jump Speed:</TextBlock>
+            <TextBlock Text="{x:Static localization:Texts.JumpSpeed}" />
             <TextBox HorizontalAlignment="Left" Width="70"  Text="{Binding JumpVelocity}" Margin="1,0,-1,5"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                 <TextBox.ToolTip>
-                    The Y velocity to assign when jumping. Setting a value of 0 means the entity cannot jump.
+                    <Label Content="{x:Static localization:Texts.HintYVelocityForJumping}"/>
                 </TextBox.ToolTip>
             </TextBox>
 
             <CheckBox Margin="0,5,0,0" IsChecked="{Binding JumpApplyByButtonHold}">
-                <CheckBox.ToolTip>If checked, the player can hold the jump button to jump higher. If unchecked, all jumps will be the same height, regardless of how long the jump button is held.</CheckBox.ToolTip>
-                Hold to Jump Higher</CheckBox>
+                <CheckBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintHoldToJumpHigher}"/>
+                </CheckBox.ToolTip>
+                <Label Content="{x:Static localization:Texts.HoldToJumpHigher}"/>
+            </CheckBox>
             <StackPanel Visibility="{Binding JumpHoldTimeVisibility}">
                 <TextBlock>Max Jump Hold Time:</TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding JumpApplyLength}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                     <TextBox.ToolTip>
-                        The amount of time that the player can hold the jump button to jump higher. While the button is held, gravity is disabled.
+                        <Label Content="{x:Static localization:Texts.HintTimeAmountJumpHigher}"/>
                     </TextBox.ToolTip>
                 </TextBox>
             </StackPanel>
 
             <CheckBox Margin="0,10,0,0" IsChecked="{Binding CanFallThroughCloudPlatforms}">
-                <CheckBox.ToolTip>If checked, the player can press the down direction and jump to fall through clouds.</CheckBox.ToolTip>
-                Can Fall Through Clouds</CheckBox>
+                <CheckBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintPressDownThroughClouds}"/>
+                </CheckBox.ToolTip>
+                <Label Content="{x:Static localization:Texts.CanFallThroughClouds}"/>
+            </CheckBox>
             <StackPanel Visibility="{Binding FallThroughCloudPlatformsVisibility}">
-                <TextBlock>Cloud Platform Thickness:</TextBlock>
+                <TextBlock>
+                    <Label Content="{x:Static localization:Texts.CloudPlatformThickness}"/>
+                </TextBlock>
                 <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding CloudFallThroughDistance}"
                          b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                     <TextBox.ToolTip>
-                        The amount of distance to fall when pressing down and jump on cloud before re-enabling cloud collision. This should be the height of one tile (typically 16).
+                        <Label Content="{x:Static localization:Texts.HintDistancePressCloudCollision}"/>
                     </TextBox.ToolTip>
                 </TextBox>
             </StackPanel>
         </StackPanel>
 
         <!--Falling-->
-        <TextBlock Grid.Column="4" FontSize="16" HorizontalAlignment="Left" Margin="3">Falling</TextBlock>
+        <TextBlock Grid.Column="4" FontSize="16" HorizontalAlignment="Left" Margin="3" Text="{x:Static localization:Texts.Falling}" />
         <StackPanel Grid.Column="4" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
-            <TextBlock>Gravity:</TextBlock>
+            <TextBlock Text="{x:Static localization:Texts.Gravity}" />
             <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding Gravity}" 
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
-                <TextBox.ToolTip>The gravity (Y Acceleration) to apply to the entity. A positive value makes the entity fall downward.</TextBox.ToolTip>
+                <TextBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintGravityApply}"/>
+                </TextBox.ToolTip>
             </TextBox>
-            <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding Gravity0WarningVisibility}">
-                If these values are used for ground movement with 0 or negative gravity, the entity may have its OnGround set to false every other frame.</TextBlock>
-            <TextBlock>Max Falling Speed:</TextBlock>
+            <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding Gravity0WarningVisibility}" Text="{x:Static localization:Texts.HintIfValuesUsedForGroundMovement}" />
+            <TextBlock Text="{x:Static localization:Texts.MaxFallingSpeed}" />
             <TextBox HorizontalAlignment="Left" Width="50" Text="{Binding MaxFallSpeed}"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
-                <TextBox.ToolTip>The maximum falling speed.</TextBox.ToolTip>
+                <TextBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.MaxSpeed}"/>
+                </TextBox.ToolTip>
             </TextBox>
             <TextBlock HorizontalAlignment="Left" MaxWidth="150" Margin="0,0,0,5" FontSize="9" Foreground="Red" TextWrapping="Wrap" Visibility="{Binding MaxFallingSpeed0WarningVisibility}">
-                If these values are used for ground movement with 0 or negative Max Falling Speed, the entity may have its OnGround set to false every other frame.</TextBlock>
+                <Label Content="{x:Static localization:Texts.HintValuesGroundMovementFallingSpeed}"/>
+            </TextBlock>
 
         </StackPanel>
 
-        <TextBlock Grid.Column="5" FontSize="16" HorizontalAlignment="Left" Margin="3">Climbing</TextBlock>
+        <TextBlock Grid.Column="5" FontSize="16" HorizontalAlignment="Left" Margin="3" Text="{x:Static localization:Texts.Climbing}" />
         <StackPanel Grid.Column="5" Grid.Row="1" Margin="12,3,8,3"  IsEnabled="{Binding IsEditable}">
             <CheckBox VerticalContentAlignment="Center" Margin="0,10,0,0" IsChecked="{Binding CanClimb}">
                 <CheckBox.ToolTip>
-                    Whether pressing up and down puts the player in a climbing state. When climbing, there is no gravity and up/down input directly sets the player's velocity.
+                    <Label Content="{x:Static localization:Texts.HintClimbingPressingUp}"/>
                 </CheckBox.ToolTip>
-                Can Climb
+                <Label Content="{x:Static localization:Texts.CanClimb}"/>
             </CheckBox>
-            <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" >Climbing Speed:</TextBlock>
-            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
+            <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" Text="{x:Static localization:Texts.ClimbingSpeed}"/>
+            <TextBox HorizontalAlignment="Left" Width="p70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
-                <TextBox.ToolTip>The vertical movement speed when climging.</TextBox.ToolTip>
+                <TextBox.ToolTip>
+                    <Label Content="{x:Static localization:Texts.HintVerticalSpeedForClimbing}"/>
+                </TextBox.ToolTip>
             </TextBox>
             
         </StackPanel>
 
         <Button Grid.Column="6" Width="24" Click="HandleXClick" Visibility="{Binding DeleteButtonVisibility}" >
-            <Button.ToolTip>Deletes this set of movement values.</Button.ToolTip>
+            <Button.ToolTip>
+                <Label Content="{x:Static localization:Texts.HintDeletesMovementValues}"/>
+            </Button.ToolTip>
             X</Button>
 
         <StackPanel Grid.Column="6" Grid.Row="1">
@@ -252,7 +272,7 @@
             <Button x:Name="DuplicateButton" Click="HandleDuplicateClicked" Width="24" Margin="0,5,0,0">
                 <Image Source="/PlatformerPluginCore;component/Content/Icons/icon_duplicate.png"></Image>
                 <Button.ToolTip>
-                    Create a duplicate of this set of movement values.
+                    <Label Content="{x:Static localization:Texts.HintDuplicateMovementValues}"/>
                 </Button.ToolTip>
             </Button>
         </StackPanel>

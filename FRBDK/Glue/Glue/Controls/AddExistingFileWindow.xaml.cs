@@ -1,30 +1,18 @@
-﻿using FlatRedBall.Glue.Errors;
-using FlatRedBall.Glue.FormHelpers;
-using FlatRedBall.Glue.Managers;
+﻿using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
-using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
 using Glue;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Policy;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ToolsUtilitiesStandard.Network;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -109,9 +97,9 @@ namespace FlatRedBall.Glue.Controls
             if(destination.Exists())
             {
                 DialogResult result =
-                    System.Windows.Forms.MessageBox.Show("Do you want to download this file? It will ovewrite:\n" +
+                    System.Windows.Forms.MessageBox.Show(L.Texts.AskDownloadFileOverwrite + "\n" +
                     destination.FullPath,
-                    "Download and Ovewrite?",
+                    L.Texts.DownloadAndOverwrite,
                     MessageBoxButtons.YesNo);
 
                 shouldDownload = result == System.Windows.Forms.DialogResult.Yes;
@@ -134,7 +122,7 @@ namespace FlatRedBall.Glue.Controls
 
             if(downloadResponse.Succeeded == false || ViewModel.DownloadedFilesList.Any(item => item.DownloadResponse?.Succeeded == false))
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox("Error downloading files");
+                GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.ErrorDownloadingFiles);
             }
             else
             {
@@ -189,12 +177,12 @@ namespace FlatRedBall.Glue.Controls
                     ViewModel.Files.Add(ViewModel.ContentFolder + ViewModel.SelectedListBoxItem);
                 else
                     foreach(var s in ViewModel.SelectedListBoxItems)
-                        ViewModel.Files.Add(ViewModel.ContentFolder + s.ToString());
+                        ViewModel.Files.Add(ViewModel.ContentFolder + s);
                 this.DialogResult = true;
             }
             else
             {
-                GlueCommands.Self.DialogCommands.ShowMessageBox("Select a file or click the Browse button");
+                GlueCommands.Self.DialogCommands.ShowMessageBox(L.Texts.SelectFileOrClickBrowse);
             }
         }
 

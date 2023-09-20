@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 
 	<PropertyGroup>
@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Gum\ToolsUtilities\ToolsUtilitiesStandard.csproj" />
     <ProjectReference Include="..\..\FRBDKUpdater\UpdaterWpf\UpdaterWpf\UpdaterWpf.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

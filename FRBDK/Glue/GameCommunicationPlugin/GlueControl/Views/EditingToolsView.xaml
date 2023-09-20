@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:GameCommunicationPlugin.GlueControl.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignWidth="28">
     <StackPanel>
@@ -19,14 +19,14 @@
                         <Image Source="{Binding ImageSource}" IsHitTestVisible="False"></Image>
                         <Button.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="View Preview in Explorer" Command="{Binding ViewInExplorerCommand}" />
-                                <MenuItem Header="Set Preview File">
-                                    <MenuItem Header="From Custom File..."  Command="{Binding SelectPreviewFileCommand}"></MenuItem>
-                                    <MenuItem Header="From Entity..." Command="{Binding SelectPreviewFromEntityCommand}"></MenuItem>
+                                <MenuItem Header="{x:Static localization:Texts.StartGameInEditMode}" Command="{Binding ViewInExplorerCommand}" />
+                                <MenuItem Header="{x:Static localization:Texts.SetPreviewFile}">
+                                    <MenuItem Header="{x:Static localization:Texts.FromCustomFile}"  Command="{Binding SelectPreviewFileCommand}"></MenuItem>
+                                    <MenuItem Header="{x:Static localization:Texts.FromEntity}" Command="{Binding SelectPreviewFromEntityCommand}"></MenuItem>
                                 </MenuItem> 
                                 <MenuItem Header="{Binding RefreshPreviewText}" Command="{Binding ForceRefreshPreviewCommand}" />
                                 <Separator></Separator>
-                                <MenuItem Header="Remove from Toolbar" Command="{Binding RemoveFromToolbarCommand}" />
+                                <MenuItem Header="{x:Static localization:Texts.RemoveFromToolbar}" Command="{Binding RemoveFromToolbarCommand}" />
                             </ContextMenu>
                         </Button.ContextMenu>
                         <Button.ToolTip>

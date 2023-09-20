@@ -2,24 +2,9 @@
 using FlatRedBall.Glue.MVVM;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
-using OfficialPlugins.Common.Controls;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WpfDataUi;
-using WpfDataUi.Controls;
-using WpfDataUi.DataTypes;
 using WpfDataUi.EventArguments;
 
 namespace OfficialPlugins.CustomVariablePlugin.Views;
@@ -30,8 +15,6 @@ namespace OfficialPlugins.CustomVariablePlugin.Views;
 public partial class CustomVariablePropertiesView : UserControl
 {
     CustomVariable Variable => MainGrid.Instance as CustomVariable;
-
-
 
     public CustomVariablePropertiesView()
     {
@@ -103,8 +86,6 @@ public partial class CustomVariablePropertiesView : UserControl
     {
         this.VariableDefinitionGrid.Instance = customVariable.VariableDefinition;
 
-
-
         RemoveMember(nameof(VariableDefinition.Name));
         RemoveMember(nameof(VariableDefinition.Type));
         RemoveMember(nameof(VariableDefinition.MinValue));
@@ -142,7 +123,4 @@ public partial class CustomVariablePropertiesView : UserControl
             }
         }
     }
-
-
-
 }

@@ -92,13 +92,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             mainView.AddScreenButton.Visibility = ToVisibility(glueProject != null);
             if(hasGameScreen == false)
             {
-                mainView.AddScreenButton.Details =
-                    "Every game needs at least one screen.\nUsually the game logic is in a screen called GameScreen.";
+                mainView.AddScreenButton.Details = Localization.Texts.HintNeedAtLeastOneScreen;
             }
             else
             {
-                mainView.AddScreenButton.Details =
-                    "Most games have multiple screens. Examples include title screens, level selection screens, and settings screens.";
+                mainView.AddScreenButton.Details = Localization.Texts.HintMostGamesMultipleScreens;
             }
 
             #endregion
@@ -114,14 +112,14 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             mainView.AddObjectToEntityButton.Visibility = ToVisibility(
                 GlueState.Self.CurrentEntitySave != null
                 );
-            mainView.AddObjectToEntityButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
-            mainView.AddObjectToEntityButton.Details = "Common entity object types include sprites and shapes for collision.";
+            mainView.AddObjectToEntityButton.Title = String.Format(Localization.Texts.ObjectAddToX, GlueState.Self.CurrentElement?.GetStrippedName());
+            mainView.AddObjectToEntityButton.Details = Localization.Texts.HintCommonEntityTypes;
 
             mainView.AddObjectToScreenButton.Visibility = ToVisibility(
                 GlueState.Self.CurrentScreenSave != null
                 );
-            mainView.AddObjectToScreenButton.Title = $"Add Object to {GlueState.Self.CurrentElement?.GetStrippedName()}";
-            mainView.AddObjectToScreenButton.Details = "Common screen object types include entity lists, layers, and collision relationships.";
+            mainView.AddObjectToScreenButton.Title = String.Format(Localization.Texts.ObjectAddToX, GlueState.Self.CurrentElement?.GetStrippedName());
+            mainView.AddObjectToScreenButton.Details = Localization.Texts.HintCommonEntityTypesRelationships;
 
             #endregion
 
@@ -151,11 +149,11 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
 
             mainView.AddObjectToListInScreenButton.Visibility = 
                 ToVisibility(nosList != null && !isListReferencingAbstractEntity && GlueState.Self.CurrentScreenSave != null);
-            mainView.AddObjectToListInScreenButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
+            mainView.AddObjectToListInScreenButton.Title = String.Format(Localization.Texts.AddNewXToY, listType, nosList?.InstanceName);
 
             mainView.AddObjectToListInEntityButton.Visibility = 
                 ToVisibility(nosList != null && !isListReferencingAbstractEntity && GlueState.Self.CurrentElement != null);
-            mainView.AddObjectToListInEntityButton.Title = $"Add a new {listType} to {nosList?.InstanceName}";
+            mainView.AddObjectToListInEntityButton.Title = String.Format(Localization.Texts.AddNewXToY, listType, nosList?.InstanceName);
 
 
             #endregion
@@ -175,11 +173,9 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             {
                 var entity = selectedObject as EntitySave;
                 var entityName = entity.GetStrippedName();
-                mainView.AddListOfEntityButton.Title =
-                    $"Add {entityName} List to GameScreen";
+                mainView.AddListOfEntityButton.Title = String.Format(Localization.Texts.ListAddXToGameScreen, entityName);
 
-                mainView.AddListOfEntityButton.Details =
-                    $"Lists enable multiple copies of this entity to exist in the game screen.";
+                mainView.AddListOfEntityButton.Details = Localization.Texts.HintListMultipleCopiesOfEntity;
             }
 
             #endregion
@@ -212,13 +208,12 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
                 var entity = selectedObject as EntitySave;
                 var entityName = entity.GetStrippedName();
 
-                string anotherOrEmpty = alreadyHasInstance ? "another " : String.Empty;
+                string anotherOrEmpty = alreadyHasInstance ? Localization.Texts.Another + " " : String.Empty;
 
                 mainView.AddInstanceOfEntityButton.Title =
-                    $"Add {anotherOrEmpty}{entityName} Instance to GameScreen";
+                    String.Format(Localization.Texts.GameScreenInstanceAdd, anotherOrEmpty, entityName);
 
-                mainView.AddInstanceOfEntityButton.Details =
-                    $"Adds a single instance to the GameScreen. This is usually done if there will only ever be one of these in the game screen at any time.";
+                mainView.AddInstanceOfEntityButton.Details = Localization.Texts.HintGameScreenAddInstance;
             }
 
             #endregion
@@ -234,7 +229,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Managers
             if(mainView.AddEntityFactory.Visibility == Visibility.Visible)
             {
                 mainView.AddEntityFactory.Title =
-                    $"Add {selectedEntity.GetStrippedName()} Factory";
+                    String.Format(Localization.Texts.FactoryAddX, selectedEntity.GetStrippedName());
             }
 
             #endregion

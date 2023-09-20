@@ -9,8 +9,7 @@
         <CheckBox IsChecked="{Binding LogTaskDetailsToOutput}" VerticalContentAlignment="Center">Log Task Details to Output</CheckBox>
         <CheckBox IsChecked="{Binding LogQueueChanges}" VerticalContentAlignment="Center">Log Queueing - if unchecked only processing is logged</CheckBox>
         <CheckBox IsChecked="{Binding LogPluginCalls}" VerticalContentAlignment="Center">Log Plugin Calls</CheckBox>
-        <!--<Button Click="Button_Click">(Debug) Add a bunch of tasks</Button>
-        <Button Click="TestPriorityClicked">(Debug) Test Priority</Button>-->
+
         <Label Content="{Binding CurrentTaskText}"></Label>
     </StackPanel>
 </UserControl>

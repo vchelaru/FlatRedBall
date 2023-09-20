@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OfficialPlugins.PointEditingPlugin"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="300">
     <Grid>
@@ -29,8 +29,8 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Click="AddButtonClicked">Add</Button>
-                <Button Click="RemoveButtonClicked" Grid.Column="1">Remove</Button>
+                <Button Click="AddButtonClicked" Content="{x:Static localization:Texts.Add}" />
+                <Button Click="RemoveButtonClicked" Grid.Column="1" Content="{x:Static localization:Texts.Remove}" />
             </Grid>
         </Grid>
         <Grid Grid.Column="2">
@@ -40,30 +40,27 @@
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Margin="2">
                 <Button Height="24" Click="HandleAddRectanglePointsClicked">
-                    <Button.ToolTip>Adds or replaces all points on the polygon to create a rectangle.</Button.ToolTip>
+                    <Button.ToolTip><Label Content="{x:Static localization:Texts.PolygonToRectangle}" /></Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddRectanglePoints.png"></Image>
                 </Button>
                 <Button Height="24" Click="HandleAddPolygonPointsClicked">
-                    <Button.ToolTip>Adds or replaces all points on the polygon to create a multi-sided polygon.</Button.ToolTip>
+                    <Button.ToolTip><Label Content="{x:Static localization:Texts.PolygonToMultiSided}" /></Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/AddPolygonPoints.png"></Image>
                 </Button>
-                <Button Height="24" Click="MovePointUp" Margin="4,0,0,0"
-                        IsEnabled="{Binding IsMoveUpEnabled}">
-                    <Button.ToolTip>Moves the selected point up in the list.</Button.ToolTip>
+                <Button Height="24" Click="MovePointUp" Margin="4,0,0,0" IsEnabled="{Binding IsMoveUpEnabled}">
+                    <Button.ToolTip><Label Content="{x:Static localization:Texts.HintMovePointUpList}" /></Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/MoveUp.png"></Image>
                 </Button>
                 <Button Height="24" Click="MovePointDown"
                         IsEnabled="{Binding IsMoveDownEnabled}">
-                    <Button.ToolTip>Moves the selected point down in the list.</Button.ToolTip>
+                    <Button.ToolTip><Label Content="{x:Static localization:Texts.HintMovePointDownList}" /></Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/MoveDown.png"></Image>
                 </Button>
 
                 <Button Height="24" Click="ResizePolygon" Margin="4,0,0,0">
-                    <Button.ToolTip>Resize the polygon by moving the contained points.</Button.ToolTip>
+                    <Button.ToolTip><Label Content="{x:Static localization:Texts.HintResizePolygon}" /></Button.ToolTip>
                     <Image IsHitTestVisible="False" Source="/OfficialPluginsCore;component/PointEditingPlugin/Content/ResizePolygon.png"></Image>
                 </Button>
-
-
             </StackPanel>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -75,8 +72,7 @@
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Label>X</Label>
-                <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"
-                         ></TextBox>
+                <TextBox Margin="3" x:Name="XTextBox" Grid.Column="1" TextChanged="XTextBox_TextChanged_1"></TextBox>
 
                 <Label Grid.Row="1">Y</Label>
                 <TextBox Margin="3" x:Name="YTextBox" Grid.Column="1" TextChanged="YTextBox_TextChanged_1" Grid.Row="1"></TextBox>

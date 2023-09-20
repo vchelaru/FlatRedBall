@@ -81,11 +81,11 @@ namespace PlatformerPluginCore.Controllers
                 instanceMember.PropertiesToSetOnDisplayer[(nameof(MultiLineTextBoxDisplay.IsAboveBelowLayout))] = true;
             }
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinXVelocityAbsolute), "Velocity");
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), "Velocity");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinXVelocityAbsolute), Localization.Texts.Velocity);
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxXVelocityAbsolute), Localization.Texts.Velocity);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), "Velocity");
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity), "Velocity");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MinYVelocity), Localization.Texts.Velocity);
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MaxYVelocity),Localization.Texts.Velocity);
 
             var velocityFirstGridLength = new GridLength(150);
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinXVelocityAbsolute)).FirstGridLength = velocityFirstGridLength;
@@ -93,12 +93,12 @@ namespace PlatformerPluginCore.Controllers
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MinYVelocity)).FirstGridLength = velocityFirstGridLength;
             dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.MaxYVelocity)).FirstGridLength = velocityFirstGridLength;
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment), "Animation Speed");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.AnimationSpeedAssignment),Localization.Texts.AnimationSpeed);
 
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.AbsoluteXVelocityAnimationSpeedMultiplier);
-                prop.Category = "Animation Speed";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
@@ -106,28 +106,28 @@ namespace PlatformerPluginCore.Controllers
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.AbsoluteYVelocityAnimationSpeedMultiplier);
-                prop.Category = "Animation Speed";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnVelocityMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.MaxSpeedXRatioMultiplier);
-                prop.Category = "Animation Speed";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
             {
                 var prop = new InstanceMemberDisplayProperties();
                 prop.Name = nameof(AnimationRowViewModel.MaxSpeedYRatioMultiplier);
-                prop.Category = "Animation Speed";
+                prop.Category = Localization.Texts.AnimationSpeed;
                 prop.IsHiddenDelegate = (member) => viewModel.AnimationSpeedAssignment != AnimationSpeedAssignment.BasedOnMaxSpeedRatioMultiplier;
                 properties.DisplayProperties.Add(prop);
             }
 
             dataUiGrid.Apply(properties);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.OnGroundRequirement), "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.OnGroundRequirement), Localization.Texts.MovementType);
             var member = dataUiGrid.GetInstanceMember(nameof(AnimationRowViewModel.OnGroundRequirement));
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.TrueText)] = "Ground Only";
             member.PropertiesToSetOnDisplayer[nameof(NullableBoolDisplay.FalseText)] = "Air Only";
@@ -139,9 +139,9 @@ namespace PlatformerPluginCore.Controllers
                 category.Members.RemoveAll(item => item.PropertyType == typeof(System.Windows.Input.ICommand));
             }
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MovementName), "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.MovementName), Localization.Texts.MovementType);
 
-            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.CustomCondition), "Movement Type");
+            dataUiGrid.MoveMemberToCategory(nameof(AnimationRowViewModel.CustomCondition), Localization.Texts.MovementType);
         }
 
         public static void LoadAnimationFilesFromDisk(GlueElement currentElement)

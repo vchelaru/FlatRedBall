@@ -34,86 +34,86 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         }
         public override void StartUp()
         {
-            var File = AddTopLevelMenuItem("File");
+            var File = AddTopLevelMenuItem(Localization.Texts.File, Localization.MenuIds.FileId);
             {
-                File.Add("New Project", GlueCommands.Self.ProjectCommands.CreateNewProject);
-                File.Add("Load Project...", GlueCommands.Self.DialogCommands.ShowLoadProjectDialog);
-                File.Add("Close Project", () => GlueCommands.Self.CloseGlueProject());
+                File.Add(Localization.Texts.ProjectNew, GlueCommands.Self.ProjectCommands.CreateNewProject);
+                File.Add(Localization.Texts.ProjectLoad, GlueCommands.Self.DialogCommands.ShowLoadProjectDialog);
+                File.Add(Localization.Texts.ProjectClose, () => GlueCommands.Self.CloseGlueProject());
             }
 
-            var Edit = AddTopLevelMenuItem("Edit");
+            var Edit = AddTopLevelMenuItem(Localization.Texts.Edit, Localization.MenuIds.EditId);
             {
-                Edit.Add("Find file references...", findFileReferencesToolStripMenuItem_Click);
+                Edit.Add(Localization.Texts.FindFileReferences, findFileReferencesToolStripMenuItem_Click);
             }
 
-            var Project = AddTopLevelMenuItem("Project");
+            var Project = AddTopLevelMenuItem(Localization.Texts.Project, Localization.MenuIds.ProjectId);
             {
-                Project.Add("Error Check", RightClickHelper.ErrorCheckClick);
+                Project.Add(Localization.Texts.ErrorCheck, RightClickHelper.ErrorCheckClick);
                 Project.DropDownItems.Add(new ToolStripSeparator());
-                Project.Add("Export Group...", exportToolStripMenuItem_Click);
-                Project.Add("Import Group...", ElementImporter.AskAndImportGroup);
+                Project.Add(Localization.Texts.GroupExport, exportToolStripMenuItem_Click);
+                Project.Add(Localization.Texts.GroupImport, ElementImporter.AskAndImportGroup);
             }
 
-            var Content = AddTopLevelMenuItem("Content");
+            var Content = AddTopLevelMenuItem(Localization.Texts.Content, Localization.MenuIds.ContentId);
             {
-                var AdditionalContent = Content.Add("Additional Content", (Action)null);
+                var AdditionalContent = Content.Add(Localization.Texts.ContentAdditional, (Action)null);
                 {
-                    var ViewAdditionalContent = AdditionalContent.Add("View Additional Content Types", (Action)null);
+                    var ViewAdditionalContent = AdditionalContent.Add(Localization.Texts.ContentAdditionalViewTypes, (Action)null);
                     {
-                        ViewAdditionalContent.Add("For All Projects", forAllProjectsToolStripMenuItem_Click);
-                        ViewAdditionalContent.Add("For This Project Only", forThisProjectOnlyToolStripMenuItem_Click);
+                        ViewAdditionalContent.Add(Localization.Texts.ProjectForAll, forAllProjectsToolStripMenuItem_Click);
+                        ViewAdditionalContent.Add(Localization.Texts.ProjectThisOnly, forThisProjectOnlyToolStripMenuItem_Click);
                     }
-                    AdditionalContent.Add("New Content CSV...", newContentCSVToolStripMenuItem_Click);
-                    AdditionalContent.Add("View New File Template Folder", viewNewFileTemplateFolderToolStripMenuItem_Click);
+                    AdditionalContent.Add(Localization.Texts.NewContentCSV, newContentCSVToolStripMenuItem_Click);
+                    AdditionalContent.Add(Localization.Texts.ViewNewFileTemplateFolder, viewNewFileTemplateFolderToolStripMenuItem_Click);
                 }
                 Content.DropDownItems.Add(new ToolStripSeparator());
 
             }
             // cotinue here
 
-            var Settings = AddTopLevelMenuItem("Settings");
+            var Settings = AddTopLevelMenuItem(Localization.Texts.Settings, Localization.MenuIds.SettingsId);
             {
                 Settings.Add(
-                    "File Associations",
+                    Localization.Texts.FileAssociations,
                     () => new FileAssociationWindow().ShowDialog(MainGlueWindow.Self));
 
                 Settings.Add(
-                    "File Build Tools",
+                    Localization.Texts.FileBuildTools,
                     () => new FileBuildToolAssociationWindow(GlueState.Self.GlueSettingsSave.BuildToolAssociations).Show(MainGlueWindow.Self));
 
                 Settings.Add(
-                    "Performance Settings",
+                    Localization.Texts.PerformanceSettings,
                     () => new PerformanceSettingsWindow().ShowDialog(MainGlueWindow.Self));
 
                 Settings.Add(
-                    "Preferences",
+                    Localization.Texts.Preferences,
                     () => new PreferencesWindow().Show());
 
                 Settings.DropDownItems.Add(new ToolStripSeparator());
 
                 Settings.Add(
-                    "Custom Game Class",
+                    Localization.Texts.CustomGameClass,
                     customGameClassToolStripMenuItem_Click);
             }
 
 
-            var Update = AddTopLevelMenuItem("Update");
+            var Update = AddTopLevelMenuItem(Localization.Texts.Update,  Localization.MenuIds.UpdateId);
 
-            var Plugins = AddTopLevelMenuItem("Plugins");
+            var Plugins = AddTopLevelMenuItem(Localization.Texts.Plugins, Localization.MenuIds.PluginId);
             {
-                Plugins.Add("Install Plugin", () => new InstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add("Uninstall Plugin", () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add("Create Plugin", () => new CreatePluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().Show(MainGlueWindow.Self));
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
 
             // No one uses experimental, so get rid of it...
             //var Experimental = AddTopLevelMenuItem("Experimental");
 
-            var Help = AddTopLevelMenuItem("Help");
+            var Help = AddTopLevelMenuItem(Localization.Texts.Help, Localization.MenuIds.HelpId);
             {
-                Help.Add("Tutorials", () => OpenInBrowser("http://flatredball.com/documentation/tutorials/"));
-                Help.Add("Report a Bug", () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
+                Help.Add(Localization.Texts.Tutorials, () => OpenInBrowser("http://flatredball.com/documentation/tutorials/"));
+                Help.Add(Localization.Texts.ReportABug, () => OpenInBrowser("https://github.com/vchelaru/flatredball/issues"));
             }
         }
 
@@ -126,8 +126,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             }
             catch
             {
-                var message =
-                    $"Could not open a browser to the URL:\n\n{url}\n\nTry entering the address in a browser manually.";
+                var message = String.Format(Localization.Texts.ErrorCannotOpenBrowser, url);
 
                 GlueCommands.Self.DialogCommands.ShowMessageBox(message);
             }
@@ -135,9 +134,8 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
         private void findFileReferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TextInputWindow tiw = new TextInputWindow();
-
-            tiw.Message = "Enter the file name with extension, but no path (for example \"myfile.png\")";
+            var tiw = new TextInputWindow();
+            tiw.Message = Localization.Texts.EnterFileWithExtension;
 
 
 
@@ -169,17 +167,16 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                         }
                         catch (FileNotFoundException fnfe)
                         {
-                            ErrorReporter.ReportError(absoluteFileName, "Trying to find file references, but could not find contained file " + fnfe.FileName, true);
+                            ErrorReporter.ReportError(absoluteFileName, String.Format(Localization.Texts.AttemptFindFileReferences,fnfe.FileName), true);
                         }
 
-                        if (referencedFiles != null)
+                        if (referencedFiles == null) continue;
+                        
+                        foreach (var referencedFile in referencedFiles)
                         {
-                            foreach (var referencedFile in referencedFiles)
+                            if (result == referencedFile.NoPath.ToLower())
                             {
-                                if (result == referencedFile.NoPath.ToLower())
-                                {
-                                    matchingRegularFiles.Add(referencedFile + " in " + rfs.ToString() + "\n");
-                                }
+                                matchingRegularFiles.Add(referencedFile + " in " + rfs.ToString() + "\n");
                             }
                         }
                     }
@@ -187,11 +184,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 if (matchingReferencedFileSaves.Count == 0 && matchingRegularFiles.Count == 0)
                 {
-                    MessageBox.Show("There are no files referencing " + result, "No files found");
+                    MessageBox.Show(String.Format(Localization.Texts.NoFilesReferencing, result), Localization.Texts.NoFilesFound);
                 }
                 else
                 {
-                    string message = "Found the following:\n\n";
+                    string message = $"{Localization.Texts.FoundTheFollowing}\n\n";
 
                     foreach (string s in matchingRegularFiles)
                     {
@@ -202,7 +199,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                     {
                         message += rfs.ToString() + "\n";
                     }
-                    MessageBox.Show(message, "Files found");
+                    MessageBox.Show(message, Localization.Texts.FoundFiles);
                 }
 
 
@@ -232,18 +229,15 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         private void newContentCSVToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TextInputWindow tiw = new TextInputWindow();
-            tiw.DisplayText = "Enter new CSV name";
+            tiw.DisplayText = Localization.Texts.EnterNewCSVName;
 
-            ComboBox comboBox = new ComboBox();
+            var comboBox = new ComboBox();
 
             // project-specific CSVs are always named ProjectSpecificContent.csv
-            const string allProjects = "For all projects";
-            const string thisProjectOnly = "For this project only";
-
-            comboBox.Items.Add(allProjects);
-            comboBox.Items.Add(thisProjectOnly);
+            comboBox.Items.Add(Localization.Texts.ProjectForAll);
+            comboBox.Items.Add(Localization.Texts.ProjectThisOnly);
             // May 11 2023 - probably want to default to this project
-            comboBox.Text = thisProjectOnly;
+            comboBox.Text = Localization.Texts.ProjectThisOnly;
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.Width = 136;
             tiw.AddControl(comboBox);
@@ -262,7 +256,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                 GlobalOrProjectSpecific globalOrProjectSpecific;
 
-                if (comboBox.SelectedItem is string asString && asString == allProjects)
+                if (comboBox.SelectedItem is string asString && asString == Localization.Texts.ProjectForAll)
                 {
                     globalOrProjectSpecific = GlobalOrProjectSpecific.Global;
                 }
@@ -307,7 +301,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             }
             else
             {
-                MessageBox.Show("Could not open " + whatToView);
+                MessageBox.Show(String.Format(Localization.Texts.ErrorCouldNotOpen, whatToView));
             }
         }
 
@@ -315,12 +309,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         {
             if (ProjectManager.GlueProjectSave == null)
             {
-                MessageBox.Show("There is no loaded Glue project");
+                MessageBox.Show(Localization.Texts.NoLoadedGlueProject);
             }
             else
             {
                 var tiw = new CustomizableTextInputWindow();
-                tiw.Message = "Enter the custom class name.  Delete the contents to not use a custom class.";
+                tiw.Message = Localization.Texts.EnterCustomClassDeleteContents;
                 tiw.Result = ProjectManager.GlueProjectSave.CustomGameClass;
 
                 var result = tiw.ShowDialog();
@@ -335,11 +329,11 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
 
                     if (string.IsNullOrEmpty(ProjectManager.GameClassFileName))
                     {
-                        MessageBox.Show("Couldn't find the game class.");
+                        MessageBox.Show(Localization.Texts.ErrorCouldntFindGameClass);
                     }
                     else
                     {
-                        MessageBox.Show("Game class found:\n\n" + ProjectManager.GameClassFileName);
+                        MessageBox.Show(String.Format(Localization.Texts.GameClassFound, ProjectManager.GameClassFileName));
                     }
                 }
             }

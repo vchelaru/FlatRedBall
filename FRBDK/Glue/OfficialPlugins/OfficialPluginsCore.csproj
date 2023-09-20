@@ -110,6 +110,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Tiled\TMXGlueLib\TMXGlueLibCore.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\PluginLibraries\PluginLibraries.csproj" />
   </ItemGroup>
 

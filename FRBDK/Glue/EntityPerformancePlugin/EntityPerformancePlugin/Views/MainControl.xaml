@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:EntityPerformancePlugin.Views"
+             xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="400">
     <Grid>
@@ -12,7 +12,7 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TreeView SelectedItemChanged="TreeView_SelectedItemChanged" x:Name="TreeViewInstance" >
-            <TreeViewItem IsExpanded="True" Header="Main Entity" x:Name="EntityNode" IsSelected="{Binding IsRootSelected}"
+            <TreeViewItem IsExpanded="True" Header="{x:Static localization:Texts.EntityMain}" x:Name="EntityNode" IsSelected="{Binding IsRootSelected}"
                           ItemsSource="{Binding Instances}">
                 <TreeViewItem.ItemTemplate>
                     <DataTemplate>
@@ -28,8 +28,8 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <StackPanel>
-                <RadioButton IsChecked="{Binding IsSelectionFullyManaged}">Fully Managed</RadioButton>
-                <RadioButton IsChecked="{Binding IsSelectionSelectingManagedProperties}">Select Managed Properties</RadioButton>
+                <RadioButton IsChecked="{Binding IsSelectionFullyManaged}" Content="{x:Static localization:Texts.FullyManaged}" />
+                <RadioButton IsChecked="{Binding IsSelectionSelectingManagedProperties}"  Content="{x:Static localization:Texts.SelectManagedProperties}" />
             </StackPanel>
             <ListBox Grid.Column="0" Grid.Row="1" 
                      ItemsSource="{Binding SelectedItemProperties}" 
