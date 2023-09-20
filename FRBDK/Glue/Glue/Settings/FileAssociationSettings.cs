@@ -217,13 +217,12 @@ namespace FlatRedBall.Glue.Settings
         {
             string containsName = null;
 
-            oldName = oldName.ToLower().Replace("\\", "/");
+            oldName = oldName.Replace("\\", "/");
 
             for (int i = 0; i < mAvailableApplications.Count; i++)
             {
-                if (mAvailableApplications[i].ToLower().Replace("\\", "/") == oldName)
+                if (String.Equals(mAvailableApplications[i].Replace("\\", "/"), oldName, StringComparison.OrdinalIgnoreCase))
                 {
-
                     containsName = mAvailableApplications[i];
                     break;
                 }

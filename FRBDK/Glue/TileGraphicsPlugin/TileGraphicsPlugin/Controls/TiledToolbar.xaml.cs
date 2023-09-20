@@ -307,9 +307,9 @@ namespace TiledPluginCore.Controls
 
             // Ensure to not return the default OpenWith.exe associated executable in Windows 8 or higher
             if (!string.IsNullOrEmpty(executablePath) && File.Exists(executablePath) &&
-                !executablePath.ToLower().EndsWith(".dll"))
+                !executablePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
             {
-                if (executablePath.ToLower().EndsWith("openwith.exe"))
+                if (executablePath.EndsWith("openwith.exe", StringComparison.OrdinalIgnoreCase))
                 {
                     return null; // 'OpenWith.exe' is th windows 8 or higher default for unknown extensions. I don't want to have it as associted file
                 }

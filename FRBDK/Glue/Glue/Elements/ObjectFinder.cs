@@ -51,9 +51,9 @@ public class ObjectFinder : IObjectFinder
 
     public List<ReferencedFileSave> GetReferencedFileSavesFromSource(string sourceFile)
     {
-        List<ReferencedFileSave> toReturn = new List<ReferencedFileSave>();
+        var toReturn = new List<ReferencedFileSave>();
 
-        sourceFile = sourceFile.ToLower();
+        sourceFile = sourceFile.ToLowerInvariant();
         if (GlueProject != null)
         {
             foreach (ScreenSave screenSave in GlueProject.Screens)

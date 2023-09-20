@@ -361,7 +361,7 @@ namespace FlatRedBall.Glue.IO
                 isIgnored = true;
             }
 
-            if (!isIgnored && filePath.FullPath.ToLower().EndsWith(".generated.cs"))
+            if (!isIgnored && filePath.FullPath.EndsWith(".generated.cs", StringComparison.OrdinalIgnoreCase))
             {
                 reason = IgnoreReason.GeneratedCodeFile;
                 isIgnored = true;

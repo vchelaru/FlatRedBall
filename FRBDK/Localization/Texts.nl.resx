@@ -2675,4 +2675,37 @@
 	<data name="ErrorCouldNotPackageFileRelative" xml:space="preserve">
 		<value>Kon het verpakte bestand niet maken - waarschijnlijk omdat het bestand {0} bestanden bevat die niet relatief zijn.</value>
 	</data>
+	<data name="FileXNotRelativeToContentFolder" xml:space="preserve">
+		<value>Het bestand {0} is niet relatief ten opzichte van de inhoudsmap voor het element dat {1} is</value>
+	</data>
+	<data name="ErrorDeleteDirectoryFailed" xml:space="preserve">
+		<value>Kan de doelexportmap niet verwijderen: {0}</value>
+	</data>
+	<data name="GlueGroup" xml:space="preserve">
+		<value>Glue Groep</value>
+	</data>
+	<data name="QuestionFilesOutsideContent" xml:space="preserve">
+		<value>Deze {0} bevat bestanden buiten de inhoudsmap. Glue zal deze {0} exporteren, maar er zal naar alle bestanden verwezen worden in dezelfde inhoudsmap. Hierdoor kunnen sommige bestandsverwijzingen verbroken worden. Wilt u exporteren?</value>
+	</data>
+	<data name="QuestionExport" xml:space="preserve">
+		<value>Exporteren?</value>
+	</data>
+	<data name="FolderSelectExportedFile" xml:space="preserve">
+		<value>Selecteer de map om het geëxporteerde bestand op te slaan:</value>
+	</data>
+	<data name="QuestionOverwrite" xml:space="preserve">
+		<value>Overschrijven?</value>
+	</data>
+	<data name="FileXExistsOverwrite" xml:space="preserve">
+		<value>Het bestand bestaat al {0}. Overschrijven?</value>
+	</data>
+	<data name="ExportCant" xml:space="preserve">
+		<value>Kan niet exporteren:</value>
+	</data>
+	<data name="BuilderWhichForFile" xml:space="preserve">
+		<value>Welchen Builder möchten Sie für diese Datei verwenden?</value>
+	</data>
+	<data name="CliExtraArguments" xml:space="preserve">
+		<value>Voer extra opdrachtregelargumenten in:</value>
+	</data>
 </root>

@@ -94,15 +94,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                     {
                         foreach (ReferencedFileSave rfs in element.ReferencedFiles)
                         {
-                            bool alreadyExists = false;
-                            foreach (ReferencedFileSave existingRfs in ProjectManager.GlueProjectSave.GlobalFiles)
-                            {
-                                if (existingRfs.Name.ToLower() == rfs.Name.ToLower())
-                                {
-                                    alreadyExists = true;
-                                    break;
-                                }
-                            }
+                            bool alreadyExists = ProjectManager.GlueProjectSave.GlobalFiles
+                                .Any(existingRfs => String.Equals(existingRfs.Name, rfs.Name, StringComparison.OrdinalIgnoreCase));
 
                             if (!alreadyExists)
                             {
@@ -113,13 +106,13 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                     }
                     else
                     {
-                        foreach (ReferencedFileSave rfs in element.ReferencedFiles)
+                        foreach (var rfs in element.ReferencedFiles)
                         {
-                            for (int i = 0; i < ProjectManager.GlueProjectSave.GlobalFiles.Count; i++)
+                            for (var i = 0; i < ProjectManager.GlueProjectSave.GlobalFiles.Count; i++)
                             {
-                                ReferencedFileSave existingRfs = ProjectManager.GlueProjectSave.GlobalFiles[i];
+                                var existingRfs = ProjectManager.GlueProjectSave.GlobalFiles[i];
 
-                                if (existingRfs.Name.ToLower() == rfs.Name.ToLower())
+                                if (String.Equals(existingRfs.Name, rfs.Name, StringComparison.OrdinalIgnoreCase))
                                 {
                                     ProjectManager.GlueProjectSave.GlobalFiles.RemoveAt(i);
                                     break;
@@ -158,15 +151,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
-                bool alreadyExists = false;
-                foreach (ReferencedFileSave existingRfs in ProjectManager.GlueProjectSave.GlobalFiles)
-                {
-                    if (existingRfs.Name.ToLower() == rfs.Name.ToLower())
-                    {
-                        alreadyExists = true;
-                        break;
-                    }
-                }
+                bool alreadyExists = ProjectManager.GlueProjectSave.GlobalFiles
+                    .Any(existingRfs => String.Equals(existingRfs.Name, rfs.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (!alreadyExists)
                 {

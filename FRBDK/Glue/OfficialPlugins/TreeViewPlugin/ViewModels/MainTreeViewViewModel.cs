@@ -560,11 +560,11 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 // Let's make the directories lower case
                 for (int i = 0; i < directories.Length; i++)
                 {
-                    directories[i] = FileManager.Standardize(directories[i]).ToLower();
+                    directories[i] = FileManager.Standardize(directories[i]);
 
-                    if (!directories[i].EndsWith("/") && !directories[i].EndsWith("\\"))
+                    if (!directories[i].EndsWith("/", StringComparison.OrdinalIgnoreCase) && !directories[i].EndsWith("\\", StringComparison.OrdinalIgnoreCase))
                     {
-                        directories[i] = directories[i] + "/";
+                        directories[i] += "/";
                     }
                 }
 
@@ -581,9 +581,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                         string directory = GlueCommands.Self.GetAbsoluteFileName(treeNode.GetRelativeFilePath(), isGlobalContent);
 
-                        directory = FileManager.Standardize(directory.ToLower());
+                        directory = FileManager.Standardize(directory);
 
-                        if (!directories.Contains(directory))
+                        if (!directories.Contains(directory, StringComparer.OrdinalIgnoreCase))
                         {
                             parentTreeNode.Children.RemoveAt(i);
                         }
@@ -1090,7 +1090,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
             else
             {
-                int indexOfSlash = containingDirection.IndexOf("/");
+                int indexOfSlash = containingDirection.IndexOf("/", StringComparison.OrdinalIgnoreCase);
 
                 string rootDirectory = containingDirection;
 
@@ -1103,7 +1103,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 {
                     var subNode = containingNode.Children[i];
 
-                    if (((ITreeNode)subNode).IsDirectoryNode() && subNode.Text.ToLower() == rootDirectory.ToLower())
+                    if (((ITreeNode)subNode).IsDirectoryNode() && String.Equals(subNode.Text, rootDirectory, StringComparison.OrdinalIgnoreCase))
                     {
                         // use the containingDirectory here
                         if (indexOfSlash == -1 || indexOfSlash == containingDirection.Length - 1)
@@ -1125,7 +1125,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         {
             NodeViewModel containerTreeNode = nodeToStartAt;
 
-            if (rfs.Name.ToLower().StartsWith("globalcontent/") && nodeToStartAt == GlobalContentRootNode)
+            if (rfs.Name.StartsWith("globalcontent/", StringComparison.OrdinalIgnoreCase) && nodeToStartAt == GlobalContentRootNode)
             {
                 string directory = FileManager.GetDirectoryKeepRelative(rfs.Name);
 
@@ -1141,7 +1141,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             }
 
 
-            if (rfs.Name.ToLower().StartsWith("content/globalcontent/") && nodeToStartAt == GlobalContentRootNode)
+            if (rfs.Name.StartsWith("content/globalcontent/", StringComparison.OrdinalIgnoreCase) && nodeToStartAt == GlobalContentRootNode)
             {
                 string directory = FileManager.GetDirectoryKeepRelative(rfs.Name);
 
@@ -1187,8 +1187,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
             // Let's see if this thing is really an Entity
 
-
-            string relativeToProject = FileManager.Standardize(containingDirectory.FullPath).ToLower();
+            string relativeToProject = FileManager.Standardize(containingDirectory.FullPath).ToLowerInvariant();
 
             if (FileManager.IsRelativeTo(relativeToProject, FileManager.RelativeDirectory))
             {
@@ -1199,8 +1198,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 relativeToProject = FileManager.MakeRelative(relativeToProject, ProjectManager.ContentProject.GetAbsoluteContentFolder());
             }
 
-            if (relativeToProject.StartsWith("content/globalcontent") || relativeToProject.StartsWith("globalcontent")
-                )
+            if (relativeToProject.StartsWith("content/globalcontent", StringComparison.OrdinalIgnoreCase) 
+                || relativeToProject.StartsWith("globalcontent", StringComparison.OrdinalIgnoreCase))
             {
                 isEntity = false;
             }

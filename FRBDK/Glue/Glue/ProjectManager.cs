@@ -330,12 +330,6 @@ namespace FlatRedBall.Glue
             }
 
         }
-
-        [Obsolete("Use GlueCommands.Self.FileCommands.IsContent")]
-        public static bool IsContent(string file)
-        {
-            return GlueCommands.Self.FileCommands.IsContent(file);
-        }
         
         public static bool CollectionContains(ICollection collection, string itemToSearchFor)
         {

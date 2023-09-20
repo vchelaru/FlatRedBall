@@ -954,7 +954,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
     private static void AskAndAddAllContainedRfsToGlobalContent(IElement element)
     {
-        string message = "Add all contained files in " + element.ToString() + " to Global Content Files?  Files will still be referenced by " + element.ToString();
+        string message = "Add all contained files in " + element + " to Global Content Files?  Files will still be referenced by " + element;
 
         DialogResult dialogResult = MessageBox.Show(message, "Add to Global Content?", MessageBoxButtons.YesNo);
 
@@ -970,7 +970,7 @@ public class DragDropManager : Singleton<DragDropManager>
                     screenOrEntity = "Entity";
                 }
 
-                DialogResult result = MessageBox.Show("The " + screenOrEntity + " " + element.ToString() +
+                DialogResult result = MessageBox.Show("The " + screenOrEntity + " " + element +
                     "does not UseGlobalContent.  Would you like " +
                     " to set UseGlobalContent to true?", "Set UseGlobalContent to true?", MessageBoxButtons.YesNo);
 
@@ -982,15 +982,8 @@ public class DragDropManager : Singleton<DragDropManager>
 
             foreach (ReferencedFileSave rfs in element.ReferencedFiles)
             {
-                bool alreadyExists = false;
-                foreach (ReferencedFileSave existingRfs in ObjectFinder.Self.GlueProject.GlobalFiles)
-                {
-                    if (existingRfs.Name.ToLower() == rfs.Name.ToLower())
-                    {
-                        alreadyExists = true;
-                        break;
-                    }
-                }
+                bool alreadyExists = ObjectFinder.Self.GlueProject.GlobalFiles
+                    .Any(existingRfs => String.Equals(existingRfs.Name, rfs.Name, StringComparison.CurrentCultureIgnoreCase));
 
                 if (!alreadyExists)
                 {

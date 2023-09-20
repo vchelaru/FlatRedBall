@@ -106,25 +106,17 @@ namespace OfficialPlugins.FrbdkUpdater
             int i = fileName.LastIndexOf('.');
             if (i != -1)
             {
-                bool hasDotSlash = false;
-                if (i < fileName.Length + 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\'))
-                {
-                    hasDotSlash = true;
-                }
+                bool hasDotSlash = i < fileName.Length + 1 && (fileName[i + 1] == '/' || fileName[i + 1] == '\\');
 
                 if (hasDotSlash)
                 {
                     return "";
                 }
-                else
-                {
-                    return fileName.Substring(i + 1, fileName.Length - (i + 1)).ToLower();
-                }
+
+                return fileName.Substring(i + 1, fileName.Length - (i + 1)).ToLower();
             }
-            else
-            {
-                return ""; // This returns "" because calling the method with a string like "redball" should return no extension
-            }
+
+            return ""; // This returns "" because calling the method with a string like "redball" should return no extension
         }
 
         #region XML Docs

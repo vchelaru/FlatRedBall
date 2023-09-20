@@ -948,7 +948,9 @@ namespace FlatRedBall.Glue.IO
                         vsp.SaveAsAbsoluteSyncedProject = false;
                     }
 
-                    if (FileManager.GetDirectory(absoluteFileName).ToLower() == FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName.FullPath).ToLower())
+                    if (String.Equals(FileManager.GetDirectory(absoluteFileName),
+                            FileManager.GetDirectory(ProjectManager.ProjectBase.FullFileName.FullPath),
+                            StringComparison.OrdinalIgnoreCase))
                     {
                         vsp.SaveAsRelativeSyncedProject = false;
                         vsp.SaveAsAbsoluteSyncedProject = false;

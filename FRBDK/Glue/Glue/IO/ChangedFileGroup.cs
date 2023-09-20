@@ -257,11 +257,11 @@ namespace FlatRedBall.Glue.IO
             {
                 throw new Exception("File name should be absolute");
             }
-            string standardized = FileManager.Standardize(file, null, false).ToLower();
+            string standardized = FileManager.Standardize(file, null, false).ToLowerInvariant();
 
-            if (mChangesToIgnore.ContainsKey(standardized))
+            if (mChangesToIgnore.TryGetValue(standardized, out var change))
             {
-                return mChangesToIgnore[standardized];
+                return change;
             }
             else
             {
@@ -359,7 +359,7 @@ namespace FlatRedBall.Glue.IO
 
         bool TryIgnoreFileChange(string fileName)
         {
-            fileName = fileName.ToLower();
+            fileName = fileName.ToLowerInvariant();
             int changesToIgnore = 0;
 
             fileName = FileManager.Standardize(fileName, null, false);
@@ -383,7 +383,7 @@ namespace FlatRedBall.Glue.IO
                 {
                     throw new Exception("File name should be absolute");
                 }
-                string standardized = FileManager.Standardize(fileName, null, false).ToLower() ;
+                string standardized = FileManager.Standardize(fileName, null, false).ToLowerInvariant() ;
                 if (mChangesToIgnore.ContainsKey(standardized))
                 {
                     mChangesToIgnore[standardized] = 1 + mChangesToIgnore[standardized];

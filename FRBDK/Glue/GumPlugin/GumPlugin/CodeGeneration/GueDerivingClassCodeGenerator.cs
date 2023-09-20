@@ -485,13 +485,13 @@ namespace GumPlugin.CodeGeneration
             if(state?.GetVariableSave("HasEvents") != null)
             {
                 bool hasEvents = state.GetValueOrDefault<bool>("HasEvents");
-                constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLower()};");
+                constructor.Line($"this.HasEvents = {hasEvents.ToString().ToLowerInvariant()};");
             }
 
             if (state?.GetVariableSave("ExposeChildrenEvents") != null)
             {
                 bool exposeChildrenEvents = state.GetValueOrDefault<bool>("ExposeChildrenEvents");
-                constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLower()};");
+                constructor.Line($"this.ExposeChildrenEvents = {exposeChildrenEvents.ToString().ToLowerInvariant()};");
             }
 
             var ifStatement = constructor.If("fullInstantiation");
@@ -1016,7 +1016,7 @@ namespace GumPlugin.CodeGeneration
             }
             else if (variableSave.Type == "bool")
             {
-                variableValue = variableValue.ToLower();
+                variableValue = variableValue.ToLowerInvariant();
             }
 
 

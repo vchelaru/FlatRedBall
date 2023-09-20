@@ -35,19 +35,19 @@ namespace Npc.Managers
         {
             foreach (string arg in Environment.GetCommandLineArgs())
             {
-                if (arg.StartsWith("directory="))
+                if (arg.StartsWith("directory=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleDirectoryEquals(arg);
                 }
-                else if (arg.StartsWith("namespace="))
+                else if (arg.StartsWith("namespace=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleNamespaceEquals(arg);
                 }
-                else if (arg.ToLower().StartsWith("openedby="))
+                else if (arg.StartsWith("openedby=", StringComparison.OrdinalIgnoreCase))
                 {
                     HandleOpenedBy(arg);
                 }
-                else if(arg.ToLower() == "emptyprojects")
+                else if(String.Equals(arg, "emptyprojects", StringComparison.OrdinalIgnoreCase))
                 {
                     EmptyProjectsOnly = true;
                 }
@@ -61,7 +61,7 @@ namespace Npc.Managers
 
             string directory = arg.Substring(lengthOfDirectory, arg.Length - lengthOfDirectory);
 
-            if (directory.StartsWith("\"") && directory.EndsWith("\""))
+            if (directory.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && directory.EndsWith("\"", StringComparison.OrdinalIgnoreCase))
             {
                 directory = directory.Substring(1, directory.Length - 2);
             }

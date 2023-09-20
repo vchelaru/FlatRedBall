@@ -584,57 +584,54 @@ namespace EditorObjects.Parsing
         }
 
 		private static List<string> GetTextureReferencesInX(string fileName)
-		{
-			List<string> referencedFiles = new List<string>();
-			string contents = FileManager.FromFileText(fileName);
+        {
+            List<string> referencedFiles = new List<string>();
+            string contents = FileManager.FromFileText(fileName);
 
-			int currentIndex = 0;
-			//bool useCamel = false;
-			const string TextureFileNameString = "TextureFilename {";
-			string fileDirectory = FileManager.GetDirectory(fileName);
+            int currentIndex = 0;
+            //bool useCamel = false;
+            const string textureFileNameString = "TextureFilename {";
+            string fileDirectory = FileManager.GetDirectory(fileName);
 
-			int nextTextureFilename = contents.IndexOf(TextureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
+            int nextTextureFilename = contents.IndexOf(textureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
 
-			if (nextTextureFilename == -1)
-			{
+            if (nextTextureFilename == -1)
+            {
 
-				return referencedFiles;
-			}
-			// The first "TextureFilename" is garbage - it's the template definition.  Let's do the next
-			bool isFirstATemplate = false;
-			if (contents.IndexOf("template TextureFilename", StringComparison.OrdinalIgnoreCase) == nextTextureFilename - "template ".Length)
-			{
-				isFirstATemplate = true;
-			}
-			if (isFirstATemplate)
-			{
-				currentIndex = nextTextureFilename + 1;
-				nextTextureFilename = contents.IndexOf(TextureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
-			}
+                return referencedFiles;
+            }
+            // The first "TextureFilename" is garbage - it's the template definition.  Let's do the next
+            bool isFirstATemplate = contents.IndexOf("template TextureFilename", StringComparison.OrdinalIgnoreCase) == nextTextureFilename - "template ".Length;
 
-			while (nextTextureFilename != -1)
-			{
-				// read the file
+            if (isFirstATemplate)
+            {
+                currentIndex = nextTextureFilename + 1;
+                nextTextureFilename = contents.IndexOf(textureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
+            }
 
-				string texture = StringFunctions.GetWordAfter(TextureFileNameString, contents, nextTextureFilename, StringComparison.OrdinalIgnoreCase);
-				texture = fileDirectory + texture.Replace("\"", "").Replace(";", "").Replace(".\\\\", "").Replace("}", "");
+            while (nextTextureFilename != -1)
+            {
+                // read the file
 
-				if (!referencedFiles.Contains(texture))
-				{
-					referencedFiles.Add(texture);
-				}
+                string texture = StringFunctions.GetWordAfter(textureFileNameString, contents, nextTextureFilename, StringComparison.OrdinalIgnoreCase);
+                texture = fileDirectory + texture.Replace("\"", "").Replace(";", "").Replace(".\\\\", "").Replace("}", "");
 
-				currentIndex = nextTextureFilename + 1;
+                if (!referencedFiles.Contains(texture))
+                {
+                    referencedFiles.Add(texture);
+                }
 
-				nextTextureFilename = contents.IndexOf(TextureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
+                currentIndex = nextTextureFilename + 1;
 
-			}
+                nextTextureFilename = contents.IndexOf(textureFileNameString, currentIndex, StringComparison.OrdinalIgnoreCase);
+
+            }
 
 
 			
 
-			return referencedFiles;
-		}
+            return referencedFiles;
+        }
 
         public static void EliminateDuplicateSourceReferencingFiles(List<SourceReferencingFile> sourceReferencingFileList)
         {

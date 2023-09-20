@@ -520,6 +520,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Which builder would you like to use for this file?.
+        /// </summary>
+        public static string BuilderWhichForFile {
+            get {
+                return ResourceManager.GetString("BuilderWhichForFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Build Game.
         /// </summary>
         public static string BuildGame {
@@ -705,6 +714,15 @@ namespace Localization {
         public static string ClickToSetTile {
             get {
                 return ResourceManager.GetString("ClickToSetTile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string CliExtraArguments {
+            get {
+                return ResourceManager.GetString("CliExtraArguments", resourceCulture);
             }
         }
         
@@ -1942,7 +1960,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Could not create packaged file - likely because the file {0} contains files that are not relative..
         /// </summary>
         public static string ErrorCouldNotPackageFileRelative {
             get {
@@ -1956,6 +1974,15 @@ namespace Localization {
         public static string ErrorCouldntFindGameClass {
             get {
                 return ResourceManager.GetString("ErrorCouldntFindGameClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to delete the target export directory: {0}.
+        /// </summary>
+        public static string ErrorDeleteDirectoryFailed {
+            get {
+                return ResourceManager.GetString("ErrorDeleteDirectoryFailed", resourceCulture);
             }
         }
         
@@ -2181,6 +2208,15 @@ namespace Localization {
         public static string Execute {
             get {
                 return ResourceManager.GetString("Execute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t export:.
+        /// </summary>
+        public static string ExportCant {
+            get {
+                return ResourceManager.GetString("ExportCant", resourceCulture);
             }
         }
         
@@ -2446,6 +2482,24 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file already exist {0}. Overwrite?.
+        /// </summary>
+        public static string FileXExistsOverwrite {
+            get {
+                return ResourceManager.GetString("FileXExistsOverwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file {0} is not relative to the content folder for the element which is {1}.
+        /// </summary>
+        public static string FileXNotRelativeToContentFolder {
+            get {
+                return ResourceManager.GetString("FileXNotRelativeToContentFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fill Completely.
         /// </summary>
         public static string FillCompletely {
@@ -2595,6 +2649,15 @@ namespace Localization {
         public static string FolderRename {
             get {
                 return ResourceManager.GetString("FolderRename", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select folder to save exported file:.
+        /// </summary>
+        public static string FolderSelectExportedFile {
+            get {
+                return ResourceManager.GetString("FolderSelectExportedFile", resourceCulture);
             }
         }
         
@@ -2982,6 +3045,15 @@ namespace Localization {
         public static string GlueFileAssociation {
             get {
                 return ResourceManager.GetString("GlueFileAssociation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glue Group.
+        /// </summary>
+        public static string GlueGroup {
+            get {
+                return ResourceManager.GetString("GlueGroup", resourceCulture);
             }
         }
         
@@ -6001,11 +6073,38 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Export?.
+        /// </summary>
+        public static string QuestionExport {
+            get {
+                return ResourceManager.GetString("QuestionExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This {0} contains files outside of its content folder. Glue will export this {0}, but all files will be referenced in the same content folder. This may break some file references. Do you want to export?.
+        /// </summary>
+        public static string QuestionFilesOutsideContent {
+            get {
+                return ResourceManager.GetString("QuestionFilesOutsideContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to fill all values in the {0} State from the default variable values?  All previous values will be lost.
         /// </summary>
         public static string QuestionFillValuesDefault {
             get {
                 return ResourceManager.GetString("QuestionFillValuesDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite?.
+        /// </summary>
+        public static string QuestionOverwrite {
+            get {
+                return ResourceManager.GetString("QuestionOverwrite", resourceCulture);
             }
         }
         

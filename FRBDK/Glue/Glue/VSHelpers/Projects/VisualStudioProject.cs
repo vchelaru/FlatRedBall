@@ -268,7 +268,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 {
                     // The items in the dictionary must be to-lower on some
                     // platforms, and ProcessPath takes care of this.
-                    mBuildItemDictionaries.Add(itemInclude.ToLower(), buildItem);
+                    mBuildItemDictionaries.Add(itemInclude.ToLowerInvariant(), buildItem);
                 }
                 catch
                 {
@@ -565,7 +565,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
                 ProjectItem buildItem = mProject.AllEvaluatedItems.ElementAt(i);
 
-                string includeToLower = buildItem.EvaluatedInclude.ToLower();
+                string includeToLower = buildItem.EvaluatedInclude.ToLowerInvariant();
 
                 if (buildItem.IsImported)
                 {
@@ -579,12 +579,13 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else if (mBuildItemDictionaries.ContainsKey(includeToLower))
                 {
-                    wasChanged = ResolveDuplicateProjectEntry(wasChanged, buildItem);
+                    ResolveDuplicateProjectEntry(buildItem);
+                    wasChanged = true;
                 }
                 else
                 {
                     mBuildItemDictionaries.Add(
-                        buildItem.UnevaluatedInclude.ToLower(),
+                        buildItem.UnevaluatedInclude.ToLowerInvariant(),
                         buildItem);
                 }
             }
@@ -621,7 +622,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
         }
 
-        private bool ResolveDuplicateProjectEntry(bool wasChanged, ProjectItem buildItem)
+        private void ResolveDuplicateProjectEntry(ProjectItem buildItem)
         {
             var mbmb = new MultiButtonMessageBoxWpf();
 
@@ -668,8 +669,6 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 mProject.RemoveItem(buildItem);
                 mProject.ReevaluateIfNecessary();
             }
-            wasChanged = true;
-            return wasChanged;
         }
 
         public ProjectItem GetItem(string itemName)
@@ -690,7 +689,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             }
             else
             {
-                itemName = itemName.Replace("/", "\\").ToLower();
+                itemName = itemName.Replace("/", "\\").ToLowerInvariant();
             }
             if (!mBuildItemDictionaries.ContainsKey(itemName))
             {
@@ -703,7 +702,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 foreach (var item in values)
                 {
                     // This may be a link
-                    var foundLink = (string)item.Metadata.FirstOrDefault(metadata => metadata.ItemType == "Link")?.EvaluatedValue;
+                    var foundLink = item.Metadata.FirstOrDefault(metadata => String.Equals(metadata.ItemType, "Link", StringComparison.OrdinalIgnoreCase))?.EvaluatedValue;
 
                     if (!string.IsNullOrEmpty(foundLink) && foundLink.Equals(itemName, System.StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -942,7 +941,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                     fileName = FileManager.MakeRelative(fileName, this.Directory);
                 }
 
-                string fileNameToLower = fileName.Replace('/', '\\').ToLower();
+                string fileNameToLower = fileName.Replace('/', '\\').ToLowerInvariant();
 
 
 
@@ -1059,7 +1058,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public bool RemoveItem(ProjectItem buildItem)
         {
-            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLower();
+            string itemName = buildItem.EvaluatedInclude.Replace("/", "\\").ToLowerInvariant();
 
             return RemoveItem(itemName);
         }
@@ -1084,11 +1083,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
             ProjectItem itemToRemove = null;
 
-            itemName = itemName.Replace("/", "\\").ToLower();
+            itemName = itemName.Replace("/", "\\").ToLowerInvariant();
             bool removed = false;
-            if (mBuildItemDictionaries.ContainsKey(itemName))
+            if (mBuildItemDictionaries.TryGetValue(itemName, out var buildItem))
             {
-                itemToRemove = mBuildItemDictionaries[itemName];
+                itemToRemove = buildItem;
                 removed = true;
             }
 
@@ -1098,11 +1097,11 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
 
         public void RenameInDictionary(string oldName, string newName, ProjectItem item)
         {
-            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLower());
+            mBuildItemDictionaries.Remove(oldName.Replace("/", "\\").ToLowerInvariant());
 
-            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\").ToLower()))
+            if (!mBuildItemDictionaries.ContainsKey(newName.Replace("/", "\\").ToLowerInvariant()))
             {
-                mBuildItemDictionaries.Add(newName.Replace("/", "\\").ToLower(), item);
+                mBuildItemDictionaries.Add(newName.Replace("/", "\\").ToLowerInvariant(), item);
             }
         }
 

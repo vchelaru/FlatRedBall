@@ -122,7 +122,7 @@ namespace NAudioPlugin.Managers
         {
             var instanceName = file.GetInstanceName();
 
-            var relativeFileName = file.Name.ToLower();
+            var relativeFileName = file.Name.ToLowerInvariant();
 
             var path = $"Content/{relativeFileName}";
 

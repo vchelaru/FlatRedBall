@@ -210,13 +210,14 @@ namespace FlatRedBall.Glue.IO
             var standardizedGluj = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + ".gluj";
             var partialGlux = FileManager.RemoveExtension(FileManager.Standardize(projectFileName).ToLower()) + @"\..*\.generated\.glux";
             var partialGluxRegex = new Regex(partialGlux);
-            var isGlueProjectFile = changedFile.ToLower() == standardizedGlux || partialGluxRegex.IsMatch(changedFile.ToLower()) || changedFile.ToLower() == standardizedGluj;
+            var isGlueProjectFile = String.Equals(changedFile, standardizedGlux, StringComparison.OrdinalIgnoreCase) || partialGluxRegex.IsMatch(changedFile.ToLowerInvariant()) ||
+                                    String.Equals(changedFile, standardizedGluj, StringComparison.OrdinalIgnoreCase);
             var isElementFile = false;
             if(!isGlueProjectFile)
             {
                 var extension = FileManager.GetExtension(changedFile);
 
-                if(extension == GlueProjectSave.ScreenExtension || extension == GlueProjectSave.EntityExtension)
+                if(extension is GlueProjectSave.ScreenExtension or GlueProjectSave.EntityExtension)
                 {
                     var projectDirectory = FileManager.GetDirectory(projectFileName);
 

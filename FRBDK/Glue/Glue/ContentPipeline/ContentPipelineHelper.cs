@@ -58,7 +58,7 @@ namespace FlatRedBall.Glue.ContentPipeline
 
                 for (int i = 0; i < filesInModifiedRfs.Count; i++)
                 {
-                    filesInModifiedRfs[i] = ProjectManager.MakeRelativeContent(filesInModifiedRfs[i].FullPath).ToLower();
+                    filesInModifiedRfs[i] = ProjectManager.MakeRelativeContent(filesInModifiedRfs[i].FullPath).ToLowerInvariant();
                 }
 
                 List<ReferencedFileSave> allReferencedFiles = ObjectFinder.Self.GetAllReferencedFiles();
@@ -283,11 +283,11 @@ namespace FlatRedBall.Glue.ContentPipeline
 
         private static void RemoveFilesFromListReferencedByRfses(List<FilePath> filesInModifiedRfs, List<ReferencedFileSave> allReferencedFiles)
         {
-            foreach (ReferencedFileSave possibleReferencer in allReferencedFiles)
+            foreach (var possibleReferencer in allReferencedFiles)
             {
                 if (!possibleReferencer.UseContentPipeline)
                 {
-                    string modifiedPossibleReferencerFile = possibleReferencer.Name.ToLower();
+                    string modifiedPossibleReferencerFile = possibleReferencer.Name.ToLowerInvariant();
                     if (filesInModifiedRfs.Contains(modifiedPossibleReferencerFile))
                     {
                         // There is a RFS referencing this guy

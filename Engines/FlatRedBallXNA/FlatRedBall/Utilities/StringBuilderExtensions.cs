@@ -135,10 +135,10 @@ namespace FlatRedBall.Utilities
             {
                 for (int j = startIndex; j < num2; j++)
                 {
-                    if (char.ToLower(sb[j]) == char.ToLower(value[0]))
+                    if (char.ToLowerInvariant(sb[j]) == char.ToLowerInvariant(value[0]))
                     {
                         num3 = 1;
-                        while ((num3 < length) && (char.ToLower(sb[j + num3]) == char.ToLower(value[num3])))
+                        while ((num3 < length) && (char.ToLowerInvariant(sb[j + num3]) == char.ToLowerInvariant(value[num3])))
                         {
                             num3++;
                         }
@@ -160,7 +160,7 @@ namespace FlatRedBall.Utilities
         public static int LastIndexOf(this StringBuilder sb, string value)
         {
             // Eventually let's make this faster:
-            return sb.ToString().LastIndexOf(value);
+            return sb.ToString().LastIndexOf(value, StringComparison.OrdinalIgnoreCase);
 
         }
  

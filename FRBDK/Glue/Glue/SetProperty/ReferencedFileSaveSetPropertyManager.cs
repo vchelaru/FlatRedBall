@@ -449,15 +449,15 @@ namespace FlatRedBall.Glue.SetVariable
                 // for both in case there are any older projects.
                 string rfsType = rfs.RuntimeType;
                 string rfsTypeUnqualified = rfsType;
-                if (rfsType != null && rfsType.Contains("."))
+                if (rfsType != null && rfsType.Contains('.'))
                 {
                     rfsTypeUnqualified = FileManager.GetExtension(rfsType);
                 }
 
                 var matches =
                     customVariable.Value is string && (customVariable.Value as string) == oldNameUnqualified && 
-                        (customVariable.Type.ToLower() == rfsType.ToLower() ||
-                            customVariable.Type.ToLower() == rfsTypeUnqualified.ToLower());
+                        (string.Equals(customVariable.Type, rfsType, StringComparison.OrdinalIgnoreCase) ||
+                         string.Equals(customVariable.Type, rfsTypeUnqualified, StringComparison.OrdinalIgnoreCase));
                 if (matches)
                 {
                     customVariable.Value = newNameUnqualified;
@@ -536,12 +536,12 @@ namespace FlatRedBall.Glue.SetVariable
                 // The item could be null if this file is excluded from the project
                 if (item != null)
                 {
-                    if (newName.ToLower().Replace("/", "\\").StartsWith("content\\"))
+                    if (newName.Replace("/", "\\").StartsWith(@"content\", StringComparison.OrdinalIgnoreCase))
                     {
-                        newName = newName.Substring("content\\".Length);
+                        newName = newName.Substring(@"content\".Length);
                     }
 
-                    var newNameWithContentPrefix = "content\\" + newName.ToLower().Replace("/", "\\");
+                    var newNameWithContentPrefix = "content\\" + newName.ToLowerInvariant().Replace("/", "\\");
                     item.UnevaluatedInclude = newNameWithContentPrefix;
 
                     string nameWithoutExtensions = FileManager.RemovePath(FileManager.RemoveExtension(newName));

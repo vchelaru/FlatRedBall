@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Evaluation;
+﻿using System;
+using Microsoft.Build.Evaluation;
 using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.VSHelpers.Projects
@@ -56,28 +57,24 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             {
 
                 // Android is case-sensitive
-                returnValue = returnValue.ToLower();
+                returnValue = returnValue.ToLowerInvariant();
 
-                if (returnValue.StartsWith("assets/") || returnValue.StartsWith("assets\\"))
+                if (returnValue.StartsWith("assets/", StringComparison.OrdinalIgnoreCase) || returnValue.StartsWith(@"assets\", StringComparison.OrdinalIgnoreCase))
                 {
                     // Assets folder is capitalized in FRB Android projects:
-                    returnValue = "A" + returnValue.Substring(1);
+                    returnValue = "A" + returnValue[1..];
                 }
 
-                if(returnValue.Contains("/"))
+                if(returnValue.Contains("/", StringComparison.OrdinalIgnoreCase))
                 {
-                    returnValue = returnValue.Replace("/", "\\");
-
+                    returnValue = returnValue.Replace("/", @"\");
                 }
             }
 
             return returnValue;
         }
 
-        public override string ContentDirectory
-        {
-            get { return "Assets/content/"; }
-        }
+        public override string ContentDirectory => "Assets/content/";
 
         public override List<string> LibraryDlls
         {

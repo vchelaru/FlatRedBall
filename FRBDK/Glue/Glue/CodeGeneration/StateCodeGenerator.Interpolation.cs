@@ -249,7 +249,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                 // InterpolationEntityInstance.InterpolateToState(InterpolationEntity.VariableState.Small, secondsToTake);
                 //
                 string type = "VariableState";
-                if (variable != null && variable.Type.ToLower() != "string")
+                if (variable != null && !String.Equals(variable.Type, "string", StringComparison.OrdinalIgnoreCase))
                 {
                     type = variable.Type;
                 }
@@ -530,7 +530,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                         if (stateContainingEntity != null)
                                         {
                                             string stateType = "VariableState";
-                                            if (customVariable != null && customVariable.Type.ToLower() != "string")
+                                            if (customVariable != null && !String.Equals(customVariable.Type, "string", StringComparison.OrdinalIgnoreCase))
                                             {
                                                 stateType = customVariable.Type;
                                                 if(stateType?.Contains('.') == true)

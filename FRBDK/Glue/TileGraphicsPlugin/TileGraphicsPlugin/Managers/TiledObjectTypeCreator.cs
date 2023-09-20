@@ -177,7 +177,7 @@ namespace TileGraphicsPlugin.Managers
         {
             if(type == "bool")
             {
-                return value?.ToLower();
+                return value?.ToLowerInvariant();
             }
             else
             {
@@ -187,7 +187,7 @@ namespace TileGraphicsPlugin.Managers
 
         private string GetTmxFriendlyType(string type)
         {
-            if(type == "double" || type == "decimal")
+            if(type is "double" or "decimal")
             {
                 return "float";
             }
