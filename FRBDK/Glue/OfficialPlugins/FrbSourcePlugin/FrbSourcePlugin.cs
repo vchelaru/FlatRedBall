@@ -71,7 +71,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         public override void StartUp()
         {
-            miLinkSource = this.AddMenuItemTo(Localization.Texts.LinkGameToFrbSource, Localization.MenuIds.LinkGameToFrbSourceId, ShowGameToGlueSourceTab, Localization.MenuIds.ProjectId);
+            miLinkSource = this.AddMenuItemTo(
+                Localization.Texts.LinkGameToFrbSource, 
+                Localization.MenuIds.LinkGameToFrbSourceId, 
+                ShowGameToGlueSourceTab, 
+                Localization.MenuIds.ProjectId);
 
             miLinkSource.Enabled = false;
 

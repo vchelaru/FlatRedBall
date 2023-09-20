@@ -20,12 +20,14 @@ namespace OfficialPlugins.FrbdkUpdater
 
         public override void StartUp()
         {
-            this.AddMenuItemTo(Localization.Texts.FrbEditorBinaries, Localization.MenuIds.FrbEditorBinariesId, MenuItemClick, Localization.MenuIds.UpdateId);
+            // Vic says - this plugin may not need to do this anymore. Libraries are going to be updated through nuget soon, and 
+            // the FRB editor itself will be replaced through the About page
+            //this.AddMenuItemTo(Localization.Texts.FrbEditorBinaries, Localization.MenuIds.FrbEditorBinariesId, MenuItemClick, Localization.MenuIds.UpdateId);
 
-            var menuItem = this.AddMenuItemTo(Localization.Texts.FrbUpdateAndGameCode, Localization.MenuIds.FrbUpdateAndGameCodeId, (Action)null, Localization.MenuIds.UpdateId);
+            //var menuItem = this.AddMenuItemTo(Localization.Texts.FrbUpdateAndGameCode, Localization.MenuIds.FrbUpdateAndGameCodeId, (Action)null, Localization.MenuIds.UpdateId);
 
-            menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbAndGum, null, (_, _) => UpdateFrbFromCode(false)));
-            menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbGumAndGame, null, (_, _) => UpdateFrbFromCode(true)));
+            //menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbAndGum, null, (_, _) => UpdateFrbFromCode(false)));
+            //menuItem.DropDownItems.Add(new ToolStripMenuItem(Localization.Texts.FrbGumAndGame, null, (_, _) => UpdateFrbFromCode(true)));
         }
 
         public override bool ShutDown(PluginShutDownReason shutDownReason)
