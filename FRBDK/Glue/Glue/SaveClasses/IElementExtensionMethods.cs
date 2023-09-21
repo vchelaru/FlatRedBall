@@ -590,7 +590,7 @@ public static class IElementExtensionMethods
         else
         {
             return element.BaseElement != null &&
-                   element.BaseElement.Replace('\\', '/').StartsWith($"{L.Texts.Entities}/", StringComparison.OrdinalIgnoreCase);
+                   element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
         }
     }
 
@@ -603,7 +603,7 @@ public static class IElementExtensionMethods
         else
         {
             return !string.IsNullOrEmpty(element.BaseElement) &&
-                   !element.BaseElement.Replace('\\', '/').StartsWith($"{L.Texts.Entities}/", StringComparison.OrdinalIgnoreCase);
+                   !element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
         }
     }
 
