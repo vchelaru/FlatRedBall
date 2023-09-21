@@ -523,7 +523,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                         if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
                         {
                             absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                            var foundAnimationEditor = (System.IO.File.Exists(absoluteExe);
+                            var foundAnimationEditor = (System.IO.File.Exists(absoluteExe));
                             if(!foundAnimationEditor)
                             {
                                 // check if it's in the default built location if the user is running from prebuilt:
