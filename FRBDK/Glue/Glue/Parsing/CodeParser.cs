@@ -4,6 +4,7 @@ using System.IO;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.SaveClasses;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using L = Localization;
@@ -163,7 +164,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    string adjusted = ((float)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    string adjusted = ((float)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                     value = adjusted + "f";
                 }
             }
@@ -175,7 +176,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = ((double)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = ((double)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                 }
             }
             else if(objectToParse is decimal || typeof(T) == typeof(decimal?))
@@ -186,7 +187,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = ((decimal)(object)objectToParse).ToString(System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                    value = ((decimal)(object)objectToParse).ToString(CultureInfo.InvariantCulture.NumberFormat);
                     value = value + "m";
                 }
             }
@@ -198,7 +199,7 @@ namespace FlatRedBall.Glue.Parsing
                 }
                 else
                 {
-                    value = "\"" + value?.ToString() + "\"";
+                    value = "\"" + value + "\"";
                 }
             }
             else if (objectToParse?.GetType().IsEnum == true)
@@ -207,7 +208,7 @@ namespace FlatRedBall.Glue.Parsing
                 // This may be an enumeration contained inside a class.  If so, the ToString
                 // will return a value with the '+' character separating the container class 
                 // and the name of the Enum
-                if (value.Contains("+"))
+                if (value.Contains('+'))
                 {
                     value = value.Replace("+", ".");
                 }
@@ -242,7 +243,7 @@ namespace FlatRedBall.Glue.Parsing
                             {
                                 innerInstantiation += ", ";
                             }
-                            innerInstantiation += $"new FlatRedBall.Math.Geometry.Point({item.X}, {item.Y})";
+                            innerInstantiation += $"new FlatRedBall.Math.Geometry.Point({item.X.ToString(CultureInfo.InvariantCulture.NumberFormat)}, {item.Y.ToString(CultureInfo.InvariantCulture.NumberFormat)})";
                             isFirst = false;
                         }
                         value = "new System.Collections.Generic.List<FlatRedBall.Math.Geometry.Point> { " + innerInstantiation + "}";
@@ -257,7 +258,7 @@ namespace FlatRedBall.Glue.Parsing
                             {
                                 innerInstantiation += ", ";
                             }
-                            innerInstantiation += $"new Microsoft.Xna.Framework.Vector2({item.X}, {item.Y})";
+                            innerInstantiation += $"new Microsoft.Xna.Framework.Vector2({item.X.ToString(CultureInfo.InvariantCulture.NumberFormat)}, {item.Y.ToString(CultureInfo.InvariantCulture.NumberFormat)})";
                             isFirst = false;
                         }
                         value = "new System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2> { " + innerInstantiation + "}";

@@ -145,7 +145,7 @@ namespace FlatRedBall.Glue
         {
             valueType = referencedFileSave.GetTypeForCsvFile();
 
-            // To know the value type, we gotta pop this bad boy open and find the first requied type
+            // To know the value type, we got to pop this file open and find the first required type
             keyType = null;
 
             char oldDelimiter = CsvFileManager.Delimiter;
@@ -250,8 +250,7 @@ namespace FlatRedBall.Glue
             if (succeeded)
             {
 
-                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, members,
-                    false, new List<string>(), untypedMembers, codeBlock);
+                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, true, members, false, new List<string>(), untypedMembers, codeBlock);
 
 
                 if (rfs != null)

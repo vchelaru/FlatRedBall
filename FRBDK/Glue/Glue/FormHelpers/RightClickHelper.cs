@@ -268,7 +268,7 @@ public interface ITreeNode
 
     public bool IsFolderForEntities()
     {
-        //TODO:  this fails when deleting a folder inside files.  We gotta fix that.  Try deleting the Palette folders in CreepBase in Baron
+        //TODO:  this fails when deleting a folder inside files.  We got to fix that.  Try deleting the Palette folders in CreepBase in Baron
 
         var parent = Parent;
 

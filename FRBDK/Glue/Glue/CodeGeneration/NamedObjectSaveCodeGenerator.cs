@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
@@ -1842,7 +1843,7 @@ namespace FlatRedBall.Glue.CodeGeneration
                                     {
                                         internalPoints += ", ";
                                     }
-                                    internalPoints += "new FlatRedBall.Math.Geometry.Point(" + point.X + ", " + point.Y + ")";
+                                    internalPoints +=                                        $"new FlatRedBall.Math.Geometry.Point({point.X.ToString(CultureInfo.InvariantCulture)}, {point.Y.ToString(CultureInfo.InvariantCulture)})";
 
                                     isFirst = false;
                                 }
@@ -2231,7 +2232,7 @@ namespace FlatRedBall.Glue.CodeGeneration
             return layerName;
         }
 
-        public static void AssignInstanceVaraiblesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
+        public static void AssignInstanceVariablesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
             AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
             // Update June 24, 2012

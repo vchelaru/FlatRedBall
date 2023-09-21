@@ -399,7 +399,7 @@ namespace EntityPerformancePlugin
         }
 
         /// <summary>
-        /// Assigns the instance type onto the instance view models ocntained in the main view model.
+        /// Assigns the instance type onto the instance view models contained in the main view model.
         /// This is needed so that the Glue data is the authority on the type of an instance, rather than
         /// relying on stored values on a model or view model.
         /// </summary>
