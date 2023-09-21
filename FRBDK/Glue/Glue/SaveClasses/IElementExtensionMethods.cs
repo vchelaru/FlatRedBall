@@ -226,7 +226,7 @@ public static class IElementExtensionMethods
 
     public static List<CustomVariable> GetCustomVariablesToBeSetByDerived(this IElement element)
     {
-        List<CustomVariable> customVariablesToBeSetByDerived = new List<CustomVariable>();
+        var customVariablesToBeSetByDerived = new List<CustomVariable>();
 
         if (!string.IsNullOrEmpty(element.BaseObject) && element.BaseObject != "<NONE>")
         {
@@ -236,7 +236,7 @@ public static class IElementExtensionMethods
             {
                 if (!element.InheritsFromFrbType())
                 {
-                    throw new Exception("The object\n\n" + element.ToString() + "\n\nhas a base type of\n\n" +
+                    throw new Exception("The object\n\n" + element + "\n\nhas a base type of\n\n" +
                                         element.BaseObject + "\n\nbut this type can't be found.  This probably happened if the base type was " +
                                         "removed from the project.  You will want to set the base type to NONE");
                 }
@@ -330,15 +330,7 @@ public static class IElementExtensionMethods
 
     public static List<EventResponseSave> GetEventsOnVariable(this IElement instance, string variableName)
     {
-        List<EventResponseSave> toReturn = new List<EventResponseSave>();
-        foreach (EventResponseSave eventSave in instance.Events)
-        {
-            if (eventSave.SourceVariable == variableName)
-            {
-                toReturn.Add(eventSave);
-            }
-        }
-        return toReturn;
+        return instance.Events.Where(eventSave => eventSave.SourceVariable == variableName).ToList();
     }
 
     public static void FixAllTypes(this GlueElement element)
@@ -590,7 +582,7 @@ public static class IElementExtensionMethods
         else
         {
             return element.BaseElement != null &&
-                   element.BaseElement.Replace('\\', '/').StartsWith($"{L.Texts.Entities}/", StringComparison.OrdinalIgnoreCase);
+                   element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
         }
     }
 
@@ -603,7 +595,7 @@ public static class IElementExtensionMethods
         else
         {
             return !string.IsNullOrEmpty(element.BaseElement) &&
-                   !element.BaseElement.Replace('\\', '/').StartsWith($"{L.Texts.Entities}/", StringComparison.OrdinalIgnoreCase);
+                   !element.BaseElement.Replace('\\', '/').StartsWith($"Entities/", StringComparison.OrdinalIgnoreCase);
         }
     }
 

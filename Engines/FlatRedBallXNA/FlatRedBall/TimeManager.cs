@@ -569,9 +569,9 @@ namespace FlatRedBall
         }
 
         /// <summary>
-        /// Returns the number of seconds that have passed since the arugment value. The
+        /// Returns the number of seconds that have passed since the argument value. The
         /// return value will not increase when the screen is paused, so it can be used to 
-        /// determine how much game time has passed for event swhich should occur on a timer.
+        /// determine how much game time has passed for event which should occur on a timer.
         /// </summary>
         /// <param name="time">The time value, probably obtained earlier by calling CurrentScreenTime</param>
         /// <returns>The number of unpaused seconds that have passed since the argument time.</returns>

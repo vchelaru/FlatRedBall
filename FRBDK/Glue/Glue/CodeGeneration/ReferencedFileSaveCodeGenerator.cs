@@ -1668,8 +1668,8 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         /// <summary>
         /// Returns whether the argument RFS must be loaded before other RFS's. Right now
-        /// there's only the concept of a RFS being high priority or not - and no granual sorting.
-        /// In the future this may need to expland. Also, high priority not only means load first, but
+        /// there's only the concept of a RFS being high priority or not - and no gradual sorting.
+        /// In the future this may need to expand. Also, high priority not only means load first, but
         /// when in global content it also means to load synchronously before any async loading begins.
         /// </summary>
         /// <remarks>
@@ -1679,7 +1679,7 @@ namespace FlatRedBall.Glue.CodeGeneration
         /// the methods up - one for ordering, one for loading before any async occurs.
         /// </remarks>
         /// <param name="rfs">The file to return whether high priority.</param>
-        /// <returns>Wehther it's considered high priority</returns>
+        /// <returns>Whether it's considered high priority</returns>
         public static bool IsRfsHighPriority(ReferencedFileSave rfs)
         {
             return rfs.IsDatabaseForLocalizing ||

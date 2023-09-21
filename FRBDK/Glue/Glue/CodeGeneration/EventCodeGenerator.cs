@@ -714,7 +714,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             if (!doesFileExist)
             {
-                PluginManager.ReceiveOutput("Forcing a regneration of " + fullFileName + " because Glue can't find it anywhere.");
+                PluginManager.ReceiveOutput("Forcing a regeneration of " + fullFileName + " because Glue can't find it anywhere.");
 
                 // There is no shared code file for this event, so we need to make one
                 ProjectManager.CodeProjectHelper.CreateAndAddPartialGeneratedCodeFile(fullFileName, true);
