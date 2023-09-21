@@ -517,14 +517,22 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
                     if (string.IsNullOrEmpty(executable) && !WindowsFileAssociation.NativelyHandledExtensions.Contains(effectiveExtension))
                     {
                         //Attempt to get relative projects
-                        var relativeExe = "";
+                        var absoluteExe = "";
                         if (GumFileExtensions.Contains(textExtension.ToLower()))
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
                         if (String.Equals(textExtension, "achx", StringComparison.OrdinalIgnoreCase))
-                            relativeExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
-                        if ((relativeExe != "") && (System.IO.File.Exists(relativeExe)))
                         {
-                            Process.Start(new ProcessStartInfo(relativeExe, fileName));
+                            absoluteExe = GlueState.Self.GlueExeDirectory + "../../../../AnimationEditor/PreviewProject/bin/Debug/AnimationEditor.exe";
+                            var foundAnimationEditor = (System.IO.File.Exists(absoluteExe);
+                            if(!foundAnimationEditor)
+                            {
+                                // check if it's in the default built location if the user is running from prebuilt:
+                                absoluteExe = GlueState.Self.GlueExeDirectory + "AnimationEditor/AnimationEditor.exe";
+                            }
+                        }
+                        if ((absoluteExe != "") && (System.IO.File.Exists(absoluteExe)))
+                        {
+                            Process.Start(new ProcessStartInfo(absoluteExe, fileName));
                             return;
                         }
 
