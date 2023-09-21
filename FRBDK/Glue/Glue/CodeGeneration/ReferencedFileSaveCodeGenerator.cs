@@ -1668,7 +1668,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         /// <summary>
         /// Returns whether the argument RFS must be loaded before other RFS's. Right now
-        /// there's only the concept of a RFS being high priority or not - and no gradual sorting.
+        /// there's only the concept of a RFS being high priority or not - and no granular sorting.
         /// In the future this may need to expand. Also, high priority not only means load first, but
         /// when in global content it also means to load synchronously before any async loading begins.
         /// </summary>
