@@ -11,6 +11,7 @@ using System.Windows.Controls;
 namespace FlatRedBall.Glue.Controls;
 /// <summary>
 /// Interaction logic for AddEventWindow.xaml
+/// (Window shown when a user adds an Event to an entity)
 /// </summary>
 public partial class AddEventWindow
 {
@@ -37,10 +38,13 @@ public partial class AddEventWindow
         FillAvailableDelegateTypes();
         FillTunnelingObjects();
         FillTypeConverters();
-        UpdateGenericUiVisibility();
+        UpdateGenericTypeElementsVisibility();
 
     }
 
+    /// <summary>
+    /// Fills the available types combo box with the available delegate types.
+    /// </summary>
     private void FillAvailableDelegateTypes()
     {
         foreach (var value in AvailableDelegateTypeConverter.GetAvailableDelegates())
@@ -49,7 +53,9 @@ public partial class AddEventWindow
         }
     }
 
-
+    /// <summary>
+    /// Fill Tunneling Object Combo Box with the available named objects/files
+    /// </summary>
     private void FillTunnelingObjects()
     {
         var availableObjects = AvailableNamedObjectsAndFiles.GetAvailableObjects(false, false, GlueState.Self.CurrentElement, null);
@@ -59,22 +65,6 @@ public partial class AddEventWindow
 
         if (TunnelingObjectComboBox.Items.Count > 0)
             TunnelingObjectComboBox.SelectedIndex = 0;
-    }
-
-    private void FillTunnelableEventsFor(NamedObjectSave nos)
-    {
-        if (nos == null)
-            return;
-
-        var availableEvents = ExposedEventManager.GetExposableEventsFor(nos, GlueState.Self.CurrentElement);
-        availableEvents.Sort();
-
-        this.TunnelingEventComboBox.Items.Clear();
-        
-        foreach (var availableVariable in availableEvents)
-        {
-            this.TunnelingEventComboBox.Items.Add(availableVariable);
-        }
     }
 
     /// <summary>
@@ -135,9 +125,15 @@ public partial class AddEventWindow
 
         throw new NotImplementedException(); // only the 3 radio buttons can be used!
     }
+
+    /// <summary>
+    /// Invoked when the Available Types Combobox has been altered,
+    /// because the Generic Type UI elements need to become (in)visible
+    /// if the selected item contains a generic type 'T'
+    /// </summary>
     private void AvailableTypesComboBox_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
-        UpdateGenericUiVisibility(e.AddedItems[0]!.ToString());
+        UpdateGenericTypeElementsVisibility(e.AddedItems[0]!.ToString());
     }
 
     /// <summary>
@@ -156,10 +152,25 @@ public partial class AddEventWindow
     private void TunnelingObjectComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
         NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
-        FillTunnelableEventsFor(nos);
+        if (nos == null)
+            return;
+
+        var availableEvents = ExposedEventManager.GetExposableEventsFor(nos, GlueState.Self.CurrentElement);
+        availableEvents.Sort();
+
+        this.TunnelingEventComboBox.Items.Clear();
+
+        foreach (var availableVariable in availableEvents)
+        {
+            this.TunnelingEventComboBox.Items.Add(availableVariable);
+        }
     }
 
-    private void UpdateGenericUiVisibility(string value = null)
+    /// <summary>
+    /// Shows the GenericType element if options that can contain generic type 'T' have been selected.
+    /// </summary>
+    /// <param name="value"></param>
+    private void UpdateGenericTypeElementsVisibility(string value = null)
     {
         var showGenericUi = value?.Contains("<T>") ?? false ? Visibility.Visible : Visibility.Hidden;
 
