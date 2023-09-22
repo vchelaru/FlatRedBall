@@ -20,7 +20,7 @@
                     <RadioButton VerticalContentAlignment="Center"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsEmptyChecked}" Content="{x:Static localization:Texts.Four}" />
+                                 IsChecked="{Binding IsEmptyChecked}" Content="{x:Static localization:Texts.Empty}" />
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
@@ -108,14 +108,18 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromMapCollisionChecked}" Content="{x:Static localization:Texts.FromTmxCollision}" />
+                                 IsChecked="{Binding IsFromMapCollisionChecked}">
+                        <RadioButton.Content>
+                            <TextBlock Text="{x:Static localization:Texts.FromTmxCollision}" TextWrapping="Wrap"/>
+                        </RadioButton.Content>
+                    </RadioButton> 
                     <StackPanel x:Name="TmxCollisionStackPanel" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromTmxCollisionVisibility}">
-                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <TextBlock Text="{x:Static localization:Texts.SourceTmxFileObject}" TextWrapping="Wrap" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.TileClass}" />
                         <ComboBox x:Name="TmxCollisionComboBox" 
                                   IsEditable="True"
                                   HorizontalAlignment="Left" Width="200" 
@@ -129,14 +133,14 @@
                     <RadioButton VerticalContentAlignment="Center" Margin="0,5,0,0"
                                  HorizontalAlignment="Left"
                                  IsEnabled="{Binding IsEntireViewEnabled}"
-                                 IsChecked="{Binding IsFromTypeChecked}" Content="{x:Static localization:Texts.TypeFrom}" />
+                                 IsChecked="{Binding IsFromTypeChecked}" Content="{x:Static localization:Texts.FromTileClass}" />
                     <StackPanel x:Name="Types" Margin="10, 0, 0, 0"  IsEnabled="{Binding IsEntireViewEnabled}"
                                 Visibility="{Binding FromTypeVisibility}">
-                        <TextBlock  Text="{x:Static localization:Texts.SourceTmxFileObject}" />
+                        <TextBlock Text="{x:Static localization:Texts.SourceTmxFileObject}" />
                         <ComboBox Width="200" HorizontalAlignment="Left"
                                   ItemsSource="{Binding TmxObjectNames}"
                                   SelectedItem="{Binding SourceTmxName}"></ComboBox>
-                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.Type}" />
+                        <TextBlock Margin="0,5,0,0" Text="{x:Static localization:Texts.TileClass}" />
                         <StackPanel Orientation="Horizontal">
                             <controls:TilesetTileSelector 
                                 x:Name="TilesetTileSelector"

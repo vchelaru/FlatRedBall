@@ -718,7 +718,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Enter extra command line arguments:.
         /// </summary>
         public static string CliExtraArguments {
             get {
@@ -2860,7 +2860,16 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From TMX Collision (use tileset shapes).
+        ///   Looks up a localized string similar to From Tile Class:.
+        /// </summary>
+        public static string FromTileClass {
+            get {
+                return ResourceManager.GetString("FromTileClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From TMX Collision - requires shapes defined in the tileset (TSX).
         /// </summary>
         public static string FromTmxCollision {
             get {
@@ -7104,6 +7113,15 @@ namespace Localization {
         public static string TextureSize {
             get {
                 return ResourceManager.GetString("TextureSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile Class:.
+        /// </summary>
+        public static string TileClass {
+            get {
+                return ResourceManager.GetString("TileClass", resourceCulture);
             }
         }
         

@@ -27,7 +27,7 @@
 
             <views:TitleImageButton Clicked="FormsButtonClicked" 
                                     Title="{x:Static localization:Texts.UIFrbForms}" 
-                                    Details="{x:Static localization:Texts.UIFrbForms}" 
+                                    Details="{x:Static localization:Texts.UIFrbFormsDescription}" 
                                     ImageWidthRatio=".5" 
                                     Height="140" HorizontalAlignment="Stretch" 
                                     Width="280" Margin="5" Image="/OfficialPluginsCore;component/Wizard/Icons/action_forms.png"></views:TitleImageButton>
