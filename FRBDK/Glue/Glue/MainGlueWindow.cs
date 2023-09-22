@@ -31,6 +31,8 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Threading;
+using System.IO;
+using System.ServiceModel.Channels;
 
 namespace Glue;
 
@@ -120,24 +122,49 @@ public partial class MainGlueWindow : Form
             return;
         }
 
-        var sdkPaths = Regex.Matches(output, "([0-9]+.[0-9]+.[0-9]+) \\[(.*)\\]")
+        var sdkPaths = Regex.Matches(output, "([0-9]+)[.]([0-9]+)[.]([0-9]+) \\[(.*)\\]")
             .OfType<Match>()
             // https://stackoverflow.com/questions/75702346/why-does-the-presence-of-net-7-0-2-sdk-cause-the-sdk-resolver-microsoft-dotnet?noredirect=1#comment133550210_75702346
             // "7.0." instead of "7.0.201"
-            .Where(item => item.Value.StartsWith("7.0.") == false)
-            .Select(m => System.IO.Path.Combine(m.Groups[2].Value, m.Groups[1].Value, "MSBuild.dll"))
+            //.Where(item => item.Value.StartsWith("7.0.") == false)
+            .Where(m => int.Parse(m.Groups[1].Value) < 7)
+            .OrderByDescending(m => int.Parse(m.Groups[1].Value))
+            .ThenByDescending(m => int.Parse(m.Groups[2].Value))
+            .ThenByDescending(m => int.Parse(m.Groups[3].Value))
+            .Select(m => System.IO.Path.Combine(m.Groups[4].Value, m.Groups[1].Value + "." + m.Groups[2].Value + "." + m.Groups[3].Value, "MSBuild.dll"))
             .ToArray();
 
-        if(sdkPaths.Any())
+        //Useful for debugging query above
+        //var allSdks = sdkPaths.Aggregate((a, b) => a + "," + b);
+        //MessageBox.Show(allSdks);
+
+        if (sdkPaths.Any())
         {
-            var sdkPath = sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
+            string sdkPath = null;
+            
+            foreach(var path in sdkPaths)
+            {
+                if(File.Exists(path))
+                {
+                    sdkPath = path;
+                    break;
+                }
+            }
+
+            //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
             if(String.IsNullOrEmpty(sdkPath))
             {
-                sdkPath = sdkPaths.Last();
+                //    sdkPath = sdkPaths.Last();
+
+                var message = String.Format(Localization.Texts.ErrorCouldNotFindNetSix, output);
+                GlueCommands.Self.PrintOutput(message);
+                MessageBox.Show(message);
             }
-                    
-            Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
-            GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
+            else
+            {
+                Environment.SetEnvironmentVariable("MSBUILD_EXE_PATH", sdkPath);
+                GlueCommands.Self.PrintOutput($"Using MSBUILD from {sdkPath}");
+            }
         }
         else
         {
