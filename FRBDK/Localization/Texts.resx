@@ -2742,4 +2742,7 @@
   <data name="WhichTemplateUse" xml:space="preserve">
 	  <value>Which template would you like to use?</value>
   </data>
+  <data name="PluginNeedsValidFolder" xml:space="preserve">
+	  <value>Please select a valid folder to create the plugin from.</value>
+  </data>
 </root>

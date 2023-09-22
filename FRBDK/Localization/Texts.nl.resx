@@ -2717,4 +2717,7 @@
 	<data name="WhichTemplateUse" xml:space="preserve">
 		<value>Welk sjabloon wilt u gebruiken?</value>
 	</data>
+	<data name="PluginNeedsValidFolder" xml:space="preserve">
+		<value>Selecteer een geldige map waaruit u de plug-in wilt maken.</value>
+	</data>
 </root>

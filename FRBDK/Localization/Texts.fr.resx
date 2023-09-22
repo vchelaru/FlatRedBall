@@ -2714,4 +2714,7 @@
 	<data name="WhichTemplateUse" xml:space="preserve">
 		<value>Quel modèle souhaiteriez-vous utiliser ?</value>
 	</data>
+	<data name="PluginNeedsValidFolder" xml:space="preserve">
+		<value>Veuillez sélectionner un dossier valide à partir duquel créer le plugin.</value>
+	</data>
 </root>

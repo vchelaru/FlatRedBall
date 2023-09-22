@@ -5560,6 +5560,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string PluginNeedsValidFolder {
+            get {
+                return ResourceManager.GetString("PluginNeedsValidFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Success - Glue must be restarted to finish removing the plugin..
         /// </summary>
         public static string PluginRestartToDelete {
@@ -7837,7 +7846,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Which template would you like to use?.
         /// </summary>
         public static string WhichTemplateUse {
             get {
