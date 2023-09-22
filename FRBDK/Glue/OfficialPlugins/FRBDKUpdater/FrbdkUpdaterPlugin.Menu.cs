@@ -136,16 +136,5 @@ namespace OfficialPlugins.FrbdkUpdater
 
             GlueCommands.Self.CloseGlue();
         }
-
-        void MenuItemClick()
-        {
-            var _form = new FrbdkUpdaterPluginForm(this);
-
-            GlueCommands.Self.DialogCommands.SetFormOwner(_form);
-
-            _form.Show();
-        }
-
-
     }
 }
