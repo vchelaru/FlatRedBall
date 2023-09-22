@@ -2711,4 +2711,7 @@
 	<data name="Alternative" xml:space="preserve">
 		<value>Alternative:</value>
 	</data>
+	<data name="WhichTemplateUse" xml:space="preserve">
+		<value>Quel modèle souhaiteriez-vous utiliser ?</value>
+	</data>
 </root>

@@ -286,7 +286,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Alternative:.
         /// </summary>
         public static string Alternative {
             get {
@@ -7833,6 +7833,15 @@ namespace Localization {
         public static string WhatToDoWithFiles {
             get {
                 return ResourceManager.GetString("WhatToDoWithFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string WhichTemplateUse {
+            get {
+                return ResourceManager.GetString("WhichTemplateUse", resourceCulture);
             }
         }
         

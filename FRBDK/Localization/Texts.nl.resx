@@ -2714,4 +2714,7 @@
 	<data name="Alternative" xml:space="preserve">
 		<value>Alternatief:</value>
 	</data>
+	<data name="WhichTemplateUse" xml:space="preserve">
+		<value>Welk sjabloon wilt u gebruiken?</value>
+	</data>
 </root>
