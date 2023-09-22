@@ -2708,4 +2708,10 @@
 	<data name="CliExtraArguments" xml:space="preserve">
 		<value>Voer extra opdrachtregelargumenten in:</value>
 	</data>
+	<data name="EventTunnelOtherObject" xml:space="preserve">
+		<value>Tunnel een evenement van een ander object</value>
+	</data>
+	<data name="Alternative" xml:space="preserve">
+		<value>Alternatief:</value>
+	</data>
 </root>

@@ -2705,4 +2705,10 @@
 	<data name="CliExtraArguments" xml:space="preserve">
 		<value>Geben Sie zusätzliche Befehlszeilenargumente ein:</value>
 	</data>
+	<data name="EventTunnelOtherObject" xml:space="preserve">
+		<value>Tunneln Sie ein Ereignis von einem anderen Objekt</value>
+	</data>
+	<data name="Alternative" xml:space="preserve">
+		<value>Alternative:</value>
+	</data>
 </root>

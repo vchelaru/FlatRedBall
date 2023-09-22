@@ -286,6 +286,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Alternative {
+            get {
+                return ResourceManager.GetString("Alternative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Alternative Name:.
         /// </summary>
         public static string AlternativeName {
@@ -2190,6 +2199,15 @@ namespace Localization {
         public static string EventSelectExisting {
             get {
                 return ResourceManager.GetString("EventSelectExisting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tunnel an event from another object.
+        /// </summary>
+        public static string EventTunnelOtherObject {
+            get {
+                return ResourceManager.GetString("EventTunnelOtherObject", resourceCulture);
             }
         }
         

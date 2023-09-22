@@ -2733,4 +2733,10 @@
   <data name="TileClass" xml:space="preserve">
     <value>Tile Class:</value>
   </data>
+  <data name="EventTunnelOtherObject" xml:space="preserve">
+	  <value>Tunnel an event from another object</value>
+  </data>
+  <data name="Alternative" xml:space="preserve">
+	  <value>Alternative:</value>
+  </data>
 </root>
