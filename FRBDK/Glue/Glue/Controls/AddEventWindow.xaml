@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:localization="clr-namespace:Localization;assembly=Localization"
         mc:Ignorable="d"
-        Title="{x:Static localization:Texts.EventNew}" Height="400" Width="380" ResizeMode="NoResize">
+        Title="{x:Static localization:Texts.EventNew}" Height="400" Width="320" ResizeMode="NoResize">
     <Grid>
         <RadioButton Checked="EventTypePicked" GroupName="EventType" Name="EventTypeExisting" Content="{x:Static localization:Texts.EventExistingExpose}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" IsChecked="True"/>
         <RadioButton Checked="EventTypePicked" GroupName="EventType" Name="EventTypeTunnel" Content="{x:Static localization:Texts.EventTunnelOtherObject}" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top"/>
@@ -13,28 +13,16 @@
         <Rectangle Fill="Black" Height="1" Margin="10,60,10,243" />
 
         <ListView Name="NewOptions" Visibility="Visible"
-                  Margin="10,66,10,38" 
+                  Margin="10,66,10,43" 
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.Type}" VerticalContentAlignment="Center" Width="110" />
-                <ComboBox Name="AvailableTypesComboBox" Width="150" Height="26"/>
-            </DockPanel>
-            <DockPanel>
-                <Label Name="GenericTypeLabel" Content="{x:Static localization:Texts.GenericType}" VerticalContentAlignment="Center" Width="110" />
-                <TextBox Name="GenericTypeTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Height="26" Text="float" VerticalContentAlignment="Center"/>
+                <ComboBox Name="AvailableTypesComboBox" Width="150" Height="26" SelectionChanged="AvailableTypesComboBox_SelectedIndexChanged"/>
             </DockPanel>
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.Name}" VerticalContentAlignment="Center" Width="110" />
                 <TextBox Name="EventNameTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="26" VerticalContentAlignment="Center"/>
-            </DockPanel>
-            <DockPanel>
-                <Label Content="{x:Static localization:Texts.Alternative}" VerticalContentAlignment="Center" Width="110" />
-                <TextBox Name="AlternativeTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="26" VerticalContentAlignment="Center"/>
-            </DockPanel>
-            <DockPanel>
-                <Label Content="{x:Static localization:Texts.PropertyType}" VerticalContentAlignment="Center" Width="110" />
-                <ComboBox Name="PropertyTypeComboBox" HorizontalAlignment="Left" VerticalAlignment="Top" Width="150" Height="26"/>
             </DockPanel>
         </ListView>
 
@@ -45,6 +33,8 @@
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.EventSelectExisting}" VerticalContentAlignment="Center" Width="210" />
+            </DockPanel>
+            <DockPanel>
                 <ComboBox Name="AvailableEventsComboBox" Width="120" Height="26"/>
             </DockPanel>
         </ListView>
@@ -54,15 +44,15 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <DockPanel>
-                <Label Content="{x:Static localization:Texts.AdvancedOptions}" VerticalContentAlignment="Center" Width="130" />
-            </DockPanel>
-            <DockPanel>
-                <Label Content="{x:Static localization:Texts.TypeConverter}" VerticalContentAlignment="Center" Width="130" />
-                <ComboBox Name="TypeConverterComboBox" Width="150" Height="26"/>
+                <Label Content="{x:Static localization:Texts.Object}" VerticalContentAlignment="Center" Width="130" />
+                <ComboBox Name="TunnelingObjectComboBox" Width="150" Height="26" SelectionChanged="TunnelingObjectComboBox_SelectedIndexChanged"  />
             </DockPanel>
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.PropertyType}" VerticalContentAlignment="Center" Width="130" />
                 <ComboBox Name="OverridingPropertyTypeComboBox" Width="150" Height="26" />
+            </DockPanel>
+            <DockPanel>
+                <Label Content="{x:Static localization:Texts.AdvancedOptions}" VerticalContentAlignment="Center" Width="130" />
             </DockPanel>
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.AlternativeName}" VerticalContentAlignment="Center" Width="130" />
@@ -73,12 +63,12 @@
                 <ComboBox Name="TunnelingEventComboBox" Width="150" Height="26" SelectionChanged="TunnelingVariableComboBox_SelectedIndexChanged" />
             </DockPanel>
             <DockPanel>
-                <Label Content="{x:Static localization:Texts.Object}" VerticalContentAlignment="Center" Width="130" />
-                <ComboBox Name="TunnelingObjectComboBox" Width="150" Height="26" SelectionChanged="TunnelingObjectComboBox_SelectedIndexChanged"  />
+                <Label Content="{x:Static localization:Texts.TypeConverter}" VerticalContentAlignment="Center" Width="130" />
+                <ComboBox Name="TypeConverterComboBox" Width="150" Height="26"/>
             </DockPanel>
         </ListView>
 
-        <DockPanel Margin="10,326,10,5" Height="28">
+        <DockPanel Margin="10,346,10,10" Height="28">
             <Button Content="{x:Static localization:Texts.Ok}" Margin="143,0,0,0" Click="Submit" Padding="10, 0"></Button>
             <Button Content="{x:Static localization:Texts.Cancel}" Margin="10,0,0,0" Click="Cancel" Padding="10, 0"></Button>
         </DockPanel>

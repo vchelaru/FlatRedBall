@@ -24,6 +24,8 @@ public partial class AddEventWindow
         FillAvailableDelegateTypes();
         FillTunnelingObjects();
         FillTypeConverters();
+        UpdateGenericUiVisibility();
+
     }
 
     private void FillAvailableDelegateTypes()
@@ -119,6 +121,10 @@ public partial class AddEventWindow
         }
 
         throw new NotImplementedException(); // only the 3 radio buttons can be used!
+    }
+    private void AvailableTypesComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        UpdateGenericUiVisibility();
     }
 
     /// <summary>
