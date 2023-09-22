@@ -21,6 +21,10 @@
                 <ComboBox Name="AvailableTypesComboBox" Width="150" Height="26" SelectionChanged="AvailableTypesComboBox_SelectedIndexChanged"/>
             </DockPanel>
             <DockPanel>
+                <Label Name="GenericTypeLabel" Content="{x:Static localization:Texts.GenericType}" VerticalContentAlignment="Center" Width="110" />
+                <TextBox Name="GenericTypeTextBox" Width="150" Height="26"/>
+            </DockPanel>
+            <DockPanel>
                 <Label Content="{x:Static localization:Texts.Name}" VerticalContentAlignment="Center" Width="110" />
                 <TextBox Name="EventNameTextBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="150" Height="26" VerticalContentAlignment="Center"/>
             </DockPanel>
@@ -56,7 +60,7 @@
             </DockPanel>
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.AlternativeName}" VerticalContentAlignment="Center" Width="130" />
-                <TextBox Name="AlternativeNameTextBox" Width="150" Height="26" />
+                <TextBox Name="AlternativeTextBox" Width="150" Height="26" />
             </DockPanel>
             <DockPanel>
                 <Label Content="{x:Static localization:Texts.Event}" VerticalContentAlignment="Center" Width="130" />

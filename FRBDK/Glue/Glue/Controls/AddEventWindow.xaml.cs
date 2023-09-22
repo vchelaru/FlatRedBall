@@ -6,6 +6,7 @@ using FlatRedBall.Glue.SaveClasses;
 using System.Windows;
 using FlatRedBall.Glue.GuiDisplay;
 using GlueFormsCore.ViewModels;
+using System.Windows.Controls;
 
 namespace FlatRedBall.Glue.Controls;
 /// <summary>
@@ -14,7 +15,19 @@ namespace FlatRedBall.Glue.Controls;
 public partial class AddEventWindow
 {
 
-    public AddEventViewModel ViewModel { get; set; }
+    private AddEventViewModel _viewModel;
+    public AddEventViewModel ViewModel
+    {
+        get => _viewModel;
+        set
+        {
+            _viewModel = value;
+            if (_viewModel != null)
+            {
+                SetFrom(_viewModel);
+            }
+        }
+    }
 
     #region Initializers
     public AddEventWindow()
@@ -122,9 +135,9 @@ public partial class AddEventWindow
 
         throw new NotImplementedException(); // only the 3 radio buttons can be used!
     }
-    private void AvailableTypesComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void AvailableTypesComboBox_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
     {
-        UpdateGenericUiVisibility();
+        UpdateGenericUiVisibility(e.AddedItems[0]!.ToString());
     }
 
     /// <summary>
@@ -132,7 +145,7 @@ public partial class AddEventWindow
     /// </summary>
     private void TunnelingVariableComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        AlternativeNameTextBox.Text =
+        AlternativeTextBox.Text =
             TunnelingObjectComboBox.Text +
             TunnelingEventComboBox.Text;
     }
@@ -142,18 +155,40 @@ public partial class AddEventWindow
     /// </summary>
     private void TunnelingObjectComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        string nameOfNamedObject = TunnelingObjectComboBox.Text;
-
-        NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(nameOfNamedObject);
+        NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
         FillTunnelableEventsFor(nos);
     }
 
-    private void UpdateGenericUiVisibility()
+    private void UpdateGenericUiVisibility(string value = null)
     {
-        var showGenericUi = AvailableTypesComboBox.Text.Contains("<T>") ? Visibility.Visible : Visibility.Hidden;
+        var showGenericUi = value?.Contains("<T>") ?? false ? Visibility.Visible : Visibility.Hidden;
 
         this.GenericTypeLabel.Visibility = showGenericUi;
         this.GenericTypeTextBox.Visibility = showGenericUi;
+    }
+
+    private void SetFrom(AddEventViewModel viewModel)
+    {
+        this.TunnelingObjectComboBox.SelectedItem = viewModel.TunnelingObject;
+
+        foreach (var item in this.TunnelingEventComboBox.Items)
+        {
+            if (String.Equals(item.ToString(), viewModel.TunnelingEvent, StringComparison.OrdinalIgnoreCase))
+            {
+                this.TunnelingEventComboBox.SelectedItem = item;
+                break;
+            }
+        }
+
+        foreach (var variableName in ViewModel.ExposableEvents)
+        {
+            AvailableEventsComboBox.Items.Add(variableName);
+        }
+
+        if (ViewModel.ExposableEvents.Count > 0 && AvailableEventsComboBox.Items.Count > 0)
+        {
+            AvailableEventsComboBox.SelectedIndex = 0;
+        }
     }
 
     /// <summary>
