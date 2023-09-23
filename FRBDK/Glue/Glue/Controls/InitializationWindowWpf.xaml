@@ -6,8 +6,16 @@
              xmlns:localization="clr-namespace:Localization;assembly=Localization"
              mc:Ignorable="d" 
              Height="240" Width="550" WindowStartupLocation="CenterScreen">
-    <StackPanel Margin="12,0,12,12">
-        <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22" Text="{x:Static localization:Texts.PleaseWait}" />
-        <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
-    </StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="5*" />
+        </Grid.ColumnDefinitions>
+        <Image Source="/Content/Icons/GlueIcon.png" VerticalAlignment="Top" />
+        <Rectangle Width="1" Fill="DarkGray" Margin="0,7" HorizontalAlignment="Left" Grid.Column="1" />
+        <StackPanel Margin="12,2,12,12" Grid.Column="1">
+            <TextBlock x:Name="TopLevelLabel" TextWrapping="Wrap" FontSize="22" Text="{x:Static localization:Texts.PleaseWait}" />
+            <TextBlock Margin="0,8,0,0" x:Name="SubLabel" TextWrapping="Wrap"></TextBlock>
+        </StackPanel>
+    </Grid>
 </Window>
