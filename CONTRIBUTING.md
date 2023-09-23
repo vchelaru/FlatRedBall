@@ -8,6 +8,10 @@ The FlatRedBall Discord server is an active place to ask and answer questions. T
 
 FlatRedBall Discord: https://discord.gg/tG5RBgw
 
+## Spread the Word
+
+FRB is a mature and powerful engine, and the more people who know about it, the better! Let others know that you're workig with the engine, show off your proggress, and invite others to join the community. 
+
 ## Reporting a Bug
 
 If you believe you have encountered a bug with the FlatRedBall Engine or tools, please report a Github Issue. When reporting a bug, please include the minimum steps requires to reproduce the problem. Include very detailed steps and end the steps with the **observed** problem and **expected** behavior. If there are workarounds or actions which change the behavior of the bugs, include that as additional information after the steps. See below for an example:
