@@ -18,7 +18,7 @@
         <ListView  Name="ItemListView" Grid.Row="1"
                    Margin="10,10,10,10"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                   ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                    MouseDoubleClick="ListView_MouseDoubleClick">
         </ListView>
         <DockPanel Height="28" VerticalAlignment="Bottom" Width="260" Margin="0, 0, 0, 10" Grid.Row="2">
