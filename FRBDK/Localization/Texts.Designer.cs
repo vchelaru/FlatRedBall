@@ -5524,7 +5524,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Failed to download plugin.
         /// </summary>
         public static string PluginDownloadFailed {
             get {
@@ -6168,6 +6168,33 @@ namespace Localization {
         public static string ReduceGameSpeedSlowMotion {
             get {
                 return ResourceManager.GetString("ReduceGameSpeedSlowMotion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string ReferenceFoundAmount {
+            get {
+                return ResourceManager.GetString("ReferenceFoundAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No references found.
+        /// </summary>
+        public static string ReferenceFoundNone {
+            get {
+                return ResourceManager.GetString("ReferenceFoundNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 reference found.
+        /// </summary>
+        public static string ReferenceFoundOne {
+            get {
+                return ResourceManager.GetString("ReferenceFoundOne", resourceCulture);
             }
         }
         

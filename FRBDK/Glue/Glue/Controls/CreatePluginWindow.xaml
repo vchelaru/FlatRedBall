@@ -4,40 +4,45 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:localization="clr-namespace:Localization;assembly=Localization"
-
         mc:Ignorable="d"
-        Title="{x:Static localization:Texts.PluginCreate}" Height="250" Width="200">
-    <Grid>
-        <ListView Margin="10,10,10,10"
+        ResizeMode="NoResize"
+        Title="{x:Static localization:Texts.PluginCreate}" Height="220" Width="300">
+    <Grid Margin="10,10,10,10"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                   ScrollViewer.VerticalScrollBarVisibility="Disabled">
-            <DockPanel>
-                <Label Content="{x:Static localization:Texts.PluginSource}" />
-            </DockPanel>
-            <DockPanel>
-                <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged"  Content="{x:Static localization:Texts.PluginFromInstalled}" />
-            </DockPanel>
-            <DockPanel>
-                <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged" Name="FromFolderRadioButton" Content="{x:Static localization:Texts.FromFolder}" />
-            </DockPanel>
-            <DockPanel Margin="0, 25, 0, 0" Name="FromFolderPanel">
-                <Label Content="{x:Static localization:Texts.Path}" />
-                <TextBox Name="FromFolderTextBox" Width="100" />
-                <Button Width="30" Content="..." Click="btnPath_Click" />
-            </DockPanel>
-            <DockPanel>
-                <ComboBox Name="FromInstalledPluginComboBox" />
-            </DockPanel>
-            <DockPanel>
-                <RadioButton GroupName="whichFilesGroup" Name="AllFilesRadioButton" Content="{x:Static localization:Texts.FilesAll}" />
-                <RadioButton GroupName="whichFilesGroup" Margin="10, 0,0,0" Content="{x:Static localization:Texts.OnlyCodeFiles}" />
-            </DockPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
+            <Label Content="{x:Static localization:Texts.PluginSource}" />
+        </DockPanel>
+        <DockPanel Grid.Row="1">
+            <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged" IsChecked="True" Content="{x:Static localization:Texts.PluginFromInstalled}" />
+        </DockPanel>
+        <DockPanel Grid.Row="2">
+            <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged" Name="FromFolderRadioButton" Content="{x:Static localization:Texts.FromFolder}" />
+        </DockPanel>
+        <DockPanel Grid.Row="3" Name="FromFolderPanel" Margin="0, 10, 0, 0">
+            <Label Content="{x:Static localization:Texts.Path}" />
+            <TextBox Name="FromFolderTextBox" Width="140" />
+            <Button Width="30" Content="..." Click="btnPath_Click" />
+        </DockPanel>
+        <DockPanel Grid.Row="3"  Margin="0, 10, 0, 0">
+            <ComboBox Margin="0, 0 10, 0" Name="FromInstalledPluginComboBox"  VerticalContentAlignment="Center" />
+        </DockPanel>
+        <DockPanel Grid.Row="4"  Margin="0, 10, 0, 0">
+            <RadioButton GroupName="whichFilesGroup" IsChecked="True" Name="AllFilesRadioButton" Content="{x:Static localization:Texts.FilesAll}" />
+            <RadioButton GroupName="whichFilesGroup" Margin="10, 0,0,0" Content="{x:Static localization:Texts.OnlyCodeFiles}" />
+        </DockPanel>
 
-            <DockPanel Height="28" VerticalAlignment="Bottom" Margin="0, 25, 0, 0">
-                <Button Content="{x:Static localization:Texts.Ok}" Margin="10,0,0,0" Padding="10, 0" Width="38" Click="Submit"></Button>
-                <Button Content="{x:Static localization:Texts.Cancel}" Margin="10,0,10,0" Padding="10, 0" Click="Cancel"></Button>
-            </DockPanel>
-        </ListView>
-
+        <DockPanel Grid.Row="53"  Height="28" VerticalAlignment="Bottom" Margin="0, 15, 0, 0">
+            <Button Content="{x:Static localization:Texts.Ok}" Margin="10,0,0,0" Padding="10, 0" Width="38" Click="Submit"></Button>
+            <Button Content="{x:Static localization:Texts.Cancel}" Margin="10,0,10,0" Padding="10, 0" Click="Cancel"></Button>
+        </DockPanel>
     </Grid>
 </Window>

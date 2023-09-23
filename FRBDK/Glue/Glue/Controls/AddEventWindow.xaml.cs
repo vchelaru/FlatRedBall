@@ -7,6 +7,7 @@ using System.Windows;
 using FlatRedBall.Glue.GuiDisplay;
 using GlueFormsCore.ViewModels;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace FlatRedBall.Glue.Controls;
 /// <summary>
@@ -39,7 +40,6 @@ public partial class AddEventWindow
         FillTunnelingObjects();
         FillTypeConverters();
         UpdateGenericTypeElementsVisibility();
-
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public partial class AddEventWindow
     /// </summary>
     private void TunnelingObjectComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        NamedObjectSave nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
+        var nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
         if (nos == null)
             return;
 
@@ -180,15 +180,20 @@ public partial class AddEventWindow
 
     private void SetFrom(AddEventViewModel viewModel)
     {
-        this.TunnelingObjectComboBox.SelectedItem = viewModel.TunnelingObject;
-
-        foreach (var item in this.TunnelingEventComboBox.Items)
+        if (viewModel.TunnelingObject != null)
         {
-            if (String.Equals(item.ToString(), viewModel.TunnelingEvent, StringComparison.OrdinalIgnoreCase))
+            foreach (var item in this.TunnelingEventComboBox.Items)
             {
-                this.TunnelingEventComboBox.SelectedItem = item;
-                break;
+                if (String.Equals(item.ToString(), viewModel.TunnelingEvent, StringComparison.OrdinalIgnoreCase))
+                {
+                    this.TunnelingEventComboBox.SelectedItem = item;
+                    break;
+                }
             }
+        }
+        else if (this.TunnelingEventComboBox.Items.Count > 0)
+        {
+            this.TunnelingEventComboBox.SelectedItem = this.TunnelingEventComboBox.Items[0];
         }
 
         foreach (var variableName in ViewModel.ExposableEvents)

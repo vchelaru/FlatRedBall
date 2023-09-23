@@ -2720,4 +2720,13 @@
 	<data name="PluginDownloadFailed" xml:space="preserve">
 		<value>Échec du téléchargement du plugin</value>
 	</data>
+	<data name="ReferenceFoundNone" xml:space="preserve">
+		<value>Aucune référence trouvée</value>
+	</data>
+	<data name="ReferenceFoundOne" xml:space="preserve">
+		<value>1 référence trouvée</value>
+	</data>
+	<data name="ReferenceFoundAmount" xml:space="preserve">
+		<value>{0} références trouvées</value>
+	</data>
 </root>

@@ -217,18 +217,13 @@ namespace OfficialPlugins.TreeViewPlugin.Views
             {
                 return true;
             }
-            else
+
+            if(frameworkElement.Parent is not FrameworkElement parent)
             {
-                var parent = frameworkElement.Parent as FrameworkElement;
-                if(parent == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return ClickedOnGrid(parent);
-                }
+                return false;
             }
+
+            return ClickedOnGrid(parent);
         }
 
         private void MainTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
