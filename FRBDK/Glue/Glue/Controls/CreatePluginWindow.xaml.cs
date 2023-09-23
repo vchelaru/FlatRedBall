@@ -1,5 +1,4 @@
 ﻿using FlatRedBall.Glue.Plugins;
-using System.Collections.Generic;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;

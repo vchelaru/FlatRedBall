@@ -2717,4 +2717,7 @@
 	<data name="PluginNeedsValidFolder" xml:space="preserve">
 		<value>Bitte wählen Sie einen gültigen Ordner aus, aus dem das Plugin erstellt werden soll.</value>
 	</data>
+	<data name="PluginDownloadFailed" xml:space="preserve">
+		<value>Das Plugin konnte nicht heruntergeladen werden</value>
+	</data>
 </root>

@@ -5524,6 +5524,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string PluginDownloadFailed {
+            get {
+                return ResourceManager.GetString("PluginDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading Plugin....
         /// </summary>
         public static string PluginDownloading {
@@ -5560,7 +5569,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Please select a valid folder to create the plugin from..
         /// </summary>
         public static string PluginNeedsValidFolder {
             get {

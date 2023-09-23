@@ -15,10 +15,10 @@
                 <Label Content="{x:Static localization:Texts.PluginSource}" />
             </DockPanel>
             <DockPanel>
-                <RadioButton GroupName="pluginSourceGroup" Click="pluginSourceGroupChanged"  Content="{x:Static localization:Texts.PluginFromInstalled}" />
+                <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged"  Content="{x:Static localization:Texts.PluginFromInstalled}" />
             </DockPanel>
             <DockPanel>
-                <RadioButton GroupName="pluginSourceGroup" Click="pluginSourceGroupChanged" Name="FromFolderRadioButton" Content="{x:Static localization:Texts.FromFolder}" />
+                <RadioButton GroupName="pluginSourceGroup" Click="PluginSourceGroupChanged" Name="FromFolderRadioButton" Content="{x:Static localization:Texts.FromFolder}" />
             </DockPanel>
             <DockPanel Margin="0, 25, 0, 0" Name="FromFolderPanel">
                 <Label Content="{x:Static localization:Texts.Path}" />

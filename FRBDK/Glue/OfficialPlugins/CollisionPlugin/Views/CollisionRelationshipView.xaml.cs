@@ -24,7 +24,7 @@ namespace OfficialPlugins.CollisionPlugin.Views
             var namedObject = GlueState.Self.CurrentNamedObjectSave;
 
             var viewModel = new AddEventViewModel();
-            viewModel.DesiredEventType = FlatRedBall.Glue.Controls.CustomEventType.Tunneled;
+            viewModel.DesiredEventType = CustomEventType.Tunneled;
             viewModel.TunnelingObject = namedObject.InstanceName;
             viewModel.TunnelingEvent = "CollisionOccurred";
 
