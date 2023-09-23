@@ -7,16 +7,21 @@
         mc:Ignorable="d"
         Height="300" Width="300">
     <Grid>
-        <DockPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0">
             <Label Name="Text" Width="270" Content="{x:Static localization:Texts.ReferenceFoundNone}"/>
         </DockPanel>
-        <ListView  Name="ItemListView"
-                   Margin="10,30,10,40"
+        <ListView  Name="ItemListView" Grid.Row="1"
+                   Margin="10,10,10,10"
                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                    ScrollViewer.VerticalScrollBarVisibility="Disabled"
                    MouseDoubleClick="ListView_MouseDoubleClick">
         </ListView>
-        <DockPanel Height="28" VerticalAlignment="Bottom" Width="260" Margin="0, 0, 0, 10">
+        <DockPanel Height="28" VerticalAlignment="Bottom" Width="260" Margin="0, 0, 0, 10" Grid.Row="2">
             <Button Content="{x:Static localization:Texts.Ok}" Margin="10,0,0,0" Padding="10, 0" Width="38" Click="CloseScreen" />
         </DockPanel>
     </Grid>
