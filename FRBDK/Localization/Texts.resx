@@ -2748,4 +2748,13 @@
   <data name="PluginDownloadFailed" xml:space="preserve">
 	  <value>Failed to download plugin</value>
   </data>
+  <data name="ReferenceFoundNone" xml:space="preserve">
+	  <value>No references found</value>
+  </data>
+  <data name="ReferenceFoundOne" xml:space="preserve">
+	  <value>1 reference found</value>
+  </data>
+  <data name="ReferenceFoundAmount" xml:space="preserve">
+	  <value>{0} references found</value>
+  </data>
 </root>

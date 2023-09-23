@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
-
   <PropertyGroup>
     <Platforms>AnyCPU</Platforms>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
@@ -37,5 +34,4 @@
     <ProjectReference Include="..\GlueCommon\GlueCommon.csproj" />
     <ProjectReference Include="..\Glue\GlueFormsCore.csproj" />
   </ItemGroup>
-
 </Project>

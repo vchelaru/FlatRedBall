@@ -2723,4 +2723,13 @@
 	<data name="PluginDownloadFailed" xml:space="preserve">
 		<value>Kan de plug-in niet downloaden</value>
 	</data>
+	<data name="ReferenceFoundNone" xml:space="preserve">
+		<value>Geen referenties gevonden</value>
+	</data>
+	<data name="ReferenceFoundOne" xml:space="preserve">
+		<value>1 referentie gevonden</value>
+	</data>
+	<data name="ReferenceFoundAmount" xml:space="preserve">
+		<value>{0} referenties gevonden</value>
+	</data>
 </root>
