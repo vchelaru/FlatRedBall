@@ -27,8 +27,7 @@ namespace Glue
             // Add proper exception handling so we can handle plugin exceptions:
             CreateExceptionHandlingEvents();
 
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
+            ApplicationConfiguration.Initialize();
             //bool succeededToObtainMutex;
 
             // Only open one instance of Glue
