@@ -63,8 +63,8 @@
                 <ComboBox Name="TunnelingObjectComboBox" Width="150" Height="26" SelectionChanged="TunnelingObjectComboBox_SelectedIndexChanged"  />
             </DockPanel>
             <DockPanel Margin="0, 5, 0, 0">
-                <Label Content="{x:Static localization:Texts.PropertyType}" VerticalContentAlignment="Center" Width="130" />
-                <ComboBox Name="OverridingPropertyTypeComboBox" Width="150" Height="26" />
+                <Label Content="{x:Static localization:Texts.Event}" VerticalContentAlignment="Center" Width="130" />
+                <ComboBox Name="TunnelingEventComboBox" Width="150" Height="26" SelectionChanged="TunnelingVariableComboBox_SelectedIndexChanged" />
             </DockPanel>
             <DockPanel Margin="0, 25, 0, 0">
                 <Label Content="{x:Static localization:Texts.AdvancedOptions}" HorizontalAlignment="Left" FontWeight="Bold" VerticalContentAlignment="Center" Width="130" />
@@ -74,8 +74,8 @@
                 <TextBox Name="AlternativeTextBox" Width="150" Height="26" />
             </DockPanel>
             <DockPanel Margin="0, 5, 0, 0">
-                <Label Content="{x:Static localization:Texts.Event}" VerticalContentAlignment="Center" Width="130" />
-                <ComboBox Name="TunnelingEventComboBox" Width="150" Height="26" SelectionChanged="TunnelingVariableComboBox_SelectedIndexChanged" />
+                <Label Content="{x:Static localization:Texts.PropertyType}" VerticalContentAlignment="Center" Width="130" />
+                <ComboBox Name="OverridingPropertyTypeComboBox" Width="150" Height="26" />
             </DockPanel>
             <DockPanel Margin="0, 5, 0, 0">
                 <Label Content="{x:Static localization:Texts.TypeConverter}" VerticalContentAlignment="Center" Width="130" />

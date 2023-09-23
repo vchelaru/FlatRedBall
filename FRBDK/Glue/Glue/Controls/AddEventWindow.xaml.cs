@@ -151,7 +151,9 @@ public partial class AddEventWindow
     /// </summary>
     private void TunnelingObjectComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(TunnelingObjectComboBox.Text);
+        var selectedItemName = TunnelingObjectComboBox.SelectedItem?.ToString();
+
+        var nos = GlueState.Self.CurrentElement.GetNamedObjectRecursively(selectedItemName);
         if (nos == null)
             return;
 
