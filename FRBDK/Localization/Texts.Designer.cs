@@ -286,6 +286,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alternative:.
+        /// </summary>
+        public static string Alternative {
+            get {
+                return ResourceManager.GetString("Alternative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Alternative Name:.
         /// </summary>
         public static string AlternativeName {
@@ -2190,6 +2199,15 @@ namespace Localization {
         public static string EventSelectExisting {
             get {
                 return ResourceManager.GetString("EventSelectExisting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tunnel an event from another object.
+        /// </summary>
+        public static string EventTunnelOtherObject {
+            get {
+                return ResourceManager.GetString("EventTunnelOtherObject", resourceCulture);
             }
         }
         
@@ -5506,6 +5524,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string PluginDownloadFailed {
+            get {
+                return ResourceManager.GetString("PluginDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading Plugin....
         /// </summary>
         public static string PluginDownloading {
@@ -5538,6 +5565,15 @@ namespace Localization {
         public static string PluginInstall {
             get {
                 return ResourceManager.GetString("PluginInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a valid folder to create the plugin from..
+        /// </summary>
+        public static string PluginNeedsValidFolder {
+            get {
+                return ResourceManager.GetString("PluginNeedsValidFolder", resourceCulture);
             }
         }
         
@@ -7815,6 +7851,15 @@ namespace Localization {
         public static string WhatToDoWithFiles {
             get {
                 return ResourceManager.GetString("WhatToDoWithFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which template would you like to use?.
+        /// </summary>
+        public static string WhichTemplateUse {
+            get {
+                return ResourceManager.GetString("WhichTemplateUse", resourceCulture);
             }
         }
         

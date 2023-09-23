@@ -2708,4 +2708,19 @@
 	<data name="CliExtraArguments" xml:space="preserve">
 		<value>Voer extra opdrachtregelargumenten in:</value>
 	</data>
+	<data name="EventTunnelOtherObject" xml:space="preserve">
+		<value>Tunnel een evenement van een ander object</value>
+	</data>
+	<data name="Alternative" xml:space="preserve">
+		<value>Alternatief:</value>
+	</data>
+	<data name="WhichTemplateUse" xml:space="preserve">
+		<value>Welk sjabloon wilt u gebruiken?</value>
+	</data>
+	<data name="PluginNeedsValidFolder" xml:space="preserve">
+		<value>Selecteer een geldige map waaruit u de plug-in wilt maken.</value>
+	</data>
+	<data name="PluginDownloadFailed" xml:space="preserve">
+		<value>Kan de plug-in niet downloaden</value>
+	</data>
 </root>

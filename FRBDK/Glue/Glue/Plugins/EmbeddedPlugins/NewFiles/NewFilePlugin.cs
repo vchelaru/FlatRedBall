@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using FlatRedBall.Glue.Plugins.Interfaces;
 using FlatRedBall.Glue.Elements;
 using FlatRedBall.IO;
 using System.ComponentModel.Composition;
@@ -10,8 +8,8 @@ using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.IO;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Parsing;
-using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.Glue.SetVariable;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 {
@@ -150,35 +148,30 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.NewFiles
 
         private string GetNewFileTemplateForExtension(IEnumerable<string> listOfFiles, string extension, bool haveUserPick = true)
         {
-            var enumeration = listOfFiles.Where(file=>FileManager.GetExtension(file) == extension);
-            if(enumeration.Count() != 0)
+            var enumeration = listOfFiles.Where(file=>FileManager.GetExtension(file) == extension).ToList();
+            // If nothing was found, return null.
+            if (!enumeration.Any()) return null;
+
+            // if there is only 1 option, or the user isn't allowed to pick, pick the only first item.
+            if (enumeration.Count == 1 || !haveUserPick) return enumeration.First();
+            
+            // Now that we have determined there are multiple options and the user is allowed to pick,
+            // open a window with a combobox where the user can pick options.
+            var cbmb = new ComboBoxMessageBox(L.Texts.WhichTemplateUse);
+            foreach (var option in enumeration)
             {
-                if (enumeration.Count() > 1 && haveUserPick)
-                {
-                    ComboBoxMessageBox cbmb = new ComboBoxMessageBox();
-                    cbmb.Message = "Which template would you like to use?";
-                    foreach (var option in enumeration)
-                    {
-                        cbmb.Add(option, FileManager.RemovePath(option));
-                    }
-
-                    var result = cbmb.ShowDialog();
-
-                    if (result == System.Windows.Forms.DialogResult.OK)
-                    {
-                        return cbmb.SelectedItem as string;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    return enumeration.FirstOrDefault();
-                }
+                cbmb.Add(option, FileManager.RemovePath(option));
             }
+
+            var result = cbmb.ShowDialog();
+
+            if (result.HasValue && result.Value)
+            {
+                return cbmb.SelectedItem as string;
+            }
+
             return null;
+
         }
 
         private void ReactToNewFile(SaveClasses.ReferencedFileSave newFile, AssetTypeInfo ati)

@@ -2705,4 +2705,19 @@
 	<data name="CliExtraArguments" xml:space="preserve">
 		<value>Entrez des arguments de ligne de commande supplémentaires :</value>
 	</data>
+	<data name="EventTunnelOtherObject" xml:space="preserve">
+		<value>Tunnelier un événement à partir d'un autre objet</value>
+	</data>
+	<data name="Alternative" xml:space="preserve">
+		<value>Alternative:</value>
+	</data>
+	<data name="WhichTemplateUse" xml:space="preserve">
+		<value>Quel modèle souhaiteriez-vous utiliser ?</value>
+	</data>
+	<data name="PluginNeedsValidFolder" xml:space="preserve">
+		<value>Veuillez sélectionner un dossier valide à partir duquel créer le plugin.</value>
+	</data>
+	<data name="PluginDownloadFailed" xml:space="preserve">
+		<value>Échec du téléchargement du plugin</value>
+	</data>
 </root>

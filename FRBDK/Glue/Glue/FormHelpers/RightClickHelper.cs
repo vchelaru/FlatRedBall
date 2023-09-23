@@ -1406,15 +1406,15 @@ public static class RightClickHelper
 
     public static void HandleAddEventOk(AddEventWindow addEventWindow)
     {
-        var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel();
-        viewModel.EventName = addEventWindow.ResultName;
-        viewModel.TunnelingObject = addEventWindow.TunnelingObject;
-        viewModel.TunnelingEvent = addEventWindow.TunnelingEvent;
-
-        viewModel.SourceVariable = addEventWindow.SourceVariable;
-        viewModel.BeforeOrAfter = addEventWindow.BeforeOrAfter;
-
-        viewModel.DelegateType = addEventWindow.ResultDelegateType;
+        var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel
+        {
+            EventName = addEventWindow.ResultName,
+            TunnelingObject = addEventWindow.TunnelingObject,
+            TunnelingEvent = addEventWindow.TunnelingEvent,
+            SourceVariable = addEventWindow.SourceVariable,
+            BeforeOrAfter = addEventWindow.BeforeOrAfter,
+            DelegateType = addEventWindow.ResultDelegateType
+        };
 
         GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
 

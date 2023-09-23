@@ -342,7 +342,7 @@ namespace OfficialPlugins.DoorEntityPlugin
         {
             var viewModel = new AddEventViewModel();
             viewModel.BeforeOrAfter = BeforeOrAfter.Before;
-            viewModel.DesiredEventType = FlatRedBall.Glue.Controls.CustomEventType.Exposed;
+            viewModel.DesiredEventType = CustomEventType.Exposed;
             viewModel.EventName = "PlayerListVsDoorEntityListCollisionOccurred";
             viewModel.TunnelingEvent = "CollisionOccurred";
             viewModel.TunnelingObject = "PlayerListVsDoorEntityList";
