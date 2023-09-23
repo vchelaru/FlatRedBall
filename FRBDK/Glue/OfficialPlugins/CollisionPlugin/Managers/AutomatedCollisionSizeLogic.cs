@@ -241,17 +241,17 @@ public static class AutomatedCollisionSizeLogic
         if(ati == AvailableAssetTypes.CommonAtis.Circle)
         {
             small = Math.Min( x - Get("Radius"),  y - Get("Radius"));
-            big = Math.Min(x + Get("Radius"), y + Get("Radius"));
+            big = Math.Max(x + Get("Radius"), y + Get("Radius"));
         }
         else if (ati == AvailableAssetTypes.CommonAtis.CapsulePolygon)
         {
             small = Math.Min(x - Get("Width") / 2.0f, y - Get("Height") / 2);
-            big = Math.Min(x + Get("Width")/2.0f, y + Get("Height") / 2);
+            big = Math.Max(x + Get("Width")/2.0f, y + Get("Height") / 2);
         }
         else if (ati == AvailableAssetTypes.CommonAtis.AxisAlignedRectangle)
         {
             small = Math.Min(x - Get("Width")/2.0f, y - Get("Height") / 2);
-            big = Math.Min(x + Get("Width")/2.0f, y + Get("Height") / 2);
+            big = Math.Max(x + Get("Width")/2.0f, y + Get("Height") / 2);
         }
         else if (ati == AvailableAssetTypes.CommonAtis.Polygon)
         {
