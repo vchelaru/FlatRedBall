@@ -57,6 +57,7 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public string VariableName { get; set; }
         public object VariableValue { get; set; }
         public string Type { get; set; }
+
     }
 
     public class SetVariableDtoList
@@ -136,6 +137,8 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
         public string VariableValue { get; set; }
         public string Type { get; set; }
         public bool IsState { get; set; }
+
+        public string AbsoluteGlueProjectFilePath { get; set; }
 
         public override string ToString() => $"{VariableName}={VariableValue}";
     }

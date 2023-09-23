@@ -206,6 +206,11 @@ namespace GlueControl
 
             if (dto.AssignOrRecordOnly == AssignOrRecordOnly.Assign)
             {
+                if (ObjectFinder.Self.GlueProject == null)
+                {
+                    GlueCommands.Self.LoadProject(dto.AbsoluteGlueProjectFilePath);
+                }
+
                 var selectedNosNames = Editing.EditingManager.Self.CurrentNamedObjects.Select(item => item.InstanceName)
                     .ToArray();
 

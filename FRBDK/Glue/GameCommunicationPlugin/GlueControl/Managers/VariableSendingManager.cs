@@ -621,6 +621,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             data.AssignOrRecordOnly = assignOrRecordOnly;
             data.IsState = isState;
 
+            data.AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath;
+
+
             // March 15, 2022
             // Why do we set this
             // here? It results in 
@@ -630,7 +633,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             //data.ScreenSave = currentElement as ScreenSave;
             //data.EntitySave = currentElement as EntitySave;
 
-            if (!string.IsNullOrEmpty(variableOwningNosName))
+            var strippedVaraibleName = rawMemberName;
+            if(rawMemberName.Contains("."))
+            {
+                strippedVaraibleName = rawMemberName.Substring(rawMemberName.LastIndexOf('.') + 1);
+            }
+
+            var customVariable = currentElement?.GetCustomVariableRecursively(strippedVaraibleName);
+
+            if(customVariable?.IsShared == true)
+            {
+                // don't prefix anything, leave it as-is
+            }
+            else if (!string.IsNullOrEmpty(variableOwningNosName))
             {
                 data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
             }
