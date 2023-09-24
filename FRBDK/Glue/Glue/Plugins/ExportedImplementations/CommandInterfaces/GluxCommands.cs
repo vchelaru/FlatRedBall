@@ -1468,6 +1468,7 @@ public class GluxCommands : IGluxCommands
         NamedObjectSave newNos = new NamedObjectSave();
         newNos.SetDefaults();
         newNos.AttachToContainer = true;
+        newNos.CallActivity = addObjectViewModel.EffectiveCallActivity;
         await TaskManager.Self.AddAsync(async () =>
         {
             if (element == null)

@@ -115,6 +115,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Items in this list will already have their Activity called if added to {0}. This will result in Activity being called twice causing errors..
+        /// </summary>
+        public static string AddObject_ActivityCalledByBaseList {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityCalledByBaseList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items in this list will already have their activity called by {0}..
+        /// </summary>
+        public static string AddObject_ActivityCalledBySameList {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityCalledBySameList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activity is recommended for this list.
+        /// </summary>
+        public static string AddObject_ActivityListRecommended {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityListRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add ProfileManager.
         /// </summary>
         public static string AddProfileManager {
@@ -6172,7 +6199,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to {0} references found.
         /// </summary>
         public static string ReferenceFoundAmount {
             get {

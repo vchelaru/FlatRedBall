@@ -2734,27 +2734,36 @@
     <value>Tile Class:</value>
   </data>
   <data name="EventTunnelOtherObject" xml:space="preserve">
-	  <value>Tunnel an event from another object</value>
+    <value>Tunnel an event from another object</value>
   </data>
   <data name="Alternative" xml:space="preserve">
-	  <value>Alternative:</value>
+    <value>Alternative:</value>
   </data>
   <data name="WhichTemplateUse" xml:space="preserve">
-	  <value>Which template would you like to use?</value>
+    <value>Which template would you like to use?</value>
   </data>
   <data name="PluginNeedsValidFolder" xml:space="preserve">
-	  <value>Please select a valid folder to create the plugin from.</value>
+    <value>Please select a valid folder to create the plugin from.</value>
   </data>
   <data name="PluginDownloadFailed" xml:space="preserve">
-	  <value>Failed to download plugin</value>
+    <value>Failed to download plugin</value>
   </data>
   <data name="ReferenceFoundNone" xml:space="preserve">
-	  <value>No references found</value>
+    <value>No references found</value>
   </data>
   <data name="ReferenceFoundOne" xml:space="preserve">
-	  <value>1 reference found</value>
+    <value>1 reference found</value>
   </data>
   <data name="ReferenceFoundAmount" xml:space="preserve">
-	  <value>{0} references found</value>
+    <value>{0} references found</value>
+  </data>
+  <data name="AddObject_ActivityCalledByBaseList" xml:space="preserve">
+    <value>Items in this list will already have their Activity called if added to {0}. This will result in Activity being called twice causing errors.</value>
+  </data>
+  <data name="AddObject_ActivityCalledBySameList" xml:space="preserve">
+    <value>Items in this list will already have their activity called by {0}.</value>
+  </data>
+  <data name="AddObject_ActivityListRecommended" xml:space="preserve">
+    <value>Activity is recommended for this list</value>
   </data>
 </root>
