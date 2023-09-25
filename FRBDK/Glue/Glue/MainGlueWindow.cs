@@ -201,7 +201,7 @@ public partial class MainGlueWindow : Form
     private async void StartUpGlue(object sender, EventArgs e)
     {
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
-        LoadGlueSettings();
+        GlueCommands.Self.LoadGlueSettings();
         var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
         Localization.Texts.Culture = mainCulture;
         Thread.CurrentThread.CurrentCulture = mainCulture;
@@ -558,72 +558,6 @@ public partial class MainGlueWindow : Form
         Application.DoEvents();
     }
 
-    private static void LoadGlueSettings()
-    {
-        FilePath settingsFileLocation = null;
-        // Need to fix up saving/loading of this in json since there's some converter causing problems
-        //if(FileManager.FileExists(GlueSettingsSave.SettingsFileNameJson))
-        //{
-        //    settingsFileLocation = GlueSettingsSave.SettingsFileNameJson;
-        //}
-        //else 
-        if (FileManager.FileExists(GlueSettingsSave.SettingsFileName))
-        {
-            settingsFileLocation = GlueSettingsSave.SettingsFileName;
-        }
-        if (settingsFileLocation != null)
-        {
-            GlueSettingsSave settingsSave = null;
-
-            var didErrorOccur = false;
-
-            try
-            {
-                if(settingsFileLocation.Extension == "json")
-                {
-                    var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
-                    settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
-                }
-                else
-                {
-                    settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
-                }
-                settingsSave.FixAllTypes();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"{Localization.Texts.ErrorLoadingSettings}\n\n{settingsFileLocation}\n\n{Localization.Texts.ErrorDetails}\n\n{e}");
-                didErrorOccur = true;
-            }
-
-            // But what do we do if something bad did happen?
-            if (didErrorOccur) return;
-            
-            GlueState.Self.GlueSettingsSave = settingsSave;
-
-            ProjectLoader.Self.GetCsprojToLoad(out var csprojToLoad);
-
-            // Load the plugins settings if it exists
-            if (String.IsNullOrEmpty(csprojToLoad))
-            {
-                ProjectManager.PluginSettings = new PluginSettings();
-            }
-            else
-            {
-                var gluxDirectory = FileManager.GetDirectory(csprojToLoad);
-
-                ProjectManager.PluginSettings = PluginSettings.FileExists(gluxDirectory) 
-                    ? PluginSettings.Load(gluxDirectory)
-                    : new PluginSettings();
-            }
-
-            MainPanelControl.Self.ApplyGlueSettings(GlueState.Self.GlueSettingsSave);
-        }
-        else
-        {
-            GlueState.Self.GlueSettingsSave.Save();
-        }
-    }
 
     private static bool _wantsToExit = false;
     private void MainGlueWindow_FormClosing(object sender, FormClosingEventArgs e)
