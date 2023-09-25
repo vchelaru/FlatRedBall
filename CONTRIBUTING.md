@@ -10,7 +10,7 @@ FlatRedBall Discord: https://discord.gg/tG5RBgw
 
 ## Spread the Word
 
-FRB is a mature and powerful engine, and the more people who know about it, the better! Let others know that you're workig with the engine, show off your proggress, and invite others to join the community. 
+FRB is a mature and powerful engine, and the more people who know about it, the better! Let others know that you're working with the engine, show off your progress, and invite others to join the community. 
 
 ## Reporting a Bug
 
