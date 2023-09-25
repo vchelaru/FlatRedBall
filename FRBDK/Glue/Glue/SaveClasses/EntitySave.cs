@@ -111,6 +111,8 @@ namespace FlatRedBall.Glue.SaveClasses
             return ImplementsIWindow == true;
         }
 
+        [XmlIgnore]
+        [JsonIgnore]
         [CategoryAttribute("Inheritance and Interfaces")]
         public bool ImplementsIDrawableBatch
         {
