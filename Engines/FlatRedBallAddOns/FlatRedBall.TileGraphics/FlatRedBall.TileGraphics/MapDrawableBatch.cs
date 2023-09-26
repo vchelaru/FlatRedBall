@@ -1226,7 +1226,7 @@ namespace FlatRedBall.TileGraphics
             }
             else
             {
-#if RendererHasExternalEffectManager && NET6_0
+#if RendererHasExternalEffectManager && MONOGAME_381
                 if (UseCustomEffect)
                 {
                     var effectManager = Renderer.ExternalEffectManager;
