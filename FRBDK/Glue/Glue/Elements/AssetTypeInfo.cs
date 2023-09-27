@@ -171,7 +171,7 @@ namespace FlatRedBall.Glue.Elements
 
         /// <summary>
         /// The code to generate when the object associated with this AssetTypeInfo should be destroyed. 
-        /// The generated code replaces the string "this" with the name of the named object.
+        /// The generated code replaces the string "this" with the name of the named object. This is only used if DestroyFunc is null.
         /// </summary>
         /// <remarks>
         /// This code can be multiple statements. If it's a single statement, then the code does not need 
@@ -189,6 +189,18 @@ namespace FlatRedBall.Glue.Elements
         /// "MyObjectInstance.RemoveFromManagers(); MyObjectInstance.BroadcastRemoval();"
         /// </remarks>
 		public string DestroyMethod;
+
+
+        /// <summary>
+        /// Func which can be used to provide a custom destroy method. The parameters are
+        /// * IElement - the containing element (screen or entity), 
+        /// * NamedObjectSave - the NamedObjectSave to add add to managers which may be null, 
+        /// * ReferencedFileSave - The associated ReferencedFileSave which may be null
+        /// </summary>
+        [XmlIgnore]
+        public Func<IElement, NamedObjectSave, ReferencedFileSave, string> DestroyFunc;
+
+
         public string RecycledDestroyMethod;
         public string SetFromOtherCode;
 

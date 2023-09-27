@@ -163,7 +163,14 @@ namespace GumPlugin.CodeGeneration
 
             if(isGlueScreen && gumScreenRfs != null)
             {
-                var method = codeBlock.Function("private void", "RefreshLayoutInternal", "object sender, EventArgs e");
+                var hasBase = !string.IsNullOrEmpty(element.BaseElement);
+                string prefix = "protected virtual void";
+                if(hasBase)
+                {
+                    prefix = "protected override void";
+                }
+
+                var method = codeBlock.Function(prefix, "RefreshLayoutInternal", "object sender, EventArgs e");
 
                 var ati = gumScreenRfs.GetAssetTypeInfo();
 
@@ -180,6 +187,11 @@ namespace GumPlugin.CodeGeneration
                 else
                 {
                     method.Line($"{gumScreenRfs.GetInstanceName()}.UpdateLayout();");
+                }
+
+                if(hasBase)
+                {
+                    method.Line("base.RefreshLayoutInternal(sender, e);");
                 }
 
             }

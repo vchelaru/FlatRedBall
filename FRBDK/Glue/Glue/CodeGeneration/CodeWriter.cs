@@ -1537,7 +1537,14 @@ namespace FlatRedBallAddOns.Entities
 
                 if (ati != null)
                 {
-                    currentBlock.Line(ati.DestroyMethod + ";");
+                    if(ati.DestroyFunc != null)
+                    {
+                        currentBlock.Line(ati.DestroyFunc(saveObject, null, null));
+                    }
+                    else
+                    {
+                        currentBlock.Line(ati.DestroyMethod + ";");
+                    }
                 }
             }
             else if (!saveObject.InheritsFromElement())
@@ -2649,6 +2656,10 @@ namespace FlatRedBallAddOns.Entities
                     if (asEntitySave.CreatedByOtherEntities && !string.IsNullOrEmpty(ati.RecycledDestroyMethod))
                     {
                         currentBlock.Line(ati.RecycledDestroyMethod + ";");
+                    }
+                    else if(ati.DestroyFunc != null)
+                    {
+                        currentBlock.Line(ati.DestroyFunc(saveObject, null, null));
                     }
                     else
                     {

@@ -1091,11 +1091,13 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
                 else
                 {
-                    if (ati.DestroyMethod != null)
+                    if (ati.DestroyFunc != null)
                     {
-
+                        removalMethod = ati.DestroyFunc(element, namedObject, null);
+                    }
+                    else if (ati.DestroyMethod != null)
+                    {
                         removalMethod = ati.DestroyMethod.Replace("this", namedObject.InstanceName);
-
                     }
                 }
 
@@ -1163,14 +1165,23 @@ namespace FlatRedBall.Glue.CodeGeneration
                         AssetTypeInfo atiForListElement = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(genericClassType,
                             namedObject);
 
-                        if (atiForListElement != null && atiForListElement.DestroyMethod != null)
+                        var hasDestroy = atiForListElement.DestroyMethod != null || atiForListElement.DestroyFunc != null;
+
+                        if (atiForListElement != null && hasDestroy)
                         {
-
-                            string removalMethod = atiForListElement.DestroyMethod.Replace("this", namedObject.InstanceName + "[i]");
-
-                            if (!string.IsNullOrEmpty(removalMethod))
+                            if(atiForListElement.DestroyFunc != null)
                             {
-                                forBlock.Line(removalMethod + ";");
+                                // this must internally handle list, not sure how to do that.... We may need a new parameter for lists here:
+                                forBlock.Line(atiForListElement.DestroyFunc(element, namedObject, null));
+                            }
+                            else if(atiForListElement.DestroyMethod != null)
+                            {
+                                string removalMethod = atiForListElement.DestroyMethod.Replace("this", namedObject.InstanceName + "[i]");
+
+                                if (!string.IsNullOrEmpty(removalMethod))
+                                {
+                                    forBlock.Line(removalMethod + ";");
+                                }
                             }
                         }
                         else

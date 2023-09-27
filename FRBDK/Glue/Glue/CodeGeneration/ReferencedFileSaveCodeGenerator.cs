@@ -256,7 +256,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                     // should also remove:
                     var ati = referencedFile.GetAssetTypeInfo();
 
-                    if(!string.IsNullOrEmpty(ati.DestroyMethod))
+                    if (ati.DestroyFunc != null)
+                    {
+                        AddIfConditionalSymbolIfNecesssary(codeBlock, referencedFile);
+
+                        ati.DestroyFunc(element, null, referencedFile);
+
+                        AddEndIfIfNecessary(codeBlock, referencedFile);
+                    }
+
+                    else if (!string.IsNullOrEmpty(ati.DestroyMethod))
                     {
                         var lineToAdd = ati.DestroyMethod.Replace("this",
                             referencedFile.GetInstanceName());
@@ -439,9 +448,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         // but these will not have
                         // an AssetTypeInfo, so we need
                         // to check for that.
-                        if (ati != null &&  !string.IsNullOrEmpty(ati.DestroyMethod))
+                        if (ati != null)
                         {
-                            codeBlock.Line(ati.DestroyMethod.Replace("this", fieldName) + ";");
+                            if(ati.DestroyFunc != null)
+                            {
+                                codeBlock.Line(ati.DestroyFunc(element, null, rfs));
+                            }
+                            else if ( !string.IsNullOrEmpty(ati.DestroyMethod))
+                            {
+                                codeBlock.Line(ati.DestroyMethod.Replace("this", fieldName) + ";");
+                            }
                         }
                         codeBlock.Line(fieldName + "= null;");
                     }
@@ -1396,8 +1412,11 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-
-                if (!string.IsNullOrEmpty(ati.DestroyMethod))
+                if(ati.DestroyFunc != null)
+                {
+                    codeBlock.Line(ati.DestroyFunc(element, null, referencedFile));
+                }
+                else if (!string.IsNullOrEmpty(ati.DestroyMethod))
                 {
                     if (isScreenSave && recycleMethod != destroyMethod)
                     {

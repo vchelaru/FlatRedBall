@@ -30,7 +30,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.WildcardFilePlugin
             {
                 if(project != null)
                 {
-                    await TaskManager.Self.AddAsync(() =>
+                    // Sept 26, 2023 - why do we await here? Shouldn't we just fire and forget?
+                    //await TaskManager.Self.AddAsync(() =>
+                    _ = TaskManager.Self.AddAsync(() =>
                     {
 
                         if(changedFile.IsDirectory)

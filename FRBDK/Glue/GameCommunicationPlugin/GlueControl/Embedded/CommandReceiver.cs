@@ -970,6 +970,8 @@ namespace GlueControl
 
 
                 RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
+
+
             }
 
             return response;
@@ -1095,6 +1097,10 @@ namespace GlueControl
                 FlatRedBall.Screens.ScreenManager.ScreenLoaded -= AfterInitializeLogic;
 
                 EditingManager.Self.RefreshSelectionAfterScreenLoad(playBump);
+
+
+                // this forces Gum layouts to refresh:
+                FlatRedBall.FlatRedBallServices.GraphicsOptions.CallSizeOrOrientationChanged();
             }
 
             FlatRedBall.Screens.ScreenManager.ScreenLoaded += AfterInitializeLogic;
