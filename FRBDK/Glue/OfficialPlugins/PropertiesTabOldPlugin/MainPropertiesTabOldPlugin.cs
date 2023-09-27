@@ -75,6 +75,10 @@ namespace OfficialPluginsCore.PropertiesTabOldPlugin
         private void CreatePropertyGrid()
         {
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
+            if(MainGlueWindow.Self?.Components == null)
+            {
+                throw new Exception("Components is null, this is an error which will prevent the property grid from working correctly.");
+            }
             this.PropertyGridContextMenu = new System.Windows.Forms.ContextMenuStrip(MainGlueWindow.Self.Components);
 
             // 
