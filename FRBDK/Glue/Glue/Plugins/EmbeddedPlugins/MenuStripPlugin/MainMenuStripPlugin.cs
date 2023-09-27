@@ -205,9 +205,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GroupExportForm groupExportForm = new GroupExportForm();
-            DialogResult result = groupExportForm.ShowDialog();
+            var result = groupExportForm.ShowDialog();
 
-            if (result == DialogResult.OK)
+            if (result.HasValue && result.Value)
             {
                 ElementExporter.ExportGroup(groupExportForm.SelectedElements, GlueState.Self.CurrentGlueProject);
             }
