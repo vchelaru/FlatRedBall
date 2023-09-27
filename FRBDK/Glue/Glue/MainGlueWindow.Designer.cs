@@ -43,7 +43,7 @@ namespace Glue
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
             Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             Name = "MainGlueWindow";
-            Text = "FlatRedBall";
+            Text = "FlatRedBall Editor";
             ResumeLayout(false);
         }
 

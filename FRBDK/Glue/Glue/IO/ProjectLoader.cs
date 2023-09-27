@@ -27,6 +27,7 @@ using System.Reflection;
 using GlueSaveClasses;
 using GlueFormsCore.Controls;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.FactoryPlugin;
+using Localization;
 
 namespace FlatRedBall.Glue.IO
 {
@@ -187,7 +188,7 @@ namespace FlatRedBall.Glue.IO
 
                 UnreferencedFilesManager.Self.RefreshUnreferencedFiles(true);
 
-                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall - " + projectFileName);
+                TaskManager.Self.OnUiThread(() => MainGlueWindow.Self.Text = Texts.FrbEditor + " - " + projectFileName);
 
                 if (shouldSaveGlux)
                 {
