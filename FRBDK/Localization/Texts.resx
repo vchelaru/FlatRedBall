@@ -2766,4 +2766,7 @@
   <data name="AddObject_ActivityListRecommended" xml:space="preserve">
     <value>Activity is recommended for this list</value>
   </data>
+  <data name="FrbEditor" xml:space="preserve">
+    <value>FlatRedBall Editor</value>
+  </data>
 </root>

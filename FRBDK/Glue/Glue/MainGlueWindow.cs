@@ -45,7 +45,7 @@ public partial class MainGlueWindow : Form
     public static MainPanelControl MainWpfControl { get; private set; }
     public static MainGlueWindow Self { get; private set; }
     public static int UiThreadId { get; private set; }
-    
+
     private MenuStrip mMenu;
 
     public IContainer Components => components;
@@ -90,7 +90,7 @@ public partial class MainGlueWindow : Form
         var output = process.StandardOutput.ReadToEnd();
 
 
-        if(String.IsNullOrEmpty(output))
+        if (String.IsNullOrEmpty(output))
         {
             // Ensure dotnet is installed. If not, we will assume the user uses .NET Framework.
             // Any further checks on .NET usage are not required.
@@ -141,10 +141,10 @@ public partial class MainGlueWindow : Form
         if (sdkPaths.Any())
         {
             string sdkPath = null;
-            
-            foreach(var path in sdkPaths)
+
+            foreach (var path in sdkPaths)
             {
-                if(File.Exists(path))
+                if (File.Exists(path))
                 {
                     sdkPath = path;
                     break;
@@ -152,7 +152,7 @@ public partial class MainGlueWindow : Form
             }
 
             //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
-            if(String.IsNullOrEmpty(sdkPath))
+            if (String.IsNullOrEmpty(sdkPath))
             {
                 //    sdkPath = sdkPaths.Last();
 
@@ -257,7 +257,7 @@ public partial class MainGlueWindow : Form
         SetScreenSubMessage(Localization.Texts.InitializingInstructionManager);
         InstructionManager.Initialize();
 
-        SetScreenSubMessage(Localization.Texts.InitializingTypeConverter);        
+        SetScreenSubMessage(Localization.Texts.InitializingTypeConverter);
         TypeConverterHelper.InitializeClasses();
 
         SetScreenMessage(Localization.Texts.LoadingSettings);
@@ -271,10 +271,10 @@ public partial class MainGlueWindow : Form
 
         SetScreenMessage(Localization.Texts.LoadingPlugins);
 
-        var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null) 
-            ? GlueState.Self.CurrentPluginSettings.PluginsToIgnore 
+        var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null)
+            ? GlueState.Self.CurrentPluginSettings.PluginsToIgnore
             : new List<string>();
-        
+
         PluginManager.Initialize(true, pluginsToIgnore);
         ShareUiReferences(PluginCategories.All);
 
@@ -396,7 +396,7 @@ public partial class MainGlueWindow : Form
         {
             try
             {
-                if(wasInTask)
+                if (wasInTask)
                 {
                     RunOnUiThreadTasked(action);
                 }
@@ -405,9 +405,9 @@ public partial class MainGlueWindow : Form
                     action();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                if(!IsDisposed && !ProjectManager.WantsToCloseProject)
+                if (!IsDisposed && !ProjectManager.WantsToCloseProject)
                 {
                     throw;
                 }
@@ -419,7 +419,7 @@ public partial class MainGlueWindow : Form
     public new T Invoke<T>(Func<T> func)
     {
         var wasInTask = TaskManager.Self.IsInTask();
-        
+
         base.Invoke((MethodInvoker)delegate
         {
             try
@@ -566,7 +566,7 @@ public partial class MainGlueWindow : Form
         // is closed, and that's bad. But we can't Wait the task to finish as that would freeze the UI.
         // Therefore to fix this, we'll tell Glue to not shut down if this is the first time the user wanted
         // to shut it. Then we'll wait for all tasks to finish and then try again to close it.
-        if(!_wantsToExit)
+        if (!_wantsToExit)
         {
             CloseAfterTasks();
             e.Cancel = true;
@@ -578,7 +578,7 @@ public partial class MainGlueWindow : Form
         ProjectManager.WantsToCloseProject = true;
         _wantsToExit = true;
         //MainPanelSplitContainer.ReactToFormClosing();
-            
+
         //EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
         EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
         EditorData.GlueLayoutSettings.SaveSettings();
@@ -591,6 +591,6 @@ public partial class MainGlueWindow : Form
 
         PluginManager.ReactToGlueClose();
 
-        GlueCommands.Self.CloseGlue();            
+        GlueCommands.Self.CloseGlue();
     }
 }
