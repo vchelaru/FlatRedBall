@@ -2797,6 +2797,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FlatRedBall Editor.
+        /// </summary>
+        public static string FrbEditor {
+            get {
+                return ResourceManager.GetString("FrbEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update FRB editor binaries.
         /// </summary>
         public static string FrbEditorBinaries {
