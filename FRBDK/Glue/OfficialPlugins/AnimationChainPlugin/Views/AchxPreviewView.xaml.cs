@@ -35,6 +35,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 if (value != textureFilePath)
                 {
                     ForceRefreshMainSpriteTexture(value);
+                    ForceRefreshMainAnimationSpriteTexture(value);
                 }
             }
         }
@@ -56,11 +57,14 @@ namespace OfficialPlugins.ContentPreview.Views
         public SKBitmap Texture => MainSprite?.Texture;
 
         SpriteRuntime MainSprite;
+        SpriteRuntime MainAnimationSprite;
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
 
         SolidRectangleRuntime GumBackground { get; set; }
+        SolidRectangleRuntime GumAnimationBackground { get; set; }
 
         CameraLogic CameraLogic;
+        CameraLogic CameraLogicAnimation;
 
         #endregion
 
@@ -156,6 +160,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     var textureAbsolute = value.GetDirectoryContainingThis() + textureName;
 
                     ForceRefreshMainSpriteTexture(textureAbsolute);
+                    ForceRefreshMainAnimationSpriteTexture(textureAbsolute);
                 }
             }
         }
@@ -253,21 +258,50 @@ namespace OfficialPlugins.ContentPreview.Views
             textureFilePath = value;
         }
 
+        public void ForceRefreshMainAnimationSpriteTexture(FilePath value)
+        {
+            if (value == null || value.Exists() == false)
+            {
+                MainAnimationSprite.Texture = null;
+                GumCanvasAnimation.InvalidateVisual();
+            }
+            else
+            {
+                try
+                {
+                    using (var stream = System.IO.File.OpenRead(value.FullPath))
+                    {
+                        // cache?
+                        MainAnimationSprite.Texture = SKBitmap.Decode(stream);
+                        GumCanvasAnimation.InvalidateVisual();
+
+                    }
+                }
+                catch
+                {
+                    // do we do anything?
+                }
+            }
+
+            textureFilePath = value;
+        }
+
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
             FillSpriteToView();
         }
 
-        public void Initialize(CameraLogic cameraLogic)
+        public void Initialize(CameraLogic cameraLogic, CameraLogic cameraLogicAnimation)
         {
             this.CameraLogic = cameraLogic;
+            this.CameraLogicAnimation = cameraLogicAnimation;
 
             CreateBackground();
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
             CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
-
+            CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
         }
 
 
@@ -279,6 +313,13 @@ namespace OfficialPlugins.ContentPreview.Views
             MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
             MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
             this.GumCanvas.Children.Add(MainSprite);
+
+            MainAnimationSprite = new SpriteRuntime();
+            MainAnimationSprite.Width = 100;
+            MainAnimationSprite.Height = 100;
+            MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            this.GumCanvasAnimation.Children.Add(MainAnimationSprite);
         }
 
         private void GumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -303,6 +344,28 @@ namespace OfficialPlugins.ContentPreview.Views
             CameraLogic.HandleMouseWheel(e);
         }
 
+        private void GumAnimationCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            CameraLogicAnimation.HandleMousePush(e);
+            //MouseEditingLogic.HandleMousePush(e);
+
+            // This allows the canvas to receive focus:
+            // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
+            GumCanvasAnimation.Focusable = true;
+            IInputElement element = Keyboard.Focus(GumCanvasAnimation);
+        }
+
+        private void GumAnimationCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            CameraLogicAnimation.HandleMouseMove(e);
+            //MouseEditingLogic.HandleMouseMove(e);
+        }
+
+        private void GumAnimationCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            CameraLogicAnimation.HandleMouseWheel(e);
+        }
+
         private void CreateBackground()
         {
             GumBackground = new SolidRectangleRuntime();
@@ -312,6 +375,14 @@ namespace OfficialPlugins.ContentPreview.Views
             GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
             GumBackground.Height = 100;
             this.GumCanvas.Children.Add(GumBackground);
+
+            GumAnimationBackground = new SolidRectangleRuntime();
+            GumAnimationBackground.Color = new SKColor(68, 34, 136);
+            GumAnimationBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumAnimationBackground.Width = 100;
+            GumAnimationBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumAnimationBackground.Height = 100;
+            this.GumCanvasAnimation.Children.Add(GumAnimationBackground);
         }
 
         internal void ResetCamera()
@@ -345,6 +416,27 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        private void FillAnimationSpriteToView()
+        {
+            if (MainAnimationSprite.Texture == null || GumCanvasAnimation.ActualWidth == 0 || GumCanvasAnimation.ActualHeight == 0)
+            {
+                ViewModel.CurrentAnimationZoomPercent = 100;
+            }
+            else
+            {
+                var zoomToFitWidth = GumCanvasAnimation.ActualWidth / MainAnimationSprite.Texture.Width;
+                var zoomToFitHeight = GumCanvasAnimation.ActualHeight / MainAnimationSprite.Texture.Height;
+
+                var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
+
+                ViewModel.CurrentAnimationZoomPercent = (float)minZoom * 100;
+            }
+
+
+
+            CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
 
         internal void ShowInPropertyGrid(AnimationChainViewModel selectedAnimationChain)

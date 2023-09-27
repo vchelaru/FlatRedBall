@@ -42,7 +42,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 ViewModel = new AchxViewModel();
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 View.DataContext = ViewModel;
-                View.Initialize(new SpritePlugin.Managers.CameraLogic());
+                View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }
 
