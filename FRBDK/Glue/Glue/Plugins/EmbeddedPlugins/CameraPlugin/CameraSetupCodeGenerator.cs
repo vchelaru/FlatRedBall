@@ -305,8 +305,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                     }
                     ");
 
-            functionBlock.Line("var gumScreen = FlatRedBall.Screens.ScreenManager.CurrentScreen?.GetInstance(\"GumScreen\") as Gum.Wireframe.GraphicalUiElement;");
-            functionBlock.Line("gumScreen?.UpdateLayout();");
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasIGumScreenOwner)
+            {
+                functionBlock.Line("var gumScreenOwner = FlatRedBall.Screens.ScreenManager.CurrentScreen as FlatRedBall.Gum.IGumScreenOwner;");
+                functionBlock.Line("gumScreenOwner?.RefreshLayout();");
+
+            }
 
 
 

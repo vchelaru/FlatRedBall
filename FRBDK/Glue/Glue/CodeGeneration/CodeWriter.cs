@@ -483,6 +483,25 @@ namespace FlatRedBallAddOns.Entities
             {
                 whatToInheritFrom = "FlatRedBall.Screens.Screen";
             }
+
+            List<string> inheritanceList = new List<string>();
+            foreach (ElementComponentCodeGenerator eccg in CodeWriter.CodeGenerators)
+            {
+                eccg.AddInheritedTypesToList(inheritanceList, element);
+            }
+
+            foreach (string inheritance in inheritanceList)
+            {
+                if (string.IsNullOrEmpty(whatToInheritFrom))
+                {
+                    whatToInheritFrom = inheritance;
+                }
+                else
+                {
+                    whatToInheritFrom += ", " + inheritance;
+                }
+            }
+
         }
 
         return whatToInheritFrom;
