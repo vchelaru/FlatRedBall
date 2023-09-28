@@ -152,9 +152,9 @@ namespace FlatRedBall.Glue.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        public static System.Drawing.Icon Glue {
+        public static System.Drawing.Icon Frb {
             get {
-                object obj = ResourceManager.GetObject("Glue", resourceCulture);
+                object obj = ResourceManager.GetObject("Frb", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -254,11 +254,11 @@ namespace FlatRedBall.Glue.Resources {
         ///        object CreateNew(float x = 0, float y = 0);
         ///        object CreateNew(Microsoft.Xna.Framework.Vector3 position);
         ///        object CreateNew(FlatRedBall.Graphics.Layer layer);
-        ///
+        ///        int NewInstancesCreatedThisScreen { get; }
         ///        void Initialize(string contentManager);
         ///        void ClearListsToAddTo();
         ///
-        ///        System.Collections.Generic.List&lt;System.Collections.IList&gt; ListsT [rest of string was truncated]&quot;;.
+        ///        void Destroy() [rest of string was truncated]&quot;;.
         /// </summary>
         public static string IEntityFactory {
             get {
@@ -310,6 +310,7 @@ namespace FlatRedBall.Glue.Resources {
         ///        #region Fields
         ///        List&lt;T&gt; mPoolables = new List&lt;T&gt;();
         ///        int mNextAvailable = -1;
+        ///        public int Count =&gt; mPoolables.Count;
         ///        #endregion
         ///
         ///        #region Methods
@@ -319,9 +320,7 @@ namespace FlatRedBall.Glue.Resources {
         ///
         ///            int index = mPoolables.Count;
         ///
-        ///            if (mNextAvailable == -1)
-        ///            {
-        ///               [rest of string was truncated]&quot;;.
+        ///            if (mNext [rest of string was truncated]&quot;;.
         /// </summary>
         public static string PoolList {
             get {
