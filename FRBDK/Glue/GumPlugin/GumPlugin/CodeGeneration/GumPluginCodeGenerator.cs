@@ -1,5 +1,6 @@
 ﻿using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
+using FlatRedBall.Glue.Elements;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
 using FlatRedBall.IO;
@@ -66,7 +67,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         //}
 
         // It's possible to have a Gum screen in derived but not base, but that's rare so I'm not going to handle that case until someone complains
-        if(ShouldGenerateGumScreenOwner(element) && string.IsNullOrEmpty(element.BaseElement))
+        if(ShouldGenerateGumScreenOwner(element) && !HasBaseWithGumScreen(element as GlueElement))
         {
             codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement FlatRedBall.Gum.IGumScreenOwner.GumScreen { get; }");
 
@@ -182,6 +183,20 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
         return codeBlock;
     }
 
+    bool HasBaseWithGumScreen(GlueElement element)
+    {
+        var allBaseElements = ObjectFinder.Self.GetAllBaseElementsRecursively(element);
+
+        foreach(var baseElement in allBaseElements)
+        {
+            if(GetGumScreenRfs(baseElement) != null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public override ICodeBlock GenerateAdditionalMethods(ICodeBlock codeBlock, IElement element)
     {
         bool isGlueScreen = element is FlatRedBall.Glue.SaveClasses.ScreenSave;
@@ -190,7 +205,7 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
 
         if(isGlueScreen && gumScreenRfs != null)
         {
-            var hasBase = !string.IsNullOrEmpty(element.BaseElement);
+            var hasBase = HasBaseWithGumScreen(element as GlueElement);
             string prefix = "protected virtual void";
             if(hasBase)
             {
