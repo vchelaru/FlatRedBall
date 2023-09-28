@@ -140,6 +140,14 @@ public interface ITreeNode
                Parent.IsRootNamedObjectNode();
     }
 
+    public bool IsRootCollisionRelationshipsNode()
+    {
+        return Text.Equals("Collision Relationships", StringComparison.OrdinalIgnoreCase) &&
+               Parent != null &&
+               Tag == null &&
+               Parent.IsRootNamedObjectNode();
+    }
+
     public bool IsRootNamedObjectNode()
     {
         return Text.Equals("Objects", StringComparison.OrdinalIgnoreCase) &&
@@ -500,6 +508,7 @@ public static class RightClickHelper
 
     static System.Windows.Controls.Image BookmarkImage;
     static System.Windows.Controls.Image DerivedEntity;
+    static System.Windows.Controls.Image CollisionRelationshipImage;
 
     #endregion
 
@@ -657,6 +666,17 @@ public static class RightClickHelper
             AddItem(addLayeritem);
         }
 
+
+        #endregion
+
+        #region IsRootCollisionRelationships node
+
+        else if(targetNode.IsRootCollisionRelationshipsNode())
+        {
+            Add(L.Texts.RightClick_Add_Collision_Relationship, 
+                () => AddNewCollisionRelationshipTo(GlueState.Self.CurrentElement),
+                image:CollisionRelationshipImage);
+        }
 
         #endregion
 
@@ -964,6 +984,23 @@ public static class RightClickHelper
         #endregion
     }
 
+    private static async void AddNewCollisionRelationshipTo(GlueElement currentElement)
+    {
+        var viewModel = new AddObjectViewModel();
+
+        viewModel.SourceType = SourceType.FlatRedBallType;
+        viewModel.SourceClassType = "CollisionRelationship";
+
+        viewModel.ObjectName = "CollisionRelationshipInstance";
+        while(currentElement.GetNamedObjectRecursively(viewModel.ObjectName) != null)
+        {
+            viewModel.ObjectName = StringFunctions.IncrementNumberAtEnd(viewModel.ObjectName);
+        }
+        viewModel.SelectedAti = AvailableAssetTypes.Self.AllAssetTypes
+            .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Collision.CollisionRelationship");
+        var newNamedObject = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElementAsync(viewModel);
+        GlueState.Self.CurrentNamedObjectSave = newNamedObject;
+    }
 
     static bool HasCreatedImages = false;
     private static void CreateImages()
@@ -973,7 +1010,8 @@ public static class RightClickHelper
                 
             BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
             DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
-                
+            CollisionRelationshipImage= MakeImage("/Content/Icons/icon_collisions.png");
+
 
             HasCreatedImages = true;
         }
