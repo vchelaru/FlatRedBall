@@ -745,7 +745,7 @@ namespace GameCommunicationPlugin.GlueControl
                 IsInEditMode = inEditMode ,
                 AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath
             };
-            var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto);
+            var response = await CommandSender.Self.Send<Dtos.GeneralCommandResponse>(dto, SendImportance.RetryOnFailure);
 
             if (response?.Succeeded != true)
             {
