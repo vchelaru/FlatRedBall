@@ -59,7 +59,7 @@
 
         <GridSplitter Height="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="4"></GridSplitter>
 
-        <TabControl Grid.Row="5" x:Name="BottomTabControl" Padding="0" Margin="2"></TabControl>
+        <TabControl Grid.Row="5" x:Name="BottomTabControl" Padding="0" Margin="4,0,4,2"></TabControl>
         
     </Grid>
 </UserControl>
