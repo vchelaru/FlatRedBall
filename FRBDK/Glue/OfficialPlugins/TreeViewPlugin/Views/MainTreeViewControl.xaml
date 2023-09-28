@@ -195,7 +195,7 @@
             </pt:TreeListBox.ItemTemplate>
         </pt:TreeListBox>
         <Grid x:Name="SelectionPanel" Grid.Row="5">
-            <Label Content="{Binding SelectedItemInfoDisplay}"></Label>
+            <Label Visibility="{Binding SelectedItemInfoVisibility}" Content="{Binding SelectedItemInfoDisplay}"></Label>
         </Grid>
     </Grid>
 </UserControl>
