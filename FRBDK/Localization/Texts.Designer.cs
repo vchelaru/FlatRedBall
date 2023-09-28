@@ -6433,6 +6433,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Collision Relationship.
+        /// </summary>
+        public static string RightClick_Add_Collision_Relationship {
+            get {
+                return ResourceManager.GetString("RightClick_Add_Collision_Relationship", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Run In Edit Mode.
         /// </summary>
         public static string RunEditMode {

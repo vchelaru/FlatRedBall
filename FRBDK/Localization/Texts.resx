@@ -2769,4 +2769,7 @@
   <data name="FrbEditor" xml:space="preserve">
     <value>FlatRedBall Editor</value>
   </data>
+  <data name="RightClick_Add_Collision_Relationship" xml:space="preserve">
+    <value>Add Collision Relationship</value>
+  </data>
 </root>
