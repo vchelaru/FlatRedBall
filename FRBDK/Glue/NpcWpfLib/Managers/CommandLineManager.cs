@@ -31,6 +31,12 @@ namespace Npc.Managers
             private set;
         }
 
+        public bool ShowSourceCheckbox
+        {
+            get;
+            private set;
+        }
+
         public void ProcessCommandLineArguments()
         {
             foreach (string arg in Environment.GetCommandLineArgs())
@@ -47,9 +53,13 @@ namespace Npc.Managers
                 {
                     HandleOpenedBy(arg);
                 }
-                else if(String.Equals(arg, "emptyprojects", StringComparison.OrdinalIgnoreCase))
+                else if (String.Equals(arg, "emptyprojects", StringComparison.OrdinalIgnoreCase))
                 {
                     EmptyProjectsOnly = true;
+                }
+                else if (string.Equals(arg, "showsourcecheckbox", StringComparison.OrdinalIgnoreCase)) ;
+                {
+                    ShowSourceCheckbox = true;
                 }
             }
         }

@@ -28,6 +28,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -89,8 +90,16 @@
                 </CheckBox.LayoutTransform>
             </CheckBox>
 
-            <TextBlock FontWeight="Bold" Grid.Row="8" Margin="0,0,16,10" Text="{x:Static localization:Texts.ProjectWizardOpen}" />
-            <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}">
+            <TextBlock FontWeight="Bold" Grid.Row="8" Margin="0,0,16,10" Text="Link Engine Source" Visibility="{Binding SourceCheckboxVisibility}" />
+            <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding IsSourceCheckboxChecked}" Visibility="{Binding SourceCheckboxVisibility}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            
+            
+            <TextBlock FontWeight="Bold" Grid.Row="9" Margin="0,0,16,10" Text="{x:Static localization:Texts.ProjectWizardOpen}" />
+            <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding IsOpenNewProjectWizardChecked}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1.5" ScaleY="1.5" />
                 </CheckBox.LayoutTransform>
@@ -100,7 +109,7 @@
                 VerticalAlignment="Bottom"
                 Margin="0,16,0,16"
                 Style="{StaticResource myStyle}"
-                Grid.Row="9" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+                Grid.Row="10" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
                 Click="HandleMakeMyProjectClicked" Height="48">
                 <Button.Template>
                     <ControlTemplate TargetType="{x:Type Button}">

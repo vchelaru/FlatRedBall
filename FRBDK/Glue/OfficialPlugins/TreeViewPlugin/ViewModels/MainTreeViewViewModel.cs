@@ -187,6 +187,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             set => Set(value);
         }
 
+        [DependsOn(nameof(SelectedItemInfoDisplay))]
+        public Visibility SelectedItemInfoVisibility => 
+            string.IsNullOrEmpty(SelectedItemInfoDisplay) ? Visibility.Collapsed : Visibility.Visible;
+
         #endregion
 
         #region Bookmark
