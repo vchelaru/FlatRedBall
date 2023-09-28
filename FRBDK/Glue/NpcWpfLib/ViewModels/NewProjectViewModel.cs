@@ -67,6 +67,20 @@ namespace Npc.ViewModels
             set => Set(value);
         }
 
+        public Visibility SourceCheckboxVisibility
+        {
+            get => Get<Visibility>();
+            set => Set(value);
+        }
+
+        public bool IsSourceCheckboxChecked
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsIncludeSourceEffectivelyChecked => IsSourceCheckboxChecked && SourceCheckboxVisibility == Visibility.Visible;
+
         [DependsOn(nameof(IsDifferentNamespaceChecked))]
         public Visibility DifferentNamespaceTextBoxVisibility
         {

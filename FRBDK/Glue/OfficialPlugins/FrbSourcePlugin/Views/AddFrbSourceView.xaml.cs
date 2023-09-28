@@ -1,4 +1,5 @@
-﻿using OfficialPlugins.FrbSourcePlugin.ViewModels;
+﻿using OfficialPlugins.FrbSourcePlugin.Managers;
+using OfficialPlugins.FrbSourcePlugin.ViewModels;
 using System;
 using System.Linq;
 using System.Windows;
@@ -22,16 +23,15 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
             InitializeComponent();
 
             // Github for desktop has a standard folder for source files, so let's default to that if it exists
-            var githubFilePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GitHub");
-            var frbFilePath = System.IO.Path.Combine(githubFilePath, "FlatRedBall");
-            var gumFilePath = System.IO.Path.Combine(githubFilePath, "Gum");
-            if (System.IO.Directory.Exists( frbFilePath  ))
+            
+            
+            if (System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath))
             {
-                ViewModel.FrbRootFolder = frbFilePath;
+                ViewModel.FrbRootFolder = AddSourceManager.DefaultFrbFilePath;
             }
-            if(System.IO.Directory.Exists(gumFilePath))
+            if(System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath))
             {
-                ViewModel.GumRootFolder = gumFilePath;
+                ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
             }
 
             this.DataUiGrid.Instance = ViewModel;

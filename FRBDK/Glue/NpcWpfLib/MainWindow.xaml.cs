@@ -67,6 +67,8 @@ namespace Npc
                 // If this was opened by a different app, don't show the .sln
                 ViewModel.OpenSlnFolderAfterCreation = false;
             }
+            ViewModel.SourceCheckboxVisibility = 
+                CommandLineManager.Self.ShowSourceCheckbox ? Visibility.Visible : Visibility.Collapsed;
         }
 
         void SelectLocationClicked(object sender, RoutedEventArgs args)
