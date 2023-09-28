@@ -52,7 +52,7 @@
                         </GroupBox>
                         <StackPanel Orientation="Horizontal">
                         </StackPanel>
-                        <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center" Content="{x:Static localization:Texts.HintAutoPartitionDoesNotConsider}" />
+                        <CheckBox IsChecked="{Binding IsSortListEveryFrameChecked}" VerticalContentAlignment="Center" Content="{x:Static localization:Texts.ListSortEveryFrame}" />
                     </StackPanel>
                 </StackPanel>
                 <Label Visibility="{Binding AlreadyOrCantBePartitionedVisibility}"  Content="{x:Static localization:Texts.ObjectNoPartitioning}" />
