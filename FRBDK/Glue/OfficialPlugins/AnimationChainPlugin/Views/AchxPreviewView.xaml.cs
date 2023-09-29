@@ -4,6 +4,7 @@ using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
 using PropertyTools.Wpf;
+using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
@@ -91,8 +92,10 @@ namespace OfficialPlugins.ContentPreview.Views
             if(e.PropertyName == nameof(ViewModel.SelectedAnimationChain))
             {
                 RefreshOutlines();
+                RefreshAnimation();
 
                 GumCanvas.InvalidateVisual();
+                GumCanvasAnimation.InvalidateVisual();
             }
         }
 
@@ -197,6 +200,39 @@ namespace OfficialPlugins.ContentPreview.Views
                 foreach (var frame in animation.Frames)
                 {
                     CreatePolygonFor(frame);
+                }
+            }
+        }
+
+        private void RefreshAnimation()
+        {
+            var texture = MainAnimationSprite.Texture;
+            if (texture != null && ViewModel != null)
+            {
+                if (ViewModel.SelectedAnimationFrame != null)
+                {
+                    MainAnimationSprite.Width = ViewModel.SelectedAnimationFrame.RightCoordinate - ViewModel.SelectedAnimationFrame.LeftCoordinate;
+                    MainAnimationSprite.Height = ViewModel.SelectedAnimationFrame.BottomCoordinate - ViewModel.SelectedAnimationFrame.TopCoordinate;
+
+                    MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+                    MainAnimationSprite.TextureLeft = (int)ViewModel.SelectedAnimationFrame.LeftCoordinate;
+                    MainAnimationSprite.TextureTop = (int)ViewModel.SelectedAnimationFrame.TopCoordinate;
+                    MainAnimationSprite.TextureWidth = 10;
+                    MainAnimationSprite.TextureHeight = 10;
+                    MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                    MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                    MainAnimationSprite.TextureWidthScale = 10;
+                    MainAnimationSprite.TextureHeightScale = 10;
+
+                    MainAnimationSprite.Visible = true;
+                    FocusAnimation();
+                }
+                //else if (ViewModel.SelectedAnimationChain != null)
+                //{
+                //}
+                else //if(ViewModel.SelectedAnimationChain == null)
+                {
+                    MainAnimationSprite.Visible = false;
                 }
             }
         }
@@ -315,6 +351,7 @@ namespace OfficialPlugins.ContentPreview.Views
             this.GumCanvas.Children.Add(MainSprite);
 
             MainAnimationSprite = new SpriteRuntime();
+            MainAnimationSprite.Visible = false;
             MainAnimationSprite.Width = 100;
             MainAnimationSprite.Height = 100;
             MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
@@ -496,6 +533,24 @@ namespace OfficialPlugins.ContentPreview.Views
             camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        private void FocusAnimation()
+        {
+            var centerX = (MainAnimationSprite.GetAbsoluteLeft() + MainAnimationSprite.GetAbsoluteRight()) / 2.0f;
+            var centerY = (MainAnimationSprite.GetAbsoluteTop() + MainAnimationSprite.GetAbsoluteBottom()) / 2.0f;
+
+            var camera = GumCanvasAnimation.SystemManagers.Renderer.Camera;
+
+            //// If already zoomed in, stay zoomed in...
+            if (ViewModel.CurrentZoomPercent < 100)
+            {
+                ViewModel.CurrentZoomPercent = 100;
+            }
+            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+
+            CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
 
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)
