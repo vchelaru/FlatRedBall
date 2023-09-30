@@ -275,6 +275,18 @@ namespace FlatRedBall.Glue.SaveClasses
         }
 
 
+        protected void CopyVariablesAfterClone(GlueElement clone)
+        {
+            for (int i = 0; i < this.CustomVariables.Count; i++)
+            {
+                if (CustomVariables[i].VariableDefinition != null)
+                {
+                    clone.CustomVariables[i].VariableDefinition.PreferredDisplayer =
+                        CustomVariables[i].VariableDefinition.PreferredDisplayer;
+                }
+            }
+        }
+
         public object GetPropertyValue(string propertyName)
         {
             return Properties.GetValue(propertyName);

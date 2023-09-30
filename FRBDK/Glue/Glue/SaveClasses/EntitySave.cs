@@ -371,20 +371,14 @@ namespace FlatRedBall.Glue.SaveClasses
         public EntitySave CloneJson()
         {
             var serialized = JsonConvert.SerializeObject(this, Formatting.Indented);
-            
+
             var clone = JsonConvert.DeserializeObject<EntitySave>(serialized);
 
-            for(int i = 0; i< this.CustomVariables.Count; i++)
-            {
-                if (CustomVariables[i].VariableDefinition != null)
-                {
-                    clone.CustomVariables[i].VariableDefinition.PreferredDisplayer = CustomVariables[i].VariableDefinition.PreferredDisplayer;
-                }
-            }
+            CopyVariablesAfterClone(clone);
 
             return clone;
         }
-        
+
 
 
         public void SetCustomVariable(string customVariableName, object valueToSet)

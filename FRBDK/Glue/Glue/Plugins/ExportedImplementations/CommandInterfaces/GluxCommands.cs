@@ -200,11 +200,10 @@ public class GluxCommands : IGluxCommands
 
                 if (element is ScreenSave asScreenSave)
                 {
-                    clone = asScreenSave.Clone();
+                    clone = asScreenSave.CloneJson();
                 }
                 else if (element is EntitySave asEntitySave)
                 {
-                    //clone = asEntitySave.Clone();
                     clone = asEntitySave.CloneJson();
                 }
 
@@ -2846,11 +2845,11 @@ public class GluxCommands : IGluxCommands
 
             if (original is EntitySave asEntitySave)
             {
-                newElement = asEntitySave.Clone();
+                newElement = asEntitySave.CloneJson();
             }
             else if (original is ScreenSave asScreenSave)
             {
-                newElement = asScreenSave.Clone();
+                newElement = asScreenSave.CloneJson();
             }
 
             newElement.Name = original.Name + "Copy";
