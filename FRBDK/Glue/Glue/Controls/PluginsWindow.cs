@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using FlatRedBall.Glue.Plugins;
-
-using System.Reflection;
 using FlatRedBall.IO;
 using FlatRedBall.Glue.Plugins.Rss;
 using System.ComponentModel;
-using GlueSaveClasses;
 using System.Diagnostics;
 
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins.ManagePlugins.ViewModels;
-using FlatRedBall.Glue.Managers;
-using Glue;
 using FlatRedBall.Glue.Plugins.EmbeddedPlugins;
-using System.Threading;
-using System.Windows.Navigation;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using L = Localization;
 
 namespace FlatRedBall.Glue.Controls
 {
@@ -488,48 +479,32 @@ namespace FlatRedBall.Glue.Controls
             if (mDownloadWindow == null)
             {
                 mDownloadWindow = new DownloadPluginProgressWindow();
-
-                mDownloadWindow.Location = System.Windows.Forms.Cursor.Position;
-                
-                mDownloadWindow.Show(this);
-
+                mDownloadWindow.Left = Cursor.Position.X;
+                mDownloadWindow.Top = Cursor.Position.Y;
+                mDownloadWindow.Show();
             }
-            try
-            {
-                if (SelectedRssItem != null && !string.IsNullOrEmpty(SelectedRssItem.DirectLink))
-                {
 
-                    try
-                    {
-                        EditorObjects.IoC.Container.Get<PluginUpdater>().StartDownload(SelectedRssItem.DirectLink, AfterDownload);
-                    }
-                    catch (Exception exc)
-                    {
-                        MessageBox.Show("Failed to download plugin\n\n" + exc);
-                    }
+            if (SelectedRssItem != null && !string.IsNullOrEmpty(SelectedRssItem.DirectLink))
+            {
+
+                try
+                {
+                    EditorObjects.IoC.Container.Get<PluginUpdater>().StartDownload(SelectedRssItem.DirectLink, AfterDownload);
                 }
-            }
-            catch(Exception exception)
-            {
-                MessageBox.Show("Error downloading:\n\n" + exception.Message);
-                if (mDownloadWindow != null)
+                catch (Exception exc)
                 {
-                    mDownloadWindow.Hide();
-                    mDownloadWindow.Dispose();
-                    mDownloadWindow = null;
+                    MessageBox.Show($"{L.Texts.PluginDownloadFailed}: {exc.Message}");
                 }
             }
         }
 
-        void AfterDownload()
+        private void AfterDownload()
         {
             if (mDownloadWindow != null)
             {
-                mDownloadWindow.Hide();
-                mDownloadWindow.Dispose();
+                mDownloadWindow.Close();
                 mDownloadWindow = null;
             }
-
         }
 
     }

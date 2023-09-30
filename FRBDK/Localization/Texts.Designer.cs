@@ -115,6 +115,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Items in this list will already have their Activity called if added to {0}. This will result in Activity being called twice causing errors..
+        /// </summary>
+        public static string AddObject_ActivityCalledByBaseList {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityCalledByBaseList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items in this list will already have their activity called by {0}..
+        /// </summary>
+        public static string AddObject_ActivityCalledBySameList {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityCalledBySameList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activity is recommended for this list.
+        /// </summary>
+        public static string AddObject_ActivityListRecommended {
+            get {
+                return ResourceManager.GetString("AddObject_ActivityListRecommended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add ProfileManager.
         /// </summary>
         public static string AddProfileManager {
@@ -282,6 +309,15 @@ namespace Localization {
         public static string AllowDoubleChecksFrame {
             get {
                 return ResourceManager.GetString("AllowDoubleChecksFrame", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alternative:.
+        /// </summary>
+        public static string Alternative {
+            get {
+                return ResourceManager.GetString("Alternative", resourceCulture);
             }
         }
         
@@ -718,7 +754,7 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Enter extra command line arguments:.
         /// </summary>
         public static string CliExtraArguments {
             get {
@@ -2194,6 +2230,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tunnel an event from another object.
+        /// </summary>
+        public static string EventTunnelOtherObject {
+            get {
+                return ResourceManager.GetString("EventTunnelOtherObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Example Bool Property.
         /// </summary>
         public static string ExampleBoolProperty {
@@ -2752,6 +2797,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FlatRedBall Editor.
+        /// </summary>
+        public static string FrbEditor {
+            get {
+                return ResourceManager.GetString("FrbEditor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update FRB editor binaries.
         /// </summary>
         public static string FrbEditorBinaries {
@@ -2860,7 +2914,16 @@ namespace Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From TMX Collision (use tileset shapes).
+        ///   Looks up a localized string similar to From Tile Class:.
+        /// </summary>
+        public static string FromTileClass {
+            get {
+                return ResourceManager.GetString("FromTileClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From TMX Collision - requires shapes defined in the tileset (TSX).
         /// </summary>
         public static string FromTmxCollision {
             get {
@@ -5497,6 +5560,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to download plugin.
+        /// </summary>
+        public static string PluginDownloadFailed {
+            get {
+                return ResourceManager.GetString("PluginDownloadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading Plugin....
         /// </summary>
         public static string PluginDownloading {
@@ -5529,6 +5601,15 @@ namespace Localization {
         public static string PluginInstall {
             get {
                 return ResourceManager.GetString("PluginInstall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select a valid folder to create the plugin from..
+        /// </summary>
+        public static string PluginNeedsValidFolder {
+            get {
+                return ResourceManager.GetString("PluginNeedsValidFolder", resourceCulture);
             }
         }
         
@@ -6127,6 +6208,33 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} references found.
+        /// </summary>
+        public static string ReferenceFoundAmount {
+            get {
+                return ResourceManager.GetString("ReferenceFoundAmount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No references found.
+        /// </summary>
+        public static string ReferenceFoundNone {
+            get {
+                return ResourceManager.GetString("ReferenceFoundNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 reference found.
+        /// </summary>
+        public static string ReferenceFoundOne {
+            get {
+                return ResourceManager.GetString("ReferenceFoundOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reference Sharing.
         /// </summary>
         public static string ReferenceSharing {
@@ -6316,11 +6424,29 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restart on failed commands.
+        /// </summary>
+        public static string RestartOnFailedCommands {
+            get {
+                return ResourceManager.GetString("RestartOnFailedCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restart screen on level content change.
         /// </summary>
         public static string RestartScreenOnLevelContentChange {
             get {
                 return ResourceManager.GetString("RestartScreenOnLevelContentChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Collision Relationship.
+        /// </summary>
+        public static string RightClick_Add_Collision_Relationship {
+            get {
+                return ResourceManager.GetString("RightClick_Add_Collision_Relationship", resourceCulture);
             }
         }
         
@@ -7108,6 +7234,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tile Class:.
+        /// </summary>
+        public static string TileClass {
+            get {
+                return ResourceManager.GetString("TileClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tiled.
         /// </summary>
         public static string Tiled {
@@ -7797,6 +7932,15 @@ namespace Localization {
         public static string WhatToDoWithFiles {
             get {
                 return ResourceManager.GetString("WhatToDoWithFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Which template would you like to use?.
+        /// </summary>
+        public static string WhichTemplateUse {
+            get {
+                return ResourceManager.GetString("WhichTemplateUse", resourceCulture);
             }
         }
         

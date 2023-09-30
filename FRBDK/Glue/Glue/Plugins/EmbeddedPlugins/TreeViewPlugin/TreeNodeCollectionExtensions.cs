@@ -1,47 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Windows.Controls;
 
 namespace FlatRedBall.Glue.FormHelpers
 {
     public static class TreeNodeCollectionExtensions
     {
-        public static void SortByTextConsideringDirectories(this TreeNodeCollection treeNodeCollection, bool recursive = false)
+        public static void SortByTextConsideringDirectories(this ItemCollection treeNodeCollection, bool recursive = false)
         {
             int lastObjectExclusive = treeNodeCollection.Count;
-            int whereObjectBelongs;
             for (int i = 0 + 1; i < lastObjectExclusive; i++)
             {
-                TreeNode first = treeNodeCollection[i];
-                TreeNode second = treeNodeCollection[i - 1];
+                TreeViewItem first = treeNodeCollection[i] as TreeViewItem;
+                TreeViewItem second = treeNodeCollection[i - 1] as TreeViewItem;
                 if (TreeNodeComparer(first, second) < 0)
                 {
                     if (i == 1)
                     {
-                        TreeNode treeNode = treeNodeCollection[i];
+                        var treeNode = treeNodeCollection[i];
                         treeNodeCollection.RemoveAt(i);
 
                         treeNodeCollection.Insert(0, treeNode);
                         continue;
                     }
 
-                    for (whereObjectBelongs = i - 2; whereObjectBelongs > -1; whereObjectBelongs--)
+                    for (var whereObjectBelongs = i - 2; whereObjectBelongs > -1; whereObjectBelongs--)
                     {
-                        second = treeNodeCollection[whereObjectBelongs];
-                        if (TreeNodeComparer(treeNodeCollection[i], second) >= 0)
+                        second = treeNodeCollection[whereObjectBelongs] as TreeViewItem;
+                        if (TreeNodeComparer(treeNodeCollection[i] as TreeViewItem, second) >= 0)
                         {
-                            TreeNode treeNode = treeNodeCollection[i];
+                            var treeNode = treeNodeCollection[i];
 
                             treeNodeCollection.RemoveAt(i);
                             treeNodeCollection.Insert(whereObjectBelongs + 1, treeNode);
                             break;
                         }
-                        else if (whereObjectBelongs == 0 && TreeNodeComparer(treeNodeCollection[i], treeNodeCollection[0]) < 0)
+
+                        if (whereObjectBelongs == 0 && TreeNodeComparer(treeNodeCollection[i] as TreeViewItem, treeNodeCollection[0] as TreeViewItem) < 0)
                         {
-                            TreeNode treeNode = treeNodeCollection[i];
+                            var treeNode = treeNodeCollection[i];
                             treeNodeCollection.RemoveAt(i);
                             treeNodeCollection.Insert(0, treeNode);
                             break;
@@ -52,58 +49,34 @@ namespace FlatRedBall.Glue.FormHelpers
 
             if (recursive)
             {
-                foreach (TreeNode node in treeNodeCollection)
+                foreach (TreeViewItem node in treeNodeCollection)
                 {
-                    if (node.IsDirectoryNode())
+                    if (node.Items.Count > 0) // IsDirectoryNode();
                     {
-                        SortByTextConsideringDirectories(node.Nodes, recursive);
+                        SortByTextConsideringDirectories(node.Items, recursive);
                     }
                 }
             }
-
         }
 
         [DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
         private static extern int StrCmpLogicalW(string x, string y);
 
-        //public override int Compare(string x, string y)
-        //{
-        //    return StrCmpLogicalW(x, y);
-        //}
 
-        private static int TreeNodeComparer(TreeNode first, TreeNode second)
+        private static int TreeNodeComparer(ItemsControl first, ItemsControl second)
         {
-            bool isFirstDirectory = first.IsDirectoryNode();
-            bool isSecondDirectory = second.IsDirectoryNode();
+            bool isFirstDirectory = first.Items.Count > 0; // IsDirectoryNode();
+            bool isSecondDirectory = second.Items.Count > 0;
 
-            if (isFirstDirectory && !isSecondDirectory)
+            return isFirstDirectory switch
             {
-                return -1;
-            }
-            else if (!isFirstDirectory && isSecondDirectory)
-            {
-                return 1;
-            }
-            else
-            {
+                true when !isSecondDirectory => -1,
+                false when isSecondDirectory => 1,
+                _ => StrCmpLogicalW(first.Name, second.Name)
+            };
 
-                //return first.Text.CompareTo(second.Text);
-                // This will put Level9 before Level10
-                return StrCmpLogicalW(first.Text, second.Text);
-            }
-        }
-
-        public static bool ContainsText(this TreeNodeCollection treeNodeCollection, string textToSearchFor)
-        {
-            foreach (TreeNode treeNode in treeNodeCollection)
-            {
-                if (treeNode.Text == textToSearchFor)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            //return first.Text.CompareTo(second.Text);
+            // This will put Level9 before Level10
         }
     }
 }

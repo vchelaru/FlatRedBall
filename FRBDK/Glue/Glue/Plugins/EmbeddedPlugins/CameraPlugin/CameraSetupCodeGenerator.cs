@@ -213,6 +213,9 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateSetGumResolutionValues(ICodeBlock codeblock)
         {
+            codeblock.Line("/// <summary>");
+            codeblock.Line("/// Sets the Gum GraphicalUiElement's CanvasWidth and CanvasHeight as well as all Layer Zoom values.");
+            codeblock.Line("/// </summary>");
             var functionBlock = codeblock.Function("public static void", "ResetGumResolutionValues", "");
             var gumIfIncreaseAreaBlock = functionBlock.If("Data.ResizeBehaviorGum == ResizeBehavior.IncreaseVisibleArea");
 
@@ -301,6 +304,16 @@ namespace FlatRedBall.Glue.CodeGeneration
                         }
                     }
                     ");
+
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.HasIGumScreenOwner)
+            {
+                functionBlock.Line("var gumScreenOwner = FlatRedBall.Screens.ScreenManager.CurrentScreen as FlatRedBall.Gum.IGumScreenOwner;");
+                functionBlock.Line("gumScreenOwner?.RefreshLayout();");
+
+            }
+
+
+
 
 
         }
@@ -841,9 +854,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         private static void GenerateResetMethodNew(bool generateDisplayCode, ICodeBlock classContents)
         {
+            classContents.Line("/// <summary>");
             classContents.Line("/// Applies resolution and aspect ratio values to the FlatRedBall camera. If Gum is part of the project,");
             classContents.Line("/// then the Gum resolution will be applied. Note that this does not call Layout on the contained Gum objects,");
             classContents.Line("/// so this may need to be called explicitly if ResetCamera is called in custom code.");
+            classContents.Line("/// </summary>");
             var resetMethod = classContents.Function(
                 "internal static void", "ResetCamera", "Camera cameraToReset = null");
             {

@@ -140,6 +140,14 @@ public interface ITreeNode
                Parent.IsRootNamedObjectNode();
     }
 
+    public bool IsRootCollisionRelationshipsNode()
+    {
+        return Text.Equals("Collision Relationships", StringComparison.OrdinalIgnoreCase) &&
+               Parent != null &&
+               Tag == null &&
+               Parent.IsRootNamedObjectNode();
+    }
+
     public bool IsRootNamedObjectNode()
     {
         return Text.Equals("Objects", StringComparison.OrdinalIgnoreCase) &&
@@ -431,8 +439,6 @@ public static class RightClickHelper
 {
     #region Fields/Properties
 
-    static GeneralToolStripMenuItem addScreenToolStripMenuItem;
-
     static GeneralToolStripMenuItem addFileToolStripMenuItem;
     static GeneralToolStripMenuItem newFileToolStripMenuItem;
     static GeneralToolStripMenuItem existingFileToolStripMenuItem;
@@ -499,7 +505,39 @@ public static class RightClickHelper
     #region Images
 
     static System.Windows.Controls.Image BookmarkImage;
+    static System.Windows.Controls.Image ScreenImage;
     static System.Windows.Controls.Image DerivedEntity;
+    static System.Windows.Controls.Image CollisionRelationshipImage;
+
+    static bool HasCreatedImages = false;
+    private static void CreateImages()
+    {
+        if (!HasCreatedImages)
+        {
+
+            BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
+            ScreenImage = MakeImage("/Content/Icons/icon_screen.png");
+            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
+            CollisionRelationshipImage = MakeImage("/Content/Icons/icon_collisions.png");
+
+
+            HasCreatedImages = true;
+        }
+        System.Windows.Controls.Image MakeImage(string sourceName)
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
+            bitmapImage.EndInit();
+
+            return new System.Windows.Controls.Image()
+            {
+                Source = bitmapImage
+            };
+        }
+
+    }
+
 
     #endregion
 
@@ -660,6 +698,17 @@ public static class RightClickHelper
 
         #endregion
 
+        #region IsRootCollisionRelationships node
+
+        else if(targetNode.IsRootCollisionRelationshipsNode())
+        {
+            Add(L.Texts.RightClick_Add_Collision_Relationship, 
+                () => AddNewCollisionRelationshipTo(GlueState.Self.CurrentElement),
+                image:CollisionRelationshipImage);
+        }
+
+        #endregion
+
         #region IsGlobalContentContainerNode
         else if (targetNode.IsGlobalContentContainerNode())
         {
@@ -687,8 +736,7 @@ public static class RightClickHelper
         #region IsRootScreenNode
         else if (targetNode.IsRootScreenNode())
         {
-            AddItem(addScreenToolStripMenuItem);
-
+            Add(L.Texts.ScreenAdd, GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog, image:ScreenImage);
             Add(L.Texts.ScreenImport, () => ImportElementClick(targetNode));
 
         }
@@ -964,33 +1012,24 @@ public static class RightClickHelper
         #endregion
     }
 
-
-    static bool HasCreatedImages = false;
-    private static void CreateImages()
+    private static async void AddNewCollisionRelationshipTo(GlueElement currentElement)
     {
-        if(!HasCreatedImages)
+        var viewModel = new AddObjectViewModel();
+
+        viewModel.SourceType = SourceType.FlatRedBallType;
+        viewModel.SourceClassType = "CollisionRelationship";
+
+        viewModel.ObjectName = "CollisionRelationshipInstance";
+        while(currentElement.GetNamedObjectRecursively(viewModel.ObjectName) != null)
         {
-                
-            BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
-            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
-                
-
-            HasCreatedImages = true;
+            viewModel.ObjectName = StringFunctions.IncrementNumberAtEnd(viewModel.ObjectName);
         }
-        System.Windows.Controls.Image MakeImage(string sourceName)
-        {
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
-            bitmapImage.EndInit();
-
-            return new System.Windows.Controls.Image()
-            {
-                Source = bitmapImage
-            };
-        }
-
+        viewModel.SelectedAti = AvailableAssetTypes.Self.AllAssetTypes
+            .FirstOrDefault(item => item.QualifiedRuntimeTypeName.QualifiedType == "FlatRedBall.Math.Collision.CollisionRelationship");
+        var newNamedObject = await GlueCommands.Self.GluxCommands.AddNewNamedObjectToSelectedElementAsync(viewModel);
+        GlueState.Self.CurrentNamedObjectSave = newNamedObject;
     }
+
 
     private static void HandleOpen(ITreeNode targetNode)
     {
@@ -1097,9 +1136,6 @@ public static class RightClickHelper
 
     public static void Initialize()
     {
-        addScreenToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.ScreenAdd);
-        addScreenToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
-
         setAsStartUpScreenToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.SetAsStartupScreen);
         setAsStartUpScreenToolStripMenuItem.Click += (not, used) =>
         {
@@ -1406,15 +1442,15 @@ public static class RightClickHelper
 
     public static void HandleAddEventOk(AddEventWindow addEventWindow)
     {
-        var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel();
-        viewModel.EventName = addEventWindow.ResultName;
-        viewModel.TunnelingObject = addEventWindow.TunnelingObject;
-        viewModel.TunnelingEvent = addEventWindow.TunnelingEvent;
-
-        viewModel.SourceVariable = addEventWindow.SourceVariable;
-        viewModel.BeforeOrAfter = addEventWindow.BeforeOrAfter;
-
-        viewModel.DelegateType = addEventWindow.ResultDelegateType;
+        var viewModel = new GlueFormsCore.ViewModels.AddEventViewModel
+        {
+            EventName = addEventWindow.ResultName,
+            TunnelingObject = addEventWindow.TunnelingObject,
+            TunnelingEvent = addEventWindow.TunnelingEvent,
+            SourceVariable = addEventWindow.SourceVariable,
+            BeforeOrAfter = addEventWindow.BeforeOrAfter,
+            DelegateType = addEventWindow.ResultDelegateType
+        };
 
         GlueCommands.Self.GluxCommands.ElementCommands.AddEventToElement(viewModel, GlueState.Self.CurrentElement);
 

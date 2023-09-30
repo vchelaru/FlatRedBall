@@ -31,6 +31,8 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Windows;
+using System.Windows.Media;
 
 namespace FlatRedBall.Glue.Plugins
 {
@@ -209,7 +211,7 @@ namespace FlatRedBall.Glue.Plugins
         }
 
         public virtual string FriendlyName => GetType().Name;
-        public virtual Version Version => new Version(1,0);
+        public virtual Version Version => new Version(1, 0);
         public virtual string GithubRepoOwner => null;
         public virtual string GithubRepoName => null;
         public virtual bool CheckGithubForNewRelease => false;
@@ -489,9 +491,9 @@ namespace FlatRedBall.Glue.Plugins
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
         protected void ReactToPluginEvent(string eventName, string payload)
-        { 
-        
-            if(ReactToPluginEventAction != null)
+        {
+
+            if (ReactToPluginEventAction != null)
                 ReactToPluginEventAction(this, eventName, payload);
         }
 
@@ -549,7 +551,7 @@ namespace FlatRedBall.Glue.Plugins
             return menuItem;
         }
 
-        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId,  EventHandler eventHandler, string container)
+        protected ToolStripMenuItem AddMenuItemTo(string whatToAdd, string whatToAddId, EventHandler eventHandler, string container)
         {
             return AddMenuItemTo(whatToAdd, whatToAddId, eventHandler, container, -1);
         }
@@ -609,6 +611,8 @@ namespace FlatRedBall.Glue.Plugins
 
         #region Toolbar
 
+        static SolidColorBrush ToolbarBackgroundBrush = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
+
         protected void AddToToolBar(System.Windows.Controls.UserControl control, string toolbarName)
         {
             var tray = PluginManager.ToolBarTray;
@@ -618,15 +622,48 @@ namespace FlatRedBall.Glue.Plugins
             if (toAddTo == null)
             {
                 toAddTo = new System.Windows.Controls.ToolBar();
-
+                toAddTo.Loaded += Toolbar_Loaded;
                 toAddTo.Name = toolbarName;
                 tray.ToolBars.Add(toAddTo);
             }
 
-            control.Padding = new System.Windows.Thickness(3, 0, 3, 0);
+            if (tray.ToolBars.Count == 1 && toAddTo.Items.Count == 0)
+            {
+                // Align first item with the other main window panels
+                control.Margin = new System.Windows.Thickness(1, 0, 3, 0);
+            }
+            else
+            {
+                control.Margin = new System.Windows.Thickness(3, 0, 3, 0);
+            }
+
+            // Remove default color for background
+            control.Background = ToolbarBackgroundBrush;
+            control.BorderBrush = ToolbarBackgroundBrush;
 
             toAddTo.Items.Add(control);
+        }
 
+        private void Toolbar_Loaded(object sender, RoutedEventArgs e)
+        {
+            // This removes the overflow buttons at the end of the toolbars
+            System.Windows.Controls.ToolBar toolBar = sender as System.Windows.Controls.ToolBar;
+
+            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+            if (overflowGrid != null)
+            {
+                overflowGrid.Visibility = Visibility.Collapsed;
+            }
+
+            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
+            if (mainPanelBorder != null)
+            {
+                mainPanelBorder.Margin = new Thickness(0);
+            }
+
+            // Remove default color for background
+            toolBar.Background = ToolbarBackgroundBrush;
+            toolBar.BorderBrush = ToolbarBackgroundBrush;
         }
 
         protected bool RemoveFromToolbar(System.Windows.Controls.UserControl control, string toolbarName)
@@ -712,7 +749,7 @@ namespace FlatRedBall.Glue.Plugins
         {
             // see if it already exists
             var alreadyExists = AddedAssetTypeInfos.Any(item => item.QualifiedRuntimeTypeName.QualifiedType == ati.QualifiedRuntimeTypeName.QualifiedType);
-            if(!alreadyExists)
+            if (!alreadyExists)
             {
                 AddedAssetTypeInfos.Add(ati);
                 AvailableAssetTypes.Self.AddAssetType(ati);

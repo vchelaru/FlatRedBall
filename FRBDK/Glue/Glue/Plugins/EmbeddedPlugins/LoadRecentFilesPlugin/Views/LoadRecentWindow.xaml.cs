@@ -29,7 +29,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
 
         private void LoadButton_Click(object sender, RoutedEventArgs e)
         {
-            if(ViewModel.SelectedItem != null)
+            if (ViewModel.SelectedItem != null)
             {
                 this.DialogResult = true;
             }
@@ -40,11 +40,47 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
             this.DialogResult = false;
         }
 
-        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void SearchBar_ClearSearchButtonClicked()
         {
-            if(ViewModel.SelectedItem != null)
+            ViewModel.SearchBoxText = String.Empty;
+        }
+
+        private void SearchBar_ArrowKeyPushed(Key key)
+        {
+
+        }
+
+        private void SearchBar_EnterPressed()
+        {
+            if (ViewModel.SelectedItem != null)
             {
                 DialogResult = true;
+            }
+        }
+
+        private void ListBox_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (ViewModel.SelectedItem != null)
+            {
+                DialogResult = true;
+            }
+        }
+
+        private void SearchBar_EscapePressed()
+        {
+            DialogResult = false;
+        }
+
+        private void ListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Delete)
+            {
+                var selectedItem = ViewModel.SelectedItem;
+
+                if(selectedItem != null)
+                {
+                    selectedItem.HandleRemoveClicked();
+                }
             }
         }
     }

@@ -16,6 +16,8 @@ using FlatRedBall.Glue.Managers;
 using FlatRedBall.Glue.VSHelpers.Projects;
 using System.Runtime.InteropServices;
 using GlueFormsCore.Controls;
+using FlatRedBall.Glue.Data;
+using Newtonsoft.Json;
 
 namespace FlatRedBall.Glue.Plugins.ExportedImplementations
 {
@@ -319,6 +321,96 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
         public void Undo()
         {
             PluginManager.CallPluginMethod(pluginFriendlyName: "Undo Plugin", methodName: "Undo");
+        }
+
+        public void LoadGlueSettings()
+        {
+            FilePath settingsFileLocation = null;
+            // Need to fix up saving/loading of this in json since there's some converter causing problems
+            //if(FileManager.FileExists(GlueSettingsSave.SettingsFileNameJson))
+            //{
+            //    settingsFileLocation = GlueSettingsSave.SettingsFileNameJson;
+            //}
+            //else 
+            if (FileManager.FileExists(GlueSettingsSave.SettingsFileName))
+            {
+                settingsFileLocation = GlueSettingsSave.SettingsFileName;
+            }
+            if (settingsFileLocation != null)
+            {
+                GlueSettingsSave settingsSave = null;
+
+                var didErrorOccur = false;
+
+                try
+                {
+                    if (settingsFileLocation.Extension == "json")
+                    {
+                        var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
+                        settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
+                    }
+                    else
+                    {
+                        settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
+                    }
+                    settingsSave.FixAllTypes();
+                }
+                catch (Exception e)
+                {
+                    var errorLoadingSettings = global::Localization.Texts.ErrorLoadingSettings;
+                    var errorDetails = global::Localization.Texts.ErrorDetails;
+                    System.Windows.MessageBox.Show($"{errorLoadingSettings}\n\n{settingsFileLocation}\n\n{errorDetails}\n\n{e}");
+                    didErrorOccur = true;
+                }
+
+                // But what do we do if something bad did happen?
+                if (didErrorOccur) return;
+
+                GlueState.Self.GlueSettingsSave = settingsSave;
+
+                string csprojToLoad;
+                ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
+
+                while(!string.IsNullOrEmpty(csprojToLoad) && !System.IO.File.Exists(csprojToLoad))
+                {
+                    RemoveFromSettings(csprojToLoad);
+                    ProjectLoader.Self.GetCsprojToLoad(out csprojToLoad);
+                }
+
+                // Load the plugins settings if it exists
+                if (String.IsNullOrEmpty(csprojToLoad))
+                {
+                    ProjectManager.PluginSettings = new PluginSettings();
+                }
+                else
+                {
+                    var gluxDirectory = FileManager.GetDirectory(csprojToLoad);
+
+                    ProjectManager.PluginSettings = PluginSettings.FileExists(gluxDirectory)
+                        ? PluginSettings.Load(gluxDirectory)
+                        : new PluginSettings();
+                }
+
+                MainPanelControl.Self.ApplyGlueSettings(GlueState.Self.GlueSettingsSave);
+            }
+            else
+            {
+                GlueState.Self.GlueSettingsSave.Save();
+            }
+        }
+
+        void RemoveFromSettings(FilePath filePath)
+        {
+            var settingsSave = GlueState.Self.GlueSettingsSave;
+            settingsSave.GlueLocationSpecificLastProjectFiles.RemoveAll(item => new FilePath( item.GameProjectFileName) == filePath);
+            if(new FilePath( settingsSave.LastProjectFile) == filePath)
+            {
+                settingsSave.LastProjectFile = null;
+            }
+
+            settingsSave.RecentFiles.RemoveAll(item => new FilePath(item) == filePath);
+            settingsSave.RecentFileList.RemoveAll(item => new FilePath( item.FileName ) == filePath);
+
         }
     }
 }

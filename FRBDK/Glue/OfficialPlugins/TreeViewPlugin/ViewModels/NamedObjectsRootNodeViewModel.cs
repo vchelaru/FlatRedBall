@@ -17,9 +17,14 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         NodeViewModel LayersTreeNode;
         NodeViewModel CollisionRelationshipTreeNode;
 
+        public bool IsGameScreen { get; private set; }
+
         public NamedObjectsRootNodeViewModel(NodeViewModel parent, GlueElement glueElement) : base(parent)
         {
             this.glueElement = glueElement;
+
+            IsGameScreen = glueElement is ScreenSave screenSave && 
+                (screenSave.Name.EndsWith ("\\GameScreen") || screenSave.Name.EndsWith("/GameScreen"));
         }
 
         public override void RefreshTreeNodes(TreeNodeRefreshType treeNodeRefreshType)
@@ -100,7 +105,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                             .Where(item => item.IsLayer)
                             .ToArray();
 
-            if (layers.Length > 0)
+            var showLayers = layers.Length > 0 || IsGameScreen;
+
+            if (showLayers)
             {
                 if (LayersTreeNode == null)
                 {
@@ -161,7 +168,9 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                 .Where(item => item.IsCollisionRelationship())
                 .ToArray();
 
-            if (collisionRelationships.Length > 0)
+            var shouldShowCollisionRelationshipNode = collisionRelationships.Length > 0 || IsGameScreen;
+
+            if (shouldShowCollisionRelationshipNode)
             {
                 if (CollisionRelationshipTreeNode == null)
                 {

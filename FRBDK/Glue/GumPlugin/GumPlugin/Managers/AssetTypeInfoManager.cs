@@ -141,14 +141,39 @@ namespace GumPlugin.Managers
 
                     screenAti.QualifiedSaveTypeName = "Gum.Data.ScreenSave";
                     screenAti.Extension = "gusx";
-                    screenAti.AddToManagersMethod.Add("this.AddToManagers();" +
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal");
 
-                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+                    screenAti.AddToManagersFunc = (element, nos, rfs, layer) =>
+                    {
+                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+                        if(string.IsNullOrEmpty(element.BaseElement))
+                        {
+
+                            return $"{name}.AddToManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
+                        }
+                        else
+                        {
+                            return $"{name}.AddToManagers();";
+                        }
+                    };
+
                     
 
-                    screenAti.DestroyMethod = "this.RemoveFromManagers();" +
-                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal";
+                    screenAti.CustomLoadFunc = (element, nos, rfs, contentManagerName) => GetLoadStaticContentCodeFor(rfs, nos);
+
+                    screenAti.DestroyFunc = (element, nos, rfs) =>
+                    {
+                        var name = nos?.InstanceName ?? rfs?.GetInstanceName();
+                        if (string.IsNullOrEmpty(element.BaseElement))
+                        {
+                            return $"{name}.RemoveFromManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged -= RefreshLayoutInternal;";
+
+                        }
+                        else
+                        {
+                            return $"{name}.RemoveFromManagers();";
+                        }
+                    };
+
                     screenAti.SupportsMakeOneWay = false;
                     screenAti.ShouldAttach = false;
                     screenAti.MustBeAddedToContentPipeline = false;
@@ -618,7 +643,6 @@ namespace GumPlugin.Managers
             }
 
             var newAti = FlatRedBall.IO.FileManager.CloneObject<AssetTypeInfo>(GraphicalUiElementAti);
-
             UpdateAtiForElement(newAti, element);
 
             return newAti;
@@ -666,10 +690,11 @@ namespace GumPlugin.Managers
                 }
 
 
-                newAti.AddToManagersFunc = null;
                 newAti.AddToManagersMethod.Clear();
                 newAti.AddToManagersMethod.AddRange(screenAti.AddToManagersMethod);
 
+                newAti.AddToManagersFunc = screenAti.AddToManagersFunc;
+                newAti.DestroyFunc = screenAti.DestroyFunc;
                 newAti.DestroyMethod = screenAti.DestroyMethod;
             }
             string unqualifiedName = element.Name + "Runtime";

@@ -117,13 +117,15 @@ namespace FlatRedBall.Glue.SaveClasses
             ISongInFrb = 43,
             RendererHasExternalEffectManager = 44,
             SpriteHasSetCollisionFromAnimation = 45,
+            HasIGumScreenOwner = 46,
+            ScreenIsINameable = 47
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteHasSetCollisionFromAnimation;
+        public const int LatestVersion = (int)GluxVersions.ScreenIsINameable;
 
         public int FileVersion { get; set; }
 

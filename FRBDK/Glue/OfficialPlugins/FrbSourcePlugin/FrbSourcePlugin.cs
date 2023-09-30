@@ -16,6 +16,7 @@ using FlatRedBall.Glue.MVVM;
 using GeneralResponse = ToolsUtilities.GeneralResponse;
 using FlatRedBall.Glue.SaveClasses;
 using OfficialPlugins.FrbSourcePlugin.Managers;
+using System.Threading.Tasks;
 
 namespace PluginTestbed.GlobalContentManagerPlugins
 {
@@ -110,13 +111,21 @@ namespace PluginTestbed.GlobalContentManagerPlugins
                 return;
             
             control = new AddFrbSourceView();
-            control.LinkToSourceClicked += () =>
+            control.LinkToSourceClicked += async () =>
             {
-                AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
+                await AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
                 Tab.Hide();
             };
             Tab = CreateTab(control, Localization.Texts.AddFrbSource);
         }
 
+        public bool HasFrbAndGumReposInDefaultLocation() => 
+            System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath) &&
+            System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath);
+
+        public async Task AddFrbSourceToDefaultLocation()
+        {
+            await AddSourceManager.LinkToSourceUsingDefaults();
+        }
     }
 }

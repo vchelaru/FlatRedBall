@@ -251,7 +251,7 @@
                 <Label Content="{x:Static localization:Texts.CanClimb}"/>
             </CheckBox>
             <TextBlock Margin="0,5,0,0" Visibility="{Binding ClimbingUiVisibility}" Text="{x:Static localization:Texts.ClimbingSpeed}"/>
-            <TextBox HorizontalAlignment="Left" Width="p70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
+            <TextBox HorizontalAlignment="Left" Width="70" Text="{Binding MaxClimbingSpeed}"  Visibility="{Binding ClimbingUiVisibility}"
                      b:InputBindingsManager.UpdatePropertySourceWhenEnterPressed="TextBox.Text">
                 <TextBox.ToolTip>
                     <Label Content="{x:Static localization:Texts.HintVerticalSpeedForClimbing}"/>

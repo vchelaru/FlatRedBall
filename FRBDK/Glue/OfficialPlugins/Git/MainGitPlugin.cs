@@ -89,6 +89,7 @@ namespace OfficialPlugins.Git
                 FileManager.RemovePath(FileManager.RemoveExtension(GlueState.Self.CurrentCodeProjectFileName.FullPath));
 
             yield return "*.user";
+            yield return "*.user.*";
 
             yield return "*.aeproperties";
 

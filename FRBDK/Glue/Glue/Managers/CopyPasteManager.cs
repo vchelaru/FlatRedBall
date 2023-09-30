@@ -35,7 +35,7 @@ namespace FlatRedBall.Glue.Managers
             }
             else if(currentTreeNodeTag is ScreenSave screen)
             {
-                copiedObjectClone = screen.Clone();
+                copiedObjectClone = screen.CloneJson();
             }
             else if(currentTreeNodeTag is EntitySave entity)
             {

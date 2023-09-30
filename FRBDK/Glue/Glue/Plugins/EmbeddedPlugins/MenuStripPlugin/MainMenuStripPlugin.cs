@@ -104,7 +104,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
             {
                 Plugins.Add(Localization.Texts.PluginInstall, () => new InstallPluginWindow().Show(MainGlueWindow.Self));
                 Plugins.Add(Localization.Texts.PluginUninstall, () => new UninstallPluginWindow().Show(MainGlueWindow.Self));
-                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().Show(MainGlueWindow.Self));
+                Plugins.Add(Localization.Texts.PluginCreate, () => new CreatePluginWindow().Show());
                 Plugins.DropDownItems.Add(new ToolStripSeparator());
             }
 
@@ -205,9 +205,9 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GroupExportForm groupExportForm = new GroupExportForm();
-            DialogResult result = groupExportForm.ShowDialog();
+            var result = groupExportForm.ShowDialog();
 
-            if (result == DialogResult.OK)
+            if (result.HasValue && result.Value)
             {
                 ElementExporter.ExportGroup(groupExportForm.SelectedElements, GlueState.Self.CurrentGlueProject);
             }

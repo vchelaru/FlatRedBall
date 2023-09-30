@@ -241,6 +241,19 @@ namespace GlueControl.Editing
             return sprite;
         }
 
+        public static Sprite ColoredRectangle(Text textToSurround, Color? color = null)
+        {
+            if (color == null)
+            {
+                color = Color.Black;
+            }
+            return EditorVisuals.ColoredRectangle(
+                textToSurround.Width + 4,
+                textToSurround.Height,
+                textToSurround.Position.AddZ(-.1f),
+                color);
+        }
+
         public static AxisAlignedRectangle Rectangle(float width, float height, Vector3 centerPosition, Color? color = null)
         {
             if (centerPosition.Z == Camera.Main.Z)

@@ -32,6 +32,8 @@ namespace OfficialPlugins.PropertyGrid
 {
     internal class NamedObjectSaveVariableDataGridItem : DataGridItem, IFileInstanceMember
     {
+        #region Fields/Properties
+
         public GlueElement Container { get; set; }
         public NamedObjectSave NamedObjectSave { get; set; }
 
@@ -47,13 +49,40 @@ namespace OfficialPlugins.PropertyGrid
         /// </summary>
         public bool PushChangesToPluginManager = true;
 
+        public bool IsFile { get; set; }
+
+        Type cachedMemberType = null;
+        Type MemberType
+        {
+            get
+            {
+                if (cachedMemberType == null)
+                {
+                    var typeName = VariableDefinition?.Type;
+                    if (!string.IsNullOrEmpty(typeName))
+                    {
+                        cachedMemberType = TypeManager.GetTypeFromString(typeName);
+                    }
+
+                    if(cachedMemberType == null)
+                    {
+                        // if we got here, we don't know the type, but it seems Glue operates on there it needing to be typeof object:
+                        cachedMemberType = typeof(object);
+                    }
+                }
+                return cachedMemberType;
+            }
+        }
+
+
+        #endregion
+
         public event Action View;
         public void OnView()
         {
             View?.Invoke();
 
         }
-        public bool IsFile { get; set; }
 
         public NamedObjectSaveVariableDataGridItem()
         {
@@ -209,30 +238,6 @@ namespace OfficialPlugins.PropertyGrid
             PushChangesToPluginManager = wasPushing;
 
         }
-
-        Type cachedMemberType = null;
-        Type MemberType
-        {
-            get
-            {
-                if (cachedMemberType == null)
-                {
-                    var typeName = VariableDefinition?.Type;
-                    if (!string.IsNullOrEmpty(typeName))
-                    {
-                        cachedMemberType = TypeManager.GetTypeFromString(typeName);
-                    }
-
-                    if(cachedMemberType == null)
-                    {
-                        // if we got here, we don't know the type, but it seems Glue operates on there it needing to be typeof object:
-                        cachedMemberType = typeof(object);
-                    }
-                }
-                return cachedMemberType;
-            }
-        }
-
         public object HandleCustomGet(object throwaway)
         {
             if (VariableDefinition.CustomVariableGet != null)
@@ -279,6 +284,14 @@ namespace OfficialPlugins.PropertyGrid
                             NamedObjectSave,
                             "CurrentChainName",
                             null);
+                    }
+                }
+                else if(foundVariable?.Type == nameof(FlatRedBall.Sprite))
+                {
+                    if (value as string == "<NONE>")
+                    {
+                        value = null;
+                        makeDefault = true;
                     }
                 }
                 IsDefault = makeDefault;

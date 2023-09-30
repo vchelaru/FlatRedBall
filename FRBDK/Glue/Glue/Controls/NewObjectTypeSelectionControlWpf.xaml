@@ -41,6 +41,7 @@
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -86,7 +87,13 @@
 
             </Grid>
 
-            <Grid Margin="0,5,0,0" Visibility="{Binding SourceNameVisibility}"  Grid.Row="2">
+            <StackPanel Grid.Row="2" Visibility="{Binding CallActivityCheckBoxVisibility}" >
+                <CheckBox Margin="5,5,0,5" 
+                          IsChecked="{Binding IsCallActivityChecked}" >Call Activity</CheckBox>
+                <TextBlock TextWrapping="Wrap" Text="{Binding ActivityRecommendationText}"></TextBlock>
+            </StackPanel>
+            
+            <Grid Margin="0,3,0,0" Visibility="{Binding SourceNameVisibility}"  Grid.Row="3">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -99,7 +106,7 @@
 
             </Grid>
 
-            <StackPanel Grid.Column="1" Grid.RowSpan="3" x:Name="AdditionalUiStack">
+            <StackPanel Grid.Column="1" Grid.RowSpan="4" x:Name="AdditionalUiStack">
                 
             </StackPanel>
 

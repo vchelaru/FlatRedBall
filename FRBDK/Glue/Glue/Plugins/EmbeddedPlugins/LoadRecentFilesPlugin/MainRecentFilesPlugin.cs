@@ -36,8 +36,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
             foreach(var item in recentFiles.Where(item => item.IsFavorite))
             {
-                var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
-                recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                AddToRecentFilesMenuItem(item);
             }
 
             var nonFavorites = recentFiles.Where(item => !item.IsFavorite).ToArray();
@@ -50,13 +49,32 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
 
                 foreach(var item in nonFavorites.Take(5))
                 {
-                    var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
-
-                    recentFilesMenuItem.DropDownItems.Add(name, null, (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                    AddToRecentFilesMenuItem(item);
                 }
             }
 
             recentFilesMenuItem.DropDownItems.Add(L.Texts.More, null, HandleLoadRecentClicked);
+
+            void AddToRecentFilesMenuItem(RecentFileSave item)
+            {
+                var name = FileManager.RemovePath(FileManager.RemoveExtension(item.FileName));
+
+                var directory = FileManager.GetDirectory(item.FileName);
+
+                if(System.IO.Directory.Exists(directory))
+                {
+                    var icoFile = System.IO.Directory.GetFiles(directory, "*.ico").FirstOrDefault();
+
+                    System.Drawing.Icon icon = null;
+                    if(!string.IsNullOrEmpty(icoFile ))
+                    {
+                        // load this into an icon to use in a dropdown item
+                        icon = new System.Drawing.Icon(icoFile);
+                    }
+                    recentFilesMenuItem.DropDownItems.Add(name, icon?.ToBitmap(), (_, _) => GlueCommands.Self.LoadProjectAsync(item.FileName));
+                }
+
+            }
         }
 
         private async void HandleLoadRecentClicked(object sender, EventArgs e)
@@ -73,6 +91,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                         FullPath = recentFile.FileName,
                         IsFavorite = recentFile.IsFavorite
                     };
+                    vm.RemoveClicked += () => HandleRemovedRecentFile(vm, viewModel);
                     viewModel.AllItems.Add(vm);
 
                 }
@@ -108,6 +127,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueCommands.Self.GluxCommands.SaveSettings();
             }
 
+        }
+
+        private void HandleRemovedRecentFile(RecentItemViewModel vm, LoadRecentViewModel mainViewModel)
+        {
+            if(GlueState.Self.GlueSettingsSave == null)
+            {
+                return;
+            }
+
+            var fullPath = vm.FullPath;
+            var countRemoved = GlueState.Self.GlueSettingsSave.RecentFileList.RemoveAll(item => item.FileName == fullPath);
+
+            mainViewModel.AllItems.Remove(vm);
+            mainViewModel.RefreshFilteredItems();
+
+            if (countRemoved > 0)
+            {
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
         }
 
         private void HandleGluxLoaded()

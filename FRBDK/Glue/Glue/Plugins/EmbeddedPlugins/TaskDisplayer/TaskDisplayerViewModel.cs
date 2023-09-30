@@ -8,9 +8,9 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.TaskDisplayer
 {
     public class TaskDisplayerViewModel : ViewModel
     {
-        public static string StatusText => $"{L.Texts.TasksRemaining} {TaskManager.Self.TaskCount}";
+        public string StatusText => $"{L.Texts.TasksRemaining} {TaskManager.Self.TaskCount}";
 
-        public static string CurrentTaskText => TaskManager.Self.NextTasksDescription;
+        public string CurrentTaskText => TaskManager.Self.NextTasksDescription;
 
         public bool LogTaskDetailsToOutput
         {

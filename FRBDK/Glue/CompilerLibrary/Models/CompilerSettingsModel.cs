@@ -23,6 +23,8 @@ namespace CompilerLibrary.Models
         public int PortNumber { get; set; } = 8021;
         public bool ShowScreenBoundsWhenViewingEntities { get; set; }
 
+        public bool RestartOnFailedCommands { get; set; }
+
         public bool ShowGrid { get; set; } = true;
         public decimal GridSize { get; set; } = 32;
         public decimal GridAlpha { get; set; } = .15m;

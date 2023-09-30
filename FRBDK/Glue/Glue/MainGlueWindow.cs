@@ -45,7 +45,7 @@ public partial class MainGlueWindow : Form
     public static MainPanelControl MainWpfControl { get; private set; }
     public static MainGlueWindow Self { get; private set; }
     public static int UiThreadId { get; private set; }
-    
+
     private MenuStrip mMenu;
 
     public IContainer Components => components;
@@ -90,7 +90,7 @@ public partial class MainGlueWindow : Form
         var output = process.StandardOutput.ReadToEnd();
 
 
-        if(String.IsNullOrEmpty(output))
+        if (String.IsNullOrEmpty(output))
         {
             // Ensure dotnet is installed. If not, we will assume the user uses .NET Framework.
             // Any further checks on .NET usage are not required.
@@ -141,10 +141,10 @@ public partial class MainGlueWindow : Form
         if (sdkPaths.Any())
         {
             string sdkPath = null;
-            
-            foreach(var path in sdkPaths)
+
+            foreach (var path in sdkPaths)
             {
-                if(File.Exists(path))
+                if (File.Exists(path))
                 {
                     sdkPath = path;
                     break;
@@ -152,7 +152,7 @@ public partial class MainGlueWindow : Form
             }
 
             //sdkPaths.FirstOrDefault(item => item.Contains("sdk\\6."));
-            if(String.IsNullOrEmpty(sdkPath))
+            if (String.IsNullOrEmpty(sdkPath))
             {
                 //    sdkPath = sdkPaths.Last();
 
@@ -201,7 +201,7 @@ public partial class MainGlueWindow : Form
     private async void StartUpGlue(object sender, EventArgs e)
     {
         // We need to load the glue settings before loading the plugins so that we can shut off plugins according to settings
-        LoadGlueSettings();
+        GlueCommands.Self.LoadGlueSettings();
         var mainCulture = GlueState.Self.GlueSettingsSave.CurrentCulture;
         Localization.Texts.Culture = mainCulture;
         Thread.CurrentThread.CurrentCulture = mainCulture;
@@ -257,7 +257,7 @@ public partial class MainGlueWindow : Form
         SetScreenSubMessage(Localization.Texts.InitializingInstructionManager);
         InstructionManager.Initialize();
 
-        SetScreenSubMessage(Localization.Texts.InitializingTypeConverter);        
+        SetScreenSubMessage(Localization.Texts.InitializingTypeConverter);
         TypeConverterHelper.InitializeClasses();
 
         SetScreenMessage(Localization.Texts.LoadingSettings);
@@ -271,10 +271,10 @@ public partial class MainGlueWindow : Form
 
         SetScreenMessage(Localization.Texts.LoadingPlugins);
 
-        var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null) 
-            ? GlueState.Self.CurrentPluginSettings.PluginsToIgnore 
+        var pluginsToIgnore = (GlueState.Self.CurrentPluginSettings != null)
+            ? GlueState.Self.CurrentPluginSettings.PluginsToIgnore
             : new List<string>();
-        
+
         PluginManager.Initialize(true, pluginsToIgnore);
         ShareUiReferences(PluginCategories.All);
 
@@ -396,7 +396,7 @@ public partial class MainGlueWindow : Form
         {
             try
             {
-                if(wasInTask)
+                if (wasInTask)
                 {
                     RunOnUiThreadTasked(action);
                 }
@@ -405,9 +405,9 @@ public partial class MainGlueWindow : Form
                     action();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                if(!IsDisposed && !ProjectManager.WantsToCloseProject)
+                if (!IsDisposed && !ProjectManager.WantsToCloseProject)
                 {
                     throw;
                 }
@@ -419,7 +419,7 @@ public partial class MainGlueWindow : Form
     public new T Invoke<T>(Func<T> func)
     {
         var wasInTask = TaskManager.Self.IsInTask();
-        
+
         base.Invoke((MethodInvoker)delegate
         {
             try
@@ -558,72 +558,6 @@ public partial class MainGlueWindow : Form
         Application.DoEvents();
     }
 
-    private static void LoadGlueSettings()
-    {
-        FilePath settingsFileLocation = null;
-        // Need to fix up saving/loading of this in json since there's some converter causing problems
-        //if(FileManager.FileExists(GlueSettingsSave.SettingsFileNameJson))
-        //{
-        //    settingsFileLocation = GlueSettingsSave.SettingsFileNameJson;
-        //}
-        //else 
-        if (FileManager.FileExists(GlueSettingsSave.SettingsFileName))
-        {
-            settingsFileLocation = GlueSettingsSave.SettingsFileName;
-        }
-        if (settingsFileLocation != null)
-        {
-            GlueSettingsSave settingsSave = null;
-
-            var didErrorOccur = false;
-
-            try
-            {
-                if(settingsFileLocation.Extension == "json")
-                {
-                    var text = System.IO.File.ReadAllText(settingsFileLocation.FullPath);
-                    settingsSave = JsonConvert.DeserializeObject<GlueSettingsSave>(text);
-                }
-                else
-                {
-                    settingsSave = FileManager.XmlDeserialize<GlueSettingsSave>(settingsFileLocation.FullPath);
-                }
-                settingsSave.FixAllTypes();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show($"{Localization.Texts.ErrorLoadingSettings}\n\n{settingsFileLocation}\n\n{Localization.Texts.ErrorDetails}\n\n{e}");
-                didErrorOccur = true;
-            }
-
-            // But what do we do if something bad did happen?
-            if (didErrorOccur) return;
-            
-            GlueState.Self.GlueSettingsSave = settingsSave;
-
-            ProjectLoader.Self.GetCsprojToLoad(out var csprojToLoad);
-
-            // Load the plugins settings if it exists
-            if (String.IsNullOrEmpty(csprojToLoad))
-            {
-                ProjectManager.PluginSettings = new PluginSettings();
-            }
-            else
-            {
-                var gluxDirectory = FileManager.GetDirectory(csprojToLoad);
-
-                ProjectManager.PluginSettings = PluginSettings.FileExists(gluxDirectory) 
-                    ? PluginSettings.Load(gluxDirectory)
-                    : new PluginSettings();
-            }
-
-            MainPanelControl.Self.ApplyGlueSettings(GlueState.Self.GlueSettingsSave);
-        }
-        else
-        {
-            GlueState.Self.GlueSettingsSave.Save();
-        }
-    }
 
     private static bool _wantsToExit = false;
     private void MainGlueWindow_FormClosing(object sender, FormClosingEventArgs e)
@@ -632,7 +566,7 @@ public partial class MainGlueWindow : Form
         // is closed, and that's bad. But we can't Wait the task to finish as that would freeze the UI.
         // Therefore to fix this, we'll tell Glue to not shut down if this is the first time the user wanted
         // to shut it. Then we'll wait for all tasks to finish and then try again to close it.
-        if(!_wantsToExit)
+        if (!_wantsToExit)
         {
             CloseAfterTasks();
             e.Cancel = true;
@@ -644,7 +578,7 @@ public partial class MainGlueWindow : Form
         ProjectManager.WantsToCloseProject = true;
         _wantsToExit = true;
         //MainPanelSplitContainer.ReactToFormClosing();
-            
+
         //EditorData.GlueLayoutSettings.BottomPanelSplitterPosition = MainPanelSplitContainer.SplitterDistance;
         EditorData.GlueLayoutSettings.Maximized = this.WindowState == FormWindowState.Maximized;
         EditorData.GlueLayoutSettings.SaveSettings();
@@ -657,6 +591,6 @@ public partial class MainGlueWindow : Form
 
         PluginManager.ReactToGlueClose();
 
-        GlueCommands.Self.CloseGlue();            
+        GlueCommands.Self.CloseGlue();
     }
 }

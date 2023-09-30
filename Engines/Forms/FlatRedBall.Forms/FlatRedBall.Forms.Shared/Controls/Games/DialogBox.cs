@@ -132,16 +132,16 @@ namespace FlatRedBall.Forms.Controls.Games
 
         #endregion
 
-        public void Show(string text)
+        public void Show(string text, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
             showNextPageOnDismissedPage = true;
             ShowInternal(text, forceImmediatePrint:false);
         }
 
-        public void Show(IEnumerable<string> pages)
+        public void Show(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
 
             showNextPageOnDismissedPage = true;
             if (pages.Any())
@@ -155,9 +155,11 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        public Task ShowAsync(string page) => ShowAsync(new string[] { page });
+
         public async Task ShowAsync(IEnumerable<string> pages, FlatRedBall.Graphics.Layer frbLayer = null)
         {
-            base.Show();
+            base.Show(frbLayer);
 
             showNextPageOnDismissedPage = false;
             if (pages.Any())
@@ -182,6 +184,15 @@ namespace FlatRedBall.Forms.Controls.Games
             }
         }
 
+        // September 28, 2023
+        // Vic asks - why do we 
+        // have ShowDialog? Is it
+        // to match the ShowDialog 
+        // from the base FrameworkElement?
+        // If so, what's the poinnt because
+        // this doesn't override the base parameters.
+        // It requires pages. 
+        [Obsolete("Use ShowAsync")]
         public async Task<bool?> ShowDialog(IEnumerable<string> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
@@ -197,6 +208,8 @@ namespace FlatRedBall.Forms.Controls.Games
             return null;
         }
 
+        // See comment above about why this is obsolete.
+        [Obsolete("Use ShowAsync")]
         public async Task<bool?> ShowDialog(IEnumerable<DialogPageTask> pageTasks, FlatRedBall.Graphics.Layer frbLayer = null)
         {
 #if DEBUG
@@ -349,7 +362,10 @@ namespace FlatRedBall.Forms.Controls.Games
 
         private void HandleClick(IWindow window)
         {
-            ReactToConfirmInput();
+            if(AdvancePageInputPredicate == null)
+            {
+                ReactToConfirmInput();
+            }
         }
 
         /// <summary>
@@ -481,18 +497,18 @@ namespace FlatRedBall.Forms.Controls.Games
                         ReactToCancelInput();
                     }
                 }
+                var keyboardAsInputDevice = InputManager.Keyboard as IInputDevice;
+
+                if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
+                {
+                    ReactToConfirmInput();
+                }
+                if(keyboardAsInputDevice.DefaultCancelInput.WasJustPressed)
+                {
+                    ReactToCancelInput();
+                }
             }
 
-            var keyboardAsInputDevice = InputManager.Keyboard as IInputDevice;
-
-            if(keyboardAsInputDevice.DefaultPrimaryActionInput.WasJustPressed)
-            {
-                ReactToConfirmInput();
-            }
-            if(keyboardAsInputDevice.DefaultCancelInput.WasJustPressed)
-            {
-                ReactToCancelInput();
-            }
         }
 
         public void OnGainFocus()

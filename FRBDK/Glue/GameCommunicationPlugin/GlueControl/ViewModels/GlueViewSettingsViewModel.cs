@@ -13,6 +13,12 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
             set => Set(value);
         }
 
+        public bool RestartOnFailedCommands
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool EmbedGameInGameTab
         {
             get => Get<bool>();
@@ -106,11 +112,16 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         [DependsOn(nameof(EnableLiveEdit))]
         public Visibility ShowWindowDefenderUi => EnableLiveEdit.ToVisibility();
 
+        public GlueViewSettingsViewModel()
+        {
+            RestartOnFailedCommands = true;
+        }
 
 
         internal void SetFrom(CompilerSettingsModel model)
         {
             this.PortNumber = model.PortNumber;
+            this.RestartOnFailedCommands = model.RestartOnFailedCommands;
             this.ShowScreenBoundsWhenViewingEntities = model.ShowScreenBoundsWhenViewingEntities;
 
             this.ShowGrid = model.ShowGrid;
@@ -132,6 +143,7 @@ namespace GameCommunicationPlugin.GlueControl.ViewModels
         internal void SetModel(CompilerSettingsModel compilerSettings)
         {
             compilerSettings.PortNumber = this.PortNumber;
+            compilerSettings.RestartOnFailedCommands = this.RestartOnFailedCommands;
             compilerSettings.ShowScreenBoundsWhenViewingEntities = this.ShowScreenBoundsWhenViewingEntities;
 
             compilerSettings.ShowGrid = this.ShowGrid;

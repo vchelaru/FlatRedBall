@@ -7,7 +7,7 @@
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<Platforms>AnyCPU</Platforms>
 		<Version>2022.06.27.675</Version>
-		<ApplicationIcon>Glue.ico</ApplicationIcon>
+		<ApplicationIcon>Frb.ico</ApplicationIcon>
 		<RootNamespace>FlatRedBall.Glue</RootNamespace>
 		<!--<DisableMSBuildAssemblyCopyCheck>true</DisableMSBuildAssemblyCopyCheck>-->
 	</PropertyGroup>
@@ -86,7 +86,9 @@
 		<None Remove="Content\Icons\file.png" />
 		<None Remove="Content\Icons\folder.png" />
 		<None Remove="Content\Icons\GlueIcon.png" />
+		<None Remove="Content\Icons\icon_collisions.png" />
 		<None Remove="Content\Icons\icon_entity_derived.png" />
+		<None Remove="Content\Icons\icon_screen.png" />
 		<None Remove="Content\Icons\IncreaseArea.Agif" />
 		<None Remove="Content\Icons\IncreaseArea.gif" />
 		<None Remove="Content\Icons\IncreaseAreaGum.gif" />
@@ -128,6 +130,10 @@
 		<None Remove="Resources\Icons\MoveTabs\RightTab.png" />
 		<None Remove="Resources\Icons\MoveTabs\TopTab.png" />
 		<None Remove="Resources\test.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="..\..\..\Content\Icon.png" Link="Content\Icons\Icon.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -199,7 +205,9 @@
 		<Resource Include="Content\Icons\file.png" />
 		<Resource Include="Content\Icons\folder.png" />
 		<Resource Include="Content\Icons\GlueIcon.png" />
+		<Resource Include="Content\Icons\icon_collisions.png" />
 		<Resource Include="Content\Icons\icon_entity_derived.png" />
+		<Resource Include="Content\Icons\icon_screen.png" />
 		<Resource Include="Content\Icons\SaveIcon.png" />
 		<EmbeddedResource Include="Plugins\EmbeddedPlugins\CameraPlugin\IncreaseArea.Agif">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -935,13 +935,13 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void ShowAddNewEventDialog(AddEventViewModel viewModel)
         {
-            AddEventWindow addEventWindow = new AddEventWindow();
+            var addEventWindow = new AddEventWindow
+            {
+                ViewModel = viewModel
+            };
 
-            
 
-            addEventWindow.ViewModel = viewModel;
-
-            if (addEventWindow.ShowDialog(MainGlueWindow.Self) == DialogResult.OK)
+            if (addEventWindow.ShowDialog() == true)
             {
                 RightClickHelper.HandleAddEventOk(addEventWindow);
             }

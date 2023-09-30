@@ -42,11 +42,9 @@ https://store.steampowered.com/app/1586330/WeeRPG/
 ![](https://cdn.akamai.steamstatic.com/steam/apps/1586330/ss_ee09e0985bf865a6933b67307ce2920db5265dbe.1920x1080.jpg?t=1651849095)
 
 ### Deadvivors
-
 https://enxebregames.com/
-
-![](https://enxebregames.com/assets/images/gallery01/c89b93c3_original.jpg)
-![](https://enxebregames.com/assets/images/gallery01/baf95fba_original.jpg)
+![](https://enxebregames.com/assets/images/gallery01/c9710fba_original.jpg)
+![](https://enxebregames.com/assets/images/gallery01/a52f3d0f_original.jpg)
 
 ### Super Refresh Men (iOS and Android)
 https://www.youtube.com/watch?v=Irn64qHmakA&t=338s&ab_channel=Techzamazing

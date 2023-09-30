@@ -149,7 +149,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             Output.Print(exception);
                         }
 
-                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                        {
+                            _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        }
                     }
                 }
                 catch
@@ -258,12 +261,75 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = property.Value;
             }
-            else if(changedMember == "IncludeInICollidable")
+
+            #region NOS Properties
+
+            else if(changedMember == nameof(NamedObjectSave.AttachToContainer))
+            {
+                currentValue = nos.AttachToContainer;
+            }
+            else if (changedMember == nameof(NamedObjectSave.AttachToCamera))
+            {
+                currentValue = nos.AttachToCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.Instantiate))
+            {
+                currentValue = nos.InstanceName;
+            }
+            else if(changedMember == nameof(NamedObjectSave.AddToManagers))
+            {
+                currentValue = nos.AddToManagers;
+            }
+            else if(changedMember == nameof(NamedObjectSave.RemoveFromManagersWhenInvisible))
+            {
+                currentValue = nos.RemoveFromManagersWhenInvisible;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IncludeInIVisible))
+            {
+                currentValue = nos.IncludeInIVisible;
+            }
+            else if (changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
             }
+            else if(changedMember == nameof(NamedObjectSave.IncludeInIClickable))
+            {
+                currentValue = nos.IncludeInIClickable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IsDisabled))
+            {
+                currentValue = nos.IsDisabled;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IgnoresPausing))
+            {
+                currentValue = nos.IgnoresPausing;
+            }
+            else if(changedMember == nameof(NamedObjectSave.CallActivity))
+            {
+                currentValue = nos.CallActivity;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerOn))
+            {
+                currentValue = nos.LayerOn;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IsZBuffered))
+            {
+                currentValue = nos.IsZBuffered;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IndependentOfCamera))
+            {
+                currentValue = nos.IndependentOfCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerCoordinateUnit))
+            {
+                currentValue = nos.LayerCoordinateUnit;
+            }
 
-            if(isState && currentValue?.ToString() == "<NONE>")
+
+
+            #endregion
+
+            if (isState && currentValue?.ToString() == "<NONE>")
             {
                 currentValue = null;
             }
@@ -621,6 +687,9 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             data.AssignOrRecordOnly = assignOrRecordOnly;
             data.IsState = isState;
 
+            data.AbsoluteGlueProjectFilePath = GlueState.Self.GlueProjectFileName?.FullPath;
+
+
             // March 15, 2022
             // Why do we set this
             // here? It results in 
@@ -630,7 +699,19 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             //data.ScreenSave = currentElement as ScreenSave;
             //data.EntitySave = currentElement as EntitySave;
 
-            if (!string.IsNullOrEmpty(variableOwningNosName))
+            var strippedVaraibleName = rawMemberName;
+            if(rawMemberName.Contains("."))
+            {
+                strippedVaraibleName = rawMemberName.Substring(rawMemberName.LastIndexOf('.') + 1);
+            }
+
+            var customVariable = currentElement?.GetCustomVariableRecursively(strippedVaraibleName);
+
+            if(customVariable?.IsShared == true)
+            {
+                // don't prefix anything, leave it as-is
+            }
+            else if (!string.IsNullOrEmpty(variableOwningNosName))
             {
                 data.VariableName = "this." + variableOwningNosName + "." + data.VariableName;
             }

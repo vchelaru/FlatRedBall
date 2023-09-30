@@ -32,6 +32,11 @@ namespace FlatRedBall.Glue.SaveClasses
     {
         public string GlueFileName { get; set; }
         public string GameProjectFileName { get; set; }
+
+        public override string ToString()
+        {
+            return $"{GameProjectFileName} ({GlueFileName})";
+        }
     }
 
     #endregion

@@ -183,7 +183,7 @@ namespace GlueFormsCore.Controls
                 }
             });
 
-            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = "FlatRedBall");
+            GlueCommands.Self.DoOnUiThread(() => MainGlueWindow.Self.Text = Localization.Texts.FrbEditor);
             ProjectManager.WantsToCloseProject = false;
             TaskManager.Self.RecordTaskHistory($"--Ending Close Project Command --");
 

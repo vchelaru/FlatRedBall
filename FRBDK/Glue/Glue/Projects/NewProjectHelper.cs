@@ -44,6 +44,12 @@ public static class NewProjectHelper
             commandLineArguments += " emptyprojects";
         }
 
+        var hasDefaultRepositories = (bool)PluginManager.CallPluginMethod("FRB Source", "HasFrbAndGumReposInDefaultLocation");
+        if(hasDefaultRepositories)
+        {
+            commandLineArguments += " showsourcecheckbox";
+        }
+
         //Process process = Process.Start(processStartInfo);
 
         //return process;
@@ -93,6 +99,11 @@ public static class NewProjectHelper
                 if(viewModel.IsAddGitIgnoreChecked)
                 {
                     PluginManager.CallPluginMethod("Git Plugin", "AddGitIgnore");
+                }
+
+                if(viewModel.IsIncludeSourceEffectivelyChecked)
+                {
+                    await PluginManager.CallPluginMethodAsync("FRB Source", "AddFrbSourceToDefaultLocation");
                 }
 
                 // open the project

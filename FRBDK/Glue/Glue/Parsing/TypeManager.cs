@@ -788,6 +788,7 @@ namespace FlatRedBall.Glue.Parsing
             {
                 case "string":
                 case "String":
+                case "System.String":
                 case "string?":
                 case "String?":
                 case "Nullable<string>":

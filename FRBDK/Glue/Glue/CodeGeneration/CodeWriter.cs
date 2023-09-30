@@ -483,6 +483,25 @@ namespace FlatRedBallAddOns.Entities
             {
                 whatToInheritFrom = "FlatRedBall.Screens.Screen";
             }
+
+            List<string> inheritanceList = new List<string>();
+            foreach (ElementComponentCodeGenerator eccg in CodeWriter.CodeGenerators)
+            {
+                eccg.AddInheritedTypesToList(inheritanceList, element);
+            }
+
+            foreach (string inheritance in inheritanceList)
+            {
+                if (string.IsNullOrEmpty(whatToInheritFrom))
+                {
+                    whatToInheritFrom = inheritance;
+                }
+                else
+                {
+                    whatToInheritFrom += ", " + inheritance;
+                }
+            }
+
         }
 
         return whatToInheritFrom;
@@ -797,7 +816,8 @@ namespace FlatRedBallAddOns.Entities
         NamedObjectSaveCodeGenerator.ReusableEntireFileRfses = ReusableEntireFileRfses;
     }
 
-    
+    #region Initialize
+
     internal static ICodeBlock GenerateInitialize(GlueElement saveObject, ICodeBlock codeBlock)
     {
         TaskManager.Self.WarnIfNotInTask();
@@ -914,6 +934,12 @@ namespace FlatRedBallAddOns.Entities
 
         InheritanceCodeWriter.Self.WriteBaseInitialize(saveObject, codeBlock);
 
+        if(saveObject is ScreenSave && GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.ScreenIsINameable)
+        {
+            var name = saveObject.GetStrippedName();
+            codeBlock.Line($"this.Name = \"{name}\";");
+        }
+
         // This needs to happen after calling WriteBaseInitialize so that the derived overwrites the base
         if (saveObject is ScreenSave)
         {
@@ -962,6 +988,8 @@ namespace FlatRedBallAddOns.Entities
 
         return codeBlock;
     }
+
+    #endregion
 
     public static bool IsOnOwnLayer(IElement element)
     {
@@ -1537,7 +1565,14 @@ namespace FlatRedBallAddOns.Entities
 
                 if (ati != null)
                 {
-                    currentBlock.Line(ati.DestroyMethod + ";");
+                    if(ati.DestroyFunc != null)
+                    {
+                        currentBlock.Line(ati.DestroyFunc(saveObject, null, null));
+                    }
+                    else
+                    {
+                        currentBlock.Line(ati.DestroyMethod + ";");
+                    }
                 }
             }
             else if (!saveObject.InheritsFromElement())
@@ -2649,6 +2684,10 @@ namespace FlatRedBallAddOns.Entities
                     if (asEntitySave.CreatedByOtherEntities && !string.IsNullOrEmpty(ati.RecycledDestroyMethod))
                     {
                         currentBlock.Line(ati.RecycledDestroyMethod + ";");
+                    }
+                    else if(ati.DestroyFunc != null)
+                    {
+                        currentBlock.Line(ati.DestroyFunc(saveObject, null, null));
                     }
                     else
                     {
