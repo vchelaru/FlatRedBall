@@ -439,8 +439,6 @@ public static class RightClickHelper
 {
     #region Fields/Properties
 
-    static GeneralToolStripMenuItem addScreenToolStripMenuItem;
-
     static GeneralToolStripMenuItem addFileToolStripMenuItem;
     static GeneralToolStripMenuItem newFileToolStripMenuItem;
     static GeneralToolStripMenuItem existingFileToolStripMenuItem;
@@ -507,8 +505,39 @@ public static class RightClickHelper
     #region Images
 
     static System.Windows.Controls.Image BookmarkImage;
+    static System.Windows.Controls.Image ScreenImage;
     static System.Windows.Controls.Image DerivedEntity;
     static System.Windows.Controls.Image CollisionRelationshipImage;
+
+    static bool HasCreatedImages = false;
+    private static void CreateImages()
+    {
+        if (!HasCreatedImages)
+        {
+
+            BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
+            ScreenImage = MakeImage("/Content/Icons/icon_screen.png");
+            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
+            CollisionRelationshipImage = MakeImage("/Content/Icons/icon_collisions.png");
+
+
+            HasCreatedImages = true;
+        }
+        System.Windows.Controls.Image MakeImage(string sourceName)
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
+            bitmapImage.EndInit();
+
+            return new System.Windows.Controls.Image()
+            {
+                Source = bitmapImage
+            };
+        }
+
+    }
+
 
     #endregion
 
@@ -707,8 +736,7 @@ public static class RightClickHelper
         #region IsRootScreenNode
         else if (targetNode.IsRootScreenNode())
         {
-            AddItem(addScreenToolStripMenuItem);
-
+            Add(L.Texts.ScreenAdd, GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog, image:ScreenImage);
             Add(L.Texts.ScreenImport, () => ImportElementClick(targetNode));
 
         }
@@ -1002,33 +1030,6 @@ public static class RightClickHelper
         GlueState.Self.CurrentNamedObjectSave = newNamedObject;
     }
 
-    static bool HasCreatedImages = false;
-    private static void CreateImages()
-    {
-        if(!HasCreatedImages)
-        {
-                
-            BookmarkImage = MakeImage("/Content/Icons/StarFilled.png");
-            DerivedEntity = MakeImage("/Content/Icons/icon_entity_derived.png");
-            CollisionRelationshipImage= MakeImage("/Content/Icons/icon_collisions.png");
-
-
-            HasCreatedImages = true;
-        }
-        System.Windows.Controls.Image MakeImage(string sourceName)
-        {
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.UriSource = new Uri(sourceName, UriKind.Relative);
-            bitmapImage.EndInit();
-
-            return new System.Windows.Controls.Image()
-            {
-                Source = bitmapImage
-            };
-        }
-
-    }
 
     private static void HandleOpen(ITreeNode targetNode)
     {
@@ -1135,9 +1136,6 @@ public static class RightClickHelper
 
     public static void Initialize()
     {
-        addScreenToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.ScreenAdd);
-        addScreenToolStripMenuItem.Click += (not, used) => GlueCommands.Self.DialogCommands.ShowAddNewScreenDialog();
-
         setAsStartUpScreenToolStripMenuItem = new GeneralToolStripMenuItem(L.Texts.SetAsStartupScreen);
         setAsStartUpScreenToolStripMenuItem.Click += (not, used) =>
         {
