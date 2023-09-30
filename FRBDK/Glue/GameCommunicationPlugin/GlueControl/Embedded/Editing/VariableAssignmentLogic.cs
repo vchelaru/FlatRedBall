@@ -1293,6 +1293,13 @@ namespace GlueControl.Editing
                             {
                                 // try unqualified first:
                                 convertedValue = GetFileFromUnqualifiedName(variableValue);
+
+                                if (convertedValue == null && variableValue.Contains(".") == false)
+                                {
+                                    // This is an unqualified name, without any suffix. We need to try to find an RFS and qualify it:
+                                    variableValue = TryQualifyFromRfs(variableValue);
+                                }
+
                                 if (convertedValue == null)
                                 {
                                     convertedValue = FlatRedBallServices.Load<FlatRedBall.Graphics.Animation.AnimationChainList>(
