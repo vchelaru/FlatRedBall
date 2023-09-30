@@ -829,8 +829,6 @@ namespace FlatRedBall.Glue.SaveClasses
             //AttachToContainer = true;
             AddToManagers = true;
 
-            FulfillsRequirement = "<NONE>";
-
             ContainedObjects = new List<NamedObjectSave>();
 
             // Sept 25, 2020
