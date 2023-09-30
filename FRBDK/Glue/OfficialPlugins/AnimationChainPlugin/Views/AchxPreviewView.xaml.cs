@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -207,34 +209,76 @@ namespace OfficialPlugins.ContentPreview.Views
         private void RefreshAnimation()
         {
             var texture = MainAnimationSprite.Texture;
+            
+            _currentAnimationChain = null;
+            _currentAnimationFrame = -1;
+            _animationTimer.Stop();
+
             if (texture != null && ViewModel != null)
             {
                 if (ViewModel.SelectedAnimationFrame != null)
                 {
-                    MainAnimationSprite.Width = ViewModel.SelectedAnimationFrame.RightCoordinate - ViewModel.SelectedAnimationFrame.LeftCoordinate;
-                    MainAnimationSprite.Height = ViewModel.SelectedAnimationFrame.BottomCoordinate - ViewModel.SelectedAnimationFrame.TopCoordinate;
-
+                    var frame = ViewModel.SelectedAnimationFrame;
+                    MainAnimationSprite.Width = 100;
+                    MainAnimationSprite.Height = 100;
                     MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                    MainAnimationSprite.TextureLeft = (int)ViewModel.SelectedAnimationFrame.LeftCoordinate;
-                    MainAnimationSprite.TextureTop = (int)ViewModel.SelectedAnimationFrame.TopCoordinate;
-                    MainAnimationSprite.TextureWidth = 10;
-                    MainAnimationSprite.TextureHeight = 10;
+                    MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+                    MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+                    MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+                    MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
                     MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
                     MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                    MainAnimationSprite.TextureWidthScale = 10;
-                    MainAnimationSprite.TextureHeightScale = 10;
 
                     MainAnimationSprite.Visible = true;
                     FocusAnimation();
                 }
-                //else if (ViewModel.SelectedAnimationChain != null)
-                //{
-                //}
+                else if (ViewModel.SelectedAnimationChain != null)
+                {
+                    _currentAnimationChain = ViewModel.SelectedAnimationChain;
+
+                    RunAnimation();
+                }
                 else //if(ViewModel.SelectedAnimationChain == null)
                 {
                     MainAnimationSprite.Visible = false;
                 }
             }
+        }
+
+        private int _currentAnimationFrame = 0;
+        private AnimationChainViewModel _currentAnimationChain = null;
+        private System.Timers.Timer _animationTimer = new System.Timers.Timer();
+        private void RunAnimation()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (_currentAnimationChain == null)
+                {
+                    _animationTimer.Stop();
+                }
+
+                _currentAnimationFrame++;
+
+                if (_currentAnimationFrame >= _currentAnimationChain.VisibleChildren.Count())
+                    _currentAnimationFrame = 0;
+
+                var frame = _currentAnimationChain.VisibleChildren[_currentAnimationFrame];
+                MainAnimationSprite.Width = 100;
+                MainAnimationSprite.Height = 100;
+                MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+                MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+                MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+                MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+                MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+
+                MainAnimationSprite.Visible = true;
+                FocusAnimation();
+
+                _animationTimer.Interval = frame.LengthInSeconds * 1000;
+                _animationTimer.Start();
+            });
         }
 
         private void CreatePolygonFor(AnimationFrameSave frame)
@@ -338,6 +382,8 @@ namespace OfficialPlugins.ContentPreview.Views
             // do this after creating the background so that it can be passed here:
             CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
             CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
+
+            _animationTimer.Elapsed += (sender, args) => RunAnimation();
         }
 
 
