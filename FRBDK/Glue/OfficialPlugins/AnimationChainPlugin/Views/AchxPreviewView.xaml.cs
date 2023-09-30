@@ -212,7 +212,8 @@ namespace OfficialPlugins.ContentPreview.Views
             
             _currentAnimationChain = null;
             _currentAnimationFrame = -1;
-            _animationTimer.Stop();
+            _lastFrameTime = DateTime.MinValue;
+            _currentFrameTime = 0;
 
             if (texture != null && ViewModel != null)
             {
@@ -234,9 +235,26 @@ namespace OfficialPlugins.ContentPreview.Views
                 }
                 else if (ViewModel.SelectedAnimationChain != null)
                 {
-                    _currentAnimationChain = ViewModel.SelectedAnimationChain;
+                    if (ViewModel.SelectedAnimationChain.VisibleChildren.Count > 0)
+                    {
+                        _currentAnimationChain = ViewModel.SelectedAnimationChain;
 
-                    RunAnimation();
+                        var frame = _currentAnimationChain.VisibleChildren[0];
+                        MainAnimationSprite.Width = 100;
+                        MainAnimationSprite.Height = 100;
+                        MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+                        MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+                        MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+                        MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+                        MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+                        MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                        MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+
+                        MainAnimationSprite.Visible = true;
+                        FocusAnimation();
+
+                        RunAnimation();
+                    }
                 }
                 else //if(ViewModel.SelectedAnimationChain == null)
                 {
@@ -245,24 +263,36 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
+        private object _animationLock = new object();
         private int _currentAnimationFrame = 0;
         private AnimationChainViewModel _currentAnimationChain = null;
+        private DateTime _lastFrameTime = DateTime.MinValue;
+        private float _currentFrameTime = 0;
         private System.Timers.Timer _animationTimer = new System.Timers.Timer();
         private void RunAnimation()
         {
-            Dispatcher.Invoke(() =>
+            AnimationFrameViewModel frame;
+            lock (_animationLock)
             {
                 if (_currentAnimationChain == null)
-                {
-                    _animationTimer.Stop();
-                }
+                    return;
+
+                if ((DateTime.Now - _lastFrameTime).TotalMilliseconds < _currentFrameTime)
+                    return;
 
                 _currentAnimationFrame++;
 
                 if (_currentAnimationFrame >= _currentAnimationChain.VisibleChildren.Count())
                     _currentAnimationFrame = 0;
 
-                var frame = _currentAnimationChain.VisibleChildren[_currentAnimationFrame];
+                frame = _currentAnimationChain.VisibleChildren[_currentAnimationFrame];
+
+                _lastFrameTime = DateTime.Now;
+                _currentFrameTime = frame.LengthInSeconds * 1000;
+            }
+
+            Dispatcher.Invoke(() =>
+            {
                 MainAnimationSprite.Width = 100;
                 MainAnimationSprite.Height = 100;
                 MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
@@ -274,10 +304,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
 
                 MainAnimationSprite.Visible = true;
-                FocusAnimation();
-
-                _animationTimer.Interval = frame.LengthInSeconds * 1000;
-                _animationTimer.Start();
+                CameraLogicAnimation.RefreshCameraZoomToViewModel();
             });
         }
 
@@ -384,6 +411,8 @@ namespace OfficialPlugins.ContentPreview.Views
             CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
 
             _animationTimer.Elapsed += (sender, args) => RunAnimation();
+            _animationTimer.Interval = 1;
+            _animationTimer.Start();
         }
 
 
