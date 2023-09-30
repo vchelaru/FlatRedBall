@@ -1265,8 +1265,19 @@ namespace GlueControl.Editing
                         {
                             if (!string.IsNullOrWhiteSpace(variableValue))
                             {
-                                convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
-                                    variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                convertedValue = GetFileFromUnqualifiedName(variableValue);
+
+                                if(convertedValue == null && variableValue.Contains(".") == false)
+                                {
+                                    // This is an unqualified name, without any suffix. We need to try to find an RFS and qualify it:
+                                    variableValue = TryQualifyFromRfs(variableValue);
+                                }
+
+                                if (convertedValue == null)
+                                {
+                                    convertedValue = FlatRedBallServices.Load<Microsoft.Xna.Framework.Graphics.Texture2D>(
+                                        variableValue, FlatRedBall.Screens.ScreenManager.CurrentScreen.ContentManagerName);
+                                }
                             }
                             else
                             {
@@ -1340,6 +1351,21 @@ namespace GlueControl.Editing
             return convertedValue;
         }
 
+        private static string TryQualifyFromRfs(string variableValue)
+        {
+            var currentScreen = GlueControl.Managers.GlueState.Self.CurrentElement as GlueControl.Models.ScreenSave;
+
+            var rfs = currentScreen.GetReferencedFileSaveRecursively(variableValue);
+
+            if (rfs != null)
+            {
+                // todo - do we care about content pipeline? Technically yes, this could be used, but
+                // content pipeline tends to be avoided in general, and FNA will completely remove its use,
+                // so Vic believes this is low priority.
+                variableValue = "content/" + rfs.Name;
+            }
+            return variableValue;
+        }
 
         private static object TryGetStateValue(string type, string variableValue)
         {
