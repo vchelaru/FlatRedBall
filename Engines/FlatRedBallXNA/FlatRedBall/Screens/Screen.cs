@@ -33,7 +33,7 @@ namespace FlatRedBall.Screens
     /// <summary>
     /// Base class for screens typically defined through Glue.
     /// </summary>
-    public class Screen : IInstructable
+    public class Screen : INameable, IInstructable
     {
         #region Fields
 
@@ -220,7 +220,7 @@ namespace FlatRedBall.Screens
             internal set;
         }
 
-
+        public string Name { get; set; }
 
         #endregion
 

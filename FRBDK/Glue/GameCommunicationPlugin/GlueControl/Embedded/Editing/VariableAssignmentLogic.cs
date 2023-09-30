@@ -390,11 +390,20 @@ namespace GlueControl.Editing
             {
                 switch (variableName)
                 {
-                    case ("LayerOn"):
+                    case (nameof(NamedObjectSave.LayerOn)):
                         targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
                         if (targetInstance != null)
                         {
                             didAttemptToAssign = TryMoveInstanceToLayer(targetInstance, variableValue as string, screen);
+                        }
+
+                        break;
+                    case (nameof(NamedObjectSave.AttachToContainer)):
+                        var targetAsPositionedObject = (targetInstance ?? screen.GetInstanceRecursive(variableName)) as PositionedObject;
+                        var variableAsBool = variableValue as bool?;
+                        if (targetAsPositionedObject != null && variableAsBool != null)
+                        {
+                            didAttemptToAssign = TrySetAttachToContainer(targetAsPositionedObject, variableAsBool.Value, screen);
                         }
 
                         break;
@@ -433,6 +442,11 @@ namespace GlueControl.Editing
 
                 didAttemptToAssign = true;
             }
+        }
+
+        private static bool TrySetAttachToContainer(PositionedObject targetInstance, bool? v, FlatRedBall.Screens.Screen screen)
+        {
+            return true;
         }
 
         private static bool TryMoveInstanceToLayer(INameable targetInstance, string layerName, FlatRedBall.Screens.Screen screen)
@@ -503,7 +517,12 @@ namespace GlueControl.Editing
                 targetInstance = GetRuntimeInstanceRecursively(screen, middleVarsAsString);
             }
 
-            if (targetInstance != null && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
+            if (splitVariable[0] == "this" && splitVariable.Length == 2)
+            {
+                targetInstance = screen as FlatRedBall.Utilities.INameable;
+            }
+
+            if (targetInstance != null && splitVariable.Length > 2 && splitVariable[2] == "Points" && variableValue is List<Microsoft.Xna.Framework.Vector2> vectorList)
             {
                 variableValue = vectorList.Select(item => new FlatRedBall.Math.Geometry.Point(item.X, item.Y)).ToList();
             }

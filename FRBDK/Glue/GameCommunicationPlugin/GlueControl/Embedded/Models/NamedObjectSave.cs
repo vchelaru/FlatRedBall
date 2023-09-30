@@ -235,6 +235,18 @@ namespace GlueControl.Models
             get; set;
         }
 
+        public bool AttachToContainer
+        {
+            get;
+            set;
+        }
+
+        public bool AttachToCamera
+        {
+            get;
+            set;
+        }
+
         public bool IncludeInIVisible
         {
             get;
@@ -270,6 +282,11 @@ namespace GlueControl.Models
         {
             get => Properties.GetValue<bool>(nameof(IsEditingLocked));
             set => Properties.SetValue(nameof(IsEditingLocked), value);
+        }
+
+        public string LayerOn
+        {
+            get; set;
         }
 
         string mSourceName;
