@@ -1,4 +1,5 @@
 ﻿using EditorObjects.Parsing;
+using ExCSS;
 using FlatRedBall.Glue.CodeGeneration;
 using FlatRedBall.Glue.Controls;
 using FlatRedBall.Glue.Elements;
@@ -10,6 +11,7 @@ using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.SetVariable;
 using FlatRedBall.Glue.StandardTypes;
 using FlatRedBall.Glue.ViewModels;
 using FlatRedBall.IO;
@@ -91,6 +93,10 @@ public class DragDropManager : Singleton<DragDropManager>
         }
     }
 
+    #endregion
+
+    #region ... on other Named Object
+
     private async Task<bool> DragDropNosOnNos(ITreeNode treeNodeMoving, ITreeNode targetNode, NamedObjectSave targetNos, NamedObjectSave movingNos, bool succeeded)
     {
         var targetAti = targetNos.GetAssetTypeInfo();
@@ -98,7 +104,6 @@ public class DragDropManager : Singleton<DragDropManager>
 
         bool canBeMovedInList = false;
         bool canBeCollidable = false;
-
 
         var element = ObjectFinder.Self.GetElementContaining(targetNos);
 
@@ -120,10 +125,15 @@ public class DragDropManager : Singleton<DragDropManager>
                 ObjectFinder.Self.GetElementContaining(targetNos))
             {
                 succeeded = true;
+                var layerBefore = movingNos.LayerOn;
                 movingNos.LayerOn = targetNos.InstanceName;
                 MainGlueWindow.Self.PropertyGrid.Refresh();
 
                 GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element);
+
+                EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
+                    nameof(movingNos.LayerOn), layerBefore, nameof(movingNos.LayerOn), null);
+
                 GlueState.Self.CurrentNamedObjectSave = movingNos;
             }
         }

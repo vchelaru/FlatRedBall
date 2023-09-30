@@ -149,7 +149,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                             Output.Print(exception);
                         }
 
-                        _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                        {
+                            _refreshManager.CreateStopAndRestartTask($"Unhandled variable changed");
+                        }
                     }
                 }
                 catch
@@ -258,9 +261,13 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = property.Value;
             }
-            else if(changedMember == "IncludeInICollidable")
+            else if(changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerOn))
+            {
+                currentValue = nos.LayerOn;
             }
 
             if(isState && currentValue?.ToString() == "<NONE>")

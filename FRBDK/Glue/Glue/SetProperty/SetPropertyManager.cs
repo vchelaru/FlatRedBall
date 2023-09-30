@@ -52,7 +52,7 @@ namespace FlatRedBall.Glue.SetVariable
         /// <param name="variableName">The variable name as defined in Glue (no spaces)</param>
         /// <param name="parentGridItemName">The parent PropertyGridItem, usually null unless the value being changed is a component of a larger property grid.</param>
         public async void ReactToPropertyChanged(string variableNameAsDisplayed, object oldValue, 
-            string variableName, string parentGridItemName)
+            string variableName, string parentGridItemName = null)
         {
             var mPropertyGrid = MainGlueWindow.Self.PropertyGrid;
 
@@ -139,7 +139,7 @@ namespace FlatRedBall.Glue.SetVariable
 
             #region Global content container node
 
-            else if (GlueState.Self.CurrentTreeNode.Root.IsGlobalContentContainerNode())
+            else if (GlueState.Self.CurrentTreeNode?.Root.IsGlobalContentContainerNode() == true)
             {
                 Container.Get<GlobalContentSetVariableLogic>().ReactToGlobalContentChangedValue(
                     variableNameAsDisplayed, oldValue, ref updateTreeView);

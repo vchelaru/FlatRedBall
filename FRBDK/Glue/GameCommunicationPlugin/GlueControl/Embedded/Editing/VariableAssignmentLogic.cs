@@ -384,6 +384,26 @@ namespace GlueControl.Editing
 
             #endregion
 
+            #region NOS Properties 
+
+            if (!didAttemptToAssign)
+            {
+                switch (variableName)
+                {
+                    case ("LayerOn"):
+                        targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
+                        if (targetInstance != null)
+                        {
+                            didAttemptToAssign = TryMoveInstanceToLayer(targetInstance, variableValue as string, screen);
+                        }
+
+                        break;
+
+                }
+            }
+
+            #endregion
+
             if (!didAttemptToAssign)
             {
                 targetInstance = targetInstance ?? screen.GetInstanceRecursive(variableName) as INameable;
@@ -412,6 +432,36 @@ namespace GlueControl.Editing
                 }
 
                 didAttemptToAssign = true;
+            }
+        }
+
+        private static bool TryMoveInstanceToLayer(INameable targetInstance, string layerName, FlatRedBall.Screens.Screen screen)
+        {
+            var layer = SpriteManager.Layers.FirstOrDefault(item => item.Name == layerName);
+
+            if (targetInstance is FlatRedBall.Sprite targetSprite)
+            {
+                if (layer == null)
+                {
+                    // remove this sprite from all layers
+                    foreach (var existingLayer in SpriteManager.Layers)
+                    {
+                        if (existingLayer.Sprites.Contains(targetSprite))
+                        {
+                            existingLayer.Remove(targetSprite);
+                        }
+                    }
+                }
+                else
+                {
+                    SpriteManager.AddToLayer(targetSprite, layer);
+                }
+                return true;
+            }
+            else
+            {
+                // todo - need to do more work here to support other types
+                return false;
             }
         }
 

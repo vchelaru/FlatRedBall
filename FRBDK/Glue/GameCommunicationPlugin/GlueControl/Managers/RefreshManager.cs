@@ -485,7 +485,10 @@ namespace GameCommunicationPlugin.GlueControl.Managers
                 }
                 else
                 {
-                    CreateStopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                    if(GlueViewSettingsViewModel.RestartOnFailedCommands)
+                    {
+                        CreateStopAndRestartTask($"Restarting because of added object {newNamedObject}");
+                    }
                 }
             }
         }
@@ -801,14 +804,15 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             //if (ViewModel.IsRunning && ViewModel.IsEditChecked)
             // https://github.com/vchelaru/FlatRedBall/issues/1181
             if (ViewModel.IsRunning)
-                {
+            {
                 await VariableSendingManager.HandleNamedObjectVariableListChanged(variableList, assignOrRecordOnly);
             }
         }
 
         internal async void HandleNamedObjectVariableOrPropertyChanged(string variableName, object oldValue, NamedObjectSave nos, AssignOrRecordOnly assignOrRecordOnly)
         {
-            if (ViewModel.IsRunning && ViewModel.IsEditChecked)
+            // see above on why we don't check if edit is checked
+            if (ViewModel.IsRunning)
             {
                 await VariableSendingManager.HandleNamedObjectVariableChanged(variableName, oldValue, nos, assignOrRecordOnly);
             }

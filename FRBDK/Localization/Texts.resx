@@ -2772,4 +2772,7 @@
   <data name="RightClick_Add_Collision_Relationship" xml:space="preserve">
     <value>Add Collision Relationship</value>
   </data>
+  <data name="RestartOnFailedCommands" xml:space="preserve">
+    <value>Restart on failed commands</value>
+  </data>
 </root>

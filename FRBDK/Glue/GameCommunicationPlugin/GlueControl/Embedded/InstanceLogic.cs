@@ -209,20 +209,15 @@ namespace GlueControl
                             newPositionedObject = circle;
                         }
                         break;
-                    case "FlatRedBall.Math.Geometry.Polygon":
-                    case "Polygon":
+                    case "FlatRedBall.Graphics.Layer":
+                    case "Layer":
                         {
-                            var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                            var layer = new Layer();
                             if (deserialized.AddToManagers)
                             {
-                                ShapeManager.AddPolygon(polygon);
-                                ShapesAddedAtRuntime.Add(polygon);
+                                SpriteManager.AddLayer(layer);
                             }
-                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
-                            {
-                                asCollidable.Collision.Add(polygon);
-                            }
-                            newPositionedObject = polygon;
+                            newObject = layer;
                         }
                         break;
                     case "FlatRedBall.Math.Geometry.Line":
@@ -240,6 +235,22 @@ namespace GlueControl
                             //    asCollidable.Collision.Add(polygon);
                             //}
                             newPositionedObject = line;
+                        }
+                        break;
+                    case "FlatRedBall.Math.Geometry.Polygon":
+                    case "Polygon":
+                        {
+                            var polygon = new FlatRedBall.Math.Geometry.Polygon();
+                            if (deserialized.AddToManagers)
+                            {
+                                ShapeManager.AddPolygon(polygon);
+                                ShapesAddedAtRuntime.Add(polygon);
+                            }
+                            if (owner is ICollidable asCollidable && deserialized.IncludeInICollidable)
+                            {
+                                asCollidable.Collision.Add(polygon);
+                            }
+                            newPositionedObject = polygon;
                         }
                         break;
                     case "FlatRedBall.Sprite":

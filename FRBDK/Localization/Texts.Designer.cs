@@ -6424,6 +6424,15 @@ namespace Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Restart on failed commands.
+        /// </summary>
+        public static string RestartOnFailedCommands {
+            get {
+                return ResourceManager.GetString("RestartOnFailedCommands", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Restart screen on level content change.
         /// </summary>
         public static string RestartScreenOnLevelContentChange {
