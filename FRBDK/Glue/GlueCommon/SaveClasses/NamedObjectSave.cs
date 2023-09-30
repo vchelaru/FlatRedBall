@@ -381,7 +381,7 @@ namespace FlatRedBall.Glue.SaveClasses
         // value for this. The constructor is called whenever XML deserialization occurs. After
         // this value was set to true, deserialization would add properties, and "true" would be
         // in the XML file too, causing a duplicate entry.
-        // The moreal is - if the starting default for a value does not match the default for the type,
+        // The moral is - if the starting default for a value does not match the default for the type,
         // then the property should use get;set; instead of the properties.
         public bool GenerateTimedEmit
         {
@@ -420,14 +420,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
         [CategoryAttribute("Interface"), DefaultValue(true)]
         public bool IncludeInIClickable
-        {
-            get;
-            set;
-        }
-
-        // Behaviors are on their way out - do we need this anymore?
-        [DefaultValue("<NONE>")]
-        public string FulfillsRequirement
         {
             get;
             set;

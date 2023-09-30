@@ -261,16 +261,75 @@ namespace GameCommunicationPlugin.GlueControl.Managers
             {
                 currentValue = property.Value;
             }
-            else if(changedMember == nameof(NamedObjectSave.IncludeInICollidable))
+
+            #region NOS Properties
+
+            else if(changedMember == nameof(NamedObjectSave.AttachToContainer))
+            {
+                currentValue = nos.AttachToContainer;
+            }
+            else if (changedMember == nameof(NamedObjectSave.AttachToCamera))
+            {
+                currentValue = nos.AttachToCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.Instantiate))
+            {
+                currentValue = nos.InstanceName;
+            }
+            else if(changedMember == nameof(NamedObjectSave.AddToManagers))
+            {
+                currentValue = nos.AddToManagers;
+            }
+            else if(changedMember == nameof(NamedObjectSave.RemoveFromManagersWhenInvisible))
+            {
+                currentValue = nos.RemoveFromManagersWhenInvisible;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IncludeInIVisible))
+            {
+                currentValue = nos.IncludeInIVisible;
+            }
+            else if (changedMember == nameof(NamedObjectSave.IncludeInICollidable))
             {
                 currentValue = nos.IncludeInICollidable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IncludeInIClickable))
+            {
+                currentValue = nos.IncludeInIClickable;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IsDisabled))
+            {
+                currentValue = nos.IsDisabled;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IgnoresPausing))
+            {
+                currentValue = nos.IgnoresPausing;
+            }
+            else if(changedMember == nameof(NamedObjectSave.CallActivity))
+            {
+                currentValue = nos.CallActivity;
             }
             else if(changedMember == nameof(NamedObjectSave.LayerOn))
             {
                 currentValue = nos.LayerOn;
             }
+            else if(changedMember == nameof(NamedObjectSave.IsZBuffered))
+            {
+                currentValue = nos.IsZBuffered;
+            }
+            else if(changedMember == nameof(NamedObjectSave.IndependentOfCamera))
+            {
+                currentValue = nos.IndependentOfCamera;
+            }
+            else if(changedMember == nameof(NamedObjectSave.LayerCoordinateUnit))
+            {
+                currentValue = nos.LayerCoordinateUnit;
+            }
 
-            if(isState && currentValue?.ToString() == "<NONE>")
+
+
+            #endregion
+
+            if (isState && currentValue?.ToString() == "<NONE>")
             {
                 currentValue = null;
             }
