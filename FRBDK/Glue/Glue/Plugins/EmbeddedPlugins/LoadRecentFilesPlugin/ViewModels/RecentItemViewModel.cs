@@ -28,6 +28,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.ViewMod
             set => Set(value);
         }
 
+        public event Action RemoveClicked;
+
+        public void HandleRemoveClicked() => RemoveClicked?.Invoke();
+
         [DependsOn(nameof(IsFavorite))]
         public BitmapImage FavoriteImage
         {

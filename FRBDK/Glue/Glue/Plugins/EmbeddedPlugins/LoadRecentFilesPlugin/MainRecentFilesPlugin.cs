@@ -91,6 +91,7 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                         FullPath = recentFile.FileName,
                         IsFavorite = recentFile.IsFavorite
                     };
+                    vm.RemoveClicked += () => HandleRemovedRecentFile(vm, viewModel);
                     viewModel.AllItems.Add(vm);
 
                 }
@@ -126,6 +127,25 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin
                 GlueCommands.Self.GluxCommands.SaveSettings();
             }
 
+        }
+
+        private void HandleRemovedRecentFile(RecentItemViewModel vm, LoadRecentViewModel mainViewModel)
+        {
+            if(GlueState.Self.GlueSettingsSave == null)
+            {
+                return;
+            }
+
+            var fullPath = vm.FullPath;
+            var countRemoved = GlueState.Self.GlueSettingsSave.RecentFileList.RemoveAll(item => item.FileName == fullPath);
+
+            mainViewModel.AllItems.Remove(vm);
+            mainViewModel.RefreshFilteredItems();
+
+            if (countRemoved > 0)
+            {
+                GlueCommands.Self.GluxCommands.SaveSettings();
+            }
         }
 
         private void HandleGluxLoaded()

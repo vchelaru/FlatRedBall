@@ -9,5 +9,7 @@
         <Image Source="{Binding FavoriteImage}" Height="16" PreviewMouseLeftButtonDown="Image_PreviewMouseLeftButtonDown" />
         <TextBlock FontWeight="Bold" Text="{Binding StrippedName, FallbackValue=ProjectName}" />
         <TextBlock Margin="10,0,0,0" FontSize="10" VerticalAlignment="Bottom" Text="{Binding FullPath, FallbackValue=c:Whatever}" />
+        <!--Vic couldn't get this to work correctly so we'll just rely on the DEL key-->
+        <!--<Button Click="CloseButton_Click" Height="16" HorizontalContentAlignment="Center">X</Button>-->
     </StackPanel>
 </UserControl>

@@ -21,5 +21,10 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
             ViewModel.IsFavorite = !ViewModel.IsFavorite;
             e.Handled = true;
         }
+
+        private void CloseButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ViewModel.HandleRemoveClicked();
+        }
     }
 }

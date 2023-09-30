@@ -70,5 +70,18 @@ namespace FlatRedBall.Glue.Plugins.EmbeddedPlugins.LoadRecentFilesPlugin.Views
         {
             DialogResult = false;
         }
+
+        private void ListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Delete)
+            {
+                var selectedItem = ViewModel.SelectedItem;
+
+                if(selectedItem != null)
+                {
+                    selectedItem.HandleRemoveClicked();
+                }
+            }
+        }
     }
 }
