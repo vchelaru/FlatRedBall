@@ -62,6 +62,7 @@ namespace OfficialPlugins.ContentPreview.Views
         SpriteRuntime MainSprite;
         SpriteRuntime MainAnimationSprite;
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
+        List<SkiaShapeRuntime> AnimationShapes = new List<SkiaShapeRuntime>();
 
         SolidRectangleRuntime GumBackground { get; set; }
         SolidRectangleRuntime GumAnimationBackground { get; set; }
@@ -188,6 +189,10 @@ namespace OfficialPlugins.ContentPreview.Views
                 {
                     CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
                 }
+                else if(ViewModel.SelectedShape != null)
+                {
+                    //Do Nothing
+                }
                 else //if(ViewModel.SelectedAnimationChain == null)
                 {
                     foreach (var animationVm in ViewModel.VisibleRoot)
@@ -215,11 +220,17 @@ namespace OfficialPlugins.ContentPreview.Views
             _lastFrameTime = DateTime.MinValue;
             _currentFrameTime = 0;
 
+            foreach(var shape in AnimationShapes)
+            {
+                GumCanvasAnimation.Children.Remove(shape);
+            }
+            AnimationShapes.Clear();
+
             if (texture != null && ViewModel != null)
             {
-                if (ViewModel.SelectedAnimationFrame != null)
+                if (ViewModel.SelectedAnimationFrame != null || ViewModel.SelectedShape != null)
                 {
-                    var frame = ViewModel.SelectedAnimationFrame;
+                    var frame = ViewModel.SelectedAnimationFrame ?? ViewModel.SelectedShape.Parent;
                     MainAnimationSprite.Width = 100;
                     MainAnimationSprite.Height = 100;
                     MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
@@ -231,6 +242,22 @@ namespace OfficialPlugins.ContentPreview.Views
                     MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
 
                     MainAnimationSprite.Visible = true;
+
+                    List<ShapeViewModel> shapes;
+                    if(ViewModel.SelectedShape != null)
+                    {
+                        shapes = new List<ShapeViewModel>()
+                        {
+                            ViewModel.SelectedShape
+                        };
+                    }
+                    else
+                    {
+                        shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
+                    }
+
+                    renderShapes(shapes);
+
                     FocusAnimation();
                 }
                 else if (ViewModel.SelectedAnimationChain != null)
@@ -238,20 +265,6 @@ namespace OfficialPlugins.ContentPreview.Views
                     if (ViewModel.SelectedAnimationChain.VisibleChildren.Count > 0)
                     {
                         _currentAnimationChain = ViewModel.SelectedAnimationChain;
-
-                        var frame = _currentAnimationChain.VisibleChildren[0];
-                        MainAnimationSprite.Width = 100;
-                        MainAnimationSprite.Height = 100;
-                        MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
-                        MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
-                        MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
-                        MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
-                        MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
-                        MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-                        MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
-
-                        MainAnimationSprite.Visible = true;
-                        FocusAnimation();
 
                         RunAnimation();
                     }
@@ -263,12 +276,71 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
+        private void renderShapes(List<ShapeViewModel> shapes)
+        {
+            foreach (var shape in AnimationShapes)
+            {
+                GumCanvasAnimation.Children.Remove(shape);
+            }
+            AnimationShapes.Clear();
+
+            foreach (var loopShape in shapes)
+            {
+                if (loopShape is RectangleViewModel)
+                {
+                    var shape = (RectangleViewModel)loopShape;
+
+                    var outline = new PolygonRuntime();
+                    outline.Color = SKColors.White;
+
+                    var verticalCenter = shape.Height / 2.0f;
+
+                    var left = shape.X;
+                    var top = verticalCenter + (verticalCenter - shape.Y) + shape.Height / 2.0f;
+                    var right = shape.X + shape.Width;
+                    var bottom = verticalCenter + (verticalCenter - shape.Y) - shape.Height / 2.0f;
+
+                    outline.IsFilled = false;
+                    outline.Points = new List<SKPoint>
+                            {
+                                new SKPoint(left, top),
+                                new SKPoint(right, top),
+                                new SKPoint(right, bottom),
+                                new SKPoint(left, bottom),
+                                new SKPoint(left, top),
+                            };
+
+                    AnimationShapes.Add(outline);
+                    GumCanvasAnimation.Children.Add(outline);
+                }
+
+                if (loopShape is CircleViewModel)
+                {
+                    var shape = (CircleViewModel)loopShape;
+
+                    var outline = new ColoredCircleRuntime();
+                    outline.Color = SKColors.White;
+
+                    outline.X = shape.X;
+                    outline.Y = shape.Y - shape.Radius;
+                    outline.Width = shape.Radius * 2;
+                    outline.Height = shape.Radius * 2;
+
+                    outline.IsFilled = false;
+
+                    AnimationShapes.Add(outline);
+                    GumCanvasAnimation.Children.Add(outline);
+                }
+            }
+        }
+
         private object _animationLock = new object();
         private int _currentAnimationFrame = 0;
         private AnimationChainViewModel _currentAnimationChain = null;
         private DateTime _lastFrameTime = DateTime.MinValue;
         private float _currentFrameTime = 0;
         private System.Timers.Timer _animationTimer = new System.Timers.Timer();
+        private bool _isFirstTime = false;
         private void RunAnimation()
         {
             AnimationFrameViewModel frame;
@@ -279,6 +351,8 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 if ((DateTime.Now - _lastFrameTime).TotalMilliseconds < _currentFrameTime)
                     return;
+
+                _isFirstTime = _currentAnimationFrame < 0;
 
                 _currentAnimationFrame++;
 
@@ -304,6 +378,12 @@ namespace OfficialPlugins.ContentPreview.Views
                 MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
 
                 MainAnimationSprite.Visible = true;
+
+                if (_isFirstTime)
+                    FocusAnimation();
+
+                renderShapes(frame.VisibleChildren.ToList());
+
                 CameraLogicAnimation.RefreshCameraZoomToViewModel();
             });
         }

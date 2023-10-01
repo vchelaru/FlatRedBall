@@ -90,6 +90,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         public AnimationFrameViewModel SelectedAnimationFrame => 
             SelectedItem as AnimationFrameViewModel;
 
+        [DependsOn(nameof(SelectedItem))]
+        public ShapeViewModel SelectedShape =>
+            SelectedItem as ShapeViewModel;
+
         public AchxViewModel()
         {
             CurrentZoomPercent = 100;

@@ -2,6 +2,7 @@
 using FlatRedBall.Glue.MVVM;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,6 +53,9 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
+        public ObservableCollection<ShapeViewModel> VisibleChildren { get; set; } =
+            new ObservableCollection<ShapeViewModel>();
+
         int ResolutionWidth;
         int ResolutionHeight;
 
@@ -64,7 +68,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             Parent = parent;
             LengthInSeconds = animationFrame.FrameLength;
 
-            if(!string.IsNullOrEmpty(animationFrame.TextureName))
+            if (!string.IsNullOrEmpty(animationFrame.TextureName))
             {
                 StrippedTextureName = FileManager.RemovePath(FileManager.RemoveExtension(animationFrame.TextureName));
             }
@@ -81,7 +85,19 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             ResolutionWidth = resolutionWidth;
             ResolutionHeight = resolutionHeight;
 
+            foreach(var rect in animationFrame.ShapeCollectionSave?.AxisAlignedRectangleSaves)
+            {
+                var shape = new RectangleViewModel();
+                shape.SetFrom(this, rect);
+                VisibleChildren.Add(shape);
+            }
 
+            foreach(var circ in animationFrame.ShapeCollectionSave?.CircleSaves)
+            {
+                var shape = new CircleViewModel();
+                shape.SetFrom(this, circ);
+                VisibleChildren.Add(shape);
+            }
         }
     }
 }
