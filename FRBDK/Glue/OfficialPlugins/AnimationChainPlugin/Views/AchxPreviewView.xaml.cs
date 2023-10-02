@@ -256,7 +256,7 @@ namespace OfficialPlugins.ContentPreview.Views
                         shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
                     }
 
-                    renderShapes(shapes);
+                    RenderShapes(shapes);
 
                     FocusAnimation();
                 }
@@ -276,7 +276,7 @@ namespace OfficialPlugins.ContentPreview.Views
             }
         }
 
-        private void renderShapes(List<ShapeViewModel> shapes)
+        private void RenderShapes(List<ShapeViewModel> shapes)
         {
             foreach (var shape in AnimationShapes)
             {
@@ -382,7 +382,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 if (_isFirstTime)
                     FocusAnimation();
 
-                renderShapes(frame.VisibleChildren.ToList());
+                RenderShapes(frame.VisibleChildren.ToList());
 
                 CameraLogicAnimation.RefreshCameraZoomToViewModel();
             });

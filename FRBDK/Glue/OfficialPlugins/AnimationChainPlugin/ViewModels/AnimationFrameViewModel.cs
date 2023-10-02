@@ -12,6 +12,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
     internal class AnimationFrameViewModel : ViewModel
     {
+        AnimationFrameViewModel()
+        {
+            VisibleChildren = new ObservableCollection<ShapeViewModel>();
+        }
+
         public AnimationFrameSave BackingModel { get; set; }
         public AnimationChainViewModel Parent { get; private set; }
         public float LengthInSeconds
@@ -53,8 +58,11 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             set => Set(value);
         }
 
-        public ObservableCollection<ShapeViewModel> VisibleChildren { get; set; } =
-            new ObservableCollection<ShapeViewModel>();
+        public ObservableCollection<ShapeViewModel> VisibleChildren
+        {
+            get => Get<ObservableCollection<ShapeViewModel>>();
+            set => Set(value);
+        }
 
         int ResolutionWidth;
         int ResolutionHeight;
@@ -85,19 +93,23 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             ResolutionWidth = resolutionWidth;
             ResolutionHeight = resolutionHeight;
 
-            foreach(var rect in animationFrame.ShapeCollectionSave?.AxisAlignedRectangleSaves)
-            {
-                var shape = new RectangleViewModel();
-                shape.SetFrom(this, rect);
-                VisibleChildren.Add(shape);
-            }
+            var rectangles = animationFrame.ShapeCollectionSave?.AxisAlignedRectangleSaves;
+            if (rectangles != null)
+                foreach (var rect in rectangles)
+                {
+                    var shape = new RectangleViewModel();
+                    shape.SetFrom(this, rect);
+                    VisibleChildren.Add(shape);
+                }
 
-            foreach(var circ in animationFrame.ShapeCollectionSave?.CircleSaves)
-            {
-                var shape = new CircleViewModel();
-                shape.SetFrom(this, circ);
-                VisibleChildren.Add(shape);
-            }
+            var circles = animationFrame.ShapeCollectionSave?.CircleSaves;
+            if (circles != null)
+                foreach (var circ in animationFrame.ShapeCollectionSave?.CircleSaves)
+                {
+                    var shape = new CircleViewModel();
+                    shape.SetFrom(this, circ);
+                    VisibleChildren.Add(shape);
+                }
         }
     }
 }
