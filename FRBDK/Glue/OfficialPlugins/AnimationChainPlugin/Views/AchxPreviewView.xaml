@@ -47,11 +47,13 @@
             </ScrollViewer>
         </Grid>
 
-        <GridSplitter Width="5" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
+        <GridSplitter Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" Grid.Column="1"></GridSplitter>
 
 
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
@@ -60,7 +62,19 @@
                     MouseMove="GumCanvas_MouseMove"
                     MouseWheel="GumCanvas_MouseWheel"
                                ></wpf1:GumSKElement>
-            <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <GridSplitter Grid.Row="1"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Center"
+                          Background="Black"
+                          ShowsPreview="True"
+                          Height="2"
+                          />
+            <wpf1:GumSKElement x:Name="GumCanvasAnimation" Grid.Row="2"
+                    MouseDown="GumAnimationCanvas_MouseDown"
+                    MouseMove="GumAnimationCanvas_MouseMove"
+                    MouseWheel="GumAnimationCanvas_MouseWheel"
+                           ></wpf1:GumSKElement>
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
                 <Label Content="{Binding ResolutionDisplay, FallbackValue=300x500}" ></Label>
             </StackPanel>
         </Grid>

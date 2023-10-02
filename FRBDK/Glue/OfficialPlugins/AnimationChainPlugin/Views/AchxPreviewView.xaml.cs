@@ -4,12 +4,15 @@ using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
 using OfficialPlugins.SpritePlugin.Managers;
 using PropertyTools.Wpf;
+using RenderingLibrary;
 using SkiaGum.GueDeriving;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -35,6 +38,7 @@ namespace OfficialPlugins.ContentPreview.Views
                 if (value != textureFilePath)
                 {
                     ForceRefreshMainSpriteTexture(value);
+                    ForceRefreshMainAnimationSpriteTexture(value);
                 }
             }
         }
@@ -56,11 +60,15 @@ namespace OfficialPlugins.ContentPreview.Views
         public SKBitmap Texture => MainSprite?.Texture;
 
         SpriteRuntime MainSprite;
+        SpriteRuntime MainAnimationSprite;
         List<PolygonRuntime> Outlines = new List<PolygonRuntime>();
+        List<SkiaShapeRuntime> AnimationShapes = new List<SkiaShapeRuntime>();
 
         SolidRectangleRuntime GumBackground { get; set; }
+        SolidRectangleRuntime GumAnimationBackground { get; set; }
 
         CameraLogic CameraLogic;
+        CameraLogic CameraLogicAnimation;
 
         #endregion
 
@@ -87,8 +95,10 @@ namespace OfficialPlugins.ContentPreview.Views
             if(e.PropertyName == nameof(ViewModel.SelectedAnimationChain))
             {
                 RefreshOutlines();
+                RefreshAnimation();
 
                 GumCanvas.InvalidateVisual();
+                GumCanvasAnimation.InvalidateVisual();
             }
         }
 
@@ -156,6 +166,7 @@ namespace OfficialPlugins.ContentPreview.Views
                     var textureAbsolute = value.GetDirectoryContainingThis() + textureName;
 
                     ForceRefreshMainSpriteTexture(textureAbsolute);
+                    ForceRefreshMainAnimationSpriteTexture(textureAbsolute);
                 }
             }
         }
@@ -178,6 +189,10 @@ namespace OfficialPlugins.ContentPreview.Views
                 {
                     CreatePolygonsFor(ViewModel.SelectedAnimationChain.BackingModel);
                 }
+                else if(ViewModel.SelectedShape != null)
+                {
+                    //Do Nothing
+                }
                 else //if(ViewModel.SelectedAnimationChain == null)
                 {
                     foreach (var animationVm in ViewModel.VisibleRoot)
@@ -194,6 +209,183 @@ namespace OfficialPlugins.ContentPreview.Views
                     CreatePolygonFor(frame);
                 }
             }
+        }
+
+        private void RefreshAnimation()
+        {
+            var texture = MainAnimationSprite.Texture;
+            
+            _currentAnimationChain = null;
+            _currentAnimationFrame = -1;
+            _lastFrameTime = DateTime.MinValue;
+            _currentFrameTime = 0;
+
+            foreach(var shape in AnimationShapes)
+            {
+                GumCanvasAnimation.Children.Remove(shape);
+            }
+            AnimationShapes.Clear();
+
+            if (texture != null && ViewModel != null)
+            {
+                if (ViewModel.SelectedAnimationFrame != null || ViewModel.SelectedShape != null)
+                {
+                    var frame = ViewModel.SelectedAnimationFrame ?? ViewModel.SelectedShape.Parent;
+                    MainAnimationSprite.Width = 100;
+                    MainAnimationSprite.Height = 100;
+                    MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+                    MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+                    MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+                    MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+                    MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+                    MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                    MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+
+                    MainAnimationSprite.Visible = true;
+
+                    List<ShapeViewModel> shapes;
+                    if(ViewModel.SelectedShape != null)
+                    {
+                        shapes = new List<ShapeViewModel>()
+                        {
+                            ViewModel.SelectedShape
+                        };
+                    }
+                    else
+                    {
+                        shapes = ViewModel.SelectedAnimationFrame.VisibleChildren.ToList();
+                    }
+
+                    RenderShapes(shapes);
+
+                    FocusAnimation();
+                }
+                else if (ViewModel.SelectedAnimationChain != null)
+                {
+                    if (ViewModel.SelectedAnimationChain.VisibleChildren.Count > 0)
+                    {
+                        _currentAnimationChain = ViewModel.SelectedAnimationChain;
+
+                        RunAnimation();
+                    }
+                }
+                else //if(ViewModel.SelectedAnimationChain == null)
+                {
+                    MainAnimationSprite.Visible = false;
+                }
+            }
+        }
+
+        private void RenderShapes(List<ShapeViewModel> shapes)
+        {
+            foreach (var shape in AnimationShapes)
+            {
+                GumCanvasAnimation.Children.Remove(shape);
+            }
+            AnimationShapes.Clear();
+
+            foreach (var loopShape in shapes)
+            {
+                if (loopShape is RectangleViewModel)
+                {
+                    var shape = (RectangleViewModel)loopShape;
+
+                    var outline = new PolygonRuntime();
+                    outline.Color = SKColors.White;
+
+                    var verticalCenter = shape.Height / 2.0f;
+
+                    var left = shape.X;
+                    var top = verticalCenter + (verticalCenter - shape.Y) + shape.Height / 2.0f;
+                    var right = shape.X + shape.Width;
+                    var bottom = verticalCenter + (verticalCenter - shape.Y) - shape.Height / 2.0f;
+
+                    outline.IsFilled = false;
+                    outline.Points = new List<SKPoint>
+                            {
+                                new SKPoint(left, top),
+                                new SKPoint(right, top),
+                                new SKPoint(right, bottom),
+                                new SKPoint(left, bottom),
+                                new SKPoint(left, top),
+                            };
+
+                    AnimationShapes.Add(outline);
+                    GumCanvasAnimation.Children.Add(outline);
+                }
+
+                if (loopShape is CircleViewModel)
+                {
+                    var shape = (CircleViewModel)loopShape;
+
+                    var outline = new ColoredCircleRuntime();
+                    outline.Color = SKColors.White;
+
+                    outline.X = shape.X;
+                    outline.Y = shape.Y - shape.Radius;
+                    outline.Width = shape.Radius * 2;
+                    outline.Height = shape.Radius * 2;
+
+                    outline.IsFilled = false;
+
+                    AnimationShapes.Add(outline);
+                    GumCanvasAnimation.Children.Add(outline);
+                }
+            }
+        }
+
+        private object _animationLock = new object();
+        private int _currentAnimationFrame = 0;
+        private AnimationChainViewModel _currentAnimationChain = null;
+        private DateTime _lastFrameTime = DateTime.MinValue;
+        private float _currentFrameTime = 0;
+        private System.Timers.Timer _animationTimer = new System.Timers.Timer();
+        private bool _isFirstTime = false;
+        private void RunAnimation()
+        {
+            AnimationFrameViewModel frame;
+            lock (_animationLock)
+            {
+                if (_currentAnimationChain == null)
+                    return;
+
+                if ((DateTime.Now - _lastFrameTime).TotalMilliseconds < _currentFrameTime)
+                    return;
+
+                _isFirstTime = _currentAnimationFrame < 0;
+
+                _currentAnimationFrame++;
+
+                if (_currentAnimationFrame >= _currentAnimationChain.VisibleChildren.Count())
+                    _currentAnimationFrame = 0;
+
+                frame = _currentAnimationChain.VisibleChildren[_currentAnimationFrame];
+
+                _lastFrameTime = DateTime.Now;
+                _currentFrameTime = frame.LengthInSeconds * 1000;
+            }
+
+            Dispatcher.Invoke(() =>
+            {
+                MainAnimationSprite.Width = 100;
+                MainAnimationSprite.Height = 100;
+                MainAnimationSprite.TextureAddress = Gum.Managers.TextureAddress.Custom;
+                MainAnimationSprite.TextureLeft = (int)frame.LeftCoordinate;
+                MainAnimationSprite.TextureTop = (int)frame.TopCoordinate;
+                MainAnimationSprite.TextureWidth = FlatRedBall.Math.MathFunctions.RoundToInt(frame.RightCoordinate - frame.LeftCoordinate);
+                MainAnimationSprite.TextureHeight = FlatRedBall.Math.MathFunctions.RoundToInt(frame.BottomCoordinate - frame.TopCoordinate);
+                MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+                MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+
+                MainAnimationSprite.Visible = true;
+
+                if (_isFirstTime)
+                    FocusAnimation();
+
+                RenderShapes(frame.VisibleChildren.ToList());
+
+                CameraLogicAnimation.RefreshCameraZoomToViewModel();
+            });
         }
 
         private void CreatePolygonFor(AnimationFrameSave frame)
@@ -253,21 +445,54 @@ namespace OfficialPlugins.ContentPreview.Views
             textureFilePath = value;
         }
 
+        public void ForceRefreshMainAnimationSpriteTexture(FilePath value)
+        {
+            if (value == null || value.Exists() == false)
+            {
+                MainAnimationSprite.Texture = null;
+                GumCanvasAnimation.InvalidateVisual();
+            }
+            else
+            {
+                try
+                {
+                    using (var stream = System.IO.File.OpenRead(value.FullPath))
+                    {
+                        // cache?
+                        MainAnimationSprite.Texture = SKBitmap.Decode(stream);
+                        GumCanvasAnimation.InvalidateVisual();
+
+                    }
+                }
+                catch
+                {
+                    // do we do anything?
+                }
+            }
+
+            textureFilePath = value;
+        }
+
         private void HandleLoaded(object sender, RoutedEventArgs e)
         {
             FillSpriteToView();
         }
 
-        public void Initialize(CameraLogic cameraLogic)
+        public void Initialize(CameraLogic cameraLogic, CameraLogic cameraLogicAnimation)
         {
             this.CameraLogic = cameraLogic;
+            this.CameraLogicAnimation = cameraLogicAnimation;
 
             CreateBackground();
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
             CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
+            CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
 
+            _animationTimer.Elapsed += (sender, args) => RunAnimation();
+            _animationTimer.Interval = 1;
+            _animationTimer.Start();
         }
 
 
@@ -279,6 +504,14 @@ namespace OfficialPlugins.ContentPreview.Views
             MainSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
             MainSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
             this.GumCanvas.Children.Add(MainSprite);
+
+            MainAnimationSprite = new SpriteRuntime();
+            MainAnimationSprite.Visible = false;
+            MainAnimationSprite.Width = 100;
+            MainAnimationSprite.Height = 100;
+            MainAnimationSprite.WidthUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            MainAnimationSprite.HeightUnits = Gum.DataTypes.DimensionUnitType.PercentageOfSourceFile;
+            this.GumCanvasAnimation.Children.Add(MainAnimationSprite);
         }
 
         private void GumCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -303,6 +536,28 @@ namespace OfficialPlugins.ContentPreview.Views
             CameraLogic.HandleMouseWheel(e);
         }
 
+        private void GumAnimationCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            CameraLogicAnimation.HandleMousePush(e);
+            //MouseEditingLogic.HandleMousePush(e);
+
+            // This allows the canvas to receive focus:
+            // Source: https://social.msdn.microsoft.com/Forums/vstudio/en-US/ed6caee6-2cae-4db8-a2df-eafad44dbe37/mouse-focus-versus-keyboard-focus?forum=wpf#:~:text=In%20WPF%2C%20some%20elements%20will%20get%20keyboard%20focus,trick%3A%20userControl.MouseLeftButtonDown%20%2B%3D%20delegate%20%7B%20userControl.Focusable%20%3D%20true%3B
+            GumCanvasAnimation.Focusable = true;
+            IInputElement element = Keyboard.Focus(GumCanvasAnimation);
+        }
+
+        private void GumAnimationCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            CameraLogicAnimation.HandleMouseMove(e);
+            //MouseEditingLogic.HandleMouseMove(e);
+        }
+
+        private void GumAnimationCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            CameraLogicAnimation.HandleMouseWheel(e);
+        }
+
         private void CreateBackground()
         {
             GumBackground = new SolidRectangleRuntime();
@@ -312,6 +567,14 @@ namespace OfficialPlugins.ContentPreview.Views
             GumBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
             GumBackground.Height = 100;
             this.GumCanvas.Children.Add(GumBackground);
+
+            GumAnimationBackground = new SolidRectangleRuntime();
+            GumAnimationBackground.Color = new SKColor(68, 34, 136);
+            GumAnimationBackground.WidthUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumAnimationBackground.Width = 100;
+            GumAnimationBackground.HeightUnits = Gum.DataTypes.DimensionUnitType.RelativeToContainer;
+            GumAnimationBackground.Height = 100;
+            this.GumCanvasAnimation.Children.Add(GumAnimationBackground);
         }
 
         internal void ResetCamera()
@@ -345,6 +608,27 @@ namespace OfficialPlugins.ContentPreview.Views
 
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        private void FillAnimationSpriteToView()
+        {
+            if (MainAnimationSprite.Texture == null || GumCanvasAnimation.ActualWidth == 0 || GumCanvasAnimation.ActualHeight == 0)
+            {
+                ViewModel.CurrentAnimationZoomPercent = 100;
+            }
+            else
+            {
+                var zoomToFitWidth = GumCanvasAnimation.ActualWidth / MainAnimationSprite.Texture.Width;
+                var zoomToFitHeight = GumCanvasAnimation.ActualHeight / MainAnimationSprite.Texture.Height;
+
+                var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
+
+                ViewModel.CurrentAnimationZoomPercent = (float)minZoom * 100;
+            }
+
+
+
+            CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
 
         internal void ShowInPropertyGrid(AnimationChainViewModel selectedAnimationChain)
@@ -404,6 +688,24 @@ namespace OfficialPlugins.ContentPreview.Views
             camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
 
             CameraLogic.RefreshCameraZoomToViewModel();
+        }
+
+        private void FocusAnimation()
+        {
+            var centerX = (MainAnimationSprite.GetAbsoluteLeft() + MainAnimationSprite.GetAbsoluteRight()) / 2.0f;
+            var centerY = (MainAnimationSprite.GetAbsoluteTop() + MainAnimationSprite.GetAbsoluteBottom()) / 2.0f;
+
+            var camera = GumCanvasAnimation.SystemManagers.Renderer.Camera;
+
+            //// If already zoomed in, stay zoomed in...
+            if (ViewModel.CurrentZoomPercent < 100)
+            {
+                ViewModel.CurrentZoomPercent = 100;
+            }
+            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+
+            CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
 
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)

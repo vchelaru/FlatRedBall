@@ -42,7 +42,7 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 ViewModel = new AchxViewModel();
                 ViewModel.PropertyChanged += HandleViewModelPropertyChanged;
                 View.DataContext = ViewModel;
-                View.Initialize(new SpritePlugin.Managers.CameraLogic());
+                View.Initialize(new SpritePlugin.Managers.CameraLogic(), new SpritePlugin.Managers.CameraLogic());
             }
         }
 
@@ -54,11 +54,17 @@ namespace OfficialPlugins.AnimationChainPlugin.Managers
                 case nameof(ViewModel.SelectedAnimationFrame):
                     if(ViewModel.SelectedAnimationFrame != null)
                     {
+                        View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
                         View.ShowInPropertyGrid(ViewModel.SelectedAnimationFrame);
-
+                    }
+                    else if(ViewModel.SelectedShape != null)
+                    {
+                        //Show Shape Properties
+                        View.PropertyGrid.Visibility = System.Windows.Visibility.Hidden;
                     }
                     else
                     {
+                        View.PropertyGrid.Visibility = System.Windows.Visibility.Visible;
                         View.ShowInPropertyGrid(ViewModel.SelectedAnimationChain);
                     }
                     break;
