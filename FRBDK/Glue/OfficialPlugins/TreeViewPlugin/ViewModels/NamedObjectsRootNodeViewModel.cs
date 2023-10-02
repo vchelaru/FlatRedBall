@@ -312,6 +312,10 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             {
                 imageSource = TileShapeCollectionIcon;
             }
+            else if(namedObject.DefinedByBase)
+            {
+                imageSource = EntityInstanceDerivedIcon;
+            }
 
             return imageSource;
         }

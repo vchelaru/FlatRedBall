@@ -446,7 +446,9 @@ namespace GlueControl.Editing
 
         private static bool TrySetAttachToContainer(PositionedObject targetInstance, bool? v, FlatRedBall.Screens.Screen screen)
         {
-            return true;
+            // This is complicated - we need to get the instance (named object save), find its container type, and get the instance for that in case this re-runs at the screen
+            // level. That's a huuuuge lift, and this happens so rarely, we may just explicitly return false and log why this is happening for now...
+            return false;
         }
 
         private static bool TryMoveInstanceToLayer(INameable targetInstance, string layerName, FlatRedBall.Screens.Screen screen)

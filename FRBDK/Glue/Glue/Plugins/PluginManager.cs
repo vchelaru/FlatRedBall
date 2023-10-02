@@ -2226,6 +2226,11 @@ namespace FlatRedBall.Glue.Plugins
                 plugin => plugin.ReactToGlueJsonLoad(json),
                 plugin => plugin.ReactToGlueJsonLoad != null);
 
+        public static Task ReactToObjectReordered(object reorderedObject, int oldIndex, int newIndex) =>
+            CallMethodOnPluginAsync(
+                plugin => plugin.ReactToObjectReordered(reorderedObject, oldIndex, newIndex),
+                plugin => plugin.ReactToObjectReordered != null);
+
         #endregion
 
         internal static bool TryHandleException(Exception exception)

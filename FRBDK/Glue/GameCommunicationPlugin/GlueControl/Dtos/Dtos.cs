@@ -108,6 +108,19 @@ namespace GameCommunicationPlugin.GlueControl.Dtos
 
     #endregion
 
+    #region ObjectReorderedDto
+
+    // could eventually add variables and states if we care, but 
+    // this isn't important for now.
+    class NamedObjectReorderedDto : UpdateCurrentElementDto
+    {
+        public string NamedObjectName { get; set; }
+        public int OldIndex { get; set; }
+        public int NewIndex { get; set; }
+    }
+
+    #endregion
+
     #region GoToDefinitionDto
 
     class GoToDefinitionDto {}

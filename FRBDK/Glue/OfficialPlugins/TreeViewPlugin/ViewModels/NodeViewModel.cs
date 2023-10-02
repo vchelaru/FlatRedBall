@@ -50,6 +50,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
         public static BitmapImage EntityIcon;
         public static BitmapImage EntityDerivedIcon;
         public static BitmapImage EntityInstanceIcon;
+        public static BitmapImage EntityInstanceDerivedIcon;
         public static BitmapImage EntityInstanceIsContainerIcon;
         public static BitmapImage EntityInstanceListIcon;
         public static BitmapImage EntityInstanceListDerivedIcon;
@@ -75,6 +76,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             if (source == EntityIcon.UriSource.OriginalString) return EntityIcon;
             if (source == EntityDerivedIcon.UriSource.OriginalString) return EntityDerivedIcon;
             if (source == EntityInstanceIcon.UriSource.OriginalString) return EntityInstanceIcon;
+            if (source == EntityInstanceDerivedIcon.UriSource.OriginalString) return EntityInstanceDerivedIcon;
             if (source == EntityInstanceIsContainerIcon.UriSource.OriginalString) return EntityInstanceIsContainerIcon;
             if (source == EntityInstanceListIcon.UriSource.OriginalString) return EntityInstanceListIcon;
             if (source == EntityInstanceListDerivedIcon.UriSource.OriginalString) return EntityInstanceListDerivedIcon;
@@ -240,6 +242,7 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
             EntityIcon = LoadIcon("icon_entity");
             EntityDerivedIcon = LoadIcon("icon_entity_derived");
             EntityInstanceIcon = LoadIcon("icon_entity_instance");
+            EntityInstanceDerivedIcon = LoadIcon("icon_entity_instance_derived");
             EntityInstanceIsContainerIcon = LoadIcon("icon_entity_instance_iscontainer");
             EntityInstanceListIcon = LoadIcon("icon_entity_list");
             EntityInstanceListDerivedIcon = LoadIcon("icon_entity_list_derived");
