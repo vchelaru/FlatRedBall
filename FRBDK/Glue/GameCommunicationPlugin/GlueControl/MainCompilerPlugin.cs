@@ -200,6 +200,8 @@ namespace GameCommunicationPlugin.GlueControl
             this.ReactToTreeViewRightClickHandler += HandleTreeViewRightClick;
 
             this.ReactToSelectedSubIndexChanged += (index) => _refreshManager.ReactToSelectedSubIndexChanged(index);
+
+            this.ReactToObjectReordered += _refreshManager.HandleObjectReordered;
         }
 
         private void HandleTreeViewRightClick(ITreeNode rightClickedTreeNode, List<GeneralToolStripMenuItem> listToAddTo)

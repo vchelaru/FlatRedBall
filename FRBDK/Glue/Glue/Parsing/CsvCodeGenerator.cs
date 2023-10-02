@@ -250,7 +250,7 @@ namespace FlatRedBall.Glue
             if (succeeded)
             {
 
-                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, true, members, false, new List<string>(), untypedMembers, codeBlock);
+                ICodeBlock codeContent = CodeWriter.CreateClass(ProjectManager.ProjectNamespace + ".DataTypes", className, true, members, false, new List<string>(), untypedMembers, codeBlock);
 
 
                 if (rfs != null)

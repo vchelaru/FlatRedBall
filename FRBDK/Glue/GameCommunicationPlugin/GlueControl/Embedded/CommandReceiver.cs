@@ -275,78 +275,76 @@ namespace GlueControl
 
         #endregion
 
-        #region Set State Variable
+        #region SetEditMode
 
-        private static void HandleDto(ChangeStateVariableDto dto)
+        private static object HandleDto(SetEditMode setEditMode)
         {
-            var elementGameType = dto.ElementNameGame;
-            var categoryName = dto.CategoryName;
-            var stateSave = dto.StateSave;
-
-            ReplaceStateWithNewState(elementGameType, categoryName, stateSave);
-
-            // stop all movement in case the state assigned movement
-            foreach (var item in SpriteManager.ManagedPositionedObjects)
+            var value = setEditMode.IsInEditMode;
+#if SupportsEditMode
+            var response = new Dtos.GeneralCommandResponse
             {
-                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
-                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
-            }
-        }
+                Succeeded = true,
+            };
 
-        #endregion
 
-        #region Get Camera Position
-
-        private static object HandleDto(GetCameraPosition dto)
-        {
-            var toReturn = string.Empty;
-
-            var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
-            getCameraPositionResponse.X = Camera.Main.X;
-            getCameraPositionResponse.Y = Camera.Main.Y;
-            getCameraPositionResponse.Z = Camera.Main.Z;
-            return getCameraPositionResponse;
-        }
-
-        #endregion
-
-        #region Set Camera Position
-
-        private static void HandleDto(SetCameraPositionDto dto)
-        {
-            Camera.Main.Position = dto.Position;
-        }
-
-        #endregion
-
-        #region SetCameraSetupDto
-
-        private static void HandleDto(SetCameraSetupDto dto)
-        {
-            CameraSetup.Data = dto;
-
-            CameraSetup.ResetWindow();
-        }
-
-        #endregion
-
-        #region SetCameraAspectRatioDto
-
-        private static void HandleDto(SetCameraAspectRatioDto dto)
-        {
-            CameraSetup.Data.AspectRatio = dto.AspectRatio;
-
-            CameraSetup.ResetCamera();
-
-            if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            if (ScreenManager.CurrentScreen == null)
             {
-                CameraLogic.UpdateCameraToZoomLevel();
+                response.Succeeded = false;
+                response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
+
             }
+
+            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                CameraLogic.RecordCameraForCurrentScreen();
+
+                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
+
+                if (value)
+                {
+                    FlatRedBallServices.Game.IsMouseVisible = true;
+
+                    if(ObjectFinder.Self.GlueProject == null)
+                    {
+                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
+                    }
+
+                    // If in edit mode, polygons can get sent over from Glue
+                    // without points. We don't want to crash the game when this
+                    // happens.
+                    // Should we preserve the old value and reset it back? This adds
+                    // complexity, and I don't know if there's any benefit because this
+                    // property is usually false to catch coding errors, but code can't be
+                    // added without restarting the app, which would then reset this value back
+                    // to false. Let's keep it simple.
+                    Polygon.TolerateEmptyPolygons = true;
+#if SpriteHasTolerateMissingAnimations
+                    Sprite.TolerateMissingAnimations = true;
+#endif
+                    if(!CameraSetup.Data.AllowWindowResizing)
+                    {
+                        CameraSetup.Data.AllowWindowResizing = true;
+                        CameraSetup.ResetWindow();
+                    }
+                }
+
+                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
+
+
+                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
+
+
+            }
+
+            return response;
+#else
+            return null;
+#endif
         }
 
         #endregion
 
-        #region Select Object / State
+        #region SelectObjectDto / State
 
         static List<NamedObjectSave> GetSelectedNamedObjects(SelectObjectDto selectObjectDto)
         {
@@ -673,6 +671,88 @@ namespace GlueControl
 
         #endregion
 
+        #region ObjectReorderedDto
+
+        private static void HandleDto(NamedObjectReorderedDto dto)
+        {
+
+        }
+
+        #endregion
+
+        #region Set State Variable
+
+        private static void HandleDto(ChangeStateVariableDto dto)
+        {
+            var elementGameType = dto.ElementNameGame;
+            var categoryName = dto.CategoryName;
+            var stateSave = dto.StateSave;
+
+            ReplaceStateWithNewState(elementGameType, categoryName, stateSave);
+
+            // stop all movement in case the state assigned movement
+            foreach (var item in SpriteManager.ManagedPositionedObjects)
+            {
+                item.Velocity = Microsoft.Xna.Framework.Vector3.Zero;
+                item.Acceleration = Microsoft.Xna.Framework.Vector3.Zero;
+            }
+        }
+
+        #endregion
+
+        #region Get Camera Position
+
+        private static object HandleDto(GetCameraPosition dto)
+        {
+            var toReturn = string.Empty;
+
+            var getCameraPositionResponse = new GlueControl.Dtos.GetCameraPositionResponse();
+            getCameraPositionResponse.X = Camera.Main.X;
+            getCameraPositionResponse.Y = Camera.Main.Y;
+            getCameraPositionResponse.Z = Camera.Main.Z;
+            return getCameraPositionResponse;
+        }
+
+        #endregion
+
+        #region Set Camera Position
+
+        private static void HandleDto(SetCameraPositionDto dto)
+        {
+            Camera.Main.Position = dto.Position;
+        }
+
+        #endregion
+
+        #region SetCameraSetupDto
+
+        private static void HandleDto(SetCameraSetupDto dto)
+        {
+            CameraSetup.Data = dto;
+
+            CameraSetup.ResetWindow();
+        }
+
+        #endregion
+
+        #region SetCameraAspectRatioDto
+
+        private static void HandleDto(SetCameraAspectRatioDto dto)
+        {
+            CameraSetup.Data.AspectRatio = dto.AspectRatio;
+
+            CameraSetup.ResetCamera();
+
+            if (FlatRedBall.Screens.ScreenManager.IsInEditMode)
+            {
+                CameraLogic.UpdateCameraToZoomLevel();
+            }
+        }
+
+        #endregion
+
+
+
         #region ChangeZoomDto
 
         private static void HandleDto(ChangeZoomDto changeZoomDto)
@@ -913,74 +993,6 @@ namespace GlueControl
 
         #endregion
 
-        #region EditMode vs Play
-
-        private static object HandleDto(SetEditMode setEditMode)
-        {
-            var value = setEditMode.IsInEditMode;
-#if SupportsEditMode
-            var response = new Dtos.GeneralCommandResponse
-            {
-                Succeeded = true,
-            };
-
-
-            if (ScreenManager.CurrentScreen == null)
-            {
-                response.Succeeded = false;
-                response.Message = "The ScreenManager.CurrentScreen is null, so the screen cannot be restarted. Is the screen you are viewing abstract (such as GameScreen)? If so, this may be why the Screen hasn't been created.";
-
-            }
-
-            if (value != FlatRedBall.Screens.ScreenManager.IsInEditMode)
-            {
-                CameraLogic.RecordCameraForCurrentScreen();
-
-                FlatRedBall.Gui.GuiManager.Cursor.RequiresGameWindowInFocus = !value;
-
-                if (value)
-                {
-                    FlatRedBallServices.Game.IsMouseVisible = true;
-
-                    if(ObjectFinder.Self.GlueProject == null)
-                    {
-                        GlueCommands.Self.LoadProject(setEditMode.AbsoluteGlueProjectFilePath);
-                    }
-
-                    // If in edit mode, polygons can get sent over from Glue
-                    // without points. We don't want to crash the game when this
-                    // happens.
-                    // Should we preserve the old value and reset it back? This adds
-                    // complexity, and I don't know if there's any benefit because this
-                    // property is usually false to catch coding errors, but code can't be
-                    // added without restarting the app, which would then reset this value back
-                    // to false. Let's keep it simple.
-                    Polygon.TolerateEmptyPolygons = true;
-#if SpriteHasTolerateMissingAnimations
-                    Sprite.TolerateMissingAnimations = true;
-#endif
-                    if(!CameraSetup.Data.AllowWindowResizing)
-                    {
-                        CameraSetup.Data.AllowWindowResizing = true;
-                        CameraSetup.ResetWindow();
-                    }
-                }
-
-                FlatRedBall.TileEntities.TileEntityInstantiator.CreationFunction = (entityNameGameType) => InstanceLogic.Self.CreateEntity(entityNameGameType);
-
-
-                RestartScreenRerunCommands(applyRestartVariables: true, isInEditMode: value, shouldRecordCameraPosition: false, forceCameraToPreviousState: true);
-
-
-            }
-
-            return response;
-#else
-            return null;
-#endif
-        }
-
-        #endregion
 
         #region Move to Container
 

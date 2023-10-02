@@ -2275,8 +2275,7 @@ public static class RightClickHelper
                 {
                     listToRemoveFrom.Remove(objectToMove);
                     listToRemoveFrom.Insert(0, objectToMove);
-                    var variable = objectToMove as CustomVariable;
-                    PostMoveActivity(variable);
+                    PostMoveActivity(objectToMove, index, 0);
                 }
             }
         }, L.Texts.MovingToTop, TaskExecutionPreference.Asap);
@@ -2309,7 +2308,13 @@ public static class RightClickHelper
         await TaskManager.Self.AddAsync(() =>
             {
                 object objectToMove;
+                // The list that contains the object that will be removed/added to. For example,
+                // an Entity's NamedObjectSaves (top level)
                 IList listToRemoveFrom;
+                // The list that is used to determine indexing. For example, an list created with 
+                // the indexes of all CollisionRelationships. This is needed because if a CollisionRelationship
+                // is moved up or down, this may change the index of the CollisionRelationship in the NamedObjectSaves
+                // by more than 1 index.
                 IList listForIndexing;
                 GetObjectAndListForMoving(out objectToMove, out listToRemoveFrom, out listForIndexing);
                 if (listToRemoveFrom != null)
@@ -2334,8 +2339,7 @@ public static class RightClickHelper
                             listToRemoveFrom.Remove(objectToMove);
 
                             listToRemoveFrom.Insert(newIndex, objectToMove);
-                            var variable = objectToMove as CustomVariable;
-                            PostMoveActivity(variable);
+                            PostMoveActivity(objectToMove, index, newIndex);
                         }
                     }
                 }
@@ -2367,14 +2371,21 @@ public static class RightClickHelper
                 if (index < listToRemoveFrom.Count - 1)
                 {
                     listToRemoveFrom.Remove(objectToMove);
-                    listToRemoveFrom.Insert(listToRemoveFrom.Count, objectToMove);
-                    var variable = objectToMove as CustomVariable;
-                    PostMoveActivity(variable);
+                    var newIndex = listToRemoveFrom.Count;
+                    listToRemoveFrom.Insert(newIndex, objectToMove);
+                    PostMoveActivity(objectToMove, index, newIndex);
                 }
             }
         }, L.Texts.MovingToBottom, TaskExecutionPreference.Asap);
     }
 
+    /// <summary>
+    /// Gets the list that contains the argument objectToMove and the list that should be used to determine the new index.
+    /// </summary>
+    /// <param name="objectToMove">The object to move, such as a Layer</param>
+    /// <param name="listToRemoveFrom">The list to remove from, such as an Entity's NamedObjectSaves.</param>
+    /// <param name="listForIndexing">A subset of the listToRemoveFrom which contains all other objects that are visible
+    /// in the tree view as siblings. For example, the CollisionRelationships in a NamedObjectSave.</param>
     private static void GetObjectAndListForMoving(out object objectToMove,
         out IList listToRemoveFrom, 
         // The list to use when adjusting index, which is needed if the object being shifted is in a list that is filtered. For example,
@@ -2434,34 +2445,34 @@ public static class RightClickHelper
     }
 
 
-    private static void PostMoveActivity(CustomVariable variableMoved)
+    private static void PostMoveActivity(object objectMoved, int oldIndex, int newIndex)
     {
         // do this before refreshing the tree nodes
-        var currentCustomVariable = GlueState.Self.CurrentCustomVariable;
-        var currentNamedObjectSave = GlueState.Self.CurrentNamedObjectSave;
-        var currentStateSave = GlueState.Self.CurrentStateSave;
-
+        var variableMoved = objectMoved as CustomVariable;
+        var namedObjectMoved = objectMoved as NamedObjectSave;
+        var stateSaveMoved = objectMoved as StateSave;
+        // Should this be the current? Or the "container" of what was moved...
         var element = GlueState.Self.CurrentElement;
 
 
         // I think the variables are complete remade. I could make it preserve them, but it's easier to do this:
-        if (currentCustomVariable != null)
+        if (variableMoved != null)
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.CustomVariables);
             //GlueState.Self.CurrentCustomVariable = null;
-            GlueState.Self.CurrentCustomVariable = currentCustomVariable;
+            GlueState.Self.CurrentCustomVariable = variableMoved;
         }
-        else if (currentNamedObjectSave != null)
+        else if (namedObjectMoved != null)
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.NamedObjects);
             //GlueState.Self.CurrentNamedObjectSave = null;
-            GlueState.Self.CurrentNamedObjectSave = currentNamedObjectSave;
+            GlueState.Self.CurrentNamedObjectSave = namedObjectMoved;
         }
-        else if (currentStateSave != null)
+        else if (stateSaveMoved != null)
         {
             GlueCommands.Self.RefreshCommands.RefreshTreeNodeFor(element, TreeNodeRefreshType.All); // todo - this could be more efficient...
 
-            GlueState.Self.CurrentStateSave = currentStateSave;
+            GlueState.Self.CurrentStateSave = stateSaveMoved;
         }
 
         GlueState.Self.CurrentElement.SortStatesToCustomVariables();

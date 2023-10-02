@@ -529,6 +529,12 @@ namespace FlatRedBall.Glue.Plugins
             return result2;
         }
 
+        /// <summary>
+        /// Raised whenever an object is reordered. The object may be a NamedObjectSave, StateSave, or CustomVariable. The integer values are
+        /// oldIndex, newIndex, respectively.
+        /// </summary>
+        public Func<object, int, int, Task> ReactToObjectReordered;
+
         #endregion
 
         public abstract void StartUp();

@@ -974,6 +974,37 @@ namespace GameCommunicationPlugin.GlueControl.Managers
         }
         #endregion
 
+        #region Object Reordered
+
+        internal async Task HandleObjectReordered(object reorderedObject, int oldIndex, int newIndex)
+        {
+            if(reorderedObject is NamedObjectSave nos)
+            {
+                var ownerElement = ObjectFinder.Self.GetElementContaining(nos);
+                if(ownerElement != null)
+                {
+                    var dto = new NamedObjectReorderedDto
+                    {
+                        NamedObjectName = nos.InstanceName, 
+                        OldIndex = oldIndex, 
+                        NewIndex = newIndex
+                    };
+
+                    if(ownerElement is ScreenSave screenSave)
+                    {
+                        dto.ScreenSave = screenSave;
+                    }
+                    else if(ownerElement is EntitySave entitySave)
+                    {
+                        dto.EntitySave = entitySave;
+                    }
+
+                    await CommandSender.Self.Send(dto);
+                }
+            }
+        }
+
+        #endregion
 
         #region Object Removed
 
