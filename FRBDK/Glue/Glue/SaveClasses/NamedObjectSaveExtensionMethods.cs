@@ -26,55 +26,7 @@ namespace FlatRedBall.Glue.SaveClasses
         /// <param name="instance">The NamedObject to update properties on.</param>
         public static void UpdateCustomProperties(this NamedObjectSave instance)
         {
-            // If the project hasn't been loaded yet, then this doesn't know what
-            // members it has from its Entity.  Therefore, we shouldn't do anything here
-            // or else we'll wipe out the set values.
-
-            if (ObjectFinder.Self.GlueProject != null)
-            {
-                UpdateTypedMembers(instance);
-
-                instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
-
-                #region Note about removing variables - why we don't do it anymore.
-                // October 3, 2011
-                // Victor Chelaru
-                // We used to remove
-                // unused variables, but
-                // now we're going to keep
-                // them.  This will allow users
-                // to switch between different source
-                // types and return without losing data.
-                // Sure, it means a tiny bit of bloat in the
-                // glux and at runtime in the ram, but I think
-                // we can live with it.
-                //List<string> keysToRemove = new List<string>();
-                //// Are there any removed members?
-                //for (int index = InstructionSaves.Count - 1; index > -1; index--)
-                //{
-                //    InstructionSave instruction = InstructionSaves[index];
-
-                //    string key = instruction.Member;
-                //    bool isKeyContained = false;
-
-                //    for (int i = 0; i < mTypedMembers.Count; i++)
-                //    {
-                //        string member = mTypedMembers[i].MemberName;
-                //        if (key == member)
-                //        {
-                //            isKeyContained = true;
-                //            break;
-                //        }
-                //    }
-
-                //    if (isKeyContained == false)
-                //    {
-                //        InstructionSaves.RemoveAt(index);
-                //    }
-                //}
-                #endregion
-
-            }
+            instance.InstructionSaves.Sort((first, second) => first.Member?.CompareTo(second.Member) ?? 0);
         }
 
         private static void UpdateTypedMembers(this NamedObjectSave instance)

@@ -79,7 +79,8 @@ namespace OfficialPlugins.VariableDisplay
                 }
             }
             else if (string.IsNullOrEmpty(variable.SourceObject) && instanceMember.PreferredDisplayer == null &&
-                variable?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variable.Type == "float")
+                (variable?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) || variable?.Name == nameof(FlatRedBall.PositionedObject.RotationY) || variable?.Name == nameof(FlatRedBall.PositionedObject.RotationX)) && 
+                variable.Type == "float")
             {
                 instanceMember.PreferredDisplayer = typeof(AngleSelectorDisplay);
             }
