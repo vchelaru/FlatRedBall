@@ -257,8 +257,6 @@ namespace OfficialPlugins.ContentPreview.Views
                     }
 
                     RenderShapes(shapes);
-
-                    FocusAnimation();
                 }
                 else if (ViewModel.SelectedAnimationChain != null)
                 {
@@ -379,9 +377,6 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 MainAnimationSprite.Visible = true;
 
-                if (_isFirstTime)
-                    FocusAnimation();
-
                 RenderShapes(frame.VisibleChildren.ToList());
 
                 CameraLogicAnimation.RefreshCameraZoomToViewModel();
@@ -487,8 +482,8 @@ namespace OfficialPlugins.ContentPreview.Views
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
-            CameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
-            CameraLogicAnimation.Initialize(this, this.GumCanvasAnimation, this.GumAnimationBackground);
+            CameraLogic.Initialize(this, (this.DataContext as AchxViewModel)?.WholeZoom, this.GumCanvas, this.GumBackground);
+            CameraLogicAnimation.Initialize(this, (this.DataContext as AchxViewModel)?.SingleZoom, this.GumCanvasAnimation, this.GumAnimationBackground);
 
             _animationTimer.Elapsed += (sender, args) => RunAnimation();
             _animationTimer.Interval = 1;
@@ -593,7 +588,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             if (MainSprite.Texture == null || GumCanvas.ActualWidth == 0 || GumCanvas.ActualHeight == 0)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = 100;
             }
             else
             {
@@ -602,7 +597,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
-                ViewModel.CurrentZoomPercent = (float)minZoom * 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = (float)minZoom * 100;
             }
 
 
@@ -614,7 +609,7 @@ namespace OfficialPlugins.ContentPreview.Views
         {
             if (MainAnimationSprite.Texture == null || GumCanvasAnimation.ActualWidth == 0 || GumCanvasAnimation.ActualHeight == 0)
             {
-                ViewModel.CurrentAnimationZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentAnimationZoomPercent = 100;
             }
             else
             {
@@ -623,7 +618,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
                 var minZoom = Math.Min(zoomToFitWidth, zoomToFitHeight);
 
-                ViewModel.CurrentAnimationZoomPercent = (float)minZoom * 100;
+                ViewModel.WholeZoom.CurrentAnimationZoomPercent = (float)minZoom * 100;
             }
 
 
@@ -654,25 +649,27 @@ namespace OfficialPlugins.ContentPreview.Views
             {
                 if(treeViewItem.DataContext is AnimationChainViewModel animationChainVm)
                 {
-                    FocusAnimation(animationChainVm.BackingModel);
+                    FocusSingleToSprite();
+                    FocusWholeToAnimation(animationChainVm.BackingModel);
                 }
                 else if(treeViewItem.DataContext is AnimationFrameViewModel animationFrameVm)
                 {
-                    FocusFrame(animationFrameVm.BackingModel);
+                    FocusSingleToSprite();
+                    FocusWholeToFrame(animationFrameVm.BackingModel);
                 }
             }
         }
 
-        private void FocusAnimation(AnimationChainSave backingModel)
+        private void FocusWholeToAnimation(AnimationChainSave backingModel)
         {
-            if(backingModel.Frames.Count > 0)
+            if (backingModel.Frames.Count > 0)
             {
                 var firstFrame = backingModel.Frames[0];
-                FocusFrame(firstFrame);
+                FocusWholeToFrame(firstFrame);
             }
         }
 
-        private void FocusFrame(AnimationFrameSave animationFrame)
+        private void FocusWholeToFrame(AnimationFrameSave animationFrame)
         {
             var centerX = (animationFrame.LeftCoordinate + animationFrame.RightCoordinate) / 2.0f;
             var centerY = (animationFrame.TopCoordinate + animationFrame.BottomCoordinate) / 2.0f;
@@ -680,17 +677,17 @@ namespace OfficialPlugins.ContentPreview.Views
             var camera = GumCanvas.SystemManagers.Renderer.Camera;
 
             // If already zoomed in, stay zoomed in...
-            if(ViewModel.CurrentZoomPercent < 100)
+            if (ViewModel.WholeZoom.CurrentZoomPercent < 100)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.WholeZoom.CurrentZoomPercent = 100;
             }
-            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
-            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
 
             CameraLogic.RefreshCameraZoomToViewModel();
         }
 
-        private void FocusAnimation()
+        private void FocusSingleToSprite()
         {
             var centerX = (MainAnimationSprite.GetAbsoluteLeft() + MainAnimationSprite.GetAbsoluteRight()) / 2.0f;
             var centerY = (MainAnimationSprite.GetAbsoluteTop() + MainAnimationSprite.GetAbsoluteBottom()) / 2.0f;
@@ -698,14 +695,32 @@ namespace OfficialPlugins.ContentPreview.Views
             var camera = GumCanvasAnimation.SystemManagers.Renderer.Camera;
 
             //// If already zoomed in, stay zoomed in...
-            if (ViewModel.CurrentZoomPercent < 100)
+            if (ViewModel.SingleZoom.CurrentZoomPercent < 100)
             {
-                ViewModel.CurrentZoomPercent = 100;
+                ViewModel.SingleZoom.CurrentZoomPercent = 100;
             }
-            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.CurrentZoomScale;
-            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.CurrentZoomScale;
+            camera.X = centerX - (GumCanvasAnimation.CanvasSize.Width / 2f) / ViewModel.SingleZoom.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvasAnimation.CanvasSize.Height / 2f) / ViewModel.SingleZoom.CurrentZoomScale;
 
             CameraLogicAnimation.RefreshCameraZoomToViewModel();
+        }
+
+        private void FocusWholeToAnimation()
+        {
+            var centerX = (MainSprite.GetAbsoluteLeft() + MainSprite.GetAbsoluteRight()) / 2.0f;
+            var centerY = (MainSprite.GetAbsoluteTop() + MainSprite.GetAbsoluteBottom()) / 2.0f;
+
+            var camera = GumCanvas.SystemManagers.Renderer.Camera;
+
+            //// If already zoomed in, stay zoomed in...
+            if (ViewModel.WholeZoom.CurrentZoomPercent < 100)
+            {
+                ViewModel.WholeZoom.CurrentZoomPercent = 100;
+            }
+            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
+            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
+
+            CameraLogic.RefreshCameraZoomToViewModel();
         }
 
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)

@@ -24,7 +24,8 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         Camera Camera => Canvas.SystemManagers.Renderer.Camera;
 
-        ICameraZoomViewModel ViewModel => View.DataContext as ICameraZoomViewModel;
+        private ICameraZoomViewModel cameraZoom;
+        ICameraZoomViewModel ViewModel => cameraZoom;
 
         GumSKElement Canvas;
 
@@ -59,10 +60,11 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
         #endregion
 
-        public void Initialize(System.Windows.Controls.UserControl view, GumSKElement canvas, BindableGraphicalUiElement background)
+        public void Initialize(System.Windows.Controls.UserControl view, ICameraZoomViewModel cameraZoomViewModel, GumSKElement canvas, BindableGraphicalUiElement background)
         {
             Canvas = canvas;
             View = view;
+            cameraZoom = cameraZoomViewModel;
             Background = background;
             Camera.X = -20;
             Camera.Y = -20;

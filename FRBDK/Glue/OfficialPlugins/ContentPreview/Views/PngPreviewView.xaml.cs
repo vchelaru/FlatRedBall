@@ -85,7 +85,7 @@ namespace OfficialPlugins.ContentPreview.Views
             CreateMainSprite();
 
             // do this after creating the background so that it can be passed here:
-            _cameraLogic.Initialize(this, this.GumCanvas, this.GumBackground);
+            _cameraLogic.Initialize(this, null, this.GumCanvas, this.GumBackground);
 
         }
 
