@@ -12,7 +12,7 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
 {
     internal class AnimationFrameViewModel : ViewModel
     {
-        AnimationFrameViewModel()
+        public AnimationFrameViewModel()
         {
             VisibleChildren = new ObservableCollection<ShapeViewModel>();
         }
