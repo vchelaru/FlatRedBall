@@ -705,24 +705,6 @@ namespace OfficialPlugins.ContentPreview.Views
             CameraLogicAnimation.RefreshCameraZoomToViewModel();
         }
 
-        private void FocusWholeToAnimation()
-        {
-            var centerX = (MainSprite.GetAbsoluteLeft() + MainSprite.GetAbsoluteRight()) / 2.0f;
-            var centerY = (MainSprite.GetAbsoluteTop() + MainSprite.GetAbsoluteBottom()) / 2.0f;
-
-            var camera = GumCanvas.SystemManagers.Renderer.Camera;
-
-            //// If already zoomed in, stay zoomed in...
-            if (ViewModel.WholeZoom.CurrentZoomPercent < 100)
-            {
-                ViewModel.WholeZoom.CurrentZoomPercent = 100;
-            }
-            camera.X = centerX - (GumCanvas.CanvasSize.Width / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
-            camera.Y = centerY - (GumCanvas.CanvasSize.Height / 2f) / ViewModel.WholeZoom.CurrentZoomScale;
-
-            CameraLogic.RefreshCameraZoomToViewModel();
-        }
-
         private TreeListBoxItem GetTreeViewItemFromOriginalSource(DependencyObject originalSource)
         {
             while (originalSource != null && !(originalSource is TreeListBoxItem) && !(originalSource is TreeView))
