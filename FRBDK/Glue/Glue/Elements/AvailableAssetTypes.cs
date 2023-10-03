@@ -303,6 +303,11 @@ namespace FlatRedBall.Glue.Elements
             return AllAssetTypes.FirstOrDefault(item => item.Extension == extension);
 		}
 
+        // Note - this method is called a LOT, and it's doing brute force searches over and over
+        // We should make dictionaries here to make this much faster.
+        // If we do this, we need to make sure we clear out items and dictionaries
+        // when ATIs are removed or when projects are unloaded. We probably need to 
+        // hide the lists and make everything go through functions to control that logic.
         public AssetTypeInfo GetAssetTypeFromRuntimeType(string runtimeType,
             object callingObject, bool? isObject = null)
         {

@@ -675,7 +675,10 @@ namespace GlueControl
 
         private static void HandleDto(NamedObjectReorderedDto dto)
         {
-            ApplyNewNamedObjects(dto);
+            if (FlatRedBall.Screens.ScreenManager.IsInEditMode && dto.GlueElement != null)
+            {
+                ObjectFinder.Self.Replace(dto.GlueElement);
+            }
 
             var element = ObjectFinder.Self.GetElement(dto.GlueElement.Name);
 

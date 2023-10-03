@@ -200,6 +200,7 @@ namespace FlatRedBallAddOns.Entities
 
     public static async Task GenerateCode(GlueElement element)
     {
+        TaskManager.Self.WarnIfNotInTask();
 
         #region Prepare for generation
 
@@ -210,7 +211,6 @@ namespace FlatRedBallAddOns.Entities
 
         // Since anything can modify an enumeration value we want to make sure that
         // it's proper before generating code for it:
-
         // If enumeration values don't work property let's just print some output and carry on
         try
         {

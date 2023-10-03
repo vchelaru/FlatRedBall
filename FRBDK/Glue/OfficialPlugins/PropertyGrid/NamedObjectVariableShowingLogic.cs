@@ -84,47 +84,23 @@ namespace OfficialPlugins.VariableDisplay
             {
                 var variableDefinition = kvp.Value;
                 var variableName = kvp.Key;
-                bool fallBackToTypedMember = false;
-                try
-                {
-                    Type type = null;
-                    if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
-                    {
-                        type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                    }
 
-                    if (type == null)
-                    {
-                        fallBackToTypedMember = true;
-                    }
-                    else
-                    {
-                        TypedMemberBase typedMember = null;
-                        typedMember = TypedMemberBase.GetTypedMember(variableName, type);
-                        var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, variableName, categories);
-                        if (instanceMember != null)
-                        {
-                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
-                            categoryToAddTo.Members.Add(instanceMember);
-                        }
-                    }
-                }
-                catch
+                // October 3, 2023
+                // We used to use the
+                // typedMember.CustomTypeName
+                // here, but that was actually never
+                // set to anything. We can just pass null
+                // and save ourselves having to use typedMember
+                //var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, variableName, categories);
+                //TypedMemberBase typedMember = null;
+                //typedMember = TypedMemberBase.GetTypedMember(variableName, type);
+                var instanceMember = CreateInstanceMember(instance, container, null, ati, variableDefinition, variableName, categories);
+                if (instanceMember != null)
                 {
-                    fallBackToTypedMember = true;
+                    var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, variableName, variableDefinition);
+                    categoryToAddTo.Members.Add(instanceMember);
                 }
 
-                if (fallBackToTypedMember)
-                {
-                    // this new code isn't working with some things like generics. Until I fix that, let's fall back:
-
-                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableName);
-
-                    if (typedMember != null)
-                    {
-                        AddForTypedMember(instance, container, categories, ati, typedMember, variableDefinition);
-                    }
-                }
             }
 
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
@@ -152,13 +128,14 @@ namespace OfficialPlugins.VariableDisplay
             else
             {
                 var instanceElement = ObjectFinder.Self.GetElement(instance);
-                for (int i = 0; i < instance.TypedMembers.Count; i++)
+
+                for (int i = 0; i < instanceElement.CustomVariables.Count; i++)
                 {
+                    var variable = instanceElement.CustomVariables[i];
                     VariableDefinition baseVariableDefinition = null;
-                    TypedMemberBase typedMember = instance.TypedMembers[i];
                     if (instanceElement != null)
                     {
-                        var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
+                        var variableInElement = instanceElement.GetCustomVariable(variable.Name);
                         var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
                         if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
                         {
@@ -216,7 +193,7 @@ namespace OfficialPlugins.VariableDisplay
 
                     if (baseVariableDefinition != null)
                     {
-                        variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
+                        variableDefinitions.Add(variable.Name, baseVariableDefinition);
                     }
                 }
             }
@@ -309,18 +286,7 @@ namespace OfficialPlugins.VariableDisplay
                             var nameOnInstance = (newMember as NamedObjectSaveVariableDataGridItem).NameOnInstance;
 
                             var variableDefinition = variableDefinitions[nameOnInstance];
-                            Type type = null;
-                            if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
-                            {
-                                type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                            }
-
-                            TypedMemberBase typedMember = null;
-                            if (type != null)
-                            {
-                                typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                            }
-                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember?.CustomTypeName, 
+                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: null, 
                                 nameOnInstance: nameOnInstance);
                             memberAsNamedObjectSaveVariableDataGridItem.DetailText = newMember.DetailText;
                         }
@@ -451,7 +417,7 @@ namespace OfficialPlugins.VariableDisplay
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, typedMember.MemberName, categories);
 
-            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
+            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember.CustomTypeName, variableDefinition);
 
             if (instanceMember != null)
             {
@@ -710,7 +676,7 @@ namespace OfficialPlugins.VariableDisplay
         }
 
         private static MemberCategory GetOrCreateCategoryToAddTo(List<MemberCategory> categories, AssetTypeInfo ati,
-            TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
+            string memberName, VariableDefinition variableDefinition = null)
         {
             // By defaut make the last category get used (this is "Variables")
             var categoryToAddTo = categories.Last();
@@ -721,7 +687,7 @@ namespace OfficialPlugins.VariableDisplay
             if (ati != null || variableDefinition != null)
             {
                 // ... see if there is avariable definition for this variable...
-                var foundVariableDefinition = variableDefinition ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                var foundVariableDefinition = variableDefinition ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
                 if (foundVariableDefinition != null)
                 {
                     //... if so, see the category that it's a part of...

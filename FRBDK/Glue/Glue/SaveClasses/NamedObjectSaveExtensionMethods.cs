@@ -681,16 +681,16 @@ namespace FlatRedBall.Glue.SaveClasses
 
             if (instruction == null)
             {
-                TypedMemberBase tmb = instance.TypedMembers.FirstOrDefault(member=>member.MemberName == variableName);
+                var variableDefinition = instance.GetAssetTypeInfo()?.VariableDefinitions.FirstOrDefault(item => item.Name == variableName);
 
-                Type type = tmb?.MemberType ?? value?.GetType();
-                var customTypeName = tmb?.CustomTypeName;
-
-                instruction = instance.AddNewGenericInstructionFor(variableName, type);
-
-                if(customTypeName != null)
+                if(variableDefinition != null)
                 {
-                    instruction.Type = tmb.CustomTypeName;
+                    instruction = instance.AddInstruction(variableName, variableDefinition.Type);
+                }
+                else
+                {
+                    var type = value?.GetType();
+                    instruction = instance.AddNewGenericInstructionFor(variableName, type);
                 }
             }
 
@@ -707,6 +707,16 @@ namespace FlatRedBall.Glue.SaveClasses
                 return entitySave.GetCustomVariableRecursively("ScaleX") != null && entitySave.GetCustomVariableRecursively("ScaleY") != null;
             }
             return false;
+        }
+
+        public static CustomVariableInNamedObject AddInstruction(this NamedObjectSave instance, string member, string type)
+        {
+            CustomVariableInNamedObject instructionSave = new CustomVariableInNamedObject();
+            instructionSave.Value = null; // make it the default
+            instructionSave.Type = TypeManager.GetCommonTypeName(type);
+            instructionSave.Member = member;
+            instance.InstructionSaves.Add(instructionSave);
+            return instructionSave;
         }
 
         public static CustomVariableInNamedObject AddNewGenericInstructionFor(this NamedObjectSave instance, string member, Type type)
