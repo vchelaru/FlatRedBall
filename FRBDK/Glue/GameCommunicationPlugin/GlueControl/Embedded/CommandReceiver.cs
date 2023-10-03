@@ -675,7 +675,51 @@ namespace GlueControl
 
         private static void HandleDto(NamedObjectReorderedDto dto)
         {
+            ApplyNewNamedObjects(dto);
 
+            var element = ObjectFinder.Self.GetElement(dto.GlueElement.Name);
+
+            NamedObjectSave nos = null;
+            if (element != null)
+            {
+                nos = element.GetNamedObjectRecursively(dto.NamedObjectName);
+            }
+
+            if (nos == null)
+            {
+                return;
+            }
+
+            if (nos.SourceType == SourceType.FlatRedBallType && nos.SourceClassType == "FlatRedBall.Graphics.Layer")
+            {
+                HandleLayerReordered(dto, nos, element);
+            }
+            //var namedObject = ObjectFinder.Self.GetNamedObjectRecursivelydto.ContainerName, dto.ObjectName);
+        }
+
+        private static void HandleLayerReordered(NamedObjectReorderedDto dto, NamedObjectSave layerMoved, GlueElement containerElement)
+        {
+            var layer = SpriteManager.Layers.FirstOrDefault(item => item.Name == dto.NamedObjectName);
+
+            if (layer == null)
+            {
+                return;
+            }
+
+            var allLayerNamedObjects = containerElement.AllNamedObjects
+                .Where(item => item.SourceType == SourceType.FlatRedBallType && item.SourceClassType == "FlatRedBall.Graphics.Layer")
+                .ToList();
+
+
+            var newIndex = allLayerNamedObjects.IndexOf(layerMoved);
+
+#if SpriteManagerHasInsertLayer
+            if (SpriteManager.Layers.IndexOf(layer) != newIndex)
+            {
+                SpriteManager.RemoveLayer(layer);
+                SpriteManager.InsertLayer(layer, newIndex);
+            }
+#endif
         }
 
         #endregion

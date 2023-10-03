@@ -2366,14 +2366,14 @@ public static class RightClickHelper
             if (listToRemoveFrom != null)
             {
 
-                int index = listToRemoveFrom.IndexOf(objectToMove);
+                int oldIndex = listToRemoveFrom.IndexOf(objectToMove);
 
-                if (index < listToRemoveFrom.Count - 1)
+                if (oldIndex < listToRemoveFrom.Count - 1)
                 {
                     listToRemoveFrom.Remove(objectToMove);
                     var newIndex = listToRemoveFrom.Count;
                     listToRemoveFrom.Insert(newIndex, objectToMove);
-                    PostMoveActivity(objectToMove, index, newIndex);
+                    PostMoveActivity(objectToMove, oldIndex, newIndex);
                 }
             }
         }, L.Texts.MovingToBottom, TaskExecutionPreference.Asap);
@@ -2528,6 +2528,8 @@ public static class RightClickHelper
         {
             GlueCommands.Self.GluxCommands.SaveElementAsync(elementToSave, TaskExecutionPreference.AddOrMoveToEnd);
         }
+
+        PluginManager.ReactToObjectReordered(objectMoved, oldIndex, newIndex);
     }
 
     public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)
