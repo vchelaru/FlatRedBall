@@ -128,7 +128,6 @@ namespace FlatRedBall.Glue.SaveClasses
 
 
 
-        #region XML Docs
         /// <summary>
         /// Defines the source type of this NamedObjectSave.  The SourceType is the broadest type of categorization.
         /// </summary>
@@ -138,13 +137,17 @@ namespace FlatRedBall.Glue.SaveClasses
         /// an Entity.  This restriction will be enforced
         /// in the PropertyGridHelper in Glue.
         /// </remarks>
-        #endregion
-        // made to use properties on June 23, 2019. Ever want to XML ignore this?
         [CategoryAttribute("Source")]
         public SourceType SourceType
         {
-            get => Properties.GetValue<SourceType>(nameof(SourceType));
-            set => Properties.SetValue(nameof(SourceType), value);
+            // made to use properties on June 23, 2019. Ever want to XML ignore this?
+            // Update October 4, 2023 - this is so common that we want it to be fast, so let's
+            // remove the Properties. Also, Properties are good to prevent JSON from getting too big
+            // but we can do this with cleanup and defautls, so I'm going to change this back to a regular
+            // property:
+            //get => Properties.GetValue<SourceType>(nameof(SourceType));
+            //set => Properties.SetValue(nameof(SourceType), value);
+            get; set;
         }
 
         [CategoryAttribute("Source")]
