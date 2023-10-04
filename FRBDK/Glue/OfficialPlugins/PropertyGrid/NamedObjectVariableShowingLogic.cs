@@ -217,12 +217,6 @@ namespace OfficialPlugins.VariableDisplay
 
             assetTypeInfo = assetTypeInfo ?? instance.GetAssetTypeInfo();
 
-            // not sure if this is needed:
-            if (instance.TypedMembers.Count == 0)
-            {
-                instance.UpdateCustomProperties();
-            }
-
             #endregion
 
             CreateCategoriesAndVariables(instance, container as GlueElement, categories, assetTypeInfo);
