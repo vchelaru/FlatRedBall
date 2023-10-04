@@ -58,15 +58,8 @@ namespace TileGraphicsPlugin
 
         #endregion
 
-        public void UpdateAtiCsvPresence()
+        public void UpdateAtiPresence()
         {
-            var projectFolder = GlueState.Self.GlueProjectFileName.GetDirectoryContainingThis();
-            string settingsFolder = projectFolder.FullPath + "GlueSettings/";
-            if (!Directory.Exists(settingsFolder))
-            {
-                Directory.CreateDirectory(settingsFolder);
-            }
-
             List<AssetTypeInfo> list;
             list = new List<AssetTypeInfo>();
 

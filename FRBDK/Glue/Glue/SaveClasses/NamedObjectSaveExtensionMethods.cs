@@ -77,18 +77,22 @@ namespace FlatRedBall.Glue.SaveClasses
 
         public static AssetTypeInfo GetAssetTypeInfo(this NamedObjectSave instance)
         {
-            if(instance.SourceType == SourceType.Entity)
-            {
-                return null;
-            }
-
             if(instance == null)
             {
                 throw new ArgumentNullException(nameof(instance));
             }
+            if(instance.SourceType == SourceType.Entity)
+            {
+                return null;
+            }
             if (string.IsNullOrEmpty(instance.ClassType))
             {
                 return null;
+            }
+            // This is a common type, so let's go faster by returning the type:
+            if(instance.SourceType == SourceType.FlatRedBallType && instance.SourceClassType.StartsWith("FlatRedBall.Math.PositionedObjectList"))
+            {
+                return AvailableAssetTypes.CommonAtis.PositionedObjectList;
             }
 
             // If this NOS uses an EntireFile, then we should ask the file for its AssetTypeInfo,

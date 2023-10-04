@@ -1077,7 +1077,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             #endregion
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
             #region If object was added to manager, remove this object from managers
 
@@ -1270,9 +1270,12 @@ namespace FlatRedBall.Glue.CodeGeneration
 
             }
 
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
-
-            if (ati != null && ati.IsInstantiatedInAddToManagers)
+            AssetTypeInfo ati = null;
+            if (namedObject.SourceType != SourceType.Entity)
+            {
+                ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            }
+            if (ati?.IsInstantiatedInAddToManagers == true)
             {
 
                 // This is an object which has to be instantiated by the engine (like Layer), so it will
@@ -1825,7 +1828,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if (!namedObject.SetByDerived && !namedObject.SetByContainer)
                 {
-                    AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                    AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
 
                     if (ati != null && !string.IsNullOrEmpty(ati.PostInitializeCode))
                     {
@@ -2245,7 +2248,7 @@ namespace FlatRedBall.Glue.CodeGeneration
 
         public static void AssignInstanceVariablesOn(IElement element, NamedObjectSave namedObject, ICodeBlock codeBlock)
         {
-            AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+            AssetTypeInfo ati = namedObject.GetAssetTypeInfo();
             // Update June 24, 2012
             // This should happen before
             // setting variables.  Therefore
@@ -2576,7 +2579,12 @@ namespace FlatRedBall.Glue.CodeGeneration
                 }
 
 
-                AssetTypeInfo ati = AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                AssetTypeInfo ati = null;
+                
+                if(namedObject.SourceType != SourceType.Entity)
+                {
+                    AvailableAssetTypes.Self.GetAssetTypeFromRuntimeType(namedObject.InstanceType, namedObject);
+                }
 
                 if (ati != null && ati.IsInstantiatedInAddToManagers)
                 {
