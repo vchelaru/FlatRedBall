@@ -713,6 +713,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
 
+                addObjectViewModel.ForcedElementToAddTo = screen;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.PositionedObjectList;
                 addObjectViewModel.SourceClassGenericType = newElement.Name;
