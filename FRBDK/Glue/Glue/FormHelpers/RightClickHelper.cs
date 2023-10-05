@@ -31,6 +31,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Utilities;
 using System.Windows.Media.Imaging;
 using L = Localization;
+using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -1016,6 +1017,7 @@ public static class RightClickHelper
     {
         var viewModel = new AddObjectViewModel();
 
+        viewModel.ForcedElementToAddTo = currentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SourceClassType = "CollisionRelationship";
 
@@ -1373,6 +1375,8 @@ public static class RightClickHelper
     private static void HandleAddLayerClick(object sender, EventArgs e)
     {
         var viewModel = new AddObjectViewModel();
+
+        viewModel.ForcedElementToAddTo = GlueState.Self.CurrentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Layer;
         viewModel.IsTypePredetermined = true;

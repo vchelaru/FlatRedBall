@@ -518,6 +518,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (viewModel.IsSpriteChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
                 addObjectViewModel.ObjectName = "SpriteInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Sprite;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
@@ -527,6 +528,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (viewModel.IsTextChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
                 addObjectViewModel.ObjectName = "TextInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Text;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
@@ -536,6 +538,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (viewModel.IsCircleChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
                 addObjectViewModel.ObjectName = "CircleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Circle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
@@ -545,6 +548,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (viewModel.IsAxisAlignedRectangleChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
                 addObjectViewModel.ObjectName = "AxisAlignedRectangleInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.AxisAlignedRectangle;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;
@@ -553,6 +557,7 @@ public class ElementCommands : IScreenCommands, IEntityCommands,IElementCommands
             if (viewModel.IsPolygonChecked)
             {
                 AddObjectViewModel addObjectViewModel = new AddObjectViewModel();
+                addObjectViewModel.ForcedElementToAddTo = newElement;
                 addObjectViewModel.ObjectName = "PolygonInstance";
                 addObjectViewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Polygon;
                 addObjectViewModel.SourceType = SourceType.FlatRedBallType;

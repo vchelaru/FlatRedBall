@@ -778,6 +778,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 var currentNosList = targetNamedObjectSave;
 
                 AddObjectViewModel viewModel = new AddObjectViewModel();
+                viewModel.ForcedElementToAddTo = targetElement;
                 viewModel.SourceType = SourceType.Entity;
                 viewModel.SourceClassType = entity.Name;
                 viewModel.ObjectName =
@@ -874,7 +875,7 @@ public class DragDropManager : Singleton<DragDropManager>
         return newTreeNode;
     }
 
-    public async Task<NamedObjectSave> CreateNewNamedObjectInElement(IElement elementToCreateIn, 
+    public async Task<NamedObjectSave> CreateNewNamedObjectInElement(GlueElement elementToCreateIn, 
         EntitySave blueprintEntity, bool createList = false)
     {
         if (blueprintEntity == null)
@@ -911,6 +912,7 @@ public class DragDropManager : Singleton<DragDropManager>
         }
 
         var addObjectViewModel = new AddObjectViewModel();
+        addObjectViewModel.ForcedElementToAddTo = elementToCreateIn;
         // We'll add "List" or "Instance" below
         //string newName = FileManager.RemovePath(blueprintEntity.Name);
 
@@ -1091,9 +1093,15 @@ public class DragDropManager : Singleton<DragDropManager>
                 viewModel.SourceFile = (treeNodeMoving.Tag as ReferencedFileSave);
 
                 // ShowAddNewobjectDialog depends on the selected element:
-                GlueState.Self.CurrentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                //GlueState.Self.CurrentElement = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
+                // Update October 5, 2023 - no it doesn't, we can set it on the VM:
+                viewModel.ForcedElementToAddTo = targetNode.GetContainingElementTreeNode()?.Tag as GlueElement;
 
-                await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                if(viewModel.ForcedElementToAddTo != null)
+                {
+                    await GlueCommands.Self.DialogCommands.ShowAddNewObjectDialog(viewModel);
+                }
+
             }
             else if (targetNode.IsNamedObjectNode() &&
                 // dropping on an object in the same element

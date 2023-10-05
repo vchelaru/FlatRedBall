@@ -273,8 +273,13 @@ namespace GameCommunicationPlugin.GlueControl
             return true;
         }
 
-
-        private async void HandleAddToEditToolbar(NamedObjectSave namedObject, string customPreviewLocation = null)
+        /// <summary>
+        /// Adds a new entity to the edit toolbar. This is the side-bar which lets users create
+        /// new NamedObjectSave instances quidckly during edit mode.
+        /// </summary>
+        /// <param name="namedObject">The NamedObject to use as a template.</param>
+        /// <param name="customPreviewLocation">The on-disk location of a custom image for the icon. If null, one will be generated automatically.</param>
+        private void HandleAddToEditToolbar(NamedObjectSave namedObject, string customPreviewLocation = null)
         {
 
             //////////////////////////Early Out////////////////////////////

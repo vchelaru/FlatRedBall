@@ -1428,7 +1428,7 @@ public class GluxCommands : IGluxCommands
 
     public async Task<NamedObjectSave> AddNewNamedObjectToSelectedElementAsync(AddObjectViewModel addObjectViewModel)
     {
-        var elementToAddTo = GlueState.Self.CurrentElement;
+        var elementToAddTo = addObjectViewModel.ForcedElementToAddTo ?? GlueState.Self.CurrentElement;
 
         var currentList =
             GlueState.Self.CurrentNamedObjectSave;

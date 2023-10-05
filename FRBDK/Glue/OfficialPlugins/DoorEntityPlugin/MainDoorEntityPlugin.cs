@@ -241,6 +241,7 @@ namespace OfficialPlugins.DoorEntityPlugin
             if (gameScreen != null)
             {
                 var addObjectVm = new AddObjectViewModel();
+                addObjectVm.ForcedElementToAddTo = gameScreen;
                 addObjectVm.SourceType = FlatRedBall.Glue.SaveClasses.SourceType.FlatRedBallType;
                 addObjectVm.SourceClassType = AvailableAssetTypes.CommonAtis.PositionedObjectList.RuntimeTypeName;
                 addObjectVm.SourceClassGenericType = newEntity.Name;
