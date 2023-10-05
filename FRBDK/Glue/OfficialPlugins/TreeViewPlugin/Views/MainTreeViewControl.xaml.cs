@@ -453,8 +453,11 @@ namespace OfficialPlugins.TreeViewPlugin.Views
         {
             if(nodeWaitingOnSelection != null)
             {
+                // don't push deselection out:
+                var wasPushing = SelectionLogic.IsPushingSelectionOutToGlue;
+                SelectionLogic.IsPushingSelectionOutToGlue = false;
                 ViewModel.DeselectResursively();
-
+                SelectionLogic.IsPushingSelectionOutToGlue = wasPushing;
                 nodeWaitingOnSelection.IsSelected = true;
                 nodeWaitingOnSelection = null;
             }
