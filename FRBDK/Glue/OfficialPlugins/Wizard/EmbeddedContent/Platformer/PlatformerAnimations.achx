@@ -742,6 +742,7 @@
   <AnimationChain>
     <Name>CharacterWallSlideRight</Name>
     <Frame>
+      <FlipHorizontal>true</FlipHorizontal>
       <TextureName>FRBeefcakeSpritesheet.png</TextureName>
       <FrameLength>0.1</FrameLength>
       <LeftCoordinate>0</LeftCoordinate>
@@ -761,7 +762,6 @@
   <AnimationChain>
     <Name>CharacterWallSlideLeft</Name>
     <Frame>
-      <FlipHorizontal>true</FlipHorizontal>
       <TextureName>FRBeefcakeSpritesheet.png</TextureName>
       <FrameLength>0.1</FrameLength>
       <LeftCoordinate>0</LeftCoordinate>
