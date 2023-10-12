@@ -52,12 +52,24 @@ namespace FlatRedBall.Glue.Controls
             Button button = new Button();
             button.Click += HandleButtonClickInternal;
             button.TabIndex = buttons.Count;
-            button.Content = text;
+            //button.Content = text;
+
+            TextBlock myTextBlock = new TextBlock();
+            // Set the TextWrapping property to Wrap
+            myTextBlock.TextWrapping = TextWrapping.Wrap;
+            // Set the text of the TextBlock
+            myTextBlock.Text = text;
+
+            // Set the content of the Button to the TextBlock
+            button.Content = myTextBlock;
+
             button.Tag  = result;
 
             button.Margin = new Thickness(8,4,8,4);
 
-            button.Height = 30;
+            // Make this 50 so that it is bigger and can have 2 lines of text. 
+            // Eventually this could be automatic.
+            button.Height = 50;
 
             buttons.Add(button);
 

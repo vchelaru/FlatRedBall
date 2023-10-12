@@ -241,29 +241,29 @@ namespace FlatRedBall.Glue.SetVariable
 
                         if (nosEntitySave != null && nosEntitySave.ImplementsIVisible == false)
                         {
-                            MultiButtonMessageBox mbmb = new MultiButtonMessageBox();
+                            var mbmb = new MultiButtonMessageBoxWpf();
                             mbmb.MessageText = entitySave + " implements IVisible, but its object " + nos + " does not.  Would would you like to do?";
 
                             mbmb.AddButton("Make " + nosEntitySave + " implement IVisible", DialogResult.Yes);
                             mbmb.AddButton("Ignore " + nos + " when setting Visible on " + entitySave, DialogResult.No);
                             mbmb.AddButton("Do nothing - this will likely cause compile errors so this must be fixed manually", DialogResult.Cancel);
 
-                            DialogResult result = mbmb.ShowDialog(MainGlueWindow.Self);
+                            var result = mbmb.ShowDialog();
 
-                            if (result == DialogResult.Yes)
+                            if(result != null && mbmb.ClickedResult != null)
                             {
-                                nosEntitySave.ImplementsIVisible = true;
+                                var dialogResult = (DialogResult)mbmb.ClickedResult;
+                                if (dialogResult == DialogResult.Yes)
+                                {
+                                    nosEntitySave.ImplementsIVisible = true;
 
-                                GlueCommands.Self.GenerateCodeCommands
-                                    .GenerateElementAndReferencedObjectCode(nosEntitySave);
-                            }
-                            else if (result == DialogResult.No)
-                            {
-                                nos.IncludeInIVisible = false;
-                            }
-                            else if (result == DialogResult.Cancel)
-                            {
-                                // do nothing - the user better fix this!
+                                    GlueCommands.Self.GenerateCodeCommands
+                                        .GenerateElementAndReferencedObjectCode(nosEntitySave);
+                                }
+                                else if (dialogResult == DialogResult.No)
+                                {
+                                    nos.IncludeInIVisible = false;
+                                }
                             }
                         }
                     }
