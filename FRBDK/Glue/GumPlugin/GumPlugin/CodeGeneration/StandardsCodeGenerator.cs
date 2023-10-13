@@ -168,6 +168,13 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForProperties.Add("Children Layout");
             mVariableNamesToSkipForProperties.Add("StackSpacing");
 
+            // eventually add these, but for now this is a quick fix:
+            mVariableNamesToSkipForProperties.Add("AutoGridHorizontalCells");
+            mVariableNamesToSkipForProperties.Add("AutoGridVerticalCells");
+
+            
+
+
             // This restriction is only enforced Gum-side, not runtime-side (yet? ever?)
             mVariableNamesToSkipForProperties.Add("Contained Type");
 
