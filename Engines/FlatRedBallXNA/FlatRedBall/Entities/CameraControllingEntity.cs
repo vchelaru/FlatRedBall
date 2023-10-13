@@ -58,8 +58,20 @@ namespace FlatRedBall.Entities
         {
             set
             {
-                Targets = new PositionedObjectList<PositionedObject>();
-                Targets.Add(value);
+                if(Targets == null)
+                {
+                    Targets = new PositionedObjectList<PositionedObject>();
+                }
+                else
+                {
+                    Targets.Clear();
+                }
+                
+
+                if(value != null)
+                {
+                    Targets.Add(value);
+                }
             }
         }
 
