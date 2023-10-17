@@ -113,6 +113,9 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         public string DotNetVersionString { get; private set; }
 
         public Version DotNetVersion { get; private set; }
+        public Version XamarinVersion { get; private set; }
+
+
 
         public decimal? DotNetVersionNumber { get; private set; }
 
@@ -145,19 +148,35 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             var property = mProject.AllEvaluatedProperties.FirstOrDefault(item => item.Name == "TargetFrameworkVersion");
             DotNetVersionString = property?.EvaluatedValue ?? "Unknown";
 
+
             if(DotNetVersionString?.StartsWith("v") == true)
             {
                 var afterV = DotNetVersionString.Substring(1);
 
                 try
                 {
-                    DotNetVersionNumber = Decimal.Parse(afterV);
+                    if(this is AndroidProject or IosMonogameProject)
+                    {
+                        // this doesn't have a dotnet version, so gotta use xamarin:
+                        XamarinVersion = new Version(afterV);
+                    }
+                    else
+                    {
+                        DotNetVersionNumber = Decimal.Parse(afterV);
+                    }
                 }
                 catch { }
 
                 try
                 {
-                    DotNetVersion = new Version(afterV);
+                    if (this is AndroidProject or IosMonogameProject)
+                    {
+                        DotNetVersion = new Version(0,0);
+                    }
+                    else
+                    {
+                        DotNetVersion = new Version(afterV);
+                    }
                 }
                 catch { }
             }
