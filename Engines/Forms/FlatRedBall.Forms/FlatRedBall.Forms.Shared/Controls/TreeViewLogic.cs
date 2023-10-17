@@ -161,7 +161,7 @@ namespace FlatRedBall.Forms.Controls
 #if DEBUG
                 if (treeViewItemGumType == null)
                 {
-                    throw new Exception("The tree view item box does not have a TreeViewItemGumType specified, nor does the DefaultFormsControl have an entry for TreeViewItemItem. " +
+                    throw new Exception("The tree view item box does not have a TreeViewItemGumType specified, nor does the DefaultFormsComponents have an entry for TreeViewItemItem. " +
                         "This property must be set before adding any items");
                 }
                 if (TreeViewItemFormsType == null)
