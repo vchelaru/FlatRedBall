@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RenderingLibrary.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,9 +49,9 @@ namespace FlatRedBall.Gum
                     RenderingLibrary.Graphics.AtlasedTexture toReturn = new RenderingLibrary.Graphics.AtlasedTexture(
                         frbAtlasedTexture.Name,
                         frbAtlasedTexture.Texture,
-                        frbAtlasedTexture.SourceRectangle,
-                        frbAtlasedTexture.Size,
-                        frbAtlasedTexture.Origin,
+                        frbAtlasedTexture.SourceRectangle.ToSystemDrawing(),
+                        frbAtlasedTexture.Size.ToSystemNumerics(),
+                        frbAtlasedTexture.Origin.ToSystemNumerics(),
                         frbAtlasedTexture.IsRotated
                         );
 

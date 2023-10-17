@@ -120,13 +120,14 @@ namespace FlatRedBall.Glue.SaveClasses
             HasIGumScreenOwner = 46,
             ScreenIsINameable = 47,
             SpriteManagerHasInsertLayer = 48,
+            GumUsesSystemTypes = 49,
         }
 
         #endregion
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.SpriteManagerHasInsertLayer;
+        public const int LatestVersion = (int)GluxVersions.GumUsesSystemTypes;
 
         public int FileVersion { get; set; }
 

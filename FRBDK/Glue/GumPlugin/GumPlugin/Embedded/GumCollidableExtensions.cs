@@ -3,6 +3,7 @@ using FlatRedBall.Math.Geometry;
 using Gum.Wireframe;
 using Microsoft.Xna.Framework;
 using RenderingLibrary;
+using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -95,7 +96,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
                     // object, but translate that to a relative position in FRB coordinates
                     frbRect.AttachTo(frbShapeParent);
 
-                    frbRect.Color = renderableComponentAsLineRectangle.Color;
+                    frbRect.Color = renderableComponentAsLineRectangle.Color.ToXNA();
 
                     var relationship = new GumToFrbShapeRelationship();
                     relationship.FrbRect = frbRect;
@@ -128,7 +129,7 @@ namespace GumCoreShared.FlatRedBall.Embedded
                     // object, but translate that to a relative position in FRB coordinates
                     frbCircle.AttachTo(frbShapeParent);
 
-                    frbCircle.Color = renderableComponentAsLineCircle.Color;
+                    frbCircle.Color = renderableComponentAsLineCircle.Color.ToXNA();
 
                     var relationship = new GumToFrbShapeRelationship();
                     relationship.FrbCircle = frbCircle;
