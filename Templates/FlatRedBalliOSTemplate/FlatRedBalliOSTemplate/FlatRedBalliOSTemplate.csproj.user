@@ -4,5 +4,6 @@
     <ProjectView>ShowAllFiles</ProjectView>
     <SelectedDevice>Remote Device</SelectedDevice>
     <TargetiOSDevice />
+    <SelectedPlatformGroup>RemoteDevice</SelectedPlatformGroup>
   </PropertyGroup>
 </Project>
