@@ -102,6 +102,14 @@ internal static class AddSourceManager
         new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
     };
 
+    public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
 
     #endregion
 
@@ -202,6 +210,7 @@ internal static class AddSourceManager
 
                 if (addGeneralResponse.Succeeded)
                 {
+                    RemoveDllReference(proj, "FlatRedBall");
                     RemoveDllReference(proj, "FlatRedBall.Forms");
                     RemoveDllReference(proj, "FlatRedBall.Forms.iOS");
                     RemoveDllReference(proj, "FlatRedBallDesktopGL");
@@ -238,6 +247,10 @@ internal static class AddSourceManager
         else if(GlueState.Self.CurrentMainProject is IosMonogameProject)
         {
             return IosXamarin.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is Xna4Project)
+        {
+            return XnaNet4.Concat(SharedShprojReferences).ToList();
         }
         else
         {

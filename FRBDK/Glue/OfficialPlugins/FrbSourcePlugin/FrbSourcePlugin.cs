@@ -97,7 +97,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         private void HandleGluxLoaded()
         {
             var mainProject = GlueState.Self.CurrentMainProject;
-            if (mainProject is DesktopGlProject or AndroidProject or IosMonogameProject)
+            if (mainProject is DesktopGlProject or AndroidProject or IosMonogameProject or Xna4Project)
             {
                 miLinkSource.Enabled = true;
             }

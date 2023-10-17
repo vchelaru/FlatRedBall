@@ -1301,10 +1301,12 @@ namespace GlueControl
 
         private static void HandleDto(SetBorderlessDto dto)
         {
+#if MONOGAME
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
+#endif
         }
 
-        #endregion
+#endregion
 
         #region ForceGameResolution
 
