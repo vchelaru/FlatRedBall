@@ -42,6 +42,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public List<VSSolution.SharedProject> SharedProjects;
         public List<string> ProjectConfigurations;
         public List<string> SolutionConfigurations;
+
+        public override string ToString()
+        {
+            return ProjectName;
+        }
     }
 
     #endregion
