@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Content.AnimationChain;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.IO;
 using OfficialPlugins.AnimationChainPlugin.Managers;
 using OfficialPlugins.AnimationChainPlugin.ViewModels;
@@ -104,33 +105,36 @@ namespace OfficialPlugins.ContentPreview.Views
 
         public void ForceRefreshAchx(FilePath achxFilePath = null, bool preserveSelection = false)
         {
-            var previouslySelected = ViewModel.SelectedAnimationChain;
-
-            achxFilePath = achxFilePath ?? this.AchxFilePath;
-            foreach (var outline in Outlines)
+            GlueCommands.Self.DoOnUiThread(() =>
             {
-                GumCanvas.Children.Remove(outline);
-            }
+                var previouslySelected = ViewModel.SelectedAnimationChain;
 
-            AnimationChainListSave animationChain = null;
-            if (achxFilePath?.Exists() == true)
-            {
-                animationChain = AnimationChainListSave.FromFile(achxFilePath.FullPath);
-            }
+                achxFilePath = achxFilePath ?? this.AchxFilePath;
+                foreach (var outline in Outlines)
+                {
+                    GumCanvas.Children.Remove(outline);
+                }
 
-            RefreshTexture(achxFilePath, animationChain);
+                AnimationChainListSave animationChain = null;
+                if (achxFilePath?.Exists() == true)
+                {
+                    animationChain = AnimationChainListSave.FromFile(achxFilePath.FullPath);
+                }
 
-            RefreshOutlines();
+                RefreshTexture(achxFilePath, animationChain);
 
-            RefreshTreeView(animationChain);
+                RefreshOutlines();
 
-            if(preserveSelection && previouslySelected != null)
-            {
-                ViewModel.SelectedAnimationChain = ViewModel.VisibleRoot
-                    .FirstOrDefault(item => item.Name == previouslySelected.Name);
-            }
+                RefreshTreeView(animationChain);
 
-            GumCanvas.InvalidateVisual();
+                if(preserveSelection && previouslySelected != null)
+                {
+                    ViewModel.SelectedAnimationChain = ViewModel.VisibleRoot
+                        .FirstOrDefault(item => item.Name == previouslySelected.Name);
+                }
+
+                GumCanvas.InvalidateVisual();
+            });
         }
 
         private void RefreshTreeView(AnimationChainListSave animationChain)
