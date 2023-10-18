@@ -1,4 +1,5 @@
 ﻿using FlatRedBall.Glue.MVVM;
+using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using GlueFormsCore.Extensions;
 using System.Windows;
 
@@ -29,7 +30,7 @@ public partial class ResizePolygonWindow : Window
 
     private void HandleLoaded(object sender, RoutedEventArgs e)
     {
-        this.MoveToCursor();
+        GlueCommands.Self.DialogCommands.MoveToCursor(this);
     }
 
     private void Button_Click(object sender, RoutedEventArgs e)
