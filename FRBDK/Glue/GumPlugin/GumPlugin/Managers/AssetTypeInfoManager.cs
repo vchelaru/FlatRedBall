@@ -145,7 +145,13 @@ namespace GumPlugin.Managers
                     screenAti.AddToManagersFunc = (element, nos, rfs, layer) =>
                     {
                         var name = nos?.InstanceName ?? rfs?.GetInstanceName();
-                        if(string.IsNullOrEmpty(element.BaseElement))
+
+                        if(nos?.SourceType == SourceType.File && nos.IsEntireFile)
+                        {
+                            // don't generate anything, it's handled by the file
+                            return null;
+                        }
+                        else if(string.IsNullOrEmpty(element.BaseElement))
                         {
 
                             return $"{name}.AddToManagers(); FlatRedBall.FlatRedBallServices.GraphicsOptions.SizeOrOrientationChanged += RefreshLayoutInternal;";
