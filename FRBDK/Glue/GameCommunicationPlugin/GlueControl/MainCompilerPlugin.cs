@@ -41,6 +41,7 @@ using Newtonsoft.Json.Linq;
 using CompilerLibrary.ViewModels;
 using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using System.Security.Permissions;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace GameCommunicationPlugin.GlueControl
 {
@@ -482,10 +483,16 @@ namespace GameCommunicationPlugin.GlueControl
 
             ToolbarController.Self.HandleGluxLoaded();
 
-            if(IsFrbNewEnough())
+            if(IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(model.GenerateGlueControlManagerCode), "Generate Glue Control Code");
                 TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Generate Glue Control Code New");
+            }
+            else
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.RemoveAll(), "Removing Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.RemoveAll(), "Removing Glue Control Code New");
+
             }
 
             GlueCommands.Self.ProjectCommands.AddNugetIfNotAdded("Newtonsoft.Json", "12.0.3");
@@ -884,10 +891,16 @@ namespace GameCommunicationPlugin.GlueControl
             }));
 
             GlueCommands.Self.GenerateCodeCommands.GenerateGame1();
-            if (IsFrbNewEnough())
+            if (IsFrbNewEnough() && GlueViewSettingsViewModel.EnableLiveEdit)
             {
                 TaskManager.Self.Add(() => EmbeddedCodeManager.EmbedAll(GlueViewSettingsViewModel.EnableLiveEdit), Localization.Texts.GenerateGlueControlCode);
                 TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), Localization.Texts.GenerateNewGlueControlCode);
+            }
+            else
+            {
+                TaskManager.Self.Add(() => EmbeddedCodeManager.RemoveAll(), "Removing Glue Control Code");
+                TaskManager.Self.Add(() => GlueCallsCodeGenerator.GenerateAll(), "Removing Glue Control Code New");
+
             }
 
             if (GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.NugetPackageInCsproj)
