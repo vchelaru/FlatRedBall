@@ -47,7 +47,7 @@ using System.Diagnostics;
 
 #endif
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
 using FlatRedBall.IO.Remote;
 #endif
 #endregion
@@ -749,7 +749,7 @@ namespace FlatRedBall.IO
             {
                 bool isFtp = false;
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                 isFtp = FtpManager.IsFtp(fileName);
 #endif
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DefineConstants>TRACE; DESKTOP_GL; XNA4; FRB_XNA; FNA;</DefineConstants>
+        <Title>FlatRedBall (.NET FNA)</Title>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <Description>FlatRedBall Game Engine</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Version>1.0.1</Version>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\3rd Party Libraries\FNA-2310\FNA\FNA.Core.csproj" />
+    </ItemGroup>
+
+    <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
+
+    
+
+</Project>

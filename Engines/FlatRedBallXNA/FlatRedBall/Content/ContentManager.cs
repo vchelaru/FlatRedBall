@@ -31,7 +31,7 @@ using Microsoft.Xna.Framework.Audio;
 #endif
 
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
 using Image = System.Drawing.Image;
 using FlatRedBall.IO.Gif;
 using FlatRedBall.IO; // For Image
@@ -455,7 +455,7 @@ namespace FlatRedBall.Content
 			}
 #endif
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
 			if (!FileManager.IsRelative(assetName))
 			{
 				assetName = FileManager.MakeRelative(
@@ -584,7 +584,7 @@ namespace FlatRedBall.Content
 				#endregion
 
 				#region Image
-#if !MONOGAME
+#if !MONOGAME && !FNA
 				else if (typeof(T) == typeof(Image))
 				{
 
@@ -601,7 +601,7 @@ namespace FlatRedBall.Content
 				#endregion
 
 				#region BitmapList
-#if !MONOGAME
+#if !MONOGAME && !FNA
 
 				else if (typeof(T) == typeof(BitmapList))
 				{

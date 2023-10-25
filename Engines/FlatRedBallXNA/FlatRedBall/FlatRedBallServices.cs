@@ -125,7 +125,7 @@ namespace FlatRedBall
 
         static int mPrimaryThreadId;
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         static System.Windows.Forms.Control mOwner;
 #endif
 
@@ -201,7 +201,7 @@ namespace FlatRedBall
             }
         }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public static System.Windows.Forms.Control Owner
         {
             get { return mOwner; }
@@ -299,7 +299,7 @@ namespace FlatRedBall
                 }
                 else
                 {
-#if MONOGAME
+#if MONOGAME || FNA
                     throw new NotSupportedException("Game required on the this platform");
 #else
                     System.Windows.Forms.Control window = System.Windows.Forms.Form.FromHandle(mWindowHandle);
@@ -400,7 +400,7 @@ namespace FlatRedBall
                 mTypesThatCanBeLoaded.Add(typeof(Texture2D));
                 mTypesThatCanBeLoaded.Add(typeof(Scene));
                 mTypesThatCanBeLoaded.Add(typeof(EmitterList));
-#if !MONOGAME
+#if !MONOGAME && !FNA
                 mTypesThatCanBeLoaded.Add(typeof(System.Drawing.Image));
                 //mTypesThatCanBeLoaded.Add(typeof(BitmapList));
 #endif
@@ -655,7 +655,7 @@ namespace FlatRedBall
 
             graphics.DeviceReset += new EventHandler<EventArgs>(graphics_DeviceReset);
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             System.Windows.Forms.Form.FromHandle(mWindowHandle).Resize += new EventHandler(Window_ClientSizeChanged);
 
 #endif
@@ -678,7 +678,7 @@ namespace FlatRedBall
         {
             // All InitializeFlatRedBall methods call this one
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             //PngLoader.Initialize();
 #endif
 
@@ -1587,7 +1587,7 @@ namespace FlatRedBall
 
         #endregion
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         public static Texture2D BitmapToTexture2D(System.Drawing.Bitmap bitmapToConvert,
             string newTextureName, string contentManagerName)
         {
