@@ -27,6 +27,26 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration.GlueCalls
             }
         }
 
+        public static void RemoveAll()
+        {
+            var names = GlueCallsGenerated.Keys.ToArray();
+            for (int i = 0; i < names.Length; i++)
+            {
+                string key = names[i];
+                var noCs = key.Substring(0, key.Length - 3);
+                var withSlashes = noCs.Replace(".", "/");
+                var withGenerated = withSlashes + ".Generated.cs";
+
+                FilePath absoluteFile = GlueState.Self.CurrentGlueProjectDirectory + "GlueControl/" + withGenerated;
+
+                var shouldSave = i == names.Length - 1;
+
+                GlueCommands.Self.ProjectCommands.RemoveFromProjects(absoluteFile, shouldSave);
+
+
+            }
+        }
+
         private static void SaveGlueCommunicationGeneratedFile(string resourcePath, GenerationOptions generationOptions)
         {
             var split = resourcePath.Split(".").ToArray();

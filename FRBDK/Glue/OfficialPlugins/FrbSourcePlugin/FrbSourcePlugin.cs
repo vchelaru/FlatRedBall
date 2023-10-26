@@ -42,6 +42,11 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         public List<VSSolution.SharedProject> SharedProjects;
         public List<string> ProjectConfigurations;
         public List<string> SolutionConfigurations;
+
+        public override string ToString()
+        {
+            return ProjectName;
+        }
     }
 
     #endregion
@@ -53,6 +58,7 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private PluginTab Tab;
         private AddFrbSourceView control;
+        private AddFrbSourceViewModel ViewModel;
 
         private ToolStripMenuItem miLinkSource;
 
@@ -91,7 +97,8 @@ namespace PluginTestbed.GlobalContentManagerPlugins
 
         private void HandleGluxLoaded()
         {
-            if (GlueState.Self.CurrentMainProject is DesktopGlProject)
+            var mainProject = GlueState.Self.CurrentMainProject;
+            if (mainProject is DesktopGlProject or AndroidProject or IosMonogameProject or Xna4Project)
             {
                 miLinkSource.Enabled = true;
             }
@@ -101,19 +108,37 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         {
             CreateTabIfNecessary();
 
+            // Github for desktop has a standard folder for source files, so let's default to that if it exists
+
+            if (System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath))
+            {
+                ViewModel.FrbRootFolder = AddSourceManager.DefaultFrbFilePath;
+            }
+            if (System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath))
+            {
+                ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
+            }
+
+            var alreadyLinked = GlueState.Self.CurrentMainProject.IsFrbSourceLinked();
+            ViewModel.AlreadyLinkedMessageVisibility = alreadyLinked.ToVisibility();
+
             Tab.Show();
             Tab.Focus();
+
         }
 
         private void CreateTabIfNecessary()
         {
             if (Tab != null) 
                 return;
+
+            ViewModel = new AddFrbSourceViewModel();
             
             control = new AddFrbSourceView();
+            control.DataContext = ViewModel;
             control.LinkToSourceClicked += async () =>
             {
-                await AddSourceManager.HandleLinkToSourceClicked(control.ViewModel);
+                await AddSourceManager.HandleLinkToSourceClicked(ViewModel);
                 Tab.Hide();
             };
             Tab = CreateTab(control, Localization.Texts.AddFrbSource);

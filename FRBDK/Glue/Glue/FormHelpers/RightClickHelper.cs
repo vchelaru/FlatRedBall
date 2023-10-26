@@ -31,6 +31,7 @@ using FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces;
 using FlatRedBall.Glue.Utilities;
 using System.Windows.Media.Imaging;
 using L = Localization;
+using FlatRedBall.Glue.Plugins.Interfaces;
 
 namespace FlatRedBall.Glue.FormHelpers;
 
@@ -1016,6 +1017,7 @@ public static class RightClickHelper
     {
         var viewModel = new AddObjectViewModel();
 
+        viewModel.ForcedElementToAddTo = currentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SourceClassType = "CollisionRelationship";
 
@@ -1373,6 +1375,8 @@ public static class RightClickHelper
     private static void HandleAddLayerClick(object sender, EventArgs e)
     {
         var viewModel = new AddObjectViewModel();
+
+        viewModel.ForcedElementToAddTo = GlueState.Self.CurrentElement;
         viewModel.SourceType = SourceType.FlatRedBallType;
         viewModel.SelectedAti = AvailableAssetTypes.CommonAtis.Layer;
         viewModel.IsTypePredetermined = true;
@@ -2366,14 +2370,14 @@ public static class RightClickHelper
             if (listToRemoveFrom != null)
             {
 
-                int index = listToRemoveFrom.IndexOf(objectToMove);
+                int oldIndex = listToRemoveFrom.IndexOf(objectToMove);
 
-                if (index < listToRemoveFrom.Count - 1)
+                if (oldIndex < listToRemoveFrom.Count - 1)
                 {
                     listToRemoveFrom.Remove(objectToMove);
                     var newIndex = listToRemoveFrom.Count;
                     listToRemoveFrom.Insert(newIndex, objectToMove);
-                    PostMoveActivity(objectToMove, index, newIndex);
+                    PostMoveActivity(objectToMove, oldIndex, newIndex);
                 }
             }
         }, L.Texts.MovingToBottom, TaskExecutionPreference.Asap);
@@ -2528,6 +2532,8 @@ public static class RightClickHelper
         {
             GlueCommands.Self.GluxCommands.SaveElementAsync(elementToSave, TaskExecutionPreference.AddOrMoveToEnd);
         }
+
+        PluginManager.ReactToObjectReordered(objectMoved, oldIndex, newIndex);
     }
 
     public static void SetExternallyBuiltFileIfHigherThanCurrent(string directoryOfFile, bool performSave)

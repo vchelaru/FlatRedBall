@@ -46,7 +46,7 @@ namespace OfficialPlugins.VariableDisplay
             AssetTypeInfo ati,
             VariableDefinition variableDefinition, string nameOnInstance, IEnumerable<MemberCategory> categories)
         {
-            bool shouldBeSkipped = 
+            bool shouldBeSkipped =
                 GetIfShouldBeSkipped(variableDefinition.Name, instance, ati);
             ///////Early Out//////////
             if (shouldBeSkipped)
@@ -84,47 +84,23 @@ namespace OfficialPlugins.VariableDisplay
             {
                 var variableDefinition = kvp.Value;
                 var variableName = kvp.Key;
-                bool fallBackToTypedMember = false;
-                try
-                {
-                    Type type = null;
-                    if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
-                    {
-                        type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                    }
 
-                    if (type == null)
-                    {
-                        fallBackToTypedMember = true;
-                    }
-                    else
-                    {
-                        TypedMemberBase typedMember = null;
-                        typedMember = TypedMemberBase.GetTypedMember(variableName, type);
-                        var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, variableName, categories);
-                        if (instanceMember != null)
-                        {
-                            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
-                            categoryToAddTo.Members.Add(instanceMember);
-                        }
-                    }
-                }
-                catch
+                // October 3, 2023
+                // We used to use the
+                // typedMember.CustomTypeName
+                // here, but that was actually never
+                // set to anything. We can just pass null
+                // and save ourselves having to use typedMember
+                //var instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, variableName, categories);
+                //TypedMemberBase typedMember = null;
+                //typedMember = TypedMemberBase.GetTypedMember(variableName, type);
+                var instanceMember = CreateInstanceMember(instance, container, null, ati, variableDefinition, variableName, categories);
+                if (instanceMember != null)
                 {
-                    fallBackToTypedMember = true;
+                    var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, variableName, variableDefinition);
+                    categoryToAddTo.Members.Add(instanceMember);
                 }
 
-                if (fallBackToTypedMember)
-                {
-                    // this new code isn't working with some things like generics. Until I fix that, let's fall back:
-
-                    var typedMember = instance.TypedMembers.FirstOrDefault(item => item.MemberName == variableName);
-
-                    if (typedMember != null)
-                    {
-                        AddForTypedMember(instance, container, categories, ati, typedMember, variableDefinition);
-                    }
-                }
             }
 
             bool shouldAddSourceNameVariable = instance.SourceType == SourceType.File &&
@@ -149,75 +125,79 @@ namespace OfficialPlugins.VariableDisplay
 
                 }
             }
-            else
+            else if(instance.SourceType == SourceType.Entity)
             {
                 var instanceElement = ObjectFinder.Self.GetElement(instance);
-                for (int i = 0; i < instance.TypedMembers.Count; i++)
+                if (instanceElement != null)
                 {
-                    VariableDefinition baseVariableDefinition = null;
-                    TypedMemberBase typedMember = instance.TypedMembers[i];
-                    if (instanceElement != null)
+                    for (int i = 0; i < instanceElement.CustomVariables.Count; i++)
                     {
-                        var variableInElement = instanceElement.GetCustomVariable(typedMember.MemberName);
-                        var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
-                        if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
+                        var variable = instanceElement.CustomVariables[i];
+                        VariableDefinition baseVariableDefinition = null;
+                        if (instanceElement != null)
                         {
-                            var ownerNos = instanceElement.GetNamedObjectRecursively(baseVariable.SourceObject);
-
-                            var ownerNosAti = ownerNos.GetAssetTypeInfo();
-                            baseVariableDefinition = ownerNosAti?.VariableDefinitions
-                                .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
-                        }
-                        // This could be null if the ownerNos doesn't have an ATI.
-                        if (variableInElement != null && baseVariableDefinition == null)
-                        {
-                            // we can create a new VariableDefinition here with the category:
-                            baseVariableDefinition = new VariableDefinition();
-                            //todo - may need to use culture invariant here...
-                            //baseVariableDefinition.DefaultValue = variableInElement.DefaultValue?.To;
-                            baseVariableDefinition.Name = variableInElement.Name;
-                            baseVariableDefinition.Category = variableInElement.Category;
-                            baseVariableDefinition.Type = variableInElement.Type;
-
-                            if(variableInElement.VariableDefinition != null)
+                            var variableInElement = instanceElement.GetCustomVariable(variable.Name);
+                            var baseVariable = ObjectFinder.Self.GetBaseCustomVariable(variableInElement);
+                            if (!string.IsNullOrEmpty(baseVariable?.SourceObject))
                             {
-                                baseVariableDefinition.MinValue = variableInElement.VariableDefinition.MinValue;
-                                baseVariableDefinition.MaxValue = variableInElement.VariableDefinition.MaxValue;
+                                var ownerNos = instanceElement.GetNamedObjectRecursively(baseVariable.SourceObject);
+
+                                var ownerNosAti = ownerNos.GetAssetTypeInfo();
+                                baseVariableDefinition = ownerNosAti?.VariableDefinitions
+                                    .FirstOrDefault(item => item.Name == baseVariable.SourceObjectProperty);
                             }
-
-                            if (variableInElement.CustomGetForcedOptionsFunc != null)
+                            // This could be null if the ownerNos doesn't have an ATI.
+                            if (variableInElement != null && baseVariableDefinition == null)
                             {
-                                baseVariableDefinition.CustomGetForcedOptionFunc = (element, namedObject, referencedFileSave) => variableInElement.CustomGetForcedOptionsFunc(instanceElement);
+                                // we can create a new VariableDefinition here with the category:
+                                baseVariableDefinition = new VariableDefinition();
+                                //todo - may need to use culture invariant here...
+                                //baseVariableDefinition.DefaultValue = variableInElement.DefaultValue?.To;
+                                baseVariableDefinition.Name = variableInElement.Name;
+                                baseVariableDefinition.Category = variableInElement.Category;
+                                baseVariableDefinition.Type = variableInElement.Type;
 
-                            }
-
-                            if (!string.IsNullOrWhiteSpace(variableInElement.PreferredDisplayerTypeName) &&
-                                VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variableInElement.PreferredDisplayerTypeName))
-                            {
-                                baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
-                                    [variableInElement.PreferredDisplayerTypeName];
-                            }
-                            else if(variableInElement?.VariableDefinition?.PreferredDisplayer != null)
-                            {
-                                baseVariableDefinition.PreferredDisplayer = variableInElement.VariableDefinition.PreferredDisplayer;
-
-                                if(variableInElement.VariableDefinition.PropertiesToSetOnDisplayer?.Count > 0)
+                                if (variableInElement.VariableDefinition != null)
                                 {
-                                    baseVariableDefinition.PropertiesToSetOnDisplayer.Clear();
+                                    baseVariableDefinition.MinValue = variableInElement.VariableDefinition.MinValue;
+                                    baseVariableDefinition.MaxValue = variableInElement.VariableDefinition.MaxValue;
+                                }
 
-                                    foreach(var kvp in variableInElement.VariableDefinition.PropertiesToSetOnDisplayer)
+                                if (variableInElement.CustomGetForcedOptionsFunc != null)
+                                {
+                                    baseVariableDefinition.CustomGetForcedOptionFunc = (element, namedObject, referencedFileSave) => variableInElement.CustomGetForcedOptionsFunc(instanceElement);
+
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(variableInElement.PreferredDisplayerTypeName) &&
+                                    VariableDisplayerTypeManager.TypeNameToTypeAssociations.ContainsKey(variableInElement.PreferredDisplayerTypeName))
+                                {
+                                    baseVariableDefinition.PreferredDisplayer = VariableDisplayerTypeManager.TypeNameToTypeAssociations
+                                        [variableInElement.PreferredDisplayerTypeName];
+                                }
+                                else if (variableInElement?.VariableDefinition?.PreferredDisplayer != null)
+                                {
+                                    baseVariableDefinition.PreferredDisplayer = variableInElement.VariableDefinition.PreferredDisplayer;
+
+                                    if (variableInElement.VariableDefinition.PropertiesToSetOnDisplayer?.Count > 0)
                                     {
-                                        baseVariableDefinition.PropertiesToSetOnDisplayer[kvp.Key] = kvp.Value;
+                                        baseVariableDefinition.PropertiesToSetOnDisplayer.Clear();
+
+                                        foreach (var kvp in variableInElement.VariableDefinition.PropertiesToSetOnDisplayer)
+                                        {
+                                            baseVariableDefinition.PropertiesToSetOnDisplayer[kvp.Key] = kvp.Value;
+                                        }
                                     }
                                 }
                             }
                         }
+
+                        if (baseVariableDefinition != null)
+                        {
+                            variableDefinitions.Add(variable.Name, baseVariableDefinition);
+                        }
                     }
 
-                    if (baseVariableDefinition != null)
-                    {
-                        variableDefinitions.Add(typedMember.MemberName, baseVariableDefinition);
-                    }
                 }
             }
 
@@ -236,12 +216,6 @@ namespace OfficialPlugins.VariableDisplay
             categories.Add(defaultCategory);
 
             assetTypeInfo = assetTypeInfo ?? instance.GetAssetTypeInfo();
-
-            // not sure if this is needed:
-            if (instance.TypedMembers.Count == 0)
-            {
-                instance.UpdateCustomProperties();
-            }
 
             #endregion
 
@@ -277,7 +251,7 @@ namespace OfficialPlugins.VariableDisplay
             }
 
             var needsFullRefresh = GetIfNeedsFullRefresh(grid.Categories?.ToArray(), categories?.ToArray());
-            if(needsFullRefresh )
+            if (needsFullRefresh)
             {
                 grid.Categories.Clear();
                 SetAlternatingColors(grid, categories);
@@ -294,33 +268,22 @@ namespace OfficialPlugins.VariableDisplay
                 var ati = instance.GetAssetTypeInfo();
                 Dictionary<string, VariableDefinition> variableDefinitions = GetVariableDefinitions(instance, ati);
 
-                for(int i = 0; i < grid.Categories.Count; i++)
+                for (int i = 0; i < grid.Categories.Count; i++)
                 {
                     var oldCategory = grid.Categories[i];
 
-                    for(int j = 0; j < oldCategory.Members.Count; j++)
+                    for (int j = 0; j < oldCategory.Members.Count; j++)
                     {
                         var oldMember = oldCategory.Members[j];
 
                         var newMember = categories[i].Members[j];
 
-                        if(oldMember is NamedObjectSaveVariableDataGridItem memberAsNamedObjectSaveVariableDataGridItem)
+                        if (oldMember is NamedObjectSaveVariableDataGridItem memberAsNamedObjectSaveVariableDataGridItem)
                         {
                             var nameOnInstance = (newMember as NamedObjectSaveVariableDataGridItem).NameOnInstance;
 
                             var variableDefinition = variableDefinitions[nameOnInstance];
-                            Type type = null;
-                            if (!string.IsNullOrWhiteSpace(variableDefinition.Type))
-                            {
-                                type = FlatRedBall.Glue.Parsing.TypeManager.GetTypeFromString(variableDefinition.Type);
-                            }
-
-                            TypedMemberBase typedMember = null;
-                            if (type != null)
-                            {
-                                typedMember = TypedMemberBase.GetTypedMember(variableDefinition.Name, type);
-                            }
-                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition:variableDefinition, container: container, categories: grid.Categories, customTypeName: typedMember?.CustomTypeName, 
+                            memberAsNamedObjectSaveVariableDataGridItem.RefreshFrom(instance, variableDefinition: variableDefinition, container: container, categories: grid.Categories, customTypeName: null,
                                 nameOnInstance: nameOnInstance);
                             memberAsNamedObjectSaveVariableDataGridItem.DetailText = newMember.DetailText;
                         }
@@ -339,15 +302,15 @@ namespace OfficialPlugins.VariableDisplay
 
         static bool GetIfNeedsFullRefresh(MemberCategory[] oldCategories, MemberCategory[] newCategories)
         {
-            if(oldCategories == null)
+            if (oldCategories == null)
             {
                 return true;
             }
-            if(oldCategories.Length != newCategories.Length)
+            if (oldCategories.Length != newCategories.Length)
             {
                 return true;
             }
-            for(int i = 0; i < oldCategories.Length; i++)
+            for (int i = 0; i < oldCategories.Length; i++)
             {
                 var oldCategory = oldCategories[i];
                 var newCategory = newCategories[i];
@@ -357,7 +320,7 @@ namespace OfficialPlugins.VariableDisplay
                     return true;
                 }
 
-                for(int j = 0; j < oldCategory.Members.Count; j++)
+                for (int j = 0; j < oldCategory.Members.Count; j++)
                 {
                     if (oldCategory.Members[j].Name != newCategory.Members[j].Name)
                     {
@@ -411,7 +374,7 @@ namespace OfficialPlugins.VariableDisplay
 
             }
 
-            if(assetTypeInfo?.IsPositionedObject == true && instance.IsContainer)
+            if (assetTypeInfo?.IsPositionedObject == true && instance.IsContainer)
             {
                 subtext = "This value may not be applied since this object has IsContainer set to true";
                 setZ = true;
@@ -451,7 +414,7 @@ namespace OfficialPlugins.VariableDisplay
             variableDefinition = variableDefinition ?? ati?.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
             InstanceMember instanceMember = CreateInstanceMember(instance, container, typedMember.CustomTypeName, ati, variableDefinition, typedMember.MemberName, categories);
 
-            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember, variableDefinition);
+            var categoryToAddTo = GetOrCreateCategoryToAddTo(categories, ati, typedMember.CustomTypeName, variableDefinition);
 
             if (instanceMember != null)
             {
@@ -574,7 +537,7 @@ namespace OfficialPlugins.VariableDisplay
                 EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                     nameof(NamedObjectSave.InstanceName), oldValue, nameof(NamedObjectSave.InstanceName), null);
 
-                if(element != null)
+                if (element != null)
                 {
                     GlueCommands.Self.GluxCommands.SaveElementAsync(element);
                     GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
@@ -710,7 +673,7 @@ namespace OfficialPlugins.VariableDisplay
         }
 
         private static MemberCategory GetOrCreateCategoryToAddTo(List<MemberCategory> categories, AssetTypeInfo ati,
-            TypedMemberBase typedMember, VariableDefinition variableDefinition = null)
+            string memberName, VariableDefinition variableDefinition = null)
         {
             // By defaut make the last category get used (this is "Variables")
             var categoryToAddTo = categories.Last();
@@ -721,7 +684,7 @@ namespace OfficialPlugins.VariableDisplay
             if (ati != null || variableDefinition != null)
             {
                 // ... see if there is avariable definition for this variable...
-                var foundVariableDefinition = variableDefinition ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == typedMember.MemberName);
+                var foundVariableDefinition = variableDefinition ?? ati.VariableDefinitions.FirstOrDefault(item => item.Name == memberName);
                 if (foundVariableDefinition != null)
                 {
                     //... if so, see the category that it's a part of...
@@ -881,7 +844,7 @@ namespace OfficialPlugins.VariableDisplay
             MainGlueWindow.Self.PropertyGrid.Refresh();
 
             PluginManager.ReactToChangedProperty(memberName, oldValue, element, new PluginManager.NamedObjectSavePropertyChange
-            { 
+            {
                 NamedObjectSave = instance,
                 ChangedPropertyName = memberName
             });

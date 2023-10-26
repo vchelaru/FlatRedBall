@@ -24,6 +24,15 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
             }
         }
 
+        public float CurrentAnimationZoomPercent
+        {
+            get => Get<float>();
+            set
+            {
+                Set(value);
+            }
+        }
+
         public List<int> ZoomPercentages { get; set; } =
             new List<int> { 4000, 2000, 1500, 1000, 750, 500, 350, 200, 100, 75, 50, 25, 10, 5 };
 
@@ -80,6 +89,10 @@ namespace OfficialPlugins.AnimationChainPlugin.ViewModels
         [DependsOn(nameof(SelectedItem))]
         public AnimationFrameViewModel SelectedAnimationFrame => 
             SelectedItem as AnimationFrameViewModel;
+
+        [DependsOn(nameof(SelectedItem))]
+        public ShapeViewModel SelectedShape =>
+            SelectedItem as ShapeViewModel;
 
         public AchxViewModel()
         {

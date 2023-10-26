@@ -1514,7 +1514,11 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                 if(ati.AddToManagersFunc != null)
                 {
-                    currentBlock.Line(ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo"));
+                    var text = ati.AddToManagersFunc(mSaveObject, null, referencedFile, "layerToAddTo");
+                    if(!string.IsNullOrEmpty(text))
+                    {
+                        currentBlock.Line(text);
+                    }
                 }
                 else if (CodeWriter.IsOnOwnLayer(mSaveObject) && ati.LayeredAddToManagersMethod.Count != 0 && !string.IsNullOrEmpty(ati.LayeredAddToManagersMethod[0]))
                 {

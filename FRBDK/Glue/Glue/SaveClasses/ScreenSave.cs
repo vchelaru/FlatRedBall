@@ -216,11 +216,11 @@ namespace FlatRedBall.Glue.SaveClasses
             return clone;
         }
 
-        public EntitySave CloneJson()
+        public ScreenSave CloneJson()
         {
             var serialized = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-            var clone = JsonConvert.DeserializeObject<EntitySave>(serialized);
+            var clone = JsonConvert.DeserializeObject<ScreenSave>(serialized);
 
             CopyVariablesAfterClone(clone);
 

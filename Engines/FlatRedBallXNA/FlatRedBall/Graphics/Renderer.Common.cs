@@ -128,7 +128,8 @@ namespace FlatRedBall.Graphics
             set { mUpdateDrawableBatches = value; }
         }
 
-        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section, ref RenderTarget2D lastRenderTarget)
+        private static void DrawIndividualLayer(Camera camera, RenderMode renderMode, Layer layer, Section section, ref RenderTarget2D lastRenderTarget,
+            ref Viewport lastViewport)
         {
             bool hasLayerModifiedCamera = false;
 
@@ -150,7 +151,18 @@ namespace FlatRedBall.Graphics
                 if(didSetRenderTarget)
                 {
                     lastRenderTarget = layer.RenderTarget;
+
+                    if(layer.RenderTarget != null)
+                    {
+                        lastViewport = GraphicsDevice.Viewport;
+                    }
+
                     GraphicsDevice.SetRenderTarget(layer.RenderTarget);
+
+                    if(layer.RenderTarget == null)
+                    {
+                        GraphicsDevice.Viewport = lastViewport;
+                    }
 
                     if(layer.RenderTarget != null)
                     {
@@ -161,8 +173,9 @@ namespace FlatRedBall.Graphics
                     }
                 }
 
+
                 // No need to clear depth buffer if it's a render target
-                if(!didSetRenderTarget)
+                if (!didSetRenderTarget)
                 {
                     ClearBackgroundForLayer(camera);
                 }
@@ -1023,6 +1036,7 @@ namespace FlatRedBall.Graphics
             //TimeManager.SumTimeSection("Set device settings");
 
             RenderTarget2D lastRenderTarget = null;
+            Viewport lastViewport = GraphicsDevice.Viewport;
 
             #region Draw World Layers
             // Draw layers that belong to the World "SpriteEditor"
@@ -1034,7 +1048,7 @@ namespace FlatRedBall.Graphics
                 {
                     Layer layer = SpriteManager.LayersWriteable[i];
 
-                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
+                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget, ref lastViewport);
 
                 }
             }
@@ -1049,7 +1063,7 @@ namespace FlatRedBall.Graphics
                 for (int i = 0; i < layerCount; i++)
                 {
                     Layer layer = camera.Layers[i];
-                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
+                    DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget, ref lastViewport);
                 }
             }
             #endregion
@@ -1062,7 +1076,7 @@ namespace FlatRedBall.Graphics
             {
                 Layer layer = SpriteManager.TopLayer;
 
-                DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget);
+                DrawIndividualLayer(camera, renderMode, layer, section, ref lastRenderTarget, ref lastViewport);
 
             }
             #endregion
@@ -1217,7 +1231,8 @@ namespace FlatRedBall.Graphics
                 Layer layer = SpriteManager.UnderAllDrawnLayer;
 
                 RenderTarget2D lastRenderTarget = null;
-                DrawIndividualLayer(camera, RenderMode.Default, layer, section, ref lastRenderTarget);
+                var lastViewport = GraphicsDevice.Viewport;
+                DrawIndividualLayer(camera, RenderMode.Default, layer, section, ref lastRenderTarget, ref lastViewport);
 
                 if(lastRenderTarget != null)
                 {

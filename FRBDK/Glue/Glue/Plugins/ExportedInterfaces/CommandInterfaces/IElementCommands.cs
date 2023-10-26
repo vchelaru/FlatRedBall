@@ -92,8 +92,11 @@ namespace FlatRedBall.Glue.Plugins.ExportedInterfaces.CommandInterfaces
 
         List<OrderedNamedObjectPair> GetGameScreenOpposingTeamIndexCollisionPairs(int? newTeamIndex, NamedObjectSave newElementList, AddEntityViewModel viewModel);
 
+        #region Inheritance
 
-        bool UpdateFromBaseType(GlueElement glueElement);
+        bool UpdateFromBaseType(GlueElement glueElement, bool showPopupAboutObjectErrors = true);
+
+        #endregion
 
     }
 }

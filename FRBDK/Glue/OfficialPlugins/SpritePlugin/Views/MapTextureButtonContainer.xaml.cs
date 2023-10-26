@@ -80,7 +80,7 @@ namespace OfficialPlugins.SpritePlugin.Views
                 {
                     window.MoveToMainWindowCenterAndSize(Glue.MainGlueWindow.Self, .7f, .85f);
                     window.Width = 100 + window.Height; //How to get width of wpf element before window shown?  100 is just some random amount
-                    window.MoveToCursor();
+                    GlueCommands.Self.DialogCommands.MoveToCursor(window);
 
                     //better way to have viewmodel update itself from window?
                     viewModel.WindowWidth = window.Width;

@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Glue.Plugins;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
 using FlatRedBall.Glue.SaveClasses;
+using FlatRedBall.Glue.VSHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,21 +31,7 @@ namespace GameCommunicationPlugin.GlueControl.CodeGeneration
                 compilerDirectives += "#define IncludeSetVariable\r\n";
             }
 
-            var fileVersion =
-                GlueState.Self.CurrentGlueProject.FileVersion;
-
-            if (fileVersion >= (int)GlueProjectSave.GluxVersions.SupportsEditMode)
-            {
-                compilerDirectives += "#define SupportsEditMode\r\n";
-            }
-            if(fileVersion >= (int)GlueProjectSave.GluxVersions.ScreenManagerHasPersistentPolygons)
-            {
-                compilerDirectives += "#define ScreenManagerHasPersistentPolygons\r\n";
-            }
-            if(fileVersion >= (int)GlueProjectSave.GluxVersions.SpriteHasTolerateMissingAnimations)
-            {
-                compilerDirectives += "#define SpriteHasTolerateMissingAnimations\r\n";
-            }            
+            compilerDirectives += CodeBuildItemAdder.GetGlueVersionsString();
 
             var hasGumResponse = PluginManager.CallPluginMethod("Gum Plugin", "HasGum");
             var asBool = hasGumResponse as bool?;

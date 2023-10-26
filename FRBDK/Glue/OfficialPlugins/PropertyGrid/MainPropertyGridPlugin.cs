@@ -19,6 +19,7 @@ using FlatRedBall.Glue.SetVariable;
 using GlueFormsCore.Controls;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace OfficialPlugins.VariableDisplay
 {
@@ -75,11 +76,13 @@ namespace OfficialPlugins.VariableDisplay
 
         public void RefreshVariables()
         {
-            if(GlueState.Self.CurrentNamedObjectSave != null)
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var element = GlueState.Self.CurrentElement;
+            if (nos != null)
             {
-                HandleNamedObjectSelect(GlueState.Self.CurrentNamedObjectSave);
+                HandleNamedObjectSelect(nos, element);
             }
-            else if(GlueState.Self.CurrentElement != null)
+            else if(element != null)
             {
                 ShowVariablesForCurrentElement();
             }
@@ -88,9 +91,12 @@ namespace OfficialPlugins.VariableDisplay
 
         private void HandleItemSelect(ITreeNode selectedTreeNode)
         {
-            if(GlueState.Self.CurrentNamedObjectSave != null)
+            var nos = GlueState.Self.CurrentNamedObjectSave;
+            var element = GlueState.Self.CurrentElement;
+
+            if (nos != null)
             {
-                HandleNamedObjectSelect(GlueState.Self.CurrentNamedObjectSave);
+                HandleNamedObjectSelect(nos, element);
             }
             else if(GlueState.Self.CurrentStateSave != null || GlueState.Self.CurrentStateSaveCategory != null)
             {
@@ -169,7 +175,7 @@ namespace OfficialPlugins.VariableDisplay
             ElementVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, GlueState.Self.CurrentElement);
         }
 
-        private void HandleNamedObjectSelect(NamedObjectSave namedObject)
+        private void HandleNamedObjectSelect(NamedObjectSave namedObject, GlueElement currentElement)
         {
             // Update August 17, 2021
             // If it's a list, don't show the Variables tab. It's never got anything:
@@ -253,7 +259,7 @@ namespace OfficialPlugins.VariableDisplay
             VariableGrid.Visibility = System.Windows.Visibility.Visible;
 
             NamedObjectVariableShowingLogic.UpdateShownVariables(VariableGrid.DataUiGrid, namedObject,
-                GlueState.Self.CurrentElement, ati);
+                currentElement, ati);
 
         }
 
@@ -303,7 +309,7 @@ namespace OfficialPlugins.VariableDisplay
                     var nos = GlueState.Self.CurrentNamedObjectSave;
                     if(nos != null)
                     {
-                        HandleNamedObjectSelect(nos);
+                        HandleNamedObjectSelect(nos, currentElement);
                     }
                     else if(currentElement != null)
                     {

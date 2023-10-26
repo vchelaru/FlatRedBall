@@ -1295,7 +1295,10 @@ namespace FlatRedBall.Glue.Plugins
 
                     }
                 },
-                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null);
+                plugin => plugin.ReactToFileChangeHandler != null || plugin.ReactToFileChange != null,
+                // This can cause a deadlock. We need the underlying calls to do things on UI thread specifically on the calls
+                // that are needed
+                doOnUiThread:false);
 
 
             ResumeRelativeDirectory(nameof(ReactToChangedFile));

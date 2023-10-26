@@ -814,8 +814,10 @@ namespace FlatRedBall.Glue.CodeGeneration
                     elseBlock.Line("width = System.Math.Min(width, maxWidth);");
                     elseBlock.Line("height = System.Math.Min(height, maxHeight);");
 
+                    elseBlock.Line("#if MONOGAME");
                     var innerIf = elseBlock.If("FlatRedBall.FlatRedBallServices.Game.Window.Position.Y < 25");
                     innerIf.Line("FlatRedBall.FlatRedBallServices.Game.Window.Position = new Microsoft.Xna.Framework.Point(FlatRedBall.FlatRedBallServices.Game.Window.Position.X, 25);");
+                    elseBlock.Line("#endif");
 
                     elseBlock.Line("FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(width, height);");
 

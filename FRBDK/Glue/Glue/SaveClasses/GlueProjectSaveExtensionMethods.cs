@@ -598,11 +598,11 @@ namespace FlatRedBall.Glue.SaveClasses
         {
             foreach (var screen in instance.Screens)
             {
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen);
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(screen, showPopupAboutObjectErrors:false);
             }
             foreach (var entity in instance.Entities)
             {
-                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity);
+                GlueCommands.Self.GluxCommands.ElementCommands.UpdateFromBaseType(entity, showPopupAboutObjectErrors:false);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces;
 using FlatRedBall.Glue.SaveClasses;
 using GlueFormsCore.Extensions;
 using GlueFormsCore.ViewModels;
@@ -26,8 +27,7 @@ namespace FlatRedBall.Glue.Controls
                 {
                     NewVariableTextBox.Focus();
                 }
-
-                this.MoveToCursor();
+                GlueCommands.Self.DialogCommands.MoveToCursor(this);
 
             };
         }

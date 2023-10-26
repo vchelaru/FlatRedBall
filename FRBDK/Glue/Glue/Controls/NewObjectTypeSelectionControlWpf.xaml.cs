@@ -1,4 +1,5 @@
-﻿using FlatRedBall.Glue.ViewModels;
+﻿using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using FlatRedBall.Glue.ViewModels;
 using GlueFormsCore.Extensions;
 using System.Windows;
 using System.Windows.Input;
@@ -22,7 +23,8 @@ namespace GlueFormsCore.Controls
             {
                 SearchTextBox.Focus();
 
-                this.MoveToCursor();
+                GlueCommands.Self.DialogCommands.MoveToCursor(this);
+
             };
         }
 

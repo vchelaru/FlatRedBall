@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms.Design.Behavior;
 
 namespace GumPlugin.CodeGeneration
 {
@@ -148,13 +149,32 @@ namespace GumPlugin.CodeGeneration
             foreach(var component in AppState.Self.GumProjectSave.Components)
             {
                 // Is this component a forms control, but not a default forms control?
-                if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(component))
-                {
+                // update October 17, 2023
+                // Why do we exclude if it's 
+                // a default forms control? Those
+                // need the association too. I really
+                // don't understand how this code was working
+                // before, but this is causing problems, so I'm
+                // going to fix it:
+                //if(FormsClassCodeGenerator.Self.GetIfShouldGenerate(component))
+
+                var shouldGenerate = FormsClassCodeGenerator.Self.GetIfShouldGenerate(component);
+
+                if (FormsClassCodeGenerator.Self.GetIfShouldGenerate(component) || 
+                    (component.Behaviors != null && GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors) != null))
+                    {
                     // associate them:
                     var newFulfillment = new AssociationFulfillment();
                     newFulfillment.Element = component;
                     newFulfillment.IsCompletelyFulfilled = true;
-                    newFulfillment.ControlType = FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
+
+                    string standardFormsType = null;
+                    if(component.Behaviors != null)
+                    {
+                        standardFormsType = GueDerivingClassCodeGenerator.GetFormsControlTypeFrom(component.Behaviors);
+                    }
+
+                    newFulfillment.ControlType = standardFormsType ?? FormsClassCodeGenerator.Self.GetFullRuntimeNamespaceFor(component) + 
                         "." + FormsClassCodeGenerator.Self.GetUnqualifiedRuntimeTypeFor(component);
 
                     associationFulfillments.Add(newFulfillment);

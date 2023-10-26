@@ -804,7 +804,7 @@ namespace OfficialPluginsCore.Wizard.Managers
                 if (vm.AddPlayerToList)
                 {
                     AddObjectViewModel addPlayerVm = new AddObjectViewModel();
-
+                    addPlayerVm.ForcedElementToAddTo = gameScreen;
                     addPlayerVm.SourceType = SourceType.Entity;
                     addPlayerVm.SourceClassType = playerEntity.Name;
                     addPlayerVm.ObjectName = "Player1";

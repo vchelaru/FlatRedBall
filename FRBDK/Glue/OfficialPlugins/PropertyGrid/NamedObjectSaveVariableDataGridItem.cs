@@ -174,7 +174,8 @@ namespace OfficialPlugins.PropertyGrid
                 }
 
             }
-            else if (variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) && variableDefinition.Type == "float")
+            else if ((variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationZ) || variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationY) || variableDefinition?.Name == nameof(FlatRedBall.PositionedObject.RotationX))
+                && variableDefinition.Type == "float")
             {
                 PreferredDisplayer = typeof(AngleSelectorDisplay);
             }

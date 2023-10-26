@@ -86,6 +86,31 @@ internal static class AddSourceManager
 
     };
 
+    public static List<ProjectReference> AndroidXamarin = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.Android.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallAndroidv2.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.Android.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreAndroid.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+    public static List<ProjectReference> IosXamarin = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBalliOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.iOS\\FlatRedBall.Forms.iOS.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreiOS.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+    public static List<ProjectReference> XnaNet4 = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall\\FlatRedBallXna4.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCoreXnaPc.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+
     #endregion
 
     #region DesktopGlNet6 Projects
@@ -185,11 +210,18 @@ internal static class AddSourceManager
 
                 if (addGeneralResponse.Succeeded)
                 {
+                    RemoveDllReference(proj, "FlatRedBall");
                     RemoveDllReference(proj, "FlatRedBall.Forms");
+                    RemoveDllReference(proj, "FlatRedBall.Forms.iOS");
                     RemoveDllReference(proj, "FlatRedBallDesktopGL");
+                    RemoveDllReference(proj, "FlatRedBallAndroid");
+                    RemoveDllReference(proj, "FlatRedBalliOS");
                     RemoveDllReference(proj, "GumCoreXnaPc");
+                    RemoveDllReference(proj, "GumCoreAndroid");
+                    RemoveDllReference(proj, "GumCoreiOS");
                     RemoveDllReference(proj, "GumCore.DesktopGlNet6");
                     RemoveDllReference(proj, "StateInterpolation");
+                    RemoveDllReference(proj, "StateInterpolation.iOS");
                     RemoveDllReference(proj, "SkiaInGum");
 
                     RemoveNugetReference(proj, "FlatRedBallDesktopGLNet6");
@@ -205,7 +237,20 @@ internal static class AddSourceManager
     {
         if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6)
         {
+            // When we support Android/iOS .NET 6, we need to handle those here:
             return DesktopGlNet6.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is AndroidProject)
+        {
+            return AndroidXamarin.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is IosMonogameProject)
+        {
+            return IosXamarin.Concat(SharedShprojReferences).ToList();
+        }
+        else if(GlueState.Self.CurrentMainProject is Xna4Project)
+        {
+            return XnaNet4.Concat(SharedShprojReferences).ToList();
         }
         else
         {

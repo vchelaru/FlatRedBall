@@ -14,7 +14,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
     /// </summary>
     public partial class AddFrbSourceView : UserControl
     {
-        public AddFrbSourceViewModel ViewModel { get; private set; } = new AddFrbSourceViewModel();
+        AddFrbSourceViewModel ViewModel => DataContext as AddFrbSourceViewModel;
 
         public Action LinkToSourceClicked;
 
@@ -22,29 +22,31 @@ namespace OfficialPlugins.FrbSourcePlugin.Views
         {
             InitializeComponent();
 
-            // Github for desktop has a standard folder for source files, so let's default to that if it exists
-            
-            
-            if (System.IO.Directory.Exists(AddSourceManager.DefaultFrbFilePath))
-            {
-                ViewModel.FrbRootFolder = AddSourceManager.DefaultFrbFilePath;
-            }
-            if(System.IO.Directory.Exists(AddSourceManager.DefaultGumFilePath))
-            {
-                ViewModel.GumRootFolder = AddSourceManager.DefaultGumFilePath;
-            }
+            this.DataContextChanged += HandleDataContextChanged;
+        }
 
+        private void HandleDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
             this.DataUiGrid.Instance = ViewModel;
 
             var category = this.DataUiGrid.Categories[0];
             category.Name = "";
 
+            RemoveFromGrid(nameof(ViewModel.AlreadyLinkedMessageVisibility));
+
             MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.FrbRootFolder)));
             MakeMemberFileSelectionDisplay(category.Members.First(item => item.Name == nameof(ViewModel.GumRootFolder)));
 
             this.DataUiGrid.InsertSpacesInCamelCaseMemberNames();
-            
+
+            return;
+
+            void RemoveFromGrid(string memberName)
+            {
+                category.Members.RemoveAll(item => item.Name == memberName);
+            }
         }
+
 
         void MakeMemberFileSelectionDisplay(InstanceMember instanceMember)
         {

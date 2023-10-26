@@ -145,6 +145,8 @@ namespace GumPlugin.Managers
                     var ati = AssetTypeInfoManager.Self.GetAtiFor(gumComponent);
 
                     var addObjectViewModel = new AddObjectViewModel();
+                    addObjectViewModel.ForcedElementToAddTo = entity;
+
                     addObjectViewModel.SourceType = SourceType.FlatRedBallType;
                     addObjectViewModel.SourceClassType = ati.QualifiedRuntimeTypeName.QualifiedType;
                     addObjectViewModel.ObjectName = "GumObject";
