@@ -1918,6 +1918,7 @@ namespace FlatRedBall.IO
             return stream;
         }
 
+
         public static object BinaryDeserialize(Type type, string fileName)
         {
             object objectToReturn = null;
@@ -1943,7 +1944,7 @@ namespace FlatRedBall.IO
             {
                 throw new NotImplementedException();
             }
-#elif WINDOWS_8 || UWP
+#elif WINDOWS_8 || UWP || FNA
             throw new NotImplementedException();
 #else
             using (FileStream stream = System.IO.File.OpenRead(fileName))
@@ -2034,7 +2035,7 @@ namespace FlatRedBall.IO
 
             try
             {
-#if UWP
+#if UWP || FNA
                 throw new NotImplementedException();
 #else
 
@@ -2150,7 +2151,7 @@ namespace FlatRedBall.IO
 			    stringToSerializeTo = System.Text.Encoding.UTF8.GetString(asBytes, 0, asBytes.Length);
 #else
                 stringToSerializeTo = System.Text.Encoding.UTF8.GetString(memoryStream.ToArray());
-    #endif
+#endif
             }
 
 		}
@@ -2179,11 +2180,11 @@ namespace FlatRedBall.IO
 			return new XElement(xmlDocument.Name.LocalName, xmlDocument.Elements().Select(el => RemoveAllNamespaces(el)));
 		}
 
-		#endregion
+#endregion
 
-		#endregion
+#endregion
 
-		#region Internal Methods
+        #region Internal Methods
 
 		internal static XmlSerializer GetXmlSerializer<T>()
 		{
@@ -2220,9 +2221,9 @@ namespace FlatRedBall.IO
 		}
 
 
-		#endregion
+        #endregion
 
-		#region Private Methods
+        #region Private Methods
 
 		private static void CopyDirectoryHelper(string sourceDirectory, string destDirectory, bool clearDestination, List<string> excludeFiles, List<string> excludeDirectories)
 		{
