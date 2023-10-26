@@ -11,7 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Gum\GumCore\GumCoreXnaPc\GumCore.FNA\GumCore.FNA.csproj" />
     <ProjectReference Include="..\..\..\..\..\Gum\SvgPlugin\SkiaInGumShared\SkiaInGum.csproj" Condition="'$(Configuration)' == 'DebugAutoBuild' Or '$(Configuration)' == 'ReleaseAutoBuild'" />
-    <ProjectReference Include="..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA-2310\FNA\FNA.Core.csproj" />
+    <ProjectReference Include="..\..\..\FlatRedBallXNA\3rd Party Libraries\FNA\FNA\FNA.Core.csproj" />
   </ItemGroup>
   <Import Project="..\FlatRedBall.Forms.Shared\FlatRedBall.Forms.Shared.projitems" Label="Shared" />
 </Project>

@@ -13,7 +13,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\3rd Party Libraries\FNA-2310\FNA\FNA.Core.csproj" />
+      <ProjectReference Include="..\3rd Party Libraries\FNA\FNA\FNA.Core.csproj" />
     </ItemGroup>
 
     <Import Project="..\FlatRedBall\FlatRedBallShared.projitems" Label="Shared" />
