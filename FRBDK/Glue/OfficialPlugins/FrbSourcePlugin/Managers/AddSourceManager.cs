@@ -131,6 +131,30 @@ internal static class AddSourceManager
 
     #endregion
 
+    #region DesktopFNA Projects
+
+    public static List<ProjectReference> DesktopFNA = new List<ProjectReference>
+    {
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\StateInterpolation\\StateInterpolation.FNA\\StateInterpolation.FNA.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\FlatRedBall.FNA\\FlatRedBall.FNA.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"Engines\\Forms\\FlatRedBall.Forms\\FlatRedBall.Forms.FNA\\FlatRedBall.Forms.FNA.csproj", ProjectRootType = FrbOrGum.Frb},
+        new ProjectReference(){ RelativeProjectFilePath = $"GumCore\\GumCoreXnaPc\\GumCore.FNA\\GumCore.FNA.csproj", ProjectRootType = FrbOrGum.Gum},
+    };
+
+    private static ProjectReference GumSkiaFNA = new ProjectReference
+    {
+        RelativeProjectFilePath = $"SvgPlugin\\SkiaInGumShared\\SkiaInGum.FNA.csproj",
+        ProjectRootType = FrbOrGum.Gum
+    };
+
+    private static ProjectReference FNA = new ProjectReference
+    {
+        RelativeProjectFilePath = $"Engines\\FlatRedBallXNA\\3rd Party Libraries\\FNA\\FNA.Core.csproj",
+        ProjectRootType = FrbOrGum.Frb
+    };
+
+    #endregion
+
     public static async Task HandleLinkToSourceClicked(AddFrbSourceViewModel viewModel)
     {
         var frbRootFolder = viewModel.FrbRootFolder;
@@ -203,15 +227,23 @@ internal static class AddSourceManager
                     AddProjectReference(sln, referencedProject, proj, addGeneralResponse, projectReference, frbRootFolder, gumRootFolder);
                 }
 
+                var isFNA = GlueState.Self.CurrentMainProject is FnaDesktopProject;
                 if (includeGumSkia)
                 {
-                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, GumSkia, frbRootFolder, gumRootFolder);
+                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, isFNA ? GumSkiaFNA : GumSkia, frbRootFolder, gumRootFolder);
+                }
+
+                if (isFNA)
+                {
+                    AddProjectReference(sln, referencedProject, proj, addGeneralResponse, FNA, frbRootFolder, gumRootFolder);
                 }
 
                 if (addGeneralResponse.Succeeded)
                 {
                     RemoveDllReference(proj, "FlatRedBall");
+                    RemoveDllReference(proj, "FlatRedBall.FNA");
                     RemoveDllReference(proj, "FlatRedBall.Forms");
+                    RemoveDllReference(proj, "FlatRedBall.Forms.FNA");
                     RemoveDllReference(proj, "FlatRedBall.Forms.iOS");
                     RemoveDllReference(proj, "FlatRedBallDesktopGL");
                     RemoveDllReference(proj, "FlatRedBallAndroid");
@@ -220,9 +252,14 @@ internal static class AddSourceManager
                     RemoveDllReference(proj, "GumCoreAndroid");
                     RemoveDllReference(proj, "GumCoreiOS");
                     RemoveDllReference(proj, "GumCore.DesktopGlNet6");
+                    RemoveDllReference(proj, "GumCore.FNA");
                     RemoveDllReference(proj, "StateInterpolation");
+                    RemoveDllReference(proj, "StateInterpolation.FNA");
                     RemoveDllReference(proj, "StateInterpolation.iOS");
                     RemoveDllReference(proj, "SkiaInGum");
+                    RemoveDllReference(proj, "SkiaInGum.FNA");
+
+                    RemoveDllReference(proj, "FNA");
 
                     RemoveNugetReference(proj, "FlatRedBallDesktopGLNet6");
 
@@ -235,10 +272,11 @@ internal static class AddSourceManager
 
     private static List<ProjectReference> GetProjectReferencesForCurrentProject()
     {
-        if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6)
-        {
+        if (GlueState.Self.CurrentMainProject.DotNetVersion.Major >= 6) {
             // When we support Android/iOS .NET 6, we need to handle those here:
-            return DesktopGlNet6.Concat(SharedShprojReferences).ToList();
+            return GlueState.Self.CurrentMainProject is FnaDesktopProject
+                ? DesktopFNA.Concat(SharedShprojReferences).ToList()
+                : DesktopGlNet6.Concat(SharedShprojReferences).ToList();
         }
         else if(GlueState.Self.CurrentMainProject is AndroidProject)
         {
