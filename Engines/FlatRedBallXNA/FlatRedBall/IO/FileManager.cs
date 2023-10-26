@@ -68,7 +68,7 @@ namespace FlatRedBall.IO
 
 #if FRB_RAW || DESKTOP_GL
         public static string DefaultRelativeDirectory = 
-            System.IO.Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location ) + "/";
+            System.IO.Path.GetDirectoryName(AppContext.BaseDirectory) + "/";
 #elif MONOGAME
         public static string DefaultRelativeDirectory = "./";
 
