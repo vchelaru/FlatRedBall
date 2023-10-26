@@ -79,6 +79,12 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
             set => Set(value);
         }
 
+        public string MainProjectTypeText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         internal async void DoInstallUpdate()
         {
             var result = MessageBox.Show("This will download the latest version of FlatRedBall and install it.  This will overwrite any existing FRBDK.  Are you sure you want to do this?", "Install FRBDK", MessageBoxButton.YesNo);

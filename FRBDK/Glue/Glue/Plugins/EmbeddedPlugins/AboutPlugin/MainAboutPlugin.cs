@@ -42,11 +42,14 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.AboutPlugin
 
             if(glueProject == null)
             {
-                aboutViewModel.GluxVersionText = "<No Project loaded>";
+                aboutViewModel.GluxVersionText = "<No Project Loaded>";
+                aboutViewModel.MainProjectTypeText = "<No Project Loaded>";
             }
             else
             {
                 aboutViewModel.GluxVersionText = glueProject.FileVersion.ToString();
+                aboutViewModel.MainProjectTypeText = GlueState.Self.CurrentMainProject?.GetType().Name;
+
             }
 
             tab.Show();
