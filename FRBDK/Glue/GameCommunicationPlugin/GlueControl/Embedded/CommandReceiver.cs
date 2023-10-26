@@ -1303,10 +1303,13 @@ namespace GlueControl
         {
 #if MONOGAME
             FlatRedBallServices.Game.Window.IsBorderless = dto.IsBorderless;
+#elif FNA
+            FlatRedBallServices.Game.Window.IsBorderlessEXT = dto.IsBorderless;
+
 #endif
         }
 
-#endregion
+        #endregion
 
         #region ForceGameResolution
 

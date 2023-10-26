@@ -164,7 +164,7 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
         /// <summary>
         /// A string which is intended to uniquely identify the project type.
         /// For example, XNA 4 projets might return "Xna4".  This is not tied to
-        /// any preprocessor defines.
+        /// any preprocessor defines, nor is it used during the update or creation process. It's only a unique ID used by FRB Editor.
         /// </summary>
         public abstract string ProjectId { get; }
         public abstract string PrecompilerDirective { get; }

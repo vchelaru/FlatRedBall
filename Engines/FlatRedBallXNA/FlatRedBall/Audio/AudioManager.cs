@@ -252,7 +252,7 @@ namespace FlatRedBall.Audio
         {
             AreSoundEffectsEnabled = true;
             AreSongsEnabled = true;
-#if !MONOGAME
+#if !MONOGAME && !FNA
             SoundListener = new PositionedSoundListener();
             PositionedSounds = new PositionedObjectList<PositionedSound>();
 #endif
@@ -692,7 +692,7 @@ namespace FlatRedBall.Audio
 
         internal static void UpdateDependencies()
         {
-#if !MONOGAME
+#if !MONOGAME && !FNA
             SoundListener.UpdateDependencies(TimeManager.CurrentTime);
             SoundListener.UpdateAudio();
 
@@ -724,7 +724,7 @@ namespace FlatRedBall.Audio
 
 
             // TODO:  Execute instructions
-#if !MONOGAME
+#if !MONOGAME && !FNA
             for (int i = 0; i < PositionedSounds.Count; i++)
             {
                 PositionedSounds[i].TimedActivity(

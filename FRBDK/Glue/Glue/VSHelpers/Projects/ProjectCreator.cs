@@ -273,6 +273,7 @@ Additional Info:
                 loadCalls.Add(new PreprocessorAndFunc("IOS", () => new IosMonogameProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("UWP", () => new UwpProject(coreVisualStudioProject)));
                 loadCalls.Add(new PreprocessorAndFunc("DESKTOP_GL", () => new DesktopGlProject(coreVisualStudioProject)));
+                loadCalls.Add(new PreprocessorAndFunc("FNA", () => new FnaDesktopProject(coreVisualStudioProject)));
                 // Do XNA_4 last, since every 
                 // other project type has this 
                 // preprocessor type, so every project

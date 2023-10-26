@@ -746,7 +746,7 @@ namespace FlatRedBall.Gui
                 }
                 else
                 {
-#if !MONOGAME && !UNIT_TESTS
+#if !MONOGAME && !UNIT_TESTS && !FNA
                     var windowLocation =
                                 System.Windows.Forms.Form.FromHandle(FlatRedBallServices.WindowHandle).Location;
 
@@ -1861,7 +1861,7 @@ namespace FlatRedBall.Gui
         }
 
 
-#if !MONODROID && !MONOGAME
+#if !MONODROID && !MONOGAME && !FNA
         public bool IsInWindow(System.Windows.Forms.Control control)
         {
             if (!mUsingWindowsCursor)

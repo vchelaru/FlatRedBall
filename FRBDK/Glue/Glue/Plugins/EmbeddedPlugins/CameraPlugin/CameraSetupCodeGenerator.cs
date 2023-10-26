@@ -785,6 +785,13 @@ namespace FlatRedBall.Glue.CodeGeneration
 
                     }
 
+                    ifBlock.Line("#elif FNA");
+                    // If in fullscreen we want the widow to take up just the resolution of the screen:
+                    ifBlock.Line(
+                        "FlatRedBall.FlatRedBallServices.GraphicsOptions.SetResolution(" +
+                        "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, " +
+                        "Microsoft.Xna.Framework.Graphics.GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, " +
+                        "FlatRedBall.Graphics.WindowedFullscreenMode.FullscreenBorderless);");
 
                     ifBlock.Line("#elif WINDOWS");
                     ifBlock.Line("System.IntPtr hWnd = FlatRedBall.FlatRedBallServices.Game.Window.Handle;");

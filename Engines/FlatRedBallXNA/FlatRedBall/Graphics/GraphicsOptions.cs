@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using FlatRedBall.IO;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-    #if !MONOGAME
+    #if !MONOGAME && !FNA
     using System.Windows.Forms;
     #endif
 
@@ -56,7 +56,7 @@ namespace FlatRedBall.Graphics
 
         private WindowedFullscreenMode windowedFullscreenMode = WindowedFullscreenMode.Windowed;
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
         // For some reason setting to fullscreen can crash things but setting the border style to none helps.
         System.Windows.Forms.FormBorderStyle mWindowedBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D; 
 #endif
@@ -180,7 +180,7 @@ namespace FlatRedBall.Graphics
                         return;
                     }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (IsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
@@ -189,7 +189,7 @@ namespace FlatRedBall.Graphics
 #endif
 
                     ResetDevice();
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (!IsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;
@@ -239,7 +239,7 @@ namespace FlatRedBall.Graphics
 						return;
                     }
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (IsFullScreen)
                     {
                         mWindowedBorderStyle = ((Form)FlatRedBallServices.Owner).FormBorderStyle;
@@ -248,7 +248,7 @@ namespace FlatRedBall.Graphics
 #endif
 
                     ResetDevice();
-#if !MONOGAME
+#if !MONOGAME && !FNA
                     if (!IsFullScreen)
                     {
                         ((Form)FlatRedBallServices.Owner).FormBorderStyle = mWindowedBorderStyle;

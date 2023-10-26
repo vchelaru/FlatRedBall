@@ -57,7 +57,7 @@ namespace FlatRedBall.Content.ContentLoaders
 
                     if (useFrbPngLoader)
                     {
-#if MONOGAME
+#if MONOGAME || FNA
 						throw new NotImplementedException();
 #else
                         ImageData png = FlatRedBall.IO.PngLoader.GetPixelData(assetName);

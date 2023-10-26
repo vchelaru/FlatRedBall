@@ -292,7 +292,7 @@ namespace FlatRedBall.Input
                 )
             {
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
                 bool isSTAThreadUsed =
                     System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA;
 
@@ -632,7 +632,7 @@ namespace FlatRedBall.Input
         {
             bool isShiftDown = KeyDown(Keys.LeftShift) || KeyDown(Keys.RightShift);
 
-#if !MONOGAME
+#if !MONOGAME && !FNA
             if (System.Windows.Forms.Control.IsKeyLocked(System.Windows.Forms.Keys.CapsLock))
             {
                 isShiftDown = !isShiftDown;

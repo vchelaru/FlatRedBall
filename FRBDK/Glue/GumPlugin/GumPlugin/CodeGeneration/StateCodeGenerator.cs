@@ -86,8 +86,6 @@ namespace GumPlugin.CodeGeneration
             mVariableNamesToSkipForStates.Add("IsOverrideInCodeGen");
             //mVariableNamesToSkipForStates.Add("IsBold");
 
-
-
             // Eventually we'll support this but first Gum needs to support 
             // setting categorized states on instances
             // September 17 2014
@@ -104,16 +102,42 @@ namespace GumPlugin.CodeGeneration
 
             if (version >= (int)GluxVersions.GumSupportsStackSpacing)
             {
-                if (mVariableNamesToSkipForStates.Contains("StackSpacing"))
-                {
-                    mVariableNamesToSkipForStates.Remove("StackSpacing");
-                }
+                Include("StackSpacing");
             }
             else
             {
-                if (!mVariableNamesToSkipForStates.Contains("StackSpacing"))
+                Skip("StackSpacing");
+            }
+
+            if(version >= (int)GluxVersions.GumUsesSystemTypes)
+            {
+                Include("CustomFrameTextureCoordinateWidth");
+                Include("AutoGridHorizontalCells");
+                Include("AutoGridVerticalCells");
+                Include("LineHeightMultiplier");
+            }
+            else
+            {
+                Skip("CustomFrameTextureCoordinateWidth");
+                Skip("AutoGridHorizontalCells");
+                Skip("AutoGridVerticalCells");
+                Skip("LineHeightMultiplier");
+            }
+
+            return;
+
+            void Include(string variable)
+            {
+                if (mVariableNamesToSkipForStates.Contains(variable))
                 {
-                    mVariableNamesToSkipForStates.Add("StackSpacing");
+                    mVariableNamesToSkipForStates.Remove(variable);
+                }
+            }
+            void Skip(string variable)
+            {
+                if (!mVariableNamesToSkipForStates.Contains(variable))
+                {
+                    mVariableNamesToSkipForStates.Add(variable);
                 }
             }
         }

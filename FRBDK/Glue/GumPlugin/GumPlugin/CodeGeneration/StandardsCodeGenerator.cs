@@ -201,6 +201,14 @@ namespace GumPlugin.CodeGeneration
                 Name = "Color"
             });
 
+
+            // It turns out we dont' have a way to skip/include properties by version. To be safe we are going to exclude these for now. In the future we need to have version-based
+            // include/exclude just like the StateCodeGenerator:
+            mVariableNamesToSkipForProperties.Add("CustomFrameTextureCoordinateWidth");
+            mVariableNamesToSkipForProperties.Add("LineHeightMultiplier");
+
+
+
         }
 
 
