@@ -111,10 +111,18 @@ namespace GumPlugin.CodeGeneration
 
             if(version >= (int)GluxVersions.GumUsesSystemTypes)
             {
-                Include("CustomFrameTextureCoordinateWidth");
-                Include("AutoGridHorizontalCells");
-                Include("AutoGridVerticalCells");
-                Include("LineHeightMultiplier");
+                // todo - StateCodeGenerator supports version-specific include/skip, but
+                // the StandardsCodeGenerator does not (yet). Therefore even if we include
+                // conditionally here, we will get compile errors. Change this back to include
+                // once the StandardsCodeGenerator is fixed:
+                //Include("CustomFrameTextureCoordinateWidth");
+                //Include("AutoGridHorizontalCells");
+                //Include("AutoGridVerticalCells");
+                //Include("LineHeightMultiplier");
+                Skip("CustomFrameTextureCoordinateWidth");
+                Skip("AutoGridHorizontalCells");
+                Skip("AutoGridVerticalCells");
+                Skip("LineHeightMultiplier");
             }
             else
             {
