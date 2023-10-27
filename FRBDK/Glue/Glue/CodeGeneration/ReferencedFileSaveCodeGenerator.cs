@@ -709,11 +709,15 @@ namespace FlatRedBall.Glue.CodeGeneration
             bool shouldAddExtensionOnNonXnaPlatforms = 
                 FileManager.GetExtension(fileNameToLoad) != extension && extension == "png";
 
+            if (GlueState.Self.CurrentMainProject is FnaDesktopProject) {
+              shouldAddExtensionOnNonXnaPlatforms = shouldAddExtensionOnNonXnaPlatforms || extension == "wav";
+            }
+
             if(!string.IsNullOrEmpty(formattableLine))
             {
                 if(shouldAddExtensionOnNonXnaPlatforms)
                 {
-                    codeBlock.Line("#if IOS || WINDOWS_8");
+                    codeBlock.Line("#if IOS || WINDOWS_8 || FNA");
 
                     codeBlock.Line(
                         string.Format(formattableLine,

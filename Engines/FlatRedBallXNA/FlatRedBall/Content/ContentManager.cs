@@ -26,7 +26,7 @@ using FlatRedBall.Content.Math.Splines;
 using System.Threading;
 
 using Microsoft.Xna.Framework.Media;
-#if MONOGAME
+#if MONOGAME || FNA
 using Microsoft.Xna.Framework.Audio;
 #endif
 
@@ -682,7 +682,7 @@ namespace FlatRedBall.Content
                     var loader = new SongLoader();
                     return (T)(object) loader.Load(assetName);
 				}
-#if MONOGAME
+#if MONOGAME || FNA
 
                 else if (typeof(T) == typeof(SoundEffect))
                 {
