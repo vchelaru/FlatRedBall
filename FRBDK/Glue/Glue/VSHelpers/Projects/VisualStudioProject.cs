@@ -598,8 +598,16 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
                 }
                 else if (mBuildItemDictionaries.ContainsKey(includeToLower))
                 {
-                    ResolveDuplicateProjectEntry(buildItem);
-                    wasChanged = true;
+                    // do the two have the same 
+                    var areSameItemType = buildItem.ItemType == mBuildItemDictionaries[includeToLower].ItemType;
+
+                    if(areSameItemType)
+                    {
+                        ResolveDuplicateProjectEntry(buildItem);
+                        wasChanged = true;
+                    }
+                    // else no worries, don't touch it...
+
                 }
                 else
                 {
