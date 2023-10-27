@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace FlatRedBallDesktopGlNet6Template
+namespace FlatRedBallDesktopFnaTemplate
 {
     /// <summary>
     /// The main class.

@@ -16,6 +16,7 @@ namespace Npc.Data
             Add("Winows UWP (Windows Desktop, Xbox One, Tablet)", "FlatRedBallUwpTemplate", "FlatRedBallUwpTemplate.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallUwpTemplate.zip" ,true);
             Add("[deprecated, use Desktop GL .NET 6] Desktop GL .NET Framework 4.7.1 (Windows, Mac, Linux)", "FlatRedBallDesktopGlTemplate", "FlatRedBallDesktopGL.zip", "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallDesktopGlTemplate.zip", true);
             Add("[deprecated, use Desktop GL .NET 6] Desktop XNA (Windows, requires XNA install)", "FlatRedBallXna4Template", "FlatRedBallXna4Template.zip" , "http://files.flatredball.com/content/FrbXnaTemplates/DailyBuild/ZippedTemplates/FlatRedBallXna4Template.zip", true);
+            Projects.Add(new AddNewLocalProjectOption());
         }
 
         static void Add(string friendlyName, string namespaceName, string zipName, string url, bool supportedInGlue)

@@ -12,7 +12,7 @@ using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace FlatRedBallDesktopGlNet6Template
+namespace FlatRedBallDesktopFnaTemplate
 {
     public partial class Game1 : Microsoft.Xna.Framework.Game
     {

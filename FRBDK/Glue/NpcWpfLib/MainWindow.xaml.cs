@@ -1,11 +1,14 @@
 ﻿using Npc.Managers;
 using Npc.ViewModels;
+using Ookii.Dialogs.Wpf;
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using ToolsUtilities;
 
 namespace Npc
 {
@@ -20,6 +23,15 @@ namespace Npc
         {
             InitializeComponent();
 
+            InitializeViewModel();
+
+            this.DataContext = ViewModel;
+
+            this.Loaded += HandleLoaded;
+        }
+
+        private void InitializeViewModel()
+        {
             ViewModel = new NewProjectViewModel();
             ViewModel.owner = this;
             ViewModel.OpenSlnFolderAfterCreation = true;
@@ -34,11 +46,73 @@ namespace Npc
             string folderName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\FlatRedBallProjects\";
             ViewModel.ProjectLocation = folderName;
             ViewModel.IsCancelButtonVisible = true;
+
+            ViewModel.PropertyChanged += HandlePropertyChanged;
             //ProcessCommandLineArguments();
+        }
 
-            this.DataContext = ViewModel;
+        private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case nameof(ViewModel.SelectedProject):
+                    if(ViewModel.SelectedProject is AddNewLocalProjectOption && 
+                        // Vista is pretty new at this point so we should be okay...
+                        VistaFolderBrowserDialog.IsVistaFolderDialogSupported)
+                    {
+                        var dialog = new VistaFolderBrowserDialog();
+                        dialog.Description = "Select the folder that contains the template .sln file";
+                        dialog.UseDescriptionForTitle = true; // This applies to the Vista style dialog only, not the old dialog.
 
-            this.Loaded += HandleLoaded;
+                        if ((bool)dialog.ShowDialog(this))
+                        {
+                            var folder = dialog.SelectedPath;
+
+                            var project = new PlatformProjectInfo();
+                            project.FriendlyName = "Local Project";
+                            project.LocalSourceFile = folder;
+                            // assume true:
+                            project.SupportedInGlue = true;
+                            project.Namespace = GetNamespaceForProjectIn(project.LocalSourceFile);
+
+                            ViewModel.AvailableProjects.Insert(ViewModel.AvailableProjects.Count - 1, project);
+                            ViewModel.SelectedProject = project;
+                        }
+
+
+
+                    }
+                    break;
+            }
+        }
+
+        private string GetNamespaceForProjectIn(FilePath localSourceFile)
+        {
+            var csproj = FileManager.GetAllFilesInDirectory(localSourceFile.FullPath, ".csproj", int.MaxValue).FirstOrDefault();
+
+            if(csproj != null)
+            {
+                var contents = FileManager.FromFileText(csproj);
+
+                if(contents.Contains("<RootNamespace>"))
+                {
+                    var namespaceStart = contents.IndexOf("<RootNamespace>") + "<RootNamespace>".Length;
+                    var namespaceEnd = contents.IndexOf("</RootNamespace>");
+
+                    var namespaceString = contents.Substring(namespaceStart, namespaceEnd - namespaceStart);
+
+                    return namespaceString;
+                }
+                else
+                {
+                    var csprojFilePath = new FilePath(csproj);
+                    return csprojFilePath.CaseSensitiveNoPathNoExtension;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void HandleLoaded(object sender, RoutedEventArgs e)
