@@ -1,6 +1,7 @@
 ﻿using FlatRedBall.Gui;
 using Gum.Wireframe;
 using GumCoreShared.FlatRedBall.Embedded;
+using RenderingLibrary;
 using RenderingLibrary.Graphics;
 using System;
 using System.Collections.Generic;
@@ -595,7 +596,7 @@ namespace Gum.Wireframe
                 float worldX;
                 float worldY;
 
-                var managers = this.EffectiveManagers;
+                var managers = this.EffectiveManagers as SystemManagers;
 
 
                 // If there are no managers, we an still fall back to the default:

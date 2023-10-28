@@ -408,7 +408,7 @@ namespace OfficialPlugins.ContentPreview.Views
 
             var outline = new PolygonRuntime();
             outline.Color = SKColors.White;
-
+            outline.Name = "Frame Outline";
             outline.IsFilled = false;
             outline.Points = new List<SKPoint>
                             {

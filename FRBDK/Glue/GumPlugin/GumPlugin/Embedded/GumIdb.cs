@@ -119,7 +119,7 @@ namespace FlatRedBall.Gum
         public GraphicalUiElement CreateAndUseEmptyGraphicalUiElement()
         {
             this.element = new GraphicalUiElement();
-            this.element.AddToManagers();
+            this.element.AddToManagers(mManagers, null);
 
             return element;
         }
@@ -149,7 +149,9 @@ namespace FlatRedBall.Gum
 
                 RenderingLibrary.Graphics.Text.RenderBoundaryDefault = false;
                 // FlatRedBall uses premult alpha.
-                RenderingLibrary.Graphics.Renderer.NormalBlendState = Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
+                RenderingLibrary.Graphics.Renderer.NormalBlendState =
+                    global::Gum.BlendState.AlphaBlend;
+                    //Microsoft.Xna.Framework.Graphics.BlendState.AlphaBlend;
 
                 // August 31 - I don't know if we should do this:
                 UpdateDisplayToMainFrbCamera();
