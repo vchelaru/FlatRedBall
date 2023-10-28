@@ -22,7 +22,7 @@ namespace OfficialPlugins.FrbSourcePlugin.Managers;
 internal static class AddSourceManager
 {
     static string GithubFilePath =>
-    System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GitHub");
+        System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "GitHub");
 
     public static string DefaultFrbFilePath =>
         System.IO.Path.Combine(GithubFilePath, "FlatRedBall");
@@ -330,7 +330,7 @@ internal static class AddSourceManager
     {
         if (!Directory.Exists(path))
         {
-            error = "Path is not a directory that exists";
+            error = $"Gum path does not exist. Expected path:\n{path}";
             return false;
         }
 

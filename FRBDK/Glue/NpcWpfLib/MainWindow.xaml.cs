@@ -123,7 +123,12 @@ namespace Npc
 
         public void ProcessCommandLineArguments(string arguments)
         {
-            CommandLineManager.Self.ProcessCommandLineArguments();
+            string[] args = null;
+            if(!string.IsNullOrEmpty(arguments))
+            {
+                args = arguments.Split(' ');
+            }
+            CommandLineManager.Self.ProcessCommandLineArguments(args);
 
             if (!string.IsNullOrEmpty(CommandLineManager.Self.ProjectLocation))
             {
