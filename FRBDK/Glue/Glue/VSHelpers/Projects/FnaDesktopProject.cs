@@ -49,5 +49,22 @@ namespace FlatRedBall.Glue.VSHelpers.Projects
             // Linux is case-sensitive
             return returnValue.ToLowerInvariant();
         }
+
+        public override bool IsFrbSourceLinked()
+        {
+            foreach (var item in this.Project.AllEvaluatedItems)
+            {
+                if (item.ItemType == "ProjectReference")
+                {
+                    var filename = System.IO.Path.GetFileName(item.EvaluatedInclude);
+                    if (filename == "FlatRedBall.FNA.csproj")
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
+        }
     }
 }
