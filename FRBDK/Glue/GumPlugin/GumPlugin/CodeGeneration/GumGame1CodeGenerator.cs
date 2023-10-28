@@ -28,10 +28,18 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
-            if (hasSkia)
+            if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing)
             {
-                codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+                codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType;");
             }
+            else
+            {
+                if (hasSkia)
+                {
+                    codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+                }
+            }
+
         }
 
         public override void GenerateDrawEarly(ICodeBlock codeBlock)
@@ -52,21 +60,24 @@ namespace GumPluginCore.CodeGeneration
 
         public override void GenerateInitialize(ICodeBlock codeBlock)
         {
-            var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
-            if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
-            {
-                codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
-            }
+            // handled above in GumGame1CodeGeneratorEarly
+            //var fileVersion = GlueState.Self.CurrentGlueProject.FileVersion;
+            //if (fileVersion >= (int)GluxVersions.HasFrameworkElementManager)
+            //{
+            //    codeBlock.Line("FlatRedBall.FlatRedBallServices.AddManager(FlatRedBall.Forms.Managers.FrameworkElementManager.Self);");
+            //}
 
-            if(hasSkia)
-            {
-                codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
-            }
+
+
+            //if(hasSkia)
+            //{
+            //    codeBlock.Line("GumRuntime.InstanceSaveExtensionMethods.CustomObjectCreation = GetSkiaType;");
+            //}
         }
 
         public override void GenerateClassScope(ICodeBlock codeBlock)
         {
-            if(hasSkia)
+            if(hasSkia && GlueState.Self.CurrentGlueProject.FileVersion < (int)GluxVersions.GumCommonCodeReferencing)
             {
                 var function = codeBlock.Function("RenderingLibrary.Graphics.IRenderable", "GetSkiaType", "string name");
                 var switchStatement = function.Switch("name");

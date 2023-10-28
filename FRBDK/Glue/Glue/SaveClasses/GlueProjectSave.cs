@@ -121,6 +121,8 @@ namespace FlatRedBall.Glue.SaveClasses
             ScreenIsINameable = 47,
             SpriteManagerHasInsertLayer = 48,
             GumUsesSystemTypes = 49,
+            // Technically this isn't referencing GumCommon project, but it's referencing code from GumCommon
+            GumCommonCodeReferencing = 50
         }
 
         #endregion

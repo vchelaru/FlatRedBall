@@ -136,7 +136,8 @@ namespace GumPlugin.CodeGeneration
 
             GenerateAssignInternalReferencesMethod(elementSave, classBlock);
 
-            GenerateAddToManagersMethod(elementSave, classBlock);
+            // See below for comments on this method:
+            //GenerateAddToManagersMethod(elementSave, classBlock);
 
             GenerateCallCustomInitialize(elementSave, classBlock);
 
@@ -681,13 +682,22 @@ namespace GumPlugin.CodeGeneration
             }
         }
 
-        private void GenerateAddToManagersMethod(ElementSave elementSave, ICodeBlock currentBlock)
-        {
-            currentBlock = currentBlock.Function("public override void", "AddToManagers", "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer");
-            {
-                currentBlock.Line("base.AddToManagers(managers, layer);");
-            }
-        }
+        // Vic asks - why do we generate this? Seems pointless...
+        //private void GenerateAddToManagersMethod(ElementSave elementSave, ICodeBlock currentBlock)
+        //{
+        //    string parameters =
+        //        "RenderingLibrary.SystemManagers managers, RenderingLibrary.Graphics.Layer layer";
+
+        //    if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GlueProjectSave.GluxVersions.GumCommonCodeReferencing)
+        //    {
+        //        parameters = "RenderingLibrary.ISystemManagers managers, RenderingLibrary.Graphics.Layer layer";
+        //    }
+
+        //    currentBlock = currentBlock.Function("public override void", "AddToManagers", parameters);
+        //    {
+        //        currentBlock.Line("base.AddToManagers(managers, layer);");
+        //    }
+        //}
 
         private void GenerateCallCustomInitialize(ElementSave elementSave, ICodeBlock currentBlock)
         {
