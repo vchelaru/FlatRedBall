@@ -207,7 +207,6 @@ namespace GumPlugin.Managers
                     if (IsNineSliceSource(variable, state))
                     {
                         string variableValue = variable.Value as string;
-
                         var shouldUsePattern = NineSliceExtensions.GetIfShouldUsePattern(variableValue);
 
                         if (shouldUsePattern)
