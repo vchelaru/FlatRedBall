@@ -860,36 +860,7 @@ namespace GumPlugin
             // --rebuildfonts "C:\Users\Victor\Documents\TestProject2\TestProject2\Content\GumProject\GumProject.gumx"
             var gumFileName = AppState.Self.GumProjectSave.FullFileName;
 
-            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
-            if(!File.Exists(executable))
-                executable = "";
-
-            // see if the prebuilt location exists:
-            if(string.IsNullOrEmpty(executable))
-            {
-                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
-                if(prebuiltLocation.Exists())
-                {
-                    executable = prebuiltLocation.FullPath;
-                }
-
-            }
-            try
-            {
-                //find corresponding gum if in ide
-                if(string.IsNullOrEmpty(executable)) {
-                    // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
-                    FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
-                    if(prebuiltLocation.Exists()) {
-                        executable = prebuiltLocation.FullPath;
-                    }
-
-                }
-            }
-            catch(Exception ex)
-            {
-                // no biggie, this could be in a location that doesn't exist...
-            }
+            string executable = GetGumExecutableLocation();
 
             if (string.IsNullOrEmpty(executable))
             {
@@ -914,6 +885,44 @@ namespace GumPlugin
 
 
             }
+        }
+
+        public static string GetGumExecutableLocation()
+        {
+            var executable = WindowsFileAssociation.GetExecFileAssociatedToExtension("gumx");
+            if (!File.Exists(executable))
+                executable = "";
+
+            // see if the prebuilt location exists:
+            if (string.IsNullOrEmpty(executable))
+            {
+                FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../Gum/Data/Gum.exe";
+                if (prebuiltLocation.Exists())
+                {
+                    executable = prebuiltLocation.FullPath;
+                }
+
+            }
+            try
+            {
+                //find corresponding gum if in ide
+                if (string.IsNullOrEmpty(executable))
+                {
+                    // \FlatRedBall\FRBDK\Glue\Glue\bin\x86\Debug to \Gum\Gum\bin\Debug\Data
+                    FilePath prebuiltLocation = GlueState.Self.GlueExeDirectory + "../../../../../../Gum/Gum/bin/Debug/Data/Gum.exe";
+                    if (prebuiltLocation.Exists())
+                    {
+                        executable = prebuiltLocation.FullPath;
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                // no biggie, this could be in a location that doesn't exist...
+            }
+
+            return executable;
         }
 
         private void HandleMakePluginRequiredYes()
