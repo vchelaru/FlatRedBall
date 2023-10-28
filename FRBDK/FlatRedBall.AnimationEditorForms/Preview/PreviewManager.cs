@@ -261,9 +261,9 @@ namespace FlatRedBall.AnimationEditorForms.Preview
         private void UpdateOutlineRectangleToSprite()
         {
             
-            outlineRectangle.Width = Sprite.EffectiveWidth;
-            outlineRectangle.Height = Sprite.EffectiveHeight;
-            outlineRectangle.Color = WireframeManager.Self.OutlineColor;
+            outlineRectangle.Width = Sprite.Width;
+            outlineRectangle.Height = Sprite.Height;
+            outlineRectangle.Color = WireframeManager.Self.OutlineColor.ToSystemDrawing();
             outlineRectangle.Visible = Sprite.Visible;
 
             outlineRectangle.X = Sprite.X;
@@ -499,7 +499,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                 if (mOnionSkinSprites.Count == 0)
                 {
                     RenderingLibrary.Graphics.Sprite sprite = new RenderingLibrary.Graphics.Sprite(null);
-                    sprite.Color = new Microsoft.Xna.Framework.Color(1, 1, 1, .5f);
+                    sprite.Color = new Microsoft.Xna.Framework.Color(1, 1, 1, .5f).ToSystemDrawing();
                     sprite.Z = -1;
                     mManagers.SpriteManager.Add(sprite);
                     mOnionSkinSprites.Add(sprite);
@@ -537,7 +537,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     var horizontalLine = new RenderingLibrary.Math.Geometry.Line(mManagers);
                     horizontalLine.X = -3000;
                     horizontalLine.Y = 0;
-                    horizontalLine.RelativePoint = new Microsoft.Xna.Framework.Vector2(6000, 0);
+                    horizontalLine.RelativePoint = new System.Numerics.Vector2(6000, 0);
 
                     mManagers.ShapeManager.Add(horizontalLine);
                     mOriginGuideLines.Add(horizontalLine);
@@ -545,7 +545,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
                     var verticalLine = new RenderingLibrary.Math.Geometry.Line(mManagers);
                     verticalLine.X = 0;
                     verticalLine.Y = -3000;
-                    verticalLine.RelativePoint = new Microsoft.Xna.Framework.Vector2(0, 6000);
+                    verticalLine.RelativePoint = new System.Numerics.Vector2(0, 6000);
                     mManagers.ShapeManager.Add(verticalLine);
                     mOriginGuideLines.Add(verticalLine);
 
@@ -567,7 +567,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             UpdateSpriteToAnimationFrame();
         }
 
-        private Microsoft.Xna.Framework.Rectangle? GetSourceRetangleForFrame(AnimationFrameSave afs, Microsoft.Xna.Framework.Graphics.Texture2D texture2D)
+        private System.Drawing.Rectangle? GetSourceRetangleForFrame(AnimationFrameSave afs, Microsoft.Xna.Framework.Graphics.Texture2D texture2D)
         {
             if (afs == null || texture2D == null)
             {
@@ -575,7 +575,7 @@ namespace FlatRedBall.AnimationEditorForms.Preview
             }
             else
             {
-                Microsoft.Xna.Framework.Rectangle rectangle = new Microsoft.Xna.Framework.Rectangle();
+                var rectangle = new System.Drawing.Rectangle();
                 rectangle.X = Math.MathFunctions.RoundToInt(afs.LeftCoordinate * texture2D.Width);
                 rectangle.Width = Math.MathFunctions.RoundToInt(afs.RightCoordinate * texture2D.Width) - rectangle.X;
 
@@ -615,8 +615,8 @@ namespace FlatRedBall.AnimationEditorForms.Preview
 
                 if (SpriteAlignment == Data.SpriteAlignment.Center)
                 {
-                    float xOffset = (-sprite.EffectiveWidth) / 2.0f;
-                    float yOffset = (-sprite.EffectiveHeight) / 2.0f;
+                    float xOffset = (-sprite.Width) / 2.0f;
+                    float yOffset = (-sprite.Height) / 2.0f;
 
                     sprite.X = xOffset + animationXOffset;
                     sprite.Y = yOffset - animationYOffset;

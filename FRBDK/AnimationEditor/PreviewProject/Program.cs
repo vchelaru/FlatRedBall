@@ -15,6 +15,8 @@ namespace PreviewProject
         {
             try
             {
+                var vector = new System.Numerics.Vector2();
+                var color = System.Drawing.Color.Black;
                 System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
