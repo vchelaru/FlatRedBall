@@ -559,7 +559,13 @@ namespace GumPlugin.CodeGeneration
 
         private void GenerateCreateChildrenRecursively(ElementSave elementSave, ICodeBlock currentBlock)
         {
-            currentBlock = currentBlock.Function("public override void", "CreateChildrenRecursively", "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers");
+            var parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.SystemManagers systemManagers";
+            var hasCommon = GlueState.Self.CurrentGlueProject.FileVersion >= (int)FlatRedBall.Glue.SaveClasses.GlueProjectSave.GluxVersions.GumCommonCodeReferencing;
+            if(hasCommon)
+            {
+                parameters = "Gum.DataTypes.ElementSave elementSave, RenderingLibrary.ISystemManagers systemManagers";
+            }
+            currentBlock = currentBlock.Function("public override void", "CreateChildrenRecursively", parameters);
             {
 
                 currentBlock.Line("base.CreateChildrenRecursively(elementSave, systemManagers);");

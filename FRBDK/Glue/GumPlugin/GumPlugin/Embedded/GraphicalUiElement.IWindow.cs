@@ -774,25 +774,6 @@ namespace Gum.Wireframe
 
         public virtual object FormsControlAsObject { get; set; }
 
-        public virtual void CreateChildrenRecursively(ElementSave elementSave, SystemManagers systemManagers)
-        {
-            bool isScreen = elementSave is ScreenSave;
-
-            foreach (var instance in elementSave.Instances)
-            {
-                var childGue = instance.ToGraphicalUiElement(systemManagers);
-
-                if (childGue != null)
-                {
-                    if (!isScreen)
-                    {
-                        childGue.Parent = this;
-                    }
-                    childGue.ElementGueContainingThis = this;
-                }
-            }
-        }
-
         #region Binding
         // Apr 19 2020:
         // Vic says I could
