@@ -1,7 +1,9 @@
 ﻿using FlatRedBall.Glue.CodeGeneration.CodeBuilder;
 using FlatRedBall.Glue.CodeGeneration.Game1;
 using FlatRedBall.Glue.Plugins.ExportedImplementations;
+using Gum.Wireframe;
 using GumPlugin.Managers;
+using SkiaGum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +33,13 @@ namespace GumPluginCore.CodeGeneration
             if(GlueState.Self.CurrentGlueProject.FileVersion >= (int)GluxVersions.GumCommonCodeReferencing)
             {
                 codeBlock.Line("global::GumRuntime.ElementSaveExtensions.CustomCreateGraphicalComponentFunc = Gum.Wireframe.RuntimeObjectCreator.TryHandleAsBaseType;");
+
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.SetPropertyOnRenderable = global::Gum.Wireframe.CustomSetPropertyOnRenderable.SetPropertyOnRenderable;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.UpdateFontFromProperties = global::Gum.Wireframe.CustomSetPropertyOnRenderable.UpdateToFontValues;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.ThrowExceptionsForMissingFiles = global::Gum.Wireframe.CustomSetPropertyOnRenderable.ThrowExceptionsForMissingFiles;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.AddRenderableToManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.AddRenderableToManagers;");
+                codeBlock.Line("global::Gum.Wireframe.GraphicalUiElement.RemoveRenderableFromManagers = global::Gum.Wireframe.CustomSetPropertyOnRenderable.RemoveRenderableFromManagers;");
+
             }
             else
             {

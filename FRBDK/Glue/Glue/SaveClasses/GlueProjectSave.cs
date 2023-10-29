@@ -129,7 +129,7 @@ namespace FlatRedBall.Glue.SaveClasses
 
         #region Versions
 
-        public const int LatestVersion = (int)GluxVersions.GumUsesSystemTypes;
+        public const int LatestVersion = (int)GluxVersions.GumCommonCodeReferencing;
 
         public int FileVersion { get; set; }
 
