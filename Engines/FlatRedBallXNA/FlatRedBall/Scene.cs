@@ -25,7 +25,7 @@ namespace FlatRedBall
 {
     public static class SpriteGridListExtensionMethods
     {
-
+        [Obsolete]
         public static SpriteGrid FindByName(this List<SpriteGrid> list, string name)
         {
             for (int i = 0; i < list.Count; i++)
@@ -51,6 +51,7 @@ namespace FlatRedBall
         string mName;
 
         SpriteList mSprites;
+        [Obsolete]
         List<SpriteGrid> mSpriteGrids;
 
         PositionedObjectList<SpriteFrame> mSpriteFrames;
@@ -71,6 +72,7 @@ namespace FlatRedBall
             get { return mSprites; }
         }
 
+        [Obsolete]
         public List<SpriteGrid> SpriteGrids
         {
             get { return mSpriteGrids; }

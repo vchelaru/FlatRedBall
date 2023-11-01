@@ -265,7 +265,7 @@ namespace OfficialPlugins.TreeViewPlugin
             TreeViewPluginSettingsManager.SaveSettings(settings);
         }
 
-        private void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
+        private async void HandleRefreshTreeNodeFor(GlueElement element, TreeNodeRefreshType treeNodeRefreshType)
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
             var oldNode = SelectionLogic.CurrentNode;
@@ -303,7 +303,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = oldTag != currentNode?.Tag;
                 // todo - need to add currentTreeNodes (plural)
-                SelectionLogic.SelectByTag(currentNode.Tag, false);
+                await SelectionLogic.SelectByTag(currentNode.Tag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
 
                 // This can happen if the last item in a category (like a variable) is removed. If so, push
