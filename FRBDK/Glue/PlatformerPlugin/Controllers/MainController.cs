@@ -191,7 +191,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                 EnumFileGenerator.Self.GenerateAndSave();
                 IPlatformerCodeGenerator.Self.GenerateAndSave();
                 PlatformerAnimationControllerGenerator.Self.GenerateAndSave();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 
@@ -268,7 +268,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                         if (rfs != null && rfs.CreatesDictionary == false)
                         {
                             rfs.CreatesDictionary = true;
-                            GlueCommands.Self.GluxCommands.SaveGlux();
+                            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
                         }
 
@@ -288,7 +288,7 @@ namespace FlatRedBall.PlatformerPlugin.Controllers
                             {
                                 Glue.CreatedClass.CustomClassController.Self.SetCsvRfsToUseCustomClass(rfs, customClass, force: true);
 
-                                GlueCommands.Self.GluxCommands.SaveGlux();
+                                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                             }
                         }
                     },

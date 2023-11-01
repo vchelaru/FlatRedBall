@@ -594,8 +594,7 @@ namespace FlatRedBall.Glue.SetVariable
                                 }
                                 namedObjectInBase.UpdateCustomProperties();
 
-                                CodeWriter.GenerateCode(baseElement);
-
+                                GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(baseElement);
                             }
                         }
                         else
@@ -716,7 +715,7 @@ namespace FlatRedBall.Glue.SetVariable
             }
         }
 
-        public async Task ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, string oldValue)
+        public Task ReactToNamedObjectChangedInstanceName(NamedObjectSave namedObjectSave, string oldValue)
         {
             ///////////////////Early Out//////////////////////////////
             if (namedObjectSave == null)
@@ -732,7 +731,7 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 GlueGui.ShowMessageBox(whyItIsntValid);
                 namedObjectSave.InstanceName = oldValue;
-                return;
+                return Task.CompletedTask;
             }
             ///////////////End Early Out//////////////////////////////
 
@@ -831,6 +830,8 @@ namespace FlatRedBall.Glue.SetVariable
             {
                 GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
+
+            return Task.CompletedTask;
         }
 
         private void ShowPopupsForMissingVariablesInNewType(NamedObjectSave namedObjectSave, object oldValue)

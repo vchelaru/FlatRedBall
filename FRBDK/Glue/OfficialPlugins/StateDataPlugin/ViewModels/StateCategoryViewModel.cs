@@ -186,7 +186,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     // todo - eventually may need to handle variables renaming here
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     break;
             }
         }
@@ -224,7 +224,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     ApplyViewModelVariableToStateAtIndex(variableViewModel.Value, index, stateSave);
 
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 }
             }

@@ -2279,7 +2279,7 @@ public class GluxCommands : IGluxCommands
             // when deleting an instance from a base object
             // which is exposed. Therefore, we should add to end
             // so these don't stack
-            //GluxCommands.Self.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+            //GluxCommands.Self.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
             // Actually why not just save the element
             var throwaway = GluxCommands.Self.SaveElementAsync(element);
         }

@@ -22,7 +22,9 @@ namespace OfficialPlugins.FrbUpdater
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
 #pragma warning restore CS0067 // The event 'FrbUpdaterPlugin.ReactToPluginEventAction' is never used
 
+#pragma warning disable CS0067 // needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
+#pragma warning restore CS0067 // The event 'FrbUpdaterPlugin.ReactToPluginEventWithReturnAction' is never used
 
         public FrbUpdaterPlugin()
         {

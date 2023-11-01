@@ -807,7 +807,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 PluginManager.ReactToObjectContainerChanged(namedObject, currentNosList);
 
                 // Don't save the Glux, the caller of this method will take care of it
-                // GluxCommands.Self.SaveGlux();
+                // GluxCommands.Self.SaveProjectAndElements();
                 newTreeNode = GlueState.Self.Find.TreeNodeByTag(namedObject);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(targetElement);

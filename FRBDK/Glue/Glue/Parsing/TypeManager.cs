@@ -463,16 +463,16 @@ namespace FlatRedBall.Glue.Parsing
                     mAdditionalTypes.AddRange(types.Where(type => type.FullName.StartsWith(namespaceFilter)));
                 }
             }
-            catch (ReflectionTypeLoadException reflectionException)
+            catch (ReflectionTypeLoadException)
             {
                 System.Windows.Forms.MessageBox.Show("Encountered exception while trying to load " + assembly.FullName +
                     "\nThis is likely because the assembly is using a different version of the .NET framework.");
             }
-            catch (TypeLoadException ex)
+            catch (TypeLoadException)
             {
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
             }

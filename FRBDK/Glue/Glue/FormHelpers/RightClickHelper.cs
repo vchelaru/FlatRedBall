@@ -2286,20 +2286,20 @@ public static class RightClickHelper
         }, L.Texts.MovingToTop, TaskExecutionPreference.Asap);
     }
 
-    private static void MoveUpClick(object sender, EventArgs e)
+    private static async void MoveUpClick(object sender, EventArgs e)
     {
-        MoveSelectedObjectUp();
+        await MoveSelectedObjectUp();
     }
 
-    private static void MoveDownClick(object sender, EventArgs e)
+    private static async void MoveDownClick(object sender, EventArgs e)
     {
-        MoveSelectedObjectDown();
+        await MoveSelectedObjectDown();
     }
 
-    public static void MoveSelectedObjectUp()
+    public static async Task MoveSelectedObjectUp()
     {
         int direction = -1;
-        MoveObjectInDirection(direction);
+        await MoveObjectInDirection(direction);
     }
 
     public static async Task MoveSelectedObjectDown()

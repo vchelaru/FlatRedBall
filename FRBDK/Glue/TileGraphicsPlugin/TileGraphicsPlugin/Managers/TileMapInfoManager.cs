@@ -62,7 +62,7 @@ namespace TileGraphicsPlugin.Managers
             {
                 // Let's generate this asap:
                 GlueCommands.Self.GenerateCodeCommands.GenerateCustomClassesCode();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
         }

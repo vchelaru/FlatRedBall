@@ -254,8 +254,10 @@ namespace OfficialPlugins.SpritePlugin.Managers
 
             var existingUseAnimationTextureVariableDefinition = ati.VariableDefinitions
                 .FirstOrDefault(item => item.Name == nameof(FlatRedBall.Sprite.UseAnimationTextureFlip));
+#pragma warning disable CS0618 // using as nameof, that's okay
             var existingIgnoreAnimationTextureFlipVariableDefinition = ati.VariableDefinitions
                 .FirstOrDefault(item => item.Name == nameof(FlatRedBall.Sprite.IgnoreAnimationChainTextureFlip));
+#pragma warning restore CS0618 // Type or member is obsolete
 
             var doesAtiAlreadyHaveUseAnimationTextureFlip = existingUseAnimationTextureVariableDefinition != null;
 

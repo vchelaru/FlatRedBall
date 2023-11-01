@@ -167,15 +167,15 @@ namespace OfficialPlugins.TreeViewPlugin
 
                     if(selectedTreeNode is NodeViewModel vm)
                     {
-                        _ = SelectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
+                        await SelectionLogic.SelectByTreeNode(vm, addToSelection, selectAndScroll:isLast);
                     }
                     else if (selectedTreeNode.Tag != null)
                     {
-                        SelectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
+                        await SelectionLogic.SelectByTag(selectedTreeNode.Tag, addToSelection);
                     }
                     else if(selectedTreeNode != null)
                     {
-                        SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
+                        await SelectionLogic.SelectByPath(selectedTreeNode.GetRelativeFilePath(), addToSelection);
                     }
                     else
                     {
@@ -316,7 +316,7 @@ namespace OfficialPlugins.TreeViewPlugin
             
         }
 
-        private void HandleRefreshDirectoryTreeNodes()
+        private async void HandleRefreshDirectoryTreeNodes()
         {
             var oldTag = SelectionLogic.CurrentNode?.Tag;
 
@@ -327,7 +327,7 @@ namespace OfficialPlugins.TreeViewPlugin
                 var wasPushingSelection = SelectionLogic.IsPushingSelectionOutToGlue;
                 // If the tag changed, push it back out:
                 SelectionLogic.IsPushingSelectionOutToGlue = false;
-                SelectionLogic.SelectByTag(oldTag, false);
+                await SelectionLogic.SelectByTag(oldTag, false);
                 SelectionLogic.IsPushingSelectionOutToGlue = wasPushingSelection;
             }
         }

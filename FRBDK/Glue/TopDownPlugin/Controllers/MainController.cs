@@ -178,7 +178,7 @@ namespace TopDownPlugin.Controllers
             //{
             //    GlueCommands.Self.GluxCommands.SetPluginRequirement(MainPlugin, true);
             //    GlueCommands.Self.PrintOutput("Added Top Down Plugin as a required plugin because the entity was marked as a top down entity");
-            //    GlueCommands.Self.GluxCommands.SaveGlux();
+            //    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             //}
 
             if (viewModel.IsTopDown == false)

@@ -101,7 +101,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
             // I don't think we want to save here.  An
             // update can happen whenever the .glux is loaded
             // and we don't want to save right after loading.
-            //GlueCommand.GluxCommands.SaveGlux();
+            //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
         public void Update(string containerName, NamedObjectSave namedObjectSave)
@@ -111,7 +111,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CopyObject(namedObjectSave, currentNos);
             RefreshElement(container);
-            //GlueCommand.GluxCommands.SaveGlux();
+            //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
         public void Update(string containerName, CustomVariable customVariable)
@@ -121,7 +121,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CopyObject(customVariable, currentNos);
             RefreshElement(container);
-            //GlueCommand.GluxCommands.SaveGlux();
+            //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
         public void Update(string containerName, StateSave stateSave)
@@ -131,7 +131,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CopyObject(stateSave, currentNos);
             RefreshElement(container);
-            //GlueCommand.GluxCommands.SaveGlux();
+            //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
         public void Update(string containerName, StateSaveCategory stateSaveCategory)
@@ -141,7 +141,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
             CopyObject(stateSaveCategory, currentNos);
             RefreshElement(container);
-            //GlueCommand.GluxCommands.SaveGlux();
+            //GlueCommand.GluxCommands.SaveProjectAndElements();
         }
 
         public void Remove(IElement element)

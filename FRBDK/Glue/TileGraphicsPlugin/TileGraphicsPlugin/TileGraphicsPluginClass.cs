@@ -390,7 +390,7 @@ public class TileGraphicsPluginClass : PluginBase
             {
                 GlueCommands.Self.GluxCommands.SetPluginRequirement(this, true);
                 GlueCommands.Self.PrintOutput("Added Tiled Plugin as a required plugin because TMX's are used");
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
             }
 
@@ -476,7 +476,7 @@ public class TileGraphicsPluginClass : PluginBase
     public static void ExecuteFinalGlueCommands(EntitySave entity)
     {
         FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.RefreshCommands.RefreshCurrentElementTreeNode();
-        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GluxCommands.SaveGlux();
+        FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GluxCommands.SaveProjectAndElements();
         FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entity);
         FlatRedBall.Glue.Plugins.ExportedImplementations.GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
     }
