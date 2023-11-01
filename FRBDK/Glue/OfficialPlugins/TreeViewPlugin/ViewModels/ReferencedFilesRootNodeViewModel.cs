@@ -149,9 +149,8 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                int m = 3;
             }
             return null;
 
@@ -214,8 +213,6 @@ namespace OfficialPlugins.TreeViewPlugin.ViewModels
 
                     if (!DirectoriesToIgnore.Contains(FileManager.RemovePath(directory)))
                     {
-                        bool alreadyHasNode = false;
-
                         // See if there is already a tree node with this name
                         string directoryRelativeToThisTreeNode = FileManager.MakeRelative(
                             directory, GlueCommands.Self.GetAbsoluteFileName(((ITreeNode)treeNode).GetRelativeFilePath(), true)) + "/";
