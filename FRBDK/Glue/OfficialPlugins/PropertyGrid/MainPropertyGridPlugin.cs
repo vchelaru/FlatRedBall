@@ -162,11 +162,11 @@ namespace OfficialPlugins.VariableDisplay
 
         private void ShowVariablesForCurrentElement()
         {
-            if (false)
-            {
-                AddOrShowSettingsGrid();
-                settingsGrid.Instance = GlueState.Self.CurrentElement;
-            }
+            //if (false)
+            //{
+            //    AddOrShowSettingsGrid();
+            //    settingsGrid.Instance = GlueState.Self.CurrentElement;
+            //}
 
             AddOrShowVariableGrid();
 
@@ -239,9 +239,8 @@ namespace OfficialPlugins.VariableDisplay
                     // rest of the ATI (including its tag) to be the same.
                     ati.Tag = oldTag;
                 }
-                catch(Exception e)
+                catch(Exception)
                 {
-                    int m = 3;
                 }
                 foreach(var variable in ati.VariableDefinitions)
                 {

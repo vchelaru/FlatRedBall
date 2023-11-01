@@ -69,19 +69,11 @@ namespace CompilerPlugin
         private Compiler _compiler;
         private Runner _runner;
         private CompilerViewModel _compilerViewModel;
-        private bool ignoreViewModelChanges;
 
         FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
         public async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            //////////Early Out////////////////////
-            if (ignoreViewModelChanges)
-            {
-                return;
-            }
-
-            /////////End Early Out////////////////
             var propertyName = e.PropertyName;
 
             switch (propertyName)
@@ -149,8 +141,6 @@ namespace CompilerPlugin
                 }
             };
 
-            MainControl.PackageClicked += HandlePackageClicked;
-
             MainControl.CancelBuildClicked += (_, _) =>
             {
                 _compiler.CancelBuild();
@@ -201,35 +191,6 @@ namespace CompilerPlugin
             };
         }
 
-        private async void HandlePackageClicked()
-        {
-            return;
-            // todo - finish here
-            var compileTask = _compiler.Compile(
-                (value) => ReactToPluginEvent("Compiler_Output_Standard", value),
-                (value) => ReactToPluginEvent("Compiler_Output_Error", value),
-                _compilerViewModel.Configuration,   
-                _compilerViewModel.IsPrintMsBuildCommandChecked);
-
-            var dialog = new SaveFileDialog();
-            var saveDialogResult = dialog.ShowDialog();
-            if(saveDialogResult == DialogResult.OK)
-            {
-                var succeeded = await compileTask;
-
-                if (!succeeded)
-                {
-                    GlueCommands.Self.DialogCommands.FocusTab(Localization.Texts.Build);
-                }
-                else
-                {
-                    // save it:
-                    var fileName = dialog.FileName;
-
-                    // todo - zip and save here:
-                }
-            }
-        }
         #endregion
 
         #region Overrided Method

@@ -139,7 +139,7 @@ namespace OfficialPluginsCore.QuickActionPlugin.Views
             EditorObjects.IoC.Container.Get<SetPropertyManager>().ReactToPropertyChanged(
                 nameof(entity.CreatedByOtherEntities), false, nameof(entity.CreatedByOtherEntities), null);
 
-            GlueCommands.Self.GluxCommands.SaveGlux();
+            GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
             AnyButtonClicked();
         }

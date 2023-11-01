@@ -349,7 +349,7 @@ namespace OfficialPlugins.PropertyGrid
                     }
                     else
                     {
-                        GlueCommands.Self.GluxCommands.SaveGlux(TaskExecutionPreference.AddOrMoveToEnd);
+                        GlueCommands.Self.GluxCommands.SaveProjectAndElements(TaskExecutionPreference.AddOrMoveToEnd);
                     }
 
 
@@ -415,7 +415,7 @@ namespace OfficialPlugins.PropertyGrid
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
                 }
 
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
 
                 MainGlueWindow.Self.PropertyGrid.Refresh();
 

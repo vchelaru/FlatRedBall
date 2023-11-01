@@ -23,7 +23,6 @@ namespace CompilerPlugin.Views
         public event Action BuildClicked;
         public event Action PackageClicked;
         public event Action BuildContentClicked;
-        public event Action RunClicked;
         public event Action MSBuildSettingsClicked;
 
         public WhileStoppedView()

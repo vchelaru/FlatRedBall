@@ -88,7 +88,7 @@ public class DragDropManager : Singleton<DragDropManager>
                     GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                 }
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -840,7 +840,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
             GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(entitySave);
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
 
             GlueState.Self.CurrentElement = entitySave;
@@ -1008,7 +1008,7 @@ public class DragDropManager : Singleton<DragDropManager>
             GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
 
             GlueCommands.Self.ProjectCommands.SaveProjects();
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
@@ -1307,7 +1307,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 GlueCommands.Self.GenerateCodeCommands.GenerateGlobalContentCode();
 
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }
@@ -1409,7 +1409,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
 
             // 6 Save everything
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
             GlueCommands.Self.ProjectCommands.SaveProjects();
         }
 
@@ -1618,7 +1618,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 }
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
         else if (targetNode.Tag is ScreenSave || targetNode.Tag is EntitySave)
         {
@@ -1646,7 +1646,7 @@ public class DragDropManager : Singleton<DragDropManager>
             }
             if (any)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -1716,7 +1716,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 }
 
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }

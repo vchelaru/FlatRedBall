@@ -32,42 +32,42 @@ namespace OfficialPlugins.TreeViewPlugin.Logic
 
         public static NamedObjectSave CurrentNamedObjectSave
         {
-            set => SelectByTag(value, false);
+            set => _=SelectByTag(value, false);
         }
 
         public static ReferencedFileSave CurrentReferencedFileSave
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static CustomVariable CurrentCustomVariable
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static EventResponseSave CurrentEventResponseSave
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static StateSave CurrentStateSave
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static StateSaveCategory CurrentStateSaveCategory
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static EntitySave CurrentEntitySave
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         public static ScreenSave CurrentScreenSave
         {
-            set => SelectByTag(value, false);
+            set => _ = SelectByTag(value, false);
         }
 
         #endregion

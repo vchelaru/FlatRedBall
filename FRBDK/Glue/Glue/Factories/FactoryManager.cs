@@ -137,7 +137,7 @@ namespace FlatRedBall.Glue.Factories
                     }
                 }
 
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
             }
@@ -236,7 +236,7 @@ namespace FlatRedBall.Glue.Factories
                 CodeWriter.GenerateCode(element);
             }
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
 
         public static bool AddResetVariablesFor(NamedObjectSave nos)

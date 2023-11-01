@@ -18,7 +18,10 @@ namespace OfficialPlugins.FrbUpdater
         public const string PluginsMenuItem = Localization.MenuIds.UpdateId;
         FrbUpdaterPluginForm mForm;
 
+#pragma warning disable CS0067 // needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
+#pragma warning restore CS0067 // The event 'FrbUpdaterPlugin.ReactToPluginEventAction' is never used
+
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
 
         public FrbUpdaterPlugin()

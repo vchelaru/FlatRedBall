@@ -93,7 +93,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void Update(IElement element)
         {
-            var currentElement = ObjectFinder.Self.GetIElement(element.Name);
+            var currentElement = ObjectFinder.Self.GetElement(element.Name);
 
             CopyObject(element, currentElement);
             RefreshElement(currentElement);
@@ -106,7 +106,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void Update(string containerName, NamedObjectSave namedObjectSave)
         {
-            var container = ObjectFinder.Self.GetIElement(containerName);
+            var container = ObjectFinder.Self.GetElement(containerName);
             var currentNos = container.GetNamedObjectRecursively(namedObjectSave.FieldName);
 
             CopyObject(namedObjectSave, currentNos);
@@ -116,7 +116,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void Update(string containerName, CustomVariable customVariable)
         {
-            var container = ObjectFinder.Self.GetIElement(containerName);
+            var container = ObjectFinder.Self.GetElement(containerName);
             var currentNos = container.GetCustomVariableRecursively(customVariable.Name);
 
             CopyObject(customVariable, currentNos);
@@ -126,7 +126,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void Update(string containerName, StateSave stateSave)
         {
-            var container = ObjectFinder.Self.GetIElement(containerName);
+            var container = ObjectFinder.Self.GetElement(containerName);
             var currentNos = container.GetState(stateSave.Name);
 
             CopyObject(stateSave, currentNos);
@@ -136,7 +136,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations.CommandInterfaces
 
         public void Update(string containerName, StateSaveCategory stateSaveCategory)
         {
-            var container = ObjectFinder.Self.GetIElement(containerName);
+            var container = ObjectFinder.Self.GetElement(containerName);
             var currentNos = container.GetStateCategory(stateSaveCategory.Name);
 
             CopyObject(stateSaveCategory, currentNos);

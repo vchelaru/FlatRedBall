@@ -421,7 +421,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                     //GlueCommands.Self.GenerateCodeCommands.GenerateAllCodeTask();
                     GlueCommands.Self.GenerateCodeCommands.GenerateElementCode(element);
 
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 }
                 GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
 
@@ -465,7 +465,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
 
                     GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
                     GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-                    GlueCommands.Self.GluxCommands.SaveGlux();
+                    GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                     // Victor Chelaru June 8, 2018
                     // I can't get this to select, not sure why.
                     // I've tried setting the selected state, the selected
@@ -501,7 +501,7 @@ namespace OfficialPlugins.StateDataPlugin.ViewModels
                 category.ExcludedVariables.AddRange(this.ExcludedVariables);
 
                 GlueCommands.Self.GenerateCodeCommands.GenerateAllCode();
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
                 // I guess this isn't needed because the states in the tree view didn't change
                 //GlueCommands.Self.RefreshCommands.RefreshUi(this.category);
             }

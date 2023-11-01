@@ -317,7 +317,7 @@ namespace GlueFormsCore.Plugins.EmbeddedPlugins.MenuStripPlugin
                 if (result == true)
                 {
                     ProjectManager.GlueProjectSave.CustomGameClass = tiw.Result;
-                    GluxCommands.Self.SaveGlux();
+                    GluxCommands.Self.SaveProjectAndElements();
 
                     ProjectManager.FindGameClass();
 

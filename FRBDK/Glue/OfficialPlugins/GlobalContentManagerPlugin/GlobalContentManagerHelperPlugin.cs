@@ -26,8 +26,14 @@ namespace PluginTestbed.GlobalContentManagerPlugins
         ToolStripMenuItem mMenuItem;
         MenuStrip mMenuStrip;
 
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventAction;
+#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventAction' is never used
+
+
+#pragma warning disable CS0067 // Needed for interface
         public event Action<IPlugin, string, string> ReactToPluginEventWithReturnAction;
+#pragma warning restore CS0067 // The event 'GlobalContentManagerHelperPlugin.ReactToPluginEventWithReturnAction' is never used
 
         #region IPlugin Members
 

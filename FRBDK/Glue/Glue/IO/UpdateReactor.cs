@@ -577,7 +577,7 @@ namespace FlatRedBall.Glue.IO
 
             if (shouldSave)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
             }
 

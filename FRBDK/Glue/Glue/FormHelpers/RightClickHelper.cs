@@ -1337,7 +1337,7 @@ public static class RightClickHelper
                 CsvCodeGenerator.GenerateAndSaveDataClass(rfs, rfs.CsvDelimiter);
                 GlobalContentCodeGenerator.UpdateLoadGlobalContentCode();
                 GlueCommands.Self.ProjectCommands.SaveProjects();
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
 
         }
@@ -1530,7 +1530,7 @@ public static class RightClickHelper
 
             GlueCommands.Self.GenerateCodeCommands.GenerateCurrentElementCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
@@ -1612,7 +1612,7 @@ public static class RightClickHelper
         }
         CodeWriter.GenerateCode(GlueState.Self.CurrentElement);
         GlueCommands.Self.ProjectCommands.SaveProjects();
-        GluxCommands.Self.SaveGlux();
+        GluxCommands.Self.SaveProjectAndElements();
 
     }
 
@@ -1745,7 +1745,7 @@ public static class RightClickHelper
 
                         PluginManager.ReactToStateRemoved(GlueState.Self.CurrentElement, name);
 
-                        GluxCommands.Self.SaveGlux();
+                        GluxCommands.Self.SaveProjectAndElements();
                     }
 
                     #endregion
@@ -1916,7 +1916,7 @@ public static class RightClickHelper
 
 
                         GluxCommands.Self.ProjectCommands.SaveProjects();
-                        GluxCommands.Self.SaveGlux();
+                        GluxCommands.Self.SaveProjectAndElements();
                     }
                 }
             }
@@ -2002,17 +2002,18 @@ public static class RightClickHelper
 
             if (CustomVariableHelper.IsStateMissingFor(variable, element))
             {
-                var mbmb = new MultiButtonMessageBox();
+                var mbmb = new MultiButtonMessageBoxWpf();
                 mbmb.MessageText = String.Format(L.Texts.VariableHasNoStates, variable);
 
                 mbmb.AddButton(L.Texts.VariableRemove, DialogResult.OK);
                 mbmb.AddButton(L.Texts.VariableRemoveNothing, DialogResult.Cancel);
 
-                if (mbmb.ShowDialog() == DialogResult.OK)
+                if(mbmb.ShowDialog() == true && mbmb.ClickedResult is DialogResult asDialogResult && asDialogResult == DialogResult.OK)
                 {
                     element.CustomVariables.RemoveAt(i);
                     i--;
                 }
+
             }
         }
     }
@@ -2301,10 +2302,10 @@ public static class RightClickHelper
         MoveObjectInDirection(direction);
     }
 
-    public static void MoveSelectedObjectDown()
+    public static async Task MoveSelectedObjectDown()
     {
         int direction = 1;
-        MoveObjectInDirection(direction);
+        await MoveObjectInDirection(direction);
     }
 
     private static async Task MoveObjectInDirection(int direction)
@@ -2561,7 +2562,7 @@ public static class RightClickHelper
 
             if (performSave)
             {
-                GluxCommands.Self.SaveGlux();
+                GluxCommands.Self.SaveProjectAndElements();
             }
         }
     }
@@ -2669,7 +2670,7 @@ public static class RightClickHelper
 
             GlueCommands.Self.GenerateCodeCommands.GenerateStartupScreenCode();
 
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 
