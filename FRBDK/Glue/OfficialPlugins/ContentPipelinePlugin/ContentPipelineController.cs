@@ -226,7 +226,7 @@ namespace OfficialPlugins.ContentPipelinePlugin
                     }
                     else
                     {
-                        throw e;
+                        throw;
                     }
                 }
 

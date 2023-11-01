@@ -314,7 +314,7 @@ namespace FlatRedBall.Glue.Elements
                 }
                 else
                 {
-                    throw e;
+                    throw;
                 }
             }
             if (succeeded)

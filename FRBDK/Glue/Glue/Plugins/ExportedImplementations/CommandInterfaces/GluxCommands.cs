@@ -1226,7 +1226,7 @@ public class GluxCommands : IGluxCommands
 
         if (regenerateAndSave)
         {
-            GluxCommands.Self.SaveGlux();
+            GluxCommands.Self.SaveProjectAndElements();
         }
     }
 

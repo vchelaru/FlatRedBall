@@ -112,7 +112,7 @@ namespace FlatRedBall.Glue.Plugins.ExportedImplementations
                     System.Threading.Thread.Sleep(msSleepBetweenAttempts);
                     if (failureCount >= numberOfTimesToTry)
                     {
-                        throw e;
+                        throw;
                     }
                 }
             }

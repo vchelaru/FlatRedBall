@@ -1063,7 +1063,7 @@ public class DragDropManager : Singleton<DragDropManager>
                     else
                     {
                         string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                        response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                        response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                     }
                 }
                 else
@@ -1082,7 +1082,7 @@ public class DragDropManager : Singleton<DragDropManager>
                 else
                 {
                     string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                    response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                    response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                 }
 
             }
@@ -1221,7 +1221,7 @@ public class DragDropManager : Singleton<DragDropManager>
                         if(isRelativeToElementBeforeMove)
                         {
                             string targetDirectory = GlueCommands.Self.GetAbsoluteFileName(targetNode.GetRelativeFilePath(), true);
-                            response = MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
+                            response = await MoveReferencedFileToDirectory(originalReferencedFileSave, targetDirectory);
                         }
                         else
                         {
@@ -1314,7 +1314,7 @@ public class DragDropManager : Singleton<DragDropManager>
 
     }
 
-    private static GeneralResponse MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
+    private static async Task<GeneralResponse> MoveReferencedFileToDirectory(ReferencedFileSave referencedFileSave, string targetDirectory)
     {
         // Things to do:
         // 1 Move the TreeNode from one parent TreeNode to another UPDATE:  We will just refresh the UI for the Element or GlobalContent
@@ -1389,7 +1389,7 @@ public class DragDropManager : Singleton<DragDropManager>
             // 5 Re-generate the containing Element (Screen or Entity)
             if (elementContainingMovedFile != null)
             {
-                CodeWriter.GenerateCode(elementContainingMovedFile);
+                await CodeWriter.GenerateCode(elementContainingMovedFile);
             }
             else
             {

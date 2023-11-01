@@ -1845,7 +1845,7 @@ namespace FlatRedBallAddOns.Entities
                 {
                     // If we failed, save a backup
                     FileManager.SaveText(contents, gameFilePath.FullPath + ".Backup");
-                    throw e;
+                    throw;
                 }
             }
         }

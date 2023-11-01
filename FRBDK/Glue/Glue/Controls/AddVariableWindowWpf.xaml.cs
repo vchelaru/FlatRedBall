@@ -15,7 +15,6 @@ namespace FlatRedBall.Glue.Controls
     public partial class AddVariableWindowWpf : Window
     {
         AddCustomVariableViewModel ViewModel => DataContext as AddCustomVariableViewModel;
-        GlueElement element;
 
         public AddVariableWindowWpf()
         {

@@ -24,12 +24,14 @@ namespace FlatRedBall.Glue.Parsing
         static Type[] FlatRedBallTypes;
         static Type[] mTypesInMicrosoftXnaFramework;
         static Type[] mTypesInMicrosoftXnaFrameworkGame;
+#if XNA4
         static Type[] mTypesInMicrosoftXnaFrameworkGraphics;
+#endif
         static Type[] pluginTypes;
 
         static List<Type> mAdditionalTypes = new List<Type>();
 
-        #endregion
+#endregion
 
         public static Type GetTypeFromParsedType(ParsedType parsedType)
         {
@@ -379,7 +381,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
                 }
 
-
+#if XNA4
                 if (typeToReturn == null && mTypesInMicrosoftXnaFrameworkGraphics != null)
                 {
                     Type[] types = mTypesInMicrosoftXnaFrameworkGraphics;
@@ -394,6 +396,7 @@ namespace FlatRedBall.Glue.Parsing
                     }
 
                 }
+#endif
 
                 if (typeToReturn == null)
                 {
