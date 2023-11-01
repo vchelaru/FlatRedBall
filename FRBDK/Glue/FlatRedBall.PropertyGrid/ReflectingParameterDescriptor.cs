@@ -100,7 +100,6 @@ namespace FlatRedBall.Glue.GuiDisplay
             }
             catch(Exception e)
             {
-                int m = 3;
                 return null;
             }
         }
