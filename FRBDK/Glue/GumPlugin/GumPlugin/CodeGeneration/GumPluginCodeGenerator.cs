@@ -50,8 +50,6 @@ class GumPluginCodeGenerator : ElementComponentCodeGenerator
 
     public override ICodeBlock GenerateFields(ICodeBlock codeBlock, IElement element)
     {
-        bool isGlueScreen, hasGumScreen, hasForms;
-
         // June 6, 2023
         // GUMX files in Global Content load and initialize a static global GumIdb automatically.
         // By leaving this in, we have 2 Gum IDBs as reported here:

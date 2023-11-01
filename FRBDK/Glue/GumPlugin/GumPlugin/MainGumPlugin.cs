@@ -917,7 +917,7 @@ namespace GumPlugin
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // no biggie, this could be in a location that doesn't exist...
             }
@@ -931,7 +931,7 @@ namespace GumPlugin
 
             if (changed)
             {
-                GlueCommands.Self.GluxCommands.SaveGlux();
+                GlueCommands.Self.GluxCommands.SaveProjectAndElements();
             }
         }
 

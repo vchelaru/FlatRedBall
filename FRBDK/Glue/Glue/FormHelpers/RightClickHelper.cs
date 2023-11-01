@@ -2142,7 +2142,7 @@ public static class RightClickHelper
     /// are folders.
     /// </summary>
     /// <param name="targetNode">The tree node to delete.</param>
-    public static void DeleteFolderClick(ITreeNode targetNode)
+    public static async void DeleteFolderClick(ITreeNode targetNode)
     {
         // delete folder, deletefolder
 
@@ -2178,7 +2178,7 @@ public static class RightClickHelper
                 foreach (EntitySave entitySave in allEntitySaves)
                 {
                     GlueState.Self.CurrentEntitySave = entitySave;
-                    RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[^1], false, false);
+                    await RemoveFromProjectOptionalSaveAndRegenerate(entitySave == allEntitySaves[^1], false, false);
 
                 }
             }
@@ -2191,7 +2191,7 @@ public static class RightClickHelper
                 {
                     GlueState.Self.CurrentReferencedFileSave = rfs;
                     // I guess we won't ask to delete here, but maybe eventually we want to?
-                    RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
+                    await RemoveFromProjectOptionalSaveAndRegenerate(rfs == allReferencedFileSaves[allReferencedFileSaves.Count - 1], false, false);
                 }
             }
 

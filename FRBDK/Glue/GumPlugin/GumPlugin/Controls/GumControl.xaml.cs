@@ -128,7 +128,7 @@ namespace GumPlugin.Controls
             var shouldSave = FormsControlAdder.AskToSaveIfOverwriting(assembly);
             if(shouldSave)
             {
-                FormsControlAdder.SaveElements(assembly);
+                _ = FormsControlAdder.SaveElements(assembly);
             }
         }
 
