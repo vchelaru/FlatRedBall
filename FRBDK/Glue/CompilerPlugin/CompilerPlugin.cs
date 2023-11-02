@@ -72,7 +72,7 @@ namespace CompilerPlugin
 
         FilePath BuildSettingsUserFilePath => GlueState.Self.ProjectSpecificSettingsFolder + "BuildSettings.user.json";
 
-        public async void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        public void HandleCompilerViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var propertyName = e.PropertyName;
 
